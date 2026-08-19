@@ -394,6 +394,8 @@
 
       try {
         const response = await fetch('assets/logos_list.json');
+        if (!response.ok) throw new Error("JSON non trovato");
+
         let files = await response.json();
         
         select1.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
@@ -413,7 +415,7 @@
           select2.appendChild(option2);
         });
       } catch (e) {
-        console.warn("Nessun listato JSON trovato.");
+        console.warn("File logos_list.json non trovato. Caricamento in modalità di backup.");
       }
 
       updateCards();
