@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>GENERATORE CARTELLI by Fabrice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef2f5;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* PANNELLO CONTROLLI DOPPIO */
+    .controls {
+      width: 380px;
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      height: fit-content;
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+
+    .controls h2 {
+      font-size: 1.1rem;
+      color: #333;
+      border-bottom: 2px solid #e00000;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #e00000;
+      background-color: #fbeaeae6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+
+    .form-group { margin-bottom: 8px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+      color: #444;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .btn-sync {
+      width: 100%;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .btn-sync:hover { background-color: #1557b0; }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-print:hover { background-color: #b30000; }
+
+    /* FOGLIO A4 CON 2 CARTELLI */
+    .print-sheet {
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      padding: 10mm 12mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* SINGOLO CARTELLO CON SPAZIATURA EQUILIBRATA */
+    .card {
+      width: 100%;
+      height: 128mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4mm 0;
+      flex-shrink: 0;
+    }
+
+    .cut-line {
+      width: 100%;
+      border-top: 1px dashed #ccc;
+      margin: 2mm 0;
+      flex-shrink: 0;
+    }
+
+    /* FASCIA IN ALTO */
+    .header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5mm;
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #e00000;
+      text-align: center;
+      line-height: 1.1;
+      text-transform: uppercase;
+      width: 20%;
+    }
+
+    /* RIQUADRO ROSSO */
+    .red-box {
+      width: 56%;
+      height: 29mm;
+      background-color: #e00000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2mm;
+      flex-shrink: 0;
+    }
+
+    .red-box img {
+      max-width: 94%;
+      max-height: 94%;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    /* BLOCCO PREZZI AL CENTRO */
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1mm 0;
+      flex-shrink: 0;
+    }
+
+    .price-row-old {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+
+    .price-original {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-weight: normal;
+      color: #333;
+      text-decoration: line-through;
+    }
+
+    .discount-tag {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-style: italic;
+      color: #e00000;
+      font-weight: 800;
+    }
+
+    /* PREZZO FINALE */
+    .price-final {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-size: 7.8rem;
+      font-weight: normal;
+      color: #000;
+      line-height: 0.82;
+      text-align: center;
+      letter-spacing: -3.5px;
+    }
+
+    /* LOGO LUXURY OUTLET IN FONDO */
+    .card-footer {
+      height: 19.2mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1mm;
+      flex-shrink: 0;
+    }
+
+    .card-footer img {
+      max-height: 100%;
+      max-width: 264px;
+      object-fit: contain;
+      filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
+    }
+
+    /* CONFIGURAZIONE STAMPA */
+    @page {
+      size: A4 portrait;
+      margin: 0 !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        background: white;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .controls { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        padding: 8mm 10mm;
+        width: 210mm;
+        height: 297mm;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .red-box { 
+        background-color: #e00000 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PANNELLO CONTROLLI -->
+  <div class="controls">
+    <h2>Pannello di Controllo</h2>
+
+    <button class="btn-sync" onclick="syncDriveLogos(true)">🔄 AGGIORNA LOGHI DA DRIVE</button>
+
+    <!-- CARTELLO 1 -->
+    <div class="section-title">CARTELLO 1</div>
+    
+    <div class="form-group">
+      <label>Brand</label>
+      <select id="brandSelect1" onchange="updateCards()"><option value="">Caricamento...</option></select>
+    </div>
+    <div class="form-group">
+      <label>Claim SX 1 / DX 1:</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="left1" value="SALDI 2026" oninput="updateCards()">
+        <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Prezzi (Originale / Sconto / Finale):</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="pOld1" value="395,00" placeholder="395,00" oninput="updateCards()">
+        <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="updateCards()">
+        <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
+      </div>
+    </div>
+
+    <!-- TASTO COPIA -->
+    <button class="btn-copy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+    <!-- CARTELLO 2 -->
+    <div class="section-title">CARTELLO 2</div>
+    
+    <div class="form-group">
+      <label>Brand</label>
+      <select id="brandSelect2" onchange="updateCards()"><option value="">Caricamento...</option></select>
+    </div>
+    <div class="form-group">
+      <label>Claim SX 2 / DX 2:</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="left2" value="SALDI 2026" oninput="updateCards()">
+        <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Prezzi (Originale / Sconto / Finale):</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="pOld2" value="395,00" placeholder="395,00" oninput="updateCards()">
+        <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="updateCards()">
+        <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
+      </div>
+    </div>
+
+    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio (A4)</button>
+  </div>
+
+  <!-- FOGLIO A4 STAMPABILE -->
+  <div class="print-sheet">
+    
+    <!-- CARTELLO 1 -->
+    <div class="card">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">SALDI<br>2026</div>
+        <div class="red-box"><img id="cardLogo1" src="" alt="Logo Brand"></div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+      </div>
+
+      <div class="price-block">
+        <div class="price-row-old">
+          <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
+          <span class="discount-tag" id="discountDisplay1">-75%</span>
+        </div>
+        <div class="price-final" id="priceNewDisplay1">€ 99,00</div>
+      </div>
+
+      <div class="card-footer"><img class="luxuryLogo" src="https://lh3.googleusercontent.com/d/1TQyudx5q76azxbpI1oW5g6YQ46R5dgCg" alt="Luxury Outlet"></div>
+    </div>
+
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">SALDI<br>2026</div>
+        <div class="red-box"><img id="cardLogo2" src="" alt="Logo Brand"></div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+      </div>
+
+      <div class="price-block">
+        <div class="price-row-old">
+          <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
+          <span class="discount-tag" id="discountDisplay2">-75%</span>
+        </div>
+        <div class="price-final" id="priceNewDisplay2">€ 99,00</div>
+      </div>
+
+      <div class="card-footer"><img class="luxuryLogo" src="https://lh3.googleusercontent.com/d/1TQyudx5q76azxbpI1oW5g6YQ46R5dgCg" alt="Luxury Outlet"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr-yLaKoswnn4JHiyRshyVCkhXnuRFQch3wfxnzTZhVy9etZXUfCYatYQt1Mhpwqqn/exec";
+    const STORAGE_KEY = "fabrice_cartelli_logos";
+    const DIRECT_FOOTER_LOGO_ID = "1TQyudx5q76azxbpI1oW5g6YQ46R5dgCg";
+
+    function getDriveUrl(id) {
+      return 'https://lh3.googleusercontent.com/d/' + id;
+    }
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '');
+    }
+
+    function populateLogosUI(logos) {
+      const select1 = document.getElementById('brandSelect1');
+      const select2 = document.getElementById('brandSelect2');
+      
+      const currentVal1 = select1.value;
+      const currentVal2 = select2.value;
+
+      select1.innerHTML = '';
+      select2.innerHTML = '';
+      
+      let luxuryGoldId = "";
+
+      // Assicura che i cartelli abbiano l'immagine del footer dall'URL diretto fornito
+      const luxuryLogos = document.querySelectorAll('.luxuryLogo');
+      luxuryLogos.forEach(img => {
+        img.src = getDriveUrl(DIRECT_FOOTER_LOGO_ID);
+      });
+
+      logos.forEach(logo => {
+        const nameUpper = logo.name.toUpperCase();
+
+        // Esclude dall'elenco a discesa i file grafici generali di fondo
+        if (logo.id !== DIRECT_FOOTER_LOGO_ID && 
+            !nameUpper.includes("LUXURYOUTLET_BACK") && 
+            !nameUpper.includes("LUXURYOUTLETBACK") && 
+            !nameUpper.includes("LASTCHANCE")) {
+          
+          const displayName = cleanBrandName(logo.name);
+
+          const option1 = document.createElement('option');
+          option1.value = logo.id;
+          option1.textContent = displayName;
+          select1.appendChild(option1);
+
+          const option2 = document.createElement('option');
+          option2.value = logo.id;
+          option2.textContent = displayName;
+          select2.appendChild(option2);
+
+          if (nameUpper.includes("LUXURYGOLD") || nameUpper.includes("LUXURY_GOLD")) {
+            luxuryGoldId = logo.id;
+          }
+        }
+      });
+
+      if (currentVal1 && select1.querySelector(`option[value="${currentVal1}"]`)) {
+        select1.value = currentVal1;
+      } else if (luxuryGoldId) {
+        select1.value = luxuryGoldId;
+      }
+
+      if (currentVal2 && select2.querySelector(`option[value="${currentVal2}"]`)) {
+        select2.value = currentVal2;
+      } else if (luxuryGoldId) {
+        select2.value = luxuryGoldId;
+      }
+
+      updateCards();
+    }
+
+    async function syncDriveLogos(manualSync = false) {
+      const btnSync = document.querySelector('.btn-sync');
+      if (manualSync && btnSync) btnSync.innerText = "⏳ AGGIORNAMENTO IN CORSO...";
+
+      try {
+        const response = await fetch(SCRIPT_URL, { redirect: "follow" });
+        let logos = await response.json();
+
+        logos.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logos));
+        populateLogosUI(logos);
+        
+        if (manualSync && btnSync) alert("Loghi aggiornati da Drive!");
+      } catch (err) {
+        console.error("Errore sync Drive:", err);
+        if (manualSync) alert("Impossibile aggiornare i loghi da Drive.");
+      } finally {
+        if (btnSync) btnSync.innerText = "🔄 AGGIORNA LOGHI DA DRIVE";
+      }
+    }
+
+    function copyCard1ToCard2() {
+      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('left2').value = document.getElementById('left1').value;
+      document.getElementById('right2').value = document.getElementById('right1').value;
+      document.getElementById('pOld2').value = document.getElementById('pOld1').value;
+      document.getElementById('disc2').value = document.getElementById('disc1').value;
+      document.getElementById('pNew2').value = document.getElementById('pNew1').value;
+      updateCards();
+    }
+
+    function updateCards() {
+      // Cartello 1
+      const b1 = document.getElementById('brandSelect1').value;
+      if (b1) document.getElementById('cardLogo1').src = getDriveUrl(b1);
+      document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
+      document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
+      
+      const po1 = document.getElementById('pOld1').value;
+      document.getElementById('priceOldDisplay1').innerText = po1 ? '€ ' + po1 : '';
+      document.getElementById('discountDisplay1').innerText = document.getElementById('disc1').value;
+      const pn1 = document.getElementById('pNew1').value;
+      document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
+
+      // Cartello 2
+      const b2 = document.getElementById('brandSelect2').value;
+      if (b2) document.getElementById('cardLogo2').src = getDriveUrl(b2);
+      document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
+      document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
+      
+      const po2 = document.getElementById('pOld2').value;
+      document.getElementById('priceOldDisplay2').innerText = po2 ? '€ ' + po2 : '';
+      document.getElementById('discountDisplay2').innerText = document.getElementById('disc2').value;
+      const pn2 = document.getElementById('pNew2').value;
+      document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
+    }
+
+    window.onload = function() {
+      const cachedData = localStorage.getItem(STORAGE_KEY);
+      if (cachedData) {
+        try {
+          const logos = JSON.parse(cachedData);
+          populateLogosUI(logos);
+        } catch (e) {
+          console.error("Errore lettura cache:", e);
+        }
+      }
+      syncDriveLogos(false);
+    };
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>GENERATORE CARTELLI LAST CHANCE</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef2f5;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    /* PANNELLO CONTROLLI */
+    .controls {
+      width: 380px;
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      height: fit-content;
+      max-height: 95vh;
+      overflow-y: auto;
+    }
+
+    .controls h2 {
+      font-size: 1.1rem;
+      color: #333;
+      border-bottom: 2px solid #e00000;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #e00000;
+      background-color: #fbeaeae6;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+
+    .form-group { margin-bottom: 8px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+      color: #444;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .btn-sync {
+      width: 100%;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+
+    .btn-sync:hover { background-color: #1557b0; }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-print:hover { background-color: #b30000; }
+
+    /* FOGLIO A4 CON 2 CARTELLI */
+    .print-sheet {
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      padding: 6mm 10mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .card {
+      width: 100%;
+      height: 135mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2mm;
+      padding: 2mm 0;
+      flex-shrink: 0;
+    }
+
+    .cut-line {
+      width: 100%;
+      border-top: 1px dashed #ccc;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    /* FASCIA IN ALTO DINAMICA */
+    .header-row {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 0 2mm;
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 1.05rem;
+      color: #e00000;
+      text-align: center;
+      line-height: 1.1;
+      text-transform: uppercase;
+      width: 18%;
+      margin-top: 5mm;
+    }
+
+    .center-header-box {
+      width: 64%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    /* Immagine Grafica LAST CHANCE */
+    .last-chance-graphic {
+      width: 100%;
+      max-height: 48mm;
+      object-fit: contain;
+      transform: scale(1.40);
+    }
+
+    /* Logo Brand Rosso */
+    .brand-logo-container {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 5mm;
+      margin-top: 3mm;
+      min-height: 12mm;
+    }
+
+    .brand-logo-container img {
+      max-height: 13mm;
+      max-width: 160px;
+      object-fit: contain;
+      filter: invert(13%) sepia(94%) saturate(7400%) hue-rotate(358deg) brightness(92%) contrast(114%);
+    }
+
+    /* PREZZO */
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1mm 0;
+      flex-shrink: 0;
+    }
+
+    .price-final {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-size: 8.8rem;
+      font-weight: normal;
+      color: #000;
+      line-height: 0.8;
+      text-align: center;
+      letter-spacing: -3.5px;
+    }
+
+    /* FOOTER */
+    .card-footer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1mm;
+    }
+
+    /* Nota Italiana in Bodoni Italic */
+    .footer-ita-note {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni Std", "Didot", serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: #000;
+      margin-bottom: 2mm;
+      text-align: center;
+      min-height: 1.2rem;
+    }
+
+    /* Box Rosso Inferiore */
+    .red-bottom-banner {
+      display: inline-block;
+      background-color: #e00000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      padding: 3px 14px;
+      text-align: center;
+    }
+
+    .red-bottom-banner .banner-text {
+      font-family: "Impact", "Arial Black", "ITC Machine", sans-serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      line-height: 1;
+    }
+
+    /* CONFIGURAZIONE STAMPA */
+    @page {
+      size: A4 portrait;
+      margin: 0 !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm;
+        background: white;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .controls { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        padding: 6mm 10mm;
+        width: 210mm;
+        height: 297mm;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .red-bottom-banner { 
+        background-color: #e00000 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .brand-logo-container img {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PANNELLO CONTROLLI -->
+  <div class="controls">
+    <h2>Last Chance Generator</h2>
+
+    <button class="btn-sync" onclick="syncDriveLogos(true)">🔄 AGGIORNA LOGHI DA DRIVE</button>
+
+    <!-- CARTELLO 1 -->
+    <div class="section-title">CARTELLO 1 (Superiore)</div>
+    
+    <div class="form-group">
+      <label>Brand facoltativo (Sotto a destra):</label>
+      <select id="brandSelect1" onchange="updateCards()">
+        <option value="">-- Nessun Logo Brand --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Claim SX 1 / DX 1:</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="left1" value="SUMMER SALE" oninput="updateCards()">
+        <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Prezzo Finale:</label>
+      <input type="text" id="pNew1" value="69,90" placeholder="69,90" oninput="updateCards()">
+    </div>
+    <div class="form-group">
+      <label>Nota Italiana (Bodoni Italic):</label>
+      <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
+    </div>
+
+    <!-- TASTO COPIA -->
+    <button class="btn-copy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+    <!-- CARTELLO 2 -->
+    <div class="section-title">CARTELLO 2 (Inferiore)</div>
+    
+    <div class="form-group">
+      <label>Brand facoltativo (Sotto a destra):</label>
+      <select id="brandSelect2" onchange="updateCards()">
+        <option value="">-- Nessun Logo Brand --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Claim SX 2 / DX 2:</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
+        <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Prezzo Finale:</label>
+      <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
+    </div>
+    <div class="form-group">
+      <label>Nota Italiana (Bodoni Italic):</label>
+      <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+    </div>
+
+    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio (A4)</button>
+  </div>
+
+  <!-- FOGLIO A4 STAMPABILE -->
+  <div class="print-sheet">
+    
+    <!-- CARTELLO 1 -->
+    <div class="card">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">SUMMER<br>SALE</div>
+        <div class="center-header-box">
+          <img id="lastChanceImg1" class="last-chance-graphic" alt="Last Chance">
+          <div id="brandContainer1" class="brand-logo-container"></div>
+        </div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+      </div>
+
+      <div class="price-block">
+        <div class="price-final" id="priceNewDisplay1">€ 69,90</div>
+      </div>
+
+      <div class="card-footer">
+        <div class="footer-ita-note" id="noteDisplay1">Fino ad esaurimento scorte</div>
+        <div class="red-bottom-banner">
+          <div class="banner-text">LIMITED QUANTITIES AVAILABLE</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">SUMMER<br>SALE</div>
+        <div class="center-header-box">
+          <img id="lastChanceImg2" class="last-chance-graphic" alt="Last Chance">
+          <div id="brandContainer2" class="brand-logo-container"></div>
+        </div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+      </div>
+
+      <div class="price-block">
+        <div class="price-final" id="priceNewDisplay2">€ 69,90</div>
+      </div>
+
+      <div class="card-footer">
+        <div class="footer-ita-note" id="noteDisplay2">Fino ad esaurimento scorte</div>
+        <div class="red-bottom-banner">
+          <div class="banner-text">LIMITED QUANTITIES AVAILABLE</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr-yLaKoswnn4JHiyRshyVCkhXnuRFQch3wfxnzTZhVy9etZXUfCYatYQt1Mhpwqqn/exec";
+    const STORAGE_KEY = "fabrice_cartelli_logos";
+
+    function getDriveUrl(id) {
+      return 'https://lh3.googleusercontent.com/d/' + id;
+    }
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '');
+    }
+
+    function populateLogosUI(logos) {
+      const select1 = document.getElementById('brandSelect1');
+      const select2 = document.getElementById('brandSelect2');
+      
+      const currentVal1 = select1.value;
+      const currentVal2 = select2.value;
+
+      select1.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
+      select2.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
+
+      // Imposta il grafico principale LAST CHANCE
+      const defaultLogoObj = logos.find(logo => logo.name.toUpperCase().includes("LASTCHANCE"));
+      if (defaultLogoObj) {
+        const lastChanceLogoUrl = getDriveUrl(defaultLogoObj.id);
+        document.getElementById('lastChanceImg1').src = lastChanceLogoUrl;
+        document.getElementById('lastChanceImg2').src = lastChanceLogoUrl;
+      }
+
+      logos.forEach(logo => {
+        const nameClean = logo.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        if (!nameClean.includes("outlet") && !nameClean.includes("lastchance")) {
+          const displayName = cleanBrandName(logo.name);
+
+          const option1 = document.createElement('option');
+          option1.value = logo.id;
+          option1.textContent = displayName;
+          select1.appendChild(option1);
+
+          const option2 = document.createElement('option');
+          option2.value = logo.id;
+          option2.textContent = displayName;
+          select2.appendChild(option2);
+        }
+      });
+
+      if (currentVal1 && select1.querySelector(`option[value="${currentVal1}"]`)) {
+        select1.value = currentVal1;
+      }
+      if (currentVal2 && select2.querySelector(`option[value="${currentVal2}"]`)) {
+        select2.value = currentVal2;
+      }
+
+      updateCards();
+    }
+
+    async function syncDriveLogos(manualSync = false) {
+      const btnSync = document.querySelector('.btn-sync');
+      if (manualSync && btnSync) btnSync.innerText = "⏳ AGGIORNAMENTO IN CORSO...";
+
+      try {
+        const response = await fetch(SCRIPT_URL, { redirect: "follow" });
+        let logos = await response.json();
+
+        logos.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logos));
+        populateLogosUI(logos);
+        
+        if (manualSync && btnSync) alert("Loghi aggiornati da Drive!");
+      } catch (err) {
+        console.error("Errore sync Drive:", err);
+        if (manualSync) alert("Impossibile aggiornare i loghi da Drive.");
+      } finally {
+        if (btnSync) btnSync.innerText = "🔄 AGGIORNA LOGHI DA DRIVE";
+      }
+    }
+
+    function copyCard1ToCard2() {
+      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('left2').value = document.getElementById('left1').value;
+      document.getElementById('right2').value = document.getElementById('right1').value;
+      document.getElementById('pNew2').value = document.getElementById('pNew1').value;
+      document.getElementById('note2').value = document.getElementById('note1').value;
+      updateCards();
+    }
+
+    function updateCards() {
+      // CARTELLO 1
+      const b1 = document.getElementById('brandSelect1').value;
+      const brandContainer1 = document.getElementById('brandContainer1');
+      const noteDisplay1 = document.getElementById('noteDisplay1');
+      const noteVal1 = document.getElementById('note1').value;
+      
+      if (b1) {
+        brandContainer1.innerHTML = `<img src="${getDriveUrl(b1)}" alt="Brand Logo">`;
+      } else {
+        brandContainer1.innerHTML = '';
+      }
+
+      noteDisplay1.innerText = noteVal1;
+      noteDisplay1.style.display = noteVal1.trim() !== "" ? 'block' : 'none';
+
+      document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
+      document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
+      
+      const pn1 = document.getElementById('pNew1').value;
+      document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
+
+      // CARTELLO 2
+      const b2 = document.getElementById('brandSelect2').value;
+      const brandContainer2 = document.getElementById('brandContainer2');
+      const noteDisplay2 = document.getElementById('noteDisplay2');
+      const noteVal2 = document.getElementById('note2').value;
+      
+      if (b2) {
+        brandContainer2.innerHTML = `<img src="${getDriveUrl(b2)}" alt="Brand Logo">`;
+      } else {
+        brandContainer2.innerHTML = '';
+      }
+
+      noteDisplay2.innerText = noteVal2;
+      noteDisplay2.style.display = noteVal2.trim() !== "" ? 'block' : 'none';
+
+      document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
+      document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
+      
+      const pn2 = document.getElementById('pNew2').value;
+      document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
+    }
+
+    window.onload = function() {
+      const cachedData = localStorage.getItem(STORAGE_KEY);
+      if (cachedData) {
+        try {
+          const logos = JSON.parse(cachedData);
+          populateLogosUI(logos);
+        } catch (e) {
+          console.error("Errore lettura cache:", e);
+        }
+      }
+      syncDriveLogos(false);
+    };
+  </script>
+
+</body>
+</html>
