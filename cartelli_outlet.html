@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>GENERATORE CARTELLI LAST CHANCE</title>
+  <title>GENERATORE CARTELLI OUTLET by Fabrice</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -98,7 +98,7 @@
       height: 297mm;
       background: white;
       box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      padding: 6mm 10mm;
+      padding: 10mm 12mm;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -107,75 +107,60 @@
 
     .card {
       width: 100%;
-      height: 135mm;
+      height: 128mm;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 2mm;
-      padding: 2mm 0;
+      justify-content: space-between;
+      padding: 4mm 0;
       flex-shrink: 0;
     }
 
     .cut-line {
       width: 100%;
       border-top: 1px dashed #ccc;
-      margin: 0;
+      margin: 2mm 0;
       flex-shrink: 0;
     }
 
     .header-row {
       width: 100%;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
-      padding: 0 2mm;
+      padding: 0 5mm;
       flex-shrink: 0;
     }
 
     .header-text {
       font-family: 'Courier New', Courier, monospace;
       font-weight: bold;
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       color: #e00000;
       text-align: center;
       line-height: 1.1;
       text-transform: uppercase;
-      width: 18%;
-      margin-top: 5mm;
+      width: 20%;
     }
 
-    .center-header-box {
-      width: 64%;
+    .red-box {
+      width: 56%;
+      height: 29mm;
+      background-color: #e00000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      padding: 2mm;
       flex-shrink: 0;
     }
 
-    .last-chance-graphic {
-      width: 100%;
-      max-height: 48mm;
+    .red-box img {
+      max-width: 94%;
+      max-height: 94%;
       object-fit: contain;
-      transform: scale(1.40);
-    }
-
-    .brand-logo-container {
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      padding-right: 5mm;
-      margin-top: 3mm;
-      min-height: 12mm;
-    }
-
-    .brand-logo-container img {
-      max-height: 13mm;
-      max-width: 160px;
-      object-fit: contain;
-      filter: invert(13%) sepia(94%) saturate(7400%) hue-rotate(358deg) brightness(92%) contrast(114%);
+      filter: brightness(0) invert(1);
     }
 
     .price-block {
@@ -187,53 +172,52 @@
       flex-shrink: 0;
     }
 
+    .price-row-old {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+
+    .price-original {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-weight: normal;
+      color: #333;
+      text-decoration: line-through;
+    }
+
+    .discount-tag {
+      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-style: italic;
+      color: #e00000;
+      font-weight: 800;
+    }
+
     .price-final {
       font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
-      font-size: 8.8rem;
+      font-size: 7.8rem;
       font-weight: normal;
       color: #000;
-      line-height: 0.8;
+      line-height: 0.82;
       text-align: center;
       letter-spacing: -3.5px;
     }
 
     .card-footer {
-      width: 100%;
+      height: 19.2mm;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      margin-bottom: 1mm;
       flex-shrink: 0;
-      margin-top: 1mm;
     }
 
-    .footer-ita-note {
-      font-family: "Bodoni MT", "Bodoni 72", "Bodoni Std", "Didot", serif;
-      font-style: italic;
-      font-size: 1.15rem;
-      color: #000;
-      margin-bottom: 2mm;
-      text-align: center;
-      min-height: 1.2rem;
-    }
-
-    .red-bottom-banner {
-      display: inline-block;
-      background-color: #e00000 !important;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-      padding: 3px 14px;
-      text-align: center;
-    }
-
-    .red-bottom-banner .banner-text {
-      font-family: "Impact", "Arial Black", "ITC Machine", sans-serif;
-      font-size: 1.45rem;
-      font-weight: 900;
-      color: #ffffff;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      line-height: 1;
+    .card-footer img {
+      max-height: 100%;
+      max-width: 264px;
+      object-fit: contain;
+      filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
     }
 
     @page {
@@ -257,20 +241,15 @@
 
       .print-sheet {
         box-shadow: none;
-        padding: 6mm 10mm;
+        padding: 8mm 10mm;
         width: 210mm;
         height: 297mm;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
       }
 
-      .red-bottom-banner { 
+      .red-box { 
         background-color: #e00000 !important; 
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      .brand-logo-container img {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
@@ -280,54 +259,54 @@
 <body>
 
   <div class="controls">
-    <h2>Last Chance Generator</h2>
+    <h2>Pannello di Controllo</h2>
 
-    <div class="section-title">CARTELLO 1 (Superiore)</div>
+    <div class="section-title">CARTELLO 1</div>
     <div class="form-group">
-      <label>Brand facoltativo (Sotto a destra):</label>
+      <label>Brand</label>
       <select id="brandSelect1" onchange="updateCards()">
-        <option value="">-- Nessun Logo Brand --</option>
+        <option value="">-- Seleziona Logo --</option>
       </select>
     </div>
     <div class="form-group">
       <label>Claim SX 1 / DX 1:</label>
       <div style="display:flex; gap:5px;">
-        <input type="text" id="left1" value="SUMMER SALE" oninput="updateCards()">
+        <input type="text" id="left1" value="SALDI 2026" oninput="updateCards()">
         <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
       </div>
     </div>
     <div class="form-group">
-      <label>Prezzo Finale:</label>
-      <input type="text" id="pNew1" value="69,90" placeholder="69,90" oninput="updateCards()">
-    </div>
-    <div class="form-group">
-      <label>Nota Italiana (Bodoni Italic):</label>
-      <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
+      <label>Prezzi (Originale / Sconto / Finale):</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="pOld1" value="395,00" placeholder="395,00" oninput="updateCards()">
+        <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="updateCards()">
+        <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
+      </div>
     </div>
 
     <button class="btn-copy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
 
-    <div class="section-title">CARTELLO 2 (Inferiore)</div>
+    <div class="section-title">CARTELLO 2</div>
     <div class="form-group">
-      <label>Brand facoltativo (Sotto a destra):</label>
+      <label>Brand</label>
       <select id="brandSelect2" onchange="updateCards()">
-        <option value="">-- Nessun Logo Brand --</option>
+        <option value="">-- Seleziona Logo --</option>
       </select>
     </div>
     <div class="form-group">
       <label>Claim SX 2 / DX 2:</label>
       <div style="display:flex; gap:5px;">
-        <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
+        <input type="text" id="left2" value="SALDI 2026" oninput="updateCards()">
         <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
       </div>
     </div>
     <div class="form-group">
-      <label>Prezzo Finale:</label>
-      <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
-    </div>
-    <div class="form-group">
-      <label>Nota Italiana (Bodoni Italic):</label>
-      <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+      <label>Prezzi (Originale / Sconto / Finale):</label>
+      <div style="display:flex; gap:5px;">
+        <input type="text" id="pOld2" value="395,00" placeholder="395,00" oninput="updateCards()">
+        <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="updateCards()">
+        <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
+      </div>
     </div>
 
     <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio (A4)</button>
@@ -336,48 +315,40 @@
   <div class="print-sheet">
     <div class="card">
       <div class="header-row">
-        <div class="header-text" id="headLeft1">SUMMER<br>SALE</div>
-        <div class="center-header-box">
-          <img id="lastChanceImg1" class="last-chance-graphic" src="assets/img/lastchance_back.png" alt="Last Chance">
-          <div id="brandContainer1" class="brand-logo-container"></div>
-        </div>
+        <div class="header-text" id="headLeft1">SALDI<br>2026</div>
+        <div class="red-box"><img id="cardLogo1" src="" alt="Logo Brand"></div>
         <div class="header-text" id="headRight1">SHOP<br>NOW</div>
       </div>
 
       <div class="price-block">
-        <div class="price-final" id="priceNewDisplay1">€ 69,90</div>
+        <div class="price-row-old">
+          <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
+          <span class="discount-tag" id="discountDisplay1">-75%</span>
+        </div>
+        <div class="price-final" id="priceNewDisplay1">€ 99,00</div>
       </div>
 
-      <div class="card-footer">
-        <div class="footer-ita-note" id="noteDisplay1">Fino ad esaurimento scorte</div>
-        <div class="red-bottom-banner">
-          <div class="banner-text">LIMITED QUANTITIES AVAILABLE</div>
-        </div>
-      </div>
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
     </div>
 
     <div class="cut-line"></div>
 
     <div class="card">
       <div class="header-row">
-        <div class="header-text" id="headLeft2">SUMMER<br>SALE</div>
-        <div class="center-header-box">
-          <img id="lastChanceImg2" class="last-chance-graphic" src="assets/img/lastchance_back.png" alt="Last Chance">
-          <div id="brandContainer2" class="brand-logo-container"></div>
-        </div>
+        <div class="header-text" id="headLeft2">SALDI<br>2026</div>
+        <div class="red-box"><img id="cardLogo2" src="" alt="Logo Brand"></div>
         <div class="header-text" id="headRight2">SHOP<br>NOW</div>
       </div>
 
       <div class="price-block">
-        <div class="price-final" id="priceNewDisplay2">€ 69,90</div>
+        <div class="price-row-old">
+          <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
+          <span class="discount-tag" id="discountDisplay2">-75%</span>
+        </div>
+        <div class="price-final" id="priceNewDisplay2">€ 99,00</div>
       </div>
 
-      <div class="card-footer">
-        <div class="footer-ita-note" id="noteDisplay2">Fino ad esaurimento scorte</div>
-        <div class="red-bottom-banner">
-          <div class="banner-text">LIMITED QUANTITIES AVAILABLE</div>
-        </div>
-      </div>
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
     </div>
   </div>
 
@@ -429,8 +400,8 @@
       const select1 = document.getElementById('brandSelect1');
       const select2 = document.getElementById('brandSelect2');
 
-      select1.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
-      select2.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
+      select1.innerHTML = '<option value="">-- Seleziona Logo --</option>';
+      select2.innerHTML = '<option value="">-- Seleziona Logo --</option>';
 
       LOGO_FILES.forEach(fileName => {
         const displayName = cleanBrandName(fileName);
@@ -453,49 +424,32 @@
       document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
       document.getElementById('left2').value = document.getElementById('left1').value;
       document.getElementById('right2').value = document.getElementById('right1').value;
+      document.getElementById('pOld2').value = document.getElementById('pOld1').value;
+      document.getElementById('disc2').value = document.getElementById('disc1').value;
       document.getElementById('pNew2').value = document.getElementById('pNew1').value;
-      document.getElementById('note2').value = document.getElementById('note1').value;
       updateCards();
     }
 
     function updateCards() {
       const b1 = document.getElementById('brandSelect1').value;
-      const brandContainer1 = document.getElementById('brandContainer1');
-      const noteDisplay1 = document.getElementById('noteDisplay1');
-      const noteVal1 = document.getElementById('note1').value;
-      
-      if (b1) {
-        brandContainer1.innerHTML = `<img src="${LOGO_PATH + b1}" alt="Brand Logo">`;
-      } else {
-        brandContainer1.innerHTML = '';
-      }
-
-      noteDisplay1.innerText = noteVal1;
-      noteDisplay1.style.display = noteVal1.trim() !== "" ? 'block' : 'none';
-
+      if (b1) document.getElementById('cardLogo1').src = LOGO_PATH + b1;
       document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
       document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
       
+      const po1 = document.getElementById('pOld1').value;
+      document.getElementById('priceOldDisplay1').innerText = po1 ? '€ ' + po1 : '';
+      document.getElementById('discountDisplay1').innerText = document.getElementById('disc1').value;
       const pn1 = document.getElementById('pNew1').value;
       document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
 
       const b2 = document.getElementById('brandSelect2').value;
-      const brandContainer2 = document.getElementById('brandContainer2');
-      const noteDisplay2 = document.getElementById('noteDisplay2');
-      const noteVal2 = document.getElementById('note2').value;
-      
-      if (b2) {
-        brandContainer2.innerHTML = `<img src="${LOGO_PATH + b2}" alt="Brand Logo">`;
-      } else {
-        brandContainer2.innerHTML = '';
-      }
-
-      noteDisplay2.innerText = noteVal2;
-      noteDisplay2.style.display = noteVal2.trim() !== "" ? 'block' : 'none';
-
+      if (b2) document.getElementById('cardLogo2').src = LOGO_PATH + b2;
       document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
       document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
       
+      const po2 = document.getElementById('pOld2').value;
+      document.getElementById('priceOldDisplay2').innerText = po2 ? '€ ' + po2 : '';
+      document.getElementById('discountDisplay2').innerText = document.getElementById('disc2').value;
       const pn2 = document.getElementById('pNew2').value;
       document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
     }
