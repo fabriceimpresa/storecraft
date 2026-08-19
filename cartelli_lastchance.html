@@ -15,7 +15,6 @@
       justify-content: center;
     }
 
-    /* PANNELLO CONTROLLI */
     .controls {
       width: 380px;
       background: #ffffff;
@@ -64,21 +63,6 @@
       font-size: 0.85rem;
     }
 
-    .btn-sync {
-      width: 100%;
-      background-color: #1a73e8;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-
-    .btn-sync:hover { background-color: #1557b0; }
-
     .btn-copy {
       width: 100%;
       background-color: #28a745;
@@ -109,7 +93,6 @@
 
     .btn-print:hover { background-color: #b30000; }
 
-    /* FOGLIO A4 CON 2 CARTELLI */
     .print-sheet {
       width: 210mm;
       height: 297mm;
@@ -141,7 +124,6 @@
       flex-shrink: 0;
     }
 
-    /* FASCIA IN ALTO DINAMICA */
     .header-row {
       width: 100%;
       display: flex;
@@ -173,7 +155,6 @@
       flex-shrink: 0;
     }
 
-    /* Immagine Grafica LAST CHANCE */
     .last-chance-graphic {
       width: 100%;
       max-height: 48mm;
@@ -181,7 +162,6 @@
       transform: scale(1.40);
     }
 
-    /* Logo Brand Rosso */
     .brand-logo-container {
       width: 100%;
       display: flex;
@@ -198,7 +178,6 @@
       filter: invert(13%) sepia(94%) saturate(7400%) hue-rotate(358deg) brightness(92%) contrast(114%);
     }
 
-    /* PREZZO */
     .price-block {
       display: flex;
       flex-direction: column;
@@ -218,7 +197,6 @@
       letter-spacing: -3.5px;
     }
 
-    /* FOOTER */
     .card-footer {
       width: 100%;
       display: flex;
@@ -229,7 +207,6 @@
       margin-top: 1mm;
     }
 
-    /* Nota Italiana in Bodoni Italic */
     .footer-ita-note {
       font-family: "Bodoni MT", "Bodoni 72", "Bodoni Std", "Didot", serif;
       font-style: italic;
@@ -240,7 +217,6 @@
       min-height: 1.2rem;
     }
 
-    /* Box Rosso Inferiore */
     .red-bottom-banner {
       display: inline-block;
       background-color: #e00000 !important;
@@ -260,7 +236,6 @@
       line-height: 1;
     }
 
-    /* CONFIGURAZIONE STAMPA */
     @page {
       size: A4 portrait;
       margin: 0 !important;
@@ -304,15 +279,10 @@
 </head>
 <body>
 
-  <!-- PANNELLO CONTROLLI -->
   <div class="controls">
     <h2>Last Chance Generator</h2>
 
-    <button class="btn-sync" onclick="syncDriveLogos(true)">🔄 AGGIORNA LOGHI DA DRIVE</button>
-
-    <!-- CARTELLO 1 -->
     <div class="section-title">CARTELLO 1 (Superiore)</div>
-    
     <div class="form-group">
       <label>Brand facoltativo (Sotto a destra):</label>
       <select id="brandSelect1" onchange="updateCards()">
@@ -335,12 +305,9 @@
       <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
     </div>
 
-    <!-- TASTO COPIA -->
     <button class="btn-copy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
 
-    <!-- CARTELLO 2 -->
     <div class="section-title">CARTELLO 2 (Inferiore)</div>
-    
     <div class="form-group">
       <label>Brand facoltativo (Sotto a destra):</label>
       <select id="brandSelect2" onchange="updateCards()">
@@ -366,15 +333,12 @@
     <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio (A4)</button>
   </div>
 
-  <!-- FOGLIO A4 STAMPABILE -->
   <div class="print-sheet">
-    
-    <!-- CARTELLO 1 -->
     <div class="card">
       <div class="header-row">
         <div class="header-text" id="headLeft1">SUMMER<br>SALE</div>
         <div class="center-header-box">
-          <img id="lastChanceImg1" class="last-chance-graphic" alt="Last Chance">
+          <img id="lastChanceImg1" class="last-chance-graphic" src="assets/img/lastchance_back.png" alt="Last Chance">
           <div id="brandContainer1" class="brand-logo-container"></div>
         </div>
         <div class="header-text" id="headRight1">SHOP<br>NOW</div>
@@ -394,12 +358,11 @@
 
     <div class="cut-line"></div>
 
-    <!-- CARTELLO 2 -->
     <div class="card">
       <div class="header-row">
         <div class="header-text" id="headLeft2">SUMMER<br>SALE</div>
         <div class="center-header-box">
-          <img id="lastChanceImg2" class="last-chance-graphic" alt="Last Chance">
+          <img id="lastChanceImg2" class="last-chance-graphic" src="assets/img/lastchance_back.png" alt="Last Chance">
           <div id="brandContainer2" class="brand-logo-container"></div>
         </div>
         <div class="header-text" id="headRight2">SHOP<br>NOW</div>
@@ -416,87 +379,44 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzr-yLaKoswnn4JHiyRshyVCkhXnuRFQch3wfxnzTZhVy9etZXUfCYatYQt1Mhpwqqn/exec";
-    const STORAGE_KEY = "fabrice_cartelli_logos";
-
-    function getDriveUrl(id) {
-      return 'https://lh3.googleusercontent.com/d/' + id;
-    }
+    const LOGO_PATH = "assets/logos/";
 
     function cleanBrandName(filename) {
-      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '');
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
     }
 
-    function populateLogosUI(logos) {
+    async function loadLocalLogos() {
       const select1 = document.getElementById('brandSelect1');
       const select2 = document.getElementById('brandSelect2');
-      
-      const currentVal1 = select1.value;
-      const currentVal2 = select2.value;
 
-      select1.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
-      select2.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
+      try {
+        const response = await fetch('assets/logos_list.json');
+        let files = await response.json();
+        
+        select1.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
+        select2.innerHTML = '<option value="">-- Nessun Logo Brand --</option>';
 
-      // Imposta il grafico principale LAST CHANCE
-      const defaultLogoObj = logos.find(logo => logo.name.toUpperCase().includes("LASTCHANCE"));
-      if (defaultLogoObj) {
-        const lastChanceLogoUrl = getDriveUrl(defaultLogoObj.id);
-        document.getElementById('lastChanceImg1').src = lastChanceLogoUrl;
-        document.getElementById('lastChanceImg2').src = lastChanceLogoUrl;
-      }
-
-      logos.forEach(logo => {
-        const nameClean = logo.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-        if (!nameClean.includes("outlet") && !nameClean.includes("lastchance")) {
-          const displayName = cleanBrandName(logo.name);
-
+        files.forEach(fileName => {
+          const displayName = cleanBrandName(fileName);
+          
           const option1 = document.createElement('option');
-          option1.value = logo.id;
+          option1.value = fileName;
           option1.textContent = displayName;
           select1.appendChild(option1);
 
           const option2 = document.createElement('option');
-          option2.value = logo.id;
+          option2.value = fileName;
           option2.textContent = displayName;
           select2.appendChild(option2);
-        }
-      });
-
-      if (currentVal1 && select1.querySelector(`option[value="${currentVal1}"]`)) {
-        select1.value = currentVal1;
-      }
-      if (currentVal2 && select2.querySelector(`option[value="${currentVal2}"]`)) {
-        select2.value = currentVal2;
+        });
+      } catch (e) {
+        console.warn("Nessun listato JSON trovato.");
       }
 
       updateCards();
-    }
-
-    async function syncDriveLogos(manualSync = false) {
-      const btnSync = document.querySelector('.btn-sync');
-      if (manualSync && btnSync) btnSync.innerText = "⏳ AGGIORNAMENTO IN CORSO...";
-
-      try {
-        const response = await fetch(SCRIPT_URL, { redirect: "follow" });
-        let logos = await response.json();
-
-        logos.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
-
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(logos));
-        populateLogosUI(logos);
-        
-        if (manualSync && btnSync) alert("Loghi aggiornati da Drive!");
-      } catch (err) {
-        console.error("Errore sync Drive:", err);
-        if (manualSync) alert("Impossibile aggiornare i loghi da Drive.");
-      } finally {
-        if (btnSync) btnSync.innerText = "🔄 AGGIORNA LOGHI DA DRIVE";
-      }
     }
 
     function copyCard1ToCard2() {
@@ -509,14 +429,13 @@
     }
 
     function updateCards() {
-      // CARTELLO 1
       const b1 = document.getElementById('brandSelect1').value;
       const brandContainer1 = document.getElementById('brandContainer1');
       const noteDisplay1 = document.getElementById('noteDisplay1');
       const noteVal1 = document.getElementById('note1').value;
       
       if (b1) {
-        brandContainer1.innerHTML = `<img src="${getDriveUrl(b1)}" alt="Brand Logo">`;
+        brandContainer1.innerHTML = `<img src="${LOGO_PATH + b1}" alt="Brand Logo">`;
       } else {
         brandContainer1.innerHTML = '';
       }
@@ -530,14 +449,13 @@
       const pn1 = document.getElementById('pNew1').value;
       document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
 
-      // CARTELLO 2
       const b2 = document.getElementById('brandSelect2').value;
       const brandContainer2 = document.getElementById('brandContainer2');
       const noteDisplay2 = document.getElementById('noteDisplay2');
       const noteVal2 = document.getElementById('note2').value;
       
       if (b2) {
-        brandContainer2.innerHTML = `<img src="${getDriveUrl(b2)}" alt="Brand Logo">`;
+        brandContainer2.innerHTML = `<img src="${LOGO_PATH + b2}" alt="Brand Logo">`;
       } else {
         brandContainer2.innerHTML = '';
       }
@@ -552,19 +470,7 @@
       document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
     }
 
-    window.onload = function() {
-      const cachedData = localStorage.getItem(STORAGE_KEY);
-      if (cachedData) {
-        try {
-          const logos = JSON.parse(cachedData);
-          populateLogosUI(logos);
-        } catch (e) {
-          console.error("Errore lettura cache:", e);
-        }
-      }
-      syncDriveLogos(false);
-    };
+    window.onload = loadLocalLogos;
   </script>
-
 </body>
 </html>

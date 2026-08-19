@@ -11,7 +11,7 @@
       --sidebar: #181715;
       --card: #1e1d1a;
       --border: #2e2b27;
-      --accent: #d4a373; /* Terracotta / Gold tenue */
+      --accent: #d4a373;
       --text: #f4f1ea;
       --text-muted: #8c857b;
     }
@@ -19,27 +19,23 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-    /* SIDEBAR */
     aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; }
     .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 2.5rem; text-align: center; }
     .menu-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin: 1.5rem 0 0.5rem 0.5rem; }
     .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
 
-    /* MAIN */
     main { flex: 1; padding: 2.5rem 3rem; overflow-y: auto; }
     header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
     header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
     header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 
-    /* GRID & CARDS */
     .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 1.2rem; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
     
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
     .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
-    /* MINIATURE */
     .preview { height: 160px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
     .mini-doc { width: 100px; height: 120px; background: #fdfbf7; color: #1a1a1a; padding: 8px; border-radius: 3px; font-family: 'Cinzel', serif; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     .mini-doc .title { font-size: 6px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
@@ -50,7 +46,6 @@
     .card-body h3 { font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 0.3rem; }
     .card-body p { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
 
-    /* WIDGETS CASSA (TOOLS) */
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
     .widget { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; }
     .widget h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
@@ -73,7 +68,7 @@
       <div class="menu-label">Utilità</div>
       <a class="nav-btn" href="#tools">🧮 Strumenti Cassa</a>
     </div>
-    <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">v2.0 • Offline Local</div>
+    <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">v2.0 • Local Assets</div>
   </aside>
 
   <main>
@@ -114,11 +109,8 @@
       </a>
     </div>
 
-    <!-- STRUMENTI CASSA -->
     <div class="section-title" id="tools">Strumenti Rapidi di Cassa</div>
     <div class="tools-grid">
-      
-      <!-- CALCOLATORE SCONTO -->
       <div class="widget">
         <h3>🧮 Calcola Sconto / Margine</h3>
         <div class="tool-row">
@@ -129,7 +121,6 @@
         <div class="tool-result" id="res-sconto">€ 0,00</div>
       </div>
 
-      <!-- CONVERTITORE VALUTA ONLINE -->
       <div class="widget">
         <h3>💱 Cambio Valuta (Live Online)</h3>
         <div class="tool-row">
@@ -143,12 +134,10 @@
         <button class="tool-btn" style="width:100%" onclick="convertCurrency()">Converti in EUR (€)</button>
         <div class="tool-result" id="res-valuta">€ 0,00</div>
       </div>
-
     </div>
   </main>
 
   <script>
-    // Calcolatore Sconto
     function calcSconto() {
       const p = parseFloat(document.getElementById('p-orig').value) || 0;
       const s = parseFloat(document.getElementById('p-sconto').value) || 0;
@@ -156,7 +145,6 @@
       document.getElementById('res-sconto').innerText = '€ ' + finale.toFixed(2);
     }
 
-    // Convertitore Valuta via API Online Gratuita
     async function convertCurrency() {
       const amount = parseFloat(document.getElementById('val-amount').value) || 0;
       const from = document.getElementById('val-from').value;
