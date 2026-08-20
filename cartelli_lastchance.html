@@ -2,25 +2,53 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>GENERATORE CARTELLI LAST CHANCE</title>
+  <title>GENERATORE CARTELLI LAST CHANCE by Fabrice</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
+    /* Sfondo principale */
     body {
       font-family: Arial, sans-serif;
-      background-color: #eef2f5;
+      background-color: #212529;
       padding: 20px;
       display: flex;
       gap: 20px;
       justify-content: center;
+      min-height: 100vh;
+      position: relative;
     }
 
+    /* Filigrana di sfondo: LASTCHANCE_BACK.png mantenuto piccolo e ben distanziato */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="450" height="250"><image href="assets/img/LASTCHANCE_BACK.png" x="100" y="50" width="250" /></svg>');
+      background-repeat: repeat;
+      opacity: 0.18;
+      filter: contrast(1.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Elementi sopra la filigrana */
+    .controls, .print-sheet {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Pannello di Controllo Scuro */
     .controls {
       width: 380px;
-      background: #ffffff;
+      background: #181a1d;
+      color: #f1f1f1;
       padding: 15px;
       border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      border: 1px solid #d4a373;
       height: fit-content;
       max-height: 95vh;
       overflow-y: auto;
@@ -28,8 +56,8 @@
 
     .controls h2 {
       font-size: 1.1rem;
-      color: #333;
-      border-bottom: 2px solid #e00000;
+      color: #e5ba73;
+      border-bottom: 2px solid #d4a373;
       padding-bottom: 5px;
       margin-bottom: 10px;
     }
@@ -37,11 +65,12 @@
     .section-title {
       font-size: 0.95rem;
       font-weight: bold;
-      color: #e00000;
-      background-color: #fbeaeae6;
+      color: #f3d5a3;
+      background-color: rgba(212, 163, 115, 0.15);
+      border-left: 3px solid #d4a373;
       padding: 4px 8px;
-      border-radius: 4px;
-      margin-top: 10px;
+      border-radius: 2px;
+      margin-top: 12px;
       margin-bottom: 8px;
     }
 
@@ -51,16 +80,24 @@
       display: block;
       font-size: 0.8rem;
       font-weight: bold;
-      margin-bottom: 2px;
-      color: #444;
+      margin-bottom: 3px;
+      color: #dddddd;
     }
 
     .form-group input, .form-group select {
       width: 100%;
       padding: 6px 8px;
-      border: 1px solid #ccc;
+      border: 1px solid #4a4237;
       border-radius: 4px;
       font-size: 0.85rem;
+      background-color: #26292e;
+      color: #ffffff;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #d4a373;
+      box-shadow: 0 0 4px rgba(212, 163, 115, 0.5);
     }
 
     .btn-copy {
@@ -78,49 +115,75 @@
 
     .btn-copy:hover { background-color: #218838; }
 
+    /* PULSANTI STAMPA */
     .btn-print {
       width: 100%;
       background-color: #e00000;
-      color: white;
-      border: none;
+      color: #ffffff;
+      border: 1px solid #b30000;
       padding: 10px;
       font-size: 0.95rem;
       font-weight: bold;
       border-radius: 4px;
       cursor: pointer;
       margin-top: 10px;
+      transition: background-color 0.2s;
     }
 
-    .btn-print:hover { background-color: #b30000; }
+    .btn-print:hover { background-color: #cc0000; }
 
+    .btn-print-single {
+      width: 100%;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 1px solid #004085;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print-single:hover { background-color: #003d80; }
+
+    /* FOGLIO STAMPA */
     .print-sheet {
       width: 210mm;
       height: 297mm;
       background: white;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-      padding: 6mm 10mm;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 10mm 12mm;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
       overflow: hidden;
+    }
+
+    .print-sheet.double-mode {
+      justify-content: space-between;
     }
 
     .card {
       width: 100%;
-      height: 135mm;
+      height: 128mm;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 2mm;
+      justify-content: space-between;
       padding: 2mm 0;
       flex-shrink: 0;
+    }
+
+    .card.disabled {
+      display: none !important;
     }
 
     .cut-line {
       width: 100%;
       border-top: 1px dashed #ccc;
-      margin: 0;
+      margin: 2mm 0;
       flex-shrink: 0;
     }
 
@@ -236,32 +299,37 @@
       line-height: 1;
     }
 
+    /* REGOLE DI STAMPA PER SAFARI E ALTRI BROWSER */
     @page {
       size: A4 portrait;
-      margin: 0 !important;
+      margin: 0mm !important;
     }
 
     @media print {
       html, body {
         width: 210mm;
         height: 297mm;
-        background: white;
-        padding: 0;
-        margin: 0;
-        overflow: hidden;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
+
+      body::before { display: none !important; }
 
       .controls { display: none !important; }
 
       .print-sheet {
         box-shadow: none;
-        padding: 6mm 10mm;
+        padding: 8mm 10mm;
         width: 210mm;
         height: 297mm;
         page-break-after: avoid !important;
         page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-inside: avoid !important;
       }
 
       .red-bottom-banner { 
@@ -282,7 +350,7 @@
   <div class="controls">
     <h2>Last Chance Generator</h2>
 
-    <div class="section-title">CARTELLO SUPERIORE</div>
+    <div class="section-title">CARTELLO 1 (Superiore)</div>
     <div class="form-group">
       <label>Brand facoltativo:</label>
       <select id="brandSelect1" onchange="updateCards()">
@@ -305,36 +373,49 @@
       <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
     </div>
 
-    <button class="btn-copy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO SUP ➔ CARTELLO INF</button>
+    <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
 
-    <div class="section-title">CARTELLO INFERIORE</div>
-    <div class="form-group">
-      <label>Brand facoltativo:</label>
-      <select id="brandSelect2" onchange="updateCards()">
-        <option value="">-- Nessun Logo Brand --</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Claim SX 2 / DX 2:</label>
-      <div style="display:flex; gap:5px;">
-        <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
-        <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+    <div id="sectionCard2">
+      <div class="section-title">CARTELLO 2 (Inferiore)</div>
+      <div class="form-group">
+        <label>Brand facoltativo:</label>
+        <select id="brandSelect2" onchange="updateCards()">
+          <option value="">-- Nessun Logo Brand --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Claim SX 2 / DX 2:</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
+          <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Prezzo Finale:</label>
+        <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Testo in italiano:</label>
+        <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
       </div>
     </div>
+
+    <div class="section-title">IMPOSTAZIONI STAMPA</div>
     <div class="form-group">
-      <label>Prezzo Finale:</label>
-      <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
-    </div>
-    <div class="form-group">
-      <label>Testo in italiano:</label>
-      <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+      <label>Modalità Cartelli da Stampare:</label>
+      <select id="modeSelect" onchange="toggleCardMode()">
+        <option value="2">2 Cartelli (Foglio Intero A4)</option>
+        <option value="1">1 Solo Cartello (Superiore)</option>
+      </select>
     </div>
 
-    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio (A4)</button>
+    <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+    <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
   </div>
 
-  <div class="print-sheet">
-    <div class="card">
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
       <div class="header-row">
         <div class="header-text" id="headLeft1">SUMMER<br>SALE</div>
         <div class="center-header-box">
@@ -356,9 +437,11 @@
       </div>
     </div>
 
+    <!-- LINEA TRATTEGGIATA -->
     <div class="cut-line"></div>
 
-    <div class="card">
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
       <div class="header-row">
         <div class="header-text" id="headLeft2">SUMMER<br>SALE</div>
         <div class="center-header-box">
@@ -458,7 +541,34 @@
       updateCards();
     }
 
+    function toggleCardMode() {
+      const count = document.getElementById('modeSelect').value;
+      const card2 = document.getElementById('card2');
+      const section2 = document.getElementById('sectionCard2');
+      const btnCopy = document.getElementById('btnCopy');
+      const sheet = document.getElementById('printSheet');
+
+      if (count === "1") {
+        card2.classList.add('disabled');
+        section2.style.display = 'none';
+        btnCopy.style.display = 'none';
+        sheet.classList.remove('double-mode');
+      } else {
+        card2.classList.remove('disabled');
+        section2.style.display = 'block';
+        btnCopy.style.display = 'block';
+        sheet.classList.add('double-mode');
+      }
+    }
+
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = count.toString();
+      toggleCardMode();
+      window.print();
+    }
+
     function updateCards() {
+      // Cartello 1
       const b1 = document.getElementById('brandSelect1').value;
       const brandContainer1 = document.getElementById('brandContainer1');
       const noteDisplay1 = document.getElementById('noteDisplay1');
@@ -479,6 +589,7 @@
       const pn1 = document.getElementById('pNew1').value;
       document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
 
+      // Cartello 2
       const b2 = document.getElementById('brandSelect2').value;
       const brandContainer2 = document.getElementById('brandContainer2');
       const noteDisplay2 = document.getElementById('noteDisplay2');
