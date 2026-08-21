@@ -36,24 +36,24 @@
       z-index: 0;
     }
 
-    /* Elementi sopra la filigrana */
-    .controls, .print-sheet {
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
       position: relative;
       z-index: 1;
     }
 
-    /* Pannello di Controllo Scuro */
+    /* Pannelli di Controllo */
     .controls {
-      width: 380px;
       background: #181a1d;
       color: #f1f1f1;
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.6);
       border: 1px solid #d4a373;
-      height: fit-content;
-      max-height: 95vh;
-      overflow-y: auto;
     }
 
     .controls h2 {
@@ -62,6 +62,7 @@
       border-bottom: 2px solid #d4a373;
       padding-bottom: 5px;
       margin-bottom: 10px;
+      text-transform: uppercase;
     }
 
     .section-title {
@@ -96,10 +97,20 @@
       color: #ffffff;
     }
 
+    .form-group select.custom-select {
+      border-color: #d4a373;
+      color: #f3d5a3;
+    }
+
     .form-group input:focus, .form-group select:focus {
       outline: none;
       border-color: #d4a373;
       box-shadow: 0 0 4px rgba(212, 163, 115, 0.5);
+    }
+
+    select option:first-child {
+      color: #e5ba73 !important;
+      font-weight: bold !important;
     }
 
     .btn-copy {
@@ -152,6 +163,8 @@
 
     /* FOGLIO STAMPA */
     .print-sheet {
+      position: relative;
+      z-index: 1;
       width: 210mm;
       height: 296mm;
       background: white;
@@ -187,6 +200,10 @@
       border-top: 1px dashed #ccc;
       margin: 2mm 0;
       flex-shrink: 0;
+    }
+
+    .print-sheet:not(.double-mode) .cut-line {
+      margin-top: 10mm;
     }
 
     .header-row {
@@ -227,11 +244,18 @@
       transform: scale(1.40);
     }
 
+    /* CONTENITORE LOGO DINAMICO */
     .brand-logo-container {
       width: 100%;
-      display: flex;
+      display: none;
       justify-content: flex-end;
       padding-right: 5mm;
+      margin-top: 0;
+      min-height: 0;
+    }
+
+    .brand-logo-container.has-logo {
+      display: flex;
       margin-top: 3mm;
       min-height: 12mm;
     }
@@ -248,7 +272,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 1mm 0;
+      margin: 0;
       flex-shrink: 0;
     }
 
@@ -301,7 +325,7 @@
       line-height: 1;
     }
 
-    /* --- PULSANTE CHIUSURA E NAVIGAZIONE --- */
+    /* PULSANTE CHIUSURA E NAVIGAZIONE */
     .app-close-btn {
       position: fixed;
       top: 1.5rem;
@@ -332,7 +356,7 @@
     .floating-nav-box {
       position: fixed;
       bottom: 1.5rem;
-      left: 1.5rem;
+      right: 1.5rem;
       background: #181a1d;
       border: 1px solid #d4a373;
       border-radius: 8px;
@@ -390,7 +414,7 @@
 
       body::before { display: none !important; }
 
-      .controls, .app-close-btn, .floating-nav-box { display: none !important; }
+      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
 
       .print-sheet {
         box-shadow: none;
@@ -432,70 +456,88 @@
     </a>
   </div>
 
-  <div class="controls">
-    <h2>Last Chance Generator</h2>
+  <div class="sidebar">
+    <!-- PANNELLO PRINCIPALE -->
+    <div class="controls">
+      <h2>Last Chance Generator</h2>
 
-    <div class="section-title">CARTELLO 1 (Superiore)</div>
-    <div class="form-group">
-      <label>Brand facoltativo:</label>
-      <select id="brandSelect1" onchange="updateCards()">
-        <option value="">-- Nessun Logo Brand --</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Claim SX 1 / DX 1:</label>
-      <div style="display:flex; gap:5px;">
-        <input type="text" id="left1" value="SUMMER SALE" oninput="updateCards()">
-        <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>Prezzo Finale:</label>
-      <input type="text" id="pNew1" value="69,90" placeholder="69,90" oninput="updateCards()">
-    </div>
-    <div class="form-group">
-      <label>Testo in italiano:</label>
-      <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
-    </div>
-
-    <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
-
-    <div id="sectionCard2">
-      <div class="section-title">CARTELLO 2 (Inferiore)</div>
+      <div class="section-title">CARTELLO 1 (Superiore)</div>
       <div class="form-group">
-        <label>Brand facoltativo:</label>
-        <select id="brandSelect2" onchange="updateCards()">
-          <option value="">-- Nessun Logo Brand --</option>
-        </select>
+        <label>Brand Ufficiale:</label>
+        <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
       </div>
       <div class="form-group">
-        <label>Claim SX 2 / DX 2:</label>
+        <label>Claim SX 1 / DX 1:</label>
         <div style="display:flex; gap:5px;">
-          <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
-          <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+          <input type="text" id="left1" value="SUMMER SALE" oninput="updateCards()">
+          <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
         </div>
       </div>
       <div class="form-group">
         <label>Prezzo Finale:</label>
-        <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
+        <input type="text" id="pNew1" value="69,90" placeholder="69,90" oninput="updateCards()">
       </div>
       <div class="form-group">
         <label>Testo in italiano:</label>
-        <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+        <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
+      </div>
+
+      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+      <div id="sectionCard2">
+        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+        <div class="form-group">
+          <label>Brand Ufficiale:</label>
+          <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
+        </div>
+        <div class="form-group">
+          <label>Claim SX 2 / DX 2:</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
+            <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Prezzo Finale:</label>
+          <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Testo in italiano:</label>
+          <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+        </div>
+      </div>
+
+      <div class="section-title">IMPOSTAZIONI STAMPA</div>
+      <div class="form-group">
+        <label>Modalità Cartelli da Stampare:</label>
+        <select id="modeSelect" onchange="toggleCardMode()">
+          <option value="2">2 Cartelli (Foglio Intero A4)</option>
+          <option value="1">1 Solo Cartello (Superiore)</option>
+        </select>
+      </div>
+
+      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+    </div>
+
+    <!-- PANNELLO LOGHI PERSONALIZZATI SEPARATO -->
+    <div class="controls">
+      <h2>LOGHI PERSONALIZZATI</h2>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
+        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
+        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
       </div>
     </div>
-
-    <div class="section-title">IMPOSTAZIONI STAMPA</div>
-    <div class="form-group">
-      <label>Modalità Cartelli da Stampare:</label>
-      <select id="modeSelect" onchange="toggleCardMode()">
-        <option value="2">2 Cartelli (Foglio Intero A4)</option>
-        <option value="1">1 Solo Cartello (Superiore)</option>
-      </select>
-    </div>
-
-    <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-    <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
   </div>
 
   <div class="print-sheet double-mode" id="printSheet">
@@ -615,11 +657,44 @@
         select2.appendChild(option2);
       });
 
+      loadCustomLogosDropdown();
+      updateCards();
+    }
+
+    function loadCustomLogosDropdown() {
+      const cSelect1 = document.getElementById('customBrandSelect1');
+      const cSelect2 = document.getElementById('customBrandSelect2');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+
+      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+
+      customLogos.forEach(item => {
+        const opt1 = document.createElement('option');
+        opt1.value = item.data;
+        opt1.textContent = "★ " + item.name;
+        cSelect1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = item.data;
+        opt2.textContent = "★ " + item.name;
+        cSelect2.appendChild(opt2);
+      });
+    }
+
+    function onOfficialBrandChange(cardIndex) {
+      document.getElementById('customBrandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function onCustomBrandChange(cardIndex) {
+      document.getElementById('brandSelect' + cardIndex).value = "";
       updateCards();
     }
 
     function copyCard1ToCard2() {
       document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
       document.getElementById('left2').value = document.getElementById('left1').value;
       document.getElementById('right2').value = document.getElementById('right1').value;
       document.getElementById('pNew2').value = document.getElementById('pNew1').value;
@@ -656,14 +731,20 @@
     function updateCards() {
       // Cartello 1
       const b1 = document.getElementById('brandSelect1').value;
+      const cb1 = document.getElementById('customBrandSelect1').value;
       const brandContainer1 = document.getElementById('brandContainer1');
       const noteDisplay1 = document.getElementById('noteDisplay1');
       const noteVal1 = document.getElementById('note1').value;
       
-      if (b1) {
+      if (cb1) {
+        brandContainer1.innerHTML = `<img src="${cb1}" alt="Custom Logo">`;
+        brandContainer1.classList.add('has-logo');
+      } else if (b1) {
         brandContainer1.innerHTML = `<img src="${LOGO_PATH + b1}" alt="Brand Logo">`;
+        brandContainer1.classList.add('has-logo');
       } else {
         brandContainer1.innerHTML = '';
+        brandContainer1.classList.remove('has-logo');
       }
 
       noteDisplay1.innerText = noteVal1;
@@ -677,14 +758,20 @@
 
       // Cartello 2
       const b2 = document.getElementById('brandSelect2').value;
+      const cb2 = document.getElementById('customBrandSelect2').value;
       const brandContainer2 = document.getElementById('brandContainer2');
       const noteDisplay2 = document.getElementById('noteDisplay2');
       const noteVal2 = document.getElementById('note2').value;
       
-      if (b2) {
+      if (cb2) {
+        brandContainer2.innerHTML = `<img src="${cb2}" alt="Custom Logo">`;
+        brandContainer2.classList.add('has-logo');
+      } else if (b2) {
         brandContainer2.innerHTML = `<img src="${LOGO_PATH + b2}" alt="Brand Logo">`;
+        brandContainer2.classList.add('has-logo');
       } else {
         brandContainer2.innerHTML = '';
+        brandContainer2.classList.remove('has-logo');
       }
 
       noteDisplay2.innerText = noteVal2;

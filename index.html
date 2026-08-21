@@ -170,13 +170,18 @@
     <div>
       <div class="brand">STORE // CRAFT</div>
       
-      <!-- GENERATORI -->
+      <!-- GENERATORI CARTELLI -->
       <div class="menu-label">Generatori Cartelli</div>
       <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
       <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
       <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
       <a href="promo_multibrand.html" class="nav-btn">🏷️ Promo Multibrand</a>
       
+      <!-- GENERA LOGHI -->
+      <div class="menu-label">Genera Loghi</div>
+      <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
+      <a href="genera_loghi.html#customLogosContainer" class="nav-btn">⚙️ Gestisci Loghi Personalizzati</a>
+
       <!-- UTILITÀ CASSA -->
       <div class="menu-label">Utilità Cassa</div>
       <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
@@ -361,7 +366,6 @@
     function focusWidget(e, widgetId) {
       const targetWidget = document.getElementById(widgetId);
       
-      // Evita di rieseguire l'espansione se è già espanso
       if (targetWidget && targetWidget.classList.contains('expanded')) {
         return;
       }
