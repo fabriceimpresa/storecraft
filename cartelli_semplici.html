@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>GENERATORE CARTELLI OUTLET by Fabrice</title>
+  <title>GENERATORE CARTELLI SEMPLICI by Fabrice</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
@@ -18,7 +18,7 @@
       position: relative;
     }
 
-    /* Filigrana di sfondo: loghi più distanziati */
+    /* Filigrana di sfondo */
     body::before {
       content: "";
       position: fixed;
@@ -155,6 +155,7 @@
 
     .btn-print-single:hover { background-color: #003d80; }
 
+    /* FOGLIO STAMPA */
     .print-sheet {
       width: 210mm;
       height: 296mm;
@@ -233,35 +234,25 @@
       filter: brightness(0) invert(1);
     }
 
+    /* BLOCCO PREZZO E TESTO DESCRITTIVO */
     .price-block {
+      width: 100%;
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      margin: 1mm 0;
-      flex-shrink: 0;
+      justify-content: space-evenly;
+      padding: 4mm 0 0 0;
     }
 
-    .price-row-old {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      font-size: 1.5rem;
-      margin-bottom: 2px;
-    }
-
-    .price-original {
+    .desc-text {
       font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
+      font-style: normal;
+      font-size: 2.1rem;
+      color: #000000;
       font-weight: normal;
-      color: #333;
-      text-decoration: line-through;
-    }
-
-    .discount-tag {
-      font-family: "Bodoni MT", "Bodoni 72", "Bodoni STD", "Didot", serif;
-      font-style: italic;
-      color: #e00000;
-      font-weight: 800;
+      text-align: center;
+      line-height: 1;
     }
 
     .price-final {
@@ -290,7 +281,7 @@
       filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
     }
 
-    /* --- PULSANTE CHIUSURA E NAVIGAZIONE --- */
+    /* NAVIGAZIONE */
     .app-close-btn {
       position: fixed;
       top: 1.5rem;
@@ -417,7 +408,7 @@
   </div>
 
   <div class="controls">
-    <h2>Pannello di Controllo</h2>
+    <h2>Generatore Cartelli Semplici</h2>
 
     <div class="section-title">CARTELLO 1 (Superiore)</div>
     <div class="form-group">
@@ -427,17 +418,31 @@
     <div class="form-group">
       <label>Claim SX 1 / DX 1:</label>
       <div style="display:flex; gap:5px;">
-        <input type="text" id="left1" value="SALDI 2026" oninput="updateCards()">
+        <input type="text" id="left1" value="PROMO 2026" oninput="updateCards()">
         <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
       </div>
     </div>
     <div class="form-group">
-      <label>Prezzi (Originale / Sconto / Finale):</label>
-      <div style="display:flex; gap:5px;">
-        <input type="text" id="pOld1" value="395,00" placeholder="395,00" oninput="updateCards()">
-        <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="updateCards()">
-        <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
-      </div>
+      <label>Seleziona Testo Descrittivo:</label>
+      <select id="presetDesc1" onchange="applyPreset(1)">
+        <option value="">-- Seleziona un testo rapido --</option>
+        <option value="Outlet Price">Outlet Price</option>
+        <option value="Final Price">Final Price</option>
+        <option value="Special Deal">Special Deal</option>
+        <option value="Made in Italy">Made in Italy</option>
+        <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+        <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+        <option value="Limited Edition">Limited Edition</option>
+        <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>oppure Testo Descrittivo Libero:</label>
+      <input type="text" id="desc1" value="Outlet Price" placeholder="Inserisci o modifica il testo" oninput="updateCards()">
+    </div>
+    <div class="form-group">
+      <label>Prezzo di Vendita:</label>
+      <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
     </div>
 
     <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
@@ -451,17 +456,31 @@
       <div class="form-group">
         <label>Claim SX 2 / DX 2:</label>
         <div style="display:flex; gap:5px;">
-          <input type="text" id="left2" value="SALDI 2026" oninput="updateCards()">
+          <input type="text" id="left2" value="PROMO 2026" oninput="updateCards()">
           <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
         </div>
       </div>
       <div class="form-group">
-        <label>Prezzi (Originale / Sconto / Finale):</label>
-        <div style="display:flex; gap:5px;">
-          <input type="text" id="pOld2" value="395,00" placeholder="395,00" oninput="updateCards()">
-          <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="updateCards()">
-          <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
-        </div>
+        <label>Seleziona Testo Descrittivo:</label>
+        <select id="presetDesc2" onchange="applyPreset(2)">
+          <option value="">-- Seleziona un testo rapido --</option>
+          <option value="Outlet Price">Outlet Price</option>
+          <option value="Final Price">Final Price</option>
+          <option value="Special Deal">Special Deal</option>
+          <option value="Made in Italy">Made in Italy</option>
+          <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+          <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+          <option value="Limited Edition">Limited Edition</option>
+          <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>oppure Testo Descrittivo Libero:</label>
+        <input type="text" id="desc2" value="Outlet Price" placeholder="Inserisci o modifica il testo" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Prezzo di Vendita:</label>
+        <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
       </div>
     </div>
 
@@ -482,16 +501,13 @@
     <!-- CARTELLO 1 -->
     <div class="card" id="card1">
       <div class="header-row">
-        <div class="header-text" id="headLeft1">SALDI<br>2026</div>
+        <div class="header-text" id="headLeft1">PROMO<br>2026</div>
         <div class="red-box"><img id="cardLogo1" src="" alt="Logo Brand"></div>
         <div class="header-text" id="headRight1">SHOP<br>NOW</div>
       </div>
 
       <div class="price-block">
-        <div class="price-row-old">
-          <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
-          <span class="discount-tag" id="discountDisplay1">-75%</span>
-        </div>
+        <div class="desc-text" id="descDisplay1">Outlet Price</div>
         <div class="price-final" id="priceNewDisplay1">€ 99,00</div>
       </div>
 
@@ -504,16 +520,13 @@
     <!-- CARTELLO 2 -->
     <div class="card" id="card2">
       <div class="header-row">
-        <div class="header-text" id="headLeft2">SALDI<br>2026</div>
+        <div class="header-text" id="headLeft2">PROMO<br>2026</div>
         <div class="red-box"><img id="cardLogo2" src="" alt="Logo Brand"></div>
         <div class="header-text" id="headRight2">SHOP<br>NOW</div>
       </div>
 
       <div class="price-block">
-        <div class="price-row-old">
-          <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
-          <span class="discount-tag" id="discountDisplay2">-75%</span>
-        </div>
+        <div class="desc-text" id="descDisplay2">Outlet Price</div>
         <div class="price-final" id="priceNewDisplay2">€ 99,00</div>
       </div>
 
@@ -591,12 +604,20 @@
       updateCards();
     }
 
+    function applyPreset(num) {
+      const val = document.getElementById('presetDesc' + num).value;
+      if (val !== "") {
+        document.getElementById('desc' + num).value = val;
+        updateCards();
+      }
+    }
+
     function copyCard1ToCard2() {
       document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
       document.getElementById('left2').value = document.getElementById('left1').value;
       document.getElementById('right2').value = document.getElementById('right1').value;
-      document.getElementById('pOld2').value = document.getElementById('pOld1').value;
-      document.getElementById('disc2').value = document.getElementById('disc1').value;
+      document.getElementById('desc2').value = document.getElementById('desc1').value;
+      document.getElementById('presetDesc2').value = document.getElementById('presetDesc1').value;
       document.getElementById('pNew2').value = document.getElementById('pNew1').value;
       updateCards();
     }
@@ -634,9 +655,7 @@
       document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
       document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
       
-      const po1 = document.getElementById('pOld1').value;
-      document.getElementById('priceOldDisplay1').innerText = po1 ? '€ ' + po1 : '';
-      document.getElementById('discountDisplay1').innerText = document.getElementById('disc1').value;
+      document.getElementById('descDisplay1').innerText = document.getElementById('desc1').value;
       const pn1 = document.getElementById('pNew1').value;
       document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
 
@@ -646,9 +665,7 @@
       document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
       document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
       
-      const po2 = document.getElementById('pOld2').value;
-      document.getElementById('priceOldDisplay2').innerText = po2 ? '€ ' + po2 : '';
-      document.getElementById('discountDisplay2').innerText = document.getElementById('disc2').value;
+      document.getElementById('descDisplay2').innerText = document.getElementById('desc2').value;
       const pn2 = document.getElementById('pNew2').value;
       document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
     }
