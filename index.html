@@ -33,6 +33,43 @@
       border-bottom: 1px solid rgba(212, 163, 115, 0.2);
     }
 
+    .menu-group { margin-top: 1.8rem; }
+    .menu-group:first-of-type { margin-top: 0; }
+    .menu-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0 0.5rem 4px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.2);
+      color: #ffffff;
+      font: inherit;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+    }
+    .menu-toggle:hover, .menu-toggle:focus-visible { color: var(--accent); outline: none; }
+    .menu-arrow {
+      color: var(--accent);
+      font-size: 1rem;
+      line-height: 0.7;
+      transition: transform 0.25s ease;
+    }
+    .menu-toggle[aria-expanded="false"] .menu-arrow { transform: rotate(-90deg); }
+    .menu-items {
+      overflow: hidden;
+      max-height: 240px;
+      opacity: 1;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+    }
+    .menu-items.is-collapsed { max-height: 0; opacity: 0; }
+
     .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
 
@@ -170,23 +207,38 @@
     <div>
       <div class="brand">STORE // CRAFT</div>
       
-      <!-- GENERATORI CARTELLI -->
-      <div class="menu-label">Generatori Cartelli</div>
-      <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
-      <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
-      <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
-      <a href="promo_multibrand.html" class="nav-btn">🏷️ Promo Multibrand</a>
-      
-      <!-- GENERA LOGHI -->
-      <div class="menu-label">Genera Loghi</div>
-      <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
-      <a href="genera_loghi.html#customLogosContainer" class="nav-btn">⚙️ Gestisci Loghi Personalizzati</a>
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
+          <span>Generatori Cartelli</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-generators">
+          <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
+          <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
+          <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
+          <a href="promo_multibrand.html" class="nav-btn">🏷️ Promo Multibrand</a>
+        </div>
+      </div>
 
-      <!-- UTILITÀ CASSA -->
-      <div class="menu-label">Utilità Cassa</div>
-      <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
-      <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
-      <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💱 Cambio Valuta</a>
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
+          <span>Genera Loghi</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-logos">
+          <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
+          <a href="genera_loghi.html#customLogosContainer" class="nav-btn">⚙️ Gestisci Loghi Personalizzati</a>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-tools" onclick="toggleMenu('menu-tools', this)">
+          <span>Utilità Cassa</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-tools">
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💱 Cambio Valuta</a>
+        </div>
+      </div>
     </div>
     
     <div class="sidebar-footer">
@@ -351,6 +403,24 @@
   <script>
     const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
 
+    function toggleMenu(menuId, toggleButton) {
+      const menu = document.getElementById(menuId);
+      const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+
+      toggleButton.setAttribute('aria-expanded', String(!isExpanded));
+      menu.classList.toggle('is-collapsed', isExpanded);
+      localStorage.setItem(`menu-${menuId}`, String(!isExpanded));
+    }
+
+    function restoreMenus() {
+      document.querySelectorAll('.menu-toggle').forEach(toggleButton => {
+        const menuId = toggleButton.getAttribute('aria-controls');
+        const isExpanded = localStorage.getItem(`menu-${menuId}`) !== 'false';
+        toggleButton.setAttribute('aria-expanded', String(isExpanded));
+        document.getElementById(menuId).classList.toggle('is-collapsed', !isExpanded);
+      });
+    }
+
     function updateUI() {
       const direction = document.getElementById('val-direction').value;
       const targetCurrency = document.getElementById('val-currency').value;
@@ -465,6 +535,7 @@
       }
     }
 
+    restoreMenus();
     updateUI();
   </script>
 </body>
