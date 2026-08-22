@@ -84,7 +84,8 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
     .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
-    .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); }
+    .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); padding: 10px 14px; }
+    .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 3px; }
     .mini-doc { width: 90px; height: 110px; background: #fdfbf7; color: #1a1a1a; padding: 8px; border-radius: 3px; font-family: 'Cinzel', serif; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     .mini-doc .title { font-size: 6px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
     .mini-doc .price-old { font-size: 6px; text-decoration: line-through; color: #777; margin-top: 10px; }
@@ -259,11 +260,7 @@
         <!-- Cartello Semplice -->
         <a href="cartelli_semplici.html" class="card">
           <div class="preview">
-            <div class="mini-doc">
-              <div class="title">BRAND NAME</div>
-              <div style="font-size: 10px; margin-top: 15px; font-weight: bold;">OUTLET PRICE</div>
-              <div style="font-size: 11px; font-weight: bold; margin-top: 10px;">€ 120,00</div>
-            </div>
+            <img class="preview-image" src="assets/img/cartellosemplice.png" alt="Anteprima Cartello Semplice">
           </div>
           <div class="card-body">
             <h3>Cartello Semplice</h3>
@@ -274,13 +271,7 @@
         <!-- Cartello Outlet -->
         <a href="cartelli_outlet.html" class="card">
           <div class="preview">
-            <div class="mini-doc">
-              <div class="title">OUTLET</div>
-              <div>
-                <div class="price-old">€ 150,00</div>
-                <div class="price-new">€ 75,00</div>
-              </div>
-            </div>
+            <img class="preview-image" src="assets/img/doppiacifra.png" alt="Anteprima Cartello Outlet">
           </div>
           <div class="card-body">
             <h3>Cartello Outlet</h3>
@@ -291,10 +282,7 @@
         <!-- Promo Last Chance -->
         <a href="cartelli_lastchance.html" class="card">
           <div class="preview">
-            <div class="mini-doc" style="background: #111; color: #fff;">
-              <div class="title" style="border-color: #333;">LAST CHANCE</div>
-              <div style="font-size: 14px; color: var(--accent); font-weight: bold;">-50%</div>
-            </div>
+            <img class="preview-image" src="assets/img/promolastchance.png" alt="Anteprima Promo Last Chance">
           </div>
           <div class="card-body">
             <h3>Promo Last Chance</h3>
