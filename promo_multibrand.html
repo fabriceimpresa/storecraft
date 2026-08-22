@@ -68,12 +68,17 @@
     @media print {
       html, body { width: 210mm !important; height: 297mm !important; max-height: 297mm !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; background: #fff !important; }
       body { display: block !important; }
+      body > *:not(.print-sheet) { display: none !important; }
       body::before, .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
-      .print-sheet { box-shadow: none; padding: 13mm 10mm 3mm; margin: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; overflow: hidden !important; page-break-after: avoid !important; page-break-before: avoid !important; page-break-inside: avoid !important; break-after: avoid-page !important; break-before: avoid-page !important; break-inside: avoid-page !important; }
+      .print-sheet { box-shadow: none; padding: 13mm 10mm 3mm; position: absolute; top: 0; left: 0; margin: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; overflow: hidden !important; page-break-after: avoid !important; page-break-before: avoid !important; page-break-inside: avoid !important; break-after: avoid-page !important; break-before: avoid-page !important; break-inside: avoid-page !important; }
       .card, .cut-line { page-break-inside: avoid !important; break-inside: avoid-page !important; }
+      .card { height: 134mm; }
+      #card2 { margin-top: 0; }
+      .cut-line { display: block !important; height: 1px; margin: 3mm 0; }
       .red-banner, .small-red-banner { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     }
     @media (max-width: 900px) { body { align-items: center; flex-direction: column; } .sidebar { width: min(380px, 100%); } .print-sheet { transform-origin: top center; transform: scale(.72); margin-bottom: -82mm; } .floating-nav-box { display: none; } }
+    @media print and (max-width: 900px) { .print-sheet { transform: none !important; transform-origin: initial !important; margin-bottom: 0 !important; } }
   </style>
 </head>
 <body>
@@ -171,7 +176,7 @@
     function toggleCardMode() {
       const single = document.getElementById('modeSelect').value === '1';
       document.getElementById('card2').classList.toggle('disabled', single);
-      document.querySelector('.cut-line').style.display = single ? 'none' : 'block';
+      document.querySelector('.cut-line').style.display = 'block';
     }
     function printSheet(count) { document.getElementById('modeSelect').value = String(count); toggleCardMode(); window.print(); }
     createLogoControls(); createCustomLogoControls(); updateCards();
