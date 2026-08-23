@@ -23,7 +23,9 @@
     .form-group input:focus, .form-group select:focus { outline: none; border-color: #d4a373; box-shadow: 0 0 4px rgba(212,163,115,.5); }
     .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
     .logo-grid .form-group { min-width: 0; }
-    .custom-logo-controls { background: #101214; border-color: #28a745; }
+    .form-group select.custom-select { border-color: #d4a373; color: #f3d5a3; }
+    select option:first-child { color: #e5ba73 !important; font-weight: bold !important; }
+    .custom-logo-controls { background: #181a1d; border-color: #d4a373; }
     .btn-copy, .btn-print { width: 100%; border: 0; padding: 9px; color: #fff; font-size: .85rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
     .btn-copy { background: #28a745; margin: 10px 0; }
     .btn-copy:hover { background: #218838; }
@@ -138,8 +140,8 @@
       const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
       for (let index = 1; index <= 8; index++) {
         const group = document.createElement('div'); group.className = 'form-group';
-        const label = document.createElement('label'); label.textContent = 'Logo ' + index + ':';
-        const select = document.createElement('select'); select.id = 'customLogo' + index; select.onchange = updateCards;
+        const label = document.createElement('label'); label.style.color = '#e5ba73'; label.textContent = '★ Logo Personalizzato ' + index + ':';
+        const select = document.createElement('select'); select.id = 'customLogo' + index; select.className = 'custom-select'; select.onchange = updateCards;
         const empty = document.createElement('option'); empty.value = ''; empty.textContent = '-- Nessun Logo Personalizzato --'; select.appendChild(empty);
         customLogos.forEach(item => { const option = document.createElement('option'); option.value = item.data; option.textContent = '★ ' + item.name; select.appendChild(option); });
         group.append(label, select); container.appendChild(group);
