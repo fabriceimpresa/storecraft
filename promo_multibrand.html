@@ -72,11 +72,12 @@
       body { display: block !important; }
       body > *:not(.print-sheet) { display: none !important; }
       body::before, .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
-      .print-sheet { box-shadow: none; padding: 8mm 10mm; position: absolute; top: 0; left: 0; margin: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; overflow: hidden !important; display: grid !important; grid-template-rows: 134mm 3mm 134mm !important; align-content: start !important; transform: none !important; -webkit-transform: none !important; zoom: 1 !important; page-break-after: avoid !important; page-break-before: avoid !important; page-break-inside: avoid !important; break-after: avoid-page !important; break-before: avoid-page !important; break-inside: avoid-page !important; }
+      .print-sheet { box-shadow: none; padding: 12mm 10mm 3mm; position: absolute; top: 0; left: 0; margin: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; overflow: hidden !important; display: grid !important; grid-template-rows: 134mm 3mm 134mm !important; align-content: start !important; transform: none !important; -webkit-transform: none !important; zoom: 1 !important; page-break-after: avoid !important; page-break-before: avoid !important; page-break-inside: avoid !important; break-after: avoid-page !important; break-before: avoid-page !important; break-inside: avoid-page !important; }
       .card, .cut-line { page-break-inside: avoid !important; break-inside: avoid-page !important; }
       .card { height: 134mm; min-height: 134mm; }
       #card2 { margin-top: 0; }
       .cut-line { display: block !important; height: 1px; margin: 0 !important; align-self: center; position: relative; top: 2mm; }
+      .print-sheet.single-mode .cut-line { transform: translateY(8mm); }
       .red-banner, .small-red-banner { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     }
     @media (max-width: 900px) { body { align-items: center; flex-direction: column; } .sidebar { width: min(380px, 100%); } .print-sheet { transform-origin: top center; transform: scale(.72); margin-bottom: -82mm; } .floating-nav-box { display: none; } }
@@ -178,6 +179,7 @@
     function toggleCardMode() {
       const single = document.getElementById('modeSelect').value === '1';
       document.getElementById('card2').classList.toggle('disabled', single);
+      document.getElementById('printSheet').classList.toggle('single-mode', single);
       document.querySelector('.cut-line').style.display = 'block';
     }
     function printSheet(count) { document.getElementById('modeSelect').value = String(count); toggleCardMode(); window.print(); }
