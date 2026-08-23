@@ -47,6 +47,7 @@
     .brand-board { width: 100%; height: 48mm; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; grid-template-areas: 'slot1 slot3 slot5' 'slot2 slot4 slot6'; align-items: center; justify-items: center; overflow: hidden; }
     .brand-slot { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 1mm 2mm; }
     .brand-slot img { display: block; max-width: 90%; max-height: 90%; object-fit: contain; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .brand-slot img.red-logo, .bottom-logo img.red-logo { -webkit-filter: none; filter: none; }
     .brand-slot.empty { visibility: hidden; }
     .brand-slot.slot1 { grid-area: slot1; }
     .brand-slot.slot2 { grid-area: slot2; }
@@ -72,7 +73,7 @@
       body { display: block !important; }
       body > *:not(.print-sheet) { display: none !important; }
       body::before, .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
-      .print-sheet { box-shadow: none; padding: 12mm 10mm 3mm; position: absolute; top: 0; left: 0; margin: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; overflow: hidden !important; display: grid !important; grid-template-rows: 134mm 3mm 134mm !important; align-content: start !important; transform: none !important; -webkit-transform: none !important; zoom: 1 !important; page-break-after: avoid !important; page-break-before: avoid !important; page-break-inside: avoid !important; break-after: avoid-page !important; break-before: avoid-page !important; break-inside: avoid-page !important; }
+      .print-sheet { box-shadow: none; padding: 16mm 10mm 3mm; position: absolute; top: 0; left: 0; margin: 0 !important; width: 210mm !important; height: 297mm !important; max-height: 297mm !important; overflow: hidden !important; display: grid !important; grid-template-rows: 134mm 3mm 134mm !important; align-content: start !important; transform: none !important; -webkit-transform: none !important; zoom: 1 !important; page-break-after: avoid !important; page-break-before: avoid !important; page-break-inside: avoid !important; break-after: avoid-page !important; break-before: avoid-page !important; break-inside: avoid-page !important; }
       .card, .cut-line { page-break-inside: avoid !important; break-inside: avoid-page !important; }
       .card { height: 134mm; min-height: 134mm; }
       #card2 { margin-top: 0; }
@@ -148,20 +149,44 @@
         group.append(label, select); container.appendChild(group);
       }
     }
+    function prepareLogoForPrint(img) {
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const context = canvas.getContext('2d');
+          context.drawImage(img, 0, 0);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+          for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
+            const luminance = (pixels.data[pixel] * 299 + pixels.data[pixel + 1] * 587 + pixels.data[pixel + 2] * 114) / 1000;
+            if (luminance < 245) {
+              pixels.data[pixel] = 224;
+              pixels.data[pixel + 1] = 0;
+              pixels.data[pixel + 2] = 0;
+            }
+          }
+          context.putImageData(pixels, 0, 0);
+          img.onload = null;
+          img.src = canvas.toDataURL('image/png');
+          img.classList.add('red-logo');
+        } catch (error) {}
+      };
+    }
     function renderLogos(card) {
       const board = document.getElementById('brandBoard' + card); board.innerHTML = '';
       for (let index = 1; index <= 6; index++) {
         const custom = document.getElementById('customLogo' + index).value;
         const file = custom || document.getElementById('logo' + index + 'Card1').value;
         const slot = document.createElement('div'); slot.className = 'brand-slot slot' + index;
-        if (file) { const img = document.createElement('img'); img.src = file.startsWith('data:') ? file : LOGO_PATH + file; img.alt = 'Logo ' + index; slot.appendChild(img); } else slot.classList.add('empty');
+        if (file) { const img = document.createElement('img'); img.src = file.startsWith('data:') ? file : LOGO_PATH + file; img.alt = 'Logo ' + index; prepareLogoForPrint(img); slot.appendChild(img); } else slot.classList.add('empty');
         board.appendChild(slot);
       }
       [7, 8].forEach(index => {
         const custom = document.getElementById('customLogo' + index).value;
         const file = custom || document.getElementById('logo' + index + 'Card1').value;
         const slot = document.getElementById('brandBottom' + index + 'Card' + card); slot.innerHTML = '';
-        if (file) { const img = document.createElement('img'); img.src = file.startsWith('data:') ? file : LOGO_PATH + file; img.alt = 'Logo ' + index; slot.appendChild(img); slot.classList.remove('empty'); } else slot.classList.add('empty');
+        if (file) { const img = document.createElement('img'); img.src = file.startsWith('data:') ? file : LOGO_PATH + file; img.alt = 'Logo ' + index; prepareLogoForPrint(img); slot.appendChild(img); slot.classList.remove('empty'); } else slot.classList.add('empty');
       });
     }
     function updateCards() {
