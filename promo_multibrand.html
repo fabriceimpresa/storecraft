@@ -13,6 +13,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; background: #212529; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
     body::before { content: ''; position: fixed; inset: 0; background: url('assets/img/LUXURYOUTLET_BACK.png') center / 650px auto repeat; opacity: .18; filter: contrast(1.1); pointer-events: none; z-index: 0; }
+    
     .sidebar { width: 380px; display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1; }
     .controls { background: #181a1d; color: #f1f1f1; padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,.6); border: 1px solid #d4a373; }
     .controls h2 { font-size: 1.1rem; color: #e5ba73; border-bottom: 2px solid #d4a373; padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
@@ -26,10 +27,7 @@
     .form-group select.custom-select { border-color: #d4a373; color: #f3d5a3; }
     select option:first-child { color: #e5ba73 !important; font-weight: bold !important; }
     .custom-logo-controls { background: #181a1d; border-color: #d4a373; }
-    .btn-copy, .btn-print { width: 100%; border: 0; padding: 9px; color: #fff; font-size: .85rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
-    .btn-copy { background: #28a745; margin: 10px 0; }
-    .btn-copy:hover { background: #218838; }
-    .btn-print { background: #e00000; border: 1px solid #b30000; margin-top: 10px; }
+    .btn-print { width: 100%; border: 0; padding: 9px; color: #fff; font-size: .85rem; font-weight: bold; border-radius: 4px; cursor: pointer; background: #e00000; border: 1px solid #b30000; margin-top: 10px; }
     .btn-print:hover { background: #c00; }
     .btn-print-single { background: #0056b3; border-color: #004085; margin-top: 6px; }
     .legend { margin-top: auto; background: #fff; border: 1px solid #d4a373; border-radius: 8px; padding: 8px; box-shadow: 0 4px 15px rgba(0,0,0,.6); }
@@ -39,26 +37,26 @@
     .floating-nav-title { color: #e5ba73; font-weight: bold; font-size: .8rem; }
     .floating-nav-btn { color: #fff; text-decoration: none; font-size: .82rem; display: block; margin-top: 5px; }
 
+    /* LAYOUT FOGLIO A4 E CARTELLI */
     .print-sheet { width: 210mm; height: 296mm; background: #fff; padding: 13mm 10mm 3mm; box-shadow: 0 4px 20px rgba(0,0,0,.7); position: relative; z-index: 1; overflow: hidden; }
     .card { width: 100%; height: 128mm; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 2mm 0; }
     .card.disabled { display: none; }
     #card2 { margin-top: 5mm; }
     .cut-line { width: 100%; border-top: 1px dashed #ccc; margin: 8mm 0 5mm; }
-    .brand-board { width: 100%; height: 48mm; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; grid-template-areas: 'slot1 slot3 slot5' 'slot2 slot4 slot6'; align-items: center; justify-items: center; overflow: hidden; }
-    .brand-slot { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 1mm 2mm; }
-    .brand-slot img { display: block; max-width: 90%; max-height: 90%; object-fit: contain; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .brand-slot img.red-logo, .bottom-logo img.red-logo { -webkit-filter: none; filter: none; }
+    
+    /* DISPOSIZIONE LOGHI SUPERIORI PER COLONNA (1-2, 3-4, 5-6) */
+    .brand-board { width: 100%; height: 45mm; display: grid; grid-template-columns: repeat(3, 63mm); grid-template-rows: repeat(2, 21mm); grid-auto-flow: column; gap: 2mm; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 3mm; }
+    .brand-slot { width: 63mm; height: 21mm; display: flex; align-items: center; justify-content: center; padding: 1mm; overflow: hidden; }
+    .brand-slot img { max-width: 58mm !important; max-height: 18mm !important; width: auto !important; height: auto !important; object-fit: contain !important; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .brand-slot img.red-logo, .bottom-logo img.red-logo { -webkit-filter: none !important; filter: none !important; }
     .brand-slot.empty { visibility: hidden; }
-    .brand-slot.slot1 { grid-area: slot1; }
-    .brand-slot.slot2 { grid-area: slot2; }
-    .brand-slot.slot3 { grid-area: slot3; }
-    .brand-slot.slot4 { grid-area: slot4; }
-    .brand-slot.slot5 { grid-area: slot5; }
-    .brand-slot.slot6 { grid-area: slot6; }
-    .bottom-layout { width: 100%; display: grid; grid-template-columns: 1fr 1.7fr 1fr; align-items: center; justify-items: center; margin-top: 12mm; }
-    .bottom-logo { width: 100%; height: 24mm; display: flex; align-items: center; justify-content: center; padding: 1mm 2mm; }
-    .bottom-logo img { display: block; max-width: 95%; max-height: 95%; object-fit: contain; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    
+    /* NORMALIZZAZIONE LOGHI INFERIORI (SLOT 7 E 8) */
+    .bottom-layout { width: 100%; display: grid; grid-template-columns: 50mm 1fr 50mm; align-items: center; justify-items: center; margin-top: 12mm; }
+    .bottom-logo { width: 50mm; height: 24mm; display: flex; align-items: center; justify-content: center; padding: 1mm; overflow: hidden; }
+    .bottom-logo img { max-width: 46mm !important; max-height: 22mm !important; width: auto !important; height: auto !important; object-fit: contain !important; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .bottom-logo.empty { visibility: hidden; }
+
     .red-banner { width: 100%; height: 46mm; background: #e00000; color: #fff; display: flex; align-items: center; justify-content: center; }
     .main-promo { font-family: 'Nevis Project', sans-serif; font-size: 7.5rem; line-height: .9; letter-spacing: -0.05em; text-align: center; white-space: nowrap; max-width: 100%; }
     .main-promo.discount-promo { font-size: 7rem; }
@@ -67,6 +65,7 @@
     .secondary-promo { font-family: 'Nevis Project', sans-serif; font-size: 2.3rem; line-height: .95; letter-spacing: -0.05em; color: #e00000; text-transform: uppercase; text-align: center; }
     .small-red-banner { background: #e00000; color: #fff; padding: 2.5mm 5.2mm 2.1mm; }
     .small-red-banner span { font-family: 'Nevis Project', sans-serif; font-size: 1.65rem; line-height: .95; letter-spacing: -0.05em; text-transform: uppercase; white-space: nowrap; }
+
     @page { size: A4 portrait; margin: 0 !important; }
     @media print {
       html, body { width: 210mm !important; height: 297mm !important; max-height: 297mm !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; background: #fff !important; }
@@ -127,11 +126,14 @@
     const LOGO_FILES = [
       '269TEBE.PNG','ABIDDIKKIA.png','AFTERLABEL.png','AIRWALK.png','ALESSANDRODELLACQUA.png','ALEXANDERMCQUEEN.png','ARMANI.png','ARMANI_COLLEZIONI.png','ARMANI_EXCHANGE.png','ARMANI_GIORGIO.png','ARMANI_JEANS.png','ARNALDIMILANO.PNG','AVIREX.png','AYLIE.png','BAGUTTA.png','BALDININI.png','BALMAIN.PNG','BASTONCINO.png','BCBG.png','BEATRICE.png','BELSTAF.png','BENSHERMAN.png','BIKKENBERGS.png','BLAUER.png','BLKER.png','BLUGIRL.png','BLUMARINE.png','BRICS.png','BURBERRY.png','BYBLOS.png','CALVINKLEIN.png','CARHARTT.png','CAVALLI_CLASS.png','CAVALLI_ROBERTO.png','CHIARABONI.png','CIESSEPIUMINI.png','COCACOLA.png','COCCINELLE.png','COSTUMENATIONAL.png','DAINESE.png','DEVORE.png','DIADORA.png','DICKIES.png','DIESEL.png','DIOR.png','DIXIE.png','DOLCEANDGABBANA.png','DRSCHOLL.png','DSQUARED2.png','DUCAHOMME.png','EASTPAK.png','EGONVONFURSTENBERG.png','ELISAFANTI.png','EMMAANDGAIA.png','ENTREAMIS.png','ERMANNOSCERVINO.png','ERMENEGILDOZEGNA.png','EVERLAST.png','FACCONABLE.png','FELEPPA.png','FERRARI.png','FERRE.png','FILA.png','FRANKLINMARSHALL.png','GAELLE.png','GANT.png','GARMENT.png','GATTINONI.png','GCDS.png','GERMANS.png','GIVENCHY.png','GOORIN.png','GUESS.png','GUYLAROCHE.png','H953.png','HACKETTLONDON.png','HARMONT&BLAINE.png','HAVEONE.png','HERSCHELL.png','HOPPER.png','HUSKY.png','IMPERIAL.png','IMPURE.png','INVICTA.png','ISABELMARANT.png','JACKDANIELS.png','JEIO.PNG','JEREMYSCOTT.png','JIJIL.png','JOHNGALLIANO.png','JOHNRICHMOND.png','JUSTCAVALLI.png','KARLLAGERFELD.png','KENZO.png','KRIZIA.png','KWAY.png','LACOSTE.png','LAMARTHE.png','LAPERLA.png','LASTCHANCE.png','LAURABIAGIOTTI.png','LEE.png','LESARTEDELSOLE.png','LEVIS.png','LIUJO.png','LONSDALE.png','LOVE.png','LUCKYLU.png','LUXURY_GOLD.png','LXRY.png','LXRY_BRAND.png','MADEINITALY.png','MAISONMARGIELA.png','MAJE.png','MALIPARNI.png','MALONESOULIERS.png','MARCJACOBS.png','MARELLA.png','MARIOVALENTINO.png','MARLBORO.png','MARNI.png','MASSIMOREBECCHI.png','MAXMARA.png','MEIMEIJ.png','MELISSA.png','MICHAELKORS.png','MIRONCE.png','MISSONI.png','MIZUNO.png','MODFITTERS.png','MONCLER.png','MONTECERVINO.png','MOSCHINO.png','MOTEL.png','MSGM.png','NAPAPIJRI.png','NENETTE.png','NEWBALANCE.png','OBAG.png','OFFICINA36.png','ONLY.png','OTTODROM.png','PACIOTTI_4US.png','PACIOTTI_CESARE.png','PATRIZIAPEPE.png','PAULANDSHARK.png','PEOPLEOFSHIBUYA.png','PHILIPPPLEIN.png','PIERRECARDIN.png','PINKO.png','PIQUADRO.png','POLAROID.png','RALPHLAUREN.png','RANSOM.png','REFRIGIWEAR.png','REFRIGUE.png','RICHMOND.png','ROCCOBAROCCO.png','ROYROGERS.png','RUEBISQUIT.png','RUSSEL.png','SALVATOREFERRAGAMO.png','SERGIOTACCHINI.png','SFIZIO.png','SIMONACORSELLINI.png','SKYWARD.png','SOUVENIR.png','STEVEMADDEN.png','SUPERDRY.png','TEBE.png','TENSIONEIN.png','TOMMYHILFIGER.png','TOMMYJEANS.png','TOYG.png','TRUSSARDI.png','TRUSSARDI_JEANS.png','TWINSET.png','UNGARO.png','UNIFORM.png','USPOLOASSN.png','VERSACE.png','VERSACE_VERSUS.png','VICBEE.png','VIONNET.png','WEILIZHENG.png','WRANGLER.png'
     ];
-    const defaults = ['PINKO.png','EMMAANDGAIA.png','MEIMEIJ.png','BCBG.png','CHIARABONI.png','ARNALDIMILANO.PNG','HAVEONE.png','CALVINKLEIN.png'];
+    // Defaults aggiornati per rispecchiare l'ordine esatto dell'immagine di legenda (1->Pinko, 2->Emma, 3->Meimeij, 4->BCBG, 5->Chiara Boni, 6->Weilizheng/WZ, 7->HaveOne)
+    const defaults = ['PINKO.png','EMMAANDGAIA.png','MEIMEIJ.png','BCBG.png','CHIARABONI.png','WEILIZHENG.png','HAVEONE.png','CALVINKLEIN.png'];
 
     function cleanName(file) { return file.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' '); }
+    
     function createLogoControls() {
       const container = document.getElementById('logoControls1');
+      container.innerHTML = '';
       for (let index = 1; index <= 8; index++) {
         const group = document.createElement('div'); group.className = 'form-group';
         const label = document.createElement('label'); label.textContent = 'Logo ' + index + ':';
@@ -141,8 +143,10 @@
         select.value = defaults[index - 1]; group.append(label, select); container.appendChild(group);
       }
     }
+
     function createCustomLogoControls() {
       const container = document.getElementById('customLogoControls');
+      container.innerHTML = '';
       const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
       for (let index = 1; index <= 8; index++) {
         const group = document.createElement('div'); group.className = 'form-group';
@@ -153,6 +157,7 @@
         group.append(label, select); container.appendChild(group);
       }
     }
+
     function prepareLogoForPrint(img) {
       img.onload = () => {
         try {
@@ -177,22 +182,41 @@
         } catch (error) {}
       };
     }
+
     function renderLogos(card) {
       const board = document.getElementById('brandBoard' + card); board.innerHTML = '';
       for (let index = 1; index <= 6; index++) {
         const custom = document.getElementById('customLogo' + index).value;
         const file = custom || document.getElementById('logo' + index + 'Card1').value;
         const slot = document.createElement('div'); slot.className = 'brand-slot slot' + index;
-        if (file) { const img = document.createElement('img'); img.src = file.startsWith('data:') ? file : LOGO_PATH + file; img.alt = 'Logo ' + index; prepareLogoForPrint(img); slot.appendChild(img); } else slot.classList.add('empty');
+        if (file) { 
+          const img = document.createElement('img'); 
+          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
+          img.alt = 'Logo ' + index; 
+          prepareLogoForPrint(img); 
+          slot.appendChild(img); 
+        } else {
+          slot.classList.add('empty');
+        }
         board.appendChild(slot);
       }
       [7, 8].forEach(index => {
         const custom = document.getElementById('customLogo' + index).value;
         const file = custom || document.getElementById('logo' + index + 'Card1').value;
         const slot = document.getElementById('brandBottom' + index + 'Card' + card); slot.innerHTML = '';
-        if (file) { const img = document.createElement('img'); img.src = file.startsWith('data:') ? file : LOGO_PATH + file; img.alt = 'Logo ' + index; prepareLogoForPrint(img); slot.appendChild(img); slot.classList.remove('empty'); } else slot.classList.add('empty');
+        if (file) { 
+          const img = document.createElement('img'); 
+          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
+          img.alt = 'Logo ' + index; 
+          prepareLogoForPrint(img); 
+          slot.appendChild(img); 
+          slot.classList.remove('empty'); 
+        } else {
+          slot.classList.add('empty');
+        }
       });
     }
+
     function updateCards() {
       const main = document.getElementById('mainFree1').value.trim() || document.getElementById('mainText1').value;
       const secondary = document.getElementById('secondaryFree1').value.trim() || document.getElementById('secondaryText1').value;
@@ -205,6 +229,7 @@
         renderLogos(card);
       });
     }
+
     function toggleCardMode() {
       const single = document.getElementById('modeSelect').value === '1';
       document.getElementById('card2').classList.toggle('disabled', single);
@@ -212,10 +237,19 @@
       document.getElementById('printSheet').classList.toggle('double-mode', !single);
       document.querySelector('.cut-line').style.display = 'block';
     }
-    function printSheet(count) { document.getElementById('modeSelect').value = String(count); toggleCardMode(); window.print(); }
+
+    function printSheet(count) { 
+      document.getElementById('modeSelect').value = String(count); 
+      toggleCardMode(); 
+      window.print(); 
+    }
+
     const browser = navigator.userAgent.includes('Chrome') ? 'browser-chrome' : (navigator.userAgent.includes('Safari') ? 'browser-safari' : 'browser-other');
     document.getElementById('printSheet').classList.add(browser, document.getElementById('modeSelect').value === '2' ? 'double-mode' : 'single-mode');
-    createLogoControls(); createCustomLogoControls(); updateCards();
+    
+    createLogoControls(); 
+    createCustomLogoControls(); 
+    updateCards();
   </script>
 </body>
 </html>
