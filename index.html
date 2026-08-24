@@ -73,6 +73,34 @@
     .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
     .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
 
+    /* Struttura inferiore della Sidebar per Logo + Footer */
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar-logo {
+      width: 100%;
+      max-width: 195px; /* Ingrandito del 15% */
+      height: auto;
+      margin-bottom: 1.2rem;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%);
+    }
+
+    .sidebar-footer {
+      font-size: 0.7rem; 
+      color: var(--text-muted); 
+      text-align: center; 
+      line-height: 1.45; 
+      padding-top: 12px; 
+      border-top: 1px solid var(--border);
+      width: 100%;
+    }
+
     main { flex: 1; padding: 2.5rem 3rem; overflow-y: auto; position: relative; }
     header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
     header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
@@ -191,15 +219,6 @@
     .tool-btn { padding: 0.8rem 1rem; background: var(--accent); color: #000; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; font-size: 0.9rem; margin-top: 0.5rem; }
     .tool-btn:hover { opacity: 0.9; }
     .tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
-
-    .sidebar-footer {
-      font-size: 0.7rem; 
-      color: var(--text-muted); 
-      text-align: center; 
-      line-height: 1.45; 
-      padding-top: 12px; 
-      border-top: 1px solid var(--border);
-    }
   </style>
 </head>
 <body>
@@ -242,9 +261,12 @@
       </div>
     </div>
     
-    <div class="sidebar-footer">
-      <strong>V 1.0 2026 • Developed by Fabrizio Notte</strong><br>©Marchi e loghi appartengono ai rispettivi proprietari<br>
-      <a href="mailto:fabriceimpresa@gmail.com" style="color: var(--accent); text-decoration: none;">fabriceimpresa@gmail.com</a>
+    <div class="sidebar-bottom">
+      <img src="assets/img/storecraftlogo.png" alt="STORE CRAFT Logo" class="sidebar-logo">
+      <div class="sidebar-footer">
+        <strong>V 1.0 2026 • Developed by Fabrizio Notte</strong><br>©Marchi e loghi appartengono ai rispettivi proprietari<br>
+        <a href="mailto:fabriceimpresa@gmail.com" style="color: var(--accent); text-decoration: none;">fabriceimpresa@gmail.com</a>
+      </div>
     </div>
   </aside>
 
