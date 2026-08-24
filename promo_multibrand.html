@@ -22,10 +22,15 @@
     .form-group label { display: block; font-size: .8rem; font-weight: bold; margin-bottom: 3px; color: #ddd; }
     .form-group input, .form-group select { width: 100%; padding: 6px 8px; border: 1px solid #4a4237; border-radius: 4px; font-size: .85rem; background: #26292e; color: #fff; }
     .form-group input:focus, .form-group select:focus { outline: none; border-color: #d4a373; box-shadow: 0 0 4px rgba(212,163,115,.5); }
+    
+    /* ANTEPRIMA COLORE SUL SELECT */
+    .select-color-preview { display: flex; align-items: center; gap: 8px; }
+    .color-badge { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #fff; background-color: #e00000; flex-shrink: 0; }
+
     .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
     .logo-grid .form-group { min-width: 0; }
     .form-group select.custom-select { border-color: #d4a373; color: #f3d5a3; }
-    select option:first-child { color: #e5ba73 !important; font-weight: bold !important; }
+    
     .custom-logo-controls { background: #181a1d; border-color: #d4a373; }
     .btn-print { width: 100%; border: 0; padding: 9px; color: #fff; font-size: .85rem; font-weight: bold; border-radius: 4px; cursor: pointer; background: #e00000; border: 1px solid #b30000; margin-top: 10px; }
     .btn-print:hover { background: #c00; }
@@ -44,27 +49,44 @@
     #card2 { margin-top: 5mm; }
     .cut-line { width: 100%; border-top: 1px dashed #ccc; margin: 8mm 0 5mm; }
     
-    /* DISPOSIZIONE LOGHI SUPERIORI PER COLONNA (1-2, 3-4, 5-6) */
     .brand-board { width: 100%; height: 45mm; display: grid; grid-template-columns: repeat(3, 63mm); grid-template-rows: repeat(2, 21mm); grid-auto-flow: column; gap: 2mm; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 3mm; }
     .brand-slot { width: 63mm; height: 21mm; display: flex; align-items: center; justify-content: center; padding: 1mm; overflow: hidden; }
-    .brand-slot img { max-width: 58mm !important; max-height: 18mm !important; width: auto !important; height: auto !important; object-fit: contain !important; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .brand-slot img.red-logo, .bottom-logo img.red-logo { -webkit-filter: none !important; filter: none !important; }
-    .brand-slot.empty { visibility: hidden; }
     
-    /* NORMALIZZAZIONE LOGHI INFERIORI (SLOT 7 E 8) */
+    .brand-slot img, .bottom-logo img { 
+      max-width: 58mm !important; 
+      max-height: 18mm !important; 
+      width: auto !important; 
+      height: auto !important; 
+      object-fit: contain !important; 
+      -webkit-print-color-adjust: exact; 
+      print-color-adjust: exact; 
+    }
+    .bottom-logo img { max-width: 46mm !important; max-height: 22mm !important; }
+
+    .brand-slot.empty, .bottom-logo.empty { visibility: hidden; }
+    
     .bottom-layout { width: 100%; display: grid; grid-template-columns: 50mm 1fr 50mm; align-items: center; justify-items: center; margin-top: 12mm; }
     .bottom-logo { width: 50mm; height: 24mm; display: flex; align-items: center; justify-content: center; padding: 1mm; overflow: hidden; }
-    .bottom-logo img { max-width: 46mm !important; max-height: 22mm !important; width: auto !important; height: auto !important; object-fit: contain !important; -webkit-filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .bottom-logo.empty { visibility: hidden; }
 
     .red-banner { width: 100%; height: 46mm; background: #e00000; color: #fff; display: flex; align-items: center; justify-content: center; }
-    .main-promo { font-family: 'Nevis Project', sans-serif; font-size: 7.5rem; line-height: .9; letter-spacing: -0.05em; text-align: center; white-space: nowrap; max-width: 100%; }
+    .main-promo { font-family: 'Nevis Project', sans-serif; font-size: 7.5rem; line-height: .9; letter-spacing: -0.05em; text-align: center; white-space: nowrap; max-width: 100%; color: #ffffff !important; }
     .main-promo.discount-promo { font-size: 7rem; }
     .main-promo.price-promo { font-size: 9rem; }
     .bottom-block { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2mm; }
     .secondary-promo { font-family: 'Nevis Project', sans-serif; font-size: 2.3rem; line-height: .95; letter-spacing: -0.05em; color: #e00000; text-transform: uppercase; text-align: center; }
     .small-red-banner { background: #e00000; color: #fff; padding: 2.5mm 5.2mm 2.1mm; }
-    .small-red-banner span { font-family: 'Nevis Project', sans-serif; font-size: 1.65rem; line-height: .95; letter-spacing: -0.05em; text-transform: uppercase; white-space: nowrap; }
+    .small-red-banner span { font-family: 'Nevis Project', sans-serif; font-size: 1.65rem; line-height: .95; letter-spacing: -0.05em; text-transform: uppercase; white-space: nowrap; color: #ffffff !important; }
+
+    /* FILTRI CSS DIRETTI PER RICOLORARE I LOGHI NERI */
+    .tint-DEFAULT { filter: brightness(0) saturate(100%) invert(14%) sepia(95%) saturate(6932%) hue-rotate(357deg) brightness(92%) contrast(114%) !important; }
+    .tint-20 { filter: brightness(0) saturate(100%) invert(32%) sepia(85%) saturate(1250%) hue-rotate(350deg) brightness(95%) contrast(90%) !important; }
+    .tint-30 { filter: brightness(0) saturate(100%) invert(38%) sepia(90%) saturate(1500%) hue-rotate(185deg) brightness(95%) contrast(95%) !important; }
+    .tint-40 { filter: brightness(0) saturate(100%) invert(45%) sepia(80%) saturate(2000%) hue-rotate(90deg) brightness(85%) contrast(95%) !important; }
+    .tint-50 { filter: brightness(0) saturate(100%) invert(18%) sepia(90%) saturate(5000%) hue-rotate(295deg) brightness(90%) contrast(100%) !important; }
+    .tint-60 { filter: brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(4000%) hue-rotate(320deg) brightness(95%) contrast(100%) !important; }
+    .tint-70 { filter: brightness(0) saturate(100%) invert(45%) sepia(40%) saturate(1500%) hue-rotate(10deg) brightness(85%) contrast(90%) !important; }
+    .tint-80 { filter: brightness(0) saturate(100%) invert(48%) sepia(60%) saturate(1200%) hue-rotate(125deg) brightness(90%) contrast(95%) !important; }
+    .tint-90 { filter: brightness(0) saturate(100%) invert(25%) sepia(60%) saturate(2000%) hue-rotate(190deg) brightness(90%) contrast(95%) !important; }
 
     @page { size: A4 portrait; margin: 0 !important; }
     @media print {
@@ -96,7 +118,24 @@
     <div class="controls">
       <h2>Promo Multi Brand</h2>
       <div class="section-title">CARTELLO 1 (Superiore)</div>
-      <div class="form-group"><label>Scritta principale:</label><select id="mainText1" onchange="updateCards()"><option>50% + 50%</option><option>€ 10,00</option><option>€ 20,00</option><option>€ 30,00</option><option>€ 40,00</option><option>€ 50,00</option><option>€ 60,00</option><option>€ 70,00</option><option>€ 80,00</option><option>€ 90,00</option></select></div>
+      <div class="form-group">
+        <label>Scritta principale:</label>
+        <div class="select-color-preview">
+          <div class="color-badge" id="previewBadge"></div>
+          <select id="mainText1" onchange="updateCards()">
+            <option value="50% + 50%">50% + 50% (Rosso Standard)</option>
+            <option value="€ 10,00">€ 10,00 (Rosso Standard)</option>
+            <option value="€ 20,00">€ 20,00 (Arancione)</option>
+            <option value="€ 30,00">€ 30,00 (Blu)</option>
+            <option value="€ 40,00">€ 40,00 (Verde)</option>
+            <option value="€ 50,00">€ 50,00 (Viola)</option>
+            <option value="€ 60,00">€ 60,00 (Rosa)</option>
+            <option value="€ 70,00">€ 70,00 (Marrone/Oro)</option>
+            <option value="€ 80,00">€ 80,00 (Ottanio)</option>
+            <option value="€ 90,00">€ 90,00 (Blu Scuro)</option>
+          </select>
+        </div>
+      </div>
       <div class="form-group"><label>Oppure testo libero:</label><input id="mainFree1" type="text" placeholder="Lascia vuoto per usare il menu" oninput="updateCards()"></div>
       <div class="form-group"><label>Scritta sopra il banner:</label><select id="secondaryText1" onchange="updateCards()"><option>Winter Sale</option><option>Summer Sale</option><option>Last Week</option><option>Shop Now</option></select></div>
       <div class="form-group"><label>Oppure testo libero:</label><input id="secondaryFree1" type="text" placeholder="Lascia vuoto per usare il menu" oninput="updateCards()"></div>
@@ -126,8 +165,21 @@
     const LOGO_FILES = [
       '269TEBE.PNG','ABIDDIKKIA.png','AFTERLABEL.png','AIRWALK.png','ALESSANDRODELLACQUA.png','ALEXANDERMCQUEEN.png','ARMANI.png','ARMANI_COLLEZIONI.png','ARMANI_EXCHANGE.png','ARMANI_GIORGIO.png','ARMANI_JEANS.png','ARNALDIMILANO.PNG','AVIREX.png','AYLIE.png','BAGUTTA.png','BALDININI.png','BALMAIN.PNG','BASTONCINO.png','BCBG.png','BEATRICE.png','BELSTAF.png','BENSHERMAN.png','BIKKENBERGS.png','BLAUER.png','BLKER.png','BLUGIRL.png','BLUMARINE.png','BRICS.png','BURBERRY.png','BYBLOS.png','CALVINKLEIN.png','CARHARTT.png','CAVALLI_CLASS.png','CAVALLI_ROBERTO.png','CHIARABONI.png','CIESSEPIUMINI.png','COCACOLA.png','COCCINELLE.png','COSTUMENATIONAL.png','DAINESE.png','DEVORE.png','DIADORA.png','DICKIES.png','DIESEL.png','DIOR.png','DIXIE.png','DOLCEANDGABBANA.png','DRSCHOLL.png','DSQUARED2.png','DUCAHOMME.png','EASTPAK.png','EGONVONFURSTENBERG.png','ELISAFANTI.png','EMMAANDGAIA.png','ENTREAMIS.png','ERMANNOSCERVINO.png','ERMENEGILDOZEGNA.png','EVERLAST.png','FACCONABLE.png','FELEPPA.png','FERRARI.png','FERRE.png','FILA.png','FRANKLINMARSHALL.png','GAELLE.png','GANT.png','GARMENT.png','GATTINONI.png','GCDS.png','GERMANS.png','GIVENCHY.png','GOORIN.png','GUESS.png','GUYLAROCHE.png','H953.png','HACKETTLONDON.png','HARMONT&BLAINE.png','HAVEONE.png','HERSCHELL.png','HOPPER.png','HUSKY.png','IMPERIAL.png','IMPURE.png','INVICTA.png','ISABELMARANT.png','JACKDANIELS.png','JEIO.PNG','JEREMYSCOTT.png','JIJIL.png','JOHNGALLIANO.png','JOHNRICHMOND.png','JUSTCAVALLI.png','KARLLAGERFELD.png','KENZO.png','KRIZIA.png','KWAY.png','LACOSTE.png','LAMARTHE.png','LAPERLA.png','LASTCHANCE.png','LAURABIAGIOTTI.png','LEE.png','LESARTEDELSOLE.png','LEVIS.png','LIUJO.png','LONSDALE.png','LOVE.png','LUCKYLU.png','LUXURY_GOLD.png','LXRY.png','LXRY_BRAND.png','MADEINITALY.png','MAISONMARGIELA.png','MAJE.png','MALIPARNI.png','MALONESOULIERS.png','MARCJACOBS.png','MARELLA.png','MARIOVALENTINO.png','MARLBORO.png','MARNI.png','MASSIMOREBECCHI.png','MAXMARA.png','MEIMEIJ.png','MELISSA.png','MICHAELKORS.png','MIRONCE.png','MISSONI.png','MIZUNO.png','MODFITTERS.png','MONCLER.png','MONTECERVINO.png','MOSCHINO.png','MOTEL.png','MSGM.png','NAPAPIJRI.png','NENETTE.png','NEWBALANCE.png','OBAG.png','OFFICINA36.png','ONLY.png','OTTODROM.png','PACIOTTI_4US.png','PACIOTTI_CESARE.png','PATRIZIAPEPE.png','PAULANDSHARK.png','PEOPLEOFSHIBUYA.png','PHILIPPPLEIN.png','PIERRECARDIN.png','PINKO.png','PIQUADRO.png','POLAROID.png','RALPHLAUREN.png','RANSOM.png','REFRIGIWEAR.png','REFRIGUE.png','RICHMOND.png','ROCCOBAROCCO.png','ROYROGERS.png','RUEBISQUIT.png','RUSSEL.png','SALVATOREFERRAGAMO.png','SERGIOTACCHINI.png','SFIZIO.png','SIMONACORSELLINI.png','SKYWARD.png','SOUVENIR.png','STEVEMADDEN.png','SUPERDRY.png','TEBE.png','TENSIONEIN.png','TOMMYHILFIGER.png','TOMMYJEANS.png','TOYG.png','TRUSSARDI.png','TRUSSARDI_JEANS.png','TWINSET.png','UNGARO.png','UNIFORM.png','USPOLOASSN.png','VERSACE.png','VERSACE_VERSUS.png','VICBEE.png','VIONNET.png','WEILIZHENG.png','WRANGLER.png'
     ];
-    // Defaults aggiornati per rispecchiare l'ordine esatto dell'immagine di legenda (1->Pinko, 2->Emma, 3->Meimeij, 4->BCBG, 5->Chiara Boni, 6->Weilizheng/WZ, 7->HaveOne)
+    
     const defaults = ['PINKO.png','EMMAANDGAIA.png','MEIMEIJ.png','BCBG.png','CHIARABONI.png','WEILIZHENG.png','HAVEONE.png','CALVINKLEIN.png'];
+
+    const PRICE_CONFIG = {
+      '€ 20,00': { color: '#c94b13', tintClass: 'tint-20' },
+      '€ 30,00': { color: '#137ec9', tintClass: 'tint-30' },
+      '€ 40,00': { color: '#22a10d', tintClass: 'tint-40' },
+      '€ 50,00': { color: '#b814ab', tintClass: 'tint-50' },
+      '€ 60,00': { color: '#f72b78', tintClass: 'tint-60' },
+      '€ 70,00': { color: '#99792e', tintClass: 'tint-70' },
+      '€ 80,00': { color: '#129a78', tintClass: 'tint-80' },
+      '€ 90,00': { color: '#1e5284', tintClass: 'tint-90' }
+    };
+    const DEFAULT_COLOR = '#e00000';
+    const DEFAULT_TINT_CLASS = 'tint-DEFAULT';
 
     function cleanName(file) { return file.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' '); }
     
@@ -158,32 +210,7 @@
       }
     }
 
-    function prepareLogoForPrint(img) {
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          const context = canvas.getContext('2d');
-          context.drawImage(img, 0, 0);
-          const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-          for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
-            const luminance = (pixels.data[pixel] * 299 + pixels.data[pixel + 1] * 587 + pixels.data[pixel + 2] * 114) / 1000;
-            if (luminance < 245) {
-              pixels.data[pixel] = 224;
-              pixels.data[pixel + 1] = 0;
-              pixels.data[pixel + 2] = 0;
-            }
-          }
-          context.putImageData(pixels, 0, 0);
-          img.onload = null;
-          img.src = canvas.toDataURL('image/png');
-          img.classList.add('red-logo');
-        } catch (error) {}
-      };
-    }
-
-    function renderLogos(card) {
+    function renderLogos(card, tintClass) {
       const board = document.getElementById('brandBoard' + card); board.innerHTML = '';
       for (let index = 1; index <= 6; index++) {
         const custom = document.getElementById('customLogo' + index).value;
@@ -191,9 +218,9 @@
         const slot = document.createElement('div'); slot.className = 'brand-slot slot' + index;
         if (file) { 
           const img = document.createElement('img'); 
-          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
+          img.className = tintClass; 
           img.alt = 'Logo ' + index; 
-          prepareLogoForPrint(img); 
+          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
           slot.appendChild(img); 
         } else {
           slot.classList.add('empty');
@@ -206,9 +233,9 @@
         const slot = document.getElementById('brandBottom' + index + 'Card' + card); slot.innerHTML = '';
         if (file) { 
           const img = document.createElement('img'); 
-          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
+          img.className = tintClass; 
           img.alt = 'Logo ' + index; 
-          prepareLogoForPrint(img); 
+          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
           slot.appendChild(img); 
           slot.classList.remove('empty'); 
         } else {
@@ -218,15 +245,33 @@
     }
 
     function updateCards() {
-      const main = document.getElementById('mainFree1').value.trim() || document.getElementById('mainText1').value;
+      const selectedDropdownValue = document.getElementById('mainText1').value;
+      const freeText = document.getElementById('mainFree1').value.trim();
+      const main = freeText || selectedDropdownValue;
       const secondary = document.getElementById('secondaryFree1').value.trim() || document.getElementById('secondaryText1').value;
+      
+      let activeColor = DEFAULT_COLOR;
+      let activeTintClass = DEFAULT_TINT_CLASS;
+
+      if (!freeText && PRICE_CONFIG[selectedDropdownValue]) {
+        activeColor = PRICE_CONFIG[selectedDropdownValue].color;
+        activeTintClass = PRICE_CONFIG[selectedDropdownValue].tintClass;
+      }
+
+      // Aggiorna Badge del menu a tendina
+      document.getElementById('previewBadge').style.backgroundColor = activeColor;
+
+      // Aggiorna colori dei banner e testo secondario
+      document.querySelectorAll('.red-banner, .small-red-banner').forEach(el => el.style.backgroundColor = activeColor);
+      document.querySelectorAll('.secondary-promo').forEach(el => el.style.color = activeColor);
+
       [1, 2].forEach(card => {
         const mainDisplay = document.getElementById('mainDisplay' + card);
         mainDisplay.textContent = main;
-        mainDisplay.classList.toggle('discount-promo', !document.getElementById('mainFree1').value.trim() && document.getElementById('mainText1').value === '50% + 50%');
-        mainDisplay.classList.toggle('price-promo', !document.getElementById('mainFree1').value.trim() && document.getElementById('mainText1').value !== '50% + 50%');
+        mainDisplay.classList.toggle('discount-promo', !freeText && selectedDropdownValue === '50% + 50%');
+        mainDisplay.classList.toggle('price-promo', !freeText && selectedDropdownValue !== '50% + 50%');
         document.getElementById('secondaryDisplay' + card).textContent = secondary;
-        renderLogos(card);
+        renderLogos(card, activeTintClass);
       });
     }
 
