@@ -46,7 +46,6 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
-    /* Sfondo principale */
     body {
       font-family: Arial, sans-serif;
       background-color: #212529;
@@ -58,7 +57,6 @@
       position: relative;
     }
 
-    /* Filigrana di sfondo */
     body::before {
       content: "";
       position: fixed;
@@ -76,7 +74,6 @@
       z-index: 0;
     }
 
-    /* Contenitore Pannelli di Sinistra */
     .sidebar {
       width: 380px;
       display: flex;
@@ -86,7 +83,6 @@
       z-index: 1;
     }
 
-    /* Pannelli di Controllo */
     .controls {
       background: #181a1d;
       color: #f1f1f1;
@@ -127,7 +123,7 @@
       color: #dddddd;
     }
 
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%;
       padding: 6px 8px;
       border: 1px solid #4a4237;
@@ -135,23 +131,29 @@
       font-size: 0.85rem;
       background-color: #26292e;
       color: #ffffff;
+      font-family: inherit;
     }
 
-    .form-group select.custom-select {
-      border-color: #d4a373;
-      color: #f3d5a3;
+    .form-group textarea {
+      resize: vertical;
+      min-height: 38px;
     }
 
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #d4a373;
-      box-shadow: 0 0 4px rgba(212, 163, 115, 0.5);
+    .btn-toggle-3rd {
+      width: 100%;
+      background-color: #d4a373;
+      color: #000;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 8px 0;
+      transition: background-color 0.2s;
     }
 
-    select option:first-child {
-      color: #e5ba73 !important;
-      font-weight: bold !important;
-    }
+    .btn-toggle-3rd:hover { background-color: #e5ba73; }
 
     .btn-copy {
       width: 100%;
@@ -163,12 +165,11 @@
       font-weight: bold;
       border-radius: 4px;
       cursor: pointer;
-      margin: 10px 0;
+      margin: 8px 0;
     }
 
     .btn-copy:hover { background-color: #218838; }
 
-    /* PULSANTI STAMPA */
     .btn-print {
       width: 100%;
       background-color: #e00000;
@@ -180,10 +181,7 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 10px;
-      transition: background-color 0.2s;
     }
-
-    .btn-print:hover { background-color: #cc0000; }
 
     .btn-print-single {
       width: 100%;
@@ -196,10 +194,7 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 6px;
-      transition: background-color 0.2s;
     }
-
-    .btn-print-single:hover { background-color: #003d80; }
 
     /* FOGLIO STAMPA */
     .print-sheet {
@@ -216,13 +211,8 @@
       overflow: hidden;
     }
 
-    .print-sheet.double-mode {
-      justify-content: space-between;
-    }
-
-    .print-sheet.single-mode #card1 {
-      margin-bottom: 5.5mm;
-    }
+    .print-sheet.double-mode { justify-content: space-between; }
+    .print-sheet.single-mode #card1 { margin-bottom: 5.5mm; }
 
     .card {
       width: 100%;
@@ -235,9 +225,7 @@
       flex-shrink: 0;
     }
 
-    .card.disabled {
-      display: none !important;
-    }
+    .card.disabled { display: none !important; }
 
     .cut-line {
       width: 100%;
@@ -286,11 +274,11 @@
       filter: brightness(0) invert(1);
     }
 
-    /* AREA PREZZI DOPPI - POSIZIONATA PIÙ IN BASSO E PERFETTAMENTE CENTRATA */
+    /* AREA PREZZI */
     .price-block {
       width: auto;
-      margin-top: 8mm; /* Ulteriore spazio verso il basso dal rettangolo rosso */
-      margin-bottom: 2mm;
+      margin-top: 6mm;
+      margin-bottom: 1mm;
       margin-left: auto;
       margin-right: auto;
       flex: 1;
@@ -299,27 +287,33 @@
       align-items: center;
       justify-content: space-evenly;
       flex-shrink: 0;
+      transition: all 0.2s ease;
     }
 
     .price-row {
       display: flex;
-      align-items: center; /* Allinea sia il testo che il prezzo al centro dell'Euro */
-      justify-content: center;
-      gap: 12px;
+      align-items: center;
+      justify-content: flex-end;
       width: 100%;
     }
+
+    .price-row.row-3rd { display: none; }
 
     .desc-text {
       font-family: 'Bodoni Book Italic', 'Bodoni Project', serif;
       font-style: italic;
       letter-spacing: -0.03em;
-      font-size: 1.5rem;
+      font-size: 1.7rem;
       color: #000000;
       font-weight: normal;
       text-align: left;
-      line-height: 1;
+      line-height: 1.1;
       word-break: break-word;
-      min-width: 130px;
+      white-space: pre-wrap;
+      width: 155px;
+      margin-right: 1mm;
+      flex-shrink: 0;
+      transition: font-size 0.2s ease;
     }
 
     .price-final {
@@ -332,13 +326,15 @@
       letter-spacing: -3px;
       white-space: nowrap;
       display: inline-flex;
-      align-items: center; /* Centratura verticale perfetta dei numeri rispetto all'Euro */
+      align-items: center;
+      flex-shrink: 0;
+      transition: font-size 0.2s ease;
     }
 
     .euro-symbol {
       display: inline-block;
-      margin-right: 4px;
-      font-size: 0.9em;
+      margin-right: 12px;
+      font-size: 1em;
       line-height: 1;
     }
 
@@ -349,6 +345,7 @@
       justify-content: center;
       margin-bottom: 1mm;
       flex-shrink: 0;
+      transition: margin 0.2s ease;
     }
 
     .card-footer img {
@@ -358,136 +355,84 @@
       filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
     }
 
+    /* ADATTAMENTO 3 ARTICOLI */
+    .has-3-items .price-block { margin-top: 2mm; margin-bottom: 0mm; }
+    .has-3-items .price-row.row-3rd { display: flex; }
+    .has-3-items .desc-text { font-size: 1.25rem; width: 140px; line-height: 1; }
+    .has-3-items .price-final { font-size: 4.8rem; letter-spacing: -2px; }
+    .has-3-items .euro-symbol { margin-right: 8px; }
+    .has-3-items .card-footer { margin-bottom: -1mm; height: 17mm; }
+
     /* NAVIGAZIONE */
     .app-close-btn {
       position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
+      top: 1.5rem; right: 1.5rem;
+      width: 36px; height: 36px;
       background-color: #d4a373;
-      color: #000000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
+      color: #000;
+      border: none; border-radius: 50%;
+      font-size: 1.2rem; font-weight: bold;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: transform 0.2s, background-color 0.2s;
-      z-index: 1000;
-      text-decoration: none;
-    }
-
-    .app-close-btn:hover {
-      background-color: #e5ba73;
-      transform: scale(1.1);
+      z-index: 1000; text-decoration: none;
     }
 
     .floating-nav-box {
       position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
+      bottom: 1.5rem; right: 1.5rem;
       background: #181a1d;
       border: 1px solid #d4a373;
       border-radius: 8px;
       padding: 0.8rem 1rem;
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
+      display: flex; flex-direction: column; gap: 0.4rem;
       z-index: 1000;
     }
 
     .floating-nav-title {
-      font-size: 0.65rem;
-      color: #e5ba73;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
-      padding-bottom: 3px;
+      font-size: 0.65rem; color: #e5ba73;
+      text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3); padding-bottom: 3px;
     }
 
     .floating-nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
+      color: #ffffff; text-decoration: none;
+      font-size: 0.82rem; font-weight: 600;
     }
 
-    .floating-nav-btn:hover {
-      color: #e5ba73;
-      transform: translateX(-2px);
-    }
-
-    @page {
-      size: A4 portrait;
-      margin: 0mm !important;
-    }
+    @page { size: A4 portrait; margin: 0mm !important; }
 
     @media print {
       html, body {
-        width: 210mm;
-        height: 296mm !important;
-        max-height: 296mm !important;
-        background: white !important;
-        padding: 0 !important;
-        margin: 0 !important;
+        width: 210mm; height: 296mm !important;
+        background: white !important; padding: 0 !important; margin: 0 !important;
         overflow: hidden !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
       }
-
-      body::before { display: none !important; }
-
-      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
-
+      body::before, .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
       .print-sheet {
-        box-shadow: none;
-        padding: 8mm 10mm;
-        width: 210mm;
-        height: 296mm !important;
-        max-height: 296mm !important;
-        page-break-after: avoid !important;
-        page-break-before: avoid !important;
-        page-break-inside: avoid !important;
-        break-after: avoid !important;
-        break-before: avoid !important;
-        break-inside: avoid !important;
-        overflow: hidden !important;
-      }
-
-      .red-box { 
-        background-color: #e00000 !important; 
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        box-shadow: none; padding: 8mm 10mm;
+        width: 210mm; height: 296mm !important;
+        page-break-after: avoid !important; break-after: avoid !important;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- Pulsanti e Riquadri Navigazione UI -->
-  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>
-    <a href="index.html" class="floating-nav-btn">
-      ← Torna al Menu Principale
-    </a>
+    <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
   </div>
 
   <div class="sidebar">
-    <!-- PANNELLO PRINCIPALE -->
     <div class="controls">
       <h2>Cartelli Multi Referenza</h2>
+
+      <button class="btn-toggle-3rd" id="btnToggle3rd" onclick="toggleThirdItem()">➕ Aggiungi 3° Articolo</button>
 
       <!-- CARTELLO 1 -->
       <div class="section-title">CARTELLO 1 (Superiore)</div>
@@ -505,15 +450,22 @@
       <div class="form-group">
         <label>Articolo 1 / Prezzo 1:</label>
         <div style="display:flex; gap:5px;">
-          <input type="text" id="desc1_1" value="T-Shirt" placeholder="Descrizione 1" oninput="updateCards()" style="width: 60%;">
-          <input type="text" id="pNew1_1" value="29,00" placeholder="29,00" oninput="updateCards()" style="width: 40%;">
+          <textarea id="desc1_1" placeholder="Descrizione 1" oninput="updateCards()" style="width: 60%;">T-Shirt</textarea>
+          <input type="text" id="pNew1_1" value="29,00" oninput="updateCards()" style="width: 40%;">
         </div>
       </div>
       <div class="form-group">
         <label>Articolo 2 / Prezzo 2:</label>
         <div style="display:flex; gap:5px;">
-          <input type="text" id="desc1_2" value="Pantalone" placeholder="Descrizione 2" oninput="updateCards()" style="width: 60%;">
-          <input type="text" id="pNew1_2" value="59,00" placeholder="59,00" oninput="updateCards()" style="width: 40%;">
+          <textarea id="desc1_2" placeholder="Descrizione 2" oninput="updateCards()" style="width: 60%;">Pantalone</textarea>
+          <input type="text" id="pNew1_2" value="59,00" oninput="updateCards()" style="width: 40%;">
+        </div>
+      </div>
+      <div class="form-group group-3rd" id="group1_3" style="display: none;">
+        <label>Articolo 3 / Prezzo 3:</label>
+        <div style="display:flex; gap:5px;">
+          <textarea id="desc1_3" placeholder="Descrizione 3" oninput="updateCards()" style="width: 60%;">Giacca</textarea>
+          <input type="text" id="pNew1_3" value="99,00" oninput="updateCards()" style="width: 40%;">
         </div>
       </div>
 
@@ -536,15 +488,22 @@
         <div class="form-group">
           <label>Articolo 1 / Prezzo 1:</label>
           <div style="display:flex; gap:5px;">
-            <input type="text" id="desc2_1" value="T-Shirt" placeholder="Descrizione 1" oninput="updateCards()" style="width: 60%;">
-            <input type="text" id="pNew2_1" value="29,00" placeholder="29,00" oninput="updateCards()" style="width: 40%;">
+            <textarea id="desc2_1" placeholder="Descrizione 1" oninput="updateCards()" style="width: 60%;">T-Shirt</textarea>
+            <input type="text" id="pNew2_1" value="29,00" oninput="updateCards()" style="width: 40%;">
           </div>
         </div>
         <div class="form-group">
           <label>Articolo 2 / Prezzo 2:</label>
           <div style="display:flex; gap:5px;">
-            <input type="text" id="desc2_2" value="Pantalone" placeholder="Descrizione 2" oninput="updateCards()" style="width: 60%;">
-            <input type="text" id="pNew2_2" value="59,00" placeholder="59,00" oninput="updateCards()" style="width: 40%;">
+            <textarea id="desc2_2" placeholder="Descrizione 2" oninput="updateCards()" style="width: 60%;">Pantalone</textarea>
+            <input type="text" id="pNew2_2" value="59,00" oninput="updateCards()" style="width: 40%;">
+          </div>
+        </div>
+        <div class="form-group group-3rd" id="group2_3" style="display: none;">
+          <label>Articolo 3 / Prezzo 3:</label>
+          <div style="display:flex; gap:5px;">
+            <textarea id="desc2_3" placeholder="Descrizione 3" oninput="updateCards()" style="width: 60%;">Giacca</textarea>
+            <input type="text" id="pNew2_3" value="99,00" oninput="updateCards()" style="width: 40%;">
           </div>
         </div>
       </div>
@@ -562,22 +521,17 @@
       <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
     </div>
 
-    <!-- PANNELLO LOGHI PERSONALIZZATI SEPARATO -->
     <div class="controls">
       <h2>LOGHI PERSONALIZZATI</h2>
 
       <div class="form-group">
         <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
-        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
+        <select id="customBrandSelect1" onchange="onCustomBrandChange(1)"></select>
       </div>
 
       <div class="form-group">
         <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
-        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
+        <select id="customBrandSelect2" onchange="onCustomBrandChange(2)"></select>
       </div>
     </div>
   </div>
@@ -594,18 +548,21 @@
       <div class="price-block">
         <div class="price-row">
           <div class="desc-text" id="descDisplay1_1">T-Shirt</div>
-          <div class="price-final" id="priceNewDisplay1_1"><span class="euro-symbol">€</span> 29,00</div>
+          <div class="price-final" id="priceNewDisplay1_1"><span class="euro-symbol">€</span>29,00</div>
         </div>
         <div class="price-row">
           <div class="desc-text" id="descDisplay1_2">Pantalone</div>
-          <div class="price-final" id="priceNewDisplay1_2"><span class="euro-symbol">€</span> 59,00</div>
+          <div class="price-final" id="priceNewDisplay1_2"><span class="euro-symbol">€</span>59,00</div>
+        </div>
+        <div class="price-row row-3rd">
+          <div class="desc-text" id="descDisplay1_3">Giacca</div>
+          <div class="price-final" id="priceNewDisplay1_3"><span class="euro-symbol">€</span>99,00</div>
         </div>
       </div>
 
       <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
     </div>
 
-    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
     <div class="cut-line"></div>
 
     <!-- CARTELLO 2 -->
@@ -619,11 +576,15 @@
       <div class="price-block">
         <div class="price-row">
           <div class="desc-text" id="descDisplay2_1">T-Shirt</div>
-          <div class="price-final" id="priceNewDisplay2_1"><span class="euro-symbol">€</span> 29,00</div>
+          <div class="price-final" id="priceNewDisplay2_1"><span class="euro-symbol">€</span>29,00</div>
         </div>
         <div class="price-row">
           <div class="desc-text" id="descDisplay2_2">Pantalone</div>
-          <div class="price-final" id="priceNewDisplay2_2"><span class="euro-symbol">€</span> 59,00</div>
+          <div class="price-final" id="priceNewDisplay2_2"><span class="euro-symbol">€</span>59,00</div>
+        </div>
+        <div class="price-row row-3rd">
+          <div class="desc-text" id="descDisplay2_3">Giacca</div>
+          <div class="price-final" id="priceNewDisplay2_3"><span class="euro-symbol">€</span>99,00</div>
         </div>
       </div>
 
@@ -672,6 +633,7 @@
     const LOGO_PATH = "assets/logos/";
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
     const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
+    let is3rdActive = false;
 
     function cleanBrandName(filename) {
       return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
@@ -688,13 +650,11 @@
         const displayName = cleanBrandName(fileName);
         
         const option1 = document.createElement('option');
-        option1.value = fileName;
-        option1.textContent = displayName;
+        option1.value = fileName; option1.textContent = displayName;
         select1.appendChild(option1);
 
         const option2 = document.createElement('option');
-        option2.value = fileName;
-        option2.textContent = displayName;
+        option2.value = fileName; option2.textContent = displayName;
         select2.appendChild(option2);
       });
 
@@ -712,15 +672,38 @@
 
       customLogos.forEach(item => {
         const opt1 = document.createElement('option');
-        opt1.value = item.data;
-        opt1.textContent = "★ " + item.name;
+        opt1.value = item.data; opt1.textContent = "★ " + item.name;
         cSelect1.appendChild(opt1);
 
         const opt2 = document.createElement('option');
-        opt2.value = item.data;
-        opt2.textContent = "★ " + item.name;
+        opt2.value = item.data; opt2.textContent = "★ " + item.name;
         cSelect2.appendChild(opt2);
       });
+    }
+
+    function toggleThirdItem() {
+      is3rdActive = !is3rdActive;
+      const btn = document.getElementById('btnToggle3rd');
+      const g1 = document.getElementById('group1_3');
+      const g2 = document.getElementById('group2_3');
+      const sheet = document.getElementById('printSheet');
+
+      if (is3rdActive) {
+        btn.textContent = "➖ Rimuovi 3° Articolo";
+        btn.style.backgroundColor = "#c82333";
+        btn.style.color = "#fff";
+        g1.style.display = "block";
+        g2.style.display = "block";
+        sheet.classList.add('has-3-items');
+      } else {
+        btn.textContent = "➕ Aggiungi 3° Articolo";
+        btn.style.backgroundColor = "#d4a373";
+        btn.style.color = "#000";
+        g1.style.display = "none";
+        g2.style.display = "none";
+        sheet.classList.remove('has-3-items');
+      }
+      updateCards();
     }
 
     function onOfficialBrandChange(cardIndex) {
@@ -738,10 +721,14 @@
       document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
       document.getElementById('left2').value = document.getElementById('left1').value;
       document.getElementById('right2').value = document.getElementById('right1').value;
+      
       document.getElementById('desc2_1').value = document.getElementById('desc1_1').value;
       document.getElementById('pNew2_1').value = document.getElementById('pNew1_1').value;
       document.getElementById('desc2_2').value = document.getElementById('desc1_2').value;
       document.getElementById('pNew2_2').value = document.getElementById('pNew1_2').value;
+      document.getElementById('desc2_3').value = document.getElementById('desc1_3').value;
+      document.getElementById('pNew2_3').value = document.getElementById('pNew1_3').value;
+
       updateCards();
     }
 
@@ -778,47 +765,47 @@
       const b1 = document.getElementById('brandSelect1').value;
       const cb1 = document.getElementById('customBrandSelect1').value;
 
-      if (cb1) {
-        document.getElementById('cardLogo1').src = cb1;
-      } else if (b1) {
-        document.getElementById('cardLogo1').src = LOGO_PATH + b1;
-      } else {
-        document.getElementById('cardLogo1').src = LOGO_PATH + DEFAULT_LOGO;
-      }
+      if (cb1) document.getElementById('cardLogo1').src = cb1;
+      else if (b1) document.getElementById('cardLogo1').src = LOGO_PATH + b1;
+      else document.getElementById('cardLogo1').src = LOGO_PATH + DEFAULT_LOGO;
 
       document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
       document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
       
       document.getElementById('descDisplay1_1').innerText = document.getElementById('desc1_1').value;
       const pn1_1 = document.getElementById('pNew1_1').value;
-      document.getElementById('priceNewDisplay1_1').innerHTML = pn1_1 ? '<span class="euro-symbol">€</span> ' + pn1_1 : '';
+      document.getElementById('priceNewDisplay1_1').innerHTML = pn1_1 ? '<span class="euro-symbol">€</span>' + pn1_1 : '';
 
       document.getElementById('descDisplay1_2').innerText = document.getElementById('desc1_2').value;
       const pn1_2 = document.getElementById('pNew1_2').value;
-      document.getElementById('priceNewDisplay1_2').innerHTML = pn1_2 ? '<span class="euro-symbol">€</span> ' + pn1_2 : '';
+      document.getElementById('priceNewDisplay1_2').innerHTML = pn1_2 ? '<span class="euro-symbol">€</span>' + pn1_2 : '';
+
+      document.getElementById('descDisplay1_3').innerText = document.getElementById('desc1_3').value;
+      const pn1_3 = document.getElementById('pNew1_3').value;
+      document.getElementById('priceNewDisplay1_3').innerHTML = pn1_3 ? '<span class="euro-symbol">€</span>' + pn1_3 : '';
 
       // Cartello 2
       const b2 = document.getElementById('brandSelect2').value;
       const cb2 = document.getElementById('customBrandSelect2').value;
 
-      if (cb2) {
-        document.getElementById('cardLogo2').src = cb2;
-      } else if (b2) {
-        document.getElementById('cardLogo2').src = LOGO_PATH + b2;
-      } else {
-        document.getElementById('cardLogo2').src = LOGO_PATH + DEFAULT_LOGO;
-      }
+      if (cb2) document.getElementById('cardLogo2').src = cb2;
+      else if (b2) document.getElementById('cardLogo2').src = LOGO_PATH + b2;
+      else document.getElementById('cardLogo2').src = LOGO_PATH + DEFAULT_LOGO;
 
       document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
       document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
       
       document.getElementById('descDisplay2_1').innerText = document.getElementById('desc2_1').value;
       const pn2_1 = document.getElementById('pNew2_1').value;
-      document.getElementById('priceNewDisplay2_1').innerHTML = pn2_1 ? '<span class="euro-symbol">€</span> ' + pn2_1 : '';
+      document.getElementById('priceNewDisplay2_1').innerHTML = pn2_1 ? '<span class="euro-symbol">€</span>' + pn2_1 : '';
 
       document.getElementById('descDisplay2_2').innerText = document.getElementById('desc2_2').value;
       const pn2_2 = document.getElementById('pNew2_2').value;
-      document.getElementById('priceNewDisplay2_2').innerHTML = pn2_2 ? '<span class="euro-symbol">€</span> ' + pn2_2 : '';
+      document.getElementById('priceNewDisplay2_2').innerHTML = pn2_2 ? '<span class="euro-symbol">€</span>' + pn2_2 : '';
+
+      document.getElementById('descDisplay2_3').innerText = document.getElementById('desc2_3').value;
+      const pn2_3 = document.getElementById('pNew2_3').value;
+      document.getElementById('priceNewDisplay2_3').innerHTML = pn2_3 ? '<span class="euro-symbol">€</span>' + pn2_3 : '';
     }
 
     window.onload = loadLocalLogos;
