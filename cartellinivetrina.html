@@ -380,7 +380,7 @@
           logoContent = `<img src="${card.customLogoUrl}" alt="${card.brand}">`;
         } else if (card.brand) {
           const brandKey = card.brand.toLowerCase().replace(/\s+/g, '');
-          const logoFile = logoFileOverrides[brandKey] || `${brandKey}.png`;
+          const logoFile = logoFileOverrides[brandKey] || `${brandKey.toUpperCase()}.png`;
           logoContent = `<img src="assets/logos/${logoFile}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${card.brand}</div>'" alt="${card.brand}">`;
         }
 
