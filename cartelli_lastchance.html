@@ -102,17 +102,17 @@
     }
 
     .section-title {
-      font-size: 0.75rem;
+      font-size: 0.9rem;
       font-weight: bold;
       color: #e5ba73;
       background-color: transparent;
       border-left: none;
-      border-bottom: 1px solid #2e2b27;
-      padding: 0 0 0.4rem;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
+      padding: 0 0 0.6rem;
       border-radius: 0;
       margin-top: 1rem;
-      margin-bottom: 0.8rem;
-      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
     }
 
@@ -131,7 +131,7 @@
       padding: 0.5rem;
       border: 1px solid #2e2b27;
       border-radius: 4px;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       background-color: #0a0908;
       color: #fff;
     }
@@ -315,9 +315,22 @@
       flex-shrink: 0;
     }
 
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .price-block.no-brand {
+      margin-top: 7mm;
+    }
+
     .price-final {
       font-family: 'Bodoni Project', serif;
-      font-size: 8.8rem;
+      font-size: 9.9rem;
       font-weight: normal;
       color: #000;
       line-height: 0.8;
@@ -339,7 +352,7 @@
       font-family: 'Bodoni Project', serif;
       letter-spacing: -0.05em;
       font-style: italic;
-      font-size: 1.15rem;
+      font-size: 1.4rem;
       color: #000;
       margin-bottom: 2mm;
       text-align: center;
@@ -776,6 +789,8 @@
       const brandContainer1 = document.getElementById('brandContainer1');
       const noteDisplay1 = document.getElementById('noteDisplay1');
       const noteVal1 = document.getElementById('note1').value;
+      const priceBlock1 = document.querySelector('#card1 .price-block');
+      const hasBrand1 = !!(cb1 || b1);
       
       if (cb1) {
         brandContainer1.innerHTML = `<img src="${cb1}" alt="Custom Logo">`;
@@ -787,6 +802,8 @@
         brandContainer1.innerHTML = '';
         brandContainer1.classList.remove('has-logo');
       }
+
+      priceBlock1.classList.toggle('no-brand', !hasBrand1);
 
       noteDisplay1.innerText = noteVal1;
       noteDisplay1.style.display = noteVal1.trim() !== "" ? 'block' : 'none';
@@ -803,6 +820,8 @@
       const brandContainer2 = document.getElementById('brandContainer2');
       const noteDisplay2 = document.getElementById('noteDisplay2');
       const noteVal2 = document.getElementById('note2').value;
+      const priceBlock2 = document.querySelector('#card2 .price-block');
+      const hasBrand2 = !!(cb2 || b2);
       
       if (cb2) {
         brandContainer2.innerHTML = `<img src="${cb2}" alt="Custom Logo">`;
@@ -814,6 +833,8 @@
         brandContainer2.innerHTML = '';
         brandContainer2.classList.remove('has-logo');
       }
+
+      priceBlock2.classList.toggle('no-brand', !hasBrand2);
 
       noteDisplay2.innerText = noteVal2;
       noteDisplay2.style.display = noteVal2.trim() !== "" ? 'block' : 'none';
