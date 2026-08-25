@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>GENERATORE CARTELLI OUTLET by Fabrice</title>
+  <title>Cartello Outlet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -70,78 +71,85 @@
 
     /* Contenitore Pannelli di Sinistra */
     .sidebar {
-      width: 380px;
+      width: 340px;
       display: flex;
       flex-direction: column;
       gap: 15px;
       position: relative;
       z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
     }
 
     /* Pannelli di Controllo */
     .controls {
-      background: #181a1d;
-      color: #f1f1f1;
-      padding: 15px;
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
       border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      border: 1px solid #d4a373;
+      box-shadow: none;
+      border: 1px solid #2e2b27;
     }
 
     .controls h2 {
+      font-family: 'Cinzel', serif;
       font-size: 1.1rem;
-      color: #e5ba73;
-      border-bottom: 2px solid #d4a373;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
+      color: #d4a373;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1.5px;
+      text-align: center;
       text-transform: uppercase;
     }
 
     .section-title {
-      font-size: 0.95rem;
+      font-size: 0.75rem;
       font-weight: bold;
-      color: #f3d5a3;
-      background-color: rgba(212, 163, 115, 0.15);
-      border-left: 3px solid #d4a373;
-      padding: 4px 8px;
-      border-radius: 2px;
-      margin-top: 12px;
-      margin-bottom: 8px;
+      color: #e5ba73;
+      background-color: transparent;
+      border-left: none;
+      border-bottom: 1px solid #2e2b27;
+      padding: 0 0 0.4rem;
+      border-radius: 0;
+      margin-top: 1rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
-    .form-group { margin-bottom: 8px; }
+    .form-group { margin-bottom: 0.8rem; }
 
     .form-group label {
       display: block;
-      font-size: 0.8rem;
-      font-weight: bold;
-      margin-bottom: 3px;
-      color: #dddddd;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
     }
 
     .form-group input, .form-group select {
       width: 100%;
-      padding: 6px 8px;
-      border: 1px solid #4a4237;
+      padding: 0.5rem;
+      border: 1px solid #2e2b27;
       border-radius: 4px;
-      font-size: 0.85rem;
-      background-color: #26292e;
-      color: #ffffff;
+      font-size: 0.82rem;
+      background-color: #0a0908;
+      color: #fff;
     }
 
     .form-group select.custom-select {
-      border-color: #d4a373;
+      border-color: #b48b37;
       color: #f3d5a3;
     }
 
     .form-group input:focus, .form-group select:focus {
       outline: none;
-      border-color: #d4a373;
-      box-shadow: 0 0 4px rgba(212, 163, 115, 0.5);
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
     }
 
     select option:first-child {
-      color: #e5ba73 !important;
+      color: #b48b37 !important;
       font-weight: bold !important;
     }
 
@@ -482,8 +490,8 @@
     @media print {
       html, body {
         width: 210mm;
-        height: 296mm !important;
-        max-height: 296mm !important;
+        height: 291mm !important;
+        max-height: 291mm !important;
         background: white !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -498,10 +506,11 @@
 
       .print-sheet {
         box-shadow: none;
+        margin: 5mm auto 0 !important;
         padding: 8mm 10mm;
         width: 210mm;
-        height: 296mm !important;
-        max-height: 296mm !important;
+        height: 291mm !important;
+        max-height: 291mm !important;
         page-break-after: avoid !important;
         page-break-before: avoid !important;
         page-break-inside: avoid !important;
@@ -534,11 +543,11 @@
   <div class="sidebar">
     <!-- PANNELLO PRINCIPALE -->
     <div class="controls">
-      <h2>Pannello di Controllo</h2>
+      <h2>Cartello Outlet</h2>
 
       <!-- TASTO PER AGGIUNGERE/REMUOVERE DESCRIZIONE -->
       <button type="button" class="btn-toggle-desc" id="btnToggleDesc" onclick="toggleDescription()">
-        ✨ Aggiungi descrizione articolo/promo
+        ✨ AGGIUNGI DESCRIZIONE ARTICOLO
       </button>
 
       <div class="section-title">CARTELLO 1 (Superiore)</div>
@@ -737,7 +746,7 @@
 
       if (isDescriptionActive) {
         btn.classList.add('active');
-        btn.innerHTML = "✓ Descrizione Articolo Attiva";
+        btn.innerHTML = "✓ DESCRIZIONE ARTICOLO ATTIVA";
         descGroup1.style.display = "block";
         descGroup2.style.display = "block";
         promoDesc1.classList.add('active');
@@ -746,7 +755,7 @@
         card2.classList.add('has-desc');
       } else {
         btn.classList.remove('active');
-        btn.innerHTML = "✨ Aggiungi descrizione articolo/promo";
+        btn.innerHTML = "✨ AGGIUNGI DESCRIZIONE ARTICOLO";
         descGroup1.style.display = "none";
         descGroup2.style.display = "none";
         promoDesc1.classList.remove('active');

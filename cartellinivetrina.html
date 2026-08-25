@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STORE // CRAFT - Cartellini Vetrina 8x A4</title>
+  <title>Cartellini Vetrina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
       font-family: 'Bodoni Std';
-      src: url('assets/fonts/BodoniStd-Roman.woff2') format('woff2'),
-           url('assets/fonts/BodoniStd-Roman.ttf') format('truetype');
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
     }
 
     @font-face {
       font-family: 'Bodoni Std';
-      src: url('assets/fonts/BodoniStd-Italic.woff2') format('woff2'),
-           url('assets/fonts/BodoniStd-Italic.ttf') format('truetype');
+      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
       font-weight: normal;
       font-style: italic;
     }
 
     @font-face {
       font-family: 'Bodoni Std';
-      src: url('assets/fonts/BodoniStd-Bold.woff2') format('woff2'),
-           url('assets/fonts/BodoniStd-Bold.ttf') format('truetype');
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
       font-weight: bold;
       font-style: normal;
     }
@@ -46,8 +44,8 @@
     body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
     /* --- SIDEBAR --- */
-    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
-    .brand-title { font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 1rem; text-align: center; font-weight: 700; }
+    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .brand-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 2px; color: #d4a373; margin-bottom: 1rem; text-align: center; font-weight: 700; }
 
     .tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
     .tab-item { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; cursor: pointer; transition: all 0.2s; }
@@ -70,8 +68,13 @@
     .btn-print { width: 100%; padding: 0.75rem; background: var(--gold); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 1.2rem; }
     .btn-print:hover { background: var(--accent-hover); }
 
-    .custom-logos-box { border-top: 1px solid var(--border); padding-top: 1rem; }
-    .custom-logos-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; letter-spacing: 1px; }
+    .custom-logos-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
+    .custom-logos-title { font-size: 0.75rem; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .custom-logo-row { margin-bottom: 0.7rem; }
+    .custom-logo-row:last-child { margin-bottom: 0; }
+    .custom-logo-row label { display: block; font-size: 0.72rem; color: var(--gold); margin-bottom: 0.3rem; }
+    .custom-logo-select { width: 100%; padding: 0.5rem; background: #0a0908; border: 1px solid var(--gold); color: #f3d5a3; border-radius: 4px; font-size: 0.82rem; outline: none; }
+    .custom-logo-select:focus { box-shadow: 0 0 4px rgba(180, 139, 55, 0.5); }
 
     /* --- PREVIEW MAIN --- */
     main { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; background: #0a0908; }
@@ -113,39 +116,101 @@
     .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 20pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
 
     /* 2. Descrizione Articolo */
-    .desc-box { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 20pt; color: #000; margin-top: 1mm; margin-bottom: 2mm; line-height: 1.1; word-break: break-word; }
+    .desc-box { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 20pt; color: #000; margin-top: 3mm; margin-bottom: 2mm; line-height: 1.1; word-break: break-word; }
 
     /* 3. Prezzo Orig + Sconto OPPURE Dicitura Preimpostata */
     .price-details-row { margin-bottom: 1mm; min-height: 8mm; display: flex; align-items: center; justify-content: center; }
     
-    .orig-discount { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 13pt; color: #000; display: flex; gap: 6px; align-items: center; }
+    .orig-discount { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 15pt; color: #000; display: flex; gap: 6px; align-items: center; }
     .orig-discount .strike { text-decoration: line-through; }
-    .orig-discount .badge-sconto { color: var(--gold); font-weight: bold; font-style: normal; }
+    .orig-discount .badge-sconto { color: var(--gold); font-size: 15pt; font-weight: bold; font-style: normal; }
+    .currency { font-family: inherit; font-weight: inherit; }
 
-    .preset-label { font-family: 'Bodoni Std', serif; font-size: 13pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+    .preset-label { font-family: 'Bodoni Std', serif; font-size: 15pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* 4. Prezzo Finale */
-    .final-price { font-family: 'Bodoni Std', serif; font-weight: bold; font-size: 30pt; color: #000; line-height: 1; margin-bottom: 2mm; }
+    .final-price { font-family: 'Bodoni Std', serif; font-weight: normal; font-size: 42pt; color: #000; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2mm; }
 
     /* 5. Logo Footer (Luxury Outlet) */
     .card-footer-logo { margin-top: auto; height: 20mm; display: flex; align-items: center; justify-content: center; width: 100%; padding-bottom: 1mm; }
     .card-footer-logo img { max-height: 100%; max-width: 85%; object-fit: contain; }
+
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b48b37;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181715;
+      border: 1px solid #b48b37;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #c99c43;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(180, 139, 55, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
 
     /* STAMPA */
     @media print {
       body { background: none; }
       aside { display: none !important; }
       main { padding: 0; background: none; }
-      .a4-landscape { box-shadow: none; margin: 0; width: 297mm; height: 210mm; page-break-after: always; }
+      .a4-landscape { box-shadow: none; margin: 5mm auto 0; width: 297mm; height: 205mm; page-break-after: always; }
       .cartellino.disabled { visibility: hidden; opacity: 0; }
+      .app-close-btn, .floating-nav-box { display: none !important; }
       @page { size: A4 landscape; margin: 0; }
     }
   </style>
 </head>
 <body>
+  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
 
   <aside>
-    <div class="brand-title">CARTELLINI VETRINA (8x)</div>
+    <div class="brand-title">CARTELLINI VETRINA</div>
 
     <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio A4</button>
 
@@ -171,7 +236,7 @@
 
       <div id="group-discount">
         <div class="form-group">
-          <label>Prezzo Originario (€)</label>
+          <label>Prezzo Originario (<span class="currency">€</span>)</label>
           <input type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
         </div>
         <div class="form-group">
@@ -196,16 +261,16 @@
       </div>
 
       <div class="form-group">
-        <label>Prezzo Finale (€)</label>
+        <label>Prezzo Finale (<span class="currency">€</span>)</label>
         <input type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
       </div>
     </div>
 
     <div class="custom-logos-box">
-      <div class="custom-logos-title">Loghi Personalizzati LocalStorage</div>
-      <div class="form-group">
-        <label>Assegna Logo Personalizzato</label>
-        <select id="inp-custom-logo" class="form-control" onchange="applyCustomLogo()"></select>
+      <div class="custom-logos-title">Loghi Personalizzati</div>
+      <div class="custom-logo-row">
+        <label for="inp-custom-logo" id="custom-logo-label">Logo Personalizzato Cartellino #1</label>
+        <select id="inp-custom-logo" class="custom-logo-select" onchange="applyCustomLogo()"></select>
       </div>
     </div>
   </aside>
@@ -227,7 +292,50 @@
     ];
 
     let currentCardIdx = 0;
-    const availableLogos = ['SKYWARD', 'PINKO', 'FELEPPA', 'WEILI ZHENG', 'HAVE ONE', 'MEIMEIJ'];
+    const availableLogos = [
+      '269TEBE', 'ABIDDIKKIA', 'AFTERLABEL', 'AIRWALK', 'ALESSANDRODELLACQUA',
+      'ALEXANDERMCQUEEN', 'ARMANI', 'ARMANI_COLLEZIONI', 'ARMANI_EXCHANGE',
+      'ARMANI_GIORGIO', 'ARMANI_JEANS', 'ARNALDIMILANO', 'AVIREX', 'AYLIE',
+      'BAGUTTA', 'BALDININI', 'BALMAIN', 'BASTONCINO', 'BCBG', 'BEATRICE',
+      'BELSTAF', 'BENSHERMAN', 'BIKKENBERGS', 'BLAUER', 'BLKER', 'BLUGIRL',
+      'BLUMARINE', 'BRICS', 'BURBERRY', 'BYBLOS', 'CALVINKLEIN', 'CARHARTT',
+      'CAVALLI_CLASS', 'CAVALLI_ROBERTO', 'CHIARABONI', 'CIESSEPIUMINI',
+      'COCACOLA', 'COCCINELLE', 'COSTUMENATIONAL', 'DAINESE', 'DEVORE',
+      'DIADORA', 'DICKIES', 'DIESEL', 'DIOR', 'DIXIE', 'DOLCEANDGABBANA',
+      'DRSCHOLL', 'DSQUARED2', 'DUCAHOMME', 'EASTPAK', 'EGONVONFURSTENBERG',
+      'ELISAFANTI', 'EMMAANDGAIA', 'ENTREAMIS', 'ERMANNOSCERVINO',
+      'ERMENEGILDOZEGNA', 'EVERLAST', 'FACCONABLE', 'FELEPPA', 'FERRARI',
+      'FERRE', 'FILA', 'FRANKLINMARSHALL', 'GAELLE', 'GANT', 'GARMENT',
+      'GATTINONI', 'GCDS', 'GERMANS', 'GIVENCHY', 'GOORIN', 'GUESS',
+      'GUYLAROCHE', 'H953', 'HACKETTLONDON', 'HARMONT&BLAINE', 'HAVE ONE',
+      'HERSCHELL', 'HOPPER', 'HUSKY', 'IMPERIAL', 'IMPURE', 'INVICTA',
+      'ISABELMARANT', 'JACKDANIELS', 'JEIO', 'JEREMYSCOTT', 'JIJIL',
+      'JOHNGALLIANO', 'JOHNRICHMOND', 'JUSTCAVALLI', 'KARLLAGERFELD', 'KENZO',
+      'KRIZIA', 'KWAY', 'LACOSTE', 'LAMARTHE', 'LAPERLA', 'LASTCHANCE',
+      'LAURABIAGIOTTI', 'LEE', 'LESARTEDELSOLE', 'LEVIS', 'LIUJO', 'LONSDALE',
+      'LOVE', 'LUCKYLU', 'LUXURY_GOLD', 'LXRY', 'LXRY_BRAND', 'MADEINITALY',
+      'MAISONMARGIELA', 'MAJE', 'MALIPARNI', 'MALONESOULIERS', 'MARCJACOBS',
+      'MARELLA', 'MARIOVALENTINO', 'MARLBORO', 'MARNI', 'MASSIMOREBECCHI',
+      'MAXMARA', 'MEIMEIJ', 'MELISSA', 'MICHAELKORS', 'MIRONCE', 'MISSONI',
+      'MIZUNO', 'MODFITTERS', 'MONCLER', 'MONTECERVINO', 'MOSCHINO', 'MOTEL',
+      'MSGM', 'NAPAPIJRI', 'NENETTE', 'NEWBALANCE', 'OBAG', 'OFFICINA36',
+      'ONLY', 'OTTODROM', 'PACIOTTI_4US', 'PACIOTTI_CESARE', 'PATRIZIAPEPE',
+      'PAULANDSHARK', 'PEOPLEOFSHIBUYA', 'PHILIPPPLEIN', 'PIERRECARDIN',
+      'PINKO', 'PIQUADRO', 'POLAROID', 'RALPHLAUREN', 'RANSOM', 'REFRIGIWEAR',
+      'REFRIGUE', 'RICHMOND', 'ROCCOBAROCCO', 'ROYROGERS', 'RUEBISQUIT',
+      'RUSSEL', 'SALVATOREFERRAGAMO', 'SERGIOTACCHINI', 'SFIZIO',
+      'SIMONACORSELLINI', 'SKYWARD', 'SOUVENIR', 'STEVEMADDEN', 'SUPERDRY',
+      'TEBE', 'TENSIONEIN', 'TOMMYHILFIGER', 'TOMMYJEANS', 'TOYG', 'TRUSSARDI',
+      'TRUSSARDI_JEANS', 'TWINSET', 'UNGARO', 'UNIFORM', 'USPOLOASSN',
+      'VERSACE', 'VERSACE_VERSUS', 'VICBEE', 'VIONNET', 'WEILI ZHENG',
+      'WRANGLER'
+    ];
+    const logoFileOverrides = {
+      '269tebe': '269TEBE.PNG',
+      'arnaldimilano': 'ARNALDIMILANO.PNG',
+      'balmain': 'BALMAIN.PNG',
+      'jeio': 'JEIO.PNG'
+    };
 
     function init() {
       renderTabs();
@@ -271,7 +379,9 @@
         if (card.customLogoUrl) {
           logoContent = `<img src="${card.customLogoUrl}" alt="${card.brand}">`;
         } else if (card.brand) {
-          logoContent = `<img src="assets/logos/${card.brand.toLowerCase().replace(/\s+/g, '')}.png" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${card.brand}</div>'" alt="${card.brand}">`;
+          const brandKey = card.brand.toLowerCase().replace(/\s+/g, '');
+          const logoFile = logoFileOverrides[brandKey] || `${brandKey}.png`;
+          logoContent = `<img src="assets/logos/${logoFile}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${card.brand}</div>'" alt="${card.brand}">`;
         }
 
         let subRowContent = '';
@@ -280,7 +390,7 @@
         } else {
           subRowContent = `
             <div class="orig-discount">
-              ${card.priceOrig ? `<span class="strike">€ ${card.priceOrig}</span>` : ''}
+              ${card.priceOrig ? `<span class="strike"><span class="currency">€</span> ${card.priceOrig}</span>` : ''}
               ${card.sconto ? `<span class="badge-sconto">${card.sconto}</span>` : ''}
             </div>
           `;
@@ -290,7 +400,7 @@
           <div class="brand-box">${logoContent}</div>
           <div class="desc-box">${card.desc}</div>
           <div class="price-details-row">${subRowContent}</div>
-          <div class="final-price">€ ${card.priceFinal}</div>
+          <div class="final-price"><span class="currency">€</span> ${card.priceFinal}</div>
           <div class="card-footer-logo">
             <img src="assets/img/logocartellini.png" onerror="this.style.display='none'" alt="Luxury Outlet">
           </div>
@@ -304,16 +414,16 @@
       const brandSelect = document.getElementById('inp-brand');
       brandSelect.innerHTML = availableLogos.map(l => `<option value="${l}">${l}</option>`).join('');
 
-      const customSelect = document.getElementById('inp-custom-logo');
-      const savedLogos = JSON.parse(localStorage.getItem('storecraft_custom_logos') || '[]');
-      
-      customSelect.innerHTML = '<option value="">-- Nessuno (Usa Standard) --</option>' + 
-        savedLogos.map((l, i) => `<option value="${l.data}">${l.name || 'Logo Custom #' + (i+1)}</option>`).join('');
+      const savedLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const customOptions = '<option value="">-- Nessun Logo Personalizzato --</option>' +
+        savedLogos.map((logo, index) => `<option value="${logo.data}">${logo.name || 'Logo Custom #' + (index + 1)}</option>`).join('');
+      document.getElementById('inp-custom-logo').innerHTML = customOptions;
     }
 
     function loadEditorData() {
       const card = cardsData[currentCardIdx];
       document.getElementById('editor-header').innerText = `Modifica Cartellino #${card.id}`;
+      document.getElementById('custom-logo-label').innerText = `Logo Personalizzato Cartellino #${card.id}`;
       document.getElementById('inp-brand').value = card.brand;
       document.getElementById('inp-desc').value = card.desc;
       document.getElementById('inp-toggle-preset').checked = card.usePreset;

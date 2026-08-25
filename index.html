@@ -109,7 +109,7 @@
     header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
     header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 
-    .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 1.2rem; }
+    .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 1.2rem; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
     
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
@@ -302,6 +302,15 @@
       </div>
 
       <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-tickets" onclick="toggleMenu('menu-tickets', this)">
+          <span>Genera Cartellini</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-tickets">
+          <a href="cartellinivetrina.html" class="nav-btn">🏷️ Cartellini Vetrina</a>
+        </div>
+      </div>
+
+      <div class="menu-group">
         <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
           <span>Genera Loghi</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
@@ -392,8 +401,24 @@
             <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Doppia Referenza">
           </div>
           <div class="card-body">
-            <h3>Cartello Multi Referenza</h3>
+            <h3>Cartello Doppia Referenza</h3>
             <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio o Triplo Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione e Prezzi</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div id="tickets-section">
+      <div class="section-title">Genera Cartellini</div>
+      <div class="grid">
+        <!-- Cartellini Vetrina -->
+        <a href="cartellinivetrina.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/cartellini.png" alt="Anteprima Cartellini Vetrina">
+          </div>
+          <div class="card-body">
+            <h3>Cartellini Vetrina</h3>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione</p>
           </div>
         </a>
       </div>
