@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORE // CRAFT - Cartellini Vetrina 8x A4</title>
+  <style>
+    /* Definizione Font Locali Bodoni Std da assets/fonts */
+    @font-face {
+      font-family: 'Bodoni Std';
+      src: url('assets/fonts/BodoniStd-Roman.woff2') format('woff2'),
+           url('assets/fonts/BodoniStd-Roman.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Std';
+      src: url('assets/fonts/BodoniStd-Italic.woff2') format('woff2'),
+           url('assets/fonts/BodoniStd-Italic.ttf') format('truetype');
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Std';
+      src: url('assets/fonts/BodoniStd-Bold.woff2') format('woff2'),
+           url('assets/fonts/BodoniStd-Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    :root {
+      --bg: #121110;
+      --sidebar: #181715;
+      --card: #1e1d1a;
+      --border: #2e2b27;
+      --accent: #b48b37;
+      --accent-hover: #c99c43;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+      --gold: #b48b37;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    /* --- SIDEBAR --- */
+    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .brand-title { font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 1rem; text-align: center; font-weight: 700; }
+
+    .tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
+    .tab-item { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; cursor: pointer; transition: all 0.2s; }
+    .tab-item:hover { border-color: var(--gold); }
+    .tab-item.active { border-color: var(--gold); background: rgba(180, 139, 55, 0.15); }
+    .tab-item label { font-size: 0.7rem; font-weight: 700; cursor: pointer; color: var(--text); }
+    .tab-item input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; }
+
+    .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
+    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+
+    .form-group { margin-bottom: 0.8rem; }
+    .form-group label { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .form-control { width: 100%; padding: 0.5rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.82rem; outline: none; }
+    .form-control:focus { border-color: var(--gold); }
+    
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; background: #0a0908; padding: 0.5rem; border-radius: 4px; border: 1px solid var(--border); }
+    .toggle-row span { font-size: 0.75rem; color: var(--text); }
+
+    .btn-print { width: 100%; padding: 0.75rem; background: var(--gold); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 1.2rem; }
+    .btn-print:hover { background: var(--accent-hover); }
+
+    .custom-logos-box { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .custom-logos-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.6rem; letter-spacing: 1px; }
+
+    /* --- PREVIEW MAIN --- */
+    main { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; background: #0a0908; }
+
+    /* Foglio A4 Landscape */
+    .a4-landscape {
+      width: 297mm;
+      height: 210mm;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      padding: 6mm;
+      gap: 3mm;
+      transform-origin: top center;
+    }
+
+    /* Modulo Singolo Cartellino - Bordo nero molto più spesso verso l'interno */
+    .cartellino {
+      border: 10px solid #000000; /* Spessore aumentato a 10px */
+      box-sizing: border-box;      /* Mantiene lo spessore verso l'interno */
+      padding: 3mm 2mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      overflow: hidden;
+      position: relative;
+    }
+    .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
+
+    /* 1. Logo Brand (Posizionato in alto) */
+    .brand-box { height: 26mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 1mm; }
+    .brand-box img { max-height: 100%; max-width: 90%; object-fit: contain; filter: invert(56%) sepia(68%) saturate(382%) hue-rotate(9deg) brightness(92%) contrast(87%); }
+    .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 20pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* 2. Descrizione Articolo */
+    .desc-box { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 20pt; color: #000; margin-top: 1mm; margin-bottom: 2mm; line-height: 1.1; word-break: break-word; }
+
+    /* 3. Prezzo Orig + Sconto OPPURE Dicitura Preimpostata */
+    .price-details-row { margin-bottom: 1mm; min-height: 8mm; display: flex; align-items: center; justify-content: center; }
+    
+    .orig-discount { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 13pt; color: #000; display: flex; gap: 6px; align-items: center; }
+    .orig-discount .strike { text-decoration: line-through; }
+    .orig-discount .badge-sconto { color: var(--gold); font-weight: bold; font-style: normal; }
+
+    .preset-label { font-family: 'Bodoni Std', serif; font-size: 13pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* 4. Prezzo Finale */
+    .final-price { font-family: 'Bodoni Std', serif; font-weight: bold; font-size: 30pt; color: #000; line-height: 1; margin-bottom: 2mm; }
+
+    /* 5. Logo Footer (Luxury Outlet) */
+    .card-footer-logo { margin-top: auto; height: 20mm; display: flex; align-items: center; justify-content: center; width: 100%; padding-bottom: 1mm; }
+    .card-footer-logo img { max-height: 100%; max-width: 85%; object-fit: contain; }
+
+    /* STAMPA */
+    @media print {
+      body { background: none; }
+      aside { display: none !important; }
+      main { padding: 0; background: none; }
+      .a4-landscape { box-shadow: none; margin: 0; width: 297mm; height: 210mm; page-break-after: always; }
+      .cartellino.disabled { visibility: hidden; opacity: 0; }
+      @page { size: A4 landscape; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div class="brand-title">CARTELLINI VETRINA (8x)</div>
+
+    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio A4</button>
+
+    <div class="tabs-grid" id="tabs-container"></div>
+
+    <div class="editor-section">
+      <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
+      
+      <div class="form-group">
+        <label>Brand / Logo</label>
+        <select id="inp-brand" class="form-control" onchange="updateCurrentCard()"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Descrizione Articolo (Bodoni Std Italic)</label>
+        <input type="text" id="inp-desc" class="form-control" placeholder="es. Giubbino" oninput="updateCurrentCard()">
+      </div>
+
+      <div class="toggle-row">
+        <span>Modalità Dicitura Fissa</span>
+        <input type="checkbox" id="inp-toggle-preset" style="accent-color: var(--gold);" onchange="toggleMode()">
+      </div>
+
+      <div id="group-discount">
+        <div class="form-group">
+          <label>Prezzo Originario (€)</label>
+          <input type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
+        </div>
+        <div class="form-group">
+          <label>Aliquota Sconto</label>
+          <input type="text" id="inp-sconto" class="form-control" placeholder="-50%" oninput="updateCurrentCard()">
+        </div>
+      </div>
+
+      <div id="group-preset" style="display: none;">
+        <div class="form-group">
+          <label>Dicitura Oro (Bodoni Std Roman)</label>
+          <select id="inp-preset" class="form-control" onchange="updateCurrentCard()">
+            <option value="OUTLET PRICE">OUTLET PRICE</option>
+            <option value="FINAL PRICE">FINAL PRICE</option>
+            <option value="GENUINE LEATHER">GENUINE LEATHER</option>
+            <option value="MADE IN ITALY">MADE IN ITALY</option>
+            <option value="SPECIAL DEAL">SPECIAL DEAL</option>
+            <option value="WINTER SALE">WINTER SALE</option>
+            <option value="VERA PELLE">VERA PELLE</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Prezzo Finale (€)</label>
+        <input type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
+      </div>
+    </div>
+
+    <div class="custom-logos-box">
+      <div class="custom-logos-title">Loghi Personalizzati LocalStorage</div>
+      <div class="form-group">
+        <label>Assegna Logo Personalizzato</label>
+        <select id="inp-custom-logo" class="form-control" onchange="applyCustomLogo()"></select>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="a4-landscape" id="printable-grid"></div>
+  </main>
+
+  <script>
+    const cardsData = [
+      { id: 1, enabled: true, brand: 'SKYWARD', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '396,00', sconto: '-50%', presetText: '', priceFinal: '198,00' },
+      { id: 2, enabled: true, brand: 'PINKO', customLogoUrl: '', desc: 'Pantalone', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '40,00' },
+      { id: 3, enabled: true, brand: 'PINKO', customLogoUrl: '', desc: 'Gonna', usePreset: true, priceOrig: '', sconto: '', presetText: 'WINTER SALE', priceFinal: '30,00' },
+      { id: 4, enabled: true, brand: 'FELEPPA', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '310,00', sconto: '-55%', presetText: '', priceFinal: '139,50' },
+      { id: 5, enabled: true, brand: 'WEILI ZHENG', customLogoUrl: '', desc: 'Top', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '30,00' },
+      { id: 6, enabled: true, brand: 'HAVE ONE', customLogoUrl: '', desc: 'Abito', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '30,00' },
+      { id: 7, enabled: true, brand: 'MEIMEIJ', customLogoUrl: '', desc: 'Pantalone', usePreset: true, priceOrig: '', sconto: '', presetText: 'WINTER SALE', priceFinal: '30,00' },
+      { id: 8, enabled: true, brand: 'FELEPPA', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '310,00', sconto: '-55%', presetText: '', priceFinal: '139,50' }
+    ];
+
+    let currentCardIdx = 0;
+    const availableLogos = ['SKYWARD', 'PINKO', 'FELEPPA', 'WEILI ZHENG', 'HAVE ONE', 'MEIMEIJ'];
+
+    function init() {
+      renderTabs();
+      renderGrid();
+      populateLogoDropdowns();
+      loadEditorData();
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('tabs-container');
+      container.innerHTML = '';
+      cardsData.forEach((card, index) => {
+        const item = document.createElement('div');
+        item.className = `tab-item ${index === currentCardIdx ? 'active' : ''}`;
+        item.onclick = (e) => {
+          if (e.target.type !== 'checkbox') {
+            currentCardIdx = index;
+            renderTabs();
+            loadEditorData();
+          }
+        };
+
+        item.innerHTML = `
+          <label>#${card.id}</label>
+          <input type="checkbox" ${card.enabled ? 'checked' : ''} onchange="toggleCardEnabled(${index}, this.checked)">
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('printable-grid');
+      grid.innerHTML = '';
+
+      cardsData.forEach((card) => {
+        const el = document.createElement('div');
+        el.className = `cartellino ${!card.enabled ? 'disabled' : ''}`;
+        el.id = `card-view-${card.id}`;
+
+        let logoContent = `<div class="brand-text-fallback">${card.brand}</div>`;
+        if (card.customLogoUrl) {
+          logoContent = `<img src="${card.customLogoUrl}" alt="${card.brand}">`;
+        } else if (card.brand) {
+          logoContent = `<img src="assets/logos/${card.brand.toLowerCase().replace(/\s+/g, '')}.png" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${card.brand}</div>'" alt="${card.brand}">`;
+        }
+
+        let subRowContent = '';
+        if (card.usePreset) {
+          subRowContent = `<div class="preset-label">${card.presetText}</div>`;
+        } else {
+          subRowContent = `
+            <div class="orig-discount">
+              ${card.priceOrig ? `<span class="strike">€ ${card.priceOrig}</span>` : ''}
+              ${card.sconto ? `<span class="badge-sconto">${card.sconto}</span>` : ''}
+            </div>
+          `;
+        }
+
+        el.innerHTML = `
+          <div class="brand-box">${logoContent}</div>
+          <div class="desc-box">${card.desc}</div>
+          <div class="price-details-row">${subRowContent}</div>
+          <div class="final-price">€ ${card.priceFinal}</div>
+          <div class="card-footer-logo">
+            <img src="assets/img/logocartellini.png" onerror="this.style.display='none'" alt="Luxury Outlet">
+          </div>
+        `;
+
+        grid.appendChild(el);
+      });
+    }
+
+    function populateLogoDropdowns() {
+      const brandSelect = document.getElementById('inp-brand');
+      brandSelect.innerHTML = availableLogos.map(l => `<option value="${l}">${l}</option>`).join('');
+
+      const customSelect = document.getElementById('inp-custom-logo');
+      const savedLogos = JSON.parse(localStorage.getItem('storecraft_custom_logos') || '[]');
+      
+      customSelect.innerHTML = '<option value="">-- Nessuno (Usa Standard) --</option>' + 
+        savedLogos.map((l, i) => `<option value="${l.data}">${l.name || 'Logo Custom #' + (i+1)}</option>`).join('');
+    }
+
+    function loadEditorData() {
+      const card = cardsData[currentCardIdx];
+      document.getElementById('editor-header').innerText = `Modifica Cartellino #${card.id}`;
+      document.getElementById('inp-brand').value = card.brand;
+      document.getElementById('inp-desc').value = card.desc;
+      document.getElementById('inp-toggle-preset').checked = card.usePreset;
+      document.getElementById('inp-orig').value = card.priceOrig;
+      document.getElementById('inp-sconto').value = card.sconto;
+      document.getElementById('inp-preset').value = card.presetText || 'SPECIAL DEAL';
+      document.getElementById('inp-final').value = card.priceFinal;
+      document.getElementById('inp-custom-logo').value = card.customLogoUrl || '';
+
+      toggleMode();
+    }
+
+    function toggleMode() {
+      const usePreset = document.getElementById('inp-toggle-preset').checked;
+      document.getElementById('group-discount').style.display = usePreset ? 'none' : 'block';
+      document.getElementById('group-preset').style.display = usePreset ? 'block' : 'none';
+      updateCurrentCard();
+    }
+
+    function updateCurrentCard() {
+      const card = cardsData[currentCardIdx];
+      card.brand = document.getElementById('inp-brand').value;
+      card.desc = document.getElementById('inp-desc').value;
+      card.usePreset = document.getElementById('inp-toggle-preset').checked;
+      card.priceOrig = document.getElementById('inp-orig').value;
+      card.sconto = document.getElementById('inp-sconto').value;
+      card.presetText = document.getElementById('inp-preset').value;
+      card.priceFinal = document.getElementById('inp-final').value;
+
+      renderGrid();
+    }
+
+    function applyCustomLogo() {
+      const customUrl = document.getElementById('inp-custom-logo').value;
+      cardsData[currentCardIdx].customLogoUrl = customUrl;
+      renderGrid();
+    }
+
+    function toggleCardEnabled(index, enabled) {
+      cardsData[index].enabled = enabled;
+      renderGrid();
+    }
+
+    init();
+  </script>
+</body>
+</html>
