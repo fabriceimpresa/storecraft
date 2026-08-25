@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <!-- Libreria qrcode.js integrata -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
       --bg: #121110;
@@ -12,6 +14,7 @@
       --card: #1e1d1a;
       --border: #2e2b27;
       --accent: #d4a373;
+      --accent-hover: #e5ba73;
       --text: #f4f1ea;
       --text-muted: #8c857b;
     }
@@ -114,10 +117,6 @@
     
     .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); padding: 10px 14px; }
     .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 3px; }
-    .mini-doc { width: 90px; height: 110px; background: #fdfbf7; color: #1a1a1a; padding: 8px; border-radius: 3px; font-family: 'Cinzel', serif; display: flex; flex-direction: column; justify-content: space-between; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-    .mini-doc .title { font-size: 6px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
-    .mini-doc .price-old { font-size: 6px; text-decoration: line-through; color: #777; margin-top: 10px; }
-    .mini-doc .price-new { font-size: 12px; font-weight: bold; color: #b00; }
 
     .card-body { padding: 1rem; }
     .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; margin-bottom: 0.3rem; }
@@ -138,6 +137,12 @@
       cursor: pointer;
       transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    .widget-compact {
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
     
     .widget:not(.expanded):hover {
       border-color: var(--accent);
@@ -145,7 +150,8 @@
     }
 
     .widget h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
-    
+    .widget-compact h3 { margin-bottom: 0.8rem; }
+
     /* MODALITÀ ESPANSA / FOCUS */
     .widget.expanded {
       grid-column: 1 / -1;
@@ -171,11 +177,10 @@
       display: flex;
     }
 
-    /* Tastino X Giallo Senape con X Nera */
     .close-btn {
       width: 32px;
       height: 32px;
-      background-color: #d4a373;
+      background-color: var(--accent);
       color: #000000;
       border: none;
       border-radius: 50%;
@@ -189,7 +194,7 @@
     }
 
     .close-btn:hover {
-      background-color: #e5ba73;
+      background-color: var(--accent-hover);
       transform: scale(1.1);
     }
 
@@ -209,16 +214,72 @@
       border-color: var(--accent);
     }
 
-    .tool-row { display: flex; gap: 0.8rem; margin-bottom: 1rem; }
+    .tool-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
     .input-group { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #0a0908; }
-    .input-prefix { padding: 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; }
-    .tool-input { width: 100%; padding: 0.7rem; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; }
-    .tool-input-select { width: 100%; padding: 0.7rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; outline: none; }
+    .input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; }
+    .tool-input { width: 100%; padding: 0.6rem 0.7rem; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
+    .tool-input-select { width: 100%; padding: 0.6rem 0.7rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
     .tool-input-select:focus, .tool-input:focus { border-color: var(--accent); }
     
-    .tool-btn { padding: 0.8rem 1rem; background: var(--accent); color: #000; font-weight: 600; border: none; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; font-size: 0.9rem; margin-top: 0.5rem; }
-    .tool-btn:hover { opacity: 0.9; }
+    .tool-btn { 
+      padding: 0.65rem 0.8rem; 
+      background: var(--accent); 
+      color: #000000; 
+      font-weight: 700; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      font-size: 0.8rem; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tool-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .tool-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .tool-btn-secondary:hover {
+      background: rgba(212, 163, 115, 0.1);
+      color: var(--accent-hover);
+    }
+
     .tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
+
+    /* Contenitore QR Code con margine inferiore bilanciato */
+    .qr-preview-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto 0;
+      padding-top: 0.2rem;
+      padding-bottom: 0.8rem; /* Spazio aggiunto prima dei tasti */
+    }
+
+    .qr-preview-wrapper {
+      background: #ffffff;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    /* Dimensione ridotta dell'immagine di anteprima */
+    .widget:not(.expanded) #qrcode img, 
+    .widget:not(.expanded) #qrcode canvas {
+      max-width: 75px !important;
+      height: auto !important;
+    }
+
+    /* Dimensione standard quando espanso */
+    .widget.expanded #qrcode img,
+    .widget.expanded #qrcode canvas {
+      max-width: none;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -257,7 +318,8 @@
         <div class="menu-items" id="menu-tools">
           <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
-          <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💱 Cambio Valuta</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💰 Cambio Valuta</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-qrcode')">📱 Generatore QR Code</a>
         </div>
       </div>
     </div>
@@ -298,7 +360,7 @@
           </div>
           <div class="card-body">
             <h3>Cartello Outlet</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Outlet</p>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione (facoltativa)&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Outlet</p>
           </div>
         </a>
 
@@ -320,7 +382,7 @@
           </div>
           <div class="card-body">
             <h3>Promo Multibrand</h3>
-            <p>Promo 50% + 50% | Promo Fasce Colore | Promo Testo Libero</p>
+            <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero</p>
           </div>
         </a>
 
@@ -330,8 +392,8 @@
             <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Doppia Referenza">
           </div>
           <div class="card-body">
-            <h3>Cartello Doppia Referenza</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio Articolo con Descrizione e Prezzi Dedicati</p>
+            <h3>Cartello Multi Referenza</h3>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio o Triplo Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione e Prezzi</p>
           </div>
         </a>
       </div>
@@ -388,7 +450,7 @@
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>💱 Cambio Valuta (Live Online)</h3>
+        <h3>💰 Cambio Valuta (Live Online)</h3>
         
         <div class="tool-row">
           <select id="val-direction" class="tool-input-select" onchange="updateUI()">
@@ -415,11 +477,47 @@
         <div class="tool-result" id="res-valuta">€ 0,00</div>
       </div>
 
+      <!-- 4. Widget Generatore QR Code -->
+      <div class="widget widget-compact" id="widget-qrcode" onclick="focusWidget(event, 'widget-qrcode')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>📱 Generatore QR Code</h3>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">URL</span>
+            <input type="text" id="qrText" class="tool-input" value="https://instagram.com" placeholder="Link o testo" oninput="generateQR()">
+          </div>
+        </div>
+
+        <div class="tool-row" style="margin-bottom: 0.4rem;">
+          <select id="qrSize" class="tool-input-select" onchange="generateQR()">
+            <option value="120" selected>Piccolo (120px)</option>
+            <option value="180">Medio (180px)</option>
+            <option value="260">Grande (260px)</option>
+          </select>
+        </div>
+
+        <div class="qr-preview-container">
+          <div class="qr-preview-wrapper">
+            <div id="qrcode"></div>
+          </div>
+        </div>
+
+        <div class="tool-row" style="margin-bottom:0; gap: 0.4rem;">
+          <button class="tool-btn" style="flex:1;" onclick="downloadQR(event)">💾 Scarica</button>
+          <button class="tool-btn tool-btn-secondary" style="flex:1;" onclick="printQR(event)">🖨️ Stampa</button>
+        </div>
+      </div>
+
     </div>
   </main>
 
   <script>
     const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
+    let qrcodeObj = null;
 
     function toggleMenu(menuId, toggleButton) {
       const menu = document.getElementById(menuId);
@@ -472,6 +570,10 @@
 
         targetWidget.classList.add('expanded');
         targetWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        if (widgetId === 'widget-qrcode') {
+          setTimeout(generateQR, 50);
+        }
       }
     }
 
@@ -553,8 +655,78 @@
       }
     }
 
+    /* FUNZIONI PER QR CODE */
+    function generateQR() {
+      const text = document.getElementById('qrText').value.trim();
+      const size = parseInt(document.getElementById('qrSize').value);
+      const container = document.getElementById('qrcode');
+
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (text !== "") {
+        qrcodeObj = new QRCode(container, {
+          text: text,
+          width: size,
+          height: size,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+        });
+      }
+    }
+
+    function downloadQR(e) {
+      if (e) e.stopPropagation();
+      const img = document.querySelector("#qrcode img");
+      const canvas = document.querySelector("#qrcode canvas");
+      
+      let imageSrc = "";
+      if (img && img.src) {
+        imageSrc = img.src;
+      } else if (canvas) {
+        imageSrc = canvas.toDataURL("image/png");
+      }
+
+      if (!imageSrc) {
+        alert("Inserisci del testo per generare il QR Code!");
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.href = imageSrc;
+      link.download = 'qrcode-storecraft.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printQR(e) {
+      if (e) e.stopPropagation();
+      const img = document.querySelector("#qrcode img");
+      const canvas = document.querySelector("#qrcode canvas");
+      let imageSrc = img && img.src ? img.src : (canvas ? canvas.toDataURL("image/png") : "");
+
+      if (!imageSrc) {
+        alert("Genera prima un QR Code valido!");
+        return;
+      }
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+          <head><title>Stampa QR Code</title></head>
+          <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
+            <img src="${imageSrc}" style="max-width:80%; max-height:80%;" onload="window.print(); window.close();"/>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+
     restoreMenus();
     updateUI();
+    generateQR();
   </script>
 </body>
 </html>
