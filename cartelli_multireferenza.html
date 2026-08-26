@@ -47,6 +47,7 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
+    /* Sfondo principale */
     body {
       font-family: Arial, sans-serif;
       background-color: #212529;
@@ -58,6 +59,7 @@
       position: relative;
     }
 
+    /* Filigrana di sfondo */
     body::before {
       content: "";
       position: fixed;
@@ -75,31 +77,35 @@
       z-index: 0;
     }
 
+    /* Contenitore Pannelli di Sinistra */
     .sidebar {
-      width: 380px;
+      width: 340px;
       display: flex;
       flex-direction: column;
       gap: 15px;
       position: relative;
       z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
     }
 
+    /* Pannelli di Controllo */
     .controls {
-      background: #181a1d;
-      color: #f1f1f1;
-      padding: 15px;
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
       border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      border: 1px solid #d4a373;
+      box-shadow: none;
+      border: 1px solid #2e2b27;
     }
 
     .controls h2 {
       font-family: 'Cinzel', serif;
       font-size: 1.1rem;
       color: #d4a373;
-      border-bottom: 2px solid #d4a373;
-      padding-bottom: 5px;
-      margin-bottom: 10px;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1.5px;
       text-align: center;
       text-transform: uppercase;
     }
@@ -119,24 +125,24 @@
       text-transform: uppercase;
     }
 
-    .form-group { margin-bottom: 8px; }
+    .form-group { margin-bottom: 0.8rem; }
 
     .form-group label {
       display: block;
-      font-size: 0.8rem;
-      font-weight: bold;
-      margin-bottom: 3px;
-      color: #dddddd;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
     }
 
     .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 6px 8px;
-      border: 1px solid #4a4237;
+      padding: 0.5rem;
+      border: 1px solid #2e2b27;
       border-radius: 4px;
-      font-size: 0.85rem;
-      background-color: #26292e;
-      color: #ffffff;
+      font-size: 0.82rem;
+      background-color: #0a0908;
+      color: #fff;
       font-family: inherit;
     }
 
@@ -145,21 +151,54 @@
       min-height: 38px;
     }
 
-    .btn-toggle-3rd {
-      width: 100%;
-      background-color: #d4a373;
-      color: #000;
-      border: none;
-      padding: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 8px 0;
-      transition: background-color 0.2s;
+    .form-group select.custom-select {
+      border-color: #b48b37;
+      color: #f3d5a3;
     }
 
-    .btn-toggle-3rd:hover { background-color: #e5ba73; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
+    }
+
+    select option:first-child {
+      color: #b48b37 !important;
+      font-weight: bold !important;
+    }
+
+    /* PULSANTE TOGGLE 3° ARTICOLO */
+    .btn-toggle-3rd {
+      width: 100%;
+      background: linear-gradient(135deg, #d4a373 0%, #b8860b 100%);
+      color: #000000;
+      border: 1px solid #e5ba73;
+      padding: 10px;
+      font-size: 0.88rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px 0;
+      box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-toggle-3rd:hover {
+      background: linear-gradient(135deg, #e5ba73 0%, #d4a373 100%);
+      box-shadow: 0 6px 14px rgba(212, 163, 115, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-toggle-3rd.active {
+      background: linear-gradient(135deg, #c82333 0%, #a71d2a 100%);
+      color: #ffffff;
+      border-color: #dc3545;
+      box-shadow: 0 4px 10px rgba(200, 35, 51, 0.4);
+    }
 
     .btn-copy {
       width: 100%;
@@ -171,11 +210,12 @@
       font-weight: bold;
       border-radius: 4px;
       cursor: pointer;
-      margin: 8px 0;
+      margin: 10px 0;
     }
 
     .btn-copy:hover { background-color: #218838; }
 
+    /* PULSANTI STAMPA */
     .btn-print {
       width: 100%;
       background-color: #e00000;
@@ -187,7 +227,10 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 10px;
+      transition: background-color 0.2s;
     }
+
+    .btn-print:hover { background-color: #cc0000; }
 
     .btn-print-single {
       width: 100%;
@@ -200,7 +243,10 @@
       border-radius: 4px;
       cursor: pointer;
       margin-top: 6px;
+      transition: background-color 0.2s;
     }
+
+    .btn-print-single:hover { background-color: #003d80; }
 
     /* FOGLIO STAMPA */
     .print-sheet {
@@ -382,6 +428,12 @@
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       z-index: 1000; text-decoration: none;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .app-close-btn:hover {
+      background-color: #e5ba73;
+      transform: scale(1.1);
     }
 
     .floating-nav-box {
@@ -403,8 +455,15 @@
     }
 
     .floating-nav-btn {
+      display: flex; align-items: center; gap: 0.5rem;
       color: #ffffff; text-decoration: none;
       font-size: 0.82rem; font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
     }
 
     @page { size: A4 portrait; margin: 0mm !important; }
@@ -428,18 +487,24 @@
 </head>
 <body>
 
-  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>
-    <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
   </div>
 
   <div class="sidebar">
+    <!-- PANNELLO PRINCIPALE -->
     <div class="controls">
       <h2>Cartello Doppia Referenza</h2>
 
-      <button class="btn-toggle-3rd" id="btnToggle3rd" onclick="toggleThirdItem()">➕ Aggiungi 3° Articolo</button>
+      <button type="button" class="btn-toggle-3rd" id="btnToggle3rd" onclick="toggleThirdItem()">
+        ➕ AGGIUNGI 3° ARTICOLO
+      </button>
 
       <!-- CARTELLO 1 -->
       <div class="section-title">CARTELLO 1 (Superiore)</div>
@@ -528,17 +593,18 @@
       <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
     </div>
 
+    <!-- PANNELLO LOGHI PERSONALIZZATI SEPARATO -->
     <div class="controls">
       <h2>LOGHI PERSONALIZZATI</h2>
 
       <div class="form-group">
         <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
-        <select id="customBrandSelect1" onchange="onCustomBrandChange(1)"></select>
+        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)"></select>
       </div>
 
       <div class="form-group">
         <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
-        <select id="customBrandSelect2" onchange="onCustomBrandChange(2)"></select>
+        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)"></select>
       </div>
     </div>
   </div>
@@ -696,16 +762,14 @@
       const sheet = document.getElementById('printSheet');
 
       if (is3rdActive) {
-        btn.textContent = "➖ Rimuovi 3° Articolo";
-        btn.style.backgroundColor = "#c82333";
-        btn.style.color = "#fff";
+        btn.innerHTML = "➖ RIMUOVI 3° ARTICOLO";
+        btn.classList.add('active');
         g1.style.display = "block";
         g2.style.display = "block";
         sheet.classList.add('has-3-items');
       } else {
-        btn.textContent = "➕ Aggiungi 3° Articolo";
-        btn.style.backgroundColor = "#d4a373";
-        btn.style.color = "#000";
+        btn.innerHTML = "➕ AGGIUNGI 3° ARTICOLO";
+        btn.classList.remove('active');
         g1.style.display = "none";
         g2.style.display = "none";
         sheet.classList.remove('has-3-items');

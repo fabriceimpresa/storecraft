@@ -216,7 +216,8 @@
 
     .tool-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
     .input-group { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #0a0908; }
-    .input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; }
+    .input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; flex-shrink: 0; }
+    .input-suffix { padding: 0.6rem 0.7rem; background: #181715; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border-left: 1px solid var(--border); font-weight: 700; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.5px; white-space: nowrap; }
     .tool-input { width: 100%; padding: 0.6rem 0.7rem; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
     .tool-input-select { width: 100%; padding: 0.6rem 0.7rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
     .tool-input-select:focus, .tool-input:focus { border-color: var(--accent); }
@@ -247,6 +248,39 @@
 
     .tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
 
+    /* STILI ESCLUSIVI WIDGET IVA */
+    .rate-grid-widget {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .rate-btn-widget {
+      background: #0a0908;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .rate-btn-widget:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .rate-btn-widget.active {
+      background: rgba(212, 163, 115, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     /* Contenitore QR Code con margine inferiore bilanciato */
     .qr-preview-container {
       display: flex;
@@ -254,7 +288,7 @@
       align-items: center;
       margin: auto 0;
       padding-top: 0.2rem;
-      padding-bottom: 0.8rem; /* Spazio aggiunto prima dei tasti */
+      padding-bottom: 0.8rem;
     }
 
     .qr-preview-wrapper {
@@ -327,6 +361,7 @@
         <div class="menu-items" id="menu-tools">
           <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-iva')">🧮 Calcola IVA</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💰 Cambio Valuta</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-qrcode')">📱 Generatore QR Code</a>
         </div>
@@ -469,7 +504,49 @@
         <div class="tool-result" id="res-aliquota">0%</div>
       </div>
 
-      <!-- 3. Widget Cambio Valuta -->
+      <!-- 3. Widget Calcola IVA -->
+      <div class="widget" id="widget-iva" onclick="focusWidget(event, 'widget-iva')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>🧮 Calcola IVA</h3>
+        
+        <div class="rate-grid-widget">
+          <button class="rate-btn-widget" onclick="setIvaRate(4, this, event)">4%</button>
+          <button class="rate-btn-widget" onclick="setIvaRate(5, this, event)">5%</button>
+          <button class="rate-btn-widget" onclick="setIvaRate(10, this, event)">10%</button>
+          <button class="rate-btn-widget active" onclick="setIvaRate(22, this, event)">22%</button>
+        </div>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="text" id="iva-net" class="tool-input" placeholder="Imponibile" oninput="calcIvaFromNet()">
+            <span class="input-suffix">SENZA IVA</span>
+          </div>
+        </div>
+        
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="text" id="iva-vat" class="tool-input" placeholder="Importo IVA" oninput="calcIvaFromVat()">
+            <span class="input-suffix">IVA</span>
+          </div>
+        </div>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="text" id="iva-gross" class="tool-input" placeholder="Totale" oninput="calcIvaFromGross()">
+            <span class="input-suffix">CON IVA</span>
+          </div>
+        </div>
+
+        <button class="tool-btn-secondary tool-btn" style="width:100%; font-size: 0.75rem;" onclick="resetIvaFields(event)">Azzera IVA</button>
+      </div>
+
+      <!-- 4. Widget Cambio Valuta -->
       <div class="widget" id="widget-valuta" onclick="focusWidget(event, 'widget-valuta')">
         <div class="widget-header-controls">
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
@@ -502,7 +579,7 @@
         <div class="tool-result" id="res-valuta">€ 0,00</div>
       </div>
 
-      <!-- 4. Widget Generatore QR Code -->
+      <!-- 5. Widget Generatore QR Code -->
       <div class="widget widget-compact" id="widget-qrcode" onclick="focusWidget(event, 'widget-qrcode')">
         <div class="widget-header-controls">
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
@@ -544,6 +621,81 @@
     const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
     let qrcodeObj = null;
 
+    /* VAR E LOGICA WIDGET IVA */
+    let currentIvaRate = 22;
+    let lastIvaSource = 'net';
+
+    function parseIvaNum(val) {
+      if (!val) return 0;
+      let cleanVal = val.toString().replace(',', '.').replace(/[^0-9.]/g, '');
+      return parseFloat(cleanVal) || 0;
+    }
+
+    function formatIvaNum(num) {
+      if (isNaN(num) || num === 0) return '';
+      return num.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function setIvaRate(rate, element, e) {
+      if (e) e.stopPropagation();
+      currentIvaRate = rate;
+      document.querySelectorAll('.rate-btn-widget').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+      recalcIva();
+    }
+
+    function calcIvaFromNet() {
+      lastIvaSource = 'net';
+      let netRaw = document.getElementById('iva-net').value;
+      if (netRaw.trim() === '') { clearIvaInputs(); return; }
+      let net = parseIvaNum(netRaw);
+      let vat = net * (currentIvaRate / 100);
+      let gross = net + vat;
+      document.getElementById('iva-vat').value = formatIvaNum(vat);
+      document.getElementById('iva-gross').value = formatIvaNum(gross);
+    }
+
+    function calcIvaFromVat() {
+      lastIvaSource = 'vat';
+      let vatRaw = document.getElementById('iva-vat').value;
+      if (vatRaw.trim() === '') { clearIvaInputs(); return; }
+      let vat = parseIvaNum(vatRaw);
+      let net = vat / (currentIvaRate / 100);
+      let gross = net + vat;
+      document.getElementById('iva-net').value = formatIvaNum(net);
+      document.getElementById('iva-gross').value = formatIvaNum(gross);
+    }
+
+    function calcIvaFromGross() {
+      lastIvaSource = 'gross';
+      let grossRaw = document.getElementById('iva-gross').value;
+      if (grossRaw.trim() === '') { clearIvaInputs(); return; }
+      let gross = parseIvaNum(grossRaw);
+      let net = gross / (1 + (currentIvaRate / 100));
+      let vat = gross - net;
+      document.getElementById('iva-net').value = formatIvaNum(net);
+      document.getElementById('iva-vat').value = formatIvaNum(vat);
+    }
+
+    function recalcIva() {
+      if (lastIvaSource === 'net') calcIvaFromNet();
+      else if (lastIvaSource === 'vat') calcIvaFromVat();
+      else if (lastIvaSource === 'gross') calcIvaFromGross();
+    }
+
+    function clearIvaInputs() {
+      document.getElementById('iva-net').value = '';
+      document.getElementById('iva-vat').value = '';
+      document.getElementById('iva-gross').value = '';
+    }
+
+    function resetIvaFields(e) {
+      if (e) e.stopPropagation();
+      clearIvaInputs();
+      setIvaRate(22, document.querySelectorAll('.rate-btn-widget')[3]);
+    }
+
+    /* BARRA MENU SIDEBAR */
     function toggleMenu(menuId, toggleButton) {
       const menu = document.getElementById(menuId);
       const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
