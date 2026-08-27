@@ -358,6 +358,7 @@
       'WRANGLER'
     ];
     availableLogos.push('ARMANI_EMPORIO', 'COLUMBIA', 'COTTONBELT', 'ONLYANDSONS', 'PANAM');
+    availableLogos.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
     const logoFileOverrides = {
       '269tebe': '269TEBE.PNG',
       'arnaldimilano': 'ARNALDIMILANO.PNG',
