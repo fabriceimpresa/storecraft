@@ -362,7 +362,7 @@
       display: flex;
       align-items: center;
       gap: 24px;
-      font-size: 1.75rem;
+      font-size: 1.95rem;
       margin-bottom: 6px;
     }
 
@@ -563,8 +563,20 @@
         </div>
       </div>
       <div class="form-group id-desc-group" id="descGroup1" style="display: none;">
-        <label style="color: #e5ba73;">Descrizione Articolo/Promo 1:</label>
-        <input type="text" id="desc1" value="Outlet Price" placeholder="Es. Outlet Price" oninput="updateCards()">
+        <label style="color: #e5ba73;">Seleziona Testo Descrittivo:</label>
+        <select id="presetDesc1" onchange="applyPreset(1)">
+          <option value="">-- Seleziona un testo rapido --</option>
+          <option value="Outlet Price">Outlet Price</option>
+          <option value="Final Price">Final Price</option>
+          <option value="Special Deal">Special Deal</option>
+          <option value="Made in Italy">Made in Italy</option>
+          <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+          <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+          <option value="Limited Edition">Limited Edition</option>
+          <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+        </select>
+        <label style="color: #e5ba73; margin-top: 0.6rem;">oppure Testo Descrittivo Libero:</label>
+        <input type="text" id="desc1" value="Outlet Price" placeholder="Inserisci o modifica il testo" oninput="updateCards()">
       </div>
       <div class="form-group">
         <label>Prezzi (Originale / Sconto / Finale):</label>
@@ -591,8 +603,20 @@
           </div>
         </div>
         <div class="form-group id-desc-group" id="descGroup2" style="display: none;">
-          <label style="color: #e5ba73;">Descrizione Articolo/Promo 2:</label>
-          <input type="text" id="desc2" value="Outlet Price" placeholder="Es. Outlet Price" oninput="updateCards()">
+          <label style="color: #e5ba73;">Seleziona Testo Descrittivo:</label>
+          <select id="presetDesc2" onchange="applyPreset(2)">
+            <option value="">-- Seleziona un testo rapido --</option>
+            <option value="Outlet Price">Outlet Price</option>
+            <option value="Final Price">Final Price</option>
+            <option value="Special Deal">Special Deal</option>
+            <option value="Made in Italy">Made in Italy</option>
+            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+            <option value="Limited Edition">Limited Edition</option>
+            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+          </select>
+          <label style="color: #e5ba73; margin-top: 0.6rem;">oppure Testo Descrittivo Libero:</label>
+          <input type="text" id="desc2" value="Outlet Price" placeholder="Inserisci o modifica il testo" oninput="updateCards()">
         </div>
         <div class="form-group">
           <label>Prezzi (Originale / Sconto / Finale):</label>
@@ -822,12 +846,21 @@
       updateCards();
     }
 
+    function applyPreset(cardIndex) {
+      const value = document.getElementById('presetDesc' + cardIndex).value;
+      if (value !== "") {
+        document.getElementById('desc' + cardIndex).value = value;
+        updateCards();
+      }
+    }
+
     function copyCard1ToCard2() {
       document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
       document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
       document.getElementById('left2').value = document.getElementById('left1').value;
       document.getElementById('right2').value = document.getElementById('right1').value;
       document.getElementById('desc2').value = document.getElementById('desc1').value;
+      document.getElementById('presetDesc2').value = document.getElementById('presetDesc1').value;
       document.getElementById('pOld2').value = document.getElementById('pOld1').value;
       document.getElementById('disc2').value = document.getElementById('disc1').value;
       document.getElementById('pNew2').value = document.getElementById('pNew1').value;
