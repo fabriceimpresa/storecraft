@@ -77,63 +77,78 @@
     .custom-logo-select:focus { box-shadow: 0 0 4px rgba(180, 139, 55, 0.5); }
 
     /* --- PREVIEW MAIN --- */
-    main { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; background: #0a0908; }
+    main { flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0908; }
 
-    /* Foglio A4 Landscape */
+    /* Griglia Foglio A4 Landscape */
     .a4-landscape {
-      width: 297mm;
-      height: 210mm;
+      width: 282mm;
+      height: 196mm;
       background: #ffffff;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       grid-template-rows: repeat(2, 1fr);
-      padding: 6mm;
-      gap: 3mm;
+      padding: 5mm 16mm;
+      gap: 3mm 0mm;
       transform-origin: top center;
     }
 
-    /* Modulo Singolo Cartellino - Bordo nero molto più spesso verso l'interno */
+    /* CARTELLINO */
     .cartellino {
-      border: 10px solid #000000; /* Spessore aumentato a 10px */
-      box-sizing: border-box;      /* Mantiene lo spessore verso l'interno */
-      padding: 3mm 2mm;
+      border: 8px solid #000000;
+      box-sizing: border-box;
+      padding: 2.5mm 1.5mm 1.5mm;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       text-align: center;
       background: #fff;
       color: #000;
       overflow: hidden;
       position: relative;
+      width: 59.5mm;
+      justify-self: center;
+      height: 100%;
     }
     .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
 
-    /* 1. Logo Brand (Posizionato in alto) */
-    .brand-box { height: 26mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 1mm; }
+    /* Brand Logo in alto */
+    .brand-box { height: 21mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5mm; flex-shrink: 0; }
     .brand-box img { max-height: 100%; max-width: 90%; object-fit: contain; filter: invert(56%) sepia(68%) saturate(382%) hue-rotate(9deg) brightness(92%) contrast(87%); }
-    .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 20pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+    .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 16pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.8px; }
 
-    /* 2. Descrizione Articolo */
-    .desc-box { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 20pt; color: #000; margin-top: 3mm; margin-bottom: 2mm; line-height: 1.1; word-break: break-word; }
+    /* Blocco centrale */
+    .card-body-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin: 0.5mm 0;
+    }
 
-    /* 3. Prezzo Orig + Sconto OPPURE Dicitura Preimpostata */
-    .price-details-row { margin-bottom: 1mm; min-height: 8mm; display: flex; align-items: center; justify-content: center; }
+    /* Descrizione in corsivo Bodoni */
+    .desc-box { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 18pt; color: #000; margin-bottom: 1.5mm; line-height: 1.1; word-break: break-word; }
+
+    .price-details-row { margin-bottom: 1mm; min-height: 5.5mm; display: flex; align-items: center; justify-content: center; }
     
-    .orig-discount { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 15pt; color: #000; display: flex; gap: 6px; align-items: center; }
+    /* Prezzo barrato e percentuale sconto oro */
+    .orig-discount { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 13pt; color: #000; display: flex; gap: 6px; align-items: center; white-space: nowrap; }
     .orig-discount .strike { text-decoration: line-through; }
-    .orig-discount .badge-sconto { color: var(--gold); font-size: 15pt; font-weight: bold; font-style: normal; }
+    .orig-discount .badge-sconto { color: var(--gold); font-size: 13pt; font-weight: bold; font-style: normal; }
     .currency { font-family: inherit; font-weight: inherit; }
 
-    .preset-label { font-family: 'Bodoni Std', serif; font-size: 15pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+    /* Dicitura Oro */
+    .preset-label { font-family: 'Bodoni Std', serif; font-size: 13.5pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
 
-    /* 4. Prezzo Finale */
-    .final-price { font-family: 'Bodoni Std', serif; font-weight: normal; font-size: 42pt; color: #000; line-height: 1; letter-spacing: -0.05em; margin-bottom: 2mm; }
+    /* Prezzo Finale in Bodoni Std - Ingrandito a 42pt */
+    .final-price { font-family: 'Bodoni Std', serif; font-weight: normal; font-size: 42pt; color: #000; line-height: 0.95; letter-spacing: -0.04em; white-space: nowrap; }
 
-    /* 5. Logo Footer (Luxury Outlet) */
-    .card-footer-logo { margin-top: auto; height: 20mm; display: flex; align-items: center; justify-content: center; width: 100%; padding-bottom: 1mm; }
-    .card-footer-logo img { max-height: 100%; max-width: 85%; object-fit: contain; }
+    /* Logo Aziendale in basso */
+    .card-footer-logo { height: 22mm; display: flex; align-items: center; justify-content: center; width: 100%; padding-bottom: 0.5mm; flex-shrink: 0; }
+    .card-footer-logo img { max-height: 100%; max-width: 98%; object-fit: contain; }
 
     /* NAVIGAZIONE */
     .app-close-btn {
@@ -189,15 +204,27 @@
       font-weight: 600;
     }
 
-    /* STAMPA */
+    /* REGOLA DI STAMPA */
     @media print {
       body { background: none; }
       aside { display: none !important; }
-      main { padding: 0; background: none; }
-      .a4-landscape { box-shadow: none; margin: 5mm auto 0; width: 297mm; height: 205mm; page-break-after: always; }
+      main { padding: 0; background: none; margin: 0; display: flex; align-items: center; justify-content: center; }
+      .a4-landscape { 
+        box-shadow: none; 
+        margin: 0 auto; 
+        width: 282mm !important; 
+        height: 196mm !important; 
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
       .cartellino.disabled { visibility: hidden; opacity: 0; }
       .app-close-btn, .floating-nav-box { display: none !important; }
-      @page { size: A4 landscape; margin: 0; }
+      @page { 
+        size: A4 landscape; 
+        margin: 4mm;
+      }
     }
   </style>
 </head>
@@ -398,9 +425,11 @@
 
         el.innerHTML = `
           <div class="brand-box">${logoContent}</div>
-          <div class="desc-box">${card.desc}</div>
-          <div class="price-details-row">${subRowContent}</div>
-          <div class="final-price"><span class="currency">€</span> ${card.priceFinal}</div>
+          <div class="card-body-center">
+            <div class="desc-box">${card.desc}</div>
+            <div class="price-details-row">${subRowContent}</div>
+            <div class="final-price"><span class="currency">€</span> ${card.priceFinal}</div>
+          </div>
           <div class="card-footer-logo">
             <img src="assets/img/logocartellini.png" onerror="this.style.display='none'" alt="Luxury Outlet">
           </div>
