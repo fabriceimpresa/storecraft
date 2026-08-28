@@ -112,7 +112,7 @@
     .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
 
     /* Brand Logo in alto (Filtro CSS Rosso per i loghi PNG) */
-    .brand-box { height: 19mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5mm; flex-shrink: 0; }
+    .brand-box { height: 19mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5mm; flex-shrink: 0; transform: translateY(-1mm); }
     .brand-box img { 
       max-height: 100%; 
       max-width: 90%; 
@@ -141,6 +141,7 @@
       line-height: 1.1;
       display: inline-block;
       white-space: nowrap;
+      transform: translateY(1mm);
     }
     .orig-price-box .strike-line {
       text-decoration: line-through;
@@ -153,6 +154,7 @@
       background: var(--sale-red);
       color: #ffffff;
       width: 98%;
+      height: 18mm;
       padding: 1.8mm 0.5mm;
       display: flex;
       flex-direction: column;
@@ -163,9 +165,9 @@
     }
     .sale-banner-title {
       font-family: 'Bodoni Std', serif;
-      font-weight: bold;
+      font-weight: 700;
       font-style: normal;
-      font-size: 13.5pt;
+      font-size: 15pt;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       line-height: 1.05;
@@ -173,9 +175,9 @@
     }
     .sale-banner-sub {
       font-family: 'Bodoni Std', serif;
-      font-weight: bold;
+      font-weight: 700;
       font-style: normal;
-      font-size: 18.5pt;
+      font-size: 20pt;
       line-height: 1.05;
       white-space: nowrap;
     }
@@ -284,8 +286,6 @@
   <aside>
     <div class="brand-title">CARTELLINI SALDI</div>
 
-    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio A4</button>
-
     <div class="tabs-grid" id="tabs-container"></div>
 
     <div class="editor-section">
@@ -328,6 +328,8 @@
         <select id="inp-custom-logo" class="custom-logo-select" onchange="applyCustomLogo()"></select>
       </div>
     </div>
+
+    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio A4</button>
   </aside>
 
   <main>

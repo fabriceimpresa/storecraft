@@ -308,6 +308,15 @@
       width: 20%;
     }
 
+    .claim-flag {
+      width: 21mm;
+      max-height: 13mm;
+      object-fit: contain;
+    }
+
+    .claim-flag-left { transform: translateX(-3mm); }
+    .claim-flag-right { transform: translateX(3mm); }
+
     .red-box {
       width: 56%;
       height: 29mm;
@@ -453,6 +462,39 @@
       transform: scale(1.1);
     }
 
+    .made-in-italy-btn {
+      position: fixed;
+      top: 4.5rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 7px;
+      background: #ffffff;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .made-in-italy-btn-lower { top: calc(50% + 1rem); }
+
+    .made-in-italy-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .made-in-italy-btn:hover,
+    .made-in-italy-btn[aria-pressed="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
     .floating-nav-box {
       position: fixed;
       bottom: 1.5rem; right: 1.5rem;
@@ -492,7 +534,7 @@
         overflow: hidden !important;
         -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
       }
-      body::before, .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+      body::before, .sidebar, .app-close-btn, .made-in-italy-btn, .floating-nav-box { display: none !important; }
       .print-sheet {
         box-shadow: none; padding: 8mm 10mm;
         margin: 5mm auto 0 !important;
@@ -506,6 +548,12 @@
 
   <!-- Pulsanti e Riquadri Navigazione UI -->
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva i claim Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+  <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva i claim Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>
@@ -709,6 +757,7 @@
   </div>
 
   <script>
+    const madeInItalyClaimsActive = { 1: false, 2: false };
     const LOGO_FILES = [
       "269TEBE.PNG","ABIDDIKKIA.png","AFTERLABEL.png","AIRWALK.png","ALESSANDRODELLACQUA.png",
       "ALEXANDERMCQUEEN.png","ARMANI.png","ARMANI_COLLEZIONI.png","ARMANI_EXCHANGE.png",
@@ -941,6 +990,12 @@
       window.print();
     }
 
+    function toggleMadeInItaly(cardIndex) {
+      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+      document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
+      updateCards();
+    }
+
     function updateCards() {
       // Cartello 1
       const b1 = document.getElementById('brandSelect1').value;
@@ -955,8 +1010,10 @@
       else if (b1Bis) document.getElementById('cardLogo1Bis').src = LOGO_PATH + b1Bis;
       else document.getElementById('cardLogo1Bis').src = LOGO_PATH + DEFAULT_LOGO;
 
-      document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
-      document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
+      const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      document.getElementById('headLeft1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>');
+      document.getElementById('headRight1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>');
       
       document.getElementById('descDisplay1_1').innerText = document.getElementById('desc1_1').value;
       const pn1_1 = document.getElementById('pNew1_1').value;
@@ -983,8 +1040,8 @@
       else if (b2Bis) document.getElementById('cardLogo2Bis').src = LOGO_PATH + b2Bis;
       else document.getElementById('cardLogo2Bis').src = LOGO_PATH + DEFAULT_LOGO;
 
-      document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
-      document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
+      document.getElementById('headLeft2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>');
+      document.getElementById('headRight2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>');
       
       document.getElementById('descDisplay2_1').innerText = document.getElementById('desc2_1').value;
       const pn2_1 = document.getElementById('pNew2_1').value;
