@@ -323,7 +323,7 @@
       <div class="brand">STORE // CRAFT</div>
       
       <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
           <span>Genera Cartelli</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
         <div class="menu-items" id="menu-generators">
@@ -337,7 +337,7 @@
       </div>
 
       <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-tickets" onclick="toggleMenu('menu-tickets', this)">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tickets" onclick="toggleMenu('menu-tickets', this)">
           <span>Genera Cartellini</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
         <div class="menu-items" id="menu-tickets">
@@ -347,7 +347,7 @@
       </div>
 
       <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
           <span>Genera Loghi</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
         <div class="menu-items" id="menu-logos">
@@ -357,7 +357,7 @@
       </div>
 
       <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="true" aria-controls="menu-tools" onclick="toggleMenu('menu-tools', this)">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tools" onclick="toggleMenu('menu-tools', this)">
           <span>Utilità Cassa</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
         <div class="menu-items" id="menu-tools">
@@ -732,7 +732,7 @@
     function restoreMenus() {
       document.querySelectorAll('.menu-toggle').forEach(toggleButton => {
         const menuId = toggleButton.getAttribute('aria-controls');
-        const isExpanded = localStorage.getItem(`menu-${menuId}`) !== 'false';
+        const isExpanded = localStorage.getItem(`menu-${menuId}`) === 'true';
         toggleButton.setAttribute('aria-expanded', String(isExpanded));
         document.getElementById(menuId).classList.toggle('is-collapsed', !isExpanded);
       });
