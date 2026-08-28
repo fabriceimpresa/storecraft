@@ -65,6 +65,8 @@
 
     .btn-print { width: 100%; padding: 0.75rem; background: var(--gold); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 1.2rem; }
     .btn-print:hover { background: var(--accent-hover); }
+    .btn-discount { width: 100%; padding: 0.75rem; background: transparent; color: var(--gold); font-weight: 700; border: 1px solid var(--gold); border-radius: 4px; cursor: pointer; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.7px; transition: all 0.2s; margin-bottom: 1.2rem; }
+    .btn-discount:hover, .btn-discount.active { background: var(--gold); color: #000; }
 
     .custom-logos-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .custom-logos-title { font-size: 0.75rem; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
@@ -119,7 +121,11 @@
       object-fit: contain; 
       filter: invert(18%) sepia(88%) saturate(6240%) hue-rotate(352deg) brightness(95%) contrast(118%);
     }
+    .cartellino.is-black-event .brand-box img {
+      filter: invert(56%) sepia(68%) saturate(382%) hue-rotate(9deg) brightness(92%) contrast(87%);
+    }
     .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 16pt; font-weight: bold; color: var(--sale-red); text-transform: uppercase; letter-spacing: 0.8px; }
+    .cartellino.is-black-event .brand-text-fallback { color: #b48b37; }
 
     /* Blocco centrale */
     .card-body-center {
@@ -133,6 +139,13 @@
     }
 
     /* Prezzo Originario Barrato in Bodoni Std Roman */
+    .orig-price-row {
+      min-height: 7mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5mm;
+    }
     .orig-price-box {
       font-family: 'Bodoni Std', serif;
       font-weight: normal;
@@ -143,10 +156,35 @@
       white-space: nowrap;
       transform: translateY(1mm);
     }
+    .orig-price-row.has-discount .orig-price-box {
+      transform: translateY(0);
+      animation: shift-original-price 0.3s ease-out both;
+    }
     .orig-price-box .strike-line {
       text-decoration: line-through;
       text-decoration-color: #d90429;
       text-decoration-thickness: 2.5px;
+    }
+    .cartellino.is-black-event .strike-line {
+      text-decoration-color: #b48b37;
+    }
+    .discount-rate {
+      color: var(--sale-red);
+      font-family: 'Bodoni Std', serif;
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1.1;
+      white-space: nowrap;
+      animation: reveal-discount-rate 0.3s ease-out both;
+    }
+    .cartellino.is-black-event .discount-rate { color: var(--gold); }
+    @keyframes shift-original-price {
+      from { transform: translate(5mm, 0); }
+      to { transform: translate(0, 0); }
+    }
+    @keyframes reveal-discount-rate {
+      from { opacity: 0; transform: translateX(4mm); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     /* Riquadro Rosso Saldi - Testi Ingranditi e in Bold */
@@ -163,6 +201,9 @@
       border-radius: 0px;
       margin: 1mm 0;
     }
+    .sale-banner-box.is-black-event {
+      background: #000000;
+    }
     .sale-banner-title {
       font-family: 'Bodoni Std', serif;
       font-weight: 700;
@@ -173,11 +214,16 @@
       line-height: 1.05;
       margin-bottom: 0.5mm;
     }
+    .sale-banner-title:only-child,
+    .sale-banner-sub:only-child {
+      margin-bottom: 0;
+      font-size: 23pt;
+    }
     .sale-banner-sub {
       font-family: 'Bodoni Std', serif;
       font-weight: 700;
       font-style: normal;
-      font-size: 20pt;
+      font-size: 22pt;
       line-height: 1.05;
       white-space: nowrap;
     }
@@ -287,6 +333,7 @@
     <div class="brand-title">CARTELLINI SALDI</div>
 
     <div class="tabs-grid" id="tabs-container"></div>
+    <button type="button" class="btn-discount" id="toggle-discount" onclick="toggleDiscount()">✨ + Aggiungi Aliquota Sconto</button>
 
     <div class="editor-section">
       <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
@@ -301,18 +348,40 @@
         <input type="text" id="inp-orig" class="form-control" placeholder="99,00" oninput="updateCurrentCard()">
       </div>
 
+      <div class="form-group" id="discount-rate-group" hidden>
+        <label>Aliquota Sconto</label>
+        <input type="text" id="inp-discount-rate" class="form-control" placeholder="-50%" oninput="updateCurrentCard()">
+      </div>
+
       <div class="form-group">
-        <label>Dicitura Saldi (Intestazione Riquadro)</label>
-        <select id="inp-sale-title" class="form-control" onchange="updateCurrentCard()">
+        <label>Stagionalità / Evento</label>
+        <select id="inp-sale-title" class="form-control" onchange="handleSaleTitleChange()">
+          <option value="">— LASCIA IL CAMPO VUOTO —</option>
           <option value="SUMMER SALE">SUMMER SALE</option>
           <option value="WINTER SALE">WINTER SALE</option>
           <option value="SPECIAL SALE">SPECIAL SALE</option>
+          <option value="SPRING SALE">SPRING SALE</option>
+          <option value="BLACK FRIDAY">BLACK FRIDAY</option>
+          <option value="BLACK WEEK">BLACK WEEK</option>
+          <option value="X-MAS SALE">X-MAS SALE</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label>Percentuale Sconto / Testo Riquadro</label>
-        <input type="text" id="inp-sale-sub" class="form-control" placeholder="50% + 50%" oninput="updateCurrentCard()">
+        <label>Promozione</label>
+        <select id="inp-sale-sub" class="form-control" onchange="updateCurrentCard()">
+          <option value="">— LASCIA IL CAMPO VUOTO —</option>
+          <option value="50% + 50%">50% + 50%</option>
+          <option value="UP TO -70%">UP TO -70%</option>
+          <option value="EXTRA DISCOUNT">EXTRA DISCOUNT</option>
+          <option value="OUTLET PRICE">OUTLET PRICE</option>
+          <option value="FINAL PRICE">FINAL PRICE</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Oppure testo libero</label>
+        <input type="text" id="inp-sale-sub-custom" class="form-control" placeholder="Lascia vuoto per usare il menu" oninput="updateCurrentCard()">
       </div>
 
       <div class="form-group">
@@ -338,17 +407,18 @@
 
   <script>
     const cardsData = [
-      { id: 1, enabled: true, brand: 'DIXIE', customLogoUrl: '', priceOrig: '99,00', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '24,70' },
-      { id: 2, enabled: true, brand: 'PINKO', customLogoUrl: '', priceOrig: '350,00', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '150,00' },
-      { id: 3, enabled: true, brand: 'FELEPPA', customLogoUrl: '', priceOrig: '210,00', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', priceFinal: '73,50' },
-      { id: 4, enabled: true, brand: 'GAELLE', customLogoUrl: '', priceOrig: '120,00', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '30,00' },
-      { id: 5, enabled: true, brand: 'WEILI ZHENG', customLogoUrl: '', priceOrig: '180,00', saleTitle: 'SPECIAL SALE', saleSub: '50% + 50%', priceFinal: '72,00' },
-      { id: 6, enabled: true, brand: 'HAVE ONE', customLogoUrl: '', priceOrig: '89,00', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '22,25' },
-      { id: 7, enabled: true, brand: 'MEIMEIJ', customLogoUrl: '', priceOrig: '260,00', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', priceFinal: '65,00' },
-      { id: 8, enabled: true, brand: 'TWINSET', customLogoUrl: '', priceOrig: '190,00', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '47,50' }
+      { id: 1, enabled: true, brand: 'DIXIE', customLogoUrl: '', priceOrig: '99,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '24,70' },
+      { id: 2, enabled: true, brand: 'PINKO', customLogoUrl: '', priceOrig: '350,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '150,00' },
+      { id: 3, enabled: true, brand: 'FELEPPA', customLogoUrl: '', priceOrig: '210,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '73,50' },
+      { id: 4, enabled: true, brand: 'GAELLE', customLogoUrl: '', priceOrig: '120,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '30,00' },
+      { id: 5, enabled: true, brand: 'WEILI ZHENG', customLogoUrl: '', priceOrig: '180,00', discountRate: '-50%', saleTitle: 'SPECIAL SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '72,00' },
+      { id: 6, enabled: true, brand: 'HAVE ONE', customLogoUrl: '', priceOrig: '89,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '22,25' },
+      { id: 7, enabled: true, brand: 'MEIMEIJ', customLogoUrl: '', priceOrig: '260,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '65,00' },
+      { id: 8, enabled: true, brand: 'TWINSET', customLogoUrl: '', priceOrig: '190,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '47,50' }
     ];
 
     let currentCardIdx = 0;
+    let showDiscount = false;
     const availableLogos = [
       '269TEBE', 'ABIDDIKKIA', 'AFTERLABEL', 'AIRWALK', 'ALESSANDRODELLACQUA',
       'ALEXANDERMCQUEEN', 'ARMANI', 'ARMANI_COLLEZIONI', 'ARMANI_EXCHANGE',
@@ -432,7 +502,8 @@
 
       cardsData.forEach((card) => {
         const el = document.createElement('div');
-        el.className = `cartellino ${!card.enabled ? 'disabled' : ''}`;
+        const isBlackEvent = ['BLACK WEEK', 'BLACK FRIDAY'].includes(card.saleTitle);
+        el.className = `cartellino ${!card.enabled ? 'disabled' : ''} ${isBlackEvent ? 'is-black-event' : ''}`;
         el.id = `card-view-${card.id}`;
 
         let logoContent = `<div class="brand-text-fallback">${card.brand}</div>`;
@@ -447,21 +518,47 @@
         el.innerHTML = `
           <div class="brand-box">${logoContent}</div>
           <div class="card-body-center">
-            <div class="orig-price-box">
-              <span class="strike-line">€ ${card.priceOrig || '0,00'}</span>
+            <div class="orig-price-row ${showDiscount ? 'has-discount' : ''}">
+              <div class="orig-price-box">
+                <span class="strike-line">€ ${card.priceOrig || '0,00'}</span>
+              </div>
+              ${showDiscount && card.discountRate ? `<span class="discount-rate">${card.discountRate}</span>` : ''}
             </div>
-            <div class="sale-banner-box">
-              <div class="sale-banner-title">${card.saleTitle || 'SUMMER SALE'}</div>
-              <div class="sale-banner-sub">${card.saleSub || '50% + 50%'}</div>
+            <div class="sale-banner-box ${['BLACK WEEK', 'BLACK FRIDAY'].includes(card.saleTitle) ? 'is-black-event' : ''}">
+              ${card.saleTitle ? `<div class="sale-banner-title">${card.saleTitle}</div>` : ''}
+              ${card.saleSubCustom.trim() || card.saleSub ? `<div class="sale-banner-sub">${card.saleSubCustom.trim() || card.saleSub}</div>` : ''}
             </div>
             <div class="final-price">€ ${card.priceFinal || '0,00'}</div>
           </div>
           <div class="card-footer-logo">
-            <img src="assets/img/loghinored.png" onerror="this.style.display='none'" alt="Luxury Outlet Red">
+            <img src="assets/img/${isBlackEvent ? 'logocartellini.png' : 'loghinored.png'}" onerror="this.style.display='none'" alt="Luxury Outlet">
           </div>
         `;
 
         grid.appendChild(el);
+      });
+
+      fitSaleBannerText();
+    }
+
+    function fitSaleBannerText() {
+      document.querySelectorAll('.sale-banner-title, .sale-banner-sub').forEach((element) => {
+        const isSingleLine = element.parentElement.children.length === 1;
+        const maximumSize = (isSingleLine ? 28 : element.classList.contains('sale-banner-sub') ? 22 : 15) * (96 / 72);
+        const minimumSize = 10 * (96 / 72);
+        const maximumWidth = element.parentElement.clientWidth * 0.82;
+        const style = getComputedStyle(element);
+        const context = document.createElement('canvas').getContext('2d');
+        let fontSize = maximumSize;
+
+        while (fontSize > minimumSize) {
+          context.font = `${style.fontStyle} ${style.fontWeight} ${fontSize}px ${style.fontFamily}`;
+          if (context.measureText(element.textContent).width <= maximumWidth) {
+            break;
+          }
+          fontSize -= 0.5;
+        }
+        element.style.fontSize = `${fontSize}px`;
       });
     }
 
@@ -481,8 +578,10 @@
       document.getElementById('custom-logo-label').innerText = `Logo Personalizzato Cartellino #${card.id}`;
       document.getElementById('inp-brand').value = card.brand;
       document.getElementById('inp-orig').value = card.priceOrig;
-      document.getElementById('inp-sale-title').value = card.saleTitle || 'SUMMER SALE';
-      document.getElementById('inp-sale-sub').value = card.saleSub || '50% + 50%';
+      document.getElementById('inp-discount-rate').value = card.discountRate || '';
+      document.getElementById('inp-sale-title').value = card.saleTitle;
+      document.getElementById('inp-sale-sub').value = card.saleSub;
+      document.getElementById('inp-sale-sub-custom').value = card.saleSubCustom || '';
       document.getElementById('inp-final').value = card.priceFinal;
       document.getElementById('inp-custom-logo').value = card.customLogoUrl || '';
     }
@@ -491,10 +590,28 @@
       const card = cardsData[currentCardIdx];
       card.brand = document.getElementById('inp-brand').value;
       card.priceOrig = document.getElementById('inp-orig').value;
+      card.discountRate = document.getElementById('inp-discount-rate').value;
       card.saleTitle = document.getElementById('inp-sale-title').value;
       card.saleSub = document.getElementById('inp-sale-sub').value;
+      card.saleSubCustom = document.getElementById('inp-sale-sub-custom').value;
       card.priceFinal = document.getElementById('inp-final').value;
 
+      renderGrid();
+    }
+
+    function handleSaleTitleChange() {
+      const saleTitle = document.getElementById('inp-sale-title').value;
+      if (['BLACK WEEK', 'BLACK FRIDAY'].includes(saleTitle)) {
+        document.getElementById('inp-sale-sub').value = '';
+        document.getElementById('inp-sale-sub-custom').value = '';
+      }
+      updateCurrentCard();
+    }
+
+    function toggleDiscount() {
+      showDiscount = !showDiscount;
+      document.getElementById('discount-rate-group').hidden = !showDiscount;
+      document.getElementById('toggle-discount').classList.toggle('active', showDiscount);
       renderGrid();
     }
 
