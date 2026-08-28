@@ -23,7 +23,14 @@
     body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
     aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
-    .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 1.5rem; text-align: center; }
+    .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 1.5rem; text-align: center; background: transparent; border: none; cursor: pointer; }
+    .brand:hover, .brand:focus-visible { animation: brand-hover 0.6s ease-in-out; outline: none; }
+
+    @keyframes brand-hover {
+      0%, 100% { transform: translateY(0) scale(1); }
+      45% { transform: translateY(-3px) scale(1.05); }
+      70% { transform: translateY(0) scale(0.98); }
+    }
     
     .menu-label { 
       font-size: 0.7rem; 
@@ -105,7 +112,11 @@
     }
 
     main { flex: 1; padding: 2.5rem 3rem; overflow-y: auto; position: relative; }
-    header { border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    .home-mark { position: fixed; top: 0.5rem; left: calc(280px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+    body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
+    .home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
+    .home-mark-icon { font-size: 1.2rem; line-height: 1; }
     header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
     header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 
@@ -320,7 +331,7 @@
 
   <aside>
     <div>
-      <div class="brand">STORE // CRAFT</div>
+      <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
       
       <div class="menu-group">
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
@@ -381,6 +392,7 @@
 
   <main id="main-content">
     <header>
+      <button class="home-mark" type="button" onclick="returnToHomeTop()" aria-label="Torna all'inizio della home"><span class="home-mark-icon" aria-hidden="true">⌂</span><span>HOME</span></button>
       <h1>Visual Merchandising & Cassa</h1>
       <p>Crea la grafica promozionale e calcola i prezzi in tempo reale.</p>
     </header>
@@ -473,11 +485,11 @@
         <!-- Cartellini Vetrina Promozionali -->
         <a href="cartellinipromo.html" class="card">
           <div class="preview">
-            <img class="preview-image" src="assets/img/cartellini.png" alt="Anteprima Cartellini Vetrina Promozionali">
+            <img class="preview-image" src="assets/img/cartellinipromo.png" alt="Anteprima Cartellini Vetrina Promozionali">
           </div>
           <div class="card-body">
             <h3>Cartellini Vetrina Promozionali</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione&nbsp;&nbsp; | &nbsp;&nbsp;Formato Saldi</p>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione&nbsp;&nbsp; | &nbsp;&nbsp;50% + 50% Saldi</p>
           </div>
         </a>
       </div>
@@ -728,6 +740,14 @@
       menu.classList.toggle('is-collapsed', isExpanded);
       localStorage.setItem(`menu-${menuId}`, String(!isExpanded));
     }
+
+    function returnToHomeTop() {
+      document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('main-content').addEventListener('scroll', function() {
+      document.body.classList.toggle('is-scrolled', this.scrollTop > 8);
+    });
 
     function restoreMenus() {
       document.querySelectorAll('.menu-toggle').forEach(toggleButton => {
