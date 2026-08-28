@@ -350,7 +350,7 @@
 
       <div class="form-group" id="discount-rate-group" hidden>
         <label>Aliquota Sconto</label>
-        <input type="text" id="inp-discount-rate" class="form-control" placeholder="-50%" oninput="updateCurrentCard()">
+        <input type="text" id="inp-discount-rate" class="form-control" placeholder="-50%" oninput="formatDiscountInput(this); updateCurrentCard()">
       </div>
 
       <div class="form-group">
@@ -597,6 +597,15 @@
       card.priceFinal = document.getElementById('inp-final').value;
 
       renderGrid();
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) {
+        return;
+      }
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
     }
 
     function handleSaleTitleChange() {

@@ -135,7 +135,7 @@
         </div>
         <div class="form-group" style="flex:1;">
           <label>Sconto (%)</label>
-          <input type="text" id="inputDiscount" class="form-control" value="-67%" oninput="updateLabel()">
+          <input type="text" id="inputDiscount" class="form-control" value="-67%" oninput="formatDiscountInput(this); updateLabel()">
         </div>
       </div>
 
@@ -292,6 +292,15 @@
         option.textContent = cleanBrandName(fileName);
         select.appendChild(option);
       });
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) {
+        return;
+      }
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
     }
 
     function updateLabel() {

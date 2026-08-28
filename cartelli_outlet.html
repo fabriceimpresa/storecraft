@@ -630,7 +630,7 @@
         <label>Prezzi (Originale / Sconto / Finale):</label>
         <div style="display:flex; gap:5px;">
           <input type="text" id="pOld1" value="395,00" placeholder="395,00" oninput="updateCards()">
-          <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="updateCards()">
+          <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="formatDiscountInput(this); updateCards()">
           <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
         </div>
       </div>
@@ -670,7 +670,7 @@
           <label>Prezzi (Originale / Sconto / Finale):</label>
           <div style="display:flex; gap:5px;">
             <input type="text" id="pOld2" value="395,00" placeholder="395,00" oninput="updateCards()">
-            <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="updateCards()">
+            <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="formatDiscountInput(this); updateCards()">
             <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
           </div>
         </div>
@@ -977,6 +977,15 @@
       document.getElementById('modeSelect').value = count.toString();
       toggleCardMode();
       window.print();
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) {
+        return;
+      }
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
     }
 
     function updateCards() {
