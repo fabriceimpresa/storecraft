@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cartellini Vetrina - Saldi</title>
+  <title>Cartellini Promo</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -62,6 +62,9 @@
     .form-group label { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; }
     .form-control { width: 100%; padding: 0.5rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.82rem; outline: none; }
     .form-control:focus { border-color: var(--gold); }
+    .currency-input-group { position: relative; }
+    .currency-input-group .currency-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #fff; font-weight: normal; font-size: 0.82rem; line-height: 1; pointer-events: none; }
+    .currency-input-group input { padding-left: 26px; }
 
     .btn-print { width: 100%; padding: 0.75rem; background: var(--gold); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 1.2rem; }
     .btn-print:hover { background: var(--accent-hover); }
@@ -133,17 +136,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-around;
+      justify-content: flex-start;
       width: 100%;
       margin: 0.5mm 0;
+      gap: 0.8mm;
     }
 
     /* Prezzo Originario Barrato in Bodoni Std Roman */
-    .orig-price-row {
-      min-height: 7mm;
+    .orig-price-row,
+    .article-placeholder {
+      min-height: 9mm;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .orig-price-row {
       gap: 2.5mm;
     }
     .orig-price-box {
@@ -176,6 +183,19 @@
       line-height: 1.1;
       white-space: nowrap;
       animation: reveal-discount-rate 0.3s ease-out both;
+    }
+    .article-placeholder {
+      padding-bottom: 0.5mm;
+    }
+    .article-desc {
+      font-family: 'Bodoni Std', serif;
+      font-style: italic;
+      font-size: 18pt;
+      color: #000;
+      line-height: 1.1;
+      margin: 0;
+      text-transform: none;
+      transform: translateY(0.6mm);
     }
     .cartellino.is-black-event .discount-rate { color: var(--gold); }
     @keyframes shift-original-price {
@@ -330,10 +350,11 @@
   </div>
 
   <aside>
-    <div class="brand-title">CARTELLINI SALDI</div>
+    <div class="brand-title">CARTELLINI PROMO</div>
 
     <div class="tabs-grid" id="tabs-container"></div>
     <button type="button" class="btn-discount" id="toggle-discount" onclick="toggleDiscount()">✨ + Aggiungi Aliquota Sconto</button>
+    <button type="button" class="btn-discount" id="toggle-description" onclick="toggleDescription()">+ INSERISCI DESCRIZIONE</button>
 
     <div class="editor-section">
       <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
@@ -344,13 +365,43 @@
       </div>
 
       <div class="form-group">
-        <label>Prezzo Originario (€)</label>
-        <input type="text" id="inp-orig" class="form-control" placeholder="99,00" oninput="updateCurrentCard()">
+        <label>Prezzo Originario</label>
+        <div class="currency-input-group">
+          <span class="currency-prefix">€</span>
+          <input type="text" id="inp-orig" class="form-control" placeholder="99,00" oninput="updateCurrentCard()">
+        </div>
       </div>
 
       <div class="form-group" id="discount-rate-group" hidden>
         <label>Aliquota Sconto</label>
         <input type="text" id="inp-discount-rate" class="form-control" placeholder="-50%" oninput="formatDiscountInput(this); updateCurrentCard()">
+      </div>
+
+      <div class="form-group" id="description-group" hidden>
+        <label>Articolo</label>
+        <select id="inp-description-article" class="form-control" onchange="updateCurrentCard()">
+          <option value="Bermuda">Bermuda</option>
+          <option value="Borsa">Borsa</option>
+          <option value="Blazer">Blazer</option>
+          <option value="Blusa">Blusa</option>
+          <option value="Camicia">Camicia</option>
+          <option value="Cappello">Cappello</option>
+          <option value="Foulard">Foulard</option>
+          <option value="Gilet">Gilet</option>
+          <option value="Giacca">Giacca</option>
+          <option value="Giubbino">Giubbino</option>
+          <option value="Gonna">Gonna</option>
+          <option value="Maglia">Maglia</option>
+          <option value="Pantalone">Pantalone</option>
+          <option value="Scarpe">Scarpe</option>
+          <option value="Sciarpa">Sciarpa</option>
+          <option value="Shorts">Shorts</option>
+          <option value="T-Shirt">T-Shirt</option>
+        </select>
+      </div>
+      <div class="form-group" id="description-custom-group" hidden>
+        <label>Testo libero</label>
+        <input type="text" id="inp-description-custom" class="form-control" placeholder="Inserisci testo personalizzato" oninput="updateCurrentCard()">
       </div>
 
       <div class="form-group">
@@ -363,6 +414,7 @@
           <option value="SPRING SALE">SPRING SALE</option>
           <option value="BLACK FRIDAY">BLACK FRIDAY</option>
           <option value="BLACK WEEK">BLACK WEEK</option>
+          <option value="LAST WEEK">LAST WEEK</option>
           <option value="X-MAS SALE">X-MAS SALE</option>
         </select>
       </div>
@@ -385,8 +437,11 @@
       </div>
 
       <div class="form-group">
-        <label>Prezzo Finale (€)</label>
-        <input type="text" id="inp-final" class="form-control" placeholder="150,00" oninput="updateCurrentCard()">
+        <label>Prezzo Finale</label>
+        <div class="currency-input-group">
+          <span class="currency-prefix">€</span>
+          <input type="text" id="inp-final" class="form-control" placeholder="150,00" oninput="updateCurrentCard()">
+        </div>
       </div>
     </div>
 
@@ -407,18 +462,17 @@
 
   <script>
     const cardsData = [
-      { id: 1, enabled: true, brand: 'DIXIE', customLogoUrl: '', priceOrig: '99,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '24,70' },
-      { id: 2, enabled: true, brand: 'PINKO', customLogoUrl: '', priceOrig: '350,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '150,00' },
-      { id: 3, enabled: true, brand: 'FELEPPA', customLogoUrl: '', priceOrig: '210,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '73,50' },
-      { id: 4, enabled: true, brand: 'GAELLE', customLogoUrl: '', priceOrig: '120,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '30,00' },
-      { id: 5, enabled: true, brand: 'WEILI ZHENG', customLogoUrl: '', priceOrig: '180,00', discountRate: '-50%', saleTitle: 'SPECIAL SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '72,00' },
-      { id: 6, enabled: true, brand: 'HAVE ONE', customLogoUrl: '', priceOrig: '89,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '22,25' },
-      { id: 7, enabled: true, brand: 'MEIMEIJ', customLogoUrl: '', priceOrig: '260,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '65,00' },
-      { id: 8, enabled: true, brand: 'TWINSET', customLogoUrl: '', priceOrig: '190,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '47,50' }
+      { id: 1, enabled: true, brand: 'DIXIE', customLogoUrl: '', priceOrig: '99,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '24,70', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 2, enabled: true, brand: 'PINKO', customLogoUrl: '', priceOrig: '350,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '150,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 3, enabled: true, brand: 'FELEPPA', customLogoUrl: '', priceOrig: '210,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '73,50', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 4, enabled: true, brand: 'GAELLE', customLogoUrl: '', priceOrig: '120,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '30,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 5, enabled: true, brand: 'WEILI ZHENG', customLogoUrl: '', priceOrig: '180,00', discountRate: '-50%', saleTitle: 'SPECIAL SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '72,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 6, enabled: true, brand: 'HAVE ONE', customLogoUrl: '', priceOrig: '89,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '22,25', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 7, enabled: true, brand: 'MEIMEIJ', customLogoUrl: '', priceOrig: '260,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '65,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
+      { id: 8, enabled: true, brand: 'TWINSET', customLogoUrl: '', priceOrig: '190,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '47,50', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' }
     ];
 
     let currentCardIdx = 0;
-    let showDiscount = false;
     const availableLogos = [
       '269TEBE', 'ABIDDIKKIA', 'AFTERLABEL', 'AIRWALK', 'ALESSANDRODELLACQUA',
       'ALEXANDERMCQUEEN', 'ARMANI', 'ARMANI_COLLEZIONI', 'ARMANI_EXCHANGE',
@@ -518,12 +572,18 @@
         el.innerHTML = `
           <div class="brand-box">${logoContent}</div>
           <div class="card-body-center">
-            <div class="orig-price-row ${showDiscount ? 'has-discount' : ''}">
-              <div class="orig-price-box">
-                <span class="strike-line">€ ${card.priceOrig || '0,00'}</span>
+            ${card.showDescription ? `
+              <div class="article-placeholder">
+                <div class="article-desc">${formatDescriptionText(card.descriptionText.trim() || card.descriptionArticle)}</div>
               </div>
-              ${showDiscount && card.discountRate ? `<span class="discount-rate">${card.discountRate}</span>` : ''}
-            </div>
+            ` : `
+              <div class="orig-price-row ${card.showDiscount ? 'has-discount' : ''}">
+                <div class="orig-price-box">
+                  <span class="strike-line">€ ${card.priceOrig || '0,00'}</span>
+                </div>
+                ${card.showDiscount && card.discountRate ? `<span class="discount-rate">${card.discountRate}</span>` : ''}
+              </div>
+            `}
             <div class="sale-banner-box ${['BLACK WEEK', 'BLACK FRIDAY'].includes(card.saleTitle) ? 'is-black-event' : ''}">
               ${card.saleTitle ? `<div class="sale-banner-title">${card.saleTitle}</div>` : ''}
               ${card.saleSubCustom.trim() || card.saleSub ? `<div class="sale-banner-sub">${card.saleSubCustom.trim() || card.saleSub}</div>` : ''}
@@ -568,8 +628,13 @@
 
       const savedLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
       const customOptions = '<option value="">-- Nessun Logo Personalizzato --</option>' +
-        savedLogos.map((logo, index) => `<option value="${logo.data}">${logo.name || 'Logo Custom #' + (index + 1)}</option>`).join('');
+        savedLogos.map((logo, index) => `<option value="${logo.data}">★ ${logo.name || 'Logo Custom #' + (index + 1)}</option>`).join('');
       document.getElementById('inp-custom-logo').innerHTML = customOptions;
+    }
+
+    function updateDescriptionButtonText(card) {
+      const toggleDescriptionBtn = document.getElementById('toggle-description');
+      toggleDescriptionBtn.textContent = card.showDescription ? '- ELIMINA DESCRIZIONE' : '+ INSERISCI DESCRIZIONE';
     }
 
     function loadEditorData() {
@@ -583,7 +648,15 @@
       document.getElementById('inp-sale-sub').value = card.saleSub;
       document.getElementById('inp-sale-sub-custom').value = card.saleSubCustom || '';
       document.getElementById('inp-final').value = card.priceFinal;
+      document.getElementById('inp-description-article').value = card.descriptionArticle || 'Giacca';
+      document.getElementById('inp-description-custom').value = card.descriptionText || '';
       document.getElementById('inp-custom-logo').value = card.customLogoUrl || '';
+      document.getElementById('discount-rate-group').hidden = !card.showDiscount;
+      document.getElementById('description-group').hidden = !card.showDescription;
+      document.getElementById('description-custom-group').hidden = !card.showDescription;
+      document.getElementById('toggle-discount').classList.toggle('active', card.showDiscount);
+      document.getElementById('toggle-description').classList.toggle('active', card.showDescription);
+      updateDescriptionButtonText(card);
     }
 
     function updateCurrentCard() {
@@ -595,8 +668,17 @@
       card.saleSub = document.getElementById('inp-sale-sub').value;
       card.saleSubCustom = document.getElementById('inp-sale-sub-custom').value;
       card.priceFinal = document.getElementById('inp-final').value;
+      card.descriptionArticle = document.getElementById('inp-description-article').value;
+      card.descriptionText = document.getElementById('inp-description-custom').value;
 
       renderGrid();
+    }
+
+    function formatDescriptionText(value) {
+      const text = value.trim();
+      if (!text) return '';
+      const normalized = text.toLowerCase();
+      return normalized.charAt(0).toUpperCase() + normalized.slice(1);
     }
 
     function formatDiscountInput(input) {
@@ -618,9 +700,23 @@
     }
 
     function toggleDiscount() {
-      showDiscount = !showDiscount;
-      document.getElementById('discount-rate-group').hidden = !showDiscount;
-      document.getElementById('toggle-discount').classList.toggle('active', showDiscount);
+      const card = cardsData[currentCardIdx];
+      card.showDiscount = !card.showDiscount;
+      document.getElementById('discount-rate-group').hidden = !card.showDiscount;
+      document.getElementById('toggle-discount').classList.toggle('active', card.showDiscount);
+      renderGrid();
+    }
+
+    function toggleDescription() {
+      const card = cardsData[currentCardIdx];
+      card.showDescription = !card.showDescription;
+      document.getElementById('description-group').hidden = !card.showDescription;
+      document.getElementById('description-custom-group').hidden = !card.showDescription;
+      document.getElementById('toggle-description').classList.toggle('active', card.showDescription);
+      updateDescriptionButtonText(card);
+      if (card.showDescription && !card.descriptionText && !card.descriptionArticle) {
+        card.descriptionArticle = 'Giacca';
+      }
       renderGrid();
     }
 
