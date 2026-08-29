@@ -129,30 +129,6 @@
 
     .btn-save:hover { background-color: #d4a373; }
 
-    .backup-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .btn-backup {
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: bold;
-      padding: 9px 12px;
-    }
-
-    .btn-export { background: #d4a373; color: #181a1d; }
-    .btn-export:hover { background: #e5ba73; }
-    .btn-import { background: #d4a373; color: #181a1d; }
-    .btn-import:hover { background: #e5ba73; }
-    .btn-clear { background: #dc3545; color: #fff; }
-    .btn-clear:hover { background: #c82333; }
-
     /* LISTA LOGHI SALVATI */
     .saved-list {
       margin-top: 30px;
@@ -324,15 +300,8 @@
     </div>
 
     <button class="btn-save" id="btnSave" style="display:none;" onclick="saveCustomLogo()">💾 SALVA NEI BRAND PERSONALIZZATI</button>
-    <div class="backup-actions">
-      <button type="button" class="btn-backup btn-export" onclick="exportCustomLogos()">⬇ ESPORTA LOGHI</button>
-      <button type="button" class="btn-backup btn-import" onclick="document.getElementById('importFileInput').click()">⬆ IMPORTA LOGHI</button>
-      <button type="button" class="btn-backup btn-clear" style="margin-left: auto;" onclick="clearCustomLogos()"><span style="font-size:1.3em;">⊘</span> CANCELLA LOGHI</button>
-      <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;" onchange="importCustomLogos(this.files[0]); this.value = '';">
-    </div>
 
-    <div style="margin-top: 20px; margin-bottom: 20px;"></div>
-
+    <div style="margin-top: 20px;  margin-bottom: 20px;"></div>
     <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
     <div class="saved-list">
       <div class="saved-list-header">
@@ -466,73 +435,6 @@
       renderSavedLogos();
     }
 
-    function exportCustomLogos() {
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-      const backup = {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        logos
-      };
-      const file = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-      const downloadUrl = URL.createObjectURL(file);
-      const link = document.createElement('a');
-
-      link.href = downloadUrl;
-      link.download = 'storecraft-loghi-personalizzati.json';
-      link.click();
-      URL.revokeObjectURL(downloadUrl);
-    }
-
-    function clearCustomLogos() {
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-      if (logos.length === 0) {
-        alert('Non ci sono loghi personalizzati da rimuovere.');
-        return;
-      }
-
-      if (confirm('Vuoi rimuovere tutti i loghi personalizzati salvati? Esporta prima un backup per poterli ripristinare.')) {
-        localStorage.removeItem('custom_brand_logos');
-        renderSavedLogos();
-      }
-    }
-
-    function importCustomLogos(file) {
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        let backup;
-
-        try {
-          backup = JSON.parse(event.target.result);
-        } catch {
-          alert('Il file selezionato non e un backup JSON valido.');
-          return;
-        }
-
-        if (!backup || backup.version !== 1 || !Array.isArray(backup.logos) || !backup.logos.every(isValidCustomLogo)) {
-          alert('Il file selezionato non contiene un backup di loghi Storecraft valido.');
-          return;
-        }
-
-        if (!confirm('L importazione sostituira tutti i loghi personalizzati attualmente salvati. Continuare?')) {
-          return;
-        }
-
-        localStorage.setItem('custom_brand_logos', JSON.stringify(backup.logos));
-        renderSavedLogos();
-        alert('Loghi personalizzati importati con successo.');
-      };
-      reader.readAsText(file);
-    }
-
-    function isValidCustomLogo(logo) {
-      return logo
-        && typeof logo.id === 'string'
-        && typeof logo.name === 'string'
-        && typeof logo.data === 'string'
-        && logo.data.startsWith('data:image/');
-    }
 
     function escapeHtml(value) {
       return value.replace(/[&<>"']/g, character => ({
