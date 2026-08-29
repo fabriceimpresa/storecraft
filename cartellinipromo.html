@@ -634,12 +634,12 @@
 
     function updateDescriptionButtonText(card) {
       const toggleDescriptionBtn = document.getElementById('toggle-description');
-      toggleDescriptionBtn.textContent = card.showDescription ? '- ELIMINA DESCRIZIONE' : '+ INSERISCI DESCRIZIONE';
+      toggleDescriptionBtn.textContent = card.showDescription ? '- RIMUOVI DESCRIZIONE' : '+ INSERISCI DESCRIZIONE';
     }
 
     function updateDiscountButtonText(card) {
       const toggleDiscountBtn = document.getElementById('toggle-discount');
-      toggleDiscountBtn.textContent = card.showDiscount ? '- ELIMINA ALIQUOTA SCONTO' : '✨ + Aggiungi Aliquota Sconto';
+      toggleDiscountBtn.textContent = card.showDiscount ? '- RIMUOVI ALIQUOTA SCONTO' : '✨ + Aggiungi Aliquota Sconto';
     }
 
     function loadEditorData() {
