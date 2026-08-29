@@ -116,21 +116,80 @@
 
     .btn-save {
       width: 100%;
-      background-color: #28a745;
-      color: white;
-      border: none;
+      background-color: #e5ba73;
+      color: #181a1d;
+      border: 1px solid #d4a373;
       padding: 10px;
       font-weight: bold;
+      font-size: 1rem;
       border-radius: 4px;
       cursor: pointer;
       margin-top: 15px;
     }
 
-    .btn-save:hover { background-color: #218838; }
+    .btn-save:hover { background-color: #d4a373; }
+
+    .backup-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .btn-backup {
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 9px 12px;
+    }
+
+    .btn-export { background: #d4a373; color: #181a1d; }
+    .btn-export:hover { background: #e5ba73; }
+    .btn-import { background: #d4a373; color: #181a1d; }
+    .btn-import:hover { background: #e5ba73; }
+    .btn-clear { background: #dc3545; color: #fff; }
+    .btn-clear:hover { background: #c82333; }
 
     /* LISTA LOGHI SALVATI */
     .saved-list {
       margin-top: 30px;
+    }
+
+    .saved-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .saved-list-header h2 {
+      font-size: 1rem;
+      color: #e5ba73;
+    }
+
+    .sort-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sort {
+      background: #26292e;
+      border: 1px solid #d4a373;
+      border-radius: 3px;
+      color: #e5ba73;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 6px 8px;
+    }
+
+    .btn-sort:hover,
+    .btn-sort.active {
+      background: #d4a373;
+      color: #181a1d;
     }
 
     .saved-item {
@@ -235,7 +294,7 @@
     <!-- AREA UPLOAD CON DRAG AND DROPPING CORRETTO -->
     <div class="upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
       📂 <strong>Clicca o Trascina qui l'immagine del Logo</strong>
-      <p style="font-size:0.75rem; color:#aaa; margin-top:5px;">(Funziona con sfondi Bianchi o Neri)</p>
+      <p style="font-size:0.9rem; color:#aaa; margin-top:5px;">(Funziona con sfondi Bianchi o Neri)</p>
       <input type="file" id="fileInput" accept="image/*" onchange="processImage(this.files[0])">
     </div>
 
@@ -265,10 +324,24 @@
     </div>
 
     <button class="btn-save" id="btnSave" style="display:none;" onclick="saveCustomLogo()">💾 SALVA NEI BRAND PERSONALIZZATI</button>
+    <div class="backup-actions">
+      <button type="button" class="btn-backup btn-export" onclick="exportCustomLogos()">⬇ ESPORTA LOGHI</button>
+      <button type="button" class="btn-backup btn-import" onclick="document.getElementById('importFileInput').click()">⬆ IMPORTA LOGHI</button>
+      <button type="button" class="btn-backup btn-clear" style="margin-left: auto;" onclick="clearCustomLogos()"><span style="font-size:1.3em;">⊘</span> CANCELLA LOGHI</button>
+      <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;" onchange="importCustomLogos(this.files[0]); this.value = '';">
+    </div>
+
+    <div style="margin-top: 20px; margin-bottom: 20px;"></div>
 
     <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
     <div class="saved-list">
-      <h2 style="font-size: 1rem; color: #e5ba73; margin-bottom: 10px;">Loghi Personalizzati Salvati</h2>
+      <div class="saved-list-header">
+        <h2>Loghi Personalizzati Salvati</h2>
+        <div class="sort-actions">
+          <button type="button" class="btn-sort" id="sortAlphabetical" onclick="setLogoSortOrder('alphabetical')">A-Z</button>
+          <button type="button" class="btn-sort active" id="sortChronological" onclick="setLogoSortOrder('chronological')">Data creazione</button>
+        </div>
+      </div>
       <div id="customLogosContainer"></div>
     </div>
   </div>
@@ -276,6 +349,7 @@
   <script>
     let processedBase64 = "";
     let rawImage = null;
+    let logoSortOrder = 'chronological';
 
     // Configurazione eventi Drag and Drop
     const dropZone = document.getElementById('dropZone');
@@ -392,22 +466,108 @@
       renderSavedLogos();
     }
 
+    function exportCustomLogos() {
+      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const backup = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        logos
+      };
+      const file = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const downloadUrl = URL.createObjectURL(file);
+      const link = document.createElement('a');
+
+      link.href = downloadUrl;
+      link.download = 'storecraft-loghi-personalizzati.json';
+      link.click();
+      URL.revokeObjectURL(downloadUrl);
+    }
+
+    function clearCustomLogos() {
+      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      if (logos.length === 0) {
+        alert('Non ci sono loghi personalizzati da rimuovere.');
+        return;
+      }
+
+      if (confirm('Vuoi rimuovere tutti i loghi personalizzati salvati? Esporta prima un backup per poterli ripristinare.')) {
+        localStorage.removeItem('custom_brand_logos');
+        renderSavedLogos();
+      }
+    }
+
+    function importCustomLogos(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        let backup;
+
+        try {
+          backup = JSON.parse(event.target.result);
+        } catch {
+          alert('Il file selezionato non e un backup JSON valido.');
+          return;
+        }
+
+        if (!backup || backup.version !== 1 || !Array.isArray(backup.logos) || !backup.logos.every(isValidCustomLogo)) {
+          alert('Il file selezionato non contiene un backup di loghi Storecraft valido.');
+          return;
+        }
+
+        if (!confirm('L importazione sostituira tutti i loghi personalizzati attualmente salvati. Continuare?')) {
+          return;
+        }
+
+        localStorage.setItem('custom_brand_logos', JSON.stringify(backup.logos));
+        renderSavedLogos();
+        alert('Loghi personalizzati importati con successo.');
+      };
+      reader.readAsText(file);
+    }
+
+    function isValidCustomLogo(logo) {
+      return logo
+        && typeof logo.id === 'string'
+        && typeof logo.name === 'string'
+        && typeof logo.data === 'string'
+        && logo.data.startsWith('data:image/');
+    }
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[character]);
+    }
+
     function renderSavedLogos() {
       const container = document.getElementById('customLogosContainer');
       const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const sortedLogos = logos.map((item, index) => ({ item, index }));
+
+      if (logoSortOrder === 'alphabetical') {
+        sortedLogos.sort((first, second) => first.item.name.localeCompare(second.item.name, 'it', { sensitivity: 'base' }));
+      }
+
+      document.getElementById('sortAlphabetical').classList.toggle('active', logoSortOrder === 'alphabetical');
+      document.getElementById('sortChronological').classList.toggle('active', logoSortOrder === 'chronological');
       
       if (logos.length === 0) {
         container.innerHTML = '<p style="font-size:0.8rem; color:#888;">Nessun logo personalizzato salvato.</p>';
         return;
       }
 
-      container.innerHTML = logos.map((item, index) => `
+      container.innerHTML = sortedLogos.map(({ item, index }) => `
         <div class="saved-item">
           <div class="saved-item-preview">
-            <img src="${item.data}" alt="${item.name}">
+            <img src="${item.data}" alt="${escapeHtml(item.name)}">
           </div>
           <div class="saved-item-details">
-            <input type="text" id="editName_${index}" value="${item.name}">
+            <input type="text" id="editName_${index}" value="${escapeHtml(item.name)}">
           </div>
           <div class="saved-item-actions">
             <button class="btn-update" onclick="updateLogoName(${index})">Aggiorna Nome</button>
@@ -415,6 +575,11 @@
           </div>
         </div>
       `).join('');
+    }
+
+    function setLogoSortOrder(sortOrder) {
+      logoSortOrder = sortOrder;
+      renderSavedLogos();
     }
 
     function updateLogoName(index) {
