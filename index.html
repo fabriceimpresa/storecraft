@@ -114,6 +114,13 @@
     main { flex: 1; padding: 2.5rem 3rem; overflow-y: auto; position: relative; }
     header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
     .home-mark { position: fixed; top: 1rem; left: calc(280px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+    .mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 0.55rem; z-index: 30; }
+    .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
+    .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
+    .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
+    .mode-icon { font-size: 1rem; line-height: 1; }
+    .menu-group, #generators-section, #tickets-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
     body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
     .home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
     .home-mark-icon { font-size: 1.2rem; line-height: 1; }
@@ -329,7 +336,12 @@
 </head>
 <body>
 
-  <aside>
+<div class="mode-switcher" aria-label="Modalità interfaccia">
+  <button class="mode-btn" data-mode="cassiere" type="button" onclick="setLayoutMode('cassiere')"><span class="mode-icon" aria-hidden="true">⌂</span><span>CASSIERE</span></button>
+  <button class="mode-btn active" data-mode="creator" type="button" onclick="setLayoutMode('creator')">CREATOR</button>
+</div>
+
+<aside>
     <div>
       <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
       
@@ -758,6 +770,8 @@
       });
     }
 
+    let currentLayoutMode = 'creator';
+
     function updateUI() {
       const direction = document.getElementById('val-direction').value;
       const targetCurrency = document.getElementById('val-currency').value;
@@ -767,6 +781,49 @@
         prefixEl.innerText = '€';
       } else {
         prefixEl.innerText = symbols[targetCurrency] || 'VAL';
+      }
+    }
+
+    function animateLayoutReorder(elements) {
+      elements.forEach(el => el.classList.add('layout-reorder-anim'));
+      requestAnimationFrame(() => {
+        elements.forEach(el => el.classList.remove('layout-reorder-anim'));
+      });
+    }
+
+    function setLayoutMode(mode) {
+      if (!['creator', 'cassiere'].includes(mode) || currentLayoutMode === mode) return;
+      currentLayoutMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(button => {
+        button.classList.toggle('active', button.dataset.mode === mode);
+      });
+
+      const generatorsGroup = document.querySelector('[aria-controls="menu-generators"]').parentElement;
+      const ticketsGroup = document.querySelector('[aria-controls="menu-tickets"]').parentElement;
+      const logosGroup = document.querySelector('[aria-controls="menu-logos"]').parentElement;
+      const toolsGroup = document.querySelector('[aria-controls="menu-tools"]').parentElement;
+      const menuWrapper = document.querySelector('aside > div');
+      const generatorsSection = document.getElementById('generators-section');
+      const ticketsSection = document.getElementById('tickets-section');
+      const toolsTitle = document.getElementById('tools-title');
+      const toolsGrid = document.getElementById('tools');
+
+      animateLayoutReorder([generatorsGroup, ticketsGroup, toolsGroup, toolsTitle, toolsGrid]);
+
+      if (mode === 'cassiere') {
+        menuWrapper.insertBefore(toolsGroup, generatorsGroup);
+        document.getElementById('main-content').insertBefore(toolsTitle, generatorsSection);
+        document.getElementById('main-content').insertBefore(toolsGrid, generatorsSection);
+      } else {
+        menuWrapper.insertBefore(generatorsGroup, ticketsGroup);
+        menuWrapper.insertBefore(ticketsGroup, logosGroup);
+        menuWrapper.insertBefore(logosGroup, toolsGroup);
+
+        const main = document.getElementById('main-content');
+        main.insertBefore(generatorsSection, ticketsSection);
+        main.insertBefore(ticketsSection, toolsTitle);
+        main.insertBefore(toolsTitle, toolsGrid);
+        main.appendChild(toolsGrid);
       }
     }
 
@@ -946,6 +1003,7 @@
     }
 
     restoreMenus();
+    setLayoutMode('creator');
     updateUI();
     generateQR();
   </script>
