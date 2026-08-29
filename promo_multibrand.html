@@ -75,6 +75,7 @@
     .main-promo.price-promo { font-size: 9rem; }
     .bottom-block { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2mm; }
     .secondary-promo { font-family: 'Nevis Project', sans-serif; font-size: 2.3rem; line-height: .95; letter-spacing: -0.05em; color: #e00000; text-transform: uppercase; text-align: center; }
+    .secondary-promo.secondary-promo-small { font-size: 1.3rem; }
     .small-red-banner { background: #e00000; color: #fff; padding: 2.5mm 5.2mm 2.1mm; }
     .small-red-banner span { font-family: 'Nevis Project', sans-serif; font-size: 1.65rem; line-height: .95; letter-spacing: -0.05em; text-transform: uppercase; white-space: nowrap; color: #ffffff !important; }
 
@@ -138,8 +139,8 @@
         </div>
       </div>
       <div class="form-group"><label>Oppure testo libero:</label><input id="mainFree1" type="text" placeholder="Lascia vuoto per usare il menu" oninput="updateCards()"></div>
-      <div class="form-group"><label>Scritta sopra il banner:</label><select id="secondaryText1" onchange="updateCards()"><option>Winter Sale</option><option>Summer Sale</option><option>Last Week</option><option>Shop Now</option></select></div>
-      <div class="form-group"><label>Oppure testo libero:</label><input id="secondaryFree1" type="text" placeholder="Lascia vuoto per usare il menu" oninput="updateCards()"></div>
+      <div class="form-group"><label>Scritta sopra il banner:</label><select id="secondaryText1" onchange="updateCards()"><option>Winter Sale</option><option>Summer Sale</option><option>Last Week</option><option>Shop Now</option><option>Su articoli selezionati</option></select></div>
+      <div class="form-group"><label>Oppure testo libero:</label><input id="secondaryFree1" type="text" maxlength="22" placeholder="Lascia vuoto per usare il menu (max 22 caratteri)" oninput="updateCards()"></div>
       <div class="section-title">SELEZIONA I MARCHI IN PROMOZIONE</div>
       <div class="logo-grid" id="logoControls1"></div>
       <div class="section-title">IMPOSTAZIONI STAMPA</div>
@@ -252,7 +253,8 @@
       const selectedDropdownValue = document.getElementById('mainText1').value;
       const freeText = document.getElementById('mainFree1').value.trim();
       const main = freeText || selectedDropdownValue;
-      const secondary = document.getElementById('secondaryFree1').value.trim() || document.getElementById('secondaryText1').value;
+      const secondaryFreeText = document.getElementById('secondaryFree1').value.trim();
+      const secondary = secondaryFreeText || document.getElementById('secondaryText1').value;
       
       let activeColor = DEFAULT_COLOR;
       let activeTintClass = DEFAULT_TINT_CLASS;
@@ -274,7 +276,9 @@
         mainDisplay.textContent = main;
         mainDisplay.classList.toggle('discount-promo', !freeText && selectedDropdownValue === '50% + 50%');
         mainDisplay.classList.toggle('price-promo', !freeText && selectedDropdownValue !== '50% + 50%');
-        document.getElementById('secondaryDisplay' + card).textContent = secondary;
+        const secondaryDisplay = document.getElementById('secondaryDisplay' + card);
+        secondaryDisplay.textContent = secondary;
+        secondaryDisplay.classList.toggle('secondary-promo-small', Boolean(secondaryFreeText) || secondary === 'Su articoli selezionati');
         renderLogos(card, activeTintClass);
       });
     }
