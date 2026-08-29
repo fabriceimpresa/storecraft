@@ -791,6 +791,14 @@
       });
     }
 
+    function appendInOrder(parent, elements) {
+      elements.forEach(el => {
+        if (el && parent.contains(el)) {
+          parent.appendChild(el);
+        }
+      });
+    }
+
     function setLayoutMode(mode) {
       if (!['creator', 'cassiere'].includes(mode) || currentLayoutMode === mode) return;
       currentLayoutMode = mode;
@@ -807,23 +815,16 @@
       const ticketsSection = document.getElementById('tickets-section');
       const toolsTitle = document.getElementById('tools-title');
       const toolsGrid = document.getElementById('tools');
+      const main = document.getElementById('main-content');
 
       animateLayoutReorder([generatorsGroup, ticketsGroup, toolsGroup, toolsTitle, toolsGrid]);
 
       if (mode === 'cassiere') {
-        menuWrapper.insertBefore(toolsGroup, generatorsGroup);
-        document.getElementById('main-content').insertBefore(toolsTitle, generatorsSection);
-        document.getElementById('main-content').insertBefore(toolsGrid, generatorsSection);
+        appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, logosGroup, ticketsGroup]);
+        appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection]);
       } else {
-        menuWrapper.insertBefore(generatorsGroup, ticketsGroup);
-        menuWrapper.insertBefore(ticketsGroup, logosGroup);
-        menuWrapper.insertBefore(logosGroup, toolsGroup);
-
-        const main = document.getElementById('main-content');
-        main.insertBefore(generatorsSection, ticketsSection);
-        main.insertBefore(ticketsSection, toolsTitle);
-        main.insertBefore(toolsTitle, toolsGrid);
-        main.appendChild(toolsGrid);
+        appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, toolsGroup]);
+        appendInOrder(main, [generatorsSection, ticketsSection, toolsTitle, toolsGrid]);
       }
     }
 
