@@ -120,6 +120,8 @@
     .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
     .mode-icon { font-size: 1rem; line-height: 1; }
     .menu-group, #generators-section, #tickets-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    body.cassiere-mode #tools-title { margin-bottom: 1.5rem; }
+    body.cassiere-mode #tools { margin-bottom: 2rem; }
     .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
     body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
     .home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
@@ -820,9 +822,11 @@
       animateLayoutReorder([generatorsGroup, ticketsGroup, toolsGroup, toolsTitle, toolsGrid]);
 
       if (mode === 'cassiere') {
+        document.body.classList.add('cassiere-mode');
         appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, logosGroup, ticketsGroup]);
         appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection]);
       } else {
+        document.body.classList.remove('cassiere-mode');
         appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, toolsGroup]);
         appendInOrder(main, [generatorsSection, ticketsSection, toolsTitle, toolsGrid]);
       }
