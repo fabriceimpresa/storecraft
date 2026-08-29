@@ -139,6 +139,26 @@
     .orig-discount .strike { text-decoration: line-through; }
     .orig-discount .badge-sconto { color: var(--gold); font-size: 13pt; font-weight: bold; font-style: normal; }
     .currency { font-family: inherit; font-weight: inherit; }
+    .currency-input-group {
+      position: relative;
+    }
+
+    .currency-input-group .currency-prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-weight: normal;
+      font-size: 0.82rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .currency-input-group input {
+      padding-left: 26px;
+      line-height: 1.2;
+    }
 
     /* Dicitura Oro */
     .preset-label { font-family: 'Bodoni Std', serif; font-size: 13.5pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
@@ -250,19 +270,22 @@
       </div>
 
       <div class="form-group">
-        <label>Descrizione Articolo (Bodoni Std Italic)</label>
+        <label>Descrizione Articolo</label>
         <input type="text" id="inp-desc" class="form-control" placeholder="es. Giubbino" oninput="updateCurrentCard()">
       </div>
 
       <div class="toggle-row">
-        <span>Modalità Dicitura Fissa</span>
+        <span>Modalità Dicitura / Doppio Prezzo</span>
         <input type="checkbox" id="inp-toggle-preset" style="accent-color: var(--gold);" onchange="toggleMode()">
       </div>
 
       <div id="group-discount">
         <div class="form-group">
-          <label>Prezzo Originario (<span class="currency">€</span>)</label>
-          <input type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
+          <label>Prezzo Originario</label>
+          <div class="currency-input-group">
+            <span class="currency-prefix">€</span>
+            <input type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
+          </div>
         </div>
         <div class="form-group">
           <label>Aliquota Sconto</label>
@@ -272,22 +295,27 @@
 
       <div id="group-preset" style="display: none;">
         <div class="form-group">
-          <label>Dicitura Oro (Bodoni Std Roman)</label>
+          <label>Testo Promozionale</label>
           <select id="inp-preset" class="form-control" onchange="updateCurrentCard()">
-            <option value="OUTLET PRICE">OUTLET PRICE</option>
             <option value="FINAL PRICE">FINAL PRICE</option>
             <option value="GENUINE LEATHER">GENUINE LEATHER</option>
+            <option value="LAST WEEK">LAST WEEK</option>
             <option value="MADE IN ITALY">MADE IN ITALY</option>
             <option value="SPECIAL DEAL">SPECIAL DEAL</option>
-            <option value="WINTER SALE">WINTER SALE</option>
+            <option value="SPRING SALE">SPRING SALE</option>
+            <option value="SUMMER SALE">SUMMER SALE</option>
             <option value="VERA PELLE">VERA PELLE</option>
+            <option value="WINTER SALE">WINTER SALE</option>
           </select>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Prezzo Finale (<span class="currency">€</span>)</label>
-        <input type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
+        <label>Prezzo Finale</label>
+        <div class="currency-input-group">
+          <span class="currency-prefix">€</span>
+          <input type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
+        </div>
       </div>
     </div>
 
@@ -447,7 +475,7 @@
 
       const savedLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
       const customOptions = '<option value="">-- Nessun Logo Personalizzato --</option>' +
-        savedLogos.map((logo, index) => `<option value="${logo.data}">${logo.name || 'Logo Custom #' + (index + 1)}</option>`).join('');
+        savedLogos.map((logo, index) => `<option value="${logo.data}">★ ${logo.name || 'Logo Custom #' + (index + 1)}</option>`).join('');
       document.getElementById('inp-custom-logo').innerHTML = customOptions;
     }
 
@@ -471,6 +499,31 @@
       const usePreset = document.getElementById('inp-toggle-preset').checked;
       document.getElementById('group-discount').style.display = usePreset ? 'none' : 'block';
       document.getElementById('group-preset').style.display = usePreset ? 'block' : 'none';
+
+      if (usePreset) {
+        const presetSelect = document.getElementById('inp-preset');
+        const finalPriceInput = document.getElementById('inp-final');
+        if (!presetSelect.value) {
+          presetSelect.value = 'SPECIAL DEAL';
+        }
+        if (!finalPriceInput.value) {
+          finalPriceInput.value = '40,00';
+        }
+      } else {
+        const origInput = document.getElementById('inp-orig');
+        const scontoInput = document.getElementById('inp-sconto');
+        const finalPriceInput = document.getElementById('inp-final');
+        if (!origInput.value) {
+          origInput.value = '100,00';
+        }
+        if (!scontoInput.value) {
+          scontoInput.value = '-50%';
+        }
+        if (!finalPriceInput.value) {
+          finalPriceInput.value = '50,00';
+        }
+      }
+
       updateCurrentCard();
     }
 
@@ -487,7 +540,8 @@
       renderGrid();
     }
 
-    function formatDiscountInput(input) {
+
+            function formatDiscountInput(input) {
       const value = input.value.replace(/[^\d,.-]/g, '');
       if (!value) {
         return;
@@ -502,7 +556,7 @@
       renderGrid();
     }
 
-    function toggleCardEnabled(index, enabled) {
+function toggleCardEnabled(index, enabled) {
       cardsData[index].enabled = enabled;
       renderGrid();
     }
