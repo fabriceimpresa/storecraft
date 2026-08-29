@@ -637,6 +637,11 @@
       toggleDescriptionBtn.textContent = card.showDescription ? '- ELIMINA DESCRIZIONE' : '+ INSERISCI DESCRIZIONE';
     }
 
+    function updateDiscountButtonText(card) {
+      const toggleDiscountBtn = document.getElementById('toggle-discount');
+      toggleDiscountBtn.textContent = card.showDiscount ? '- ELIMINA ALIQUOTA SCONTO' : '✨ + Aggiungi Aliquota Sconto';
+    }
+
     function loadEditorData() {
       const card = cardsData[currentCardIdx];
       document.getElementById('editor-header').innerText = `Modifica Cartellino #${card.id}`;
@@ -656,6 +661,7 @@
       document.getElementById('description-custom-group').hidden = !card.showDescription;
       document.getElementById('toggle-discount').classList.toggle('active', card.showDiscount);
       document.getElementById('toggle-description').classList.toggle('active', card.showDescription);
+      updateDiscountButtonText(card);
       updateDescriptionButtonText(card);
     }
 
@@ -704,6 +710,7 @@
       card.showDiscount = !card.showDiscount;
       document.getElementById('discount-rate-group').hidden = !card.showDiscount;
       document.getElementById('toggle-discount').classList.toggle('active', card.showDiscount);
+      updateDiscountButtonText(card);
       renderGrid();
     }
 
