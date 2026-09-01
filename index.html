@@ -111,7 +111,7 @@
       width: 100%;
     }
 
-    main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; }
+    main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
     header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
     .home-mark { position: fixed; top: 1rem; left: calc(280px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
     .mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 0.55rem; z-index: 30; }
@@ -119,7 +119,7 @@
     .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
     .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
     .mode-icon { font-size: 1rem; line-height: 1; }
-    .menu-group, #generators-section, #tickets-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    .menu-group, #generators-section, #tickets-section, #prints-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
     body.cassiere-mode #tools-title { margin-bottom: 1.5rem; }
     body.cassiere-mode #tools { margin-bottom: 2rem; }
     .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
@@ -135,12 +135,100 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
     .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
-    .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); padding: 10px 14px; }
+    .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); padding: 10px 14px; position: relative; }
     .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 3px; }
 
     .card-body { padding: 1rem; }
     .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; margin-bottom: 0.3rem; }
     .card-body p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* CAROSELLO STAMPE PRONTE CON FRECCE FLOATING */
+    #prints-section { margin-bottom: 3rem; }
+    
+    .carousel-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .carousel-container {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding: 0.5rem 0.2rem 1.2rem 0.2rem;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      /* Nascosto la scrollbar */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE/Edge */
+    }
+    .carousel-container::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: calc(50% - 0.6rem);
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(18, 17, 16, 0.85);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .carousel-arrow:hover {
+      background: var(--accent);
+      color: #000000;
+      box-shadow: 0 0 10px rgba(212, 163, 115, 0.5);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .carousel-arrow.prev { left: -18px; }
+    .carousel-arrow.next { right: -18px; }
+
+    .carousel-card {
+      flex: 0 0 250px;
+      scroll-snap-align: start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+    .carousel-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .carousel-card .preview-icon {
+      font-size: 3.2rem;
+      color: var(--accent);
+    }
+    .print-pdf-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      margin-top: 0.9rem;
+      text-decoration: none;
+      font-size: 0.75rem;
+      padding: 0.55rem 0.5rem;
+    }
 
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
     
@@ -301,7 +389,7 @@
       color: var(--accent);
     }
 
-    /* Contenitore QR Code con margine inferiore bilanciato */
+    /* Contenitore QR Code */
     .qr-preview-container {
       display: flex;
       justify-content: center;
@@ -321,14 +409,12 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    /* Dimensione ridotta dell'immagine di anteprima */
     .widget:not(.expanded) #qrcode img, 
     .widget:not(.expanded) #qrcode canvas {
       max-width: 75px !important;
       height: auto !important;
     }
 
-    /* Dimensione standard quando espanso */
     .widget.expanded #qrcode img,
     .widget.expanded #qrcode canvas {
       max-width: none;
@@ -379,6 +465,16 @@
         <div class="menu-items" id="menu-logos">
           <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
           <a href="gestisci_lista.html" class="nav-btn">⚙️ Gestisci Lista Personale</a>
+        </div>
+      </div>
+
+      <!-- SEZIONE: Stampe Pronte -->
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-prints" onclick="toggleMenu('menu-prints', this)">
+          <span>Stampe Pronte</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-prints">
+          <a href="#prints-section" class="nav-btn" onclick="scrollToSection('prints-section')">📄 Stampe Punto Vendita</a>
         </div>
       </div>
 
@@ -518,6 +614,86 @@
             <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione&nbsp;&nbsp; | &nbsp;&nbsp;50% + 50% Saldi</p>
           </div>
         </a>
+      </div>
+    </div>
+
+    <!-- SEZIONE: Stampe Pronte Punto Vendita (Carosello Orizzontale con Frecce Floating) -->
+    <div id="prints-section">
+      <div class="section-title">Stampe Pronte // Punto Vendita</div>
+      
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel(-1)" aria-label="Scorri a sinistra">‹</button>
+        
+        <div class="carousel-container" id="prints-carousel">
+          
+          <!-- Documento PDF 1: Orari Apertura -->
+          <div class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/orari.png" alt="Orari Apertura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🕒</span>
+            </div>
+            <div class="card-body">
+              <h3>Orari Apertura</h3>
+              <p>Cartello con schema e orari di apertura del punto vendita.</p>
+              <a href="assets/pdf/orari.pdf" target="_blank" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</a>
+            </div>
+          </div>
+
+          <!-- Documento PDF 2: No Food & Drinks Indoor -->
+          <div class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/nofoodindoor.png" alt="No Food Drinks Indoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🚫</span>
+            </div>
+            <div class="card-body">
+              <h3>No Food & Drinks Indoor</h3>
+              <p>Divieto di consumo cibi e bevande negli spazi interni del punto vendita.</p>
+              <a href="assets/pdf/nofood_indoor.pdf" target="_blank" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</a>
+            </div>
+          </div>
+
+          <!-- Documento PDF 3: No Food & Drinks Outdoor -->
+          <div class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/nofoodoutdoor.png" alt="No Food Drinks Outdoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🥤</span>
+            </div>
+            <div class="card-body">
+              <h3>No Food & Drinks Outdoor</h3>
+              <p>Divieto di consumo cibi e bevande all'esterno del punto vendita.</p>
+              <a href="assets/pdf/nofood_outdoor.pdf" target="_blank" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</a>
+            </div>
+          </div>
+
+          <!-- Documento PDF 4: Staff Only -->
+          <div class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/staffonly.png" alt="Staff Only" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🔒</span>
+            </div>
+            <div class="card-body">
+              <h3>Staff Only</h3>
+              <p>Cartello di accesso riservato esclusivamente al personale autorizzato.</p>
+              <a href="assets/pdf/staffonly.pdf" target="_blank" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</a>
+            </div>
+          </div>
+
+          <!-- Documento PDF 5: Vietato Fumare -->
+          <div class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/vietatofumare.png" alt="Vietato Fumare" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🚭</span>
+            </div>
+            <div class="card-body">
+              <h3>Vietato Fumare</h3>
+              <p>Cartello normativo di divieto di fumo ai sensi di legge.</p>
+              <a href="assets/pdf/vietatofumare.pdf" target="_blank" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</a>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel(1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
 
@@ -683,6 +859,15 @@
     const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
     let qrcodeObj = null;
 
+    /* FUNZIONE SCORRIMENTO CAROSELLO CON FRECCE FLOATING */
+    function scrollCarousel(direction) {
+      const container = document.getElementById('prints-carousel');
+      if (container) {
+        const scrollAmount = 280; // Valore di scorrimento in px
+        container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      }
+    }
+
     /* VAR E LOGICA WIDGET IVA */
     let currentIvaRate = 22;
     let lastIvaSource = 'net';
@@ -771,6 +956,13 @@
       document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    function scrollToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
     document.getElementById('main-content').addEventListener('scroll', function() {
       document.body.classList.toggle('is-scrolled', this.scrollTop > 8);
     });
@@ -823,24 +1015,30 @@
       const generatorsGroup = document.querySelector('[aria-controls="menu-generators"]').parentElement;
       const ticketsGroup = document.querySelector('[aria-controls="menu-tickets"]').parentElement;
       const logosGroup = document.querySelector('[aria-controls="menu-logos"]').parentElement;
+      const printsGroup = document.querySelector('[aria-controls="menu-prints"]').parentElement;
       const toolsGroup = document.querySelector('[aria-controls="menu-tools"]').parentElement;
+      
       const menuWrapper = document.querySelector('aside > div');
+      
       const generatorsSection = document.getElementById('generators-section');
       const ticketsSection = document.getElementById('tickets-section');
+      const printsSection = document.getElementById('prints-section');
       const toolsTitle = document.getElementById('tools-title');
       const toolsGrid = document.getElementById('tools');
       const main = document.getElementById('main-content');
 
-      animateLayoutReorder([generatorsGroup, ticketsGroup, toolsGroup, toolsTitle, toolsGrid]);
+      animateLayoutReorder([generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup, toolsTitle, toolsGrid]);
 
       if (mode === 'cassiere') {
         document.body.classList.add('cassiere-mode');
-        appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, logosGroup, ticketsGroup]);
-        appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection]);
+        // Cassiere: Utilità Cassa per prima, Stampe Pronte per ultima nel menu
+        appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, ticketsGroup, logosGroup, printsGroup]);
+        appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection, printsSection]);
       } else {
         document.body.classList.remove('cassiere-mode');
-        appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, toolsGroup]);
-        appendInOrder(main, [generatorsSection, ticketsSection, toolsTitle, toolsGrid]);
+        // Creator: Genera Cartelli -> Genera Cartellini -> Genera Loghi -> Stampe Pronte -> Utilità Cassa
+        appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup]);
+        appendInOrder(main, [generatorsSection, ticketsSection, printsSection, toolsTitle, toolsGrid]);
       }
     }
 
@@ -853,9 +1051,14 @@
 
       resetDefaultView();
 
-      const genSection = document.getElementById('generators-section');
+      const mainSections = [
+        document.getElementById('generators-section'),
+        document.getElementById('tickets-section'),
+        document.getElementById('prints-section')
+      ];
+
       if (targetWidget) {
-        if (genSection) genSection.style.display = 'none';
+        mainSections.forEach(sec => { if (sec) sec.style.display = 'none'; });
 
         document.querySelectorAll('.widget').forEach(w => {
           if (w.id !== widgetId) {
@@ -875,8 +1078,12 @@
     function resetDefaultView(e) {
       if (e) e.stopPropagation();
 
-      const genSection = document.getElementById('generators-section');
-      if (genSection) genSection.style.display = 'block';
+      const mainSections = [
+        document.getElementById('generators-section'),
+        document.getElementById('tickets-section'),
+        document.getElementById('prints-section')
+      ];
+      mainSections.forEach(sec => { if (sec) sec.style.display = 'block'; });
 
       document.querySelectorAll('.widget').forEach(w => {
         w.style.display = 'flex';
