@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartelli Magazzino // STORE CRAFT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #121110;
+      --sidebar: #181715;
+      --card: #1e1d1a;
+      --border: #2e2b27;
+      --accent: #d4a373;
+      --accent-hover: #e5ba73;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    aside { width: 320px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.8rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; overflow-y: auto; }
+    .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 1.5rem; text-align: center; }
+    .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; margin-bottom: 1rem; }
+    .nav-btn:hover { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
+    
+    main { flex: 1; padding: 2rem; overflow-y: auto; display: flex; gap: 2rem; justify-content: center; }
+    
+    .preview-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: #0a0908; border-radius: 8px; border: 1px solid var(--border); padding: 2rem; overflow-y: auto; }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.4rem; font-weight: 600; }
+    .form-control { width: 100%; padding: 0.65rem; background: var(--card); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.85rem; outline: none; }
+    .form-control:focus { border-color: var(--accent); }
+    
+    /* BOX DEDICATO LOGHI PERSONALIZZATI */
+    .custom-brand-box {
+      background: rgba(212, 163, 115, 0.04);
+      border: 1px solid rgba(212, 163, 115, 0.35);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .custom-brand-header {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e5ba73;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .form-control.custom-select {
+      background: #141312;
+      border: 1px solid #b48b37;
+      color: #f3d5a3;
+      font-weight: 600;
+    }
+    .form-control.custom-select:focus {
+      border-color: #e5ba73;
+      box-shadow: 0 0 6px rgba(229, 186, 115, 0.3);
+    }
+
+    textarea.form-control { resize: vertical; min-height: 95px; font-family: inherit; line-height: 1.4; }
+    .field-hint { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem; display: block; }
+
+    .btn-print { width: 100%; padding: 0.9rem; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; margin-top: 1rem; }
+    .btn-print:hover { background: var(--accent-hover); }
+
+    .arrow-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .arrow-btn { background: var(--card); border: 1px solid var(--border); color: #fff; padding: 0.5rem; border-radius: 4px; cursor: pointer; font-size: 1.2rem; text-align: center; transition: all 0.2s; }
+    .arrow-btn:hover, .arrow-btn.active { border-color: var(--accent); background: rgba(212, 163, 115, 0.15); color: var(--accent); }
+
+    .cartello-selector { display: flex; gap: 8px; margin-bottom: 1.2rem; }
+    .cartello-tab { flex: 1; padding: 0.5rem; background: var(--card); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.75rem; font-weight: bold; text-align: center; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+    .cartello-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* FOGLIO ANTEPRIMA */
+    .a4-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      height: 297mm;
+      background: #ffffff;
+      color: #000000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      position: relative;
+      transition: height 0.2s ease, min-height 0.2s ease;
+    }
+
+    .a4-sheet.single-mode {
+      height: 148.5mm !important;
+      min-height: 148.5mm !important;
+    }
+
+    .cartello-box {
+      flex: 1;
+      height: 148.5mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 25px 30px 20px 30px;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .cartello-box:nth-child(2) {
+      border-top: 2px dashed #bbb;
+    }
+
+    .a4-sheet.single-mode .cartello-box {
+      border-bottom: 2px dashed #bbb;
+    }
+
+    .brand-area {
+      height: 130px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .brand-area img {
+      max-width: 420px;
+      max-height: 125px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      filter: brightness(0);
+    }
+
+    .brand-area .brand-text-fallback {
+      font-family: 'Cinzel', serif;
+      font-size: 56px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #000;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      padding: 5px 0;
+    }
+
+    .content-area p {
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      font-weight: 800;
+      color: #000000;
+      text-transform: uppercase;
+      line-height: 1.25;
+      letter-spacing: 0.5px;
+      white-space: pre-line;
+    }
+
+    .arrow-area {
+      height: 105px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
+
+    .arrow-svg {
+      fill: #000000;
+      width: 105px;
+      height: 105px;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0 !important;
+      }
+
+      html, body {
+        width: 210mm !important;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      aside, .preview-section > div:first-child { 
+        display: none !important; 
+      }
+
+      main { 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        display: block !important; 
+        overflow: hidden !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      .preview-section { 
+        padding: 0 !important; 
+        margin: 0 !important;
+        background: #ffffff !important; 
+        border: none !important; 
+        border-radius: 0 !important; 
+        overflow: hidden !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+      }
+      
+      .a4-sheet {
+        width: 210mm !important;
+        height: 297mm !important;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .a4-sheet.single-mode {
+        height: 148.5mm !important;
+        min-height: 148.5mm !important;
+        max-height: 148.5mm !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+
+      .cartello-box:nth-child(2) {
+        border-top: 1px dashed #aaa !important;
+      }
+
+      .a4-sheet.single-mode .cartello-box {
+        border-bottom: 1px dashed #aaa !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div>
+      <div class="brand">STORE // CRAFT</div>
+      <a href="index.html" class="nav-btn">← Torna alla Dashboard</a>
+
+      <div class="form-group">
+        <label>Formato Pagina</label>
+        <select id="pageLayout" class="form-control" onchange="changeLayout()">
+          <option value="2">2 Cartelli per foglio A4 (Consigliato)</option>
+          <option value="1">1 Cartello Singolo (Mezzo A4)</option>
+        </select>
+      </div>
+
+      <div class="cartello-selector" id="cartelloSelector">
+        <div class="cartello-tab active" id="tab1" onclick="selectCartello(1)">Cartello Superiore</div>
+        <div class="cartello-tab" id="tab2" onclick="selectCartello(2)">Cartello Inferiore</div>
+      </div>
+
+      <hr style="border-color: var(--border); margin-bottom: 1.2rem;">
+
+      <!-- 1. SELEZIONE LOGHI UFFICIALI -->
+      <div class="form-group">
+        <label for="brandSelect">Brand Ufficiale</label>
+        <select id="brandSelect" class="form-control" onchange="onBrandSelectChange()">
+        </select>
+      </div>
+
+      <!-- 2. BLOCCO DEDICATO E SEPARATO PER LOGHI PERSONALIZZATI -->
+      <div class="custom-brand-box">
+        <div class="custom-brand-header">
+          <span>★ LOGHI PERSONALIZZATI</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <select id="customLogoSelect" class="form-control custom-select" onchange="onCustomLogoSelectChange()">
+            <option value="">-- Nessun Logo Personalizzato --</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="labelText">Articoli / Categorie</label>
+        <textarea id="labelText" class="form-control" placeholder="Es.&#10;PANTALONI&#10;GIACCHE&#10;ABITI" oninput="handleTextLimit(this)"></textarea>
+        <span class="field-hint">Max 4 righe di testo</span>
+      </div>
+
+      <div class="form-group">
+        <label>Dimensione Testo</label>
+        <input type="range" id="textSize" class="form-control" min="32" max="62" value="40" oninput="updateActiveCartello()">
+      </div>
+
+      <div class="form-group">
+        <label>Direzione Freccia</label>
+        <div class="arrow-grid">
+          <button class="arrow-btn" data-arrow="right" onclick="setArrow('right')">➔</button>
+          <button class="arrow-btn" data-arrow="down" onclick="setArrow('down')">⬇</button>
+          <button class="arrow-btn" data-arrow="left" onclick="setArrow('left')">⬅</button>
+          <button class="arrow-btn" data-arrow="up" onclick="setArrow('up')">⬆</button>
+          <button class="arrow-btn" data-arrow="none" onclick="setArrow('none')">🚫</button>
+        </div>
+      </div>
+
+      <button class="btn-print" onclick="window.print()">🖨️ Stampa Cartelli A4</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="preview-section">
+      <div style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.85rem;">
+        Anteprima Foglio (Stampa Diretta Senza Margini)
+      </div>
+
+      <div class="a4-sheet" id="a4Sheet">
+        
+        <!-- CARTELLO 1 -->
+        <div class="cartello-box" id="cartelloBox1">
+          <div class="brand-area">
+            <img id="logoImg1" src="" alt="Brand Logo" onerror="onLogoError(1)" style="display:none;">
+            <span id="logoFallback1" class="brand-text-fallback">BRAND</span>
+          </div>
+
+          <div class="content-area">
+            <p id="textContent1" style="font-size: 40px;">PANTALONI&#10;GIACCHE</p>
+          </div>
+
+          <div class="arrow-area" id="arrowArea1"></div>
+        </div>
+
+        <!-- CARTELLO 2 -->
+        <div class="cartello-box" id="cartelloBox2">
+          <div class="brand-area">
+            <img id="logoImg2" src="" alt="Brand Logo" onerror="onLogoError(2)" style="display:none;">
+            <span id="logoFallback2" class="brand-text-fallback">BRAND</span>
+          </div>
+
+          <div class="content-area">
+            <p id="textContent2" style="font-size: 36px;">GIACCHE / TOP&#10;PANTALONI / GONNE&#10;VESTITI</p>
+          </div>
+
+          <div class="arrow-area" id="arrowArea2"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const LOGO_FILES = [
+      "269TEBE.PNG","ABIDDIKKIA.png","AFTERLABEL.png","AIRWALK.png","ALESSANDRODELLACQUA.png",
+      "ALEXANDERMCQUEEN.png","ARMANI.png","ARMANI_COLLEZIONI.png","ARMANI_EXCHANGE.png",
+      "ARMANI_GIORGIO.png","ARMANI_JEANS.png","ARNALDIMILANO.PNG","AVIREX.png","AYLIE.png",
+      "BAGUTTA.png","BALDININI.png","BALMAIN.PNG","BASTONCINO.png","BCBG.png","BEATRICE.png",
+      "BELSTAF.png","BENSHERMAN.png","BIKKENBERGS.png","BLAUER.png","BLKER.png","BLUGIRL.png",
+      "BLUMARINE.png","BRICS.png","BURBERRY.png","BYBLOS.png","CALVINKLEIN.png","CARHARTT.png",
+      "CAVALLI_CLASS.png","CAVALLI_ROBERTO.png","CHIARABONI.png","CIESSEPIUMINI.png","COCACOLA.png",
+      "COCCINELLE.png","COSTUMENATIONAL.png","DAINESE.png","DEVORE.png","DIADORA.png","DICKIES.png",
+      "DIESEL.png","DIOR.png","DIXIE.png","DOLCEANDGABBANA.png","DRSCHOLL.png","DSQUARED2.png",
+      "DUCAHOMME.png","EASTPAK.png","EGONVONFURSTENBERG.png","ELISAFANTI.png","EMMAANDGAIA.png",
+      "ENTREAMIS.png","ERMANNOSCERVINO.png","ERMENEGILDOZEGNA.png","EVERLAST.png","FACCONABLE.png",
+      "FELEPPA.png","FERRARI.png","FERRE.png","FILA.png","FRANKLINMARSHALL.png","GAELLE.png",
+      "GANT.png","GARMENT.png","GATTINONI.png","GCDS.png","GERMANS.png","GIVENCHY.png","GOORIN.png",
+      "GUESS.png","GUYLAROCHE.png","H953.png","HACKETTLONDON.png","HARMONT&BLAINE.png","HAVEONE.png",
+      "HERSCHELL.png","HOPPER.png","HUSKY.png","IMPERIAL.png","IMPURE.png","INVICTA.png",
+      "ISABELMARANT.png","JACKDANIELS.png","JEIO.PNG","JEREMYSCOTT.png","JIJIL.png",
+      "JOHNGALLIANO.png","JOHNRICHMOND.png","JUSTCAVALLI.png","KARLLAGERFELD.png","KENZO.png",
+      "KRIZIA.png","KWAY.png","LACOSTE.png","LAMARTHE.png","LAPERLA.png","LASTCHANCE.png",
+      "LAURABIAGIOTTI.png","LEE.png","LESARTEDELSOLE.png","LEVIS.png","LIUJO.png","LONSDALE.png",
+      "LOVE.png","LUCKYLU.png","LUXURY_GOLD.png","LXRY.png","LXRY_BRAND.png","MADEINITALY.png",
+      "MAISONMARGIELA.png","MAJE.png","MALIPARNI.png","MALONESOULIERS.png","MARCJACOBS.png",
+      "MARELLA.png","MARIOVALENTINO.png","MARLBORO.png","MARNI.png","MASSIMOREBECCHI.png",
+      "MAXMARA.png","MEIMEIJ.png","MELISSA.png","MICHAELKORS.png","MIRONCE.png","MISSONI.png",
+      "MIZUNO.png","MODFITTERS.png","MONCLER.png","MONTECERVINO.png","MOSCHINO.png","MOTEL.png",
+      "MSGM.png","NAPAPIJRI.png","NENETTE.png","NEWBALANCE.png","OBAG.png","OFFICINA36.png",
+      "ONLY.png","OTTODROM.png","PACIOTTI_4US.png","PACIOTTI_CESARE.png","PATRIZIAPEPE.png",
+      "PAULANDSHARK.png","PEOPLEOFSHIBUYA.png","PHILIPPPLEIN.png","PIERRECARDIN.png","PINKO.png",
+      "PIQUADRO.png","POLAROID.png","RALPHLAUREN.png","RANSOM.png","REFRIGIWEAR.png","REFRIGUE.png",
+      "RICHMOND.png","ROCCOBAROCCO.png","ROYROGERS.png","RUEBISQUIT.png","RUSSEL.png",
+      "SALVATOREFERRAGAMO.png","SERGIOTACCHINI.png","SFIZIO.png","SIMONACORSELLINI.png","SKYWARD.png",
+      "SOUVENIR.png","STEVEMADDEN.png","SUPERDRY.png","TEBE.png","TENSIONEIN.png","TOMMYHILFIGER.png",
+      "TOMMYJEANS.png","TOYG.png","TRUSSARDI.png","TRUSSARDI_JEANS.png","TWINSET.png","UNGARO.png",
+      "UNIFORM.png","USPOLOASSN.png","VERSACE.png","VERSACE_VERSUS.png","VICBEE.png","VIONNET.png",
+      "WEILIZHENG.png","WRANGLER.png"
+    ];
+
+    LOGO_FILES.push("ARMANI_EMPORIO.png", "COLUMBIA.png", "COTTONBELT.png", "ONLYANDSONS.png", "PANAM.png");
+    LOGO_FILES.sort((f, s) => f.localeCompare(s));
+
+    const LOGO_PATH = "assets/logos/";
+    const PLACEHOLDER_TEXT = "🔴 ━━━ SELEZIONA BRAND ━━━ 🔴";
+
+    const SVG_ARROWS = {
+      right: `<svg class="arrow-svg" viewBox="0 0 24 24"><path d="M3 8h10V3l9 9-9 9v-5H3V8z"/></svg>`,
+      left: `<svg class="arrow-svg" viewBox="0 0 24 24"><path d="M21 8H11V3l-9 9 9 9v-5h10V8z"/></svg>`,
+      down: `<svg class="arrow-svg" viewBox="0 0 24 24"><path d="M8 3v10H3l9 9 9-9h-5V3H8z"/></svg>`,
+      up: `<svg class="arrow-svg" viewBox="0 0 24 24"><path d="M8 21V11H3l9-9 9 9h-5v10H8z"/></svg>`,
+      none: ``
+    };
+
+    let activeCartello = 1;
+    let cartelliData = {
+      1: { brand: 'MEIMEIJ.png', customLogo: '', text: 'PANTALONI\nGIACCHE', fontSize: 40, arrow: 'right' },
+      2: { brand: 'PINKO.png', customLogo: '', text: 'GIACCHE / TOP\nPANTALONI / GONNE\nVESTITI', fontSize: 36, arrow: 'right' }
+    };
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function init() {
+      loadBrandSelect();
+      loadCustomLogosSelect();
+      loadCartelloToEditor(1);
+      renderCartello(1);
+      renderCartello(2);
+    }
+
+    function loadBrandSelect() {
+      const select = document.getElementById('brandSelect');
+      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      LOGO_FILES.forEach(fileName => {
+        const option = document.createElement('option');
+        option.value = fileName;
+        option.textContent = cleanBrandName(fileName);
+        select.appendChild(option);
+      });
+    }
+
+    function loadCustomLogosSelect() {
+      const select = document.getElementById('customLogoSelect');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || localStorage.getItem('customLogos') || '[]');
+
+      select.innerHTML = '<option value="">-- Nessun Logo Personalizzato --</option>';
+
+      if (Array.isArray(customLogos) && customLogos.length > 0) {
+        customLogos.forEach((item, index) => {
+          const option = document.createElement('option');
+          option.value = item.data || item.url || item.src || item;
+          option.textContent = "★ " + (item.name || `Logo Personalizzato ${index + 1}`);
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function selectCartello(num) {
+      activeCartello = num;
+      document.getElementById('tab1').classList.toggle('active', num === 1);
+      document.getElementById('tab2').classList.toggle('active', num === 2);
+      loadCartelloToEditor(num);
+    }
+
+    function loadCartelloToEditor(num) {
+      const data = cartelliData[num];
+      document.getElementById('brandSelect').value = data.brand || '';
+      document.getElementById('customLogoSelect').value = data.customLogo || '';
+      document.getElementById('labelText').value = data.text;
+      document.getElementById('textSize').value = data.fontSize;
+      
+      document.querySelectorAll('.arrow-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-arrow') === data.arrow);
+      });
+    }
+
+    function handleTextLimit(textarea) {
+      let lines = textarea.value.split('\n');
+      if (lines.length > 4) {
+        textarea.value = lines.slice(0, 4).join('\n');
+      }
+      updateActiveCartello();
+    }
+
+    function onBrandSelectChange() {
+      const val = document.getElementById('brandSelect').value;
+      cartelliData[activeCartello].brand = val;
+      if (val) {
+        cartelliData[activeCartello].customLogo = '';
+        document.getElementById('customLogoSelect').value = '';
+      }
+      updateActiveCartello();
+    }
+
+    function onCustomLogoSelectChange() {
+      const val = document.getElementById('customLogoSelect').value;
+      cartelliData[activeCartello].customLogo = val;
+      if (val) {
+        cartelliData[activeCartello].brand = '';
+        document.getElementById('brandSelect').value = '';
+      }
+      updateActiveCartello();
+    }
+
+    function updateActiveCartello() {
+      const data = cartelliData[activeCartello];
+      data.text = document.getElementById('labelText').value;
+      data.fontSize = document.getElementById('textSize').value;
+
+      renderCartello(activeCartello);
+    }
+
+    function setArrow(dir) {
+      cartelliData[activeCartello].arrow = dir;
+      document.querySelectorAll('.arrow-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-arrow') === dir);
+      });
+      renderCartello(activeCartello);
+    }
+
+    function renderCartello(num) {
+      const data = cartelliData[num];
+      const imgElem = document.getElementById(`logoImg${num}`);
+      const fallbackElem = document.getElementById(`logoFallback${num}`);
+      const textElem = document.getElementById(`textContent${num}`);
+      const arrowElem = document.getElementById(`arrowArea${num}`);
+
+      if (data.customLogo) {
+        imgElem.src = data.customLogo;
+        imgElem.style.display = 'block';
+        fallbackElem.style.display = 'none';
+      } else if (data.brand) {
+        imgElem.src = LOGO_PATH + data.brand;
+        imgElem.style.display = 'block';
+        fallbackElem.style.display = 'none';
+      } else {
+        imgElem.style.display = 'none';
+        fallbackElem.innerText = "BRAND";
+        fallbackElem.style.display = 'block';
+      }
+
+      textElem.innerText = data.text || 'INSERISCI TESTO';
+      textElem.style.fontSize = `${data.fontSize}px`;
+      arrowElem.innerHTML = SVG_ARROWS[data.arrow] || '';
+    }
+
+    function onLogoError(num) {
+      const imgElem = document.getElementById(`logoImg${num}`);
+      const fallbackElem = document.getElementById(`logoFallback${num}`);
+      imgElem.style.display = 'none';
+      
+      const select = document.getElementById('brandSelect');
+      const selectedText = (num === activeCartello && select.options[select.selectedIndex]) 
+        ? select.options[select.selectedIndex].text 
+        : cleanBrandName(cartelliData[num].brand || 'BRAND');
+
+      fallbackElem.innerText = (selectedText && selectedText !== PLACEHOLDER_TEXT) ? selectedText : "BRAND";
+      fallbackElem.style.display = 'block';
+    }
+
+    function changeLayout() {
+      const mode = document.getElementById('pageLayout').value;
+      const sheet = document.getElementById('a4Sheet');
+      const box2 = document.getElementById('cartelloBox2');
+      const selector = document.getElementById('cartelloSelector');
+
+      if (mode === '1') {
+        sheet.classList.add('single-mode');
+        box2.style.display = 'none';
+        selector.style.display = 'none';
+        selectCartello(1);
+      } else {
+        sheet.classList.remove('single-mode');
+        box2.style.display = 'flex';
+        selector.style.display = 'flex';
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
