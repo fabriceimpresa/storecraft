@@ -22,9 +22,55 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
-    .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 1.28rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 2.4rem; text-align: center; background: transparent; border: none; cursor: pointer; }
+    /* Barra superiore mobile (Trasparente/Integrata su Desktop) */
+    .mobile-top-bar { display: contents; }
+    .mobile-brand { display: none; }
+    .mobile-nav-toggle { display: none; }
+
+    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 1000; }
+    
+    /* Intestazione Sidebar con Brand + Tasto X Mobile */
+    .sidebar-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2.4rem;
+      width: 100%;
+    }
+
+    .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 1.28rem; letter-spacing: 2px; color: var(--accent); text-align: center; background: transparent; border: none; cursor: pointer; }
     .brand:hover, .brand:focus-visible { animation: brand-hover 0.6s ease-in-out; outline: none; }
+
+    /* Tasto X per chiusura menu su Mobile (Nascosto su PC/Mac) */
+    .mobile-close-btn {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      background-color: var(--accent);
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .mobile-close-btn:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
 
     @keyframes brand-hover {
       0%, 100% { transform: translateY(0) scale(1); }
@@ -114,11 +160,12 @@
     main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
     header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
     .home-mark { position: fixed; top: 1rem; left: calc(280px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+    
     .mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 0.55rem; z-index: 30; }
     .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
     .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
     .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
-    .mode-icon { font-size: 1rem; line-height: 1; }
+    
     .menu-group, #generators-section, #tickets-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
     body.cassiere-mode #tools-title { margin-bottom: 1.5rem; }
     body.cassiere-mode #tools { margin-bottom: 2rem; }
@@ -420,18 +467,149 @@
       max-width: none;
       height: auto;
     }
+
+    /* =========================================================
+       REGOLE MOBILE (Max-Width 768px)
+       ========================================================= */
+    @media (max-width: 768px) {
+      
+      /* BARRA SUPERIORE MOBILE COMPATTA */
+      .mobile-top-bar {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 52px;
+        background: #0a0908;
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0.6rem;
+        z-index: 900;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      }
+
+      /* Tasto Hamburger a Sinistra */
+      .mobile-nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: static;
+        width: 34px;
+        height: 34px;
+        background: #181715;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        color: var(--accent);
+        font-size: 1.1rem;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      /* Scritta Brand al Centro */
+      .mobile-brand {
+        display: block;
+        font-family: 'Cinzel', serif;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+        padding: 0 0.2rem;
+      }
+
+      /* Tasti Cassiere / Creator a Destra (Piccoli) */
+      .mobile-top-bar .mode-switcher {
+        position: static;
+        display: flex;
+        gap: 0.25rem;
+        flex-shrink: 0;
+      }
+
+      .mobile-top-bar .mode-btn {
+        padding: 0.3rem 0.45rem;
+        font-size: 0.62rem;
+        border-radius: 4px;
+        letter-spacing: 0.3px;
+      }
+
+      aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+        transform: translateX(0);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1000;
+      }
+
+      body.sidebar-collapsed aside {
+        transform: translateX(-100%);
+      }
+
+      .mobile-close-btn {
+        display: flex;
+      }
+
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(3px);
+        z-index: 999;
+        opacity: 1;
+        transition: opacity 0.3s ease, visibility 0.3s;
+        visibility: visible;
+      }
+
+      body.sidebar-collapsed .sidebar-overlay {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      main {
+        padding: 4.2rem 1.2rem 2rem 1.2rem;
+      }
+
+      .home-mark {
+        left: auto;
+        right: 0.8rem;
+        top: 3.8rem;
+      }
+    }
   </style>
 </head>
-<body>
+<body class="sidebar-collapsed">
 
-<div class="mode-switcher" aria-label="Modalità interfaccia">
-  <button class="mode-btn" data-mode="cassiere" type="button" onclick="setLayoutMode('cassiere')">CASSIERE</button>
-  <button class="mode-btn active" data-mode="creator" type="button" onclick="setLayoutMode('creator')">CREATOR</button>
+<!-- Overlay per sfumare lo sfondo su Mobile quando il menu è aperto -->
+<div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- Barra Superiore Mobile (Visibile solo su schermate <= 768px, su Desktop si adatta trasparentemente) -->
+<div class="mobile-top-bar">
+  <button class="mobile-nav-toggle" type="button" onclick="toggleMobileSidebar()" aria-label="Apri menu">☰</button>
+  <button class="mobile-brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
+  <div class="mode-switcher" aria-label="Modalità interfaccia">
+    <button class="mode-btn" data-mode="cassiere" type="button" onclick="setLayoutMode('cassiere')">CASSIERE</button>
+    <button class="mode-btn active" data-mode="creator" type="button" onclick="setLayoutMode('creator')">CREATOR</button>
+  </div>
 </div>
 
-<aside>
+<aside id="sidebar-menu">
     <div>
-      <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
+      <div class="sidebar-header">
+        <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
+        <!-- Tasto X dorato (attivo e visibile solo su Mobile dentro il menu) -->
+        <button class="mobile-close-btn" type="button" onclick="toggleMobileSidebar()" aria-label="Chiudi menu">✕</button>
+      </div>
       
       <div class="menu-group">
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
@@ -661,7 +839,7 @@
             </div>
             <div class="card-body">
               <h3>No Food & Drinks Outdoor</h3>
-              <p>Divieto di consumo cibi e bevande da apporre in vetrina.</p>
+              <p>Divieto di consumo cibi e bevande all'esterno del punto vendita.</p>
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
@@ -715,7 +893,7 @@
             </div>
             <div class="card-body">
               <h3>Collezione Last Chance</h3>
-              <p>Stampe Pronte Last Chance da € 10,00 fino a € 90,00</p>
+              <p>Stampe pronte generiche Last Chance da € 10,00 fino a € 90,00</p>
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
@@ -888,6 +1066,11 @@
     const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
     let qrcodeObj = null;
 
+    /* LOGICA APERTURA / CHIUSURA MENU SIDEBAR SU MOBILE */
+    function toggleMobileSidebar() {
+      document.body.classList.toggle('sidebar-collapsed');
+    }
+
     /* FUNZIONE APERTURA FILE PDF DA CARD */
     function openPdf(filePath) {
       if (filePath) {
@@ -990,12 +1173,18 @@
 
     function returnToHomeTop() {
       document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('sidebar-collapsed');
+      }
     }
 
     function scrollToSection(sectionId) {
       const el = document.getElementById(sectionId);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
+        if (window.innerWidth <= 768) {
+          document.body.classList.add('sidebar-collapsed');
+        }
       }
     }
 
@@ -1110,6 +1299,10 @@
         if (widgetId === 'widget-qrcode') {
           setTimeout(generateQR, 50);
         }
+      }
+
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('sidebar-collapsed');
       }
     }
 
