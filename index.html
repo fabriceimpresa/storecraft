@@ -593,7 +593,7 @@
 <!-- Overlay per sfumare lo sfondo su Mobile quando il menu è aperto -->
 <div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
 
-<!-- Barra Superiore Mobile (Visibile solo su schermate <= 768px, su Desktop si adatta trasparentemente) -->
+<!-- Barra Superiore Mobile -->
 <div class="mobile-top-bar">
   <button class="mobile-nav-toggle" type="button" onclick="toggleMobileSidebar()" aria-label="Apri menu">☰</button>
   <button class="mobile-brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
@@ -885,7 +885,7 @@
         
         <div class="carousel-container" id="prints-promo-carousel">
           
-          <!-- Card Collezione Last Chance -->
+          <!-- Card 1: Collezione Last Chance -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/lastchance.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/lastchancepronte.png" alt="Collezione Last Chance" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -894,6 +894,19 @@
             <div class="card-body">
               <h3>Collezione Last Chance</h3>
               <p>Stampe pronte generiche Last Chance da € 10,00 fino a € 90,00</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Collezione Last Chance Verticale -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/lastchanceverticali.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/lastchanceprontevert.png" alt="Collezione Last Chance Verticale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🏷️</span>
+            </div>
+            <div class="card-body">
+              <h3>Collezione Last Chance Verticale</h3>
+              <p>Stampe pronte Verticali per Last Chance da € 10,00 a € 90,00</p>
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
@@ -1257,12 +1270,10 @@
 
       if (mode === 'cassiere') {
         document.body.classList.add('cassiere-mode');
-        // Cassiere: Utilità Cassa per prima, Stampe Pronte per ultima nel menu
         appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, ticketsGroup, logosGroup, printsGroup]);
         appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection, printsSection, printsPromoSection]);
       } else {
         document.body.classList.remove('cassiere-mode');
-        // Creator: Genera Cartelli -> Genera Cartellini -> Loghi Personalizzati -> Stampe Pronte -> Utilità Cassa
         appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup]);
         appendInOrder(main, [generatorsSection, ticketsSection, printsSection, printsPromoSection, toolsTitle, toolsGrid]);
       }
