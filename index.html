@@ -1087,7 +1087,7 @@
     /* FUNZIONE APERTURA FILE PDF DA CARD */
     function openPdf(filePath) {
       if (filePath) {
-        window.open(filePath, '_blank');
+        window.location.href = `pdf-viewer.html?file=${encodeURIComponent(filePath)}`;
       }
     }
 

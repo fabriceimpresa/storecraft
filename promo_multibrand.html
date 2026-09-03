@@ -90,6 +90,10 @@
     .tint-90 { filter: brightness(0) saturate(100%) invert(25%) sepia(60%) saturate(2000%) hue-rotate(190deg) brightness(90%) contrast(95%) !important; }
 
     @page { size: A4 portrait; margin: 0 !important; }
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+    }
+
     @media print {
       html, body { width: 210mm !important; height: 292mm !important; max-height: 292mm !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important; background: #fff !important; }
       body { display: block !important; }
