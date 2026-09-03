@@ -2,7 +2,6 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartelli Magazzino // STORE CRAFT</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -75,6 +74,59 @@
     .arrow-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
     .arrow-btn { background: var(--card); border: 1px solid var(--border); color: #fff; padding: 0.5rem; border-radius: 4px; cursor: pointer; font-size: 1.2rem; text-align: center; transition: all 0.2s; }
     .arrow-btn:hover, .arrow-btn.active { border-color: var(--accent); background: rgba(212, 163, 115, 0.15); color: var(--accent); }
+
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      color: #000;
+      border: 0;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--sidebar);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: var(--accent-hover);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
 
     .cartello-selector { display: flex; gap: 8px; margin-bottom: 1.2rem; }
     .cartello-tab { flex: 1; padding: 0.5rem; background: var(--card); border: 1px solid var(--border); color: var(--text-muted); font-size: 0.75rem; font-weight: bold; text-align: center; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
@@ -203,7 +255,7 @@
         print-color-adjust: exact !important;
       }
 
-      aside, .preview-section > div:first-child { 
+      aside, .preview-section > div:first-child, .app-close-btn, .floating-nav-box { 
         display: none !important; 
       }
 
@@ -256,15 +308,19 @@
         border-bottom: 1px dashed #aaa !important;
       }
     }
+
   </style>
 </head>
 <body>
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna all'index">✕</a>
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
 
   <aside>
     <div>
       <div class="brand">STORE // CRAFT</div>
-      <a href="index.html" class="nav-btn">← Torna alla Dashboard</a>
-
       <div class="form-group">
         <label>Formato Pagina</label>
         <select id="pageLayout" class="form-control" onchange="changeLayout()">
