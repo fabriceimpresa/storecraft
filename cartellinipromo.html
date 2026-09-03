@@ -322,14 +322,28 @@
     }
 
     @media print {
-      body { background: none; }
+      html, body {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      body { background: none; display: block; }
       aside { display: none !important; }
-      main { padding: 0; background: none; margin: 0; display: flex; align-items: center; justify-content: center; }
+      main {
+        padding: 0;
+        background: none;
+        margin: 0;
+        display: block;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
       .a4-landscape { 
         box-shadow: none; 
         margin: 0 auto; 
         width: 282mm !important; 
         height: 196mm !important; 
+        max-height: 196mm !important;
         page-break-after: avoid;
         page-break-inside: avoid;
         -webkit-print-color-adjust: exact;
@@ -747,7 +761,28 @@
       renderGrid();
     }
 
+    function applySafariPrintFix() {
+      const ua = navigator.userAgent;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua) && !/Edg|OPR|Brave/i.test(ua);
+      if (!isSafari) return;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @media print {
+          .a4-landscape {
+            transform: scale(0.94);
+            transform-origin: top center;
+          }
+          @page {
+            margin: 4mm 4mm 10mm 4mm;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     init();
+    applySafariPrintFix();
   </script>
 </body>
 </html>
