@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Cartello Outlet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      font-style: italic;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Nevis Project';
+      src: url('assets/fonts/Nevis Bold.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Space Invaders Project';
+      src: url('assets/fonts/space_invaders.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* Sfondo principale */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Filigrana di sfondo */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
+      background-repeat: repeat;
+      background-size: 650px auto;
+      background-position: center;
+      opacity: 0.18;
+      filter: contrast(1.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid #2e2b27;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #d4a373;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #e5ba73;
+      background-color: transparent;
+      border-left: none;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
+      padding: 0 0 0.6rem;
+      border-radius: 0;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #2e2b27;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background-color: #0a0908;
+      color: #fff;
+    }
+
+    .form-group select.custom-select {
+      border-color: #b48b37;
+      color: #f3d5a3;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
+    }
+
+    select option:first-child {
+      color: #b48b37 !important;
+      font-weight: bold !important;
+    }
+
+    /* PULSANTE TOGGLE DESCRIZIONE */
+    .btn-toggle-desc {
+      width: 100%;
+      background: linear-gradient(135deg, #d4a373 0%, #b8860b 100%);
+      color: #000000;
+      border: 1px solid #e5ba73;
+      padding: 10px;
+      font-size: 0.88rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 10px 0;
+      box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-toggle-desc:hover {
+      background: linear-gradient(135deg, #e5ba73 0%, #d4a373 100%);
+      box-shadow: 0 6px 14px rgba(212, 163, 115, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-toggle-desc.active {
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+      color: #ffffff;
+      border-color: #28a745;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    /* PULSANTI STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: #ffffff;
+      border: 1px solid #b30000;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #cc0000; }
+
+    .btn-print-single {
+      width: 100%;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 1px solid #004085;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print-single:hover { background-color: #003d80; }
+
+    /* FOGLIO STAMPA */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 296mm;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 8mm 12mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .print-sheet.double-mode {
+      justify-content: space-between;
+    }
+
+    .print-sheet.single-mode #card1 {
+      margin-bottom: 7mm;
+    }
+
+    .card {
+      width: 100%;
+      height: 128mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4mm 0;
+      flex-shrink: 0;
+    }
+
+    .card.disabled {
+      display: none !important;
+    }
+
+    .cut-line {
+      width: 100%;
+      border-top: 1px dashed #ccc;
+      margin: 2mm 0;
+      flex-shrink: 0;
+    }
+
+    .header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5mm;
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #e00000;
+      text-align: center;
+      line-height: 1.1;
+      text-transform: uppercase;
+      width: 20%;
+    }
+
+    .claim-flag {
+      width: 21mm;
+      max-height: 13mm;
+      object-fit: contain;
+    }
+
+    .claim-flag-left { transform: translateX(-3mm); }
+    .claim-flag-right { transform: translateX(3mm); }
+
+    .red-box {
+      width: 56%;
+      height: 29mm;
+      background-color: #e00000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2mm;
+      flex-shrink: 0;
+    }
+
+    .red-box img {
+      max-width: 94%;
+      max-height: 94%;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    /* RIGA DESCRIZIONE PROMOZIONALE */
+    .promo-description {
+      display: none;
+      font-family: 'Bodoni Project', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 2.1rem;
+      line-height: 1;
+      letter-spacing: -0.05em; /* Spaziatura caratteri stretta (-50 di Photoshop) */
+      color: #222222;
+      text-align: center;
+      margin-top: 10mm; /* Abbassato di ulteriori millimetri dal rettangolo rosso */
+      margin-bottom: 1mm;
+      width: 90%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .promo-description.active {
+      display: block;
+    }
+
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 1mm 0;
+      flex-shrink: 0;
+      transition: margin-top 0.2s ease-in-out, margin-bottom 0.2s ease-in-out;
+    }
+
+    /* Posizionamento del blocco prezzo verso il basso quando la descrizione è attiva */
+    .card.has-desc .price-block {
+      margin-top: 5mm;
+      margin-bottom: 1mm;
+    }
+
+    .price-row-old {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 1.95rem;
+      margin-bottom: 6px;
+    }
+
+    .price-original {
+      font-family: 'Bodoni Project', serif;
+      font-weight: normal;
+      color: #333;
+      text-decoration: line-through;
+    }
+
+    .discount-tag {
+      font-family: 'Bodoni Project', serif;
+      font-style: normal;
+      color: #e00000;
+      font-weight: 800;
+    }
+
+    .price-final {
+      font-family: 'Bodoni Project', serif;
+      font-size: 9.36rem;
+      font-weight: normal;
+      color: #000;
+      line-height: 0.82;
+      text-align: center;
+      letter-spacing: -3.5px;
+    }
+
+    .card-footer {
+      height: 19.2mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1mm;
+      flex-shrink: 0;
+      transition: margin-top 0.2s ease-in-out;
+    }
+
+    /* Spostamento verso il basso del logo luxury outlet quando c'è la descrizione */
+    .card.has-desc .card-footer {
+      margin-top: 3mm;
+      margin-bottom: 0;
+    }
+
+    .card-footer img {
+      max-height: 100%;
+      max-width: 264px;
+      object-fit: contain;
+      filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
+    }
+
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #d4a373;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #e5ba73;
+      transform: scale(1.1);
+    }
+
+    .made-in-italy-btn {
+      position: fixed;
+      top: 4.5rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 7px;
+      background: #ffffff;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .made-in-italy-btn-lower { top: calc(50% + 1rem); }
+
+    .made-in-italy-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .made-in-italy-btn:hover,
+    .made-in-italy-btn[aria-pressed="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #e5ba73;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body::before { display: none !important; }
+
+      .sidebar, .app-close-btn, .made-in-italy-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 5mm auto 0 !important;
+        padding: 8mm 10mm;
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .red-box { 
+        background-color: #e00000 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+  <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <!-- PANNELLO PRINCIPALE -->
+    <div class="controls">
+      <h2>Cartello Outlet</h2>
+
+      <!-- TASTO PER AGGIUNGERE/REMUOVERE DESCRIZIONE -->
+      <button type="button" class="btn-toggle-desc" id="btnToggleDesc" onclick="toggleDescription()">
+        ✨ AGGIUNGI DESCRIZIONE ARTICOLO
+      </button>
+
+      <div class="section-title">CARTELLO 1 (Superiore)</div>
+      <div class="form-group">
+        <label>Brand Ufficiale:</label>
+        <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
+      </div>
+      <div class="form-group">
+        <label>Claim SX 1 / DX 1:</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="left1" value="SALDI 2026" oninput="updateCards()">
+          <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+        </div>
+      </div>
+      <div class="form-group id-desc-group" id="descGroup1" style="display: none;">
+        <label style="color: #e5ba73;">Seleziona Testo Descrittivo:</label>
+        <select id="presetDesc1" onchange="applyPreset(1)">
+          <option value="">-- Seleziona un testo rapido --</option>
+          <option value="Outlet Price">Outlet Price</option>
+          <option value="Final Price">Final Price</option>
+          <option value="Special Deal">Special Deal</option>
+          <option value="Made in Italy">Made in Italy</option>
+          <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+          <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+          <option value="Limited Edition">Limited Edition</option>
+          <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+        </select>
+        <label style="color: #e5ba73; margin-top: 0.6rem;">oppure Testo Descrittivo Libero:</label>
+        <input type="text" id="desc1" value="Outlet Price" placeholder="Inserisci o modifica il testo" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Prezzi (Originale / Sconto / Finale):</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="pOld1" value="395,00" placeholder="395,00" oninput="updateCards()">
+          <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="formatDiscountInput(this); updateCards()">
+          <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
+        </div>
+      </div>
+
+      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+      <div id="sectionCard2">
+        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+        <div class="form-group">
+          <label>Brand Ufficiale:</label>
+          <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
+        </div>
+        <div class="form-group">
+          <label>Claim SX 2 / DX 2:</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="left2" value="SALDI 2026" oninput="updateCards()">
+            <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+          </div>
+        </div>
+        <div class="form-group id-desc-group" id="descGroup2" style="display: none;">
+          <label style="color: #e5ba73;">Seleziona Testo Descrittivo:</label>
+          <select id="presetDesc2" onchange="applyPreset(2)">
+            <option value="">-- Seleziona un testo rapido --</option>
+            <option value="Outlet Price">Outlet Price</option>
+            <option value="Final Price">Final Price</option>
+            <option value="Special Deal">Special Deal</option>
+            <option value="Made in Italy">Made in Italy</option>
+            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+            <option value="Limited Edition">Limited Edition</option>
+            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+          </select>
+          <label style="color: #e5ba73; margin-top: 0.6rem;">oppure Testo Descrittivo Libero:</label>
+          <input type="text" id="desc2" value="Outlet Price" placeholder="Inserisci o modifica il testo" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Prezzi (Originale / Sconto / Finale):</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="pOld2" value="395,00" placeholder="395,00" oninput="updateCards()">
+            <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="formatDiscountInput(this); updateCards()">
+            <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">IMPOSTAZIONI STAMPA</div>
+      <div class="form-group">
+        <label>Modalità Cartelli da Stampare:</label>
+        <select id="modeSelect" onchange="toggleCardMode()">
+          <option value="2">2 Cartelli (Foglio Intero A4)</option>
+          <option value="1">1 Solo Cartello (Superiore)</option>
+        </select>
+      </div>
+
+      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+    </div>
+
+    <!-- PANNELLO LOGHI PERSONALIZZATI SEPARATO -->
+    <div class="controls">
+      <h2>LOGHI PERSONALIZZATI</h2>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
+        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
+        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">SALDI<br>2026</div>
+        <div class="red-box"><img id="cardLogo1" src="" alt="Logo Brand"></div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+      </div>
+
+      <!-- RIGA DESCRIZIONE PROMOZIONALE -->
+      <div class="promo-description" id="promoDesc1">Outlet Price</div>
+
+      <div class="price-block">
+        <div class="price-row-old">
+          <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
+          <span class="discount-tag" id="discountDisplay1">-75%</span>
+        </div>
+        <div class="price-final" id="priceNewDisplay1">€ 99,00</div>
+      </div>
+
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
+    </div>
+
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">SALDI<br>2026</div>
+        <div class="red-box"><img id="cardLogo2" src="" alt="Logo Brand"></div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+      </div>
+
+      <!-- RIGA DESCRIZIONE PROMOZIONALE -->
+      <div class="promo-description" id="promoDesc2">Outlet Price</div>
+
+      <div class="price-block">
+        <div class="price-row-old">
+          <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
+          <span class="discount-tag" id="discountDisplay2">-75%</span>
+        </div>
+        <div class="price-final" id="priceNewDisplay2">€ 99,00</div>
+      </div>
+
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
+    </div>
+  </div>
+
+  <script>
+    let isDescriptionActive = false;
+    const madeInItalyClaimsActive = { 1: false, 2: false };
+    const previousDescriptionState = { 1: null, 2: null };
+
+    const LOGO_FILES = [
+      "269TEBE.PNG","ABIDDIKKIA.png","AFTERLABEL.png","AIRWALK.png","ALESSANDRODELLACQUA.png",
+      "ALEXANDERMCQUEEN.png","ARMANI.png","ARMANI_COLLEZIONI.png","ARMANI_EXCHANGE.png",
+      "ARMANI_GIORGIO.png","ARMANI_JEANS.png","ARNALDIMILANO.PNG","AVIREX.png","AYLIE.png",
+      "BAGUTTA.png","BALDININI.png","BALMAIN.PNG","BASTONCINO.png","BCBG.png","BEATRICE.png",
+      "BELSTAF.png","BENSHERMAN.png","BIKKENBERGS.png","BLAUER.png","BLKER.png","BLUGIRL.png",
+      "BLUMARINE.png","BRICS.png","BURBERRY.png","BYBLOS.png","CALVINKLEIN.png","CARHARTT.png",
+      "CAVALLI_CLASS.png","CAVALLI_ROBERTO.png","CHIARABONI.png","CIESSEPIUMINI.png","COCACOLA.png",
+      "COCCINELLE.png","COSTUMENATIONAL.png","DAINESE.png","DEVORE.png","DIADORA.png","DICKIES.png",
+      "DIESEL.png","DIOR.png","DIXIE.png","DOLCEANDGABBANA.png","DRSCHOLL.png","DSQUARED2.png",
+      "DUCAHOMME.png","EASTPAK.png","EGONVONFURSTENBERG.png","ELISAFANTI.png","EMMAANDGAIA.png",
+      "ENTREAMIS.png","ERMANNOSCERVINO.png","ERMENEGILDOZEGNA.png","EVERLAST.png","FACCONABLE.png",
+      "FELEPPA.png","FERRARI.png","FERRE.png","FILA.png","FRANKLINMARSHALL.png","GAELLE.png",
+      "GANT.png","GARMENT.png","GATTINONI.png","GCDS.png","GERMANS.png","GIVENCHY.png","GOORIN.png",
+      "GUESS.png","GUYLAROCHE.png","H953.png","HACKETTLONDON.png","HARMONT&BLAINE.png","HAVEONE.png",
+      "HERSCHELL.png","HOPPER.png","HUSKY.png","IMPERIAL.png","IMPURE.png","INVICTA.png",
+      "ISABELMARANT.png","JACKDANIELS.png","JEIO.PNG","JEREMYSCOTT.png","JIJIL.png",
+      "JOHNGALLIANO.png","JOHNRICHMOND.png","JUSTCAVALLI.png","KARLLAGERFELD.png","KENZO.png",
+      "KRIZIA.png","KWAY.png","LACOSTE.png","LAMARTHE.png","LAPERLA.png","LASTCHANCE.png",
+      "LAURABIAGIOTTI.png","LEE.png","LESARTEDELSOLE.png","LEVIS.png","LIUJO.png","LONSDALE.png",
+      "LOVE.png","LUCKYLU.png","LUXURY_GOLD.png","LXRY.png","LXRY_BRAND.png","MADEINITALY.png",
+      "MAISONMARGIELA.png","MAJE.png","MALIPARNI.png","MALONESOULIERS.png","MARCJACOBS.png",
+      "MARELLA.png","MARIOVALENTINO.png","MARLBORO.png","MARNI.png","MASSIMOREBECCHI.png",
+      "MAXMARA.png","MEIMEIJ.png","MELISSA.png","MICHAELKORS.png","MIRONCE.png","MISSONI.png",
+      "MIZUNO.png","MODFITTERS.png","MONCLER.png","MONTECERVINO.png","MOSCHINO.png","MOTEL.png",
+      "MSGM.png","NAPAPIJRI.png","NENETTE.png","NEWBALANCE.png","OBAG.png","OFFICINA36.png",
+      "ONLY.png","OTTODROM.png","PACIOTTI_4US.png","PACIOTTI_CESARE.png","PATRIZIAPEPE.png",
+      "PAULANDSHARK.png","PEOPLEOFSHIBUYA.png","PHILIPPPLEIN.png","PIERRECARDIN.png","PINKO.png",
+      "PIQUADRO.png","POLAROID.png","RALPHLAUREN.png","RANSOM.png","REFRIGIWEAR.png","REFRIGUE.png",
+      "RICHMOND.png","ROCCOBAROCCO.png","ROYROGERS.png","RUEBISQUIT.png","RUSSEL.png",
+      "SALVATOREFERRAGAMO.png","SERGIOTACCHINI.png","SFIZIO.png","SIMONACORSELLINI.png","SKYWARD.png",
+      "SOUVENIR.png","STEVEMADDEN.png","SUPERDRY.png","TEBE.png","TENSIONEIN.png","TOMMYHILFIGER.png",
+      "TOMMYJEANS.png","TOYG.png","TRUSSARDI.png","TRUSSARDI_JEANS.png","TWINSET.png","UNGARO.png",
+      "UNIFORM.png","USPOLOASSN.png","VERSACE.png","VERSACE_VERSUS.png","VICBEE.png","VIONNET.png",
+      "WEILIZHENG.png","WRANGLER.png"
+    ];
+
+    LOGO_FILES.push("ARMANI_EMPORIO.png", "COLUMBIA.png", "COTTONBELT.png", "ONLYANDSONS.png", "PANAM.png");
+    LOGO_FILES.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
+
+    const LOGO_PATH = "assets/logos/";
+    const DEFAULT_LOGO = "LUXURY_GOLD.png";
+    const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function toggleDescription() {
+      isDescriptionActive = !isDescriptionActive;
+      const btn = document.getElementById('btnToggleDesc');
+      const descGroup1 = document.getElementById('descGroup1');
+      const descGroup2 = document.getElementById('descGroup2');
+      const promoDesc1 = document.getElementById('promoDesc1');
+      const promoDesc2 = document.getElementById('promoDesc2');
+      const card1 = document.getElementById('card1');
+      const card2 = document.getElementById('card2');
+
+      if (isDescriptionActive) {
+        btn.classList.add('active');
+        btn.innerHTML = "✓ DESCRIZIONE ARTICOLO ATTIVA";
+        descGroup1.style.display = "block";
+        descGroup2.style.display = "block";
+        promoDesc1.classList.add('active');
+        promoDesc2.classList.add('active');
+        card1.classList.add('has-desc');
+        card2.classList.add('has-desc');
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = "✨ AGGIUNGI DESCRIZIONE ARTICOLO";
+        descGroup1.style.display = "none";
+        descGroup2.style.display = "none";
+        promoDesc1.classList.remove('active');
+        promoDesc2.classList.remove('active');
+        card1.classList.remove('has-desc');
+        card2.classList.remove('has-desc');
+      }
+      updateCards();
+    }
+
+    function setDescriptionVisibility(cardIndex, isVisible) {
+      document.getElementById('descGroup' + cardIndex).style.display = isVisible ? 'block' : 'none';
+      document.getElementById('promoDesc' + cardIndex).classList.toggle('active', isVisible);
+      document.getElementById('card' + cardIndex).classList.toggle('has-desc', isVisible);
+    }
+
+    function toggleMadeInItaly(cardIndex) {
+      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+      const descriptionField = document.getElementById('desc' + cardIndex);
+      const descriptionPreset = document.getElementById('presetDesc' + cardIndex);
+
+      if (madeInItalyClaimsActive[cardIndex]) {
+        previousDescriptionState[cardIndex] = {
+          description: descriptionField.value,
+          preset: descriptionPreset.value,
+          isVisible: document.getElementById('promoDesc' + cardIndex).classList.contains('active')
+        };
+        descriptionField.value = 'Made in Italy';
+        descriptionPreset.value = 'Made in Italy';
+        setDescriptionVisibility(cardIndex, true);
+      } else if (previousDescriptionState[cardIndex]) {
+        descriptionField.value = previousDescriptionState[cardIndex].description;
+        descriptionPreset.value = previousDescriptionState[cardIndex].preset;
+        setDescriptionVisibility(cardIndex, previousDescriptionState[cardIndex].isVisible);
+        previousDescriptionState[cardIndex] = null;
+      }
+
+      document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
+      updateCards();
+    }
+
+    function loadLocalLogos() {
+      const select1 = document.getElementById('brandSelect1');
+      const select2 = document.getElementById('brandSelect2');
+
+      select1.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      select2.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      LOGO_FILES.forEach(fileName => {
+        const displayName = cleanBrandName(fileName);
+        
+        const option1 = document.createElement('option');
+        option1.value = fileName;
+        option1.textContent = displayName;
+        select1.appendChild(option1);
+
+        const option2 = document.createElement('option');
+        option2.value = fileName;
+        option2.textContent = displayName;
+        select2.appendChild(option2);
+      });
+
+      loadCustomLogosDropdown();
+      updateCards();
+    }
+
+    function loadCustomLogosDropdown() {
+      const cSelect1 = document.getElementById('customBrandSelect1');
+      const cSelect2 = document.getElementById('customBrandSelect2');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+
+      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+
+      customLogos.forEach(item => {
+        const opt1 = document.createElement('option');
+        opt1.value = item.data;
+        opt1.textContent = "★ " + item.name;
+        cSelect1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = item.data;
+        opt2.textContent = "★ " + item.name;
+        cSelect2.appendChild(opt2);
+      });
+    }
+
+    function onOfficialBrandChange(cardIndex) {
+      document.getElementById('customBrandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function onCustomBrandChange(cardIndex) {
+      document.getElementById('brandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function applyPreset(cardIndex) {
+      const value = document.getElementById('presetDesc' + cardIndex).value;
+      if (value !== "") {
+        document.getElementById('desc' + cardIndex).value = value;
+        updateCards();
+      }
+    }
+
+    function copyCard1ToCard2() {
+      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
+      document.getElementById('left2').value = document.getElementById('left1').value;
+      document.getElementById('right2').value = document.getElementById('right1').value;
+      document.getElementById('desc2').value = document.getElementById('desc1').value;
+      document.getElementById('presetDesc2').value = document.getElementById('presetDesc1').value;
+      document.getElementById('pOld2').value = document.getElementById('pOld1').value;
+      document.getElementById('disc2').value = document.getElementById('disc1').value;
+      document.getElementById('pNew2').value = document.getElementById('pNew1').value;
+      updateCards();
+    }
+
+    function toggleCardMode() {
+      const count = document.getElementById('modeSelect').value;
+      const card2 = document.getElementById('card2');
+      const section2 = document.getElementById('sectionCard2');
+      const btnCopy = document.getElementById('btnCopy');
+      const sheet = document.getElementById('printSheet');
+
+      if (count === "1") {
+        card2.classList.add('disabled');
+        section2.style.display = 'none';
+        btnCopy.style.display = 'none';
+        sheet.classList.remove('double-mode');
+        sheet.classList.add('single-mode');
+      } else {
+        card2.classList.remove('disabled');
+        section2.style.display = 'block';
+        btnCopy.style.display = 'block';
+        sheet.classList.remove('single-mode');
+        sheet.classList.add('double-mode');
+      }
+    }
+
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = count.toString();
+      toggleCardMode();
+      window.print();
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) {
+        return;
+      }
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
+    }
+
+    function updateCards() {
+      // Cartello 1
+      const b1 = document.getElementById('brandSelect1').value;
+      const cb1 = document.getElementById('customBrandSelect1').value;
+
+      if (cb1) {
+        document.getElementById('cardLogo1').src = cb1;
+      } else if (b1) {
+        document.getElementById('cardLogo1').src = LOGO_PATH + b1;
+      } else {
+        document.getElementById('cardLogo1').src = LOGO_PATH + DEFAULT_LOGO;
+      }
+
+      const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      document.getElementById('headLeft1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>');
+      document.getElementById('headRight1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>');
+      document.getElementById('promoDesc1').innerText = document.getElementById('desc1').value;
+
+      const po1 = document.getElementById('pOld1').value;
+      document.getElementById('priceOldDisplay1').innerText = po1 ? '€ ' + po1 : '';
+      document.getElementById('discountDisplay1').innerText = document.getElementById('disc1').value;
+      const pn1 = document.getElementById('pNew1').value;
+      document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
+
+      // Cartello 2
+      const b2 = document.getElementById('brandSelect2').value;
+      const cb2 = document.getElementById('customBrandSelect2').value;
+
+      if (cb2) {
+        document.getElementById('cardLogo2').src = cb2;
+      } else if (b2) {
+        document.getElementById('cardLogo2').src = LOGO_PATH + b2;
+      } else {
+        document.getElementById('cardLogo2').src = LOGO_PATH + DEFAULT_LOGO;
+      }
+
+      document.getElementById('headLeft2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>');
+      document.getElementById('headRight2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>');
+      document.getElementById('promoDesc2').innerText = document.getElementById('desc2').value;
+
+      const po2 = document.getElementById('pOld2').value;
+      document.getElementById('priceOldDisplay2').innerText = po2 ? '€ ' + po2 : '';
+      document.getElementById('discountDisplay2').innerText = document.getElementById('disc2').value;
+      const pn2 = document.getElementById('pNew2').value;
+      document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
+    }
+
+    window.onload = loadLocalLogos;
+  </script>
+</body>
+</html>

@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORE // CRAFT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <!-- Libreria qrcode.js integrata -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #121110;
+      --sidebar: #181715;
+      --card: #1e1d1a;
+      --border: #2e2b27;
+      --accent: #d4a373;
+      --accent-hover: #e5ba73;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    /* Barra superiore mobile (Trasparente/Integrata su Desktop) */
+    .mobile-top-bar { display: contents; }
+    .mobile-brand { display: none; }
+    .mobile-nav-toggle { display: none; }
+
+    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 1000; }
+    
+    /* Intestazione Sidebar con Brand + Tasto X Mobile */
+    .sidebar-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2.4rem;
+      width: 100%;
+    }
+
+    .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 1.28rem; letter-spacing: 2px; color: var(--accent); text-align: center; background: transparent; border: none; cursor: pointer; }
+    .brand:hover, .brand:focus-visible { animation: brand-hover 0.6s ease-in-out; outline: none; }
+
+    /* Tasto X per chiusura menu su Mobile (Nascosto su PC/Mac) */
+    .mobile-close-btn {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      background-color: var(--accent);
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .mobile-close-btn:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    @keyframes brand-hover {
+      0%, 100% { transform: translateY(0) scale(1); }
+      45% { transform: translateY(-3px) scale(1.05); }
+      70% { transform: translateY(0) scale(0.98); }
+    }
+    
+    .menu-label { 
+      font-size: 0.7rem; 
+      color: #ffffff; 
+      text-transform: uppercase; 
+      letter-spacing: 2px; 
+      font-weight: 700;
+      margin: 1.8rem 0 0.6rem 0.5rem; 
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.2);
+    }
+
+    .menu-group { margin-top: 1.8rem; }
+    .menu-group:first-of-type { margin-top: 0; }
+    .menu-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0 0.5rem 4px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.2);
+      color: #ffffff;
+      font: inherit;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+    }
+    .menu-toggle:hover, .menu-toggle:focus-visible { color: var(--accent); outline: none; }
+    .menu-arrow {
+      color: var(--accent);
+      font-size: 1rem;
+      line-height: 0.7;
+      transition: transform 0.25s ease;
+    }
+    .menu-toggle[aria-expanded="false"] .menu-arrow { transform: rotate(-90deg); }
+    .menu-items {
+      overflow: hidden;
+      max-height: 360px;
+      opacity: 1;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+    }
+    .menu-items.is-collapsed { max-height: 0; opacity: 0; }
+
+    .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
+
+    /* Struttura inferiore della Sidebar per Logo + Footer */
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .sidebar-logo {
+      width: 100%;
+      max-width: 195px;
+      height: auto;
+      margin-bottom: 1.2rem;
+      display: block;
+      filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%);
+    }
+
+    .sidebar-footer {
+      font-size: 0.7rem; 
+      color: var(--text-muted); 
+      text-align: center; 
+      line-height: 1.45; 
+      padding-top: 12px; 
+      border-top: 1px solid var(--border);
+      width: 100%;
+    }
+
+    main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+    header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+    .home-mark { position: fixed; top: 1rem; left: calc(280px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+    
+    .mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 0.55rem; z-index: 30; }
+    .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
+    .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
+    .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
+    
+    .menu-group, #generators-section, #tickets-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    body.cassiere-mode #tools-title { margin-bottom: 1.5rem; }
+    body.cassiere-mode #tools { margin-bottom: 2rem; }
+    .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
+    body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
+    .home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
+    .home-mark-icon { font-size: 1.2rem; line-height: 1; }
+    header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
+    header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
+
+    .section-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 1.2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
+    .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    
+    .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); padding: 10px 14px; position: relative; }
+    .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 3px; }
+
+    .card-body { padding: 1rem; }
+    .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; margin-bottom: 0.3rem; }
+    .card-body p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* CAROSELLI CON FRECCE FLOATING */
+    #prints-section, #prints-promo-section { margin-bottom: 3rem; }
+    
+    .carousel-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .carousel-container {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      padding: 0.5rem 0.2rem 1.2rem 0.2rem;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .carousel-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: calc(50% - 0.6rem);
+      transform: translateY(-50%);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(18, 17, 16, 0.85);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+
+    .carousel-arrow:hover {
+      background: var(--accent);
+      color: #000000;
+      box-shadow: 0 0 10px rgba(212, 163, 115, 0.5);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .carousel-arrow.prev { left: -18px; }
+    .carousel-arrow.next { right: -18px; }
+
+    .carousel-card {
+      flex: 0 0 250px;
+      scroll-snap-align: start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .carousel-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .carousel-card .preview-icon {
+      font-size: 3.2rem;
+      color: var(--accent);
+    }
+    .print-pdf-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      width: 100%;
+      margin-top: 0.9rem;
+      text-decoration: none;
+      font-size: 0.75rem;
+      padding: 0.55rem 0.5rem;
+    }
+
+    .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    
+    /* WIDGET ED ESPANSIONE ANIMATA */
+    .widget { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 8px; 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      position: relative;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .widget-compact {
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .widget:not(.expanded):hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .widget h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .widget-compact h3 { margin-bottom: 0.8rem; }
+
+    /* MODALITÀ ESPANSA / FOCUS */
+    .widget.expanded {
+      grid-column: 1 / -1;
+      padding: 2.5rem;
+      background: #161513;
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      transform: scale(1.01);
+      cursor: default;
+      z-index: 10;
+    }
+
+    .widget-header-controls {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .widget.expanded .widget-header-controls {
+      display: flex;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      background-color: var(--accent);
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .close-btn:hover {
+      background-color: var(--accent-hover);
+      transform: scale(1.1);
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .tool-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+    .input-group { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #0a0908; }
+    .input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; flex-shrink: 0; }
+    .input-suffix { padding: 0.6rem 0.7rem; background: #181715; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border-left: 1px solid var(--border); font-weight: 700; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.5px; white-space: nowrap; }
+    .tool-input { width: 100%; padding: 0.6rem 0.7rem; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
+    .tool-input-select { width: 100%; padding: 0.6rem 0.7rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
+    .tool-input-select:focus, .tool-input:focus { border-color: var(--accent); }
+    
+    .tool-btn { 
+      padding: 0.65rem 0.8rem; 
+      background: var(--accent); 
+      color: #000000; 
+      font-weight: 700; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      font-size: 0.8rem; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tool-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .tool-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .tool-btn-secondary:hover {
+      background: rgba(212, 163, 115, 0.1);
+      color: var(--accent-hover);
+    }
+
+    .tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
+
+    /* STILI ESCLUSIVI WIDGET IVA */
+    .rate-grid-widget {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .rate-btn-widget {
+      background: #0a0908;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 0;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .rate-btn-widget:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .rate-btn-widget.active {
+      background: rgba(212, 163, 115, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Contenitore QR Code */
+    .qr-preview-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto 0;
+      padding-top: 0.2rem;
+      padding-bottom: 0.8rem;
+    }
+
+    .qr-preview-wrapper {
+      background: #ffffff;
+      padding: 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .widget:not(.expanded) #qrcode img, 
+    .widget:not(.expanded) #qrcode canvas {
+      max-width: 75px !important;
+      height: auto !important;
+    }
+
+    .widget.expanded #qrcode img,
+    .widget.expanded #qrcode canvas {
+      max-width: none;
+      height: auto;
+    }
+
+    /* =========================================================
+       REGOLE MOBILE (Max-Width 768px)
+       ========================================================= */
+    @media (max-width: 768px) {
+      
+      /* BARRA SUPERIORE MOBILE COMPATTA */
+      .mobile-top-bar {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 52px;
+        background: #0a0908;
+        border-bottom: 1px solid var(--border);
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0.6rem;
+        z-index: 900;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      }
+
+      /* Tasto Hamburger a Sinistra */
+      .mobile-nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: static;
+        width: 34px;
+        height: 34px;
+        background: #181715;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        color: var(--accent);
+        font-size: 1.1rem;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      /* Scritta Brand al Centro */
+      .mobile-brand {
+        display: block;
+        font-family: 'Cinzel', serif;
+        font-size: 0.98rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: var(--accent);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+        padding: 0 0.2rem;
+      }
+
+      /* Tasti Cassiere / Creator a Destra (Piccoli) */
+      .mobile-top-bar .mode-switcher {
+        position: static;
+        display: flex;
+        gap: 0.25rem;
+        flex-shrink: 0;
+      }
+
+      .mobile-top-bar .mode-btn {
+        padding: 0.3rem 0.45rem;
+        font-size: 0.62rem;
+        border-radius: 4px;
+        letter-spacing: 0.3px;
+      }
+
+      aside {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 280px;
+        box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+        transform: translateX(0);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1000;
+      }
+
+      body.sidebar-collapsed aside {
+        transform: translateX(-100%);
+      }
+
+      .mobile-close-btn {
+        display: flex;
+      }
+
+      .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(3px);
+        z-index: 999;
+        opacity: 1;
+        transition: opacity 0.3s ease, visibility 0.3s;
+        visibility: visible;
+      }
+
+      body.sidebar-collapsed .sidebar-overlay {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      main {
+        padding: 4.2rem 1.2rem 2rem 1.2rem;
+      }
+
+      .home-mark {
+        left: auto;
+        right: 0.8rem;
+        top: 3.8rem;
+      }
+    }
+  </style>
+</head>
+<body class="sidebar-collapsed">
+
+<!-- Overlay per sfumare lo sfondo su Mobile quando il menu è aperto -->
+<div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- Barra Superiore Mobile -->
+<div class="mobile-top-bar">
+  <button class="mobile-nav-toggle" type="button" onclick="toggleMobileSidebar()" aria-label="Apri menu">☰</button>
+  <button class="mobile-brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
+  <div class="mode-switcher" aria-label="Modalità interfaccia">
+    <button class="mode-btn" data-mode="cassiere" type="button" onclick="setLayoutMode('cassiere')">CASSIERE</button>
+    <button class="mode-btn active" data-mode="creator" type="button" onclick="setLayoutMode('creator')">CREATOR</button>
+  </div>
+</div>
+
+<aside id="sidebar-menu">
+    <div>
+      <div class="sidebar-header">
+        <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
+        <!-- Tasto X dorato (attivo e visibile solo su Mobile dentro il menu) -->
+        <button class="mobile-close-btn" type="button" onclick="toggleMobileSidebar()" aria-label="Chiudi menu">✕</button>
+      </div>
+      
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
+          <span>Genera Cartelli</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-generators">
+          <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
+          <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
+          <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
+          <a href="promo_multibrand.html" class="nav-btn">🏷️ Promo Multibrand</a>
+          <a href="cartelli_multireferenza.html" class="nav-btn">🏷️ Cartello Multi Articolo</a>
+          <a href="cartello_banco.html" class="nav-btn">🏷️ Cartello da Banco</a>
+          <a href="magazzino.html" class="nav-btn">🏷️ Cartelli Magazzino</a>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tickets" onclick="toggleMenu('menu-tickets', this)">
+          <span>Genera Cartellini</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-tickets">
+          <a href="cartellinivetrina.html" class="nav-btn">🏷️ Cartellini Vetrina</a>
+          <a href="cartellinipromo.html" class="nav-btn">🏷️ Cartellini Promozionali</a>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
+          <span>Loghi Personalizzati</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-logos">
+          <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
+          <a href="gestisci_lista.html" class="nav-btn">⚙️ Gestisci Lista Personale</a>
+        </div>
+      </div>
+
+      <!-- SEZIONE: Stampe Pronte -->
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-prints" onclick="toggleMenu('menu-prints', this)">
+          <span>Stampe Pronte</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-prints">
+          <a href="#prints-section" class="nav-btn" onclick="scrollToSection('prints-section')">📄 Punto Vendita</a>
+          <a href="#prints-promo-section" class="nav-btn" onclick="scrollToSection('prints-promo-section')">📄 Listini e Promozioni</a>
+        </div>
+      </div>
+
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tools" onclick="toggleMenu('menu-tools', this)">
+          <span>Utilità Cassa</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items" id="menu-tools">
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-iva')">🧮 Calcola IVA</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💰 Cambio Valuta</a>
+          <a class="nav-btn" onclick="focusWidget(event, 'widget-qrcode')">📱 Generatore QR Code</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="sidebar-bottom">
+      <img src="assets/img/storecraftlogo.png" alt="STORE CRAFT Logo" class="sidebar-logo">
+      <div class="sidebar-footer">
+        <strong>V 1.0 2026 • Developed by Fabrizio Notte</strong><br>©Marchi e loghi appartengono ai rispettivi proprietari<br>
+        <a href="mailto:fabriceimpresa@gmail.com" style="color: var(--accent); text-decoration: none;">fabriceimpresa@gmail.com</a>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main-content">
+    <header>
+      <button class="home-mark" type="button" onclick="returnToHomeTop()" aria-label="Torna all'inizio della home"><span class="home-mark-icon" aria-hidden="true">⌂</span><span>HOME</span></button>
+      <h1>Visual Merchandising & Cassa</h1>
+      <p>Crea la grafica promozionale e calcola i prezzi in tempo reale.</p>
+    </header>
+
+    <div id="generators-section">
+      <div class="section-title">Generatore Cartelli</div>
+      <div class="grid">
+        <!-- Cartello Semplice -->
+        <a href="cartelli_semplici.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/cartellosemplice.png" alt="Anteprima Cartello Semplice">
+          </div>
+          <div class="card-body">
+            <h3>Cartello Semplice</h3>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo di Vendita</p>
+          </div>
+        </a>
+
+        <!-- Cartello Outlet -->
+        <a href="cartelli_outlet.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/doppiacifra.png" alt="Anteprima Cartello Outlet">
+          </div>
+          <div class="card-body">
+            <h3>Cartello Outlet</h3>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione (facoltativa)&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Outlet</p>
+          </div>
+        </a>
+
+        <!-- Promo Last Chance -->
+        <a href="cartelli_lastchance.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/promolastchance.png" alt="Anteprima Promo Last Chance">
+          </div>
+          <div class="card-body">
+            <h3>Promo Last Chance</h3>
+            <p>Logo Last Chance&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promo&nbsp;&nbsp; | &nbsp;&nbsp;Brand (facoltativo)</p>
+          </div>
+        </a>
+
+        <!-- Promo Multibrand -->
+        <a href="promo_multibrand.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
+          </div>
+          <div class="card-body">
+            <h3>Promo Multibrand</h3>
+            <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero</p>
+          </div>
+        </a>
+
+        <!-- Cartello Multi Brand Articolo-->
+        <a href="cartelli_multireferenza.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
+          </div>
+          <div class="card-body">
+            <h3>Cartello Multi Brand-Articolo</h3>
+            <p>Brand o doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio o Triplo Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione e Prezzi</p>
+          </div>
+        </a>
+
+        <!-- Cartello da Banco -->
+        <a href="cartello_banco.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/cartellobanco.png" alt="Anteprima Cartello da Banco">
+          </div>
+          <div class="card-body">
+            <h3>Cartello da Banco</h3>
+            <p>Formato 15x10&nbsp;&nbsp; | &nbsp;&nbsp;Singolo o Doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppi Prezzi o Testo Descrittivo</p>
+          </div>
+        </a>
+
+        <!-- Cartelli Magazzino -->
+        <a href="magazzino.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
+          </div>
+          <div class="card-body">
+            <h3>Cartelli Magazzino</h3>
+            <p>Brand Ufficiale / Personalizzato&nbsp;&nbsp; | &nbsp;&nbsp;Elenco Categorie&nbsp;&nbsp; | &nbsp;&nbsp;Frecce Direzionali</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div id="tickets-section">
+      <div class="section-title">Genera Cartellini</div>
+      <div class="grid">
+        <!-- Cartellini Vetrina -->
+        <a href="cartellinivetrina.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/cartellini.png" alt="Anteprima Cartellini Vetrina">
+          </div>
+          <div class="card-body">
+            <h3>Cartellini Vetrina</h3>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione</p>
+          </div>
+        </a>
+
+        <!-- Cartellini Promozionali -->
+        <a href="cartellinipromo.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/cartellinipromo.png" alt="Anteprima Cartellini Promozionali">
+          </div>
+          <div class="card-body">
+            <h3>Cartellini Promozionali</h3>
+            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione&nbsp;&nbsp; | &nbsp;&nbsp;50% + 50% Saldi</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SEZIONE 1: Stampe Pronte - Punto Vendita -->
+    <div id="prints-section">
+      <div class="section-title">Stampe Pronte // Punto Vendita</div>
+      
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('prints-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
+        
+        <div class="carousel-container" id="prints-carousel">
+          
+          <!-- Documento PDF 1: Orari Apertura -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/orari.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/orari.png" alt="Orari Apertura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🕒</span>
+            </div>
+            <div class="card-body">
+              <h3>Orari Apertura</h3>
+              <p>Cartello con schema e orari di apertura del punto vendita.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Documento PDF 2: No Food & Drinks Indoor -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/nofood_indoor.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/nofoodindoor.png" alt="No Food Drinks Indoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🚫</span>
+            </div>
+            <div class="card-body">
+              <h3>No Food & Drinks Indoor</h3>
+              <p>Divieto di consumo cibi e bevande negli spazi interni del punto vendita.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Documento PDF 3: No Food & Drinks Outdoor -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/nofood_outdoor.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/nofoodoutdoor.png" alt="No Food Drinks Outdoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🥤</span>
+            </div>
+            <div class="card-body">
+              <h3>No Food & Drinks Outdoor</h3>
+              <p>Divieto di consumo cibi e bevande all'esterno del punto vendita.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Documento PDF 4: Staff Only -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/staffonly.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/staffonly.png" alt="Staff Only" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🔒</span>
+            </div>
+            <div class="card-body">
+              <h3>Staff Only</h3>
+              <p>Cartello di accesso riservato esclusivamente al personale autorizzato.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Documento PDF 5: Vietato Fumare -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/vietatofumare.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/vietatofumare.png" alt="Vietato Fumare" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🚭</span>
+            </div>
+            <div class="card-body">
+              <h3>Vietato Fumare</h3>
+              <p>Cartello normativo di divieto di fumo ai sensi di legge.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel('prints-carousel', 1)" aria-label="Scorri a destra">›</button>
+      </div>
+    </div>
+
+    <!-- SEZIONE 2: Stampe Pronte - Listini & Promozioni -->
+    <div id="prints-promo-section">
+      <div class="section-title">Stampe Pronte // Listini & Promozioni</div>
+      
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('prints-promo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
+        
+        <div class="carousel-container" id="prints-promo-carousel">
+          
+          <!-- Card 1: Collezione Last Chance -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/lastchance.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/lastchancepronte.png" alt="Collezione Last Chance" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🏷️</span>
+            </div>
+            <div class="card-body">
+              <h3>Collezione Last Chance</h3>
+              <p>Stampe pronte generiche Last Chance da € 10,00 fino a € 90,00</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Collezione Last Chance Verticale -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/lastchanceverticali.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/lastchanceprontevert.png" alt="Collezione Last Chance Verticale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🏷️</span>
+            </div>
+            <div class="card-body">
+              <h3>Collezione Last Chance Verticale</h3>
+              <p>Stampe pronte Verticali per Last Chance da € 10,00 a € 90,00</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Card 3: Taglie Internazionali -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/taglie.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/taglie.png" alt="Taglie Internazionali" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">🏷️</span>
+            </div>
+            <div class="card-body">
+              <h3>Taglie Internazionali</h3>
+              <p>Collezione di cartellini per taglie, scala numerica ed internazionale.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Card 4: Listino Egon Von Fürstenberg -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/egonlistino.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/egonlistino.png" alt="Listino Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">📄</span>
+            </div>
+            <div class="card-body">
+              <h3>Listino Egon Von Fürstenberg</h3>
+              <p>Listino Generale EVF con scontistica outlet.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel('prints-promo-carousel', 1)" aria-label="Scorri a destra">›</button>
+      </div>
+    </div>
+
+    <div class="section-title" id="tools-title">Utilità Cassa</div>
+    <div class="tools-grid" id="tools">
+      
+      <!-- 1. Widget Calcola Sconto -->
+      <div class="widget" id="widget-sconto" onclick="focusWidget(event, 'widget-sconto')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>🧮 Calcola Sconto</h3>
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="number" id="p-orig" class="tool-input" placeholder="Prezzo Pieno">
+          </div>
+          <div class="input-group">
+            <span class="input-prefix">%</span>
+            <input type="number" id="p-sconto" class="tool-input" placeholder="Sconto">
+          </div>
+        </div>
+        <button class="tool-btn" style="width:100%" onclick="calcSconto()">Calcola Prezzo Finale</button>
+        <div class="tool-result" id="res-sconto">€ 0,00</div>
+      </div>
+
+      <!-- 2. Widget Calcola Aliquota Sconto -->
+      <div class="widget" id="widget-aliquota" onclick="focusWidget(event, 'widget-aliquota')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>🧮 Calcola Aliquota Sconto</h3>
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="number" id="aliq-orig" class="tool-input" placeholder="Prezzo Originale">
+          </div>
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="number" id="aliq-finale" class="tool-input" placeholder="Prezzo Scontato">
+          </div>
+        </div>
+        <button class="tool-btn" style="width:100%" onclick="calcAliquota()">Trova % Sconto</button>
+        <div class="tool-result" id="res-aliquota">0%</div>
+      </div>
+
+      <!-- 3. Widget Calcola IVA -->
+      <div class="widget" id="widget-iva" onclick="focusWidget(event, 'widget-iva')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>🧮 Calcola IVA</h3>
+        
+        <div class="rate-grid-widget">
+          <button class="rate-btn-widget" onclick="setIvaRate(4, this, event)">4%</button>
+          <button class="rate-btn-widget" onclick="setIvaRate(5, this, event)">5%</button>
+          <button class="rate-btn-widget" onclick="setIvaRate(10, this, event)">10%</button>
+          <button class="rate-btn-widget active" onclick="setIvaRate(22, this, event)">22%</button>
+        </div>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="text" id="iva-net" class="tool-input" placeholder="Imponibile" oninput="calcIvaFromNet()">
+            <span class="input-suffix">SENZA IVA</span>
+          </div>
+        </div>
+        
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="text" id="iva-vat" class="tool-input" placeholder="Importo IVA" oninput="calcIvaFromVat()">
+            <span class="input-suffix">IVA</span>
+          </div>
+        </div>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="text" id="iva-gross" class="tool-input" placeholder="Totale" oninput="calcIvaFromGross()">
+            <span class="input-suffix">CON IVA</span>
+          </div>
+        </div>
+
+        <button class="tool-btn-secondary tool-btn" style="width:100%; font-size: 0.75rem;" onclick="resetIvaFields(event)">Azzera IVA</button>
+      </div>
+
+      <!-- 4. Widget Cambio Valuta -->
+      <div class="widget" id="widget-valuta" onclick="focusWidget(event, 'widget-valuta')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>💰 Cambio Valuta (Live Online)</h3>
+        
+        <div class="tool-row">
+          <select id="val-direction" class="tool-input-select" onchange="updateUI()">
+            <option value="TO_EUR">Da Valuta Estera ➔ ad EUR (€)</option>
+            <option value="FROM_EUR">Da EUR (€) ➔ a Valuta Estera</option>
+          </select>
+        </div>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix" id="val-prefix">VALUTA</span>
+            <input type="number" id="val-amount" class="tool-input" placeholder="Importo" value="100">
+          </div>
+          <select id="val-currency" class="tool-input-select" style="width: 45%;" onchange="updateUI()">
+            <option value="USD">USD ($)</option>
+            <option value="GBP">GBP (£)</option>
+            <option value="ILS">ILS (₪)</option>
+            <option value="CNY">CNY (¥)</option>
+            <option value="JPY">JPY (¥)</option>
+          </select>
+        </div>
+
+        <button class="tool-btn" style="width:100%" onclick="convertCurrency()">Calcola Cambio</button>
+        <div class="tool-result" id="res-valuta">€ 0,00</div>
+      </div>
+
+      <!-- 5. Widget Generatore QR Code -->
+      <div class="widget widget-compact" id="widget-qrcode" onclick="focusWidget(event, 'widget-qrcode')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>📱 Generatore QR Code</h3>
+
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">URL</span>
+            <input type="text" id="qrText" class="tool-input" value="https://instagram.com" placeholder="Link o testo" oninput="generateQR()">
+          </div>
+        </div>
+
+        <div class="tool-row" style="margin-bottom: 0.4rem;">
+          <select id="qrSize" class="tool-input-select" onchange="generateQR()">
+            <option value="120" selected>Piccolo (120px)</option>
+            <option value="180">Medio (180px)</option>
+            <option value="260">Grande (260px)</option>
+          </select>
+        </div>
+
+        <div class="qr-preview-container">
+          <div class="qr-preview-wrapper">
+            <div id="qrcode"></div>
+          </div>
+        </div>
+
+        <div class="tool-row" style="margin-bottom:0; gap: 0.4rem;">
+          <button class="tool-btn" style="flex:1;" onclick="downloadQR(event)">💾 Scarica</button>
+          <button class="tool-btn tool-btn-secondary" style="flex:1;" onclick="printQR(event)">🖨️ Stampa</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
+    let qrcodeObj = null;
+
+    /* LOGICA APERTURA / CHIUSURA MENU SIDEBAR SU MOBILE */
+    function toggleMobileSidebar() {
+      document.body.classList.toggle('sidebar-collapsed');
+    }
+
+    /* FUNZIONE APERTURA FILE PDF DA CARD */
+    function openPdf(filePath) {
+      if (filePath) {
+        window.location.href = `pdf-viewer.html?file=${encodeURIComponent(filePath)}`;
+      }
+    }
+
+    /* FUNZIONE SCORRIMENTO CAROSELLI CON FRECCE FLOATING */
+    function scrollCarousel(containerId, direction) {
+      const container = document.getElementById(containerId);
+      if (container) {
+        const scrollAmount = 280;
+        container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      }
+    }
+
+    /* VAR E LOGICA WIDGET IVA */
+    let currentIvaRate = 22;
+    let lastIvaSource = 'net';
+
+    function parseIvaNum(val) {
+      if (!val) return 0;
+      let cleanVal = val.toString().replace(',', '.').replace(/[^0-9.]/g, '');
+      return parseFloat(cleanVal) || 0;
+    }
+
+    function formatIvaNum(num) {
+      if (isNaN(num) || num === 0) return '';
+      return num.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function setIvaRate(rate, element, e) {
+      if (e) e.stopPropagation();
+      currentIvaRate = rate;
+      document.querySelectorAll('.rate-btn-widget').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+      recalcIva();
+    }
+
+    function calcIvaFromNet() {
+      lastIvaSource = 'net';
+      let netRaw = document.getElementById('iva-net').value;
+      if (netRaw.trim() === '') { clearIvaInputs(); return; }
+      let net = parseIvaNum(netRaw);
+      let vat = net * (currentIvaRate / 100);
+      let gross = net + vat;
+      document.getElementById('iva-vat').value = formatIvaNum(vat);
+      document.getElementById('iva-gross').value = formatIvaNum(gross);
+    }
+
+    function calcIvaFromVat() {
+      lastIvaSource = 'vat';
+      let vatRaw = document.getElementById('iva-vat').value;
+      if (vatRaw.trim() === '') { clearIvaInputs(); return; }
+      let vat = parseIvaNum(vatRaw);
+      let net = vat / (currentIvaRate / 100);
+      let gross = net + vat;
+      document.getElementById('iva-net').value = formatIvaNum(net);
+      document.getElementById('iva-gross').value = formatIvaNum(gross);
+    }
+
+    function calcIvaFromGross() {
+      lastIvaSource = 'gross';
+      let grossRaw = document.getElementById('iva-gross').value;
+      if (grossRaw.trim() === '') { clearIvaInputs(); return; }
+      let gross = parseIvaNum(grossRaw);
+      let net = gross / (1 + (currentIvaRate / 100));
+      let vat = gross - net;
+      document.getElementById('iva-net').value = formatIvaNum(net);
+      document.getElementById('iva-vat').value = formatIvaNum(vat);
+    }
+
+    function recalcIva() {
+      if (lastIvaSource === 'net') calcIvaFromNet();
+      else if (lastIvaSource === 'vat') calcIvaFromVat();
+      else if (lastIvaSource === 'gross') calcIvaFromGross();
+    }
+
+    function clearIvaInputs() {
+      document.getElementById('iva-net').value = '';
+      document.getElementById('iva-vat').value = '';
+      document.getElementById('iva-gross').value = '';
+    }
+
+    function resetIvaFields(e) {
+      if (e) e.stopPropagation();
+      clearIvaInputs();
+      setIvaRate(22, document.querySelectorAll('.rate-btn-widget')[3]);
+    }
+
+    /* BARRA MENU SIDEBAR */
+    function toggleMenu(menuId, toggleButton) {
+      const menu = document.getElementById(menuId);
+      const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+
+      toggleButton.setAttribute('aria-expanded', String(!isExpanded));
+      menu.classList.toggle('is-collapsed', isExpanded);
+      localStorage.setItem(`menu-${menuId}`, String(!isExpanded));
+    }
+
+    function returnToHomeTop() {
+      document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('sidebar-collapsed');
+      }
+    }
+
+    function scrollToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        if (window.innerWidth <= 768) {
+          document.body.classList.add('sidebar-collapsed');
+        }
+      }
+    }
+
+    document.getElementById('main-content').addEventListener('scroll', function() {
+      document.body.classList.toggle('is-scrolled', this.scrollTop > 8);
+    });
+
+    function restoreMenus() {
+      document.querySelectorAll('.menu-toggle').forEach(toggleButton => {
+        const menuId = toggleButton.getAttribute('aria-controls');
+        const isExpanded = localStorage.getItem(`menu-${menuId}`) === 'true';
+        toggleButton.setAttribute('aria-expanded', String(isExpanded));
+        document.getElementById(menuId).classList.toggle('is-collapsed', !isExpanded);
+      });
+    }
+
+    let currentLayoutMode = 'creator';
+
+    function updateUI() {
+      const direction = document.getElementById('val-direction').value;
+      const targetCurrency = document.getElementById('val-currency').value;
+      const prefixEl = document.getElementById('val-prefix');
+
+      if (direction === 'FROM_EUR') {
+        prefixEl.innerText = '€';
+      } else {
+        prefixEl.innerText = symbols[targetCurrency] || 'VAL';
+      }
+    }
+
+    function animateLayoutReorder(elements) {
+      elements.forEach(el => el.classList.add('layout-reorder-anim'));
+      requestAnimationFrame(() => {
+        elements.forEach(el => el.classList.remove('layout-reorder-anim'));
+      });
+    }
+
+    function appendInOrder(parent, elements) {
+      elements.forEach(el => {
+        if (el && parent.contains(el)) {
+          parent.appendChild(el);
+        }
+      });
+    }
+
+    function setLayoutMode(mode) {
+      if (!['creator', 'cassiere'].includes(mode) || currentLayoutMode === mode) return;
+      currentLayoutMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(button => {
+        button.classList.toggle('active', button.dataset.mode === mode);
+      });
+
+      const generatorsGroup = document.querySelector('[aria-controls="menu-generators"]').parentElement;
+      const ticketsGroup = document.querySelector('[aria-controls="menu-tickets"]').parentElement;
+      const logosGroup = document.querySelector('[aria-controls="menu-logos"]').parentElement;
+      const printsGroup = document.querySelector('[aria-controls="menu-prints"]').parentElement;
+      const toolsGroup = document.querySelector('[aria-controls="menu-tools"]').parentElement;
+      
+      const menuWrapper = document.querySelector('aside > div');
+      
+      const generatorsSection = document.getElementById('generators-section');
+      const ticketsSection = document.getElementById('tickets-section');
+      const printsSection = document.getElementById('prints-section');
+      const printsPromoSection = document.getElementById('prints-promo-section');
+      const toolsTitle = document.getElementById('tools-title');
+      const toolsGrid = document.getElementById('tools');
+      const main = document.getElementById('main-content');
+
+      animateLayoutReorder([generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup, toolsTitle, toolsGrid]);
+
+      if (mode === 'cassiere') {
+        document.body.classList.add('cassiere-mode');
+        appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, ticketsGroup, logosGroup, printsGroup]);
+        appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection, printsSection, printsPromoSection]);
+      } else {
+        document.body.classList.remove('cassiere-mode');
+        appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup]);
+        appendInOrder(main, [generatorsSection, ticketsSection, printsSection, printsPromoSection, toolsTitle, toolsGrid]);
+      }
+    }
+
+    function focusWidget(e, widgetId) {
+      const targetWidget = document.getElementById(widgetId);
+      
+      if (targetWidget && targetWidget.classList.contains('expanded')) {
+        return;
+      }
+
+      resetDefaultView();
+
+      const mainSections = [
+        document.getElementById('generators-section'),
+        document.getElementById('tickets-section'),
+        document.getElementById('prints-section'),
+        document.getElementById('prints-promo-section')
+      ];
+
+      if (targetWidget) {
+        mainSections.forEach(sec => { if (sec) sec.style.display = 'none'; });
+
+        document.querySelectorAll('.widget').forEach(w => {
+          if (w.id !== widgetId) {
+            w.style.display = 'none';
+          }
+        });
+
+        targetWidget.classList.add('expanded');
+        targetWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        if (widgetId === 'widget-qrcode') {
+          setTimeout(generateQR, 50);
+        }
+      }
+
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('sidebar-collapsed');
+      }
+    }
+
+    function resetDefaultView(e) {
+      if (e) e.stopPropagation();
+
+      const mainSections = [
+        document.getElementById('generators-section'),
+        document.getElementById('tickets-section'),
+        document.getElementById('prints-section'),
+        document.getElementById('prints-promo-section')
+      ];
+      mainSections.forEach(sec => { if (sec) sec.style.display = 'block'; });
+
+      document.querySelectorAll('.widget').forEach(w => {
+        w.style.display = 'flex';
+        w.classList.remove('expanded');
+      });
+    }
+
+    function calcSconto() {
+      const p = parseFloat(document.getElementById('p-orig').value) || 0;
+      const s = parseFloat(document.getElementById('p-sconto').value) || 0;
+      const finale = p - (p * (s / 100));
+      document.getElementById('res-sconto').innerText = '€ ' + finale.toFixed(2);
+    }
+
+    function calcAliquota() {
+      const orig = parseFloat(document.getElementById('aliq-orig').value) || 0;
+      const finale = parseFloat(document.getElementById('aliq-finale').value) || 0;
+      const resBox = document.getElementById('res-aliquota');
+
+      if (orig <= 0) {
+        resBox.innerText = "Inserisci prezzo originale";
+        return;
+      }
+
+      if (finale >= orig) {
+        resBox.innerText = "0% (Nessun sconto)";
+        return;
+      }
+
+      const diff = orig - finale;
+      const percentuale = Math.round((diff / orig) * 100);
+      resBox.innerText = `${percentuale}% (Sconto € ${diff.toFixed(2)})`;
+    }
+
+    async function convertCurrency() {
+      const amount = parseFloat(document.getElementById('val-amount').value) || 0;
+      const targetCurrency = document.getElementById('val-currency').value;
+      const direction = document.getElementById('val-direction').value;
+      const resBox = document.getElementById('res-valuta');
+
+      if (amount <= 0) {
+        resBox.innerText = "Inserisci un importo valido";
+        return;
+      }
+
+      resBox.innerText = "Calcolo in corso...";
+
+      const currSymbol = symbols[targetCurrency] || '';
+      const primaryUrl = `https://open.er-api.com/v6/latest/EUR`;
+
+      try {
+        const response = await fetch(primaryUrl);
+        if (!response.ok) throw new Error('Errore API');
+        const data = await response.json();
+        
+        if (data && data.rates && data.rates[targetCurrency]) {
+          const rate = data.rates[targetCurrency];
+          
+          if (direction === 'TO_EUR') {
+            const converted = amount / rate;
+            resBox.innerText = `€ ${converted.toFixed(2)} EUR`;
+          } else {
+            const converted = amount * rate;
+            resBox.innerText = `${currSymbol} ${converted.toFixed(2)} ${targetCurrency}`;
+          }
+          return;
+        }
+        throw new Error('Formato dati non valido');
+      } catch (err) {
+        resBox.innerText = "Errore di connessione!";
+      }
+    }
+
+    /* FUNZIONI PER QR CODE */
+    function generateQR() {
+      const text = document.getElementById('qrText').value.trim();
+      const size = parseInt(document.getElementById('qrSize').value);
+      const container = document.getElementById('qrcode');
+
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (text !== "") {
+        qrcodeObj = new QRCode(container, {
+          text: text,
+          width: size,
+          height: size,
+          colorDark : "#000000",
+          colorLight : "#ffffff",
+          correctLevel : QRCode.CorrectLevel.H
+        });
+      }
+    }
+
+    function downloadQR(e) {
+      if (e) e.stopPropagation();
+      const img = document.querySelector("#qrcode img");
+      const canvas = document.querySelector("#qrcode canvas");
+      
+      let imageSrc = "";
+      if (img && img.src) {
+        imageSrc = img.src;
+      } else if (canvas) {
+        imageSrc = canvas.toDataURL("image/png");
+      }
+
+      if (!imageSrc) {
+        alert("Inserisci del testo per generare il QR Code!");
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.href = imageSrc;
+      link.download = 'qrcode-storecraft.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function printQR(e) {
+      if (e) e.stopPropagation();
+      const img = document.querySelector("#qrcode img");
+      const canvas = document.querySelector("#qrcode canvas");
+      let imageSrc = img && img.src ? img.src : (canvas ? canvas.toDataURL("image/png") : "");
+
+      if (!imageSrc) {
+        alert("Genera prima un QR Code valido!");
+        return;
+      }
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+          <head><title>Stampa QR Code</title></head>
+          <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
+            <img src="${imageSrc}" style="max-width:80%; max-height:80%;" onload="window.print(); window.close();"/>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+
+    restoreMenus();
+    setLayoutMode('creator');
+    updateUI();
+    generateQR();
+  </script>
+</body>
+</html>
