@@ -120,7 +120,7 @@
     .menu-toggle[aria-expanded="false"] .menu-arrow { transform: rotate(-90deg); }
     .menu-items {
       overflow: hidden;
-      max-height: 360px;
+      max-height: 420px;
       opacity: 1;
       transition: max-height 0.3s ease, opacity 0.2s ease;
     }
@@ -618,6 +618,7 @@
         <div class="menu-items" id="menu-generators">
           <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
           <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
+          <a href="cartelli_outletmulti.html" class="nav-btn">🏷️ Cartello Outlet Multi</a>
           <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
           <a href="promo_multibrand.html" class="nav-btn">🏷️ Promo Multibrand</a>
           <a href="cartelli_multireferenza.html" class="nav-btn">🏷️ Cartello Multi Articolo</a>
@@ -654,6 +655,7 @@
         <div class="menu-items" id="menu-prints">
           <a href="#prints-section" class="nav-btn" onclick="scrollToSection('prints-section')">📄 Punto Vendita</a>
           <a href="#prints-promo-section" class="nav-btn" onclick="scrollToSection('prints-promo-section')">📄 Listini e Promozioni</a>
+          <a href="#" class="nav-btn" onclick="openPdf('assets/pdf/egoncatalogo.pdf'); return false;">📄 Catalogo Egon Von Fürstenberg</a>
         </div>
       </div>
 
@@ -709,6 +711,17 @@
           <div class="card-body">
             <h3>Cartello Outlet</h3>
             <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione (facoltativa)&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Outlet</p>
+          </div>
+        </a>
+
+        <!-- Cartello Outlet Multi -->
+        <a href="cartelli_outletmulti.html" class="card">
+          <div class="preview">
+            <img class="preview-image" src="assets/img/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
+          </div>
+          <div class="card-body">
+            <h3>Cartello Outlet Multi</h3>
+            <p>Brand | Doppio Brand | Fino a 3 Articoli | Scontistica</p>
           </div>
         </a>
 
@@ -933,6 +946,19 @@
             <div class="card-body">
               <h3>Listino Egon Von Fürstenberg</h3>
               <p>Listino Generale EVF con scontistica outlet.</p>
+              <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
+            </div>
+          </div>
+
+          <!-- Card 5: Catalogo Egon Von Fürstenberg -->
+          <div class="carousel-card" onclick="openPdf('assets/pdf/egoncatalogo.pdf')">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/egoncatalogo.png" alt="Catalogo Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <span class="preview-icon" style="display:none;">📄</span>
+            </div>
+            <div class="card-body">
+              <h3>Catalogo Egon Von Fürstenberg</h3>
+              <p>Listino Generale con foto, dettagli, misure, ed apertura colori Borse EVF .</p>
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
