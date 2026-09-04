@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Cartello Outlet - Multi Articolo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      font-style: italic;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Nevis Project';
+      src: url('assets/fonts/Nevis Bold.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Space Invaders Project';
+      src: url('assets/fonts/space_invaders.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* Sfondo principale */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Filigrana di sfondo */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
+      background-repeat: repeat;
+      background-size: 650px auto;
+      background-position: center;
+      opacity: 0.18;
+      filter: contrast(1.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid #2e2b27;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #d4a373;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 0.88rem;
+      font-weight: bold;
+      color: #e5ba73;
+      background-color: transparent;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
+      padding: 0 0 0.4rem;
+      margin-top: 1rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .sub-section-title {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #d4a373;
+      margin-top: 0.6rem;
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #2e2b27;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background-color: #0a0908;
+      color: #fff;
+    }
+
+    .form-group select.custom-select {
+      border-color: #b48b37;
+      color: #f3d5a3;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
+    }
+
+    select option:first-child {
+      color: #b48b37 !important;
+      font-weight: bold !important;
+    }
+
+    /* PULSANTI TOGGLE */
+    .btn-toggle-desc, .btn-toggle-2nd-brand, .btn-toggle-3rd-item {
+      width: 100%;
+      background: linear-gradient(135deg, #d4a373 0%, #b8860b 100%);
+      color: #000000;
+      border: 1px solid #e5ba73;
+      padding: 8px;
+      font-size: 0.82rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 6px 0 0 0;
+      box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-toggle-desc:hover, .btn-toggle-2nd-brand:hover, .btn-toggle-3rd-item:hover {
+      background: linear-gradient(135deg, #e5ba73 0%, #d4a373 100%);
+      box-shadow: 0 6px 14px rgba(212, 163, 115, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-toggle-2nd-brand.active, .btn-toggle-3rd-item.active {
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+      color: #ffffff;
+      border-color: #28a745;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 12px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    /* PULSANTI STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: #ffffff;
+      border: 1px solid #b30000;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #cc0000; }
+
+    .btn-print-single {
+      width: 100%;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 1px solid #004085;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print-single:hover { background-color: #003d80; }
+
+    /* FOGLIO STAMPA */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 296mm;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 8mm 12mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .print-sheet.double-mode {
+      justify-content: space-between;
+    }
+
+    .print-sheet.single-mode #card1 {
+      margin-bottom: 7mm;
+    }
+
+    .card {
+      width: 100%;
+      height: 128mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4mm 0;
+      flex-shrink: 0;
+    }
+
+    .card.disabled {
+      display: none !important;
+    }
+
+    .cut-line {
+      width: 100%;
+      border-top: 1px dashed #ccc;
+      margin: 2mm 0;
+      flex-shrink: 0;
+    }
+
+    .header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5mm;
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #e00000;
+      text-align: center;
+      line-height: 1.1;
+      text-transform: uppercase;
+      width: 20%;
+    }
+
+    .claim-flag {
+      width: 21mm;
+      max-height: 13mm;
+      object-fit: contain;
+    }
+
+    .claim-flag-left { transform: translateX(-3mm); }
+    .claim-flag-right { transform: translateX(3mm); }
+
+    .red-box {
+      width: 56%;
+      height: 29mm;
+      background-color: #e00000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2mm;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* STRUTTURA LOGHI E ANIMAZIONE MULTI-BRAND */
+    .brand-logo-slot {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: width 0.35s ease, transform 0.35s ease;
+    }
+
+    .brand-logo-slot img {
+      max-width: 94%;
+      max-height: 94%;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+
+    .brand-logo-slot.bis {
+      display: none;
+      width: 0;
+      opacity: 0;
+      transition: width 0.35s ease, opacity 0.2s ease 0.1s;
+    }
+
+    .has-2-brands .brand-logo-slot { width: 50%; }
+    .has-2-brands .brand-logo-slot.bis { display: flex; opacity: 1; }
+
+    /* STRUTTURA MULTI-ARTICOLO (2 o 3 COLONNE) */
+    .dual-items-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      flex-grow: 1;
+      margin: 2mm 0;
+    }
+
+    .item-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2mm;
+    }
+
+    .item-c-col { display: none; }
+    .has-3-items .item-c-col { display: flex; }
+    .has-3-items .vertical-divider.item-c-col { display: block; }
+
+    .vertical-divider {
+      width: 1px;
+      height: 70%;
+      background-color: #222222;
+      flex-shrink: 0;
+    }
+
+    /* Descrizione articolo in Bodoni Std Italic per tutti */
+    .item-title {
+      font-family: 'Bodoni Project', serif;
+      font-style: italic;
+      font-size: 2.3rem;
+      font-weight: 400;
+      color: #000;
+      margin-bottom: 2mm;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .price-row-old {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 1.45rem;
+      margin-bottom: 2mm;
+    }
+
+    .price-original {
+      font-family: 'Bodoni Project', serif;
+      font-weight: normal;
+      color: #333;
+      text-decoration: line-through;
+    }
+
+    .discount-tag {
+      font-family: 'Bodoni Project', serif;
+      font-style: italic;
+      color: #e00000;
+      font-weight: bold;
+    }
+
+    .price-final {
+      font-family: 'Bodoni Project', serif;
+      font-size: 5.2rem;
+      font-weight: normal;
+      color: #000;
+      line-height: 0.85;
+      text-align: center;
+      letter-spacing: -2px;
+      white-space: nowrap;
+    }
+
+    /* Ridimensionamento fluido per 3 Articoli */
+    .has-3-items .item-column .item-title {
+      font-size: 1.75rem;
+    }
+
+    .has-3-items .item-column .price-row-old {
+      font-size: 1.2rem;
+      gap: 6px;
+      margin-bottom: 1.5mm;
+    }
+
+    .has-3-items .item-column .price-final {
+      font-size: 3.8rem;
+      letter-spacing: -1.5px;
+    }
+
+    .card-footer {
+      height: 18mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1mm;
+      flex-shrink: 0;
+    }
+
+    .card-footer img {
+      max-height: 100%;
+      max-width: 250px;
+      object-fit: contain;
+      filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
+    }
+
+    /* NAVIGAZIONE UI */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #d4a373;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #e5ba73;
+      transform: scale(1.1);
+    }
+
+    .made-in-italy-btn {
+      position: fixed;
+      top: 4.5rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 7px;
+      background: #ffffff;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .made-in-italy-btn-lower { top: calc(50% + 1rem); }
+
+    .made-in-italy-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .made-in-italy-btn:hover,
+    .made-in-italy-btn[aria-pressed="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #e5ba73;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body::before { display: none !important; }
+
+      .sidebar, .app-close-btn, .made-in-italy-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 5mm auto 0 !important;
+        padding: 8mm 10mm;
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .red-box { 
+        background-color: #e00000 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+  <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <!-- PANNELLO PRINCIPALE -->
+    <div class="controls">
+      <h2>Cartello Multi Articolo</h2>
+
+      <button type="button" class="btn-toggle-2nd-brand" id="btnToggle2ndBrand" onclick="toggleSecondBrand()">
+        ➕ AGGIUNGI 2° BRAND
+      </button>
+
+      <button type="button" class="btn-toggle-3rd-item" id="btnToggle3rdItem" onclick="toggleThirdItem()">
+        ➕ AGGIUNGI TERZO ARTICOLO
+      </button>
+
+      <!-- CARTELLO 1 (SUPERIORE) -->
+      <div class="section-title">CARTELLO 1 (Superiore)</div>
+      <div class="form-group">
+        <label>Brand Ufficiale 1:</label>
+        <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
+      </div>
+      <div class="form-group brand-bis-group" id="brandBisGroup1" style="display: none;">
+        <label>Brand Ufficiale 1 BIS:</label>
+        <select id="brandSelect1Bis" onchange="onOfficialBrandBisChange(1)"></select>
+      </div>
+      <div class="form-group">
+        <label>Claim SX 1 / DX 1:</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="left1" value="FW 2027" oninput="updateCards()">
+          <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+        </div>
+      </div>
+
+      <!-- ARTICOLO 1 - SINISTRA -->
+      <div class="sub-section-title">🔹 ARTICOLO 1 - SINISTRA</div>
+      <div class="form-group">
+        <label>Descrizione Articolo:</label>
+        <input type="text" id="name1A" value="Small" placeholder="es. Small" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Prezzi (Originale / Sconto / Finale):</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="pOld1A" value="79,90" placeholder="79,90" oninput="updateCards()">
+          <input type="text" id="disc1A" value="-50%" placeholder="-50%" oninput="formatDiscountInput(this); updateCards()">
+          <input type="text" id="pNew1A" value="39,90" placeholder="39,90" oninput="updateCards()">
+        </div>
+      </div>
+
+      <!-- ARTICOLO 1 - CENTRO (OPZIONALE) -->
+      <div class="item-3-group" id="item3Group1" style="display: none;">
+        <div class="sub-section-title">▫️ ARTICOLO 1 - CENTRO</div>
+        <div class="form-group">
+          <label>Descrizione Articolo:</label>
+          <input type="text" id="name1C" value="Medium" placeholder="es. Medium" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Prezzi (Originale / Sconto / Finale):</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="pOld1C" value="89,90" placeholder="89,90" oninput="updateCards()">
+            <input type="text" id="disc1C" value="-50%" placeholder="-50%" oninput="formatDiscountInput(this); updateCards()">
+            <input type="text" id="pNew1C" value="44,90" placeholder="44,90" oninput="updateCards()">
+          </div>
+        </div>
+      </div>
+
+      <!-- ARTICOLO 1 - DESTRA -->
+      <div class="sub-section-title">🔸 ARTICOLO 1 - DESTRA</div>
+      <div class="form-group">
+        <label>Descrizione Articolo:</label>
+        <input type="text" id="name1B" value="Large" placeholder="es. Large" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Prezzi (Originale / Sconto / Finale):</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="pOld1B" value="99,90" placeholder="99,90" oninput="updateCards()">
+          <input type="text" id="disc1B" value="-50%" placeholder="-50%" oninput="formatDiscountInput(this); updateCards()">
+          <input type="text" id="pNew1B" value="49,90" placeholder="49,90" oninput="updateCards()">
+        </div>
+      </div>
+
+      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+      <!-- CARTELLO 2 (INFERIORE) -->
+      <div id="sectionCard2">
+        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+        <div class="form-group">
+          <label>Brand Ufficiale 2:</label>
+          <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
+        </div>
+        <div class="form-group brand-bis-group" id="brandBisGroup2" style="display: none;">
+          <label>Brand Ufficiale 2 BIS:</label>
+          <select id="brandSelect2Bis" onchange="onOfficialBrandBisChange(2)"></select>
+        </div>
+        <div class="form-group">
+          <label>Claim SX 2 / DX 2:</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="left2" value="FW 2027" oninput="updateCards()">
+            <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+          </div>
+        </div>
+
+        <!-- ARTICOLO 2 - SINISTRA -->
+        <div class="sub-section-title">🔹 ARTICOLO 2 - SINISTRA</div>
+        <div class="form-group">
+          <label>Descrizione Articolo:</label>
+          <input type="text" id="name2A" value="Small" placeholder="es. Small" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Prezzi (Originale / Sconto / Finale):</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="pOld2A" value="79,90" placeholder="79,90" oninput="updateCards()">
+            <input type="text" id="disc2A" value="-50%" placeholder="-50%" oninput="formatDiscountInput(this); updateCards()">
+            <input type="text" id="pNew2A" value="39,90" placeholder="39,90" oninput="updateCards()">
+          </div>
+        </div>
+
+        <!-- ARTICOLO 2 - CENTRO (OPZIONALE) -->
+        <div class="item-3-group" id="item3Group2" style="display: none;">
+          <div class="sub-section-title">▫️ ARTICOLO 2 - CENTRO</div>
+          <div class="form-group">
+            <label>Descrizione Articolo:</label>
+            <input type="text" id="name2C" value="Medium" placeholder="es. Medium" oninput="updateCards()">
+          </div>
+          <div class="form-group">
+            <label>Prezzi (Originale / Sconto / Finale):</label>
+            <div style="display:flex; gap:5px;">
+              <input type="text" id="pOld2C" value="89,90" placeholder="89,90" oninput="updateCards()">
+              <input type="text" id="disc2C" value="-50%" placeholder="-50%" oninput="formatDiscountInput(this); updateCards()">
+              <input type="text" id="pNew2C" value="44,90" placeholder="44,90" oninput="updateCards()">
+            </div>
+          </div>
+        </div>
+
+        <!-- ARTICOLO 2 - DESTRA -->
+        <div class="sub-section-title">🔸 ARTICOLO 2 - DESTRA</div>
+        <div class="form-group">
+          <label>Descrizione Articolo:</label>
+          <input type="text" id="name2B" value="Large" placeholder="es. Large" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Prezzi (Originale / Sconto / Finale):</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="pOld2B" value="99,90" placeholder="99,90" oninput="updateCards()">
+            <input type="text" id="disc2B" value="-50%" placeholder="-50%" oninput="formatDiscountInput(this); updateCards()">
+            <input type="text" id="pNew2B" value="49,90" placeholder="49,90" oninput="updateCards()">
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">IMPOSTAZIONI STAMPA</div>
+      <div class="form-group">
+        <label>Modalità Cartelli da Stampare:</label>
+        <select id="modeSelect" onchange="toggleCardMode()">
+          <option value="2">2 Cartelli (Foglio Intero A4)</option>
+          <option value="1">1 Solo Cartello (Superiore)</option>
+        </select>
+      </div>
+
+      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+    </div>
+
+    <!-- LOGHI PERSONALIZZATI -->
+    <div class="controls">
+      <h2>LOGHI PERSONALIZZATI</h2>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
+        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+      <div class="form-group brand-bis-group" id="customBrandBisGroup1" style="display: none;">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 1 BIS (Superiore):</label>
+        <select id="customBrandSelect1Bis" class="custom-select" onchange="onCustomBrandBisChange(1)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
+        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+      <div class="form-group brand-bis-group" id="customBrandBisGroup2" style="display: none;">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 2 BIS (Inferiore):</label>
+        <select id="customBrandSelect2Bis" class="custom-select" onchange="onCustomBrandBisChange(2)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- AREA STAMPA A4 -->
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">FW<br>2027</div>
+        <div class="red-box" id="redBox1">
+          <div class="brand-logo-slot"><img id="cardLogo1" src="" alt="Logo Brand 1"></div>
+          <div class="brand-logo-slot bis"><img id="cardLogo1Bis" src="" alt="Logo Brand 1 Bis"></div>
+        </div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+      </div>
+
+      <!-- BLOCCO MULTI ARTICOLO -->
+      <div class="dual-items-container">
+        <!-- ARTICOLO A (SINISTRA) -->
+        <div class="item-column">
+          <div class="item-title" id="title1A">Small</div>
+          <div class="price-row-old">
+            <span class="price-original" id="pOldDisp1A">€ 79,90</span>
+            <span class="discount-tag" id="discDisp1A">-50%</span>
+          </div>
+          <div class="price-final" id="pNewDisp1A">€ 39,90</div>
+        </div>
+
+        <div class="vertical-divider"></div>
+
+        <!-- ARTICOLO C (CENTRO) -->
+        <div class="item-column item-c-col">
+          <div class="item-title" id="title1C">Medium</div>
+          <div class="price-row-old">
+            <span class="price-original" id="pOldDisp1C">€ 89,90</span>
+            <span class="discount-tag" id="discDisp1C">-50%</span>
+          </div>
+          <div class="price-final" id="pNewDisp1C">€ 44,90</div>
+        </div>
+
+        <div class="vertical-divider item-c-col"></div>
+
+        <!-- ARTICOLO B (DESTRA) -->
+        <div class="item-column">
+          <div class="item-title" id="title1B">Large</div>
+          <div class="price-row-old">
+            <span class="price-original" id="pOldDisp1B">€ 99,90</span>
+            <span class="discount-tag" id="discDisp1B">-50%</span>
+          </div>
+          <div class="price-final" id="pNewDisp1B">€ 49,90</div>
+        </div>
+      </div>
+
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
+    </div>
+
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">FW<br>2027</div>
+        <div class="red-box" id="redBox2">
+          <div class="brand-logo-slot"><img id="cardLogo2" src="" alt="Logo Brand 2"></div>
+          <div class="brand-logo-slot bis"><img id="cardLogo2Bis" src="" alt="Logo Brand 2 Bis"></div>
+        </div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+      </div>
+
+      <!-- BLOCCO MULTI ARTICOLO -->
+      <div class="dual-items-container">
+        <!-- ARTICOLO A (SINISTRA) -->
+        <div class="item-column">
+          <div class="item-title" id="title2A">Small</div>
+          <div class="price-row-old">
+            <span class="price-original" id="pOldDisp2A">€ 79,90</span>
+            <span class="discount-tag" id="discDisp2A">-50%</span>
+          </div>
+          <div class="price-final" id="pNewDisp2A">€ 39,90</div>
+        </div>
+
+        <div class="vertical-divider"></div>
+
+        <!-- ARTICOLO C (CENTRO) -->
+        <div class="item-column item-c-col">
+          <div class="item-title" id="title2C">Medium</div>
+          <div class="price-row-old">
+            <span class="price-original" id="pOldDisp2C">€ 89,90</span>
+            <span class="discount-tag" id="discDisp2C">-50%</span>
+          </div>
+          <div class="price-final" id="pNewDisp2C">€ 44,90</div>
+        </div>
+
+        <div class="vertical-divider item-c-col"></div>
+
+        <!-- ARTICOLO B (DESTRA) -->
+        <div class="item-column">
+          <div class="item-title" id="title2B">Large</div>
+          <div class="price-row-old">
+            <span class="price-original" id="pOldDisp2B">€ 99,90</span>
+            <span class="discount-tag" id="discDisp2B">-50%</span>
+          </div>
+          <div class="price-final" id="pNewDisp2B">€ 49,90</div>
+        </div>
+      </div>
+
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
+    </div>
+  </div>
+
+  <script>
+    const madeInItalyClaimsActive = { 1: false, 2: false };
+
+    const LOGO_FILES = [
+      "269TEBE.PNG","ABIDDIKKIA.png","AFTERLABEL.png","AIRWALK.png","ALESSANDRODELLACQUA.png",
+      "ALEXANDERMCQUEEN.png","ARMANI.png","ARMANI_COLLEZIONI.png","ARMANI_EXCHANGE.png",
+      "ARMANI_GIORGIO.png","ARMANI_JEANS.png","ARNALDIMILANO.PNG","AVIREX.png","AYLIE.png",
+      "BAGUTTA.png","BALDININI.png","BALMAIN.PNG","BASTONCINO.png","BCBG.png","BEATRICE.png",
+      "BELSTAF.png","BENSHERMAN.png","BIKKENBERGS.png","BLAUER.png","BLKER.png","BLUGIRL.png",
+      "BLUMARINE.png","BRICS.png","BURBERRY.png","BYBLOS.png","CALVINKLEIN.png","CARHARTT.png",
+      "CAVALLI_CLASS.png","CAVALLI_ROBERTO.png","CHIARABONI.png","CIESSEPIUMINI.png","COCACOLA.png",
+      "COCCINELLE.png","COSTUMENATIONAL.png","DAINESE.png","DEVORE.png","DIADORA.png","DICKIES.png",
+      "DIESEL.png","DIOR.png","DIXIE.png","DOLCEANDGABBANA.png","DRSCHOLL.png","DSQUARED2.png",
+      "DUCAHOMME.png","EASTPAK.png","EGONVONFURSTENBERG.png","ELISAFANTI.png","EMMAANDGAIA.png",
+      "ENTREAMIS.png","ERMANNOSCERVINO.png","ERMENEGILDOZEGNA.png","EVERLAST.png","FACCONABLE.png",
+      "FELEPPA.png","FERRARI.png","FERRE.png","FILA.png","FRANKLINMARSHALL.png","GAELLE.png",
+      "GANT.png","GARMENT.png","GATTINONI.png","GCDS.png","GERMANS.png","GIVENCHY.png","GOORIN.png",
+      "GUESS.png","GUYLAROCHE.png","H953.png","HACKETTLONDON.png","HARMONT&BLAINE.png","HAVEONE.png",
+      "HERSCHELL.png","HOPPER.png","HUSKY.png","IMPERIAL.png","IMPURE.png","INVICTA.png",
+      "ISABELMARANT.png","JACKDANIELS.png","JEIO.PNG","JEREMYSCOTT.png","JIJIL.png",
+      "JOHNGALLIANO.png","JOHNRICHMOND.png","JUSTCAVALLI.png","KARLLAGERFELD.png","KENZO.png",
+      "KRIZIA.png","KWAY.png","LACOSTE.png","LAMARTHE.png","LAPERLA.png","LASTCHANCE.png",
+      "LAURABIAGIOTTI.png","LEE.png","LESARTEDELSOLE.png","LEVIS.png","LIUJO.png","LONSDALE.png",
+      "LOVE.png","LUCKYLU.png","LUXURY_GOLD.png","LXRY.png","LXRY_BRAND.png","MADEINITALY.png",
+      "MAISONMARGIELA.png","MAJE.png","MALIPARNI.png","MALONESOULIERS.png","MARCJACOBS.png",
+      "MARELLA.png","MARIOVALENTINO.png","MARLBORO.png","MARNI.png","MASSIMOREBECCHI.png",
+      "MAXMARA.png","MEIMEIJ.png","MELISSA.png","MICHAELKORS.png","MIRONCE.png","MISSONI.png",
+      "MIZUNO.png","MODFITTERS.png","MONCLER.png","MONTECERVINO.png","MOSCHINO.png","MOTEL.png",
+      "MSGM.png","NAPAPIJRI.png","NENETTE.png","NEWBALANCE.png","OBAG.png","OFFICINA36.png",
+      "ONLY.png","OTTODROM.png","PACIOTTI_4US.png","PACIOTTI_CESARE.png","PATRIZIAPEPE.png",
+      "PAULANDSHARK.png","PEOPLEOFSHIBUYA.png","PHILIPPPLEIN.png","PIERRECARDIN.png","PINKO.png",
+      "PIQUADRO.png","POLAROID.png","RALPHLAUREN.png","RANSOM.png","REFRIGIWEAR.png","REFRIGUE.png",
+      "RICHMOND.png","ROCCOBAROCCO.png","ROYROGERS.png","RUEBISQUIT.png","RUSSEL.png",
+      "SALVATOREFERRAGAMO.png","SERGIOTACCHINI.png","SFIZIO.png","SIMONACORSELLINI.png","SKYWARD.png",
+      "SOUVENIR.png","STEVEMADDEN.png","SUPERDRY.png","TEBE.png","TENSIONEIN.png","TOMMYHILFIGER.png",
+      "TOMMYJEANS.png","TOYG.png","TRUSSARDI.png","TRUSSARDI_JEANS.png","TWINSET.png","UNGARO.png",
+      "UNIFORM.png","USPOLOASSN.png","VERSACE.png","VERSACE_VERSUS.png","VICBEE.png","VIONNET.png",
+      "WEILIZHENG.png","WRANGLER.png"
+    ];
+
+    LOGO_FILES.push("ARMANI_EMPORIO.png", "COLUMBIA.png", "COTTONBELT.png", "ONLYANDSONS.png", "PANAM.png");
+    LOGO_FILES.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
+
+    const LOGO_PATH = "assets/logos/";
+    const DEFAULT_LOGO = "LUXURY_GOLD.png";
+    const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function toggleSecondBrand() {
+      const btn = document.getElementById('btnToggle2ndBrand');
+      const sheet = document.getElementById('printSheet');
+      const isActive = sheet.classList.toggle('has-2-brands');
+
+      document.querySelectorAll('.brand-bis-group').forEach(group => {
+        group.style.display = isActive ? 'block' : 'none';
+      });
+
+      if (isActive) {
+        btn.innerHTML = "➖ RIMUOVI 2° BRAND";
+        btn.classList.add('active');
+      } else {
+        btn.innerHTML = "➕ AGGIUNGI 2° BRAND";
+        btn.classList.remove('active');
+      }
+      updateCards();
+    }
+
+    function toggleThirdItem() {
+      const btn = document.getElementById('btnToggle3rdItem');
+      const sheet = document.getElementById('printSheet');
+      const isActive = sheet.classList.toggle('has-3-items');
+
+      document.querySelectorAll('.item-3-group').forEach(group => {
+        group.style.display = isActive ? 'block' : 'none';
+      });
+
+      if (isActive) {
+        btn.innerHTML = "➖ RIMUOVI TERZO ARTICOLO";
+        btn.classList.add('active');
+      } else {
+        btn.innerHTML = "➕ AGGIUNGI TERZO ARTICOLO";
+        btn.classList.remove('active');
+      }
+      updateCards();
+    }
+
+    function toggleMadeInItaly(cardIndex) {
+      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+      document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
+      updateCards();
+    }
+
+    function loadLocalLogos() {
+      const select1 = document.getElementById('brandSelect1');
+      const select2 = document.getElementById('brandSelect2');
+      const select1Bis = document.getElementById('brandSelect1Bis');
+      const select2Bis = document.getElementById('brandSelect2Bis');
+
+      select1.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      select2.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      select1Bis.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      select2Bis.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      LOGO_FILES.forEach(fileName => {
+        const displayName = cleanBrandName(fileName);
+        
+        const option1 = document.createElement('option');
+        option1.value = fileName;
+        option1.textContent = displayName;
+        if(fileName === "LUXURY_GOLD.png") option1.selected = true;
+        select1.appendChild(option1);
+
+        const option2 = document.createElement('option');
+        option2.value = fileName;
+        option2.textContent = displayName;
+        if(fileName === "LUXURY_GOLD.png") option2.selected = true;
+        select2.appendChild(option2);
+
+        const option1Bis = document.createElement('option');
+        option1Bis.value = fileName;
+        option1Bis.textContent = displayName;
+        select1Bis.appendChild(option1Bis);
+
+        const option2Bis = document.createElement('option');
+        option2Bis.value = fileName;
+        option2Bis.textContent = displayName;
+        select2Bis.appendChild(option2Bis);
+      });
+
+      loadCustomLogosDropdown();
+      updateCards();
+    }
+
+    function loadCustomLogosDropdown() {
+      const cSelect1 = document.getElementById('customBrandSelect1');
+      const cSelect2 = document.getElementById('customBrandSelect2');
+      const cSelect1Bis = document.getElementById('customBrandSelect1Bis');
+      const cSelect2Bis = document.getElementById('customBrandSelect2Bis');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+
+      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect1Bis.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect2Bis.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+
+      customLogos.forEach(item => {
+        const opt1 = document.createElement('option');
+        opt1.value = item.data;
+        opt1.textContent = "★ " + item.name;
+        cSelect1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = item.data;
+        opt2.textContent = "★ " + item.name;
+        cSelect2.appendChild(opt2);
+
+        const opt1Bis = document.createElement('option');
+        opt1Bis.value = item.data;
+        opt1Bis.textContent = "★ " + item.name;
+        cSelect1Bis.appendChild(opt1Bis);
+
+        const opt2Bis = document.createElement('option');
+        opt2Bis.value = item.data;
+        opt2Bis.textContent = "★ " + item.name;
+        cSelect2Bis.appendChild(opt2Bis);
+      });
+    }
+
+    function onOfficialBrandChange(cardIndex) {
+      document.getElementById('customBrandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function onCustomBrandChange(cardIndex) {
+      document.getElementById('brandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function onOfficialBrandBisChange(cardIndex) {
+      document.getElementById('customBrandSelect' + cardIndex + 'Bis').value = "";
+      updateCards();
+    }
+
+    function onCustomBrandBisChange(cardIndex) {
+      document.getElementById('brandSelect' + cardIndex + 'Bis').value = "";
+      updateCards();
+    }
+
+    function copyCard1ToCard2() {
+      // Brand
+      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('brandSelect2Bis').value = document.getElementById('brandSelect1Bis').value;
+      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
+      document.getElementById('customBrandSelect2Bis').value = document.getElementById('customBrandSelect1Bis').value;
+      
+      const firstCardHasSecondBrand = Boolean(
+        document.getElementById('brandSelect1Bis').value ||
+        document.getElementById('customBrandSelect1Bis').value
+      );
+      const sheet = document.getElementById('printSheet');
+      if (firstCardHasSecondBrand && !sheet.classList.contains('has-2-brands')) {
+        toggleSecondBrand();
+      }
+
+      // Claims
+      document.getElementById('left2').value = document.getElementById('left1').value;
+      document.getElementById('right2').value = document.getElementById('right1').value;
+
+      // Articolo A
+      document.getElementById('name2A').value = document.getElementById('name1A').value;
+      document.getElementById('pOld2A').value = document.getElementById('pOld1A').value;
+      document.getElementById('disc2A').value = document.getElementById('disc1A').value;
+      document.getElementById('pNew2A').value = document.getElementById('pNew1A').value;
+
+      // Articolo C
+      document.getElementById('name2C').value = document.getElementById('name1C').value;
+      document.getElementById('pOld2C').value = document.getElementById('pOld1C').value;
+      document.getElementById('disc2C').value = document.getElementById('disc1C').value;
+      document.getElementById('pNew2C').value = document.getElementById('pNew1C').value;
+
+      // Articolo B
+      document.getElementById('name2B').value = document.getElementById('name1B').value;
+      document.getElementById('pOld2B').value = document.getElementById('pOld1B').value;
+      document.getElementById('disc2B').value = document.getElementById('disc1B').value;
+      document.getElementById('pNew2B').value = document.getElementById('pNew1B').value;
+
+      updateCards();
+    }
+
+    function toggleCardMode() {
+      const count = document.getElementById('modeSelect').value;
+      const card2 = document.getElementById('card2');
+      const section2 = document.getElementById('sectionCard2');
+      const btnCopy = document.getElementById('btnCopy');
+      const sheet = document.getElementById('printSheet');
+
+      if (count === "1") {
+        card2.classList.add('disabled');
+        section2.style.display = 'none';
+        btnCopy.style.display = 'none';
+        sheet.classList.remove('double-mode');
+        sheet.classList.add('single-mode');
+      } else {
+        card2.classList.remove('disabled');
+        section2.style.display = 'block';
+        btnCopy.style.display = 'block';
+        sheet.classList.remove('single-mode');
+        sheet.classList.add('double-mode');
+      }
+    }
+
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = count.toString();
+      toggleCardMode();
+      window.print();
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) return;
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
+    }
+
+    function updateCards() {
+      const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+
+      // --- CARTELLO 1 ---
+      const b1 = document.getElementById('brandSelect1').value;
+      const cb1 = document.getElementById('customBrandSelect1').value;
+      const b1Bis = document.getElementById('brandSelect1Bis').value;
+      const cb1Bis = document.getElementById('customBrandSelect1Bis').value;
+
+      if (cb1) document.getElementById('cardLogo1').src = cb1;
+      else if (b1) document.getElementById('cardLogo1').src = LOGO_PATH + b1;
+      else document.getElementById('cardLogo1').src = LOGO_PATH + DEFAULT_LOGO;
+
+      if (cb1Bis) document.getElementById('cardLogo1Bis').src = cb1Bis;
+      else if (b1Bis) document.getElementById('cardLogo1Bis').src = LOGO_PATH + b1Bis;
+      else document.getElementById('cardLogo1Bis').src = LOGO_PATH + DEFAULT_LOGO;
+
+      document.getElementById('headLeft1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>');
+      document.getElementById('headRight1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>');
+
+      // Articolo 1A
+      document.getElementById('title1A').innerText = document.getElementById('name1A').value;
+      const po1A = document.getElementById('pOld1A').value;
+      document.getElementById('pOldDisp1A').innerText = po1A ? '€ ' + po1A : '';
+      document.getElementById('discDisp1A').innerText = document.getElementById('disc1A').value;
+      const pn1A = document.getElementById('pNew1A').value;
+      document.getElementById('pNewDisp1A').innerText = pn1A ? '€ ' + pn1A : '';
+
+      // Articolo 1C (Centro)
+      document.getElementById('title1C').innerText = document.getElementById('name1C').value;
+      const po1C = document.getElementById('pOld1C').value;
+      document.getElementById('pOldDisp1C').innerText = po1C ? '€ ' + po1C : '';
+      document.getElementById('discDisp1C').innerText = document.getElementById('disc1C').value;
+      const pn1C = document.getElementById('pNew1C').value;
+      document.getElementById('pNewDisp1C').innerText = pn1C ? '€ ' + pn1C : '';
+
+      // Articolo 1B
+      document.getElementById('title1B').innerText = document.getElementById('name1B').value;
+      const po1B = document.getElementById('pOld1B').value;
+      document.getElementById('pOldDisp1B').innerText = po1B ? '€ ' + po1B : '';
+      document.getElementById('discDisp1B').innerText = document.getElementById('disc1B').value;
+      const pn1B = document.getElementById('pNew1B').value;
+      document.getElementById('pNewDisp1B').innerText = pn1B ? '€ ' + pn1B : '';
+
+      // --- CARTELLO 2 ---
+      const b2 = document.getElementById('brandSelect2').value;
+      const cb2 = document.getElementById('customBrandSelect2').value;
+      const b2Bis = document.getElementById('brandSelect2Bis').value;
+      const cb2Bis = document.getElementById('customBrandSelect2Bis').value;
+
+      if (cb2) document.getElementById('cardLogo2').src = cb2;
+      else if (b2) document.getElementById('cardLogo2').src = LOGO_PATH + b2;
+      else document.getElementById('cardLogo2').src = LOGO_PATH + DEFAULT_LOGO;
+
+      if (cb2Bis) document.getElementById('cardLogo2Bis').src = cb2Bis;
+      else if (b2Bis) document.getElementById('cardLogo2Bis').src = LOGO_PATH + b2Bis;
+      else document.getElementById('cardLogo2Bis').src = LOGO_PATH + DEFAULT_LOGO;
+
+      document.getElementById('headLeft2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>');
+      document.getElementById('headRight2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>');
+
+      // Articolo 2A
+      document.getElementById('title2A').innerText = document.getElementById('name2A').value;
+      const po2A = document.getElementById('pOld2A').value;
+      document.getElementById('pOldDisp2A').innerText = po2A ? '€ ' + po2A : '';
+      document.getElementById('discDisp2A').innerText = document.getElementById('disc2A').value;
+      const pn2A = document.getElementById('pNew2A').value;
+      document.getElementById('pNewDisp2A').innerText = pn2A ? '€ ' + pn2A : '';
+
+      // Articolo 2C (Centro)
+      document.getElementById('title2C').innerText = document.getElementById('name2C').value;
+      const po2C = document.getElementById('pOld2C').value;
+      document.getElementById('pOldDisp2C').innerText = po2C ? '€ ' + po2C : '';
+      document.getElementById('discDisp2C').innerText = document.getElementById('disc2C').value;
+      const pn2C = document.getElementById('pNew2C').value;
+      document.getElementById('pNewDisp2C').innerText = pn2C ? '€ ' + pn2C : '';
+
+      // Articolo 2B
+      document.getElementById('title2B').innerText = document.getElementById('name2B').value;
+      const po2B = document.getElementById('pOld2B').value;
+      document.getElementById('pOldDisp2B').innerText = po2B ? '€ ' + po2B : '';
+      document.getElementById('discDisp2B').innerText = document.getElementById('disc2B').value;
+      const pn2B = document.getElementById('pNew2B').value;
+      document.getElementById('pNewDisp2B').innerText = pn2B ? '€ ' + pn2B : '';
+    }
+
+    window.onload = loadLocalLogos;
+  </script>
+</body>
+</html>
