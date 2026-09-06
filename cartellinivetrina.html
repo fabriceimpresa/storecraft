@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>Cartellini Vetrina</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
+  <script src="assets/js/logos.js"></script>
+
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -358,69 +362,42 @@
   </main>
 
   <script>
+    const LOGO_PATH = "assets/logos/";
+
+    function cleanBrandName(filename) {
+      if (!filename) return '';
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function getLogoFilename(brand) {
+      if (!brand) return '';
+      if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
+        const found = LOGO_FILES.find(f => 
+          f.toLowerCase() === brand.toLowerCase() || 
+          cleanBrandName(f).toLowerCase() === brand.toLowerCase().replace(/[-_]/g, ' ')
+        );
+        if (found) return found;
+      }
+      return brand.includes('.') ? brand : `${brand}.png`;
+    }
+
     const cardsData = [
-      { id: 1, enabled: true, brand: 'SKYWARD', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '396,00', sconto: '-50%', presetText: '', priceFinal: '198,00' },
-      { id: 2, enabled: true, brand: 'PINKO', customLogoUrl: '', desc: 'Pantalone', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '40,00' },
-      { id: 3, enabled: true, brand: 'PINKO', customLogoUrl: '', desc: 'Gonna', usePreset: true, priceOrig: '', sconto: '', presetText: 'WINTER SALE', priceFinal: '30,00' },
-      { id: 4, enabled: true, brand: 'FELEPPA', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '310,00', sconto: '-55%', presetText: '', priceFinal: '139,50' },
-      { id: 5, enabled: true, brand: 'WEILI ZHENG', customLogoUrl: '', desc: 'Top', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '30,00' },
-      { id: 6, enabled: true, brand: 'HAVE ONE', customLogoUrl: '', desc: 'Abito', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '30,00' },
-      { id: 7, enabled: true, brand: 'MEIMEIJ', customLogoUrl: '', desc: 'Pantalone', usePreset: true, priceOrig: '', sconto: '', presetText: 'WINTER SALE', priceFinal: '30,00' },
-      { id: 8, enabled: true, brand: 'FELEPPA', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '310,00', sconto: '-55%', presetText: '', priceFinal: '139,50' }
+      { id: 1, enabled: true, brand: 'SKYWARD.png', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '396,00', sconto: '-50%', presetText: '', priceFinal: '198,00' },
+      { id: 2, enabled: true, brand: 'PINKO.png', customLogoUrl: '', desc: 'Pantalone', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '40,00' },
+      { id: 3, enabled: true, brand: 'PINKO.png', customLogoUrl: '', desc: 'Gonna', usePreset: true, priceOrig: '', sconto: '', presetText: 'WINTER SALE', priceFinal: '30,00' },
+      { id: 4, enabled: true, brand: 'FELEPPA.png', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '310,00', sconto: '-55%', presetText: '', priceFinal: '139,50' },
+      { id: 5, enabled: true, brand: 'WEILI ZHENG.png', customLogoUrl: '', desc: 'Top', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '30,00' },
+      { id: 6, enabled: true, brand: 'HAVE ONE.png', customLogoUrl: '', desc: 'Abito', usePreset: true, priceOrig: '', sconto: '', presetText: 'SPECIAL DEAL', priceFinal: '30,00' },
+      { id: 7, enabled: true, brand: 'MEIMEIJ.png', customLogoUrl: '', desc: 'Pantalone', usePreset: true, priceOrig: '', sconto: '', presetText: 'WINTER SALE', priceFinal: '30,00' },
+      { id: 8, enabled: true, brand: 'FELEPPA.png', customLogoUrl: '', desc: 'Giubbino', usePreset: false, priceOrig: '310,00', sconto: '-55%', presetText: '', priceFinal: '139,50' }
     ];
 
     let currentCardIdx = 0;
-    const availableLogos = [
-      '269TEBE', 'ABIDDIKKIA', 'AFTERLABEL', 'AIRWALK', 'ALESSANDRODELLACQUA',
-      'ALEXANDERMCQUEEN', 'ARMANI', 'ARMANI_COLLEZIONI', 'ARMANI_EXCHANGE',
-      'ARMANI_GIORGIO', 'ARMANI_JEANS', 'ARNALDIMILANO', 'AVIREX', 'AYLIE',
-      'BAGUTTA', 'BALDININI', 'BALMAIN', 'BASTONCINO', 'BCBG', 'BEATRICE',
-      'BELSTAF', 'BENSHERMAN', 'BIKKENBERGS', 'BLAUER', 'BLKER', 'BLUGIRL',
-      'BLUMARINE', 'BRICS', 'BURBERRY', 'BYBLOS', 'CALVINKLEIN', 'CARHARTT',
-      'CAVALLI_CLASS', 'CAVALLI_ROBERTO', 'CHIARABONI', 'CIESSEPIUMINI',
-      'COCACOLA', 'COCCINELLE', 'COSTUMENATIONAL', 'DAINESE', 'DEVORE',
-      'DIADORA', 'DICKIES', 'DIESEL', 'DIOR', 'DIXIE', 'DOLCEANDGABBANA',
-      'DRSCHOLL', 'DSQUARED2', 'DUCAHOMME', 'EASTPAK', 'EGONVONFURSTENBERG',
-      'ELISAFANTI', 'EMMAANDGAIA', 'ENTREAMIS', 'ERMANNOSCERVINO',
-      'ERMENEGILDOZEGNA', 'EVERLAST', 'FACCONABLE', 'FELEPPA', 'FERRARI',
-      'FERRE', 'FILA', 'FRANKLINMARSHALL', 'GAELLE', 'GANT', 'GARMENT',
-      'GATTINONI', 'GCDS', 'GERMANS', 'GIVENCHY', 'GOORIN', 'GUESS',
-      'GUYLAROCHE', 'H953', 'HACKETTLONDON', 'HARMONT&BLAINE', 'HAVE ONE',
-      'HERSCHELL', 'HOPPER', 'HUSKY', 'IMPERIAL', 'IMPURE', 'INVICTA',
-      'ISABELMARANT', 'JACKDANIELS', 'JEIO', 'JEREMYSCOTT', 'JIJIL',
-      'JOHNGALLIANO', 'JOHNRICHMOND', 'JUSTCAVALLI', 'KARLLAGERFELD', 'KENZO',
-      'KRIZIA', 'KWAY', 'LACOSTE', 'LAMARTHE', 'LAPERLA', 'LASTCHANCE',
-      'LAURABIAGIOTTI', 'LEE', 'LESARTEDELSOLE', 'LEVIS', 'LIUJO', 'LONSDALE',
-      'LOVE', 'LUCKYLU', 'LUXURY_GOLD', 'LXRY', 'LXRY_BRAND', 'MADEINITALY',
-      'MAISONMARGIELA', 'MAJE', 'MALIPARNI', 'MALONESOULIERS', 'MARCJACOBS',
-      'MARELLA', 'MARIOVALENTINO', 'MARLBORO', 'MARNI', 'MASSIMOREBECCHI',
-      'MAXMARA', 'MEIMEIJ', 'MELISSA', 'MICHAELKORS', 'MIRONCE', 'MISSONI',
-      'MIZUNO', 'MODFITTERS', 'MONCLER', 'MONTECERVINO', 'MOSCHINO', 'MOTEL',
-      'MSGM', 'NAPAPIJRI', 'NENETTE', 'NEWBALANCE', 'OBAG', 'OFFICINA36',
-      'ONLY', 'OTTODROM', 'PACIOTTI_4US', 'PACIOTTI_CESARE', 'PATRIZIAPEPE',
-      'PAULANDSHARK', 'PEOPLEOFSHIBUYA', 'PHILIPPPLEIN', 'PIERRECARDIN',
-      'PINKO', 'PIQUADRO', 'POLAROID', 'RALPHLAUREN', 'RANSOM', 'REFRIGIWEAR',
-      'REFRIGUE', 'RICHMOND', 'ROCCOBAROCCO', 'ROYROGERS', 'RUEBISQUIT',
-      'RUSSEL', 'SALVATOREFERRAGAMO', 'SERGIOTACCHINI', 'SFIZIO',
-      'SIMONACORSELLINI', 'SKYWARD', 'SOUVENIR', 'STEVEMADDEN', 'SUPERDRY',
-      'TEBE', 'TENSIONEIN', 'TOMMYHILFIGER', 'TOMMYJEANS', 'TOYG', 'TRUSSARDI',
-      'TRUSSARDI_JEANS', 'TWINSET', 'UNGARO', 'UNIFORM', 'USPOLOASSN',
-      'VERSACE', 'VERSACE_VERSUS', 'VICBEE', 'VIONNET', 'WEILI ZHENG',
-      'WRANGLER'
-    ];
-    availableLogos.push('ARMANI_EMPORIO', 'COLUMBIA', 'COTTONBELT', 'ONLYANDSONS', 'PANAM');
-    availableLogos.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
-    const logoFileOverrides = {
-      '269tebe': '269TEBE.PNG',
-      'arnaldimilano': 'ARNALDIMILANO.PNG',
-      'balmain': 'BALMAIN.PNG',
-      'jeio': 'JEIO.PNG'
-    };
 
     function init() {
+      populateLogoDropdowns();
       renderTabs();
       renderGrid();
-      populateLogoDropdowns();
       loadEditorData();
     }
 
@@ -455,13 +432,15 @@
         el.className = `cartellino ${!card.enabled ? 'disabled' : ''}`;
         el.id = `card-view-${card.id}`;
 
-        let logoContent = `<div class="brand-text-fallback">${card.brand}</div>`;
+        const brandDisplayName = cleanBrandName(card.brand);
+        let logoContent = `<div class="brand-text-fallback">${brandDisplayName}</div>`;
+
         if (card.customLogoUrl) {
-          logoContent = `<img src="${card.customLogoUrl}" alt="${card.brand}">`;
+          logoContent = `<img src="${card.customLogoUrl}" alt="${brandDisplayName}">`;
         } else if (card.brand) {
-          const brandKey = card.brand.toLowerCase().replace(/\s+/g, '');
-          const logoFile = logoFileOverrides[brandKey] || `${brandKey.toUpperCase()}.png`;
-          logoContent = `<img src="assets/logos/${logoFile}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${card.brand}</div>'" alt="${card.brand}">`;
+          const logoFile = getLogoFilename(card.brand);
+          const logoSrc = LOGO_PATH + logoFile;
+          logoContent = `<img src="${logoSrc}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${brandDisplayName}</div>'" alt="${brandDisplayName}">`;
         }
 
         let subRowContent = '';
@@ -494,7 +473,14 @@
 
     function populateLogoDropdowns() {
       const brandSelect = document.getElementById('inp-brand');
-      brandSelect.innerHTML = availableLogos.map(l => `<option value="${l}">${l}</option>`).join('');
+
+      if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
+        brandSelect.innerHTML = LOGO_FILES.map(file => {
+          return `<option value="${file}">${cleanBrandName(file)}</option>`;
+        }).join('');
+      } else {
+        brandSelect.innerHTML = '<option value="">nessun logo caricato</option>';
+      }
 
       const savedLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
       const customOptions = '<option value="">-- Nessun Logo Personalizzato --</option>' +
@@ -506,7 +492,10 @@
       const card = cardsData[currentCardIdx];
       document.getElementById('editor-header').innerText = `Modifica Cartellino #${card.id}`;
       document.getElementById('custom-logo-label').innerText = `Logo Personalizzato Cartellino #${card.id}`;
-      document.getElementById('inp-brand').value = card.brand;
+      
+      const matchedFile = getLogoFilename(card.brand);
+      document.getElementById('inp-brand').value = matchedFile;
+
       document.getElementById('inp-desc').value = card.desc;
       document.getElementById('inp-toggle-preset').checked = card.usePreset;
       document.getElementById('inp-orig').value = card.priceOrig;
@@ -563,8 +552,7 @@
       renderGrid();
     }
 
-
-            function formatDiscountInput(input) {
+    function formatDiscountInput(input) {
       const value = input.value.replace(/[^\d,.-]/g, '');
       if (!value) {
         return;
@@ -579,7 +567,7 @@
       renderGrid();
     }
 
-function toggleCardEnabled(index, enabled) {
+    function toggleCardEnabled(index, enabled) {
       cardsData[index].enabled = enabled;
       renderGrid();
     }
