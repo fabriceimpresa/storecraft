@@ -355,8 +355,8 @@
       font-weight: 400;
       color: #000;
       text-align: center;
-      margin-top: 8mm; /* Staccato maggiormente dal rettangolo rosso */
-      margin-bottom: -7mm; /* Avvicinato ulteriormente alla percentuale */
+      margin-top: 8mm;
+      margin-bottom: -7mm;
       letter-spacing: -0.3px;
     }
 
@@ -756,7 +756,7 @@
     LOGO_FILES.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
 
     const LOGO_PATH = "assets/logos/";
-    const DEFAULT_LOGO = "IMPERIAL.png";
+    const DEFAULT_LOGO = "LUXURY_GOLD.png";
     const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
 
     function cleanBrandName(filename) {
@@ -805,13 +805,11 @@
         const option1 = document.createElement('option');
         option1.value = fileName;
         option1.textContent = displayName;
-        if(fileName === DEFAULT_LOGO) option1.selected = true;
         select1.appendChild(option1);
 
         const option2 = document.createElement('option');
         option2.value = fileName;
         option2.textContent = displayName;
-        if(fileName === DEFAULT_LOGO) option2.selected = true;
         select2.appendChild(option2);
 
         const option1Bis = document.createElement('option');
