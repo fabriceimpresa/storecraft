@@ -32,11 +32,9 @@
     .nav-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: 1px solid var(--border); transition: all 0.2s; margin-bottom: 1.2rem; }
     .nav-btn:hover { color: var(--text); border-color: var(--accent); }
 
-    /* TITOLO GALLERIA CENTRATO */
     .gallery-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; margin-bottom: 0.6rem; text-align: center; }
     .template-gallery { display: flex; flex-direction: column; gap: 0.6rem; }
 
-    /* CARD E NOMI MODELLI CENTRATI */
     .template-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -57,7 +55,6 @@
 
     .template-card .tpl-name { font-size: 0.75rem; font-weight: 600; color: var(--text); text-align: center; }
     
-    /* MINIATURE ANTEPRIMA SIDEBAR - 145px */
     .tpl-preview-box {
       width: 100%;
       max-width: 145px;
@@ -87,7 +84,6 @@
     header h1 { font-family: 'Cinzel', serif; font-size: 1.4rem; }
     header p { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
 
-    /* RILEVAMENTO E STATO DYMO USB */
     .usb-status {
       display: flex;
       align-items: center;
@@ -111,7 +107,6 @@
     .form-control:focus { border-color: var(--accent); }
     .row { display: flex; gap: 0.8rem; }
 
-    /* BOX DEDICATO LOGHI PERSONALIZZATI */
     .custom-brand-box {
       background: rgba(212, 163, 115, 0.04);
       border: 1px solid rgba(212, 163, 115, 0.35);
@@ -145,15 +140,15 @@
     .btn-print { width: 100%; padding: 0.9rem; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; margin-top: 0.5rem; }
     .btn-print:hover { background: var(--accent-hover); }
 
-    /* CONTENITORE ANTEPRIMA SCHERMO (456x256px = SCALA REALE PROPORZIONALE) */
+    /* CONTENITORE ANTEPRIMA SCHERMO (456x256px) */
     .label-preview-wrapper {
       background: #ffffff;
       width: 456px;
       height: 256px;
       border-radius: 12px;
-      padding: 12px 28px;
+      padding: 12px 20px;
       color: #000;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
@@ -162,14 +157,13 @@
     .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
     .brand-text-fallback { font-family: Arial, sans-serif; font-weight: 800; color: #000; line-height: 1.1; letter-spacing: -0.5px; }
 
-    /* LAYOUT 1 SCHERMO: OUTLET DOPPIO PREZZO */
+    /* LAYOUT 1: OUTLET DOPPIO PREZZO */
     .tpl-outlet { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
     .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 112px; width: 100%; }
     .tpl-outlet .brand-logo-container { width: 256px; height: 112px; }
     .tpl-outlet .brand-text-fallback { font-size: 31px; }
     .tpl-outlet .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
     .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 96px !important; height: 96px !important; }
-    
     .tpl-outlet .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 18px; width: 100%; }
     .tpl-outlet .price-box { display: flex; flex-direction: column; align-items: flex-start; }
     .tpl-outlet .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; }
@@ -178,23 +172,21 @@
     .tpl-outlet .price-outlet { align-items: flex-end; }
     .tpl-outlet .price-outlet .price-val { font-size: 48px; font-weight: bold; }
 
-    /* LAYOUT 2 SCHERMO: FINAL | OUTLET PRICE */
+    /* LAYOUT 2: FINAL PRICE */
     .tpl-final { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
     .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 112px; width: 100%; }
     .tpl-final .brand-logo-container { width: 256px; height: 112px; }
     .tpl-final .brand-text-fallback { font-size: 31px; }
     .tpl-final .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
     .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 96px !important; height: 96px !important; }
-    
     .tpl-final .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 18px; width: 100%; }
     .tpl-final .custom-text-box { display: flex; align-items: flex-end; margin-bottom: 4px; }
     .tpl-final .custom-text-val { font-size: 34px; font-weight: 400; letter-spacing: -0.3px; text-transform: uppercase; color: #000; line-height: 1; }
-    
     .tpl-final .price-box { display: flex; flex-direction: column; align-items: flex-end; }
     .tpl-final .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; }
     .tpl-final .price-val { font-size: 51px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-    /* LAYOUT 3 E 4 SCHERMO: LAST CHANCE E LUXURY LABEL */
+    /* LAYOUT 3 E 4: LAST CHANCE E LUXURY LABEL */
     .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 100%; width: 100%; padding: 0 5px; }
     .tpl-promo .left-logo-box, .tpl-luxury .left-logo-box { width: 225px; height: 195px; display: flex; align-items: center; justify-content: flex-start; }
     .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -202,29 +194,50 @@
     .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; font-weight: normal; }
     .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 54px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-    /* LAYOUT 5 SCHERMO: BARCODE */
-    .tpl-barcode { display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; }
-    .tpl-barcode .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-    .tpl-barcode .brand-logo-container { width: 176px; height: 56px; }
-    .tpl-barcode .brand-text-fallback { font-size: 23px; }
-    .tpl-barcode .prod-name { font-size: 23px; font-weight: bold; text-transform: uppercase; }
-    .tpl-barcode .barcode-box { text-align: center; margin: 4px 0; width: 100%; }
-    .tpl-barcode .barcode-lines { font-family: 'Courier New', monospace; font-size: 42px; letter-spacing: 3px; font-weight: bold; line-height: 1; }
-    .tpl-barcode .code-text { font-size: 20px; letter-spacing: 2px; }
-    .tpl-barcode .bottom-row { text-align: right; width: 100%; }
-    .tpl-barcode .price-val { font-size: 48px; font-weight: bold; }
+    /* LAYOUT 5: PROMO 50+50 */
+    .tpl-promo50 { display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; }
+    .tpl-promo50 .top-row { display: flex; justify-content: space-between; align-items: flex-end; padding: 2px 8px 6px 8px; height: 78px; }
+    .tpl-promo50 .price-col { display: flex; flex-direction: column; align-items: flex-start; }
+    .tpl-promo50 .price-col.align-right { align-items: flex-end; }
+    .tpl-promo50 .top-row .price-label { font-size: 20px; line-height: 1; color: #000; font-weight: 400; margin-bottom: 4px; }
+    .tpl-promo50 .top-row .price-val { font-size: 38px; font-weight: 400; line-height: 1; color: #000; letter-spacing: -0.5px; white-space: nowrap; }
+    .tpl-promo50 .disc-middle { font-size: 38px; font-weight: 400; line-height: 1; color: #000; text-align: center; }
+    .tpl-promo50 .black-banner { background: #000; color: #fff; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: stretch; height: 146px; }
+    .tpl-promo50 .banner-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+    .tpl-promo50 .banner-promo-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .tpl-promo50 .promo-title { font-size: 21px; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; text-align: center; }
+    .tpl-promo50 .promo-subtitle { font-size: 25px; font-weight: 800; line-height: 1.1; text-align: center; }
+    .tpl-promo50 .promo-discount { font-size: 62px; font-weight: 800; line-height: 0.95; text-align: left; }
+    .tpl-promo50 .banner-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; height: 100%; }
+    .tpl-promo50 .banner-right .price-label { color: #fff; font-size: 24px; font-weight: 400; line-height: 1; margin-bottom: 2px; text-align: right; }
+    .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 62px; font-weight: 800; line-height: 1; letter-spacing: -1px; white-space: nowrap; text-align: right; }
 
-    /* LAYOUT 6 SCHERMO: MINIMAL */
-    .tpl-minimal { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%; width: 100%; text-align: center; padding: 8px 0; }
-    .tpl-minimal .brand-logo-container { width: 288px; height: 72px; justify-content: center; }
-    .tpl-minimal .brand-text-fallback { font-size: 31px; }
-    .tpl-minimal .prod-name { font-size: 25px; color: #333; font-weight: 500; }
-    .tpl-minimal .price-val { font-size: 59px; font-weight: bold; }
+    /* LAYOUT 6: TAGLIE | DOPPIA CIFRA */
+    .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; width: 100%; height: 100%; padding: 2px 0; color: #000; }
+    .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; align-items: center; width: 110px; }
+    .tpl-tagliedoppiacifra .size-title { font-size: 18px; font-weight: 400; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase; }
+    .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; }
+    .tpl-tagliedoppiacifra .size-box { width: 48px; height: 48px; border: 2.5px solid #000000; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; background-color: #ffffff; text-align: center; }
+    .tpl-tagliedoppiacifra .price-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 10px; padding-bottom: 6px; }
+    .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 14px; width: 100%; margin-top: 2px; }
+    .tpl-tagliedoppiacifra .original-price { font-size: 32px; font-weight: 400; letter-spacing: -0.5px; }
+    .tpl-tagliedoppiacifra .discount-tag { font-size: 32px; font-weight: 900; }
+    
+    /* FONT DINAMICO PREZZO FINALE (SCHERMO) */
+    .tpl-tagliedoppiacifra .final-price { 
+      font-size: var(--final-price-size-screen, 76px); 
+      font-weight: 900; 
+      line-height: 0.85; 
+      letter-spacing: -2px; 
+      margin-top: -2px; 
+      white-space: nowrap; 
+    }
+    
+    .tpl-tagliedoppiacifra .footer-text { font-size: 19px; font-weight: 400; letter-spacing: 0.3px; text-transform: uppercase; text-align: right; margin-bottom: 4px; }
   </style>
 </head>
 <body>
 
-  <!-- BARRA LATERALE CON GALLERIA TEMPLATES -->
   <aside>
     <div>
       <div class="brand">STORE // CRAFT</div>
@@ -233,15 +246,13 @@
       <div class="gallery-title">Galleria Modelli (57x32)</div>
       <div class="template-gallery">
         
-        <!-- ETICHETTA 1 -->
-        <div class="template-card active" id="card-tpl-outlet" onclick="setTemplate('outlet')">
+        <div class="template-card" id="card-tpl-outlet" onclick="setTemplate('outlet')">
           <span class="tpl-name">1. Outlet Doppio Prezzo</span>
           <div class="tpl-preview-box">
             <img src="assets/thumbnail/doppioprezzo.png" alt="Miniatura Doppio Prezzo">
           </div>
         </div>
 
-        <!-- ETICHETTA 2 -->
         <div class="template-card" id="card-tpl-final" onclick="setTemplate('final')">
           <span class="tpl-name">2. Final | Outlet Price</span>
           <div class="tpl-preview-box">
@@ -249,7 +260,6 @@
           </div>
         </div>
 
-        <!-- ETICHETTA 3 -->
         <div class="template-card" id="card-tpl-promo" onclick="setTemplate('promo')">
           <span class="tpl-name">3. Last Chance</span>
           <div class="tpl-preview-box">
@@ -257,7 +267,6 @@
           </div>
         </div>
 
-        <!-- ETICHETTA 4 -->
         <div class="template-card" id="card-tpl-luxury" onclick="setTemplate('luxury')">
           <span class="tpl-name">4. Luxury Label</span>
           <div class="tpl-preview-box">
@@ -265,24 +274,17 @@
           </div>
         </div>
 
-        <!-- ETICHETTA 5 -->
-        <div class="template-card" id="card-tpl-barcode" onclick="setTemplate('barcode')">
-          <span class="tpl-name">5. Articolo + Codice a Barre</span>
-          <div class="tpl-preview-box" style="background: #ffffff; padding: 2px; color: #000; justify-content: space-around;">
-            <div style="display:flex; flex-direction:column;">
-              <span style="font-size: 6px; font-weight: bold;">GIACCA PELLE</span>
-              <span style="font-size: 6px; letter-spacing: 0.5px;">||||||||||||||</span>
-            </div>
-            <span style="font-size: 9px; font-weight: bold;">29,50€</span>
+        <div class="template-card" id="card-tpl-promo50" onclick="setTemplate('promo50')">
+          <span class="tpl-name">5. Promo 50+50</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/promo50.png" alt="Miniatura Promo 50+50">
           </div>
         </div>
 
-        <!-- ETICHETTA 6 -->
-        <div class="template-card" id="card-tpl-minimal" onclick="setTemplate('minimal')">
-          <span class="tpl-name">6. Cartellino Essenziale</span>
-          <div class="tpl-preview-box" style="background: #ffffff; padding: 2px; color: #000; flex-direction: column; justify-content: center; gap: 1px;">
-            <span style="font-size: 6px; letter-spacing: 0.5px;">STORE CRAFT</span>
-            <span style="font-size: 10px; font-weight: bold;">29,50 €</span>
+        <div class="template-card active" id="card-tpl-tagliedoppiacifra" onclick="setTemplate('tagliedoppiacifra')">
+          <span class="tpl-name">6. Taglie | Doppia Cifra</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/tagliedoppiacifra.png" alt="Miniatura Taglie Doppia Cifra">
           </div>
         </div>
 
@@ -307,13 +309,11 @@
 
       <button class="btn-scan" onclick="requestDymoAccess()">🔄 Associa / Rileva DYMO USB</button>
 
-      <!-- 1. SELEZIONE LOGHI UFFICIALI -->
       <div class="form-group" id="groupBrand">
         <label for="brandSelect">Brand Ufficiale</label>
         <select id="brandSelect" class="form-control" onchange="onBrandSelectChange()"></select>
       </div>
 
-      <!-- 2. BLOCCO DEDICATO LOGHI PERSONALIZZATI -->
       <div class="custom-brand-box" id="groupCustomBrand">
         <div class="custom-brand-header">
           <span>★ LOGHI PERSONALIZZATI</span>
@@ -325,8 +325,21 @@
         </div>
       </div>
 
+      <!-- SELEZIONE TAGLIE GRID (6 DROPDOWN) -->
+      <div class="form-group" id="groupSizes" style="display:none;">
+        <label>Seleziona Taglie (6 Riquadri)</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.4rem;">
+          <select id="sizeSelect1" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect2" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect3" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect4" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect5" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect6" class="form-control" onchange="updateLabel()"></select>
+        </div>
+      </div>
+
       <div class="form-group" id="groupCustomText" style="display:none;">
-        <label>Testo Personalizzato / Etichetta</label>
+        <label id="lblCustomTextTitle">Testo Personalizzato / Etichetta</label>
         <input type="text" id="inputCustomText" class="form-control" value="FINAL PRICE" oninput="updateLabel()">
       </div>
 
@@ -342,18 +355,22 @@
 
       <div class="row" id="groupPriceRow">
         <div class="form-group" id="groupOrig" style="flex:1;">
-          <label>Prezzo Pieno (€)</label>
-          <input type="text" id="inputOrig" class="form-control" value="89,90" oninput="calculateDiscount()">
+          <label id="lblOrigTitle">Prezzo Originario (€)</label>
+          <input type="text" id="inputOrig" class="form-control" value="330,00" oninput="calculateDiscount()">
         </div>
-        <div class="form-group" id="groupDiscount" style="flex:1;">
+        <div class="form-group" id="groupDiscounted" style="flex:1;">
+          <label>Prezzo Scontato (€)</label>
+          <input type="text" id="inputDiscounted" class="form-control" value="99,00" oninput="updateLabel()">
+        </div>
+        <div class="form-group" id="groupDiscount" style="flex:1; display:none;">
           <label>Sconto (%)</label>
-          <input type="text" id="inputDiscount" class="form-control" value="-67%" oninput="formatDiscountInput(this); updateLabel()">
+          <input type="text" id="inputDiscount" class="form-control" value="-70%" oninput="formatDiscountInput(this); updateLabel()">
         </div>
       </div>
 
       <div class="form-group" id="groupOutlet">
-        <label id="lblPriceTitle">Prezzo (€)</label>
-        <input type="text" id="inputOutlet" class="form-control" value="29,50" oninput="updateLabel()">
+        <label id="lblPriceTitle">Prezzo Finito (€)</label>
+        <input type="text" id="inputOutlet" class="form-control" value="99,00" oninput="updateLabel()">
       </div>
 
       <button class="btn-print" onclick="printLabelIsolated()">🖨️ STAMPA ETICHETTA (11354)</button>
@@ -371,10 +388,12 @@
   <script>
     const LOGO_PATH = "assets/logos/";
     const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+    const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '54', '56', '58', '60'];
+    const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
     let selectedBrand = '';
     let selectedCustomLogo = '';
-    let currentTemplateKey = 'outlet';
+    let currentTemplateKey = 'tagliedoppiacifra';
 
     const TEMPLATES = {
       'outlet': {
@@ -453,41 +472,79 @@
             </div>
           </div>`
       },
-      'barcode': {
-        name: '5. Articolo + Codice a Barre',
-        fields: ['groupBrand', 'groupCustomBrand', 'groupProdName', 'groupCode', 'groupOutlet'],
+      'promo50': {
+        name: '5. Promo 50+50',
+        fields: ['groupOrig', 'groupDiscounted', 'groupOutlet'],
         render: () => `
-          <div class="tpl-barcode">
+          <div class="tpl-promo50">
             <div class="top-row">
-              <div class="brand-logo-container">
-                <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
-                <span id="labelFallbackText" class="brand-text-fallback">LUXURY<br>OUTLET</span>
+              <div class="price-col">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOrig">198,00</span>
               </div>
-              <span id="lblProdName" class="prod-name">GIACCA PELLE</span>
+              <div class="disc-middle">-50%</div>
+              <div class="price-col align-right">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblDiscounted">99,00</span>
+              </div>
             </div>
-            <div class="barcode-box">
-              <div class="barcode-lines">||| | |||| | |||</div>
-              <span id="lblCode" class="code-text">ART-890214</span>
-            </div>
-            <div class="bottom-row">
-              <span id="lblOutlet" class="price-val">29,50 €</span>
+            <div class="black-banner">
+              <div class="banner-left">
+                <div class="banner-promo-text">
+                  <div class="promo-title">PROMOZIONE</div>
+                  <div class="promo-subtitle">50% + 50%</div>
+                </div>
+                <div class="promo-discount">-50%</div>
+              </div>
+              <div class="banner-right">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOutlet">49,50</span>
+              </div>
             </div>
           </div>`
       },
-      'minimal': {
-        name: '6. Cartellino Essenziale',
-        fields: ['groupBrand', 'groupCustomBrand', 'groupProdName', 'groupOutlet'],
+      'tagliedoppiacifra': {
+        name: '6. Taglie | Doppia Cifra',
+        fields: ['groupSizes', 'groupOrig', 'groupDiscount', 'groupOutlet', 'groupCustomText'],
         render: () => `
-          <div class="tpl-minimal">
-            <div class="brand-logo-container">
-              <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
-              <span id="labelFallbackText" class="brand-text-fallback">LUXURY<br>OUTLET</span>
+          <div class="tpl-tagliedoppiacifra">
+            <div class="size-section">
+              <div class="size-title">SIZE</div>
+              <div class="size-grid">
+                <div class="size-box" id="lblSize1">S</div>
+                <div class="size-box" id="lblSize2">M</div>
+                <div class="size-box" id="lblSize3">L</div>
+                <div class="size-box" id="lblSize4">XL</div>
+                <div class="size-box" id="lblSize5">2XL</div>
+                <div class="size-box" id="lblSize6">3XL</div>
+              </div>
             </div>
-            <span id="lblProdName" class="prod-name">GIACCA IN PELLE</span>
-            <span id="lblOutlet" class="price-val">29,50 €</span>
+            <div class="price-section">
+              <div class="top-price-row">
+                <span class="original-price" id="lblOrig">€ 330,00</span>
+                <span class="discount-tag" id="lblDiscount">-70%</span>
+              </div>
+              <div class="final-price" id="lblOutlet">€ 99,00</div>
+              <div class="footer-text" id="lblCustomText">OUTLET PRICE • FW26</div>
+            </div>
           </div>`
       }
     };
+
+    function initSizeSelects() {
+      for (let i = 1; i <= 6; i++) {
+        const sel = document.getElementById(`sizeSelect${i}`);
+        if (!sel) continue;
+        sel.innerHTML = '';
+        SIZE_OPTIONS.forEach(opt => {
+          const el = document.createElement('option');
+          el.value = opt;
+          el.textContent = opt;
+          if (opt === DEFAULT_SIZES[i - 1]) el.selected = true;
+          sel.appendChild(el);
+        });
+      }
+    }
 
     function setTemplate(key) {
       if (!TEMPLATES[key]) return;
@@ -499,7 +556,7 @@
 
       document.getElementById('labelPreview').innerHTML = TEMPLATES[key].render();
 
-      const allFields = ['groupBrand', 'groupCustomBrand', 'groupCustomText', 'groupProdName', 'groupCode', 'groupOrig', 'groupDiscount', 'groupOutlet'];
+      const allFields = ['groupBrand', 'groupCustomBrand', 'groupCustomText', 'groupProdName', 'groupCode', 'groupOrig', 'groupDiscounted', 'groupDiscount', 'groupOutlet', 'groupSizes'];
       allFields.forEach(fId => {
         const elem = document.getElementById(fId);
         if (elem) elem.style.display = TEMPLATES[key].fields.includes(fId) ? 'block' : 'none';
@@ -507,9 +564,31 @@
 
       const priceRow = document.getElementById('groupPriceRow');
       const showOrig = TEMPLATES[key].fields.includes('groupOrig');
+      const showDiscounted = TEMPLATES[key].fields.includes('groupDiscounted');
       const showDiscount = TEMPLATES[key].fields.includes('groupDiscount');
       if (priceRow) {
-        priceRow.style.display = (showOrig || showDiscount) ? 'flex' : 'none';
+        priceRow.style.display = (showOrig || showDiscounted || showDiscount) ? 'flex' : 'none';
+      }
+
+      const lblOrigTitle = document.getElementById('lblOrigTitle');
+      const lblPriceTitle = document.getElementById('lblPriceTitle');
+      const lblCustomTextTitle = document.getElementById('lblCustomTextTitle');
+
+      if (key === 'tagliedoppiacifra') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finale (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Frase Descrittiva / Testo Libero";
+        document.getElementById('inputOrig').value = "330,00";
+        document.getElementById('inputDiscount').value = "-70%";
+        document.getElementById('inputOutlet').value = "99,00";
+        document.getElementById('inputCustomText').value = "OUTLET PRICE • FW26";
+      } else if (key === 'promo50') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finito (€)";
+      } else {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Pieno (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Testo Personalizzato / Etichetta";
       }
 
       initQR();
@@ -521,10 +600,11 @@
     }
 
     function init() {
+      initSizeSelects();
       loadBrandSelect();
       loadCustomLogosSelect();
       checkDymoPresence();
-      setTemplate('outlet');
+      setTemplate('tagliedoppiacifra');
 
       if ('usb' in navigator) {
         navigator.usb.addEventListener('connect', checkDymoPresence);
@@ -648,6 +728,43 @@
       input.setSelectionRange(value.length, value.length);
     }
 
+    /* FUNZIONE DINAMICA PER DIMENSIONE FONT PREZZO FINALE (SOLO MODELLO 6) */
+    function adjustFinalPriceFontSize() {
+      const elemOutlet = document.getElementById('lblOutlet');
+      if (!elemOutlet || currentTemplateKey !== 'tagliedoppiacifra') return;
+
+      const text = elemOutlet.innerText.trim();
+      const len = text.length;
+
+      let screenSize = '76px';
+      let printSize = '28pt';
+
+      if (len <= 7) {
+        // DECINE (es. "€ 99,00") -> Font più grande
+        screenSize = '84px';
+        printSize = '31pt';
+      } else if (len === 8) {
+        // CENTINAIA BREVI (es. "€ 150,00")
+        screenSize = '70px';
+        printSize = '25pt';
+      } else if (len === 9) {
+        // CENTINAIA ESTESE (es. "€ 999,00")
+        screenSize = '62px';
+        printSize = '22pt';
+      } else if (len === 10) {
+        // MIGLIAIA (es. "€ 1.250,00") -> Ridotto per non andare a capo
+        screenSize = '52px';
+        printSize = '18.5pt';
+      } else if (len >= 11) {
+        // DECINE DI MIGLIAIA (es. "€ 12.500,00")
+        screenSize = '44px';
+        printSize = '15.5pt';
+      }
+
+      elemOutlet.style.setProperty('--final-price-size-screen', screenSize);
+      elemOutlet.style.setProperty('--final-price-size-print', printSize);
+    }
+
     function updateLabel() {
       const imgElement = document.getElementById('labelLogo');
       const textElement = document.getElementById('labelFallbackText');
@@ -668,21 +785,51 @@
       }
 
       const elemOrig = document.getElementById('lblOrig');
+      const elemDiscounted = document.getElementById('lblDiscounted');
       const elemDisc = document.getElementById('lblDiscount');
       const elemOutlet = document.getElementById('lblOutlet');
       const elemCustomText = document.getElementById('lblCustomText');
       const elemProd = document.getElementById('lblProdName');
       const elemCode = document.getElementById('lblCode');
 
-      if (elemOrig) elemOrig.innerText = document.getElementById('inputOrig').value;
-      if (elemDisc) elemDisc.innerText = document.getElementById('inputDiscount').value;
-      if (elemOutlet) {
-        const noSymbol = (currentTemplateKey === 'outlet' || currentTemplateKey === 'final' || currentTemplateKey === 'promo' || currentTemplateKey === 'luxury');
-        elemOutlet.innerText = document.getElementById('inputOutlet').value + (noSymbol ? '' : ' €');
+      if (elemOrig) {
+        const origValue = document.getElementById('inputOrig').value;
+        if (currentTemplateKey === 'tagliedoppiacifra') {
+          elemOrig.innerText = origValue.includes('€') ? origValue : `€ ${origValue}`;
+        } else {
+          elemOrig.innerText = origValue;
+        }
       }
+
+      if (elemDiscounted && document.getElementById('inputDiscounted')) {
+        elemDiscounted.innerText = document.getElementById('inputDiscounted').value;
+      }
+      if (elemDisc) elemDisc.innerText = document.getElementById('inputDiscount').value;
+      
+      if (elemOutlet) {
+        const outletValue = document.getElementById('inputOutlet').value;
+        if (currentTemplateKey === 'tagliedoppiacifra') {
+          elemOutlet.innerText = outletValue.includes('€') ? outletValue : `€ ${outletValue}`;
+        } else {
+          const noSymbol = (currentTemplateKey === 'outlet' || currentTemplateKey === 'final' || currentTemplateKey === 'promo' || currentTemplateKey === 'luxury' || currentTemplateKey === 'promo50');
+          elemOutlet.innerText = outletValue + (noSymbol ? '' : ' €');
+        }
+      }
+      
       if (elemCustomText) elemCustomText.innerText = document.getElementById('inputCustomText').value;
       if (elemProd) elemProd.innerText = document.getElementById('inputProdName').value;
       if (elemCode) elemCode.innerText = document.getElementById('inputCode').value;
+
+      if (currentTemplateKey === 'tagliedoppiacifra') {
+        for (let i = 1; i <= 6; i++) {
+          const sBox = document.getElementById(`lblSize${i}`);
+          const sSel = document.getElementById(`sizeSelect${i}`);
+          if (sBox && sSel) {
+            sBox.innerText = sSel.value;
+          }
+        }
+        adjustFinalPriceFontSize();
+      }
     }
 
     function onLogoError() {
@@ -711,8 +858,12 @@
     }
 
     function calculateDiscount() {
-      let orig = parseFloat(document.getElementById('inputOrig').value.replace(',', '.'));
-      let outlet = parseFloat(document.getElementById('inputOutlet').value.replace(',', '.'));
+      if (currentTemplateKey === 'promo50') {
+        updateLabel();
+        return;
+      }
+      let orig = parseFloat(document.getElementById('inputOrig').value.replace('€', '').replace(',', '.').trim());
+      let outlet = parseFloat(document.getElementById('inputOutlet').value.replace(',', '.').trim());
 
       if (orig > 0 && outlet > 0 && orig > outlet) {
         let disc = Math.round(((orig - outlet) / orig) * 100);
@@ -762,14 +913,14 @@
               margin: 0 !important;
               padding: 0 !important;
               background: #ffffff;
-              font-family: Arial, sans-serif;
+              font-family: Arial, Helvetica, sans-serif;
               overflow: hidden !important;
             }
             
             .print-wrapper {
               width: 57mm !important;
               height: 32mm !important;
-              padding: 1.5mm 3.5mm 1.5mm 3.5mm !important;
+              padding: 1.5mm 2.5mm 1.5mm 2.5mm !important;
               background: #ffffff;
               color: #000000;
               box-sizing: border-box;
@@ -778,7 +929,7 @@
               justify-content: center;
             }
 
-            .tpl-outlet, .tpl-final, .tpl-promo, .tpl-luxury, .tpl-barcode, .tpl-minimal {
+            .tpl-outlet, .tpl-final, .tpl-promo, .tpl-luxury, .tpl-promo50, .tpl-tagliedoppiacifra {
               width: 100% !important;
               box-sizing: border-box;
             }
@@ -794,7 +945,6 @@
             .tpl-outlet .brand-text-fallback { font-size: 11pt; }
             .tpl-outlet .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
             .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 12mm !important; height: 12mm !important; }
-            
             .tpl-outlet .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 2.5mm; width: 100%; }
             .tpl-outlet .price-box { display: flex; flex-direction: column; }
             .tpl-outlet .price-label { font-size: 7.5pt; line-height: 1; }
@@ -809,16 +959,14 @@
             .tpl-final .brand-text-fallback { font-size: 11pt; }
             .tpl-final .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
             .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 12mm !important; height: 12mm !important; }
-            
             .tpl-final .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 2.5mm; width: 100%; }
             .tpl-final .custom-text-box { display: flex; align-items: flex-end; margin-bottom: 0.6mm; }
             .tpl-final .custom-text-val { font-size: 12pt; font-weight: 400; text-transform: uppercase; line-height: 1; letter-spacing: -0.3px; }
-            
             .tpl-final .price-box { display: flex; flex-direction: column; align-items: flex-end; }
             .tpl-final .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; }
             .tpl-final .price-val { font-size: 18pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-            /* TEMPLATE 3 & 4 PRINT (LAST CHANCE & LUXURY LABEL) */
+            /* TEMPLATE 3 & 4 PRINT */
             .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 29mm; width: 100%; padding: 0 0.5mm; }
             .tpl-promo .left-logo-box, .tpl-luxury .left-logo-box { width: 28mm; height: 23.5mm; display: flex; align-items: center; justify-content: flex-start; }
             .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -826,24 +974,42 @@
             .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; font-weight: normal; }
             .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 19pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-            /* TEMPLATE 5 PRINT */
-            .tpl-barcode { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; }
-            .tpl-barcode .top-row { display: flex; justify-content: space-between; align-items: center; height: 7mm; width: 100%; }
-            .tpl-barcode .brand-logo-container { width: 22mm; height: 7mm; }
-            .tpl-barcode .brand-text-fallback { font-size: 8pt; }
-            .tpl-barcode .prod-name { font-size: 8pt; font-weight: bold; text-transform: uppercase; }
-            .tpl-barcode .barcode-box { text-align: center; margin: 1mm 0; width: 100%; }
-            .tpl-barcode .barcode-lines { font-family: 'Courier New', monospace; font-size: 15pt; letter-spacing: 2pt; font-weight: bold; line-height: 1; }
-            .tpl-barcode .code-text { font-size: 7pt; letter-spacing: 1pt; }
-            .tpl-barcode .bottom-row { text-align: right; width: 100%; }
-            .tpl-barcode .price-val { font-size: 17pt; font-weight: bold; }
+            /* TEMPLATE 5 PRINT (PROMO 50+50) */
+            .tpl-promo50 { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; width: 100%; }
+            .tpl-promo50 .top-row { display: flex; justify-content: space-between; align-items: flex-end; padding: 0.3mm 1mm 0.8mm 1mm; height: 9.8mm; }
+            .tpl-promo50 .price-col { display: flex; flex-direction: column; align-items: flex-start; }
+            .tpl-promo50 .price-col.align-right { align-items: flex-end; }
+            .tpl-promo50 .top-row .price-label { font-size: 7.5pt; line-height: 1; color: #000; font-weight: 400; margin-bottom: 0.5mm; }
+            .tpl-promo50 .top-row .price-val { font-size: 13.5pt; font-weight: 400; line-height: 1; color: #000; letter-spacing: -0.3pt; white-space: nowrap; }
+            .tpl-promo50 .disc-middle { font-size: 13.5pt; font-weight: 400; line-height: 1; color: #000; text-align: center; }
+            .tpl-promo50 .black-banner { background: #000 !important; color: #fff !important; border-radius: 1.8mm; padding: 1.2mm 1.8mm; display: flex; justify-content: space-between; align-items: stretch; height: 18.2mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .tpl-promo50 .banner-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+            .tpl-promo50 .banner-promo-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+            .tpl-promo50 .promo-title { font-size: 8pt; font-weight: 800; letter-spacing: 0.2pt; line-height: 1.1; color: #fff; text-align: center; }
+            .tpl-promo50 .promo-subtitle { font-size: 9.5pt; font-weight: 800; line-height: 1.1; color: #fff; text-align: center; }
+            .tpl-promo50 .promo-discount { font-size: 23pt; font-weight: 800; line-height: 0.95; color: #fff; text-align: left; }
+            .tpl-promo50 .banner-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; height: 100%; }
+            .tpl-promo50 .banner-right .price-label { color: #fff; font-size: 8.5pt; font-weight: 400; line-height: 1; margin-bottom: 0.3mm; text-align: right; }
+            .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 23pt; font-weight: 800; line-height: 1; letter-spacing: -0.5pt; white-space: nowrap; text-align: right; }
 
-            /* TEMPLATE 6 PRINT */
-            .tpl-minimal { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 29mm; text-align: center; padding: 1mm 0; }
-            .tpl-minimal .brand-logo-container { width: 36mm; height: 9mm; justify-content: center; }
-            .tpl-minimal .brand-text-fallback { font-size: 11pt; }
-            .tpl-minimal .prod-name { font-size: 9pt; color: #333; font-weight: 500; }
-            .tpl-minimal .price-val { font-size: 21pt; font-weight: bold; }
+            /* TEMPLATE 6 PRINT (TAGLIE DOPPIA CIFRA CON FONT STAMPA DINAMICO) */
+            .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; height: 29mm; width: 100%; }
+            .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; align-items: center; width: 15mm; }
+            .tpl-tagliedoppiacifra .size-title { font-size: 8pt; font-weight: 400; letter-spacing: 0.2pt; margin-bottom: 0.5mm; text-transform: uppercase; }
+            .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8mm; width: 100%; }
+            .tpl-tagliedoppiacifra .size-box { width: 7mm; height: 7mm; border: 0.5mm solid #000000; display: flex; align-items: center; justify-content: center; font-size: 7.5pt; font-weight: 400; background-color: #ffffff; }
+            .tpl-tagliedoppiacifra .price-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 1mm; padding-bottom: 1.5mm; }
+            .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 2mm; width: 100%; }
+            .tpl-tagliedoppiacifra .original-price { font-size: 12.5pt; font-weight: 400; }
+            .tpl-tagliedoppiacifra .discount-tag { font-size: 12.5pt; font-weight: 900; }
+            .tpl-tagliedoppiacifra .final-price { 
+              font-size: var(--final-price-size-print, 28pt) !important; 
+              font-weight: 900; 
+              line-height: 0.85; 
+              letter-spacing: -0.5pt; 
+              white-space: nowrap; 
+            }
+            .tpl-tagliedoppiacifra .footer-text { font-size: 8.5pt; font-weight: 400; text-transform: uppercase; text-align: right; margin-bottom: 1mm; }
           </style>
         </head>
         <body>

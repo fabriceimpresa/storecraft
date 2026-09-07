@@ -27,7 +27,7 @@
     .mobile-brand { display: none; }
     .mobile-nav-toggle { display: none; }
 
-    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 1000; }
+    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 1000; overflow-y: auto; }
     
     /* Intestazione Sidebar con Brand + Tasto X Mobile */
     .sidebar-header {
@@ -166,7 +166,7 @@
     .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
     .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
     
-    .menu-group, #generators-section, #tickets-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    .menu-group, #generators-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
     body.cassiere-mode #tools-title { margin-bottom: 1.5rem; }
     body.cassiere-mode #tools { margin-bottom: 2rem; }
     .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
@@ -190,7 +190,7 @@
     .card-body p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
 
     /* CAROSELLI CON FRECCE FLOATING */
-    #prints-section, #prints-promo-section { margin-bottom: 3rem; }
+    #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
     
     .carousel-wrapper {
       position: relative;
@@ -615,7 +615,8 @@
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
           <span>Genera Cartelli</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="menu-items" id="menu-generators">
+        <!-- Tutti i sotto-menu partono chiusi grazie alla classe `is-collapsed` -->
+        <div class="menu-items is-collapsed" id="menu-generators">
           <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
           <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
           <a href="cartelli_outletmulti.html" class="nav-btn">🏷️ Cartello Outlet Multi</a>
@@ -631,9 +632,20 @@
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tickets" onclick="toggleMenu('menu-tickets', this)">
           <span>Genera Cartellini</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="menu-items" id="menu-tickets">
+        <div class="menu-items is-collapsed" id="menu-tickets">
           <a href="cartellinivetrina.html" class="nav-btn">🏷️ Cartellini Vetrina</a>
           <a href="cartellinipromo.html" class="nav-btn">🏷️ Cartellini Promozionali</a>
+        </div>
+      </div>
+
+      <!-- SEZIONE: Etichette Dymo (con reindirizzamento diretto al tipo specifico) -->
+      <div class="menu-group">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-dymo" onclick="toggleMenu('menu-dymo', this)">
+          <span>Etichette Dymo</span><span class="menu-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="menu-items is-collapsed" id="menu-dymo">
+          <a href="etichette.html?label=outlet" class="nav-btn">🏷️ Etichette LXRY</a>
+          <a href="etichette.html?label=doppioprezzo" class="nav-btn">🏷️ Etichette Varie</a>
         </div>
       </div>
 
@@ -641,7 +653,7 @@
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
           <span>Loghi Personalizzati</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="menu-items" id="menu-logos">
+        <div class="menu-items is-collapsed" id="menu-logos">
           <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
           <a href="gestisci_lista.html" class="nav-btn">⚙️ Gestisci Lista Personale</a>
         </div>
@@ -652,7 +664,7 @@
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-prints" onclick="toggleMenu('menu-prints', this)">
           <span>Stampe Pronte</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="menu-items" id="menu-prints">
+        <div class="menu-items is-collapsed" id="menu-prints">
           <a href="#prints-section" class="nav-btn" onclick="scrollToSection('prints-section')">📄 Punto Vendita</a>
           <a href="#prints-promo-section" class="nav-btn" onclick="scrollToSection('prints-promo-section')">📄 Listini e Promozioni</a>
           <a href="#" class="nav-btn" onclick="openPdf('assets/pdf/egoncatalogo.pdf'); return false;">📄 Catalogo Egon Von Fürstenberg</a>
@@ -663,7 +675,7 @@
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tools" onclick="toggleMenu('menu-tools', this)">
           <span>Utilità Cassa</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
-        <div class="menu-items" id="menu-tools">
+        <div class="menu-items is-collapsed" id="menu-tools">
           <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-iva')">🧮 Calcola IVA</a>
@@ -806,6 +818,81 @@
             <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione&nbsp;&nbsp; | &nbsp;&nbsp;50% + 50% Saldi</p>
           </div>
         </a>
+      </div>
+    </div>
+
+    <!-- SEZIONE: Etichette Dymo con Link Diretti ai singoli Modelli -->
+    <div id="dymo-section">
+      <div class="section-title">Etichette Dymo</div>
+      
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('dymo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
+        
+        <div class="carousel-container" id="dymo-carousel">
+          
+          <div class="carousel-card" onclick="window.location.href='etichette.html?label=doppioprezzo'">
+            <div class="preview">
+              <img class="preview-image" src="assets/thumbnail/doppioprezzo.png" alt="1. Outlet Doppio Prezzo">
+            </div>
+            <div class="card-body">
+              <h3>1. Outlet Doppio Prezzo</h3>
+              <p>Stampa Diretta 57x32mm (11354)</p>
+            </div>
+          </div>
+
+          <div class="carousel-card" onclick="window.location.href='etichette.html?label=finalprice'">
+            <div class="preview">
+              <img class="preview-image" src="assets/thumbnail/finalprice.png" alt="2. Final | Outlet Price">
+            </div>
+            <div class="card-body">
+              <h3>2. Final | Outlet Price</h3>
+              <p>Stampa Diretta 57x32mm (11354)</p>
+            </div>
+          </div>
+
+          <div class="carousel-card" onclick="window.location.href='etichette.html?label=lastchance'">
+            <div class="preview">
+              <img class="preview-image" src="assets/thumbnail/lastchance.png" alt="3. Last Chance">
+            </div>
+            <div class="card-body">
+              <h3>3. Last Chance</h3>
+              <p>Stampa Diretta 57x32mm (11354)</p>
+            </div>
+          </div>
+
+          <div class="carousel-card" onclick="window.location.href='etichette.html?label=outlet'">
+            <div class="preview">
+              <img class="preview-image" src="assets/thumbnail/outlet.png" alt="4. Luxury Label">
+            </div>
+            <div class="card-body">
+              <h3>4. Luxury Label</h3>
+              <p>Stampa Diretta 57x32mm (11354)</p>
+            </div>
+          </div>
+
+          <div class="carousel-card" onclick="window.location.href='etichette.html?label=promo50'">
+            <div class="preview">
+              <img class="preview-image" src="assets/thumbnail/promo50.png" alt="5. Promo 50+50">
+            </div>
+            <div class="card-body">
+              <h3>5. Promo 50+50</h3>
+              <p>Stampa Diretta 57x32mm (11354)</p>
+            </div>
+          </div>
+
+          <div class="carousel-card" onclick="window.location.href='etichette.html?label=tagliedoppiacifra'">
+            <div class="preview">
+              <img class="preview-image" src="assets/thumbnail/tagliedoppiacifra.png" alt="6. Taglie | Doppia Cifra">
+            </div>
+            <div class="card-body">
+              <h3>6. Taglie | Doppia Cifra</h3>
+              <p>Stampa Diretta 57x32mm (11354)</p>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel('dymo-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
 
@@ -1065,7 +1152,7 @@
         <h3>💰 Cambio Valuta (Live Online)</h3>
         
         <div class="tool-row">
-          <select id="val-direction" class="tool-input-select" onchange="updateUI()">
+          <select id="val-direction" class="tool-input-select" onchange="calcValuta()">
             <option value="TO_EUR">Da Valuta Estera ➔ ad EUR (€)</option>
             <option value="FROM_EUR">Da EUR (€) ➔ a Valuta Estera</option>
           </select>
@@ -1073,458 +1160,303 @@
 
         <div class="tool-row">
           <div class="input-group">
-            <span class="input-prefix" id="val-prefix">VALUTA</span>
-            <input type="number" id="val-amount" class="tool-input" placeholder="Importo" value="100">
+            <span class="input-prefix" id="val-curr-symbol">$</span>
+            <input type="number" id="val-amount" class="tool-input" placeholder="Importo" oninput="calcValuta()">
+            <select id="val-currency" class="tool-input-select" style="max-width: 110px; border-left: 1px solid var(--border);" onchange="calcValuta()">
+              <option value="USD">USD ($)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="CHF">CHF (Fr)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="CAD">CAD ($)</option>
+              <option value="AUD">AUD ($)</option>
+            </select>
           </div>
-          <select id="val-currency" class="tool-input-select" style="width: 45%;" onchange="updateUI()">
-            <option value="USD">USD ($)</option>
-            <option value="GBP">GBP (£)</option>
-            <option value="ILS">ILS (₪)</option>
-            <option value="CNY">CNY (¥)</option>
-            <option value="JPY">JPY (¥)</option>
-          </select>
         </div>
 
-        <button class="tool-btn" style="width:100%" onclick="convertCurrency()">Calcola Cambio</button>
+        <button class="tool-btn" style="width:100%" onclick="calcValuta()">Converti Valuta</button>
         <div class="tool-result" id="res-valuta">€ 0,00</div>
       </div>
 
       <!-- 5. Widget Generatore QR Code -->
-      <div class="widget widget-compact" id="widget-qrcode" onclick="focusWidget(event, 'widget-qrcode')">
+      <div class="widget" id="widget-qrcode" onclick="focusWidget(event, 'widget-qrcode')">
         <div class="widget-header-controls">
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
         <h3>📱 Generatore QR Code</h3>
-
+        
         <div class="tool-row">
           <div class="input-group">
-            <span class="input-prefix">URL</span>
-            <input type="text" id="qrText" class="tool-input" value="https://instagram.com" placeholder="Link o testo" oninput="generateQR()">
+            <input type="text" id="qr-input" class="tool-input" placeholder="Inserisci Link o Testo" value="https://instagram.com/luxuryoutletroma" oninput="generateQRCode()">
           </div>
-        </div>
-
-        <div class="tool-row" style="margin-bottom: 0.4rem;">
-          <select id="qrSize" class="tool-input-select" onchange="generateQR()">
-            <option value="120" selected>Piccolo (120px)</option>
-            <option value="180">Medio (180px)</option>
-            <option value="260">Grande (260px)</option>
-          </select>
         </div>
 
         <div class="qr-preview-container">
-          <div class="qr-preview-wrapper">
-            <div id="qrcode"></div>
-          </div>
+          <div class="qr-preview-wrapper" id="qrcode"></div>
         </div>
 
-        <div class="tool-row" style="margin-bottom:0; gap: 0.4rem;">
-          <button class="tool-btn" style="flex:1;" onclick="downloadQR(event)">💾 Scarica</button>
-          <button class="tool-btn tool-btn-secondary" style="flex:1;" onclick="printQR(event)">🖨️ Stampa</button>
-        </div>
+        <button class="tool-btn" style="width:100%" onclick="generateQRCode()">Rigenera QR Code</button>
       </div>
 
     </div>
   </main>
 
   <script>
-    const symbols = { USD: '$', GBP: '£', ILS: '₪', CNY: '¥', JPY: '¥' };
-    let qrcodeObj = null;
+    let currentIvaRate = 22;
+    let qrCodeInstance = null;
 
-    /* LOGICA APERTURA / CHIUSURA MENU SIDEBAR SU MOBILE */
     function toggleMobileSidebar() {
       document.body.classList.toggle('sidebar-collapsed');
     }
 
-    /* FUNZIONE APERTURA FILE PDF DA CARD */
-    function openPdf(filePath) {
-      if (filePath) {
-        window.location.href = `pdf-viewer.html?file=${encodeURIComponent(filePath)}`;
+    function toggleMenu(menuId, buttonElem) {
+      const menu = document.getElementById(menuId);
+      if (!menu) return;
+
+      const isExpanded = buttonElem.getAttribute('aria-expanded') === 'true';
+      buttonElem.setAttribute('aria-expanded', !isExpanded);
+      menu.classList.toggle('is-collapsed', isExpanded);
+    }
+
+    function scrollCarousel(carouselId, direction) {
+      const container = document.getElementById(carouselId);
+      if (!container) return;
+      const scrollAmount = container.clientWidth * 0.75;
+      container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+
+    function openPdf(pdfUrl) {
+      window.open(pdfUrl, '_blank');
+    }
+
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('sidebar-collapsed');
       }
     }
 
-    /* FUNZIONE SCORRIMENTO CAROSELLI CON FRECCE FLOATING */
-    function scrollCarousel(containerId, direction) {
-      const container = document.getElementById(containerId);
-      if (container) {
-        const scrollAmount = 280;
-        container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    function returnToHomeTop() {
+      const mainElem = document.getElementById('main-content');
+      if (mainElem) mainElem.scrollTo({ top: 0, behavior: 'smooth' });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+      resetDefaultView();
+    }
+
+    function focusWidget(event, widgetId) {
+      if (event) event.stopPropagation();
+
+      document.querySelectorAll('.widget').forEach(w => {
+        w.classList.remove('expanded');
+        w.style.display = 'none';
+      });
+
+      const target = document.getElementById(widgetId);
+      if (target) {
+        target.classList.add('expanded');
+        target.style.display = 'flex';
+        
+        const main = document.getElementById('main-content');
+        if (main) {
+          const targetTop = target.getBoundingClientRect().top + main.scrollTop - main.getBoundingClientRect().top - 20;
+          main.scrollTo({ top: targetTop, behavior: 'smooth' });
+        }
+      }
+
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('sidebar-collapsed');
       }
     }
 
-    /* VAR E LOGICA WIDGET IVA */
-    let currentIvaRate = 22;
-    let lastIvaSource = 'net';
-
-    function parseIvaNum(val) {
-      if (!val) return 0;
-      let cleanVal = val.toString().replace(',', '.').replace(/[^0-9.]/g, '');
-      return parseFloat(cleanVal) || 0;
+    function resetDefaultView(event) {
+      if (event) event.stopPropagation();
+      document.querySelectorAll('.widget').forEach(w => {
+        w.classList.remove('expanded');
+        w.style.display = 'flex';
+      });
     }
 
-    function formatIvaNum(num) {
-      if (isNaN(num) || num === 0) return '';
-      return num.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    function setLayoutMode(mode) {
+      const creatorBtn = document.querySelector('.mode-btn[data-mode="creator"]');
+      const cassiereBtn = document.querySelector('.mode-btn[data-mode="cassiere"]');
+      
+      const generatorsSec = document.getElementById('generators-section');
+      const ticketsSec = document.getElementById('tickets-section');
+      const dymoSec = document.getElementById('dymo-section');
+      const printsSec = document.getElementById('prints-section');
+      const printsPromoSec = document.getElementById('prints-promo-section');
+      const toolsSec = document.getElementById('tools');
+      const toolsTitle = document.getElementById('tools-title');
+
+      if (mode === 'cassiere') {
+        document.body.classList.add('cassiere-mode');
+        if (creatorBtn) creatorBtn.classList.remove('active');
+        if (cassiereBtn) cassiereBtn.classList.add('active');
+
+        if (toolsTitle && toolsSec) {
+          toolsTitle.parentNode.insertBefore(toolsTitle, generatorsSec);
+          toolsSec.parentNode.insertBefore(toolsSec, generatorsSec);
+        }
+      } else {
+        document.body.classList.remove('cassiere-mode');
+        if (cassiereBtn) cassiereBtn.classList.remove('active');
+        if (creatorBtn) creatorBtn.classList.add('active');
+
+        const mainElem = document.getElementById('main-content');
+        if (mainElem && toolsTitle && toolsSec) {
+          mainElem.appendChild(toolsTitle);
+          mainElem.appendChild(toolsSec);
+        }
+      }
     }
 
-    function setIvaRate(rate, element, e) {
-      if (e) e.stopPropagation();
+    /* WIDGET 1: CALCOLA SCONTO */
+    function calcSconto() {
+      const orig = parseFloat(document.getElementById('p-orig').value);
+      const sconto = parseFloat(document.getElementById('p-sconto').value);
+      const resElem = document.getElementById('res-sconto');
+
+      if (!isNaN(orig) && !isNaN(sconto)) {
+        const finale = orig - (orig * (sconto / 100));
+        resElem.innerText = `€ ${finale.toFixed(2).replace('.', ',')}`;
+      } else {
+        resElem.innerText = "€ 0,00";
+      }
+    }
+
+    /* WIDGET 2: CALCOLA ALIQUOTA SCONTO */
+    function calcAliquota() {
+      const orig = parseFloat(document.getElementById('aliq-orig').value);
+      const finale = parseFloat(document.getElementById('aliq-finale').value);
+      const resElem = document.getElementById('res-aliquota');
+
+      if (!isNaN(orig) && !isNaN(finale) && orig > 0) {
+        const perc = Math.round(((orig - finale) / orig) * 100);
+        resElem.innerText = `-${perc}%`;
+      } else {
+        resElem.innerText = "0%";
+      }
+    }
+
+    /* WIDGET 3: CALCOLA IVA */
+    function setIvaRate(rate, btnElem, event) {
+      if (event) event.stopPropagation();
       currentIvaRate = rate;
-      document.querySelectorAll('.rate-btn-widget').forEach(btn => btn.classList.remove('active'));
-      if (element) element.classList.add('active');
-      recalcIva();
+      document.querySelectorAll('.rate-btn-widget').forEach(b => b.classList.remove('active'));
+      if (btnElem) btnElem.classList.add('active');
+      calcIvaFromNet();
     }
 
     function calcIvaFromNet() {
-      lastIvaSource = 'net';
-      let netRaw = document.getElementById('iva-net').value;
-      if (netRaw.trim() === '') { clearIvaInputs(); return; }
-      let net = parseIvaNum(netRaw);
-      let vat = net * (currentIvaRate / 100);
-      let gross = net + vat;
-      document.getElementById('iva-vat').value = formatIvaNum(vat);
-      document.getElementById('iva-gross').value = formatIvaNum(gross);
+      const netVal = parseFloat(document.getElementById('iva-net').value.replace(',', '.'));
+      if (!isNaN(netVal) && netVal >= 0) {
+        const vatVal = netVal * (currentIvaRate / 100);
+        const grossVal = netVal + vatVal;
+        document.getElementById('iva-vat').value = vatVal.toFixed(2).replace('.', ',');
+        document.getElementById('iva-gross').value = grossVal.toFixed(2).replace('.', ',');
+      } else {
+        document.getElementById('iva-vat').value = '';
+        document.getElementById('iva-gross').value = '';
+      }
     }
 
     function calcIvaFromVat() {
-      lastIvaSource = 'vat';
-      let vatRaw = document.getElementById('iva-vat').value;
-      if (vatRaw.trim() === '') { clearIvaInputs(); return; }
-      let vat = parseIvaNum(vatRaw);
-      let net = vat / (currentIvaRate / 100);
-      let gross = net + vat;
-      document.getElementById('iva-net').value = formatIvaNum(net);
-      document.getElementById('iva-gross').value = formatIvaNum(gross);
+      const vatVal = parseFloat(document.getElementById('iva-vat').value.replace(',', '.'));
+      if (!isNaN(vatVal) && vatVal >= 0) {
+        const netVal = vatVal / (currentIvaRate / 100);
+        const grossVal = netVal + vatVal;
+        document.getElementById('iva-net').value = netVal.toFixed(2).replace('.', ',');
+        document.getElementById('iva-gross').value = grossVal.toFixed(2).replace('.', ',');
+      } else {
+        document.getElementById('iva-net').value = '';
+        document.getElementById('iva-gross').value = '';
+      }
     }
 
     function calcIvaFromGross() {
-      lastIvaSource = 'gross';
-      let grossRaw = document.getElementById('iva-gross').value;
-      if (grossRaw.trim() === '') { clearIvaInputs(); return; }
-      let gross = parseIvaNum(grossRaw);
-      let net = gross / (1 + (currentIvaRate / 100));
-      let vat = gross - net;
-      document.getElementById('iva-net').value = formatIvaNum(net);
-      document.getElementById('iva-vat').value = formatIvaNum(vat);
+      const grossVal = parseFloat(document.getElementById('iva-gross').value.replace(',', '.'));
+      if (!isNaN(grossVal) && grossVal >= 0) {
+        const netVal = grossVal / (1 + (currentIvaRate / 100));
+        const vatVal = grossVal - netVal;
+        document.getElementById('iva-net').value = netVal.toFixed(2).replace('.', ',');
+        document.getElementById('iva-vat').value = vatVal.toFixed(2).replace('.', ',');
+      } else {
+        document.getElementById('iva-net').value = '';
+        document.getElementById('iva-vat').value = '';
+      }
     }
 
-    function recalcIva() {
-      if (lastIvaSource === 'net') calcIvaFromNet();
-      else if (lastIvaSource === 'vat') calcIvaFromVat();
-      else if (lastIvaSource === 'gross') calcIvaFromGross();
-    }
-
-    function clearIvaInputs() {
+    function resetIvaFields(event) {
+      if (event) event.stopPropagation();
       document.getElementById('iva-net').value = '';
       document.getElementById('iva-vat').value = '';
       document.getElementById('iva-gross').value = '';
     }
 
-    function resetIvaFields(e) {
-      if (e) e.stopPropagation();
-      clearIvaInputs();
-      setIvaRate(22, document.querySelectorAll('.rate-btn-widget')[3]);
-    }
+    /* WIDGET 4: CAMBIO VALUTA */
+    const RATES = {
+      'USD': 1.08,
+      'GBP': 0.85,
+      'CHF': 0.95,
+      'JPY': 160.5,
+      'CAD': 1.46,
+      'AUD': 1.65
+    };
 
-    /* BARRA MENU SIDEBAR */
-    function toggleMenu(menuId, toggleButton) {
-      const menu = document.getElementById(menuId);
-      const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-
-      toggleButton.setAttribute('aria-expanded', String(!isExpanded));
-      menu.classList.toggle('is-collapsed', isExpanded);
-      localStorage.setItem(`menu-${menuId}`, String(!isExpanded));
-    }
-
-    function returnToHomeTop() {
-      document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
-      if (window.innerWidth <= 768) {
-        document.body.classList.add('sidebar-collapsed');
-      }
-    }
-
-    function scrollToSection(sectionId) {
-      const el = document.getElementById(sectionId);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-        if (window.innerWidth <= 768) {
-          document.body.classList.add('sidebar-collapsed');
-        }
-      }
-    }
-
-    document.getElementById('main-content').addEventListener('scroll', function() {
-      document.body.classList.toggle('is-scrolled', this.scrollTop > 8);
-    });
-
-    function restoreMenus() {
-      document.querySelectorAll('.menu-toggle').forEach(toggleButton => {
-        const menuId = toggleButton.getAttribute('aria-controls');
-        const isExpanded = localStorage.getItem(`menu-${menuId}`) === 'true';
-        toggleButton.setAttribute('aria-expanded', String(isExpanded));
-        document.getElementById(menuId).classList.toggle('is-collapsed', !isExpanded);
-      });
-    }
-
-    let currentLayoutMode = 'creator';
-
-    function updateUI() {
+    function calcValuta() {
       const direction = document.getElementById('val-direction').value;
-      const targetCurrency = document.getElementById('val-currency').value;
-      const prefixEl = document.getElementById('val-prefix');
+      const amount = parseFloat(document.getElementById('val-amount').value);
+      const curr = document.getElementById('val-currency').value;
+      const resElem = document.getElementById('res-valuta');
+      const rate = RATES[curr] || 1;
 
-      if (direction === 'FROM_EUR') {
-        prefixEl.innerText = '€';
+      if (!isNaN(amount) && amount > 0) {
+        if (direction === 'TO_EUR') {
+          const inEur = amount / rate;
+          resElem.innerText = `€ ${inEur.toFixed(2).replace('.', ',')}`;
+        } else {
+          const inForeign = amount * rate;
+          resElem.innerText = `${curr} ${inForeign.toFixed(2).replace('.', ',')}`;
+        }
       } else {
-        prefixEl.innerText = symbols[targetCurrency] || 'VAL';
+        resElem.innerText = direction === 'TO_EUR' ? "€ 0,00" : `${curr} 0,00`;
       }
     }
 
-    function animateLayoutReorder(elements) {
-      elements.forEach(el => el.classList.add('layout-reorder-anim'));
-      requestAnimationFrame(() => {
-        elements.forEach(el => el.classList.remove('layout-reorder-anim'));
-      });
-    }
-
-    function appendInOrder(parent, elements) {
-      elements.forEach(el => {
-        if (el && parent.contains(el)) {
-          parent.appendChild(el);
-        }
-      });
-    }
-
-    function setLayoutMode(mode) {
-      if (!['creator', 'cassiere'].includes(mode) || currentLayoutMode === mode) return;
-      currentLayoutMode = mode;
-      document.querySelectorAll('.mode-btn').forEach(button => {
-        button.classList.toggle('active', button.dataset.mode === mode);
-      });
-
-      const generatorsGroup = document.querySelector('[aria-controls="menu-generators"]').parentElement;
-      const ticketsGroup = document.querySelector('[aria-controls="menu-tickets"]').parentElement;
-      const logosGroup = document.querySelector('[aria-controls="menu-logos"]').parentElement;
-      const printsGroup = document.querySelector('[aria-controls="menu-prints"]').parentElement;
-      const toolsGroup = document.querySelector('[aria-controls="menu-tools"]').parentElement;
-      
-      const menuWrapper = document.querySelector('aside > div');
-      
-      const generatorsSection = document.getElementById('generators-section');
-      const ticketsSection = document.getElementById('tickets-section');
-      const printsSection = document.getElementById('prints-section');
-      const printsPromoSection = document.getElementById('prints-promo-section');
-      const toolsTitle = document.getElementById('tools-title');
-      const toolsGrid = document.getElementById('tools');
-      const main = document.getElementById('main-content');
-
-      animateLayoutReorder([generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup, toolsTitle, toolsGrid]);
-
-      if (mode === 'cassiere') {
-        document.body.classList.add('cassiere-mode');
-        appendInOrder(menuWrapper, [toolsGroup, generatorsGroup, ticketsGroup, logosGroup, printsGroup]);
-        appendInOrder(main, [toolsTitle, toolsGrid, generatorsSection, ticketsSection, printsSection, printsPromoSection]);
-      } else {
-        document.body.classList.remove('cassiere-mode');
-        appendInOrder(menuWrapper, [generatorsGroup, ticketsGroup, logosGroup, printsGroup, toolsGroup]);
-        appendInOrder(main, [generatorsSection, ticketsSection, printsSection, printsPromoSection, toolsTitle, toolsGrid]);
-      }
-    }
-
-    function focusWidget(e, widgetId) {
-      const targetWidget = document.getElementById(widgetId);
-      
-      if (targetWidget && targetWidget.classList.contains('expanded')) {
-        return;
-      }
-
-      resetDefaultView();
-
-      const mainSections = [
-        document.getElementById('generators-section'),
-        document.getElementById('tickets-section'),
-        document.getElementById('prints-section'),
-        document.getElementById('prints-promo-section')
-      ];
-
-      if (targetWidget) {
-        mainSections.forEach(sec => { if (sec) sec.style.display = 'none'; });
-
-        document.querySelectorAll('.widget').forEach(w => {
-          if (w.id !== widgetId) {
-            w.style.display = 'none';
-          }
-        });
-
-        targetWidget.classList.add('expanded');
-        targetWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        if (widgetId === 'widget-qrcode') {
-          setTimeout(generateQR, 50);
-        }
-      }
-
-      if (window.innerWidth <= 768) {
-        document.body.classList.add('sidebar-collapsed');
-      }
-    }
-
-    function resetDefaultView(e) {
-      if (e) e.stopPropagation();
-
-      const mainSections = [
-        document.getElementById('generators-section'),
-        document.getElementById('tickets-section'),
-        document.getElementById('prints-section'),
-        document.getElementById('prints-promo-section')
-      ];
-      mainSections.forEach(sec => { if (sec) sec.style.display = 'block'; });
-
-      document.querySelectorAll('.widget').forEach(w => {
-        w.style.display = 'flex';
-        w.classList.remove('expanded');
-      });
-    }
-
-    function calcSconto() {
-      const p = parseFloat(document.getElementById('p-orig').value) || 0;
-      const s = parseFloat(document.getElementById('p-sconto').value) || 0;
-      const finale = p - (p * (s / 100));
-      document.getElementById('res-sconto').innerText = '€ ' + finale.toFixed(2);
-    }
-
-    function calcAliquota() {
-      const orig = parseFloat(document.getElementById('aliq-orig').value) || 0;
-      const finale = parseFloat(document.getElementById('aliq-finale').value) || 0;
-      const resBox = document.getElementById('res-aliquota');
-
-      if (orig <= 0) {
-        resBox.innerText = "Inserisci prezzo originale";
-        return;
-      }
-
-      if (finale >= orig) {
-        resBox.innerText = "0% (Nessun sconto)";
-        return;
-      }
-
-      const diff = orig - finale;
-      const percentuale = Math.round((diff / orig) * 100);
-      resBox.innerText = `${percentuale}% (Sconto € ${diff.toFixed(2)})`;
-    }
-
-    async function convertCurrency() {
-      const amount = parseFloat(document.getElementById('val-amount').value) || 0;
-      const targetCurrency = document.getElementById('val-currency').value;
-      const direction = document.getElementById('val-direction').value;
-      const resBox = document.getElementById('res-valuta');
-
-      if (amount <= 0) {
-        resBox.innerText = "Inserisci un importo valido";
-        return;
-      }
-
-      resBox.innerText = "Calcolo in corso...";
-
-      const currSymbol = symbols[targetCurrency] || '';
-      const primaryUrl = `https://open.er-api.com/v6/latest/EUR`;
-
-      try {
-        const response = await fetch(primaryUrl);
-        if (!response.ok) throw new Error('Errore API');
-        const data = await response.json();
-        
-        if (data && data.rates && data.rates[targetCurrency]) {
-          const rate = data.rates[targetCurrency];
-          
-          if (direction === 'TO_EUR') {
-            const converted = amount / rate;
-            resBox.innerText = `€ ${converted.toFixed(2)} EUR`;
-          } else {
-            const converted = amount * rate;
-            resBox.innerText = `${currSymbol} ${converted.toFixed(2)} ${targetCurrency}`;
-          }
-          return;
-        }
-        throw new Error('Formato dati non valido');
-      } catch (err) {
-        resBox.innerText = "Errore di connessione!";
-      }
-    }
-
-    /* FUNZIONI PER QR CODE */
-    function generateQR() {
-      const text = document.getElementById('qrText').value.trim();
-      const size = parseInt(document.getElementById('qrSize').value);
+    /* WIDGET 5: GENERATORE QR CODE */
+    function generateQRCode() {
+      const text = document.getElementById('qr-input').value.trim() || 'https://instagram.com/luxuryoutletroma';
       const container = document.getElementById('qrcode');
+      container.innerHTML = '';
+      
+      qrCodeInstance = new QRCode(container, {
+        text: text,
+        width: 120,
+        height: 120,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
 
-      if (!container) return;
-      container.innerHTML = "";
+    /* INIZIALIZZAZIONE PAGINA */
+    window.addEventListener('DOMContentLoaded', () => {
+      generateQRCode();
 
-      if (text !== "") {
-        qrcodeObj = new QRCode(container, {
-          text: text,
-          width: size,
-          height: size,
-          colorDark : "#000000",
-          colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.H
+      const mainScroll = document.getElementById('main-content');
+      if (mainScroll) {
+        mainScroll.addEventListener('scroll', () => {
+          if (mainScroll.scrollTop > 120) {
+            document.body.classList.add('is-scrolled');
+          } else {
+            document.body.classList.remove('is-scrolled');
+          }
         });
       }
-    }
-
-    function downloadQR(e) {
-      if (e) e.stopPropagation();
-      const img = document.querySelector("#qrcode img");
-      const canvas = document.querySelector("#qrcode canvas");
-      
-      let imageSrc = "";
-      if (img && img.src) {
-        imageSrc = img.src;
-      } else if (canvas) {
-        imageSrc = canvas.toDataURL("image/png");
-      }
-
-      if (!imageSrc) {
-        alert("Inserisci del testo per generare il QR Code!");
-        return;
-      }
-
-      const link = document.createElement('a');
-      link.href = imageSrc;
-      link.download = 'qrcode-storecraft.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function printQR(e) {
-      if (e) e.stopPropagation();
-      const img = document.querySelector("#qrcode img");
-      const canvas = document.querySelector("#qrcode canvas");
-      let imageSrc = img && img.src ? img.src : (canvas ? canvas.toDataURL("image/png") : "");
-
-      if (!imageSrc) {
-        alert("Genera prima un QR Code valido!");
-        return;
-      }
-
-      const win = window.open('', '_blank');
-      win.document.write(`
-        <html>
-          <head><title>Stampa QR Code</title></head>
-          <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
-            <img src="${imageSrc}" style="max-width:80%; max-height:80%;" onload="window.print(); window.close();"/>
-          </body>
-        </html>
-      `);
-      win.document.close();
-    }
-
-    restoreMenus();
-    setLayoutMode('creator');
-    updateUI();
-    generateQR();
+    });
   </script>
 </body>
 </html>
