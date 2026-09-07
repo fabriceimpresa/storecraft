@@ -57,7 +57,7 @@
 
     .template-card .tpl-name { font-size: 0.75rem; font-weight: 600; color: var(--text); text-align: center; }
     
-    /* MINIATURE ANTEPRIMA SIDEBAR - LEGGERMENTE INGRANDITE (145px) */
+    /* MINIATURE ANTEPRIMA SIDEBAR - 145px */
     .tpl-preview-box {
       width: 100%;
       max-width: 145px;
@@ -194,13 +194,15 @@
     .tpl-final .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; }
     .tpl-final .price-val { font-size: 51px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-    /* LAYOUT 3 SCHERMO: PROMO */
-    .tpl-promo { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; text-align: center; border: 3px solid #000; padding: 8px; }
-    .tpl-promo .promo-title { font-size: 31px; font-weight: 800; letter-spacing: 2px; }
-    .tpl-promo .discount-val { font-size: 37px; font-weight: bold; margin: 4px 0; }
-    .tpl-promo .price-val { font-size: 62px; font-weight: bold; }
+    /* LAYOUT 3 E 4 SCHERMO: LAST CHANCE E LUXURY LABEL */
+    .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 100%; width: 100%; padding: 0 5px; }
+    .tpl-promo .left-logo-box, .tpl-luxury .left-logo-box { width: 225px; height: 195px; display: flex; align-items: center; justify-content: flex-start; }
+    .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .tpl-promo .price-box, .tpl-luxury .price-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+    .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; font-weight: normal; }
+    .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 54px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-    /* LAYOUT 4 SCHERMO: BARCODE */
+    /* LAYOUT 5 SCHERMO: BARCODE */
     .tpl-barcode { display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; }
     .tpl-barcode .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .tpl-barcode .brand-logo-container { width: 176px; height: 56px; }
@@ -212,7 +214,7 @@
     .tpl-barcode .bottom-row { text-align: right; width: 100%; }
     .tpl-barcode .price-val { font-size: 48px; font-weight: bold; }
 
-    /* LAYOUT 5 SCHERMO: MINIMAL */
+    /* LAYOUT 6 SCHERMO: MINIMAL */
     .tpl-minimal { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%; width: 100%; text-align: center; padding: 8px 0; }
     .tpl-minimal .brand-logo-container { width: 288px; height: 72px; justify-content: center; }
     .tpl-minimal .brand-text-fallback { font-size: 31px; }
@@ -249,16 +251,23 @@
 
         <!-- ETICHETTA 3 -->
         <div class="template-card" id="card-tpl-promo" onclick="setTemplate('promo')">
-          <span class="tpl-name">3. Saldi / Promozione</span>
-          <div class="tpl-preview-box" style="background: #ffffff; padding: 2px; color: #000;">
-            <span style="font-size: 8px; font-weight: bold; color: #d00000;">PROMO</span>
-            <span style="font-size: 11px; font-weight: bold; margin-left: 4px;">29,50 €</span>
+          <span class="tpl-name">3. Last Chance</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/lastchance.png" alt="Miniatura Last Chance">
           </div>
         </div>
 
         <!-- ETICHETTA 4 -->
+        <div class="template-card" id="card-tpl-luxury" onclick="setTemplate('luxury')">
+          <span class="tpl-name">4. Luxury Label</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/outlet.png" alt="Miniatura Luxury Label">
+          </div>
+        </div>
+
+        <!-- ETICHETTA 5 -->
         <div class="template-card" id="card-tpl-barcode" onclick="setTemplate('barcode')">
-          <span class="tpl-name">4. Articolo + Codice a Barre</span>
+          <span class="tpl-name">5. Articolo + Codice a Barre</span>
           <div class="tpl-preview-box" style="background: #ffffff; padding: 2px; color: #000; justify-content: space-around;">
             <div style="display:flex; flex-direction:column;">
               <span style="font-size: 6px; font-weight: bold;">GIACCA PELLE</span>
@@ -268,9 +277,9 @@
           </div>
         </div>
 
-        <!-- ETICHETTA 5 -->
+        <!-- ETICHETTA 6 -->
         <div class="template-card" id="card-tpl-minimal" onclick="setTemplate('minimal')">
-          <span class="tpl-name">5. Cartellino Essenziale</span>
+          <span class="tpl-name">6. Cartellino Essenziale</span>
           <div class="tpl-preview-box" style="background: #ffffff; padding: 2px; color: #000; flex-direction: column; justify-content: center; gap: 1px;">
             <span style="font-size: 6px; letter-spacing: 0.5px;">STORE CRAFT</span>
             <span style="font-size: 10px; font-weight: bold;">29,50 €</span>
@@ -343,8 +352,8 @@
       </div>
 
       <div class="form-group" id="groupOutlet">
-        <label id="lblPriceTitle">Prezzo Outlet (€)</label>
-        <input type="text" id="inputOutlet" class="form-control" value="89,00" oninput="updateLabel()">
+        <label id="lblPriceTitle">Prezzo (€)</label>
+        <input type="text" id="inputOutlet" class="form-control" value="29,50" oninput="updateLabel()">
       </div>
 
       <button class="btn-print" onclick="printLabelIsolated()">🖨️ STAMPA ETICHETTA (11354)</button>
@@ -417,17 +426,35 @@
           </div>`
       },
       'promo': {
-        name: '3. Saldi / Promozione',
-        fields: ['groupDiscount', 'groupOutlet'],
+        name: '3. Last Chance',
+        fields: ['groupOutlet'],
         render: () => `
           <div class="tpl-promo">
-            <span class="promo-title">OFFERTA SPECIALE</span>
-            <span id="lblDiscount" class="discount-val">-67%</span>
-            <span id="lblOutlet" class="price-val">29,50 €</span>
+            <div class="left-logo-box">
+              <img src="assets/img/lclogobn.png" alt="Last Chance Logo">
+            </div>
+            <div class="price-box">
+              <span class="price-label">Euro</span>
+              <span class="price-val" id="lblOutlet">29,50</span>
+            </div>
+          </div>`
+      },
+      'luxury': {
+        name: '4. Luxury Label',
+        fields: ['groupOutlet'],
+        render: () => `
+          <div class="tpl-luxury">
+            <div class="left-logo-box">
+              <img src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet Logo">
+            </div>
+            <div class="price-box">
+              <span class="price-label">Euro</span>
+              <span class="price-val" id="lblOutlet">29,50</span>
+            </div>
           </div>`
       },
       'barcode': {
-        name: '4. Articolo + Codice a Barre',
+        name: '5. Articolo + Codice a Barre',
         fields: ['groupBrand', 'groupCustomBrand', 'groupProdName', 'groupCode', 'groupOutlet'],
         render: () => `
           <div class="tpl-barcode">
@@ -448,7 +475,7 @@
           </div>`
       },
       'minimal': {
-        name: '5. Cartellino Essenziale',
+        name: '6. Cartellino Essenziale',
         fields: ['groupBrand', 'groupCustomBrand', 'groupProdName', 'groupOutlet'],
         render: () => `
           <div class="tpl-minimal">
@@ -649,7 +676,10 @@
 
       if (elemOrig) elemOrig.innerText = document.getElementById('inputOrig').value;
       if (elemDisc) elemDisc.innerText = document.getElementById('inputDiscount').value;
-      if (elemOutlet) elemOutlet.innerText = document.getElementById('inputOutlet').value + (currentTemplateKey === 'outlet' || currentTemplateKey === 'final' ? '' : ' €');
+      if (elemOutlet) {
+        const noSymbol = (currentTemplateKey === 'outlet' || currentTemplateKey === 'final' || currentTemplateKey === 'promo' || currentTemplateKey === 'luxury');
+        elemOutlet.innerText = document.getElementById('inputOutlet').value + (noSymbol ? '' : ' €');
+      }
       if (elemCustomText) elemCustomText.innerText = document.getElementById('inputCustomText').value;
       if (elemProd) elemProd.innerText = document.getElementById('inputProdName').value;
       if (elemCode) elemCode.innerText = document.getElementById('inputCode').value;
@@ -748,7 +778,7 @@
               justify-content: center;
             }
 
-            .tpl-outlet, .tpl-final, .tpl-promo, .tpl-barcode, .tpl-minimal {
+            .tpl-outlet, .tpl-final, .tpl-promo, .tpl-luxury, .tpl-barcode, .tpl-minimal {
               width: 100% !important;
               box-sizing: border-box;
             }
@@ -788,13 +818,15 @@
             .tpl-final .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; }
             .tpl-final .price-val { font-size: 18pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-            /* TEMPLATE 3 PRINT */
-            .tpl-promo { height: 29mm; border: 2pt solid #000; padding: 1mm; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-            .tpl-promo .promo-title { font-size: 11pt; font-weight: 800; letter-spacing: 1pt; }
-            .tpl-promo .discount-val { font-size: 13pt; font-weight: bold; margin: 1mm 0; }
-            .tpl-promo .price-val { font-size: 22pt; font-weight: bold; }
+            /* TEMPLATE 3 & 4 PRINT (LAST CHANCE & LUXURY LABEL) */
+            .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 29mm; width: 100%; padding: 0 0.5mm; }
+            .tpl-promo .left-logo-box, .tpl-luxury .left-logo-box { width: 28mm; height: 23.5mm; display: flex; align-items: center; justify-content: flex-start; }
+            .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+            .tpl-promo .price-box, .tpl-luxury .price-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+            .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; font-weight: normal; }
+            .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 19pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
 
-            /* TEMPLATE 4 PRINT */
+            /* TEMPLATE 5 PRINT */
             .tpl-barcode { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; }
             .tpl-barcode .top-row { display: flex; justify-content: space-between; align-items: center; height: 7mm; width: 100%; }
             .tpl-barcode .brand-logo-container { width: 22mm; height: 7mm; }
@@ -806,7 +838,7 @@
             .tpl-barcode .bottom-row { text-align: right; width: 100%; }
             .tpl-barcode .price-val { font-size: 17pt; font-weight: bold; }
 
-            /* TEMPLATE 5 PRINT */
+            /* TEMPLATE 6 PRINT */
             .tpl-minimal { display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 29mm; text-align: center; padding: 1mm 0; }
             .tpl-minimal .brand-logo-container { width: 36mm; height: 9mm; justify-content: center; }
             .tpl-minimal .brand-text-fallback { font-size: 11pt; }
