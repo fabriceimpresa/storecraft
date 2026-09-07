@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Etichette DYMO (BIS) // STORE CRAFT</title>
+  <title>Etichette DYMO // STORE CRAFT</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
+  <script src="assets/js/logos.js"></script>
 
   <style>
     :root {
@@ -58,33 +60,42 @@
     .form-control:focus { border-color: var(--accent); }
     .row { display: flex; gap: 0.8rem; }
 
+    /* BOX DEDICATO LOGHI PERSONALIZZATI */
+    .custom-brand-box {
+      background: rgba(212, 163, 115, 0.04);
+      border: 1px solid rgba(212, 163, 115, 0.35);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .custom-brand-header {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e5ba73;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .form-control.custom-select {
+      background: #141312;
+      border: 1px solid #b48b37;
+      color: #f3d5a3;
+      font-weight: 600;
+    }
+    .form-control.custom-select:focus {
+      border-color: #e5ba73;
+      box-shadow: 0 0 6px rgba(229, 186, 115, 0.3);
+    }
+
     .btn-scan { width: 100%; padding: 0.6rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.2rem; transition: all 0.2s; }
     .btn-scan:hover { color: var(--text); border-color: var(--accent); }
 
     .btn-print { width: 100%; padding: 0.9rem; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; margin-top: 0.5rem; }
     .btn-print:hover { background: var(--accent-hover); }
-
-    .print-hint {
-      margin-top: 0.9rem;
-      padding: 0.7rem 0.8rem;
-      background: rgba(212, 163, 115, 0.08);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.72rem;
-      line-height: 1.4;
-      color: var(--text-muted);
-    }
-    .print-hint kbd {
-      display: inline-block;
-      padding: 0.05rem 0.4rem;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      color: var(--accent);
-      font-weight: 700;
-      font-family: inherit;
-    }
-    .print-hint b { color: var(--text); }
 
     /* ANTEPRIMA SCHERMO */
     .label-preview-wrapper {
@@ -144,10 +155,23 @@
 
       <button class="btn-scan" onclick="requestDymoAccess()">🔄 Associa / Rileva DYMO USB</button>
 
+      <!-- 1. SELEZIONE LOGHI UFFICIALI -->
       <div class="form-group">
         <label for="brandSelect">Brand Ufficiale</label>
-        <select id="brandSelect" class="form-control" onchange="updateLabel()">
+        <select id="brandSelect" class="form-control" onchange="onBrandSelectChange()">
         </select>
+      </div>
+
+      <!-- 2. BLOCCO DEDICATO E SEPARATO PER LOGHI PERSONALIZZATI -->
+      <div class="custom-brand-box">
+        <div class="custom-brand-header">
+          <span>★ LOGHI PERSONALIZZATI</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <select id="customLogoSelect" class="form-control custom-select" onchange="onCustomLogoSelectChange()">
+            <option value="">-- Nessun Logo Personalizzato --</option>
+          </select>
+        </div>
       </div>
 
       <div class="row">
@@ -167,12 +191,6 @@
       </div>
 
       <button class="btn-print" onclick="printLabelIsolated()">🖨️ STAMPA ETICHETTA (11354)</button>
-
-      <div class="print-hint">
-        💡 <b>Mac:</b> premi <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>P</kbd> (Cmd+Option+P) per aprire subito la finestra di stampa <b>di sistema macOS</b>.<br>
-        💡 <b>Windows:</b> nel dialogo di stampa di Chrome (<kbd>Ctrl</kbd>+<kbd>P</kbd>) clicca sul link <b>"Stampa con dialogo di sistema"</b> in basso (oppure premi <kbd>Ctrl</kbd>+<kbd>⇧</kbd>+<kbd>P</kbd>) per passare al dialogo <b>di sistema Windows</b>.<br>
-        In entrambi i casi scegli la stampante <b>DYMO</b> e il preset/formato <b>“11354”</b> (57×32mm) per stampare senza scalature di Chrome.
-      </div>
     </div>
 
     <div class="preview-section">
@@ -207,48 +225,11 @@
   </main>
 
   <script>
-    const LOGO_FILES = [
-      "269TEBE.PNG","ABIDDIKKIA.png","AFTERLABEL.png","AIRWALK.png","ALESSANDRODELLACQUA.png",
-      "ALEXANDERMCQUEEN.png","ARMANI.png","ARMANI_COLLEZIONI.png","ARMANI_EXCHANGE.png",
-      "ARMANI_GIORGIO.png","ARMANI_JEANS.png","ARNALDIMILANO.PNG","AVIREX.png","AYLIE.png",
-      "BAGUTTA.png","BALDININI.png","BALMAIN.PNG","BASTONCINO.png","BCBG.png","BEATRICE.png",
-      "BELSTAF.png","BENSHERMAN.png","BIKKENBERGS.png","BLAUER.png","BLKER.png","BLUGIRL.png",
-      "BLUMARINE.png","BRICS.png","BURBERRY.png","BYBLOS.png","CALVINKLEIN.png","CARHARTT.png",
-      "CAVALLI_CLASS.png","CAVALLI_ROBERTO.png","CHIARABONI.png","CIESSEPIUMINI.png","COCACOLA.png",
-      "COCCINELLE.png","COSTUMENATIONAL.png","DAINESE.png","DEVORE.png","DIADORA.png","DICKIES.png",
-      "DIESEL.png","DIOR.png","DIXIE.png","DOLCEANDGABBANA.png","DRSCHOLL.png","DSQUARED2.png",
-      "DUCAHOMME.png","EASTPAK.png","EGONVONFURSTENBERG.png","ELISAFANTI.png","EMMAANDGAIA.png",
-      "ENTREAMIS.png","ERMANNOSCERVINO.png","ERMENEGILDOZEGNA.png","EVERLAST.png","FACCONABLE.png",
-      "FELEPPA.png","FERRARI.png","FERRE.png","FILA.png","FRANKLINMARSHALL.png","GAELLE.png",
-      "GANT.png","GARMENT.png","GATTINONI.png","GCDS.png","GERMANS.png","GIVENCHY.png","GOORIN.png",
-      "GUESS.png","GUYLAROCHE.png","H953.png","HACKETTLONDON.png","HARMONT&BLAINE.png","HAVEONE.png",
-      "HERSCHELL.png","HOPPER.png","HUSKY.png","IMPERIAL.png","IMPURE.png","INVICTA.png",
-      "ISABELMARANT.png","JACKDANIELS.png","JEIO.PNG","JEREMYSCOTT.png","JIJIL.png",
-      "JOHNGALLIANO.png","JOHNRICHMOND.png","JUSTCAVALLI.png","KARLLAGERFELD.png","KENZO.png",
-      "KRIZIA.png","KWAY.png","LACOSTE.png","LAMARTHE.png","LAPERLA.png","LASTCHANCE.png",
-      "LAURABIAGIOTTI.png","LEE.png","LESARTEDELSOLE.png","LEVIS.png","LIUJO.png","LONSDALE.png",
-      "LOVE.png","LUCKYLU.png","LUXURY_GOLD.png","LXRY.png","LXRY_BRAND.png","MADEINITALY.png",
-      "MAISONMARGIELA.png","MAJE.png","MALIPARNI.png","MALONESOULIERS.png","MARCJACOBS.png",
-      "MARELLA.png","MARIOVALENTINO.png","MARLBORO.png","MARNI.png","MASSIMOREBECCHI.png",
-      "MAXMARA.png","MEIMEIJ.png","MELISSA.png","MICHAELKORS.png","MIRONCE.png","MISSONI.png",
-      "MIZUNO.png","MODFITTERS.png","MONCLER.png","MONTECERVINO.png","MOSCHINO.png","MOTEL.png",
-      "MSGM.png","NAPAPIJRI.png","NENETTE.png","NEWBALANCE.png","OBAG.png","OFFICINA36.png",
-      "ONLY.png","OTTODROM.png","PACIOTTI_4US.png","PACIOTTI_CESARE.png","PATRIZIAPEPE.png",
-      "PAULANDSHARK.png","PEOPLEOFSHIBUYA.png","PHILIPPPLEIN.png","PIERRECARDIN.png","PINKO.png",
-      "PIQUADRO.png","POLAROID.png","RALPHLAUREN.png","RANSOM.png","REFRIGIWEAR.png","REFRIGUE.png",
-      "RICHMOND.png","ROCCOBAROCCO.png","ROYROGERS.png","RUEBISQUIT.png","RUSSEL.png",
-      "SALVATOREFERRAGAMO.png","SERGIOTACCHINI.png","SFIZIO.png","SIMONACORSELLINI.png","SKYWARD.png",
-      "SOUVENIR.png","STEVEMADDEN.png","SUPERDRY.png","TEBE.png","TENSIONEIN.png","TOMMYHILFIGER.png",
-      "TOMMYJEANS.png","TOYG.png","TRUSSARDI.png","TRUSSARDI_JEANS.png","TWINSET.png","UNGARO.png",
-      "UNIFORM.png","USPOLOASSN.png","VERSACE.png","VERSACE_VERSUS.png","VICBEE.png","VIONNET.png",
-      "WEILIZHENG.png","WRANGLER.png"
-    ];
-
-    LOGO_FILES.push("ARMANI_EMPORIO.png", "COLUMBIA.png", "COTTONBELT.png", "ONLYANDSONS.png", "PANAM.png");
-    LOGO_FILES.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
-
     const LOGO_PATH = "assets/logos/";
     const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+
+    let selectedBrand = '';
+    let selectedCustomLogo = '';
 
     function cleanBrandName(filename) {
       return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
@@ -256,6 +237,7 @@
 
     function init() {
       loadBrandSelect();
+      loadCustomLogosSelect();
       initQR();
       updateLabel();
       checkDymoPresence();
@@ -264,6 +246,56 @@
         navigator.usb.addEventListener('connect', checkDymoPresence);
         navigator.usb.addEventListener('disconnect', checkDymoPresence);
       }
+    }
+
+    function loadBrandSelect() {
+      const select = document.getElementById('brandSelect');
+      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      if (typeof LOGO_FILES !== 'undefined') {
+        LOGO_FILES.forEach(fileName => {
+          const option = document.createElement('option');
+          option.value = fileName;
+          option.textContent = cleanBrandName(fileName);
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function loadCustomLogosSelect() {
+      const select = document.getElementById('customLogoSelect');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || localStorage.getItem('customLogos') || '[]');
+
+      select.innerHTML = '<option value="">-- Nessun Logo Personalizzato --</option>';
+
+      if (Array.isArray(customLogos) && customLogos.length > 0) {
+        customLogos.forEach((item, index) => {
+          const option = document.createElement('option');
+          option.value = item.data || item.url || item.src || item;
+          option.textContent = "★ " + (item.name || `Logo Personalizzato ${index + 1}`);
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function onBrandSelectChange() {
+      const val = document.getElementById('brandSelect').value;
+      selectedBrand = val;
+      if (val) {
+        selectedCustomLogo = '';
+        document.getElementById('customLogoSelect').value = '';
+      }
+      updateLabel();
+    }
+
+    function onCustomLogoSelectChange() {
+      const val = document.getElementById('customLogoSelect').value;
+      selectedCustomLogo = val;
+      if (val) {
+        selectedBrand = '';
+        document.getElementById('brandSelect').value = '';
+      }
+      updateLabel();
     }
 
     async function checkDymoPresence() {
@@ -310,18 +342,6 @@
       }
     }
 
-    function loadBrandSelect() {
-      const select = document.getElementById('brandSelect');
-      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
-
-      LOGO_FILES.forEach(fileName => {
-        const option = document.createElement('option');
-        option.value = fileName;
-        option.textContent = cleanBrandName(fileName);
-        select.appendChild(option);
-      });
-    }
-
     function formatDiscountInput(input) {
       const value = input.value.replace(/[^\d,.-]/g, '');
       if (!value) {
@@ -332,14 +352,15 @@
     }
 
     function updateLabel() {
-      const select = document.getElementById('brandSelect');
-      const selectedFile = select.value;
-
       const imgElement = document.getElementById('labelLogo');
       const textElement = document.getElementById('labelFallbackText');
 
-      if (selectedFile) {
-        imgElement.src = LOGO_PATH + selectedFile;
+      if (selectedCustomLogo) {
+        imgElement.src = selectedCustomLogo;
+        imgElement.style.display = 'block';
+        textElement.style.display = 'none';
+      } else if (selectedBrand) {
+        imgElement.src = LOGO_PATH + selectedBrand;
         imgElement.style.display = 'block';
         textElement.style.display = 'none';
       } else {
@@ -387,20 +408,8 @@
       updateLabel();
     }
 
-    /* STAMPA DIRETTA 57mm x 32mm PER DYMO 11354 (landscape) */
+    /* STAMPA DIRETTA 57mm x 32mm PER DYMO 11354 */
     function printLabelIsolated() {
-      const proceed = confirm(
-        "Nel dialogo di stampa che sta per aprirsi:\n\n" +
-        "MAC: premi ⌘ + ⌥ + P (Cmd+Option+P) per passare alla finestra di stampa di sistema macOS.\n" +
-        "WINDOWS: clicca \"Stampa con dialogo di sistema\" in basso (o premi Ctrl+Shift+P) per aprire il dialogo di sistema Windows.\n\n" +
-        "Poi:\n" +
-        "• Seleziona la stampante DYMO LabelWriter.\n" +
-        "• Scegli il preset \"11354\" (57 x 32 mm) già salvato.\n" +
-        "• Stampa.\n\n" +
-        "Procedere con la stampa?"
-      );
-      if (!proceed) return;
-
       let iframe = document.getElementById('printIframe');
       if (!iframe) {
         iframe = document.createElement('iframe');
@@ -425,14 +434,8 @@
           <title>Stampa DYMO 11354</title>
           <style>
             @page {
-              size: 57mm 32mm landscape;
+              size: 57mm 32mm;
               margin: 0 !important;
-            }
-            @media print {
-              @page {
-                size: 57mm 32mm landscape;
-                margin: 0 !important;
-              }
             }
             * { 
               box-sizing: border-box; 
