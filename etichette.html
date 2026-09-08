@@ -161,7 +161,7 @@
     .tpl-outlet { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
     .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 112px; width: 100%; }
     .tpl-outlet .brand-logo-container { width: 256px; height: 112px; }
-    .tpl-outlet .brand-text-fallback { font-size: 31px; }
+    .tpl-outlet .brand-text-fallback { font-size: 26px; }
     .tpl-outlet .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
     .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 96px !important; height: 96px !important; }
     .tpl-outlet .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 18px; width: 100%; }
@@ -176,7 +176,7 @@
     .tpl-final { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
     .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 112px; width: 100%; }
     .tpl-final .brand-logo-container { width: 256px; height: 112px; }
-    .tpl-final .brand-text-fallback { font-size: 31px; }
+    .tpl-final .brand-text-fallback { font-size: 26px; }
     .tpl-final .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
     .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 96px !important; height: 96px !important; }
     .tpl-final .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 18px; width: 100%; }
@@ -404,7 +404,7 @@
             <div class="label-top">
               <div class="brand-logo-container">
                 <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
-                <span id="labelFallbackText" class="brand-text-fallback">LUXURY<br>OUTLET</span>
+                <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span>
               </div>
               <div class="qr-container" id="labelQR"></div>
             </div>
@@ -429,7 +429,7 @@
             <div class="label-top">
               <div class="brand-logo-container">
                 <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
-                <span id="labelFallbackText" class="brand-text-fallback">LUXURY<br>OUTLET</span>
+                <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span>
               </div>
               <div class="qr-container" id="labelQR"></div>
             </div>
@@ -582,6 +582,11 @@
         document.getElementById('inputDiscount').value = "-70%";
         document.getElementById('inputOutlet').value = "99,00";
         document.getElementById('inputCustomText').value = "OUTLET PRICE • FW26";
+      } else if (key === 'final') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Pieno (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Testo Personalizzato / Etichetta";
+        document.getElementById('inputCustomText').value = "FINAL PRICE";
       } else if (key === 'promo50') {
         if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
         if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finito (€)";
@@ -604,7 +609,28 @@
       loadBrandSelect();
       loadCustomLogosSelect();
       checkDymoPresence();
-      setTemplate('tagliedoppiacifra');
+
+      // PARSING PARAMETRI URL PER SELEZIONE AUTOMATICA TEMPLATE
+      const urlParams = new URLSearchParams(window.location.search);
+      const labelParam = urlParams.get('label') || urlParams.get('tpl') || urlParams.get('template');
+      
+      const paramMap = {
+        'doppioprezzo': 'outlet',
+        'outlet': 'luxury',
+        'finalprice': 'final',
+        'final': 'final',
+        'lastchance': 'promo',
+        'promo': 'promo',
+        'luxury': 'luxury',
+        'promo50': 'promo50',
+        'tagliedoppiacifra': 'tagliedoppiacifra'
+      };
+
+      if (labelParam && paramMap[labelParam.toLowerCase()]) {
+        setTemplate(paramMap[labelParam.toLowerCase()]);
+      } else {
+        setTemplate('tagliedoppiacifra');
+      }
 
       if ('usb' in navigator) {
         navigator.usb.addEventListener('connect', checkDymoPresence);
@@ -660,29 +686,18 @@
       const select = document.getElementById('brandSelect');
       select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
 
-      let defaultTargetValue = '';
-
       if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
         LOGO_FILES.forEach(fileName => {
           const option = document.createElement('option');
           option.value = fileName;
           option.textContent = cleanBrandName(fileName);
           select.appendChild(option);
-
-          const cleanName = cleanBrandName(fileName).toUpperCase();
-          if (cleanName.includes('LXRY') || cleanName.includes('LUXURY') || fileName.includes('LUXURY_BRAND') || fileName.includes('LXRY_BRAND')) {
-            defaultTargetValue = fileName;
-          }
         });
       }
 
-      if (defaultTargetValue) {
-        select.value = defaultTargetValue;
-        selectedBrand = defaultTargetValue;
-      } else {
-        select.value = "LUXURY_BRAND.png";
-        selectedBrand = "LUXURY_BRAND.png";
-      }
+      // Posizionato di default sulla voce placeholder
+      select.value = "";
+      selectedBrand = "";
     }
 
     function loadCustomLogosSelect() {
@@ -728,7 +743,6 @@
       input.setSelectionRange(value.length, value.length);
     }
 
-    /* FUNZIONE DINAMICA PER DIMENSIONE FONT PREZZO FINALE (SOLO MODELLO 6) */
     function adjustFinalPriceFontSize() {
       const elemOutlet = document.getElementById('lblOutlet');
       if (!elemOutlet || currentTemplateKey !== 'tagliedoppiacifra') return;
@@ -740,23 +754,18 @@
       let printSize = '28pt';
 
       if (len <= 7) {
-        // DECINE (es. "€ 99,00") -> Font più grande
         screenSize = '84px';
         printSize = '31pt';
       } else if (len === 8) {
-        // CENTINAIA BREVI (es. "€ 150,00")
         screenSize = '70px';
         printSize = '25pt';
       } else if (len === 9) {
-        // CENTINAIA ESTESE (es. "€ 999,00")
         screenSize = '62px';
         printSize = '22pt';
       } else if (len === 10) {
-        // MIGLIAIA (es. "€ 1.250,00") -> Ridotto per non andare a capo
         screenSize = '52px';
         printSize = '18.5pt';
       } else if (len >= 11) {
-        // DECINE DI MIGLIAIA (es. "€ 12.500,00")
         screenSize = '44px';
         printSize = '15.5pt';
       }
@@ -779,8 +788,11 @@
           imgElement.style.display = 'block';
           if (textElement) textElement.style.display = 'none';
         } else {
-          imgElement.style.display = 'none';
-          if (textElement) textElement.style.display = 'block';
+          // SE L'UTENTE NON HA SELEZIONATO ALCUN BRAND:
+          // Mostra di default a schermo il file assets/logos/LXRY_BRAND.png
+          imgElement.src = LOGO_PATH + 'LXRY_BRAND.png';
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
         }
       }
 
@@ -838,7 +850,7 @@
       
       const textElement = document.getElementById('labelFallbackText');
       if (textElement) {
-        textElement.innerHTML = "LUXURY<br>OUTLET";
+        textElement.innerHTML = "LXRY<br>BRAND";
         textElement.style.display = 'block';
       }
     }
@@ -942,7 +954,7 @@
             .tpl-outlet { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; }
             .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 14mm; width: 100%; }
             .tpl-outlet .brand-logo-container { width: 32mm; height: 14mm; }
-            .tpl-outlet .brand-text-fallback { font-size: 11pt; }
+            .tpl-outlet .brand-text-fallback { font-size: 10pt; }
             .tpl-outlet .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
             .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 12mm !important; height: 12mm !important; }
             .tpl-outlet .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 2.5mm; width: 100%; }
@@ -956,7 +968,7 @@
             .tpl-final { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; }
             .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 14mm; width: 100%; }
             .tpl-final .brand-logo-container { width: 32mm; height: 14mm; }
-            .tpl-final .brand-text-fallback { font-size: 11pt; }
+            .tpl-final .brand-text-fallback { font-size: 10pt; }
             .tpl-final .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
             .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 12mm !important; height: 12mm !important; }
             .tpl-final .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 2.5mm; width: 100%; }
