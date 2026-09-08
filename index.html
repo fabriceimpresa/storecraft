@@ -190,7 +190,7 @@
     .card-body p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
 
     /* CAROSELLI CON FRECCE FLOATING */
-    #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
+    #generators-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
     
     .carousel-wrapper {
       position: relative;
@@ -210,6 +210,14 @@
     }
     .carousel-container::-webkit-scrollbar {
       display: none;
+    }
+
+    /* CAROSELLO SU 2 RIGHE (Per Generatore Cartelli) */
+    .carousel-container.two-rows {
+      display: grid;
+      grid-template-rows: repeat(2, auto);
+      grid-auto-flow: column;
+      grid-auto-columns: 250px;
     }
 
     .carousel-arrow {
@@ -256,6 +264,8 @@
       justify-content: space-between;
       transition: all 0.25s ease;
       cursor: pointer;
+      text-decoration: none;
+      color: inherit;
     }
     .carousel-card:hover {
       border-color: var(--accent);
@@ -698,88 +708,95 @@
       <p>Crea la grafica promozionale e calcola i prezzi in tempo reale.</p>
     </header>
 
+    <!-- SEZIONE GENERATORE CARTELLI - CAROSELLO SU 2 RIGHE -->
     <div id="generators-section">
       <div class="section-title">Generatore Cartelli</div>
-      <div class="grid">
-        <a href="cartelli_semplici.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/cartellosemplice.png" alt="Anteprima Cartello Semplice">
-          </div>
-          <div class="card-body">
-            <h3>Cartello Semplice</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo di Vendita</p>
-          </div>
-        </a>
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('generators-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
+        <div class="carousel-container two-rows" id="generators-carousel">
+          
+          <a href="cartelli_semplici.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/cartellosemplice.png" alt="Anteprima Cartello Semplice">
+            </div>
+            <div class="card-body">
+              <h3>Cartello Semplice</h3>
+              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo di Vendita</p>
+            </div>
+          </a>
 
-        <a href="cartelli_outlet.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/doppiacifra.png" alt="Anteprima Cartello Outlet">
-          </div>
-          <div class="card-body">
-            <h3>Cartello Outlet</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione (facoltativa)&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Outlet</p>
-          </div>
-        </a>
+          <a href="cartelli_outlet.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/doppiacifra.png" alt="Anteprima Cartello Outlet">
+            </div>
+            <div class="card-body">
+              <h3>Cartello Outlet</h3>
+              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione (facoltativa)&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Outlet</p>
+            </div>
+          </a>
 
-        <a href="cartelli_outletmulti.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
-          </div>
-          <div class="card-body">
-            <h3>Cartello Outlet Multi</h3>
-            <p>Brand | Doppio Brand | Fino a 3 Articoli | Scontistica</p>
-          </div>
-        </a>
+          <a href="cartelli_outletmulti.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
+            </div>
+            <div class="card-body">
+              <h3>Cartello Outlet Multi</h3>
+              <p>Brand | Doppio Brand | Fino a 3 Articoli | Scontistica</p>
+            </div>
+          </a>
 
-        <a href="cartelli_multireferenza.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
-          </div>
-          <div class="card-body">
-            <h3>Cartello Multi Brand-Articolo</h3>
-            <p>Brand o doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio o Triplo Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione e Prezzi</p>
-          </div>
-        </a>
+          <a href="cartelli_multireferenza.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
+            </div>
+            <div class="card-body">
+              <h3>Cartello Multi Brand-Articolo</h3>
+              <p>Brand o doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio o Triplo Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione e Prezzi</p>
+            </div>
+          </a>
 
-        <a href="cartellopercentuale.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/percentuale.png" alt="Anteprima Promo Percentuale">
-          </div>
-          <div class="card-body">
-            <h3>Promo Percentuale</h3>
-            <p>Brand | Doppio Brand | Sconto | Testo Libero</p>
-          </div>
-        </a>
+          <a href="cartellopercentuale.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/percentuale.png" alt="Anteprima Promo Percentuale">
+            </div>
+            <div class="card-body">
+              <h3>Promo Percentuale</h3>
+              <p>Brand | Doppio Brand | Sconto | Testo Libero</p>
+            </div>
+          </a>
 
-        <a href="cartelli_lastchance.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/promolastchance.png" alt="Anteprima Promo Last Chance">
-          </div>
-          <div class="card-body">
-            <h3>Promo Last Chance</h3>
-            <p>Logo Last Chance&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promo&nbsp;&nbsp; | &nbsp;&nbsp;Brand (facoltativo)</p>
-          </div>
-        </a>
+          <a href="cartelli_lastchance.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/promolastchance.png" alt="Anteprima Promo Last Chance">
+            </div>
+            <div class="card-body">
+              <h3>Promo Last Chance</h3>
+              <p>Logo Last Chance&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promo&nbsp;&nbsp; | &nbsp;&nbsp;Brand (facoltativo)</p>
+            </div>
+          </a>
 
-        <a href="promo_multibrand.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
-          </div>
-          <div class="card-body">
-            <h3>Promo Multibrand</h3>
-            <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero</p>
-          </div>
-        </a>
+          <a href="promo_multibrand.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
+            </div>
+            <div class="card-body">
+              <h3>Promo Multibrand</h3>
+              <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero</p>
+            </div>
+          </a>
 
-        <a href="magazzino.html" class="card">
-          <div class="preview">
-            <img class="preview-image" src="assets/img/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
-          </div>
-          <div class="card-body">
-            <h3>Cartelli Magazzino</h3>
-            <p>Brand Ufficiale / Personalizzato&nbsp;&nbsp; | &nbsp;&nbsp;Elenco Categorie&nbsp;&nbsp; | &nbsp;&nbsp;Frecce Direzionali</p>
-          </div>
-        </a>
+          <a href="magazzino.html" class="carousel-card">
+            <div class="preview">
+              <img class="preview-image" src="assets/img/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
+            </div>
+            <div class="card-body">
+              <h3>Cartelli Magazzino</h3>
+              <p>Brand Ufficiale / Personalizzato&nbsp;&nbsp; | &nbsp;&nbsp;Elenco Categorie&nbsp;&nbsp; | &nbsp;&nbsp;Frecce Direzionali</p>
+            </div>
+          </a>
+
+        </div>
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel('generators-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
 
@@ -1111,7 +1128,6 @@
           </div>
         </div>
 
-        <!-- CAMPO DIMENSIONE QR CODE RIPRISTINATO CON VALORE PICCOLO DI DEFAULT -->
         <div class="tool-row">
           <select id="qr-size" class="tool-input-select" onchange="generateQRCode()">
             <option value="100" selected>Dimensione: Piccolo (100px)</option>
@@ -1157,7 +1173,7 @@
       container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
-    /* RIPRISTINO VISUALIZZATORE CUSTOM PDF */
+    /* VISUALIZZATORE CUSTOM PDF */
     function openPdf(pdfUrl) {
       window.location.href = 'pdf-viewer.html?file=' + encodeURIComponent(pdfUrl);
     }
