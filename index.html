@@ -319,6 +319,17 @@
       z-index: 10;
     }
 
+    /* NASCONDE TUTTE LE ALTRE SEZIONI QUANDO UN WIDGET È IN FOCUS */
+    body.widget-focused-mode #generators-section,
+    body.widget-focused-mode #tickets-section,
+    body.widget-focused-mode #dymo-section,
+    body.widget-focused-mode #prints-section,
+    body.widget-focused-mode #prints-promo-section,
+    body.widget-focused-mode #tools-title,
+    body.widget-focused-mode header {
+      display: none !important;
+    }
+
     .widget-header-controls {
       display: none;
       justify-content: space-between;
@@ -441,14 +452,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: auto 0;
-      padding-top: 0.2rem;
-      padding-bottom: 0.8rem;
+      margin: 1rem 0;
     }
 
     .qr-preview-wrapper {
       background: #ffffff;
-      padding: 6px;
+      padding: 8px;
       border-radius: 6px;
       display: inline-flex;
       justify-content: center;
@@ -456,16 +465,9 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    .widget:not(.expanded) #qrcode img, 
-    .widget:not(.expanded) #qrcode canvas {
-      max-width: 75px !important;
-      height: auto !important;
-    }
-
-    .widget.expanded #qrcode img,
-    .widget.expanded #qrcode canvas {
-      max-width: none;
-      height: auto;
+    #qrcode img, #qrcode canvas {
+      display: block;
+      margin: 0 auto;
     }
 
     /* =========================================================
@@ -473,7 +475,6 @@
        ========================================================= */
     @media (max-width: 768px) {
       
-      /* BARRA SUPERIORE MOBILE COMPATTA */
       .mobile-top-bar {
         display: flex;
         position: fixed;
@@ -490,7 +491,6 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.6);
       }
 
-      /* Tasto Hamburger a Sinistra */
       .mobile-nav-toggle {
         display: flex;
         align-items: center;
@@ -507,7 +507,6 @@
         flex-shrink: 0;
       }
 
-      /* Scritta Brand al Centro */
       .mobile-brand {
         display: block;
         font-family: 'Cinzel', serif;
@@ -523,7 +522,6 @@
         padding: 0 0.2rem;
       }
 
-      /* Tasti Cassiere / Creator a Destra (Piccoli) */
       .mobile-top-bar .mode-switcher {
         position: static;
         display: flex;
@@ -607,7 +605,7 @@
     <div>
       <div class="sidebar-header">
         <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
-        <!-- Tasto X dorato (attivo e visibile solo su Mobile dentro il menu) -->
+        <!-- Tasto X dorato -->
         <button class="mobile-close-btn" type="button" onclick="toggleMobileSidebar()" aria-label="Chiudi menu">✕</button>
       </div>
       
@@ -615,7 +613,6 @@
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
           <span>Genera Cartelli</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
-        <!-- Tutti i sotto-menu partono chiusi grazie alla classe `is-collapsed` -->
         <div class="menu-items is-collapsed" id="menu-generators">
           <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
           <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
@@ -638,7 +635,7 @@
         </div>
       </div>
 
-      <!-- SEZIONE: Etichette Dymo (con reindirizzamento diretto al tipo specifico) -->
+      <!-- SEZIONE: Etichette Dymo -->
       <div class="menu-group">
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-dymo" onclick="toggleMenu('menu-dymo', this)">
           <span>Etichette Dymo</span><span class="menu-arrow" aria-hidden="true">⌄</span>
@@ -704,7 +701,6 @@
     <div id="generators-section">
       <div class="section-title">Generatore Cartelli</div>
       <div class="grid">
-        <!-- 1. Cartello Semplice -->
         <a href="cartelli_semplici.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/cartellosemplice.png" alt="Anteprima Cartello Semplice">
@@ -715,7 +711,6 @@
           </div>
         </a>
 
-        <!-- 2. Cartello Outlet -->
         <a href="cartelli_outlet.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/doppiacifra.png" alt="Anteprima Cartello Outlet">
@@ -726,7 +721,6 @@
           </div>
         </a>
 
-        <!-- 3. Cartello Outlet Multi -->
         <a href="cartelli_outletmulti.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
@@ -737,7 +731,6 @@
           </div>
         </a>
 
-        <!-- 4. Cartello Multi Brand Articolo -->
         <a href="cartelli_multireferenza.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
@@ -748,7 +741,6 @@
           </div>
         </a>
 
-        <!-- 5. Promo Percentuale -->
         <a href="cartellopercentuale.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/percentuale.png" alt="Anteprima Promo Percentuale">
@@ -759,7 +751,6 @@
           </div>
         </a>
 
-        <!-- 6. Promo Last Chance -->
         <a href="cartelli_lastchance.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/promolastchance.png" alt="Anteprima Promo Last Chance">
@@ -770,7 +761,6 @@
           </div>
         </a>
 
-        <!-- 7. Promo Multibrand -->
         <a href="promo_multibrand.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
@@ -781,7 +771,6 @@
           </div>
         </a>
 
-        <!-- 8. Cartello Magazzino -->
         <a href="magazzino.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
@@ -797,7 +786,6 @@
     <div id="tickets-section">
       <div class="section-title">Genera Cartellini</div>
       <div class="grid">
-        <!-- Cartellini Vetrina -->
         <a href="cartellinivetrina.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/cartellini.png" alt="Anteprima Cartellini Vetrina">
@@ -808,7 +796,6 @@
           </div>
         </a>
 
-        <!-- Cartellini Promozionali -->
         <a href="cartellinipromo.html" class="card">
           <div class="preview">
             <img class="preview-image" src="assets/img/cartellinipromo.png" alt="Anteprima Cartellini Promozionali">
@@ -821,77 +808,37 @@
       </div>
     </div>
 
-    <!-- SEZIONE: Etichette Dymo con Link Diretti ai singoli Modelli -->
+    <!-- SEZIONE: Etichette Dymo -->
     <div id="dymo-section">
       <div class="section-title">Etichette Dymo</div>
-      
       <div class="carousel-wrapper">
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('dymo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
-        
         <div class="carousel-container" id="dymo-carousel">
-          
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=doppioprezzo'">
-            <div class="preview">
-              <img class="preview-image" src="assets/thumbnail/doppioprezzo.png" alt="1. Outlet Doppio Prezzo">
-            </div>
-            <div class="card-body">
-              <h3>1. Outlet Doppio Prezzo</h3>
-              <p>Stampa Diretta 57x32mm (11354)</p>
-            </div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/doppioprezzo.png" alt="1. Outlet Doppio Prezzo"></div>
+            <div class="card-body"><h3>1. Outlet Doppio Prezzo</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
           </div>
-
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=finalprice'">
-            <div class="preview">
-              <img class="preview-image" src="assets/thumbnail/finalprice.png" alt="2. Final | Outlet Price">
-            </div>
-            <div class="card-body">
-              <h3>2. Final | Outlet Price</h3>
-              <p>Stampa Diretta 57x32mm (11354)</p>
-            </div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/finalprice.png" alt="2. Final | Outlet Price"></div>
+            <div class="card-body"><h3>2. Final | Outlet Price</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
           </div>
-
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=lastchance'">
-            <div class="preview">
-              <img class="preview-image" src="assets/thumbnail/lastchance.png" alt="3. Last Chance">
-            </div>
-            <div class="card-body">
-              <h3>3. Last Chance</h3>
-              <p>Stampa Diretta 57x32mm (11354)</p>
-            </div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/lastchance.png" alt="3. Last Chance"></div>
+            <div class="card-body"><h3>3. Last Chance</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
           </div>
-
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=outlet'">
-            <div class="preview">
-              <img class="preview-image" src="assets/thumbnail/outlet.png" alt="4. Luxury Label">
-            </div>
-            <div class="card-body">
-              <h3>4. Luxury Label</h3>
-              <p>Stampa Diretta 57x32mm (11354)</p>
-            </div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/outlet.png" alt="4. Luxury Label"></div>
+            <div class="card-body"><h3>4. Luxury Label</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
           </div>
-
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=promo50'">
-            <div class="preview">
-              <img class="preview-image" src="assets/thumbnail/promo50.png" alt="5. Promo 50+50">
-            </div>
-            <div class="card-body">
-              <h3>5. Promo 50+50</h3>
-              <p>Stampa Diretta 57x32mm (11354)</p>
-            </div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/promo50.png" alt="5. Promo 50+50"></div>
+            <div class="card-body"><h3>5. Promo 50+50</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
           </div>
-
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=tagliedoppiacifra'">
-            <div class="preview">
-              <img class="preview-image" src="assets/thumbnail/tagliedoppiacifra.png" alt="6. Taglie | Doppia Cifra">
-            </div>
-            <div class="card-body">
-              <h3>6. Taglie | Doppia Cifra</h3>
-              <p>Stampa Diretta 57x32mm (11354)</p>
-            </div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/tagliedoppiacifra.png" alt="6. Taglie | Doppia Cifra"></div>
+            <div class="card-body"><h3>6. Taglie | Doppia Cifra</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
           </div>
-
         </div>
-
         <button class="carousel-arrow next" type="button" onclick="scrollCarousel('dymo-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
@@ -899,13 +846,9 @@
     <!-- SEZIONE 1: Stampe Pronte - Punto Vendita -->
     <div id="prints-section">
       <div class="section-title">Stampe Pronte // Punto Vendita</div>
-      
       <div class="carousel-wrapper">
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('prints-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
-        
         <div class="carousel-container" id="prints-carousel">
-          
-          <!-- Documento PDF 1: Orari Apertura -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/orari.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/orari.png" alt="Orari Apertura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -917,8 +860,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Documento PDF 2: No Food & Drinks Indoor -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/nofood_indoor.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/nofoodindoor.png" alt="No Food Drinks Indoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -930,8 +871,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Documento PDF 3: No Food & Drinks Outdoor -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/nofood_outdoor.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/nofoodoutdoor.png" alt="No Food Drinks Outdoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -943,8 +882,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Documento PDF 4: Staff Only -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/staffonly.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/staffonly.png" alt="Staff Only" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -956,8 +893,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Documento PDF 5: Vietato Fumare -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/vietatofumare.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/vietatofumare.png" alt="Vietato Fumare" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -969,9 +904,7 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
         </div>
-
         <button class="carousel-arrow next" type="button" onclick="scrollCarousel('prints-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
@@ -979,13 +912,9 @@
     <!-- SEZIONE 2: Stampe Pronte - Listini & Promozioni -->
     <div id="prints-promo-section">
       <div class="section-title">Stampe Pronte // Listini & Promozioni</div>
-      
       <div class="carousel-wrapper">
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('prints-promo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
-        
         <div class="carousel-container" id="prints-promo-carousel">
-          
-          <!-- Card 1: Collezione Last Chance -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/lastchance.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/lastchancepronte.png" alt="Collezione Last Chance" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -997,8 +926,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Card 2: Collezione Last Chance Verticale -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/lastchanceverticali.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/lastchanceprontevert.png" alt="Collezione Last Chance Verticale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -1010,8 +937,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Card 3: Taglie Internazionali -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/taglie.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/taglie.png" alt="Taglie Internazionali" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -1023,8 +948,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Card 4: Listino Egon Von Fürstenberg -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/egonlistino.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/egonlistino.png" alt="Listino Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -1036,8 +959,6 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
-          <!-- Card 5: Catalogo Egon Von Fürstenberg -->
           <div class="carousel-card" onclick="openPdf('assets/pdf/egoncatalogo.pdf')">
             <div class="preview">
               <img class="preview-image" src="assets/img/egoncatalogo.png" alt="Catalogo Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
@@ -1049,13 +970,12 @@
               <button type="button" class="tool-btn print-pdf-btn">📄 Apri / Stampa PDF</button>
             </div>
           </div>
-
         </div>
-
         <button class="carousel-arrow next" type="button" onclick="scrollCarousel('prints-promo-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
 
+    <!-- SEZIONE STRUMENTI DI CASSA -->
     <div class="section-title" id="tools-title">Utilità Cassa</div>
     <div class="tools-grid" id="tools">
       
@@ -1143,13 +1063,13 @@
         <button class="tool-btn-secondary tool-btn" style="width:100%; font-size: 0.75rem;" onclick="resetIvaFields(event)">Azzera IVA</button>
       </div>
 
-      <!-- 4. Widget Cambio Valuta -->
+      <!-- 4. Widget Cambio Valuta (Integrazione API ExchangeRate-API in tempo reale) -->
       <div class="widget" id="widget-valuta" onclick="focusWidget(event, 'widget-valuta')">
         <div class="widget-header-controls">
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>💰 Cambio Valuta (Live Online)</h3>
+        <h3>💰 Cambio Valuta</h3>
         
         <div class="tool-row">
           <select id="val-direction" class="tool-input-select" onchange="calcValuta()">
@@ -1162,18 +1082,18 @@
           <div class="input-group">
             <span class="input-prefix" id="val-curr-symbol">$</span>
             <input type="number" id="val-amount" class="tool-input" placeholder="Importo" oninput="calcValuta()">
-            <select id="val-currency" class="tool-input-select" style="max-width: 110px; border-left: 1px solid var(--border);" onchange="calcValuta()">
-              <option value="USD">USD ($)</option>
-              <option value="GBP">GBP (£)</option>
-              <option value="CHF">CHF (Fr)</option>
-              <option value="JPY">JPY (¥)</option>
-              <option value="CAD">CAD ($)</option>
-              <option value="AUD">AUD ($)</option>
+            <select id="val-currency" class="tool-input-select" style="max-width: 140px; border-left: 1px solid var(--border);" onchange="calcValuta()">
+              <option value="USD">USD ($) USA</option>
+              <option value="GBP">GBP (£) GBR</option>
+              <option value="RUB">RUB (₽) RUS</option>
+              <option value="ILS">ILS (₪) ISR</option>
+              <option value="CNY">CNY (¥) CHN</option>
+              <option value="JPY">JPY (¥) JPN</option>
             </select>
           </div>
         </div>
 
-        <button class="tool-btn" style="width:100%" onclick="calcValuta()">Converti Valuta</button>
+        <button class="tool-btn" style="width:100%" onclick="calcValuta()">Calcola Cambio</button>
         <div class="tool-result" id="res-valuta">€ 0,00</div>
       </div>
 
@@ -1191,11 +1111,23 @@
           </div>
         </div>
 
+        <!-- CAMPO DIMENSIONE QR CODE RIPRISTINATO CON VALORE PICCOLO DI DEFAULT -->
+        <div class="tool-row">
+          <select id="qr-size" class="tool-input-select" onchange="generateQRCode()">
+            <option value="100" selected>Dimensione: Piccolo (100px)</option>
+            <option value="160">Dimensione: Medio (160px)</option>
+            <option value="240">Dimensione: Grande (240px)</option>
+          </select>
+        </div>
+
         <div class="qr-preview-container">
           <div class="qr-preview-wrapper" id="qrcode"></div>
         </div>
 
-        <button class="tool-btn" style="width:100%" onclick="generateQRCode()">Rigenera QR Code</button>
+        <div class="tool-row" style="gap: 0.5rem; margin-top: 0.8rem;">
+          <button class="tool-btn" style="flex: 1;" onclick="downloadQRCode(event)">💾 Scarica QR</button>
+          <button class="tool-btn tool-btn-secondary" style="flex: 1;" onclick="printQRCode(event)">🖨️ Stampa QR</button>
+        </div>
       </div>
 
     </div>
@@ -1225,8 +1157,9 @@
       container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
+    /* RIPRISTINO VISUALIZZATORE CUSTOM PDF */
     function openPdf(pdfUrl) {
-      window.open(pdfUrl, '_blank');
+      window.location.href = 'pdf-viewer.html?file=' + encodeURIComponent(pdfUrl);
     }
 
     function scrollToSection(sectionId) {
@@ -1246,8 +1179,11 @@
       resetDefaultView();
     }
 
+    /* GESTIONE FOCUS/ESPANSIONE CON NASCONDIMENTO ALTRE SEZIONI */
     function focusWidget(event, widgetId) {
       if (event) event.stopPropagation();
+
+      document.body.classList.add('widget-focused-mode');
 
       document.querySelectorAll('.widget').forEach(w => {
         w.classList.remove('expanded');
@@ -1261,8 +1197,7 @@
         
         const main = document.getElementById('main-content');
         if (main) {
-          const targetTop = target.getBoundingClientRect().top + main.scrollTop - main.getBoundingClientRect().top - 20;
-          main.scrollTo({ top: targetTop, behavior: 'smooth' });
+          main.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
 
@@ -1273,6 +1208,7 @@
 
     function resetDefaultView(event) {
       if (event) event.stopPropagation();
+      document.body.classList.remove('widget-focused-mode');
       document.querySelectorAll('.widget').forEach(w => {
         w.classList.remove('expanded');
         w.style.display = 'flex';
@@ -1284,10 +1220,6 @@
       const cassiereBtn = document.querySelector('.mode-btn[data-mode="cassiere"]');
       
       const generatorsSec = document.getElementById('generators-section');
-      const ticketsSec = document.getElementById('tickets-section');
-      const dymoSec = document.getElementById('dymo-section');
-      const printsSec = document.getElementById('prints-section');
-      const printsPromoSec = document.getElementById('prints-promo-section');
       const toolsSec = document.getElementById('tools');
       const toolsTitle = document.getElementById('tools-title');
 
@@ -1396,22 +1328,56 @@
       document.getElementById('iva-gross').value = '';
     }
 
-    /* WIDGET 4: CAMBIO VALUTA */
-    const RATES = {
+    /* WIDGET 4: CAMBIO VALUTA CON CHIAMATA API IN TEMPO REALE */
+    let liveRates = {
       'USD': 1.08,
       'GBP': 0.85,
-      'CHF': 0.95,
-      'JPY': 160.5,
-      'CAD': 1.46,
-      'AUD': 1.65
+      'RUB': 98.0,
+      'ILS': 4.00,
+      'CNY': 7.80,
+      'JPY': 160.5
     };
 
-    function calcValuta() {
+    const SYMBOLS = {
+      'USD': '$',
+      'GBP': '£',
+      'RUB': '₽',
+      'ILS': '₪',
+      'CNY': '¥',
+      'JPY': '¥',
+      'EUR': '€'
+    };
+
+    async function fetchExchangeRates() {
+      try {
+        const response = await fetch('https://open.er-api.com/v6/latest/EUR');
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.rates) {
+            liveRates = data.rates;
+            calcValuta();
+          }
+        }
+      } catch (error) {
+        console.warn('Uso tassi di cambio di riserva per offline/errore API:', error);
+      }
+    }
+
+    async function calcValuta() {
       const direction = document.getElementById('val-direction').value;
       const amount = parseFloat(document.getElementById('val-amount').value);
       const curr = document.getElementById('val-currency').value;
+      const symbolSpan = document.getElementById('val-curr-symbol');
       const resElem = document.getElementById('res-valuta');
-      const rate = RATES[curr] || 1;
+
+      const foreignSymbol = SYMBOLS[curr] || '$';
+      const rate = liveRates[curr] || 1;
+
+      if (direction === 'TO_EUR') {
+        symbolSpan.innerText = foreignSymbol;
+      } else {
+        symbolSpan.innerText = '€';
+      }
 
       if (!isNaN(amount) && amount > 0) {
         if (direction === 'TO_EUR') {
@@ -1419,32 +1385,83 @@
           resElem.innerText = `€ ${inEur.toFixed(2).replace('.', ',')}`;
         } else {
           const inForeign = amount * rate;
-          resElem.innerText = `${curr} ${inForeign.toFixed(2).replace('.', ',')}`;
+          resElem.innerText = `${foreignSymbol} ${inForeign.toFixed(2).replace('.', ',')} (${curr})`;
         }
       } else {
-        resElem.innerText = direction === 'TO_EUR' ? "€ 0,00" : `${curr} 0,00`;
+        resElem.innerText = direction === 'TO_EUR' ? "€ 0,00" : `${foreignSymbol} 0,00`;
       }
     }
 
-    /* WIDGET 5: GENERATORE QR CODE */
+    /* WIDGET 5: GENERATORE QR CODE CON DIMENSIONE CONFIGURABILE */
     function generateQRCode() {
       const text = document.getElementById('qr-input').value.trim() || 'https://instagram.com/luxuryoutletroma';
+      const size = parseInt(document.getElementById('qr-size').value) || 100;
       const container = document.getElementById('qrcode');
       container.innerHTML = '';
       
       qrCodeInstance = new QRCode(container, {
         text: text,
-        width: 120,
-        height: 120,
+        width: size,
+        height: size,
         colorDark: "#000000",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.M
       });
     }
 
+    function downloadQRCode(e) {
+      if (e) e.stopPropagation();
+      const qrElem = document.querySelector('#qrcode img') || document.querySelector('#qrcode canvas');
+      if (!qrElem) return;
+
+      let imgUrl = '';
+      if (qrElem.tagName.toLowerCase() === 'img') {
+        imgUrl = qrElem.src;
+      } else if (qrElem.tagName.toLowerCase() === 'canvas') {
+        imgUrl = qrElem.toDataURL("image/png");
+      }
+
+      if (imgUrl) {
+        const link = document.createElement('a');
+        link.href = imgUrl;
+        link.download = 'qrcode.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+    function printQRCode(e) {
+      if (e) e.stopPropagation();
+      const qrElem = document.querySelector('#qrcode img') || document.querySelector('#qrcode canvas');
+      if (!qrElem) return;
+
+      let imgUrl = '';
+      if (qrElem.tagName.toLowerCase() === 'img') {
+        imgUrl = qrElem.src;
+      } else if (qrElem.tagName.toLowerCase() === 'canvas') {
+        imgUrl = qrElem.toDataURL("image/png");
+      }
+
+      if (imgUrl) {
+        const printWin = window.open('', '_blank', 'width=450,height=450');
+        printWin.document.write(`
+          <!DOCTYPE html>
+          <html>
+            <head><title>Stampa QR Code</title></head>
+            <body style="display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#fff;">
+              <img src="${imgUrl}" style="max-width:80%; height:auto;" onload="window.print(); window.close();" />
+            </body>
+          </html>
+        `);
+        printWin.document.close();
+      }
+    }
+
     /* INIZIALIZZAZIONE PAGINA */
     window.addEventListener('DOMContentLoaded', () => {
       generateQRCode();
+      fetchExchangeRates();
 
       const mainScroll = document.getElementById('main-content');
       if (mainScroll) {
