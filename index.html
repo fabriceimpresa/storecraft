@@ -263,7 +263,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-between: space-between;
       transition: all 0.25s ease;
       cursor: pointer;
       text-decoration: none;
@@ -1272,6 +1272,11 @@
     }
 
     function setLayoutMode(mode) {
+      // Riporta la pagina all'inizio
+      const mainElem = document.getElementById('main-content');
+      if (mainElem) mainElem.scrollTo({ top: 0, behavior: 'smooth' });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+
       const creatorBtn = document.querySelector('.mode-btn[data-mode="creator"]');
       const cassiereBtn = document.querySelector('.mode-btn[data-mode="cassiere"]');
       
