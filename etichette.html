@@ -234,6 +234,179 @@
     }
     
     .tpl-tagliedoppiacifra .footer-text { font-size: 19px; font-weight: 400; letter-spacing: 0.3px; text-transform: uppercase; text-align: right; margin-bottom: 4px; }
+
+    /* NAV MOBILE PULSANTE HEADER */
+    .mobile-nav-btn { display: none; }
+
+    /* ==========================================
+       MEDIA QUERIES PER RESPONSIVE MOBILE
+    ========================================== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .mobile-nav-btn {
+        display: inline-flex;
+        margin-bottom: 0.8rem;
+        width: fit-content;
+      }
+
+      /* MENU COMANDI SCORREVOLE CON LE DITA */
+      main {
+        flex: 1;
+        flex-direction: column;
+        padding: 150px 1rem 100px 1rem; /* Spazio in alto per preview fissa e in basso per carosello fisso */
+        overflow-y: auto;
+        gap: 1.5rem;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .editor-section {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      /* ANTEPRIMA ETICHETTA FISSA IN ALTO */
+      .preview-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        z-index: 9990;
+        background: #0a0908;
+        border-radius: 0 0 10px 10px;
+        border: none;
+        border-bottom: 1px solid var(--accent);
+        padding: 0.5rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+      }
+
+      .preview-title {
+        position: absolute !important;
+        top: 6px !important;
+        left: 0 !important;
+        right: 0 !important;
+        text-align: center !important;
+        margin: 0 !important;
+      }
+
+      .preview-title label {
+        font-size: 0.65rem;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+      }
+
+      /* Ridimensionamento compattezza anteprima etichetta */
+      .label-preview-wrapper {
+        transform: scale(0.48);
+        transform-origin: center center;
+        margin: 0;
+        margin-top: 12px;
+      }
+
+      /* CAROSELLO IN BASSO PER SELEZIONE MODELLI ETICHETTE */
+      aside {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        background: var(--sidebar);
+        border-right: none;
+        border-top: 1px solid var(--accent);
+        padding: 0.5rem 0.8rem 0.6rem 0.8rem;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+      }
+
+      aside .brand, aside .nav-btn {
+        display: none;
+      }
+
+      .gallery-title {
+        font-size: 0.65rem;
+        margin-bottom: 0.35rem;
+        text-align: left;
+      }
+
+      .template-gallery {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 0.6rem;
+        padding-bottom: 0.3rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .template-gallery::-webkit-scrollbar {
+        height: 4px;
+      }
+      .template-gallery::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .template-gallery::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 4px;
+      }
+
+      .template-card {
+        flex: 0 0 115px;
+        min-width: 115px;
+        scroll-snap-align: start;
+        padding: 0.4rem 0.35rem;
+      }
+
+      .template-card .tpl-name {
+        font-size: 0.65rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tpl-preview-box {
+        max-width: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding-top: 135px;
+        padding-bottom: 95px;
+      }
+      .preview-section {
+        height: 125px;
+      }
+      .label-preview-wrapper {
+        transform: scale(0.42);
+        margin-top: 10px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      main {
+        padding-top: 125px;
+        padding-bottom: 90px;
+      }
+      .preview-section {
+        height: 115px;
+      }
+      .label-preview-wrapper {
+        transform: scale(0.38);
+        margin-top: 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -295,6 +468,7 @@
   <main>
     <div class="editor-section">
       <header>
+        <a href="index.html" class="nav-btn mobile-nav-btn">← Torna al Dashboard</a>
         <h1 id="templateTitle">Etichette DYMO</h1>
         <p>Stampa Diretta 57x32mm (11354)</p>
       </header>
