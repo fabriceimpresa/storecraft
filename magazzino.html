@@ -6,6 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
   <script src="assets/js/logos.js"></script>
+  <script src="assets/js/print-logo-colors.js"></script>
 
   <style>
     :root {
@@ -190,7 +191,6 @@
       width: auto;
       height: auto;
       object-fit: contain;
-      filter: brightness(0);
     }
 
     .brand-area .brand-text-fallback {
@@ -557,11 +557,11 @@
       const arrowElem = document.getElementById(`arrowArea${num}`);
 
       if (data.customLogo) {
-        imgElem.src = data.customLogo;
+        PrintLogoColors.setBrandLogoSrc(`logoImg${num}`, data.customLogo, '', '', 'black');
         imgElem.style.display = 'block';
         fallbackElem.style.display = 'none';
       } else if (data.brand) {
-        imgElem.src = LOGO_PATH + data.brand;
+        PrintLogoColors.setBrandLogoSrc(`logoImg${num}`, '', data.brand, '', 'black');
         imgElem.style.display = 'block';
         fallbackElem.style.display = 'none';
       } else {

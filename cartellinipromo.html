@@ -7,6 +7,7 @@
   
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
   <script src="assets/js/logos.js"></script>
+  <script src="assets/js/print-logo-colors.js"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -118,16 +119,12 @@
     }
     .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
 
-    /* Brand Logo in alto (Filtro CSS Rosso per i loghi PNG) */
+    /* Brand Logo in alto (colore già applicato via canvas dal JS, vedi renderGrid) */
     .brand-box { height: 19mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5mm; flex-shrink: 0; transform: translateY(-1mm); }
     .brand-box img { 
       max-height: 100%; 
       max-width: 90%; 
       object-fit: contain; 
-      filter: invert(18%) sepia(88%) saturate(6240%) hue-rotate(352deg) brightness(95%) contrast(118%);
-    }
-    .cartellino.is-black-event .brand-box img {
-      filter: invert(56%) sepia(68%) saturate(382%) hue-rotate(9deg) brightness(92%) contrast(87%);
     }
     .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 16pt; font-weight: bold; color: var(--sale-red); text-transform: uppercase; letter-spacing: 0.8px; }
     .cartellino.is-black-event .brand-text-fallback { color: #b48b37; }
@@ -568,7 +565,6 @@
           const logoSrc = LOGO_PATH + logoFile;
           logoContent = `<img src="${logoSrc}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${brandDisplayName}</div>'" alt="${brandDisplayName}">`;
         }
-
         el.innerHTML = `
           <div class="brand-box">${logoContent}</div>
           <div class="card-body-center">
@@ -596,6 +592,18 @@
         `;
 
         grid.appendChild(el);
+
+        // Ricolora il logo brand via canvas (bianco/oro a seconda dell'evento)
+        // così sia lo schermo sia la stampa mostrano sempre il colore corretto,
+        // senza dipendere dai filtri CSS ignorati da Safari in stampa.
+        if (card.customLogoUrl || card.brand) {
+          const brandColor = isBlackEvent ? 'gold' : 'red';
+          const officialFile = card.customLogoUrl ? '' : getLogoFilename(card.brand);
+          PrintLogoColors.getBrandLogoSrc(card.customLogoUrl, officialFile, '', brandColor).then(src => {
+            const imgEl = el.querySelector('.brand-box img');
+            if (imgEl && src) imgEl.src = src;
+          });
+        }
       });
 
       fitSaleBannerText();

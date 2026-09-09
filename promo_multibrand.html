@@ -6,6 +6,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <!-- Inclusione script centralizzato loghi -->
   <script src="assets/js/logos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd.otf') format('opentype'); font-style: normal; font-weight: 400; font-display: block; }
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype'); font-style: italic; font-weight: 400; font-display: block; }
@@ -282,8 +284,8 @@
       <div class="logo-grid" id="logoControls1"></div>
       <div class="section-title">IMPOSTAZIONI STAMPA</div>
       <div class="form-group"><label>Modalità cartelli:</label><select id="modeSelect" onchange="toggleCardMode()"><option value="2">2 Cartelli (Foglio Intero A4)</option><option value="1">1 Solo Cartello (Superiore)</option></select></div>
-      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-      <button class="btn-print btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+      <button class="btn-print" id="btnPrint2" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print btn-print-single" id="btnPrint1" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
     </div>
     <div class="controls custom-logo-controls">
       <h2>LOGHI PERSONALIZZATI</h2>
@@ -419,15 +421,109 @@
       document.getElementById('card2').classList.toggle('disabled', single);
     }
 
-    function printSheet(count) { 
-      document.getElementById('modeSelect').value = String(count); 
-      toggleCardMode(); 
-      window.print(); 
+    // Rileva Safari desktop (esclude iOS/iPadOS, dove il download/anteprima PDF
+    // funziona diversamente ed è gestito meglio dalla stampa nativa mobile,
+    // che infatti già funziona correttamente).
+    function isSafariDesktopBrowser() {
+      const ua = navigator.userAgent;
+      const isSafari = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(ua);
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      return isSafari && !isIOS;
+    }
+
+    // Su Safari desktop i filtri CSS applicati ai loghi non vengono rispettati
+    // in stampa (restano neri), anche se l'anteprima a schermo è corretta.
+    // Soluzione: invece di stampare, generiamo un PDF a partire da uno
+    // screenshot esatto dell'anteprima (già colorata bene) e lo apriamo in una
+    // nuova scheda; da lì l'utente può stampare o salvare con il colore giusto.
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = String(count);
+      toggleCardMode();
+
+      if (!isSafariDesktopBrowser()) {
+        // Chrome/Firefox/Edge/Safari mobile stampano correttamente i filtri CSS.
+        window.print();
+        return;
+      }
+
+      exportPdf(count);
+    }
+
+    // Converte tutte le <img> di un elemento in data URL (base64), leggendo il
+    // file direttamente via fetch+FileReader. Necessario su Safari, che
+    // considera "cross-origin" (canvas "tainted") anche immagini locali
+    // caricate con percorso relativo da file://, bloccando poi toDataURL().
+    async function inlineImagesAsDataUrls(rootEl) {
+      const imgElements = Array.from(rootEl.querySelectorAll('img'));
+      const originalSrcs = new Map();
+      await Promise.all(imgElements.map(async img => {
+        const currentSrc = img.src;
+        if (!currentSrc || currentSrc.startsWith('data:')) return;
+        try {
+          const response = await fetch(currentSrc);
+          const blob = await response.blob();
+          const dataUrl = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+          originalSrcs.set(img, currentSrc);
+          img.src = dataUrl;
+        } catch (err) {
+          console.warn('Impossibile convertire il logo in base64:', currentSrc, err);
+        }
+      }));
+      return () => {
+        originalSrcs.forEach((originalSrc, img) => { img.src = originalSrc; });
+      };
+    }
+
+    function exportPdf(count) {
+      const button = document.getElementById(count === 1 ? 'btnPrint1' : 'btnPrint2');
+      const originalLabel = button ? button.textContent : '';
+      if (button) { button.disabled = true; button.textContent = '⏳ Generazione PDF...'; }
+
+      const printSheetEl = document.getElementById('printSheet');
+      let restoreImages = () => {};
+
+      inlineImagesAsDataUrls(printSheetEl)
+        .then(restoreFn => {
+          restoreImages = restoreFn;
+          return html2canvas(printSheetEl, { scale: 3, backgroundColor: '#ffffff', useCORS: true });
+        })
+        .then(canvas => {
+          restoreImages();
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          const imgData = canvas.toDataURL('image/png');
+          pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+          pdf.output('dataurlnewwindow', { filename: 'cartello-promo-multibrand.pdf' });
+        })
+        .catch(err => {
+          restoreImages();
+          console.error('Impossibile generare il PDF:', err);
+          alert('Non è stato possibile generare il PDF. Riprova.');
+        })
+        .finally(() => {
+          if (button) { button.disabled = false; button.textContent = originalLabel; }
+        });
+    }
+
+    // Su Safari desktop sostituiamo le etichette dei pulsanti da "Stampa" a
+    // "Esporta PDF", per riflettere il comportamento realmente eseguito.
+    function adaptPrintButtonsForBrowser() {
+      if (!isSafariDesktopBrowser()) return;
+      const btn2 = document.getElementById('btnPrint2');
+      const btn1 = document.getElementById('btnPrint1');
+      if (btn2) btn2.textContent = '📄 Esporta PDF 2 Cartelli (A4)';
+      if (btn1) btn1.textContent = '📄 Esporta PDF SOLO 1 Cartello';
     }
 
     createLogoControls(); 
     createCustomLogoControls(); 
     updateCards();
+    adaptPrintButtonsForBrowser();
   </script>
 </body>
 </html>

@@ -5,6 +5,7 @@
   <title>Cartello da Banco</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <script src="assets/js/logos.js"></script>
+  <script src="assets/js/print-logo-colors.js"></script>
   <script src="assets/js/print-white-logos.js"></script>
   <style>
     @font-face {
@@ -329,7 +330,6 @@
     .red-box img {
       max-height: 100%;
       object-fit: contain;
-      filter: brightness(0) invert(1);
       transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
@@ -435,7 +435,6 @@
       max-height: 100%;
       max-width: 250px;
       object-fit: contain;
-      filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
     }
 
     /* NAVIGAZIONE UI */
@@ -847,7 +846,7 @@
         </div>
 
         <div class="card-footer">
-          <img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet">
+          <img class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet">
         </div>
       </div>
     </div>
@@ -880,7 +879,7 @@
         </div>
 
         <div class="card-footer">
-          <img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet">
+          <img class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet">
         </div>
       </div>
     </div>
@@ -1108,15 +1107,7 @@
     function setLogoSrc(cardIndex, slot) {
       const officialVal = document.getElementById(`brandSelect${cardIndex}_${slot}`).value;
       const customVal = document.getElementById(`customBrandSelect${cardIndex}_${slot}`).value;
-      const imgElement = document.getElementById(`cardLogo${cardIndex}_${slot}`);
-
-      if (customVal) {
-        imgElement.src = customVal;
-      } else if (officialVal) {
-        imgElement.src = LOGO_PATH + officialVal;
-      } else {
-        imgElement.src = LOGO_PATH + DEFAULT_LOGO;
-      }
+      PrintLogoColors.setBrandLogoSrc(`cardLogo${cardIndex}_${slot}`, customVal, officialVal, DEFAULT_LOGO, 'white');
     }
 
     function formatDiscountInput(input) {

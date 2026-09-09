@@ -5,6 +5,7 @@
   <title>Cartello Semplice</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <script src="assets/js/logos.js"></script>
+  <script src="assets/js/print-logo-colors.js"></script>
   <script src="assets/js/print-white-logos.js"></script>
   <style>
     @font-face {
@@ -339,7 +340,6 @@
       max-width: 94%;
       max-height: 94%;
       object-fit: contain;
-      filter: brightness(0) invert(1);
     }
 
     .brand-logo-slot.bis {
@@ -397,7 +397,6 @@
       max-height: 100%;
       max-width: 264px;
       object-fit: contain;
-      filter: invert(13%) sepia(94%) saturate(7465%) hue-rotate(356deg) brightness(91%) contrast(115%);
     }
 
     /* NAVIGAZIONE */
@@ -727,7 +726,7 @@
         <div class="price-final" id="priceNewDisplay1">€ 99,00</div>
       </div>
 
-      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet"></div>
     </div>
 
     <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
@@ -749,7 +748,7 @@
         <div class="price-final" id="priceNewDisplay2">€ 99,00</div>
       </div>
 
-      <div class="card-footer"><img class="luxuryLogo" src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet"></div>
+      <div class="card-footer"><img class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet"></div>
     </div>
   </div>
 
@@ -934,6 +933,9 @@
     function printSheet(count) {
       document.getElementById('modeSelect').value = count.toString();
       toggleCardMode();
+      window.preparePrintLogos().catch(error => {
+        console.error('Preparazione loghi per la stampa fallita.', error);
+      });
       window.print();
     }
 
@@ -966,13 +968,9 @@
       const b1Bis = document.getElementById('brandSelect1Bis').value;
       const cb1Bis = document.getElementById('customBrandSelect1Bis').value;
 
-      if (cb1) document.getElementById('cardLogo1').src = cb1;
-      else if (b1) document.getElementById('cardLogo1').src = LOGO_PATH + b1;
-      else document.getElementById('cardLogo1').src = LOGO_PATH + DEFAULT_LOGO;
+      PrintLogoColors.setBrandLogoSrc('cardLogo1', cb1, b1, DEFAULT_LOGO, 'white');
 
-      if (cb1Bis) document.getElementById('cardLogo1Bis').src = cb1Bis;
-      else if (b1Bis) document.getElementById('cardLogo1Bis').src = LOGO_PATH + b1Bis;
-      else document.getElementById('cardLogo1Bis').src = LOGO_PATH + DEFAULT_LOGO;
+      PrintLogoColors.setBrandLogoSrc('cardLogo1Bis', cb1Bis, b1Bis, DEFAULT_LOGO, 'white');
 
       const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
       const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
@@ -989,13 +987,9 @@
       const b2Bis = document.getElementById('brandSelect2Bis').value;
       const cb2Bis = document.getElementById('customBrandSelect2Bis').value;
 
-      if (cb2) document.getElementById('cardLogo2').src = cb2;
-      else if (b2) document.getElementById('cardLogo2').src = LOGO_PATH + b2;
-      else document.getElementById('cardLogo2').src = LOGO_PATH + DEFAULT_LOGO;
+      PrintLogoColors.setBrandLogoSrc('cardLogo2', cb2, b2, DEFAULT_LOGO, 'white');
 
-      if (cb2Bis) document.getElementById('cardLogo2Bis').src = cb2Bis;
-      else if (b2Bis) document.getElementById('cardLogo2Bis').src = LOGO_PATH + b2Bis;
-      else document.getElementById('cardLogo2Bis').src = LOGO_PATH + DEFAULT_LOGO;
+      PrintLogoColors.setBrandLogoSrc('cardLogo2Bis', cb2Bis, b2Bis, DEFAULT_LOGO, 'white');
 
       document.getElementById('headLeft2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>');
       document.getElementById('headRight2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>');

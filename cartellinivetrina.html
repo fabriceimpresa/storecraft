@@ -7,6 +7,7 @@
   
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
   <script src="assets/js/logos.js"></script>
+  <script src="assets/js/print-logo-colors.js"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -118,7 +119,7 @@
 
     /* Brand Logo in alto */
     .brand-box { height: 21mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5mm; flex-shrink: 0; }
-    .brand-box img { max-height: 100%; max-width: 90%; object-fit: contain; filter: invert(56%) sepia(68%) saturate(382%) hue-rotate(9deg) brightness(92%) contrast(87%); }
+    .brand-box img { max-height: 100%; max-width: 90%; object-fit: contain; }
     .brand-box .brand-text-fallback { font-family: 'Bodoni Std', serif; font-size: 16pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.8px; }
 
     /* Blocco centrale */
@@ -468,6 +469,15 @@
         `;
 
         grid.appendChild(el);
+
+        // Ricolora il logo brand via canvas (oro), indipendente dal browser.
+        if (card.customLogoUrl || card.brand) {
+          const officialFile = card.customLogoUrl ? '' : getLogoFilename(card.brand);
+          PrintLogoColors.getBrandLogoSrc(card.customLogoUrl, officialFile, '', 'gold').then(src => {
+            const imgEl = el.querySelector('.brand-box img');
+            if (imgEl && src) imgEl.src = src;
+          });
+        }
       });
     }
 
