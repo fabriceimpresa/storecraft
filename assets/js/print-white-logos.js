@@ -1,7 +1,7 @@
 (() => {
   const printableLogos = new WeakMap();
 
-  function createWhiteLogo(source) {
+  function createColorLogo(source, red, green, blue) {
     return new Promise((resolve, reject) => {
       const sourceImage = new Image();
 
@@ -21,9 +21,9 @@
         const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
         for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
           if (pixels.data[pixel + 3] > 0) {
-            pixels.data[pixel] = 255;
-            pixels.data[pixel + 1] = 255;
-            pixels.data[pixel + 2] = 255;
+            pixels.data[pixel] = red;
+            pixels.data[pixel + 1] = green;
+            pixels.data[pixel + 2] = blue;
           }
         }
         context.putImageData(pixels, 0, 0);
@@ -35,17 +35,18 @@
     });
   }
 
-  function prepareLogo(logoImage) {
+  function prepareLogo(logoImage, color) {
     const source = logoImage.currentSrc || logoImage.src;
     const record = printableLogos.get(logoImage);
-    if (!source || record?.convertedSource === source || (record?.source === source && record.pending)) {
+    const colorKey = color.join(',');
+    if (!source || (record?.colorKey === colorKey && (record?.convertedSource === source || (record.source === source && record.pending)))) {
       return;
     }
 
     logoImage.style.filter = '';
-    const nextRecord = { source, pending: true };
+    const nextRecord = { source, colorKey, pending: true };
     printableLogos.set(logoImage, nextRecord);
-    createWhiteLogo(source)
+    createColorLogo(source, ...color)
       .then(printableSource => {
         if (printableLogos.get(logoImage) === nextRecord) {
           nextRecord.pending = false;
@@ -62,7 +63,8 @@
   }
 
   function prepareAllLogos() {
-    document.querySelectorAll('[id^="cardLogo"]').forEach(prepareLogo);
+    document.querySelectorAll('[id^="cardLogo"]').forEach(logoImage => prepareLogo(logoImage, [255, 255, 255]));
+    document.querySelectorAll('.luxuryLogo').forEach(logoImage => prepareLogo(logoImage, [224, 0, 0]));
   }
 
   document.addEventListener('DOMContentLoaded', () => {
