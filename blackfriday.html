@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Genera Cartelli - Black Friday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
+  <script src="assets/js/logos.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      font-style: italic;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Franklin Gothic';
+      src: url('assets/fonts/Franklin Gothic.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* Sfondo principale dell'applicazione UI */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Filigrana di sfondo UI */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
+      background-repeat: repeat;
+      background-size: 650px auto;
+      background-position: center;
+      opacity: 0.18;
+      filter: contrast(1.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 10;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid #2e2b27;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #d4a373;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #e5ba73;
+      background-color: transparent;
+      border-left: none;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
+      padding: 0 0 0.6rem;
+      border-radius: 0;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #2e2b27;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background-color: #0a0908;
+      color: #fff;
+    }
+
+    .form-group select.custom-select {
+      border-color: #b48b37;
+      color: #f3d5a3;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
+    }
+
+    /* PULSANTE TOGGLE DESCRIZIONE */
+    .btn-toggle-desc {
+      width: 100%;
+      background: linear-gradient(135deg, #d4a373 0%, #b8860b 100%);
+      color: #000000;
+      border: 1px solid #e5ba73;
+      padding: 10px;
+      font-size: 0.88rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 5px 0 10px 0;
+      box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-toggle-desc:hover {
+      background: linear-gradient(135deg, #e5ba73 0%, #d4a373 100%);
+      box-shadow: 0 6px 14px rgba(212, 163, 115, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-toggle-desc.active {
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+      color: #ffffff;
+      border-color: #28a745;
+      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    /* PULSANTI STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: #ffffff;
+      border: 1px solid #b30000;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #cc0000; }
+
+    .btn-print-single {
+      width: 100%;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 1px solid #004085;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print-single:hover { background-color: #003d80; }
+
+    /* FOGLIO A4 (STRATO 0: BIANCO BASE) */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 296mm;
+      background-color: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 6mm 10mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* STRATO 1: FILIGRANA HALFTONE INTERMEDIA (RIDOTTA DEL 20% A 800px) */
+    .print-sheet::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('assets/img/halftone.png') !important;
+      background-repeat: repeat !important;
+      background-size: 800px auto !important; /* RIDOTTO DA 1000px A 800px */
+      z-index: 1;
+      pointer-events: none;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .print-sheet.double-mode {
+      justify-content: space-between;
+    }
+
+    .print-sheet.single-mode #card1 {
+      margin-bottom: 7mm;
+    }
+
+    /* STRATO 2: ELEMENTI GRAFICI E TESTUALI (SOPRA HALFTONE) */
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 136mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .card.disabled {
+      display: none !important;
+    }
+
+    .cut-line {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      border-top: 1px dashed #bbb;
+      margin: 1mm 0;
+      flex-shrink: 0;
+    }
+
+    /* CONTENITORE CENTRALE BLACK FRIDAY */
+    .bf-block {
+      width: 168mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    /* SVG PER SCRITTE CORPOSE */
+    .bf-svg-row {
+      width: 100%;
+      height: 42mm;
+      display: block;
+      margin: 0;
+      overflow: visible;
+    }
+
+    /* RETTANGOLO NERO CENTRALE */
+    .black-box {
+      width: 100%;
+      height: 38mm;
+      background-color: #000000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6mm;
+      margin: 1mm 0;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* LATO SINISTRO: LARGHEZZA 36% CON OVERFLOW VISIBLE */
+    .side-container {
+      width: 36%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      overflow: visible;
+      flex-shrink: 0;
+      padding-left: 2mm;
+    }
+
+    .side-container img {
+      max-width: 95%;
+      max-height: 90%;
+      object-fit: contain;
+      filter: brightness(0) invert(1);
+      transform: scale(1.10);
+      transform-origin: left center;
+    }
+
+    .side-container .desc-text {
+      display: none;
+      font-family: 'Bodoni Project', 'Bodoni MT', Didot, serif;
+      font-size: 3.2rem;
+      font-weight: 400;
+      color: #ffffff;
+      text-align: left;
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .card.has-desc .side-container img {
+      display: none !important;
+    }
+
+    .card.has-desc .side-container .desc-text {
+      display: block !important;
+    }
+
+    /* LATO DESTRO: LARGHEZZA 64% E PREZZO ABBASSATO DEL 10% */
+    .price-display {
+      width: 64%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-family: 'Bodoni Project', 'Bodoni MT', Didot, serif;
+      font-size: 7.0rem;
+      font-weight: 400;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      white-space: nowrap;
+      text-align: right;
+      overflow: hidden;
+      flex-shrink: 0;
+      padding-right: 2mm;
+      transform: translateY(10%);
+    }
+
+    /* NAVIGAZIONE UI */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #d4a373;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #e5ba73;
+      transform: scale(1.1);
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #e5ba73;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body::before { display: none !important; }
+
+      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 0 auto !important;
+        padding: 6mm 10mm;
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background-color: #ffffff !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      /* HALFTONE A 800px ANCHE IN STAMPA */
+      .print-sheet::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('assets/img/halftone.png') !important;
+        background-repeat: repeat !important;
+        background-size: 800px auto !important;
+        z-index: 1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .black-box { 
+        background-color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pulsante Chiudi e Menu Fluttuante -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">BLACK FRIDAY // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <!-- PANNELLO PRINCIPALE -->
+    <div class="controls">
+      <h2>BLACK FRIDAY</h2>
+
+      <!-- PULSANTE TOGGLE DESCRIZIONE -->
+      <button type="button" class="btn-toggle-desc" id="btnToggleDesc" onclick="toggleDescription()">
+        + AGGIUNGI DESCRIZIONE
+      </button>
+
+      <div class="section-title">CARTELLO 1 (Superiore)</div>
+      <div class="form-group">
+        <label>Brand Ufficiale 1:</label>
+        <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
+      </div>
+      <div class="form-group" id="descGroup1" style="display: none;">
+        <label style="color: #e5ba73;">Testo Descrittivo (al posto del Logo):</label>
+        <input type="text" id="desc1" value="Sciarpe" placeholder="Inserisci la descrizione" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Prezzo Finale:</label>
+        <input type="text" id="price1" value="79,90" placeholder="Es. 79,90" oninput="updateCards()">
+      </div>
+
+      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+      <div id="sectionCard2">
+        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+        <div class="form-group">
+          <label>Brand Ufficiale 2:</label>
+          <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
+        </div>
+        <div class="form-group" id="descGroup2" style="display: none;">
+          <label style="color: #e5ba73;">Testo Descrittivo (al posto del Logo):</label>
+          <input type="text" id="desc2" value="Sciarpe" placeholder="Inserisci la descrizione" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Prezzo Finale:</label>
+          <input type="text" id="price2" value="10,00" placeholder="Es. 10,00" oninput="updateCards()">
+        </div>
+      </div>
+
+      <div class="section-title">IMPOSTAZIONI STAMPA</div>
+      <div class="form-group">
+        <label>Modalità Cartelli da Stampare:</label>
+        <select id="modeSelect" onchange="toggleCardMode()">
+          <option value="2">2 Cartelli (Foglio Intero A4)</option>
+          <option value="1">1 Solo Cartello (Superiore)</option>
+        </select>
+      </div>
+
+      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+    </div>
+
+    <!-- PANNELLO LOGHI PERSONALIZZATI -->
+    <div class="controls">
+      <h2>LOGHI PERSONALIZZATI</h2>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
+        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
+        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="bf-block">
+        <!-- SCRITTA BLACK VETTORIALE -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
+          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#000000">BLACK</text>
+        </svg>
+
+        <!-- RETTANGOLO NERO CENTRALE -->
+        <div class="black-box">
+          <div class="side-container">
+            <img id="cardLogo1" src="" alt="Brand Logo 1">
+            <div id="cardDesc1" class="desc-text">Sciarpe</div>
+          </div>
+          <div class="price-display" id="priceDisplay1">€ 79,90</div>
+        </div>
+
+        <!-- SCRITTA FRIDAY VETTORIALE -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
+          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#e89006">FRIDAY</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="bf-block">
+        <!-- SCRITTA BLACK VETTORIALE -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
+          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#000000">BLACK</text>
+        </svg>
+
+        <!-- RETTANGOLO NERO CENTRALE -->
+        <div class="black-box">
+          <div class="side-container">
+            <img id="cardLogo2" src="" alt="Brand Logo 2">
+            <div id="cardDesc2" class="desc-text">Sciarpe</div>
+          </div>
+          <div class="price-display" id="priceDisplay2">€ 10,00</div>
+        </div>
+
+        <!-- SCRITTA FRIDAY VETTORIALE -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
+          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#e89006">FRIDAY</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isDescriptionActive = false;
+    const LOGO_PATH = "assets/logos/";
+    const DEFAULT_LOGO = "LUXURY_GOLD.png";
+    const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function toggleDescription() {
+      isDescriptionActive = !isDescriptionActive;
+      const btn = document.getElementById('btnToggleDesc');
+      const descGroup1 = document.getElementById('descGroup1');
+      const descGroup2 = document.getElementById('descGroup2');
+      const card1 = document.getElementById('card1');
+      const card2 = document.getElementById('card2');
+
+      if (isDescriptionActive) {
+        btn.classList.add('active');
+        btn.innerHTML = "✓ DESCRIZIONE ATTIVA";
+        descGroup1.style.display = "block";
+        descGroup2.style.display = "block";
+        card1.classList.add('has-desc');
+        card2.classList.add('has-desc');
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = "+ AGGIUNGI DESCRIZIONE";
+        descGroup1.style.display = "none";
+        descGroup2.style.display = "none";
+        card1.classList.remove('has-desc');
+        card2.classList.remove('has-desc');
+      }
+      updateCards();
+    }
+
+    function loadLocalLogos() {
+      const select1 = document.getElementById('brandSelect1');
+      const select2 = document.getElementById('brandSelect2');
+
+      select1.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      select2.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      if (typeof LOGO_FILES !== 'undefined') {
+        LOGO_FILES.forEach(fileName => {
+          const displayName = cleanBrandName(fileName);
+          
+          const option1 = document.createElement('option');
+          option1.value = fileName;
+          option1.textContent = displayName;
+          select1.appendChild(option1);
+
+          const option2 = document.createElement('option');
+          option2.value = fileName;
+          option2.textContent = displayName;
+          select2.appendChild(option2);
+        });
+      }
+
+      loadCustomLogosDropdown();
+      updateCards();
+    }
+
+    function loadCustomLogosDropdown() {
+      const cSelect1 = document.getElementById('customBrandSelect1');
+      const cSelect2 = document.getElementById('customBrandSelect2');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+
+      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+
+      customLogos.forEach(item => {
+        const opt1 = document.createElement('option');
+        opt1.value = item.data;
+        opt1.textContent = "★ " + item.name;
+        cSelect1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = item.data;
+        opt2.textContent = "★ " + item.name;
+        cSelect2.appendChild(opt2);
+      });
+    }
+
+    function onOfficialBrandChange(cardIndex) {
+      document.getElementById('customBrandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function onCustomBrandChange(cardIndex) {
+      document.getElementById('brandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function copyCard1ToCard2() {
+      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
+      document.getElementById('desc2').value = document.getElementById('desc1').value;
+      document.getElementById('price2').value = document.getElementById('price1').value;
+      updateCards();
+    }
+
+    function toggleCardMode() {
+      const count = document.getElementById('modeSelect').value;
+      const card2 = document.getElementById('card2');
+      const section2 = document.getElementById('sectionCard2');
+      const btnCopy = document.getElementById('btnCopy');
+      const sheet = document.getElementById('printSheet');
+
+      if (count === "1") {
+        card2.classList.add('disabled');
+        section2.style.display = 'none';
+        btnCopy.style.display = 'none';
+        sheet.classList.remove('double-mode');
+        sheet.classList.add('single-mode');
+      } else {
+        card2.classList.remove('disabled');
+        section2.style.display = 'block';
+        btnCopy.style.display = 'block';
+        sheet.classList.remove('single-mode');
+        sheet.classList.add('double-mode');
+      }
+    }
+
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = count.toString();
+      toggleCardMode();
+      window.print();
+    }
+
+    /* SCALATURA DINAMICA FONT DEL PREZZO */
+    function adjustPriceFontSize(priceEl, text) {
+      const len = text.length;
+      let fontSize = "7.0rem";
+
+      if (len <= 7) {
+        fontSize = "7.0rem";
+      } else if (len <= 8) {
+        fontSize = "6.0rem";
+      } else if (len <= 10) {
+        fontSize = "4.8rem";
+      } else if (len <= 12) {
+        fontSize = "4.0rem";
+      } else {
+        fontSize = "3.2rem";
+      }
+
+      priceEl.style.fontSize = fontSize;
+    }
+
+    function updateCards() {
+      for (let i = 1; i <= 2; i++) {
+        // Prezzo
+        const rawPrice = document.getElementById('price' + i).value.trim();
+        const priceDisplay = document.getElementById('priceDisplay' + i);
+        if (rawPrice) {
+          const fullPrice = rawPrice.includes('€') ? rawPrice : '€ ' + rawPrice;
+          priceDisplay.innerText = fullPrice;
+          adjustPriceFontSize(priceDisplay, fullPrice);
+        } else {
+          priceDisplay.innerText = '';
+        }
+
+        // Descrizione
+        const descText = document.getElementById('desc' + i).value;
+        document.getElementById('cardDesc' + i).innerText = descText;
+
+        // Loghi
+        const b = document.getElementById('brandSelect' + i).value;
+        const cb = document.getElementById('customBrandSelect' + i).value;
+        const logoImg = document.getElementById('cardLogo' + i);
+
+        if (cb) {
+          logoImg.src = cb;
+        } else if (b) {
+          logoImg.src = LOGO_PATH + b;
+        } else {
+          logoImg.src = LOGO_PATH + DEFAULT_LOGO;
+        }
+      }
+    }
+
+    window.onload = loadLocalLogos;
+  </script>
+</body>
+</html>
