@@ -144,7 +144,7 @@
       box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
     }
 
-    /* PULSANTE TOGGLE DESCRIZIONE */
+    /* PULSANTI TOGGLE */
     .btn-toggle-desc {
       width: 100%;
       background: linear-gradient(135deg, #d4a373 0%, #b8860b 100%);
@@ -155,7 +155,7 @@
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
-      margin: 5px 0 10px 0;
+      margin: 5px 0;
       box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
       transition: all 0.2s ease-in-out;
       display: flex;
@@ -225,7 +225,7 @@
 
     .btn-print-single:hover { background-color: #003d80; }
 
-    /* FOGLIO A4 (STRATO 0: BIANCO BASE) */
+    /* FOGLIO A4 */
     .print-sheet {
       position: relative;
       z-index: 1;
@@ -242,7 +242,7 @@
       print-color-adjust: exact !important;
     }
 
-    /* STRATO 1: FILIGRANA HALFTONE INTERMEDIA (RIDOTTA DEL 20% A 800px) */
+    /* FILIGRANA HALFTONE INTERMEDIA */
     .print-sheet::before {
       content: "";
       position: absolute;
@@ -252,7 +252,7 @@
       height: 100%;
       background-image: url('assets/img/halftone.png') !important;
       background-repeat: repeat !important;
-      background-size: 800px auto !important; /* RIDOTTO DA 1000px A 800px */
+      background-size: 800px auto !important;
       z-index: 1;
       pointer-events: none;
       -webkit-print-color-adjust: exact !important;
@@ -267,7 +267,7 @@
       margin-bottom: 7mm;
     }
 
-    /* STRATO 2: ELEMENTI GRAFICI E TESTUALI (SOPRA HALFTONE) */
+    /* ELEMENTI GRAFICI E TESTUALI */
     .card {
       position: relative;
       z-index: 2;
@@ -324,36 +324,50 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 6mm;
+      padding: 0 4mm 0 0;
       margin: 1mm 0;
       flex-shrink: 0;
       overflow: hidden;
     }
 
-    /* LATO SINISTRO: LARGHEZZA 36% CON OVERFLOW VISIBLE */
+    /* LATO SINISTRO CON LOGO / DESCRIZIONE E SCONTISTICA */
     .side-container {
-      width: 36%;
+      width: 44%;
       height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      padding-left: 0;
+      transition: all 0.3s ease;
+    }
+
+    /* SPOSTAMENTO DEL 15% VERSO DESTRA PER LOGO O TESTO LIBERO */
+    .side-brand-wrapper {
       display: flex;
       align-items: center;
       justify-content: flex-start;
-      overflow: visible;
-      flex-shrink: 0;
-      padding-left: 2mm;
+      width: 100%;
+      height: 100%;
+      padding-left: 15%;
+      transition: all 0.3s ease;
     }
 
-    .side-container img {
-      max-width: 95%;
-      max-height: 90%;
+    .side-brand-wrapper img {
+      max-width: 90%;
+      max-height: 75%;
       object-fit: contain;
-      transform: scale(1.10);
+      transform: scale(0.95);
       transform-origin: left center;
+      transition: all 0.3s ease;
     }
 
-    .side-container .desc-text {
+    .side-brand-wrapper .desc-text {
       display: none;
       font-family: 'Bodoni Project', 'Bodoni MT', Didot, serif;
-      font-size: 3.2rem;
+      font-size: 2.8rem;
       font-weight: 400;
       color: #ffffff;
       text-align: left;
@@ -362,19 +376,76 @@
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
+      transition: all 0.3s ease;
     }
 
-    .card.has-desc .side-container img {
+    .card.has-desc .side-brand-wrapper img {
       display: none !important;
     }
 
-    .card.has-desc .side-container .desc-text {
+    .card.has-desc .side-brand-wrapper .desc-text {
       display: block !important;
     }
 
-    /* LATO DESTRO: LARGHEZZA 64% E PREZZO ABBASSATO DEL 10% */
+    /* RIGA SCONTISTICA INFERIORE (NASCOSTA DI DEFAULT) */
+    .discount-row {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      color: #ffffff;
+      opacity: 0;
+      padding-left: 15%; /* ALLINEATO A SINISTRA COL LOGO/DESCRIZIONE (15%) */
+      transition: all 0.3s ease;
+    }
+
+    .discount-row .p-orig {
+      font-family: 'Bodoni Project', 'Bodoni MT', Didot, serif;
+      font-size: 1.8rem;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .discount-row .p-disc {
+      font-family: 'Bodoni Project', 'Bodoni MT', Didot, serif;
+      font-style: italic;
+      font-size: 2.1rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* STILI QUANDO LA SCONTISTICA E' ATTIVA */
+    .card.has-discount .side-brand-wrapper {
+      height: 50%;
+      align-items: center;
+      padding-bottom: 0;
+    }
+
+    .card.has-discount .side-brand-wrapper img {
+      max-height: 85%;
+      transform: scale(0.85);
+      transform-origin: left center;
+    }
+
+    /* RIGA SCONTISTICA TRASLATA IN ALTO E PERFETTAMENTE ALLINEATA A SINISTRA (15%) */
+    .card.has-discount .discount-row {
+      display: flex;
+      height: 50%;
+      opacity: 1;
+      transform: translateY(-8px);
+      align-items: center;
+      padding-left: 15%;
+      padding-bottom: 0;
+    }
+
+    /* MODIFICA ESCLUSIVA: QUANDO SONO ATTIVE SIA DESCRIZIONE CHE SCONTISTICA */
+    .card.has-desc.has-discount .side-brand-wrapper {
+      transform: translateY(6px); /* FA SCENDERE IL CAMPO DESCRIZIONE VERSO LA SCONTISTICA */
+    }
+
+    /* LATO DESTRO: PREZZO FINALE */
     .price-display {
-      width: 64%;
+      width: 56%;
       height: 100%;
       display: flex;
       align-items: center;
@@ -503,7 +574,6 @@
         print-color-adjust: exact !important;
       }
 
-      /* HALFTONE A 800px ANCHE IN STAMPA */
       .print-sheet::before {
         content: "";
         position: absolute;
@@ -549,18 +619,38 @@
         + AGGIUNGI DESCRIZIONE
       </button>
 
+      <!-- PULSANTE TOGGLE SCONTISTICA -->
+      <button type="button" class="btn-toggle-desc" id="btnToggleDiscount" onclick="toggleDiscount()">
+        + AGGIUNGI SCONTISTICA
+      </button>
+
       <div class="section-title">CARTELLO 1 (Superiore)</div>
       <div class="form-group">
         <label>Brand Ufficiale 1:</label>
         <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
       </div>
       <div class="form-group" id="descGroup1" style="display: none;">
-        <label style="color: #e5ba73;">Testo Descrittivo (al posto del Logo):</label>
-        <input type="text" id="desc1" value="Sciarpe" placeholder="Inserisci la descrizione" oninput="updateCards()">
+        <label style="color: #e5ba73;">Testo Descrittivo (Max 20 char):</label>
+        <input type="text" id="desc1" value="Sciarpe" maxlength="20" placeholder="Inserisci descrizione" oninput="updateCards()">
       </div>
+      
+      <!-- CAMPI SCONTISTICA SEPARATI PER CARTELLO 1 -->
+      <div class="form-group" id="discountGroup1" style="display: none;">
+        <div style="display: flex; gap: 8px;">
+          <div style="flex: 1;">
+            <label style="color: #e5ba73;">Prezzo Originario</label>
+            <input type="text" id="pOrig1" value="130,00" placeholder="Es. 130,00" oninput="updateCards()">
+          </div>
+          <div style="flex: 1;">
+            <label style="color: #e5ba73;">Scontistica %</label>
+            <input type="text" id="pDisc1" value="-60" placeholder="Es. -60" oninput="updateCards()">
+          </div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Prezzo Finale:</label>
-        <input type="text" id="price1" value="79,90" placeholder="Es. 79,90" oninput="updateCards()">
+        <input type="text" id="price1" value="49,90" placeholder="Es. 49,90" oninput="updateCards()">
       </div>
 
       <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
@@ -572,12 +662,27 @@
           <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
         </div>
         <div class="form-group" id="descGroup2" style="display: none;">
-          <label style="color: #e5ba73;">Testo Descrittivo (al posto del Logo):</label>
-          <input type="text" id="desc2" value="Sciarpe" placeholder="Inserisci la descrizione" oninput="updateCards()">
+          <label style="color: #e5ba73;">Testo Descrittivo (Max 20 char):</label>
+          <input type="text" id="desc2" value="Sciarpe" maxlength="20" placeholder="Inserisci descrizione" oninput="updateCards()">
         </div>
+
+        <!-- CAMPI SCONTISTICA SEPARATI PER CARTELLO 2 -->
+        <div class="form-group" id="discountGroup2" style="display: none;">
+          <div style="display: flex; gap: 8px;">
+            <div style="flex: 1;">
+              <label style="color: #e5ba73;">Prezzo Originario</label>
+              <input type="text" id="pOrig2" value="130,00" placeholder="Es. 130,00" oninput="updateCards()">
+            </div>
+            <div style="flex: 1;">
+              <label style="color: #e5ba73;">Scontistica %</label>
+              <input type="text" id="pDisc2" value="-60" placeholder="Es. -60" oninput="updateCards()">
+            </div>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>Prezzo Finale:</label>
-          <input type="text" id="price2" value="10,00" placeholder="Es. 10,00" oninput="updateCards()">
+          <input type="text" id="price2" value="49,90" placeholder="Es. 49,90" oninput="updateCards()">
         </div>
       </div>
 
@@ -626,10 +731,16 @@
         <!-- RETTANGOLO NERO CENTRALE -->
         <div class="black-box">
           <div class="side-container">
-            <img id="cardLogo1" src="" alt="Brand Logo 1">
-            <div id="cardDesc1" class="desc-text">Sciarpe</div>
+            <div class="side-brand-wrapper">
+              <img id="cardLogo1" src="" alt="Brand Logo 1">
+              <div id="cardDesc1" class="desc-text">Sciarpe</div>
+            </div>
+            <div class="discount-row" id="discountRow1">
+              <span class="p-orig" id="pOrigDisplay1">€ 130,00</span>
+              <span class="p-disc" id="pDiscDisplay1">-60%</span>
+            </div>
           </div>
-          <div class="price-display" id="priceDisplay1">€ 79,90</div>
+          <div class="price-display" id="priceDisplay1">€ 49,90</div>
         </div>
 
         <!-- SCRITTA FRIDAY VETTORIALE -->
@@ -653,10 +764,16 @@
         <!-- RETTANGOLO NERO CENTRALE -->
         <div class="black-box">
           <div class="side-container">
-            <img id="cardLogo2" src="" alt="Brand Logo 2">
-            <div id="cardDesc2" class="desc-text">Sciarpe</div>
+            <div class="side-brand-wrapper">
+              <img id="cardLogo2" src="" alt="Brand Logo 2">
+              <div id="cardDesc2" class="desc-text">Sciarpe</div>
+            </div>
+            <div class="discount-row" id="discountRow2">
+              <span class="p-orig" id="pOrigDisplay2">€ 130,00</span>
+              <span class="p-disc" id="pDiscDisplay2">-60%</span>
+            </div>
           </div>
-          <div class="price-display" id="priceDisplay2">€ 10,00</div>
+          <div class="price-display" id="priceDisplay2">€ 49,90</div>
         </div>
 
         <!-- SCRITTA FRIDAY VETTORIALE -->
@@ -669,6 +786,7 @@
 
   <script>
     let isDescriptionActive = false;
+    let isDiscountActive = false;
     const LOGO_PATH = "assets/logos/";
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
     const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
@@ -699,6 +817,32 @@
         descGroup2.style.display = "none";
         card1.classList.remove('has-desc');
         card2.classList.remove('has-desc');
+      }
+      updateCards();
+    }
+
+    function toggleDiscount() {
+      isDiscountActive = !isDiscountActive;
+      const btn = document.getElementById('btnToggleDiscount');
+      const discountGroup1 = document.getElementById('discountGroup1');
+      const discountGroup2 = document.getElementById('discountGroup2');
+      const card1 = document.getElementById('card1');
+      const card2 = document.getElementById('card2');
+
+      if (isDiscountActive) {
+        btn.classList.add('active');
+        btn.innerHTML = "✓ SCONTISTICA ATTIVA";
+        discountGroup1.style.display = "block";
+        discountGroup2.style.display = "block";
+        card1.classList.add('has-discount');
+        card2.classList.add('has-discount');
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = "+ AGGIUNGI SCONTISTICA";
+        discountGroup1.style.display = "none";
+        discountGroup2.style.display = "none";
+        card1.classList.remove('has-discount');
+        card2.classList.remove('has-discount');
       }
       updateCards();
     }
@@ -765,6 +909,8 @@
       document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
       document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
       document.getElementById('desc2').value = document.getElementById('desc1').value;
+      document.getElementById('pOrig2').value = document.getElementById('pOrig1').value;
+      document.getElementById('pDisc2').value = document.getElementById('pDisc1').value;
       document.getElementById('price2').value = document.getElementById('price1').value;
       updateCards();
     }
@@ -797,7 +943,7 @@
       window.print();
     }
 
-    /* SCALATURA DINAMICA FONT DEL PREZZO */
+    /* SCALATURA DINAMICA FONT DEL PREZZO FINALE */
     function adjustPriceFontSize(priceEl, text) {
       const len = text.length;
       let fontSize = "7.0rem";
@@ -817,9 +963,33 @@
       priceEl.style.fontSize = fontSize;
     }
 
+    /* SCALATURA DINAMICA FONT DELLA DESCRIZIONE */
+    function adjustDescFontSize(descEl, text) {
+      const len = text.length;
+      let baseSize = 2.8;
+
+      if (len > 18) {
+        baseSize = 1.3;
+      } else if (len > 14) {
+        baseSize = 1.6;
+      } else if (len > 10) {
+        baseSize = 2.0;
+      } else if (len > 6) {
+        baseSize = 2.4;
+      } else {
+        baseSize = 2.8;
+      }
+
+      if (isDiscountActive) {
+        baseSize = baseSize * 0.72;
+      }
+
+      descEl.style.fontSize = baseSize + "rem";
+    }
+
     function updateCards() {
       for (let i = 1; i <= 2; i++) {
-        // Prezzo
+        // Prezzo Finale
         const rawPrice = document.getElementById('price' + i).value.trim();
         const priceDisplay = document.getElementById('priceDisplay' + i);
         if (rawPrice) {
@@ -830,9 +1000,32 @@
           priceDisplay.innerText = '';
         }
 
-        // Descrizione
+        // Prezzo Originario
+        const rawOrig = document.getElementById('pOrig' + i).value.trim();
+        const pOrigDisplay = document.getElementById('pOrigDisplay' + i);
+        if (rawOrig) {
+          pOrigDisplay.innerText = rawOrig.includes('€') ? rawOrig : '€ ' + rawOrig;
+        } else {
+          pOrigDisplay.innerText = '';
+        }
+
+        // Scontistica % (Aggiunta automatica del simbolo %)
+        let rawDisc = document.getElementById('pDisc' + i).value.trim();
+        const pDiscDisplay = document.getElementById('pDiscDisplay' + i);
+        if (rawDisc) {
+          if (!rawDisc.endsWith('%')) {
+            rawDisc += '%';
+          }
+          pDiscDisplay.innerText = rawDisc;
+        } else {
+          pDiscDisplay.innerText = '';
+        }
+
+        // Descrizione con ridimensionamento dinamico
         const descText = document.getElementById('desc' + i).value;
-        document.getElementById('cardDesc' + i).innerText = descText;
+        const descEl = document.getElementById('cardDesc' + i);
+        descEl.innerText = descText;
+        adjustDescFontSize(descEl, descText);
 
         // Loghi
         const b = document.getElementById('brandSelect' + i).value;
