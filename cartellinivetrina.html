@@ -590,12 +590,18 @@
       const style = document.createElement('style');
       style.textContent = `
         @media print {
-          .a4-landscape {
-            transform: scale(0.94);
-            transform-origin: top center;
-          }
+          /* Safari, a differenza di Chrome, spesso ignora la regola globale
+             "@page { size: A4 landscape }" (parola chiave) e stampa in
+             portrait di default: il foglio (282mm di larghezza) va quindi
+             in overflow orizzontale e genera una seconda pagina fantasma
+             vuota. Il foglio 282x196mm rientra già perfettamente nell'area
+             stampabile di un A4 landscape (289x202mm con margine 4mm), per
+             cui basta forzare l'orientamento corretto con dimensioni
+             esplicite, senza scalare o tagliare nulla.
+          */
           @page {
-            margin: 4mm 4mm 10mm 4mm;
+            size: 297mm 210mm;
+            margin: 4mm;
           }
         }
       `;

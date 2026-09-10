@@ -933,9 +933,6 @@
     function printSheet(count) {
       document.getElementById('modeSelect').value = count.toString();
       toggleCardMode();
-      window.preparePrintLogos().catch(error => {
-        console.error('Preparazione loghi per la stampa fallita.', error);
-      });
       window.print();
     }
 
