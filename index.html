@@ -17,19 +17,20 @@
       --accent-hover: #e5ba73;
       --text: #f4f1ea;
       --text-muted: #8c857b;
+      --gold: #e5ba73;
+      --gold-border: #d4a373;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
 
-    /* Barra superiore mobile (Trasparente/Integrata su Desktop) */
+    /* Barra superiore mobile */
     .mobile-top-bar { display: contents; }
     .mobile-brand { display: none; }
     .mobile-nav-toggle { display: none; }
 
     aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 1000; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
     
-    /* Intestazione Sidebar con Brand + Tasto X Mobile */
     .sidebar-header {
       position: relative;
       display: flex;
@@ -42,7 +43,6 @@
     .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 1.28rem; letter-spacing: 2px; color: var(--accent); text-align: center; background: transparent; border: none; cursor: pointer; }
     .brand:hover, .brand:focus-visible { animation: brand-hover 0.6s ease-in-out; outline: none; }
 
-    /* Tasto X per chiusura menu su Mobile */
     .mobile-close-btn {
       display: none;
       position: absolute;
@@ -165,7 +165,7 @@
     .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
     .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
     
-    .menu-group, #generators-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    .menu-group, #generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
     body.cassiere-mode #tools { margin-bottom: 3rem; }
     .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
     body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
@@ -174,8 +174,7 @@
     header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
     header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 
-    /* Grandezza font sezioni aumentata leggermente per il desktop */
-    .section-title { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 0.8rem; }
+    .section-title { font-family: 'Cinzel', serif; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 0.8rem; }
     
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; padding-top: 0.4rem; }
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
@@ -190,8 +189,43 @@
     .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; margin-bottom: 0.3rem; }
     .card-body p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
 
-    /* CAROSELLI CON FRECCE FLOATING E NASCONDIMENTO DINAMICO */
-    #generators-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
+    /* STILI ESCLUSIVI WIDGET / CARD DORATA CON COLORE LOGO STORE CRAFT (#d4a373 / #e5ba73) */
+    .gold-bf-card {
+      border: 1px solid var(--gold-border) !important;
+      background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%) !important;
+      box-shadow: 0 0 15px rgba(212, 163, 115, 0.25);
+      position: relative;
+    }
+
+    .gold-bf-card:hover {
+      border-color: var(--gold) !important;
+      box-shadow: 0 0 25px rgba(229, 186, 115, 0.45) !important;
+      transform: translateY(-4px);
+    }
+
+    .gold-bf-card h3 {
+      color: var(--gold) !important;
+      text-shadow: 0 0 8px rgba(212, 163, 115, 0.35);
+    }
+
+    .gold-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73);
+      color: #000;
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      z-index: 5;
+    }
+
+    /* CAROSELLI CON FRECCE FLOATING */
+    #generators-section, #seasonal-promo-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
     
     .carousel-wrapper {
       position: relative;
@@ -214,7 +248,6 @@
       display: none;
     }
 
-    /* CAROSELLO SU 2 RIGHE (Desktop / Monitor Grandi) */
     .carousel-container.two-rows {
       display: grid;
       grid-template-rows: repeat(2, auto);
@@ -233,7 +266,7 @@
       border: 1px solid var(--accent);
       color: var(--accent);
       font-size: 1.4rem;
-      display: none; /* Gestito dinamicamente tramite JS */
+      display: none;
       align-items: center;
       justify-content: center;
       cursor: pointer;
@@ -263,7 +296,7 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-between: space-between;
+      justify-content: space-between;
       transition: all 0.25s ease;
       cursor: pointer;
       text-decoration: none;
@@ -329,6 +362,7 @@
     }
 
     body.widget-focused-mode #generators-section,
+    body.widget-focused-mode #seasonal-promo-section,
     body.widget-focused-mode #tickets-section,
     body.widget-focused-mode #dymo-section,
     body.widget-focused-mode #prints-section,
@@ -422,7 +456,7 @@
 
     .tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
 
-    /* STILI ESCLUSIVI WIDGET IVA */
+    /* STILI WIDGET IVA */
     .rate-grid-widget {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -477,12 +511,8 @@
       margin: 0 auto;
     }
 
-    /* =========================================================
-       REGOLE MOBILE (Max-Width 768px)
-       ========================================================= */
+    /* REGOLE MOBILE */
     @media (max-width: 768px) {
-      
-      /* Titoli delle sezioni centrati su mobile */
       .section-title {
         text-align: center;
         font-size: 0.95rem;
@@ -490,7 +520,6 @@
         margin-bottom: 1rem;
       }
 
-      /* CAROSELLO GENERATORE CARTELLI A 2 RIGHE SOVRAPPOSTE (1 COLONNA PER VOLTA SU MOBILE) */
       .carousel-container.two-rows {
         display: grid;
         grid-template-rows: repeat(2, auto);
@@ -503,7 +532,6 @@
         scroll-snap-align: center;
       }
 
-      /* ALTRI CAROSELLI A RIGA SINGOLA SU MOBILE */
       .carousel-container:not(.two-rows) .carousel-card {
         flex: 0 0 100%;
         scroll-snap-align: center;
@@ -621,7 +649,6 @@
 </head>
 <body class="sidebar-collapsed">
 
-<!-- Overlay per sfumare lo sfondo su Mobile quando il menu è aperto -->
 <div class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
 
 <!-- Barra Superiore Mobile -->
@@ -652,8 +679,9 @@
           <a href="cartelli_multireferenza.html" class="nav-btn">🏷️ Cartello Multi Brand Articolo</a>
           <a href="cartellopercentuale.html" class="nav-btn">🏷️ Promo Percentuale</a>
           <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
-          <a href="promo_multibrand.html" class="nav-btn">🏷️ Promo Multibrand</a>
           <a href="magazzino.html" class="nav-btn">🏷️ Cartello Magazzino</a>
+          <a href="promo_multibrand.html" class="nav-btn" style="color: var(--gold); font-weight: 600;">🏷️ Promo Multibrand ✦</a>
+          <a href="blackfriday.html" class="nav-btn" style="color: var(--gold); font-weight: 600;">🏷️ Black Friday ✦</a>
         </div>
       </div>
 
@@ -703,6 +731,7 @@
           <span>Utilità Cassa</span><span class="menu-arrow" aria-hidden="true">⌄</span>
         </button>
         <div class="menu-items is-collapsed" id="menu-tools">
+          <a class="nav-btn" style="color: var(--gold);" onclick="focusWidget(event, 'widget-blackfriday')">🖤 Calc. Black Friday</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
           <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💰 Cambio Valuta</a>
@@ -795,16 +824,6 @@
             </div>
           </a>
 
-          <a href="promo_multibrand.html" class="carousel-card">
-            <div class="preview">
-              <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
-            </div>
-            <div class="card-body">
-              <h3>Promo Multibrand</h3>
-              <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero</p>
-            </div>
-          </a>
-
           <a href="magazzino.html" class="carousel-card">
             <div class="preview">
               <img class="preview-image" src="assets/img/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
@@ -817,6 +836,42 @@
 
         </div>
         <button class="carousel-arrow next" type="button" onclick="scrollCarousel('generators-carousel', 1)" aria-label="Scorri a destra">›</button>
+      </div>
+    </div>
+
+    <!-- SEZIONE PROMO STAGIONALI - CAROSELLO -->
+    <div id="seasonal-promo-section">
+      <div class="section-title">Promo Stagionali</div>
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('seasonal-promo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
+        <div class="carousel-container" id="seasonal-promo-carousel">
+          
+          <!-- CARD DORATA PROMO MULTIBRAND -->
+          <a href="promo_multibrand.html" class="carousel-card gold-bf-card">
+            <span class="gold-badge">PROMO</span>
+            <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
+              <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
+            </div>
+            <div class="card-body">
+              <h3>Promo Multibrand ✦</h3>
+              <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero</p>
+            </div>
+          </a>
+
+          <!-- CARD DORATA BLACK FRIDAY -->
+          <a href="blackfriday.html" class="carousel-card gold-bf-card">
+            <span class="gold-badge">PROMO</span>
+            <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
+              <img class="preview-image" src="assets/img/blackfriday.png" alt="Anteprima Black Friday">
+            </div>
+            <div class="card-body">
+              <h3>Black Friday ✦</h3>
+              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promozionale&nbsp;&nbsp; | &nbsp;&nbsp;Grafica Black Friday Gold</p>
+            </div>
+          </a>
+
+        </div>
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel('seasonal-promo-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
 
@@ -1016,6 +1071,27 @@
     <div class="section-title" id="tools-title">Utilità Cassa</div>
     <div class="tools-grid" id="tools">
       
+      <!-- WIDGET DORATO BLACK FRIDAY -->
+      <div class="widget gold-bf-card" id="widget-blackfriday" onclick="focusWidget(event, 'widget-blackfriday')">
+        <div class="widget-header-controls">
+          <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
+          <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
+        </div>
+        <h3>🖤 Calcolatore Black Friday</h3>
+        <div class="tool-row">
+          <div class="input-group">
+            <span class="input-prefix">€</span>
+            <input type="number" id="bf-orig" class="tool-input" placeholder="Prezzo Listino" oninput="calcBF()">
+          </div>
+          <div class="input-group">
+            <span class="input-prefix">%</span>
+            <input type="number" id="bf-sconto" class="tool-input" placeholder="Sconto BF" value="30" oninput="calcBF()">
+          </div>
+        </div>
+        <button class="tool-btn" style="width:100%; background: linear-gradient(135deg, #b88d4c, #f4e3c9, #e5ba73); color: #000;" onclick="calcBF()">Calcola Prezzo Promo BF</button>
+        <div class="tool-result" id="res-bf" style="color: var(--gold); text-shadow: 0 0 10px rgba(212,163,115,0.35);">€ 0,00</div>
+      </div>
+
       <div class="widget" id="widget-sconto" onclick="focusWidget(event, 'widget-sconto')">
         <div class="widget-header-controls">
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
@@ -1168,7 +1244,6 @@
     let currentIvaRate = 22;
     let qrCodeInstance = null;
 
-    /* GESTIONE DINAMICA DELLE FRECCE DEI CAROSELLI */
     function updateCarouselArrows() {
       document.querySelectorAll('.carousel-wrapper').forEach(wrapper => {
         const container = wrapper.querySelector('.carousel-container');
@@ -1272,7 +1347,6 @@
     }
 
     function setLayoutMode(mode) {
-      // Riporta la pagina all'inizio
       const mainElem = document.getElementById('main-content');
       if (mainElem) mainElem.scrollTo({ top: 0, behavior: 'smooth' });
       else window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1305,6 +1379,19 @@
         }
       }
       setTimeout(updateCarouselArrows, 100);
+    }
+
+    function calcBF() {
+      const orig = parseFloat(document.getElementById('bf-orig').value);
+      const sconto = parseFloat(document.getElementById('bf-sconto').value) || 0;
+      const resElem = document.getElementById('res-bf');
+
+      if (!isNaN(orig) && orig > 0) {
+        const finale = orig - (orig * (sconto / 100));
+        resElem.innerText = `€ ${finale.toFixed(2).replace('.', ',')}`;
+      } else {
+        resElem.innerText = "€ 0,00";
+      }
     }
 
     function calcSconto() {
@@ -1417,7 +1504,7 @@
           }
         }
       } catch (error) {
-        console.warn('Uso tassi di cambio di riserva per offline/errore API:', error);
+        console.warn('Uso tassi di cambio di riserva:', error);
       }
     }
 
