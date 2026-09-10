@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Genera Cartelli - Black Friday Lips</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Franklin Gothic';
+      src: url('assets/fonts/Franklin Gothic.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* Sfondo principale dell'applicazione UI */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Filigrana di sfondo UI */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
+      background-repeat: repeat;
+      background-size: 650px auto;
+      background-position: center;
+      opacity: 0.18;
+      filter: contrast(1.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 10;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #2e2b27;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #d4a373;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #e5ba73;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
+      padding: 0 0 0.6rem;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #2e2b27;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background-color: #0a0908;
+      color: #fff;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
+    }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    /* PULSANTI STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: #ffffff;
+      border: 1px solid #b30000;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #cc0000; }
+
+    .btn-print-single {
+      width: 100%;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 1px solid #004085;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print-single:hover { background-color: #003d80; }
+
+    /* FOGLIO A4 */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 296mm;
+      background-color: #ffffff !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 6mm 10mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* FILIGRANA HALFTONE INTERMEDIA */
+    .print-sheet::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('assets/img/halftone.png') !important;
+      background-repeat: repeat !important;
+      background-size: 800px auto !important;
+      z-index: 1;
+      pointer-events: none;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .print-sheet.double-mode {
+      justify-content: space-between;
+    }
+
+    .print-sheet.single-mode #card1 {
+      margin-bottom: 7mm;
+    }
+
+    /* ELEMENTI GRAFICI E CARTELLO */
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 136mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4mm 0;
+      flex-shrink: 0;
+      background: transparent;
+    }
+
+    .card.disabled {
+      display: none !important;
+    }
+
+    .cut-line {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      border-top: 1px dashed #bbb;
+      margin: 1mm 0;
+      flex-shrink: 0;
+    }
+
+    /* CONTENITORE PREZZO E IMMAGINE LIPS */
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-top: 1mm;
+    }
+
+    .euro-title {
+      font-family: 'Franklin Gothic', Arial, sans-serif;
+      font-size: 4.2rem;
+      font-weight: 700;
+      color: #000000;
+      line-height: 0.85;
+      text-transform: uppercase;
+      letter-spacing: -0.067em; /* Photoshop tracking -67 */
+    }
+
+    .price-value {
+      font-family: 'Franklin Gothic', Arial, sans-serif;
+      font-size: 6.8rem;
+      font-weight: 700;
+      color: #e89006;
+      line-height: 0.9;
+      letter-spacing: -0.067em; /* Photoshop tracking -67 */
+      white-space: nowrap;
+    }
+
+    .lips-wrapper {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2mm;
+    }
+
+    /* Ridotta la dimensione massima dell'immagine per rispecchiare l'anteprima lipsthumb.png */
+    .lips-wrapper img {
+      max-width: 65%;
+      max-height: 85%;
+      object-fit: contain;
+    }
+
+    /* NAVIGAZIONE UI */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #d4a373;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #e5ba73;
+      transform: scale(1.1);
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #e5ba73;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body::before { display: none !important; }
+
+      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 0 auto !important;
+        padding: 6mm 10mm;
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background-color: #ffffff !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .print-sheet::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('assets/img/halftone.png') !important;
+        background-repeat: repeat !important;
+        background-size: 800px auto !important;
+        z-index: 1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pulsante Chiudi e Menu Fluttuante -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">BLACK FRIDAY // LIPS</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <div class="controls">
+      <h2>BLACK FRIDAY LIPS</h2>
+
+      <div class="section-title">CARTELLO 1 (Superiore)</div>
+      <div class="form-group">
+        <label>Prezzo (Es. 20,00):</label>
+        <input type="text" id="price1" value="20,00" placeholder="Es. 20,00" oninput="updateCards()">
+      </div>
+
+      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+      <div id="sectionCard2">
+        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+        <div class="form-group">
+          <label>Prezzo (Es. 20,00):</label>
+          <input type="text" id="price2" value="20,00" placeholder="Es. 20,00" oninput="updateCards()">
+        </div>
+      </div>
+
+      <div class="section-title">IMPOSTAZIONI STAMPA</div>
+      <div class="form-group">
+        <label>Modalità Cartelli da Stampare:</label>
+        <select id="modeSelect" onchange="toggleCardMode()">
+          <option value="2">2 Cartelli (Foglio Intero A4)</option>
+          <option value="1">1 Solo Cartello (Superiore)</option>
+        </select>
+      </div>
+
+      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="price-block">
+        <div class="euro-title">EURO</div>
+        <div class="price-value" id="priceDisplay1">20,00</div>
+      </div>
+      <div class="lips-wrapper">
+        <img src="assets/img/lips.png" alt="Black Friday Lips">
+      </div>
+    </div>
+
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="price-block">
+        <div class="euro-title">EURO</div>
+        <div class="price-value" id="priceDisplay2">20,00</div>
+      </div>
+      <div class="lips-wrapper">
+        <img src="assets/img/lips.png" alt="Black Friday Lips">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function copyCard1ToCard2() {
+      document.getElementById('price2').value = document.getElementById('price1').value;
+      updateCards();
+    }
+
+    function toggleCardMode() {
+      const count = document.getElementById('modeSelect').value;
+      const card2 = document.getElementById('card2');
+      const section2 = document.getElementById('sectionCard2');
+      const btnCopy = document.getElementById('btnCopy');
+      const sheet = document.getElementById('printSheet');
+
+      if (count === "1") {
+        card2.classList.add('disabled');
+        section2.style.display = 'none';
+        btnCopy.style.display = 'none';
+        sheet.classList.remove('double-mode');
+        sheet.classList.add('single-mode');
+      } else {
+        card2.classList.remove('disabled');
+        section2.style.display = 'block';
+        btnCopy.style.display = 'block';
+        sheet.classList.remove('single-mode');
+        sheet.classList.add('double-mode');
+      }
+    }
+
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = count.toString();
+      toggleCardMode();
+      window.print();
+    }
+
+    /* SCALATURA DINAMICA FONT DEL PREZZO NUMERICO */
+    function adjustPriceFontSize(priceEl, text) {
+      const len = text.length;
+      let fontSize = "6.8rem";
+
+      if (len <= 5) {
+        fontSize = "6.8rem";
+      } else if (len <= 7) {
+        fontSize = "5.8rem";
+      } else if (len <= 9) {
+        fontSize = "4.8rem";
+      } else {
+        fontSize = "3.8rem";
+      }
+
+      priceEl.style.fontSize = fontSize;
+    }
+
+    function updateCards() {
+      for (let i = 1; i <= 2; i++) {
+        let rawPrice = document.getElementById('price' + i).value.trim();
+        // Rimuove l'eventuale simbolo dell'euro inserito dall'utente
+        rawPrice = rawPrice.replace(/€/g, '').trim();
+        
+        const priceDisplay = document.getElementById('priceDisplay' + i);
+        priceDisplay.innerText = rawPrice;
+        adjustPriceFontSize(priceDisplay, rawPrice);
+      }
+    }
+
+    window.onload = updateCards;
+  </script>
+</body>
+</html>
