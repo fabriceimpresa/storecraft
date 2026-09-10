@@ -6,8 +6,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
   <!-- Inclusione script centralizzato loghi -->
   <script src="assets/js/logos.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd.otf') format('opentype'); font-style: normal; font-weight: 400; font-display: block; }
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype'); font-style: italic; font-weight: 400; font-display: block; }
@@ -501,9 +499,7 @@
       document.getElementById('card2').classList.toggle('disabled', single);
     }
 
-    // Rileva Safari desktop (esclude iOS/iPadOS, dove il download/anteprima PDF
-    // funziona diversamente ed è gestito meglio dalla stampa nativa mobile,
-    // che infatti già funziona correttamente).
+    // Rileva Safari desktop (usato solo per l'avviso browser consigliato).
     function isSafariDesktopBrowser() {
       const ua = navigator.userAgent;
       const isSafari = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(ua);
@@ -511,93 +507,15 @@
       return isSafari && !isIOS;
     }
 
-    // Su Safari desktop i filtri CSS applicati ai loghi non vengono rispettati
-    // in stampa (restano neri), anche se l'anteprima a schermo è corretta.
-    // Soluzione: invece di stampare, generiamo un PDF a partire da uno
-    // screenshot esatto dell'anteprima (già colorata bene) e lo apriamo in una
-    // nuova scheda; da lì l'utente può stampare o salvare con il colore giusto.
+    // Su Safari desktop l'export PDF via html2canvas si blocca spesso
+    // (canvas "tainted"/fetch bloccato su file://), risultando meno
+    // affidabile della stampa nativa. Dato che l'utente viene già avvisato
+    // con un popup di stampare preferibilmente da Chrome desktop, si usa
+    // sempre la stampa nativa su tutti i browser, Safari incluso.
     function printSheet(count) {
       document.getElementById('modeSelect').value = String(count);
       toggleCardMode();
-
-      if (!isSafariDesktopBrowser()) {
-        // Chrome/Firefox/Edge/Safari mobile stampano correttamente i filtri CSS.
-        window.print();
-        return;
-      }
-
-      exportPdf(count);
-    }
-
-    // Converte tutte le <img> di un elemento in data URL (base64), leggendo il
-    // file direttamente via fetch+FileReader. Necessario su Safari, che
-    // considera "cross-origin" (canvas "tainted") anche immagini locali
-    // caricate con percorso relativo da file://, bloccando poi toDataURL().
-    async function inlineImagesAsDataUrls(rootEl) {
-      const imgElements = Array.from(rootEl.querySelectorAll('img'));
-      const originalSrcs = new Map();
-      await Promise.all(imgElements.map(async img => {
-        const currentSrc = img.src;
-        if (!currentSrc || currentSrc.startsWith('data:')) return;
-        try {
-          const response = await fetch(currentSrc);
-          const blob = await response.blob();
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-          originalSrcs.set(img, currentSrc);
-          img.src = dataUrl;
-        } catch (err) {
-          console.warn('Impossibile convertire il logo in base64:', currentSrc, err);
-        }
-      }));
-      return () => {
-        originalSrcs.forEach((originalSrc, img) => { img.src = originalSrc; });
-      };
-    }
-
-    function exportPdf(count) {
-      const button = document.getElementById(count === 1 ? 'btnPrint1' : 'btnPrint2');
-      const originalLabel = button ? button.textContent : '';
-      if (button) { button.disabled = true; button.textContent = '⏳ Generazione PDF...'; }
-
-      const printSheetEl = document.getElementById('printSheet');
-      let restoreImages = () => {};
-
-      inlineImagesAsDataUrls(printSheetEl)
-        .then(restoreFn => {
-          restoreImages = restoreFn;
-          return html2canvas(printSheetEl, { scale: 3, backgroundColor: '#ffffff', useCORS: true });
-        })
-        .then(canvas => {
-          restoreImages();
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-          const imgData = canvas.toDataURL('image/png');
-          pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
-          pdf.output('dataurlnewwindow', { filename: 'cartello-promo-multibrand.pdf' });
-        })
-        .catch(err => {
-          restoreImages();
-          console.error('Impossibile generare il PDF:', err);
-          alert('Non è stato possibile generare il PDF. Riprova.');
-        })
-        .finally(() => {
-          if (button) { button.disabled = false; button.textContent = originalLabel; }
-        });
-    }
-
-    // Su Safari desktop sostituiamo le etichette dei pulsanti da "Stampa" a
-    // "Esporta PDF", per riflettere il comportamento realmente eseguito.
-    function adaptPrintButtonsForBrowser() {
-      if (!isSafariDesktopBrowser()) return;
-      const btn2 = document.getElementById('btnPrint2');
-      const btn1 = document.getElementById('btnPrint1');
-      if (btn2) btn2.textContent = '📄 Esporta PDF 2 Cartelli (A4)';
-      if (btn1) btn1.textContent = '📄 Esporta PDF SOLO 1 Cartello';
+      window.print();
     }
 
     // Rileva Chrome su mobile (Android/iOS): su questi browser la resa dei
@@ -626,7 +544,6 @@
     createLogoControls(); 
     createCustomLogoControls(); 
     updateCards();
-    adaptPrintButtonsForBrowser();
     showBrowserWarningIfNeeded();
   </script>
 </body>
