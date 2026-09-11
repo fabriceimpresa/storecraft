@@ -322,6 +322,29 @@
       padding: 0.55rem 0.5rem;
     }
     
+    /* FIX SPAZIATURA SAFARI PER SEZIONE PROMO STAGIONALI */
+    @supports (-webkit-hyphens: none) {
+      #seasonal-promo-carousel {
+        gap: 0 !important;
+      }
+      #seasonal-promo-carousel .carousel-card {
+        margin-right: 1.5rem !important;
+      }
+      #seasonal-promo-carousel .carousel-card:last-child {
+        margin-right: 0 !important;
+      }
+      @media (max-width: 768px) {
+        #seasonal-promo-carousel .carousel-card {
+          flex: 0 0 calc(100% - 1.5rem) !important;
+          margin-right: 1.5rem !important;
+        }
+        #seasonal-promo-carousel .carousel-card:last-child {
+          flex: 0 0 100% !important;
+          margin-right: 0 !important;
+        }
+      }
+    }
+
     /* WIDGET ED ESPANSIONE ANIMATA */
     .widget { 
       background: var(--card); 
