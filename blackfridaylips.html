@@ -180,7 +180,7 @@
       print-color-adjust: exact !important;
     }
 
-    /* FILIGRANA HALFTONE INTERMEDIA */
+    /* FILIGRANA HALFTONE INTERMEDIA (SCHERMO ORIGINAL) */
     .print-sheet::before {
       content: "";
       position: absolute;
@@ -241,25 +241,27 @@
       justify-content: center;
       text-align: center;
       margin-top: 1mm;
+      height: 42mm; /* Altezza fissa per mantenere fissa l'immagine sottostante */
+      flex-shrink: 0;
     }
 
     .euro-title {
       font-family: 'Franklin Gothic', Arial, sans-serif;
-      font-size: 4.2rem;
+      font-size: 5.65rem;
       font-weight: 700;
       color: #000000;
       line-height: 0.85;
       text-transform: uppercase;
-      letter-spacing: -0.067em; /* Photoshop tracking -67 */
+      letter-spacing: -0.04em;
     }
 
     .price-value {
       font-family: 'Franklin Gothic', Arial, sans-serif;
-      font-size: 6.8rem;
+      font-size: 5.55rem;
       font-weight: 700;
       color: #e89006;
       line-height: 0.9;
-      letter-spacing: -0.067em; /* Photoshop tracking -67 */
+      letter-spacing: -0.067em;
       white-space: nowrap;
     }
 
@@ -272,7 +274,6 @@
       margin-top: 2mm;
     }
 
-    /* Ridotta la dimensione massima dell'immagine per rispecchiare l'anteprima lipsthumb.png */
     .lips-wrapper img {
       max-width: 65%;
       max-height: 85%;
@@ -389,6 +390,7 @@
         print-color-adjust: exact !important;
       }
 
+      /* FILIGRANA IN STAMPA (Ridotta visibilità del 25%) */
       .print-sheet::before {
         content: "";
         position: absolute;
@@ -399,6 +401,8 @@
         background-image: url('assets/img/halftone.png') !important;
         background-repeat: repeat !important;
         background-size: 800px auto !important;
+        opacity: 0.75 !important;
+        filter: brightness(0.85) contrast(1.1) !important;
         z-index: 1 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
@@ -516,16 +520,16 @@
     /* SCALATURA DINAMICA FONT DEL PREZZO NUMERICO */
     function adjustPriceFontSize(priceEl, text) {
       const len = text.length;
-      let fontSize = "6.8rem";
+      let fontSize = "5.55rem";
 
-      if (len <= 5) {
-        fontSize = "6.8rem";
-      } else if (len <= 7) {
-        fontSize = "5.8rem";
-      } else if (len <= 9) {
+      if (len <= 6) {
+        fontSize = "5.55rem"; /* Fino a 6 caratteri (es. 100,00) mantiene la dimensione piena */
+      } else if (len <= 8) {
         fontSize = "4.8rem";
+      } else if (len <= 10) {
+        fontSize = "4.0rem";
       } else {
-        fontSize = "3.8rem";
+        fontSize = "3.2rem";
       }
 
       priceEl.style.fontSize = fontSize;
@@ -534,7 +538,6 @@
     function updateCards() {
       for (let i = 1; i <= 2; i++) {
         let rawPrice = document.getElementById('price' + i).value.trim();
-        // Rimuove l'eventuale simbolo dell'euro inserito dall'utente
         rawPrice = rawPrice.replace(/€/g, '').trim();
         
         const priceDisplay = document.getElementById('priceDisplay' + i);

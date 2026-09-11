@@ -242,7 +242,7 @@
       print-color-adjust: exact !important;
     }
 
-    /* FILIGRANA HALFTONE INTERMEDIA */
+    /* FILIGRANA HALFTONE INTERMEDIA (SCHERMO ORIGINAL) */
     .print-sheet::before {
       content: "";
       position: absolute;
@@ -395,7 +395,7 @@
       width: 100%;
       color: #ffffff;
       opacity: 0;
-      padding-left: 15%; /* ALLINEATO A SINISTRA COL LOGO/DESCRIZIONE (15%) */
+      padding-left: 15%;
       transition: all 0.3s ease;
     }
 
@@ -440,7 +440,7 @@
 
     /* MODIFICA ESCLUSIVA: QUANDO SONO ATTIVE SIA DESCRIZIONE CHE SCONTISTICA */
     .card.has-desc.has-discount .side-brand-wrapper {
-      transform: translateY(6px); /* FA SCENDERE IL CAMPO DESCRIZIONE VERSO LA SCONTISTICA */
+      transform: translateY(6px);
     }
 
     /* LATO DESTRO: PREZZO FINALE */
@@ -574,6 +574,7 @@
         print-color-adjust: exact !important;
       }
 
+      /* FILIGRANA IN STAMPA (Ridotta visibilità del 25%) */
       .print-sheet::before {
         content: "";
         position: absolute;
@@ -584,6 +585,8 @@
         background-image: url('assets/img/halftone.png') !important;
         background-repeat: repeat !important;
         background-size: 800px auto !important;
+        opacity: 0.75 !important;
+        filter: brightness(0.85) contrast(1.1) !important;
         z-index: 1 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
