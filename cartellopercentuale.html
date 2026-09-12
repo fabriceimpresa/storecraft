@@ -237,7 +237,7 @@
       position: relative;
       z-index: 1;
       width: 210mm;
-      height: 296mm;
+      height: 297mm;
       background: white;
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
       padding: 8mm 12mm;
@@ -266,15 +266,50 @@
       flex-shrink: 0;
     }
 
+    .card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* FILIGRANA BLACK FRIDAY */
+    .card.bf-active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      background-image: url('assets/img/halftone.png');
+      background-repeat: repeat;
+      background-position: center;
+      background-size: cover;
+      z-index: 0;
+      pointer-events: none;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    #card1.bf-active::before {
+      top: 0;
+      height: 50%;
+    }
+
+    #card2.bf-active::before {
+      top: 50%;
+      bottom: 0;
+    }
+
     .card.disabled {
       display: none !important;
     }
 
     .cut-line {
-      width: 100%;
+      position: absolute;
+      top: 50%;
+      left: 12mm;
+      right: 12mm;
       border-top: 1px dashed #ccc;
-      margin: 1mm 0;
-      flex-shrink: 0;
+      transform: translateY(-50%);
+      z-index: 10;
+      pointer-events: none;
     }
 
     .header-row {
@@ -306,6 +341,15 @@
     .claim-flag-left { transform: translateX(-3mm); }
     .claim-flag-right { transform: translateX(3mm); }
 
+    .claim-flag-bf {
+      width: 23.1mm;
+      max-height: 14.3mm;
+      object-fit: contain;
+    }
+
+    .claim-flag-bf.claim-flag-left { transform: translateX(-3mm) scale(1.1); }
+    .claim-flag-bf.claim-flag-right { transform: translateX(3mm) scale(1.1); }
+
     .red-box {
       width: 54%;
       height: 28mm;
@@ -318,6 +362,7 @@
       padding: 2mm;
       flex-shrink: 0;
       overflow: hidden;
+      transition: background-color 0.2s ease-in-out;
     }
 
     /* LOGHI E 2° BRAND TOGGLE */
@@ -453,6 +498,42 @@
       box-shadow: 0 5px 16px rgba(0,0,0,0.7);
     }
 
+    /* PULSANTI BLACK FRIDAY */
+    .black-friday-btn {
+      position: fixed;
+      top: 8rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 6px;
+      background: #ffffff;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .black-friday-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .black-friday-btn:hover,
+    .black-friday-btn[aria-pressed="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    .black-friday-btn-lower {
+      top: calc(50% + 4.5rem);
+    }
+
     .floating-nav-box {
       position: fixed;
       bottom: 1.5rem;
@@ -502,8 +583,8 @@
     @media print {
       html, body {
         width: 210mm;
-        height: 291mm !important;
-        max-height: 291mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
         background: white !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -514,15 +595,15 @@
 
       body::before { display: none !important; }
 
-      .sidebar, .app-close-btn, .made-in-italy-btn, .floating-nav-box { display: none !important; }
+      .sidebar, .app-close-btn, .made-in-italy-btn, .black-friday-btn, .floating-nav-box { display: none !important; }
 
       .print-sheet {
         box-shadow: none;
-        margin: 5mm auto 0 !important;
+        margin: 0 auto !important;
         padding: 8mm 10mm;
         width: 210mm;
-        height: 291mm !important;
-        max-height: 291mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
         page-break-after: avoid !important;
         page-break-before: avoid !important;
         page-break-inside: avoid !important;
@@ -530,6 +611,18 @@
         break-before: avoid !important;
         break-inside: avoid !important;
         overflow: hidden !important;
+      }
+
+      .cut-line {
+        left: 10mm !important;
+        right: 10mm !important;
+      }
+
+      .card.bf-active::before {
+        left: 0 !important;
+        right: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
 
       .red-box { 
@@ -549,11 +642,19 @@
 
   <!-- Pulsanti e Riquadri Navigazione UI -->
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  
   <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
     <img src="assets/img/madeinitaly.png" alt="Made in Italy">
   </button>
   <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
     <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+
+  <button class="black-friday-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva il tema Black Friday del cartello superiore" aria-pressed="false" onclick="toggleBlackFriday(1)">
+    <img src="assets/img/tema_blackfriday.png" alt="Black Friday">
+  </button>
+  <button class="black-friday-btn black-friday-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva il tema Black Friday del cartello inferiore" aria-pressed="false" onclick="toggleBlackFriday(2)">
+    <img src="assets/img/tema_blackfriday.png" alt="Black Friday">
   </button>
 
   <div class="floating-nav-box">
@@ -690,7 +791,7 @@
 
       <div class="card-discount-giant" id="discountDisp1">-50%</div>
 
-      <div class="card-footer"><img class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet"></div>
+      <div class="card-footer"><img class="luxuryLogo" id="footerLogo1" src="assets/img/footer.png" alt="Luxury Outlet"></div>
     </div>
 
     <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
@@ -711,12 +812,13 @@
 
       <div class="card-discount-giant" id="discountDisp2">-50%</div>
 
-      <div class="card-footer"><img class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet"></div>
+      <div class="card-footer"><img class="luxuryLogo" id="footerLogo2" src="assets/img/footer.png" alt="Luxury Outlet"></div>
     </div>
   </div>
 
   <script>
     const madeInItalyClaimsActive = { 1: false, 2: false };
+    const blackFridayActive = { 1: false, 2: false };
 
     const LOGO_PATH = "assets/logos/";
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
@@ -747,7 +849,31 @@
 
     function toggleMadeInItaly(cardIndex) {
       madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+
+      if (madeInItalyClaimsActive[cardIndex] && blackFridayActive[cardIndex]) {
+        blackFridayActive[cardIndex] = false;
+        const bfBtn = document.querySelector('.black-friday-btn[data-card-index="' + cardIndex + '"]');
+        if (bfBtn) bfBtn.setAttribute('aria-pressed', 'false');
+      }
+
       document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
+      updateCards();
+    }
+
+    function toggleBlackFriday(cardIndex) {
+      blackFridayActive[cardIndex] = !blackFridayActive[cardIndex];
+
+      if (blackFridayActive[cardIndex] && madeInItalyClaimsActive[cardIndex]) {
+        madeInItalyClaimsActive[cardIndex] = false;
+        const miaBtn = document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]');
+        if (miaBtn) miaBtn.setAttribute('aria-pressed', 'false');
+      }
+
+      const bfBtn = document.querySelector('.black-friday-btn[data-card-index="' + cardIndex + '"]');
+      if (bfBtn) {
+        bfBtn.setAttribute('aria-pressed', blackFridayActive[cardIndex].toString());
+      }
+
       updateCards();
     }
 
@@ -794,13 +920,15 @@
       const cSelect1 = document.getElementById('customBrandSelect1');
       const cSelect2 = document.getElementById('customBrandSelect2');
       const cSelect1Bis = document.getElementById('customBrandSelect1Bis');
-      const cSelect2Bis = document.getElementById('customBrandSelect2Bis');
+      const cSelect2Bis = document.getElementById('customBrandSelect1Bis'); // fix scope if needed, keeping consistency
       const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+
+      const cSelect2BisReal = document.getElementById('customBrandSelect2Bis');
 
       cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
       cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
       cSelect1Bis.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
-      cSelect2Bis.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      if(cSelect2BisReal) cSelect2BisReal.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
 
       customLogos.forEach(item => {
         const opt1 = document.createElement('option');
@@ -818,10 +946,12 @@
         opt1Bis.textContent = "★ " + item.name;
         cSelect1Bis.appendChild(opt1Bis);
 
-        const opt2Bis = document.createElement('option');
-        opt2Bis.value = item.data;
-        opt2Bis.textContent = "★ " + item.name;
-        cSelect2Bis.appendChild(opt2Bis);
+        if(cSelect2BisReal) {
+          const opt2Bis = document.createElement('option');
+          opt2Bis.value = item.data;
+          opt2Bis.textContent = "★ " + item.name;
+          cSelect2BisReal.appendChild(opt2Bis);
+        }
       });
     }
 
@@ -846,7 +976,6 @@
     }
 
     function copyCard1ToCard2() {
-      // Brand
       document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
       document.getElementById('brandSelect2Bis').value = document.getElementById('brandSelect1Bis').value;
       document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
@@ -861,7 +990,6 @@
         toggleSecondBrand();
       }
 
-      // Claims & Sottotitoli & Sconto
       document.getElementById('left2').value = document.getElementById('left1').value;
       document.getElementById('right2').value = document.getElementById('right1').value;
       document.getElementById('sub2').value = document.getElementById('sub1').value;
@@ -901,35 +1029,79 @@
     function updateCards() {
       const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
       const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      const bfMarkupLeft = '<img class="claim-flag claim-flag-bf claim-flag-left" src="assets/img/tema_blackfriday.png" alt="Black Friday">';
+      const bfMarkupRight = '<img class="claim-flag claim-flag-bf claim-flag-right" src="assets/img/tema_blackfriday.png" alt="Black Friday">';
 
       // --- CARTELLO 1 ---
+      const card1 = document.getElementById('card1');
       const b1 = document.getElementById('brandSelect1').value;
       const cb1 = document.getElementById('customBrandSelect1').value;
       const b1Bis = document.getElementById('brandSelect1Bis').value;
       const cb1Bis = document.getElementById('customBrandSelect1Bis').value;
 
       PrintLogoColors.setBrandLogoSrc('cardLogo1', cb1, b1, DEFAULT_LOGO, 'white');
-
       PrintLogoColors.setBrandLogoSrc('cardLogo1Bis', cb1Bis, b1Bis, DEFAULT_LOGO, 'white');
 
-      document.getElementById('headLeft1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>');
-      document.getElementById('headRight1').innerHTML = madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>');
+      const redBox1 = document.getElementById('redBox1');
+      const footerLogo1 = document.getElementById('footerLogo1');
+
+      if (blackFridayActive[1]) {
+        card1.classList.add('bf-active');
+        redBox1.style.setProperty('background-color', '#e89106', 'important');
+        if (footerLogo1) footerLogo1.src = 'assets/img/footer_orange.png';
+      } else {
+        card1.classList.remove('bf-active');
+        redBox1.style.setProperty('background-color', '#e00000', 'important');
+        if (footerLogo1) footerLogo1.src = 'assets/img/footer.png';
+      }
+
+      if (blackFridayActive[1]) {
+        document.getElementById('headLeft1').innerHTML = bfMarkupLeft;
+        document.getElementById('headRight1').innerHTML = bfMarkupRight;
+      } else if (madeInItalyClaimsActive[1]) {
+        document.getElementById('headLeft1').innerHTML = claimMarkupLeft;
+        document.getElementById('headRight1').innerHTML = claimMarkupRight;
+      } else {
+        document.getElementById('headLeft1').innerHTML = document.getElementById('left1').value.replace(' ', '<br>');
+        document.getElementById('headRight1').innerHTML = document.getElementById('right1').value.replace(' ', '<br>');
+      }
 
       document.getElementById('subDisp1').innerText = document.getElementById('sub1').value;
       document.getElementById('discountDisp1').innerText = document.getElementById('discount1').value;
 
       // --- CARTELLO 2 ---
+      const card2 = document.getElementById('card2');
       const b2 = document.getElementById('brandSelect2').value;
       const cb2 = document.getElementById('customBrandSelect2').value;
       const b2Bis = document.getElementById('brandSelect2Bis').value;
       const cb2Bis = document.getElementById('customBrandSelect2Bis').value;
 
       PrintLogoColors.setBrandLogoSrc('cardLogo2', cb2, b2, DEFAULT_LOGO, 'white');
-
       PrintLogoColors.setBrandLogoSrc('cardLogo2Bis', cb2Bis, b2Bis, DEFAULT_LOGO, 'white');
 
-      document.getElementById('headLeft2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>');
-      document.getElementById('headRight2').innerHTML = madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>');
+      const redBox2 = document.getElementById('redBox2');
+      const footerLogo2 = document.getElementById('footerLogo2');
+
+      if (blackFridayActive[2]) {
+        card2.classList.add('bf-active');
+        redBox2.style.setProperty('background-color', '#e89106', 'important');
+        if (footerLogo2) footerLogo2.src = 'assets/img/footer_orange.png';
+      } else {
+        card2.classList.remove('bf-active');
+        redBox2.style.setProperty('background-color', '#e00000', 'important');
+        if (footerLogo2) footerLogo2.src = 'assets/img/footer.png';
+      }
+
+      if (blackFridayActive[2]) {
+        document.getElementById('headLeft2').innerHTML = bfMarkupLeft;
+        document.getElementById('headRight2').innerHTML = bfMarkupRight;
+      } else if (madeInItalyClaimsActive[2]) {
+        document.getElementById('headLeft2').innerHTML = claimMarkupLeft;
+        document.getElementById('headRight2').innerHTML = claimMarkupRight;
+      } else {
+        document.getElementById('headLeft2').innerHTML = document.getElementById('left2').value.replace(' ', '<br>');
+        document.getElementById('headRight2').innerHTML = document.getElementById('right2').value.replace(' ', '<br>');
+      }
 
       document.getElementById('subDisp2').innerText = document.getElementById('sub2').value;
       document.getElementById('discountDisp2').innerText = document.getElementById('discount2').value;
