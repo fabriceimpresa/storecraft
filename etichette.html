@@ -235,6 +235,28 @@
     
     .tpl-tagliedoppiacifra .footer-text { font-size: 19px; font-weight: 400; letter-spacing: 0.3px; text-transform: uppercase; text-align: right; margin-bottom: 4px; }
 
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b48b37;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
     /* NAV MOBILE PULSANTE HEADER */
     .mobile-nav-btn { display: none; }
 
@@ -410,6 +432,7 @@
   </style>
 </head>
 <body>
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
 
   <aside>
     <div>

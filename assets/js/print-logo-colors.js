@@ -16,7 +16,7 @@
   let customLogoCache = new Map(); // chiave: `${sourceData}|${colorKey}`
 
   function getOfficialPrintLogoPath(logoFileName, color) {
-    return PRINT_LOGOS_PATH + color + logoFileName;
+    return PRINT_LOGOS_PATH + color + getGeneratedLogoFileName(logoFileName);
   }
 
   // Se un logo personalizzato viene rinominato/eliminato in un'altra scheda
@@ -69,6 +69,10 @@
     red: [224, 0, 0],
     gold: [180, 139, 55]
   };
+
+  function getGeneratedLogoFileName(logoFileName) {
+    return logoFileName.replace(/\.[^.]+$/, '.png');
+  }
 
   // Converte una stringa colore in [r,g,b]. Supporta i nomi predefiniti
   // (white/black/red/gold, che hanno anche i file pre-generati) e qualunque

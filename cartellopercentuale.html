@@ -404,6 +404,11 @@
       letter-spacing: -0.3px;
     }
 
+    /* Safari rende il margine negativo troppo compatto rispetto alla percentuale. */
+    .safari-browser .card-subtitle {
+      margin-bottom: 2mm;
+    }
+
     /* SCONTO GIGANTE */
     .card-discount-giant {
       font-family: 'Bodoni Project', Didot, 'Garamond', serif;
@@ -1107,6 +1112,16 @@
       document.getElementById('discountDisp2').innerText = document.getElementById('discount2').value;
     }
 
+    function applySafariSpacingFix() {
+      const userAgent = navigator.userAgent;
+      const isSafari = /Safari/i.test(userAgent) && !/Chrome|Chromium|CriOS|Edg|OPR|Brave|Android/i.test(userAgent);
+
+      if (isSafari) {
+        document.documentElement.classList.add('safari-browser');
+      }
+    }
+
+    applySafariSpacingFix();
     window.onload = loadLocalLogos;
   </script>
 </body>
