@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>GESTIONE LOGHI (uso interno)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #212529;
+    color: #fff;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 900px;
+    background: #181a1d;
+    border: 1px solid #d4a373;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    color: #e5ba73;
+    border-bottom: 2px solid #d4a373;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 20px;
+  }
+
+  .folder-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #26292e;
+    border: 1px solid #4a4237;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .folder-status { flex-grow: 1; font-size: 0.85rem; color: #ccc; }
+  .folder-status.ok { color: #6fbf73; }
+  .folder-status.err { color: #e06666; }
+
+  .btn-folder {
+    background: #d4a373;
+    color: #181a1d;
+    border: none;
+    padding: 8px 14px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-folder:hover { background: #e5ba73; }
+
+  .search-bar { margin-bottom: 16px; }
+  .search-bar input {
+    width: 100%;
+    padding: 9px 12px;
+    background: #26292e;
+    border: 1px solid #4a4237;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .count-info {
+    font-size: 0.78rem;
+    color: #999;
+    margin-bottom: 12px;
+  }
+
+  .logo-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .logo-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #26292e;
+    padding: 10px 15px;
+    border-radius: 4px;
+    border-left: 3px solid #d4a373;
+    flex-wrap: wrap;
+  }
+
+  .logo-item-preview {
+    width: 90px;
+    height: 45px;
+    background: repeating-conic-gradient(#3a3f47 0% 25%, #26292e 0% 50%) 50% / 14px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    padding: 4px;
+    flex-shrink: 0;
+    border: 1px solid #4a4237;
+  }
+  .logo-item-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+  .logo-item-name {
+    flex-grow: 1;
+    min-width: 160px;
+    font-size: 0.9rem;
+    color: #fff;
+    word-break: break-word;
+  }
+
+  .row-status {
+    font-size: 0.78rem;
+    font-weight: bold;
+    min-width: 90px;
+  }
+  .row-status.deleted { color: #6fbf73; }
+  .row-status.deleting { color: #e5ba73; }
+  .row-status.error { color: #e06666; }
+
+  .btn-delete-row {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .btn-delete-row:hover { background: #c82333; }
+  .btn-delete-row:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .empty-msg { font-size: 0.8rem; color: #888; padding: 10px 0; }
+
+  .app-close-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 36px;
+    height: 36px;
+    background-color: #d4a373;
+    color: #000;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  /* MODAL DI CONFERMA ELIMINAZIONE */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.65);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    position: relative;
+    width: 90%;
+    max-width: 420px;
+    background: #181a1d;
+    border: 1px solid #d4a373;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    padding: 30px 24px 20px;
+    text-align: center;
+  }
+
+  .modal-warning-icon {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 52px;
+    height: 52px;
+    background-color: #dc3545;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    border: 2px solid #181a1d;
+  }
+
+  .modal-message {
+    color: #fff;
+    font-size: 0.95rem;
+    margin-top: 10px;
+    margin-bottom: 22px;
+    line-height: 1.4;
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    border: none;
+    border-radius: 4px;
+    padding: 9px 18px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .modal-btn-cancel { background: #3a3f47; color: #fff; }
+  .modal-btn-cancel:hover { background: #4a505a; }
+  .modal-btn-confirm { background: #dc3545; color: #fff; }
+  .modal-btn-confirm:hover { background: #c82333; }
+</style>
+</head>
+<body>
+
+  <a href="index.html" class="app-close-btn" title="Torna all'index">✕</a>
+
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+      <div class="modal-warning-icon">⚠</div>
+      <p class="modal-message" id="deleteModalMessage"></p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="resolveDelete(false)">Annulla</button>
+        <button type="button" class="modal-btn modal-btn-confirm" onclick="resolveDelete(true)">Elimina Logo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>GESTIONE LOGHI UFFICIALI</h1>
+    <p class="subtitle">Pagina ad uso interno: elimina loghi da assets/logos, dalle 4 varianti colorate in assets/img/printlogos e dall'elenco assets/js/logos.js</p>
+
+    <div class="folder-bar">
+      <span class="folder-status" id="folderStatus">Cartella progetto non collegata.</span>
+      <button type="button" class="btn-folder" onclick="connectProjectFolder()">📁 Collega cartella progetto</button>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Cerca logo per nome..." oninput="renderList()">
+    </div>
+
+    <p class="count-info" id="countInfo"></p>
+
+    <div class="logo-list" id="logoList">
+      <p class="empty-msg" id="emptyMsg">Collega la cartella del progetto per vedere l'elenco dei loghi.</p>
+    </div>
+  </div>
+
+<script>
+  let projectDirHandle = null;
+  let logosDirHandle = null;
+  let printlogosDirHandle = null;
+  let jsDirHandle = null;
+  let logoEntries = []; // { name, previewUrl, status }
+  let pendingDelete = null; // { resolve }
+
+  const folderStatus = document.getElementById('folderStatus');
+
+  function fsaSupported() {
+    return typeof window.showDirectoryPicker === 'function';
+  }
+
+  async function connectProjectFolder() {
+    if (!fsaSupported()) {
+      alert('Questa funzione richiede Chrome o Edge su desktop (File System Access API non disponibile in questo browser).');
+      return;
+    }
+    try {
+      projectDirHandle = await window.showDirectoryPicker();
+      const assetsDir = await projectDirHandle.getDirectoryHandle('assets', { create: true });
+      logosDirHandle = await assetsDir.getDirectoryHandle('logos', { create: true });
+      const imgDir = await assetsDir.getDirectoryHandle('img', { create: true });
+      printlogosDirHandle = await imgDir.getDirectoryHandle('printlogos', { create: true });
+      jsDirHandle = await assetsDir.getDirectoryHandle('js', { create: true });
+
+      const perm = await projectDirHandle.requestPermission({ mode: 'readwrite' });
+      if (perm !== 'granted') {
+        throw new Error('Permesso di scrittura negato.');
+      }
+
+      folderStatus.textContent = '✅ Cartella progetto collegata: ' + projectDirHandle.name;
+      folderStatus.className = 'folder-status ok';
+
+      await loadLogoList();
+    } catch (err) {
+      console.error(err);
+      folderStatus.textContent = '❌ ' + (err.message || 'Impossibile collegare la cartella.');
+      folderStatus.className = 'folder-status err';
+    }
+  }
+
+  async function readLogosJsEntries() {
+    let text = '';
+    try {
+      const fileHandle = await jsDirHandle.getFileHandle('logos.js');
+      const file = await fileHandle.getFile();
+      text = await file.text();
+    } catch (err) {
+      return [];
+    }
+    const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
+    if (!match) return [];
+    return match[1]
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean)
+      .map(s => s.replace(/^["']|["']$/g, ''));
+  }
+
+  async function loadLogoList() {
+    const emptyMsg = document.getElementById('emptyMsg');
+    const container = document.getElementById('logoList');
+    container.innerHTML = '<p class="empty-msg">Caricamento elenco loghi...</p>';
+
+    const entries = await readLogosJsEntries();
+    logoEntries = [];
+
+    for (const fileName of entries) {
+      let previewUrl = '';
+      try {
+        const fileHandle = await logosDirHandle.getFileHandle(fileName);
+        const file = await fileHandle.getFile();
+        previewUrl = URL.createObjectURL(file);
+      } catch (err) {
+        previewUrl = '';
+      }
+      logoEntries.push({ name: fileName, previewUrl, status: 'idle' });
+    }
+
+    logoEntries.sort((a, b) => a.name.toUpperCase().localeCompare(b.name.toUpperCase(), 'it', { sensitivity: 'base' }));
+
+    renderList();
+  }
+
+  function escapeHtml(value) {
+    return (value || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[ch]);
+  }
+
+  function renderList() {
+    const container = document.getElementById('logoList');
+    const countInfo = document.getElementById('countInfo');
+    const searchInput = document.getElementById('searchInput');
+    const query = (searchInput ? searchInput.value : '').trim().toUpperCase();
+
+    if (!logosDirHandle) {
+      container.innerHTML = '<p class="empty-msg">Collega la cartella del progetto per vedere l\'elenco dei loghi.</p>';
+      countInfo.textContent = '';
+      return;
+    }
+
+    const filtered = logoEntries.filter(entry => entry.name.toUpperCase().includes(query));
+
+    countInfo.textContent = `${filtered.length} di ${logoEntries.length} loghi mostrati.`;
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<p class="empty-msg">Nessun logo trovato.</p>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(entry => `
+      <div class="logo-item" data-name="${escapeHtml(entry.name)}">
+        <div class="logo-item-preview">
+          ${entry.previewUrl ? `<img src="${entry.previewUrl}" alt="${escapeHtml(entry.name)}">` : '⚠'}
+        </div>
+        <div class="logo-item-name">${escapeHtml(entry.name)}</div>
+        <span class="row-status ${entry.status === 'deleted' ? 'deleted' : entry.status === 'deleting' ? 'deleting' : entry.status === 'error' ? 'error' : ''}">
+          ${entry.status === 'deleted' ? '✅ Eliminato' : entry.status === 'deleting' ? '⏳ Eliminazione...' : entry.status === 'error' ? '❌ Errore' : ''}
+        </span>
+        <button type="button" class="btn-delete-row" ${entry.status === 'deleting' ? 'disabled' : ''} onclick="deleteLogo('${entry.name.replace(/'/g, "\\'")}')">🗑 Elimina</button>
+      </div>
+    `).join('');
+  }
+
+  function askDeleteConfirm(fileName) {
+    return new Promise(resolve => {
+      pendingDelete = { resolve };
+      document.getElementById('deleteModalMessage').textContent =
+        `Sei sicuro di voler eliminare definitivamente il logo "${fileName}"? Verranno rimossi il file originale, le 4 varianti colorate e la voce dall'elenco.`;
+      document.getElementById('deleteModal').classList.add('active');
+    });
+  }
+
+  function resolveDelete(confirmed) {
+    document.getElementById('deleteModal').classList.remove('active');
+    if (pendingDelete) {
+      pendingDelete.resolve(confirmed);
+      pendingDelete = null;
+    }
+  }
+
+  async function removeFileIfExists(dirHandle, name) {
+    try {
+      await dirHandle.removeEntry(name);
+    } catch (err) {
+      // file non esistente o già rimosso: ignora
+    }
+  }
+
+  async function updateLogosJsRemove(fileName) {
+    let text = '';
+    try {
+      const fileHandle = await jsDirHandle.getFileHandle('logos.js');
+      const file = await fileHandle.getFile();
+      text = await file.text();
+    } catch (err) {
+      text = 'const LOGO_FILES = [\n];\n';
+    }
+
+    const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
+    let entries = [];
+    if (match) {
+      entries = match[1]
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(s => s.replace(/^["']|["']$/g, ''));
+    }
+
+    entries = entries.filter(name => name !== fileName);
+    entries.sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase(), 'it', { sensitivity: 'base' }));
+
+    const newArrayBody = entries.map(name => `  "${name}"`).join(',\n');
+    const newBlock = `const LOGO_FILES = [\n${newArrayBody}\n];`;
+
+    let newText;
+    if (match) {
+      newText = text.slice(0, match.index) + newBlock + text.slice(match.index + match[0].length);
+    } else {
+      newText = (text ? text + '\n' : '') + newBlock + '\n';
+    }
+
+    const fileHandle = await jsDirHandle.getFileHandle('logos.js', { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(newText);
+    await writable.close();
+  }
+
+  async function deleteLogo(fileName) {
+    const entry = logoEntries.find(e => e.name === fileName);
+    if (!entry) return;
+
+    const confirmed = await askDeleteConfirm(fileName);
+    if (!confirmed) return;
+
+    entry.status = 'deleting';
+    renderList();
+
+    try {
+      // File originale in assets/logos
+      await removeFileIfExists(logosDirHandle, fileName);
+
+      // 4 varianti colorate in assets/img/printlogos
+      for (const colorKey of ['white', 'black', 'red', 'gold']) {
+        await removeFileIfExists(printlogosDirHandle, colorKey + fileName);
+      }
+
+      // Aggiorna assets/js/logos.js rimuovendo la voce
+      await updateLogosJsRemove(fileName);
+
+      // Rimuove la voce dalla lista in memoria
+      logoEntries = logoEntries.filter(e => e.name !== fileName);
+      renderList();
+    } catch (err) {
+      console.error(err);
+      entry.status = 'error';
+      renderList();
+      alert('Errore durante l\'eliminazione: ' + (err.message || err));
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>IMPORT LOGHI (uso interno)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #212529;
+    color: #fff;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 900px;
+    background: #181a1d;
+    border: 1px solid #d4a373;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    color: #e5ba73;
+    border-bottom: 2px solid #d4a373;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 20px;
+  }
+
+  .folder-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #26292e;
+    border: 1px solid #4a4237;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .folder-status {
+    flex-grow: 1;
+    font-size: 0.85rem;
+    color: #ccc;
+  }
+
+  .folder-status.ok { color: #6fbf73; }
+  .folder-status.err { color: #e06666; }
+
+  .btn-folder {
+    background: #d4a373;
+    color: #181a1d;
+    border: none;
+    padding: 8px 14px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-folder:hover { background: #e5ba73; }
+
+  .upload-box {
+    border: 2px dashed #d4a373;
+    border-radius: 6px;
+    padding: 25px;
+    text-align: center;
+    background: #26292e;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .upload-box.dragover { background: #353b45; border-color: #e5ba73; }
+  .upload-box:hover { background: #2f333a; }
+  .upload-box.disabled { opacity: 0.5; cursor: not-allowed; }
+  .upload-box input { display: none; }
+
+  .queue-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .queue-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #26292e;
+    padding: 10px 15px;
+    border-radius: 4px;
+    border-left: 3px solid #d4a373;
+    flex-wrap: wrap;
+  }
+
+  .queue-item-preview {
+    width: 90px;
+    height: 45px;
+    background: repeating-conic-gradient(#3a3f47 0% 25%, #26292e 0% 50%) 50% / 14px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    padding: 4px;
+    flex-shrink: 0;
+    border: 1px solid #4a4237;
+  }
+  .queue-item-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+  .queue-item-name {
+    flex-grow: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .queue-item-name label { font-size: 0.7rem; color: #999; }
+
+  .queue-item-name input {
+    padding: 6px 8px;
+    background: #181a1d;
+    border: 1px solid #4a4237;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+  }
+
+  .queue-item-actions { display: flex; gap: 8px; align-items: center; }
+
+  .btn-save-row {
+    background: #0056b3;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+  .btn-save-row:hover { background: #004085; }
+  .btn-save-row:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-delete-row {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .btn-delete-row:hover { background: #c82333; }
+
+  .row-status {
+    font-size: 0.78rem;
+    font-weight: bold;
+    min-width: 90px;
+  }
+  .row-status.saved { color: #6fbf73; }
+  .row-status.saving { color: #e5ba73; }
+  .row-status.error { color: #e06666; }
+
+  .empty-msg { font-size: 0.8rem; color: #888; padding: 10px 0; }
+
+  .app-close-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 36px;
+    height: 36px;
+    background-color: #d4a373;
+    color: #000;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  /* MODAL DI CONFERMA CONFLITTO NOME */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.65);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal-box {
+    position: relative;
+    width: 90%;
+    max-width: 420px;
+    background: #181a1d;
+    border: 1px solid #d4a373;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    padding: 30px 24px 20px;
+    text-align: center;
+  }
+
+  .modal-warning-icon {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 52px;
+    height: 52px;
+    background-color: #e5ba73;
+    color: #181a1d;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    border: 2px solid #181a1d;
+  }
+
+  .modal-message {
+    color: #fff;
+    font-size: 0.95rem;
+    margin-top: 10px;
+    margin-bottom: 22px;
+    line-height: 1.4;
+  }
+
+  .modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .modal-btn {
+    border: none;
+    border-radius: 4px;
+    padding: 9px 18px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .modal-btn-cancel { background: #3a3f47; color: #fff; }
+  .modal-btn-cancel:hover { background: #4a505a; }
+  .modal-btn-rename { background: #0056b3; color: #fff; }
+  .modal-btn-rename:hover { background: #004085; }
+  .modal-btn-overwrite { background: #dc3545; color: #fff; }
+  .modal-btn-overwrite:hover { background: #c82333; }
+</style>
+</head>
+<body>
+
+  <a href="index.html" class="app-close-btn" title="Torna all'index">✕</a>
+
+  <div class="modal-overlay" id="conflictModal">
+    <div class="modal-box">
+      <div class="modal-warning-icon">⚠</div>
+      <p class="modal-message" id="conflictModalMessage"></p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="resolveConflict('cancel')">Annulla</button>
+        <button type="button" class="modal-btn modal-btn-rename" onclick="resolveConflict('rename')">Salva con nome diverso</button>
+        <button type="button" class="modal-btn modal-btn-overwrite" onclick="resolveConflict('overwrite')">Sovrascrivi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>IMPORT LOGHI NEL PROGETTO</h1>
+    <p class="subtitle">Pagina ad uso interno: aggiunge nuovi loghi ufficiali ad assets/logos, genera le 4 versioni colorate e aggiorna logos.js</p>
+
+    <div class="folder-bar">
+      <span class="folder-status" id="folderStatus">Cartella progetto non collegata.</span>
+      <button type="button" class="btn-folder" onclick="connectProjectFolder()">📁 Collega cartella progetto</button>
+    </div>
+
+    <div class="upload-box disabled" id="dropZone" onclick="onDropZoneClick()">
+      📂 <strong>Clicca o Trascina qui i PNG trasparenti dei loghi</strong>
+      <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">(Carica direttamente immagini già trasparenti, senza elaborazione automatica dei bordi)</p>
+      <input type="file" id="fileInput" accept="image/png" multiple onchange="handleFiles(this.files); this.value=''">
+    </div>
+
+    <div class="queue-list" id="queueList">
+      <p class="empty-msg" id="emptyMsg">Nessun logo in coda. Collega la cartella del progetto e trascina un PNG per iniziare.</p>
+    </div>
+  </div>
+
+<script>
+  const PROJECT_FOLDER_NAMES = { logos: 'logos', printlogos: 'printlogos', assets: 'assets' };
+  const COLORS = {
+    white: [255, 255, 255],
+    black: [0, 0, 0],
+    red: [224, 0, 0],
+    gold: [180, 139, 55]
+  };
+
+  let projectDirHandle = null;
+  let logosDirHandle = null;
+  let printlogosDirHandle = null;
+  let queue = []; // { id, rawImage, fileName, status }
+  let pendingConflict = null; // { resolve }
+
+  const dropZone = document.getElementById('dropZone');
+  const folderStatus = document.getElementById('folderStatus');
+
+  function fsaSupported() {
+    return typeof window.showDirectoryPicker === 'function';
+  }
+
+  async function connectProjectFolder() {
+    if (!fsaSupported()) {
+      alert('Questa funzione richiede Chrome o Edge su desktop (File System Access API non disponibile in questo browser).');
+      return;
+    }
+    try {
+      projectDirHandle = await window.showDirectoryPicker();
+      // Verifica/crea sottocartelle assets/logos e assets/img/printlogos
+      const assetsDir = await projectDirHandle.getDirectoryHandle('assets', { create: true });
+      logosDirHandle = await assetsDir.getDirectoryHandle('logos', { create: true });
+      const imgDir = await assetsDir.getDirectoryHandle('img', { create: true });
+      printlogosDirHandle = await imgDir.getDirectoryHandle('printlogos', { create: true });
+
+      const perm = await projectDirHandle.requestPermission({ mode: 'readwrite' });
+      if (perm !== 'granted') {
+        throw new Error('Permesso di scrittura negato.');
+      }
+
+      folderStatus.textContent = '✅ Cartella progetto collegata: ' + projectDirHandle.name;
+      folderStatus.className = 'folder-status ok';
+      dropZone.classList.remove('disabled');
+    } catch (err) {
+      console.error(err);
+      folderStatus.textContent = '❌ ' + (err.message || 'Impossibile collegare la cartella.');
+      folderStatus.className = 'folder-status err';
+    }
+  }
+
+  function onDropZoneClick() {
+    if (!logosDirHandle) {
+      alert('Collega prima la cartella del progetto.');
+      return;
+    }
+    document.getElementById('fileInput').click();
+  }
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (logosDirHandle) dropZone.classList.add('dragover');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('dragover');
+    }, false);
+  });
+
+  dropZone.addEventListener('drop', e => {
+    if (!logosDirHandle) {
+      alert('Collega prima la cartella del progetto.');
+      return;
+    }
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) handleFiles(files);
+  }, false);
+
+  function handleFiles(fileList) {
+    Array.from(fileList).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = event => {
+        const img = new Image();
+        img.onload = () => {
+          const suggestedName = file.name.replace(/\.[^.]+$/, '').toUpperCase().replace(/[^A-Z0-9_]/g, '');
+          queue.push({
+            id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            rawImage: img,
+            fileName: suggestedName,
+            status: 'idle' // idle | saving | saved | error
+          });
+          renderQueue();
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function escapeHtml(value) {
+    return (value || '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[ch]);
+  }
+
+  function renderQueue() {
+    const container = document.getElementById('queueList');
+    const emptyMsg = document.getElementById('emptyMsg');
+    if (queue.length === 0) {
+      container.innerHTML = '';
+      container.appendChild(emptyMsg);
+      return;
+    }
+    container.innerHTML = queue.map(item => `
+      <div class="queue-item" data-id="${item.id}">
+        <div class="queue-item-preview"><img src="${item.rawImage.src}" alt=""></div>
+        <div class="queue-item-name">
+          <label>Nome brand (genera il nome file)</label>
+          <input type="text" value="${escapeHtml(item.fileName)}" oninput="updateItemName('${item.id}', this.value)">
+        </div>
+        <span class="row-status ${item.status === 'saved' ? 'saved' : item.status === 'saving' ? 'saving' : item.status === 'error' ? 'error' : ''}">
+          ${item.status === 'saved' ? '✅ Salvato' : item.status === 'saving' ? '⏳ Salvataggio...' : item.status === 'error' ? '❌ Errore' : ''}
+        </span>
+        <div class="queue-item-actions">
+          <button type="button" class="btn-save-row" ${item.status === 'saving' ? 'disabled' : ''} onclick="saveItem('${item.id}')">💾 Salva</button>
+          <button type="button" class="btn-delete-row" onclick="deleteItem('${item.id}')">Elimina</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateItemName(id, value) {
+    const item = queue.find(q => q.id === id);
+    if (!item) return;
+    item.fileName = value.toUpperCase().replace(/[^A-Z0-9_]/g, '');
+  }
+
+  function deleteItem(id) {
+    queue = queue.filter(q => q.id !== id);
+    renderQueue();
+  }
+
+  function setItemStatus(id, status) {
+    const item = queue.find(q => q.id === id);
+    if (item) item.status = status;
+    renderQueue();
+  }
+
+  function colorizeToBlob(rawImage, rgb) {
+    const canvas = document.createElement('canvas');
+    canvas.width = rawImage.naturalWidth;
+    canvas.height = rawImage.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(rawImage, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] > 0) {
+        data[i] = rgb[0];
+        data[i + 1] = rgb[1];
+        data[i + 2] = rgb[2];
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  function imageToBlob(rawImage) {
+    const canvas = document.createElement('canvas');
+    canvas.width = rawImage.naturalWidth;
+    canvas.height = rawImage.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(rawImage, 0, 0);
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  async function fileExists(dirHandle, name) {
+    try {
+      await dirHandle.getFileHandle(name);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  async function writeFile(dirHandle, name, blob) {
+    const fileHandle = await dirHandle.getFileHandle(name, { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(blob);
+    await writable.close();
+  }
+
+  function askConflict(fileName) {
+    return new Promise(resolve => {
+      pendingConflict = { resolve };
+      document.getElementById('conflictModalMessage').textContent =
+        `Esiste già un logo chiamato "${fileName}.png". Vuoi sovrascriverlo, salvare questo con un nome diverso, o annullare?`;
+      document.getElementById('conflictModal').classList.add('active');
+    });
+  }
+
+  function resolveConflict(choice) {
+    document.getElementById('conflictModal').classList.remove('active');
+    if (pendingConflict) {
+      pendingConflict.resolve(choice);
+      pendingConflict = null;
+    }
+  }
+
+  async function updateLogosJs(fileName) {
+    // logos.js vive in assets/js/logos.js rispetto alla cartella progetto
+    const assetsDir = await projectDirHandle.getDirectoryHandle('assets', { create: true });
+    const jsDir = await assetsDir.getDirectoryHandle('js', { create: true });
+    let text = '';
+    try {
+      const fileHandle = await jsDir.getFileHandle('logos.js');
+      const file = await fileHandle.getFile();
+      text = await file.text();
+    } catch (err) {
+      text = 'const LOGO_FILES = [\n];\n';
+    }
+
+    const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
+    let entries = [];
+    if (match) {
+      entries = match[1]
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(s => s.replace(/^["']|["']$/g, ''));
+    }
+
+    const newEntry = fileName + '.png';
+    if (!entries.includes(newEntry)) {
+      entries.push(newEntry);
+    }
+    entries = Array.from(new Set(entries)).sort((a, b) =>
+      a.toUpperCase().localeCompare(b.toUpperCase(), 'it', { sensitivity: 'base' })
+    );
+
+    const newArrayBody = entries.map(name => `  "${name}"`).join(',\n');
+    const newBlock = `const LOGO_FILES = [\n${newArrayBody}\n];`;
+
+    let newText;
+    if (match) {
+      newText = text.slice(0, match.index) + newBlock + text.slice(match.index + match[0].length);
+    } else {
+      newText = (text ? text + '\n' : '') + newBlock + '\n';
+    }
+
+    const fileHandle = await jsDir.getFileHandle('logos.js', { create: true });
+    const writable = await fileHandle.createWritable();
+    await writable.write(newText);
+    await writable.close();
+  }
+
+  async function saveItem(id) {
+    const item = queue.find(q => q.id === id);
+    if (!item) return;
+
+    if (!logosDirHandle || !printlogosDirHandle) {
+      alert('Collega prima la cartella del progetto.');
+      return;
+    }
+
+    let fileName = (item.fileName || '').trim();
+    if (!fileName) {
+      alert('Inserisci un nome per il brand prima di salvare!');
+      return;
+    }
+
+    setItemStatus(id, 'saving');
+
+    try {
+      const targetName = fileName + '.png';
+      const alreadyExists = await fileExists(logosDirHandle, targetName);
+
+      if (alreadyExists) {
+        const choice = await askConflict(fileName);
+        if (choice === 'cancel') {
+          setItemStatus(id, 'idle');
+          return;
+        }
+        if (choice === 'rename') {
+          const suggested = fileName + '_2';
+          const newName = prompt('Inserisci un nuovo nome per il logo:', suggested);
+          if (!newName || !newName.trim()) {
+            setItemStatus(id, 'idle');
+            return;
+          }
+          fileName = newName.trim().toUpperCase().replace(/[^A-Z0-9_]/g, '');
+          item.fileName = fileName;
+        }
+        // se 'overwrite' si prosegue scrivendo sullo stesso nome
+      }
+
+      const finalName = fileName + '.png';
+
+      // Logo originale (già trasparente, caricato così com'è)
+      const originalBlob = await imageToBlob(item.rawImage);
+      await writeFile(logosDirHandle, finalName, originalBlob);
+
+      // 4 versioni colorate
+      for (const colorKey of Object.keys(COLORS)) {
+        const blob = await colorizeToBlob(item.rawImage, COLORS[colorKey]);
+        await writeFile(printlogosDirHandle, colorKey + finalName, blob);
+      }
+
+      // Aggiorna assets/js/logos.js
+      await updateLogosJs(fileName);
+
+      setItemStatus(id, 'saved');
+    } catch (err) {
+      console.error(err);
+      setItemStatus(id, 'error');
+      alert('Errore durante il salvataggio: ' + (err.message || err));
+    }
+  }
+
+  renderQueue();
+</script>
+</body>
+</html>
