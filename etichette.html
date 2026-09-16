@@ -8,6 +8,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
   <script src="assets/js/logos.js"></script>
+  <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="assets/js/dymo-direct.js"></script>
 
   <style>
     :root {
@@ -511,7 +514,7 @@
         <span class="status-badge disconnected" id="usbStatusBadge">NON CONNESSA</span>
       </div>
 
-      <button class="btn-scan" onclick="requestDymoAccess()">🔄 Associa / Rileva DYMO USB</button>
+      <button class="btn-scan" onclick="checkDymoPresence()">🔄 Ricontrolla stampante DYMO</button>
 
       <div class="form-group" id="groupBrand">
         <label for="brandSelect">Brand Ufficiale</label>
@@ -577,7 +580,7 @@
         <input type="text" id="inputOutlet" class="form-control" value="99,00" oninput="updateLabel()">
       </div>
 
-      <button class="btn-print" onclick="printLabelIsolated()">🖨️ STAMPA ETICHETTA (11354)</button>
+      <button class="btn-print" id="btnPrint" onclick="printLabel()">🖨️ STAMPA ETICHETTA (11354)</button>
     </div>
 
     <div class="preview-section">
@@ -836,53 +839,28 @@
         setTemplate('tagliedoppiacifra');
       }
 
-      if ('usb' in navigator) {
-        navigator.usb.addEventListener('connect', checkDymoPresence);
-        navigator.usb.addEventListener('disconnect', checkDymoPresence);
-      }
     }
 
-    async function checkDymoPresence() {
+    function setDymoStatus(badgeText, connected, detail) {
       const badge = document.getElementById('usbStatusBadge');
-      const nameElem = document.getElementById('usbDeviceName');
-
-      if (!('usb' in navigator)) {
-        badge.innerText = "NON SUPPORTATO";
-        nameElem.innerText = "Usare Chrome per il rilievo USB";
-        return;
-      }
-
-      try {
-        const devices = await navigator.usb.getDevices();
-        const dymo = devices.find(d => d.vendorId === 0x0922);
-
-        if (dymo) {
-          let name = "DYMO LabelWriter";
-          if (dymo.productId === 0x0007) name = "DYMO LW 400";
-          else if (dymo.productId === 0x0008) name = "DYMO LW 400 Turbo";
-          else if (dymo.productId === 0x0013) name = "DYMO LW 450";
-          else if (dymo.productId === 0x0014) name = "DYMO LW 450 Turbo";
-
-          badge.innerText = "CONNESSA";
-          badge.className = "status-badge connected";
-          nameElem.innerText = name;
-        } else {
-          badge.innerText = "NON TROVATA";
-          badge.className = "status-badge disconnected";
-          nameElem.innerText = "Collega il cavo USB";
-        }
-      } catch (err) {
-        badge.innerText = "DISCONNESSA";
-        badge.className = "status-badge disconnected";
-      }
+      badge.innerText = badgeText;
+      badge.className = `status-badge ${connected ? 'connected' : 'disconnected'}`;
+      document.getElementById('usbDeviceName').innerText = detail;
     }
 
-    async function requestDymoAccess() {
-      if ('usb' in navigator) {
-        try {
-          await navigator.usb.requestDevice({ filters: [{ vendorId: 0x0922 }] });
-          checkDymoPresence();
-        } catch (e) {}
+    // STATO STAMPANTE LETTO DAL WEB SERVICE DI DYMO CONNECT (PORTA 41951)
+    async function checkDymoPresence() {
+      try {
+        const printer = await DymoDirect.dymoFindPrinter();
+        if (printer) {
+          setDymoStatus('CONNESSA', true, printer.name);
+        } else {
+          setDymoStatus('NON TROVATA', false, 'Collega e accendi la LabelWriter');
+        }
+        return printer;
+      } catch (err) {
+        setDymoStatus('SERVIZIO OFF', false, 'Avvia DYMO Connect sul computer');
+        return null;
       }
     }
 
@@ -1087,25 +1065,109 @@
       updateLabel();
     }
 
-    function printLabelIsolated() {
+    // STAMPA DIRETTA SU DYMO; SE IL SERVIZIO NON RISPONDE RIPIEGA SULLA STAMPA DEL BROWSER
+    async function printLabel() {
+      const btn = document.getElementById('btnPrint');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = '⏳ STAMPA IN CORSO…';
+
+      try {
+        let printer, png;
+        try {
+          printer = await checkDymoPresence();
+          if (!printer) throw new Error('nessuna stampante DYMO connessa');
+          png = await renderLabelPng();
+        } catch (err) {
+          console.warn('Stampa DYMO diretta non disponibile:', err);
+          alert(`Stampa DYMO diretta non disponibile (${err.message}).\nUso la stampa del browser.`);
+          printLabelIsolated();
+          return;
+        }
+
+        try {
+          await DymoDirect.dymoPrintPng(printer.name, png);
+          setDymoStatus('CONNESSA', true, `${printer.name} · etichetta inviata`);
+        } catch (err) {
+          // La richiesta potrebbe essere già arrivata alla stampante: niente fallback automatico
+          console.error('Errore stampa DYMO:', err);
+          if (confirm(`Errore durante la stampa DYMO (${err.message}).\nVuoi usare la stampa del browser?`)) {
+            printLabelIsolated();
+          }
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    }
+
+    function getPrintIframe() {
       let iframe = document.getElementById('printIframe');
       if (!iframe) {
         iframe = document.createElement('iframe');
         iframe.id = 'printIframe';
         iframe.style.position = 'fixed';
-        iframe.style.right = '0';
-        iframe.style.bottom = '0';
-        iframe.style.width = '0px';
-        iframe.style.height = '0px';
+        // Dimensioni reali dell'etichetta fuori schermo: servono a html2canvas per il rendering
+        iframe.style.left = '-10000px';
+        iframe.style.top = '0';
+        iframe.style.width = '57mm';
+        iframe.style.height = '32mm';
         iframe.style.border = '0px';
         document.body.appendChild(iframe);
       }
+      return iframe;
+    }
 
+    function writePrintIframe(autoPrint) {
+      const iframe = getPrintIframe();
       const labelHTML = document.getElementById('labelPreview').innerHTML;
-
       const doc = iframe.contentWindow.document;
       doc.open();
-      doc.write(`
+      doc.write(buildPrintDocument(labelHTML, autoPrint));
+      doc.close();
+      return iframe;
+    }
+
+    function printLabelIsolated() {
+      writePrintIframe(true);
+    }
+
+    // RENDERING DELL'ETICHETTA DI STAMPA IN PNG A 300 DPI (RISOLUZIONE LABELWRITER 450)
+    async function renderLabelPng() {
+      if (typeof html2canvas === 'undefined') throw new Error('html2canvas non caricato');
+
+      const iframe = writePrintIframe(false);
+      const doc = iframe.contentWindow.document;
+
+      await Promise.all([...doc.images].map(img => img.complete ? null : new Promise(resolve => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+      })));
+      if (doc.fonts) await doc.fonts.ready;
+
+      // html2canvas ignora i filtri CSS: applica a mano il filter: brightness(0) dei loghi brand
+      doc.querySelectorAll('.brand-logo-container img').forEach(img => {
+        if (!img.naturalWidth) return;
+        const canvas = doc.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = 'brightness(0)';
+        ctx.drawImage(img, 0, 0);
+        img.src = canvas.toDataURL('image/png');
+      });
+
+      const canvas = await html2canvas(doc.querySelector('.print-wrapper'), {
+        scale: 300 / 96,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false
+      });
+      return canvas.toDataURL('image/png').split(',')[1];
+    }
+
+    function buildPrintDocument(labelHTML, autoPrint) {
+      return `
         <!DOCTYPE html>
         <html>
         <head>
@@ -1231,18 +1293,17 @@
           <div class="print-wrapper">
             ${labelHTML}
           </div>
-          <script>
+          ${autoPrint ? `<script>
             window.onload = function() {
               setTimeout(function() {
                 window.focus();
                 window.print();
               }, 300);
             };
-          <\/script>
+          <\/script>` : ''}
         </body>
         </html>
-      `);
-      doc.close();
+      `;
     }
 
     window.onload = init;
