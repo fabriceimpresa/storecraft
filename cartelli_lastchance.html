@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Promo Last Chance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
+  <script src="assets/js/logos.js"></script>
+  <script src="assets/js/print-logo-colors.js"></script>
+  <style>
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      font-style: italic;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Nevis Project';
+      src: url('assets/fonts/Nevis Bold.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Space Invaders Project';
+      src: url('assets/fonts/space_invaders.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* Sfondo principale */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Filigrana di sfondo */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('assets/img/LASTCHANCE_BACK.png');
+      background-repeat: repeat;
+      background-size: 650px auto;
+      background-position: center;
+      opacity: 0.18;
+      filter: contrast(1.1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #1e1d1a;
+      color: #f4f1ea;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid #2e2b27;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      color: #d4a373;
+      border-bottom: 1px solid #2e2b27;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.2rem;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #e5ba73;
+      background-color: transparent;
+      border-left: none;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
+      padding: 0 0 0.6rem;
+      border-radius: 0;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.3rem;
+      color: #8c857b;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #2e2b27;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      background-color: #0a0908;
+      color: #fff;
+    }
+
+    .form-group select.custom-select {
+      border-color: #b48b37;
+      color: #f3d5a3;
+    }
+
+    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
+    select option.priority-brand-option {
+      background-color: #2e2b27;
+      color: #e5ba73;
+      font-weight: bold;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #b48b37;
+      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
+    }
+
+    select option:first-child {
+      color: #b48b37 !important;
+      font-weight: bold !important;
+    }
+
+    .btn-copy {
+      width: 100%;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+
+    .btn-copy:hover { background-color: #218838; }
+
+    /* PULSANTI STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #e00000;
+      color: #ffffff;
+      border: 1px solid #b30000;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #cc0000; }
+
+    .btn-print-single {
+      width: 100%;
+      background-color: #0056b3;
+      color: #ffffff;
+      border: 1px solid #004085;
+      padding: 10px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print-single:hover { background-color: #003d80; }
+
+    /* FOGLIO STAMPA */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 296mm;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 8mm 12mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .print-sheet.double-mode {
+      justify-content: space-between;
+    }
+
+    .card {
+      width: 100%;
+      height: 128mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2mm 0;
+      flex-shrink: 0;
+    }
+
+    .card.xmas-active {
+      position: relative;
+    }
+
+    .card.xmas-active::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url('assets/img/tema_xmas_stars.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      z-index: 0;
+      pointer-events: none;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card.disabled {
+      display: none !important;
+    }
+
+    .cut-line {
+      width: 100%;
+      border-top: 1px dashed #ccc;
+      margin: 2mm 0;
+      flex-shrink: 0;
+    }
+
+    .print-sheet:not(.double-mode) .cut-line {
+      margin-top: 10mm;
+    }
+
+    .header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2mm;
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      font-size: 1.05rem;
+      color: #e00000;
+      text-align: center;
+      line-height: 1.1;
+      text-transform: uppercase;
+      width: 18%;
+      margin-top: -8mm;
+    }
+
+    .claim-flag {
+      width: 21mm;
+      max-height: 13mm;
+      object-fit: contain;
+    }
+
+    .claim-flag-left { transform: translateX(-3mm); }
+    .claim-flag-right { transform: translateX(3mm); }
+
+    .center-header-box {
+      width: 64%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .last-chance-graphic {
+      width: 100%;
+      max-height: 48mm;
+      object-fit: contain;
+      transform: scale(1.33);
+    }
+
+    /* CONTENITORE LOGO DINAMICO */
+    .brand-logo-container {
+      width: 100%;
+      display: none;
+      justify-content: flex-end;
+      padding-right: 5mm;
+      margin-top: 0;
+      min-height: 0;
+    }
+
+    .brand-logo-container.has-logo {
+      display: flex;
+      margin-top: 3mm;
+      min-height: 12mm;
+    }
+
+    .brand-logo-container img {
+      max-height: 14.3mm;
+      max-width: 176px;
+      object-fit: contain;
+    }
+
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      flex-shrink: 0;
+    }
+
+    .price-block.no-brand {
+      margin-top: 7mm;
+    }
+
+    .price-final {
+      font-family: 'Bodoni Project', serif;
+      font-size: 9.9rem;
+      font-weight: normal;
+      color: #000;
+      line-height: 0.8;
+      text-align: center;
+      letter-spacing: -3.5px;
+    }
+
+    .card-footer {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1mm;
+    }
+
+    .footer-ita-note {
+      font-family: 'Bodoni Project', serif;
+      letter-spacing: -0.05em;
+      font-style: italic;
+      font-size: 1.65rem;
+      color: #000;
+      margin-bottom: 2mm;
+      text-align: center;
+      min-height: 1.2rem;
+    }
+
+    .footer-ita-note.made-in-italy-active {
+      font-size: 1.98rem;
+    }
+
+    .red-bottom-banner {
+      display: inline-block;
+      background-color: #e00000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      padding: 4px 16px;
+      text-align: center;
+    }
+
+    .red-bottom-banner .banner-text {
+      font-family: "Impact", "Arial Black", "ITC Machine", sans-serif;
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      line-height: 1;
+    }
+
+    /* PULSANTE CHIUSURA E NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #d4a373;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #e5ba73;
+      transform: scale(1.1);
+    }
+
+    .made-in-italy-btn {
+      position: fixed;
+      top: 4.5rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 7px;
+      background: #ffffff;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .made-in-italy-btn-lower { top: calc(50% + 1rem); }
+
+    .made-in-italy-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .made-in-italy-btn:hover,
+    .made-in-italy-btn[aria-pressed="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    /* PULSANTE BLACK FRIDAY */
+    .black-friday-btn {
+      position: fixed;
+      top: 8rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 7px;
+      background: #000000;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .black-friday-btn-lower {
+      top: calc(50% + 4.5rem);
+    }
+
+    .black-friday-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .black-friday-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    /* PULSANTI TEMA NATALIZIO */
+    .xmas-btn {
+      position: fixed;
+      top: 11.5rem;
+      right: 1.25rem;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      background: #ffffff;
+      border: 1px solid #d4a373;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 1000;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .xmas-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .xmas-btn:hover,
+    .xmas-btn[aria-pressed="true"] {
+      transform: scale(1.1);
+      box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    .xmas-btn-lower { top: calc(50% + 8rem); }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #e5ba73;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body::before { display: none !important; }
+
+      .sidebar, .app-close-btn, .made-in-italy-btn, .black-friday-btn, .xmas-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 5mm auto 0 !important;
+        padding: 8mm 10mm;
+        width: 210mm;
+        height: 291mm !important;
+        max-height: 291mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .red-bottom-banner { 
+        background-color: #e00000 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .brand-logo-container img {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+  <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
+    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+  </button>
+  <a class="black-friday-btn" href="blackfridaylips.html" aria-label="Apri Black Friday Lips" title="Apri Black Friday Lips">
+    <img src="assets/img/tema_blackfriday_icon.png" alt="Black Friday">
+  </a>
+  <a class="black-friday-btn black-friday-btn-lower" href="blackfridaylips.html" aria-label="Apri Black Friday Lips per il cartello inferiore" title="Apri Black Friday Lips">
+    <img src="assets/img/tema_blackfriday_icon.png" alt="Black Friday">
+  </a>
+  <button class="xmas-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva il tema natalizio del cartello superiore" aria-pressed="false" onclick="toggleXmas(1)">
+    <img src="assets/img/tema_xmas_icon.png" alt="Natale">
+  </button>
+  <button class="xmas-btn xmas-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva il tema natalizio del cartello inferiore" aria-pressed="false" onclick="toggleXmas(2)">
+    <img src="assets/img/tema_xmas_icon.png" alt="Natale">
+  </button>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <!-- PANNELLO PRINCIPALE -->
+    <div class="controls">
+      <h2>Promo Last Chance</h2>
+
+      <div class="section-title">CARTELLO 1 (Superiore)</div>
+      <div class="form-group">
+        <label>Brand Ufficiale:</label>
+        <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
+      </div>
+      <div class="form-group">
+        <label>Claim SX 1 / DX 1:</label>
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="left1" value="SUMMER SALE" oninput="updateCards()">
+          <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Prezzo Finale:</label>
+        <input type="text" id="pNew1" value="69,90" placeholder="69,90" oninput="updateCards()">
+      </div>
+      <div class="form-group">
+        <label>Testo in italiano:</label>
+        <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
+      </div>
+
+      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
+
+      <div id="sectionCard2">
+        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+        <div class="form-group">
+          <label>Brand Ufficiale:</label>
+          <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
+        </div>
+        <div class="form-group">
+          <label>Claim SX 2 / DX 2:</label>
+          <div style="display:flex; gap:5px;">
+            <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
+            <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Prezzo Finale:</label>
+          <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label>Testo in italiano:</label>
+          <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+        </div>
+      </div>
+
+      <div class="section-title">IMPOSTAZIONI STAMPA</div>
+      <div class="form-group">
+        <label>Modalità Cartelli da Stampare:</label>
+        <select id="modeSelect" onchange="toggleCardMode()">
+          <option value="2">2 Cartelli (Foglio Intero A4)</option>
+          <option value="1">1 Solo Cartello (Superiore)</option>
+        </select>
+      </div>
+
+      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
+      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+    </div>
+
+    <!-- PANNELLO LOGHI PERSONALIZZATI SEPARATO -->
+    <div class="controls">
+      <h2>LOGHI PERSONALIZZATI</h2>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
+        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
+        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
+          <option value="">-- Nessun Logo Personalizzato --</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">SUMMER<br>SALE</div>
+        <div class="center-header-box">
+          <img id="lastChanceImg1" class="last-chance-graphic" src="assets/img/LASTCHANCE_BACK.png" alt="Last Chance">
+          <div id="brandContainer1" class="brand-logo-container"></div>
+        </div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+      </div>
+
+      <div class="price-block">
+        <div class="price-final" id="priceNewDisplay1">€ 69,90</div>
+      </div>
+
+      <div class="card-footer">
+        <div class="footer-ita-note" id="noteDisplay1">Fino ad esaurimento scorte</div>
+        <div class="red-bottom-banner">
+          <div class="banner-text">LIMITED QUANTITIES AVAILABLE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINEA TRATTEGGIATA -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">SUMMER<br>SALE</div>
+        <div class="center-header-box">
+          <img id="lastChanceImg2" class="last-chance-graphic" src="assets/img/LASTCHANCE_BACK.png" alt="Last Chance">
+          <div id="brandContainer2" class="brand-logo-container"></div>
+        </div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+      </div>
+
+      <div class="price-block">
+        <div class="price-final" id="priceNewDisplay2">€ 69,90</div>
+      </div>
+
+      <div class="card-footer">
+        <div class="footer-ita-note" id="noteDisplay2">Fino ad esaurimento scorte</div>
+        <div class="red-bottom-banner">
+          <div class="banner-text">LIMITED QUANTITIES AVAILABLE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const madeInItalyClaimsActive = { 1: false, 2: false };
+    const xmasActive = { 1: false, 2: false };
+    const previousItalianText = { 1: null, 2: null };
+
+    const LOGO_PATH = "assets/logos/";
+    const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function loadLocalLogos() {
+      const select1 = document.getElementById('brandSelect1');
+      const select2 = document.getElementById('brandSelect2');
+
+      select1.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      select2.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
+      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+      [...priorityFiles, ...remainingFiles].forEach(fileName => {
+        const displayName = cleanBrandName(fileName);
+        const isPriority = priorityFiles.includes(fileName);
+
+        appendBrandOption(select1, fileName, displayName, isPriority);
+        appendBrandOption(select2, fileName, displayName, isPriority);
+      });
+
+      loadCustomLogosDropdown();
+      updateCards();
+    }
+
+    function loadCustomLogosDropdown() {
+      const cSelect1 = document.getElementById('customBrandSelect1');
+      const cSelect2 = document.getElementById('customBrandSelect2');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+
+      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+
+      customLogos.forEach(item => {
+        const opt1 = document.createElement('option');
+        opt1.value = item.data;
+        opt1.textContent = "★ " + item.name;
+        cSelect1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = item.data;
+        opt2.textContent = "★ " + item.name;
+        cSelect2.appendChild(opt2);
+      });
+    }
+
+    function onOfficialBrandChange(cardIndex) {
+      document.getElementById('customBrandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function onCustomBrandChange(cardIndex) {
+      document.getElementById('brandSelect' + cardIndex).value = "";
+      updateCards();
+    }
+
+    function copyCard1ToCard2() {
+      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
+      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
+      document.getElementById('left2').value = document.getElementById('left1').value;
+      document.getElementById('right2').value = document.getElementById('right1').value;
+      document.getElementById('pNew2').value = document.getElementById('pNew1').value;
+      document.getElementById('note2').value = document.getElementById('note1').value;
+      updateCards();
+    }
+
+    function toggleCardMode() {
+      const count = document.getElementById('modeSelect').value;
+      const card2 = document.getElementById('card2');
+      const section2 = document.getElementById('sectionCard2');
+      const btnCopy = document.getElementById('btnCopy');
+      const sheet = document.getElementById('printSheet');
+
+      if (count === "1") {
+        card2.classList.add('disabled');
+        section2.style.display = 'none';
+        btnCopy.style.display = 'none';
+        sheet.classList.remove('double-mode');
+      } else {
+        card2.classList.remove('disabled');
+        section2.style.display = 'block';
+        btnCopy.style.display = 'block';
+        sheet.classList.add('double-mode');
+      }
+    }
+
+    function printSheet(count) {
+      document.getElementById('modeSelect').value = count.toString();
+      toggleCardMode();
+      window.print();
+    }
+
+    function toggleMadeInItaly(cardIndex) {
+      if (!madeInItalyClaimsActive[cardIndex] && xmasActive[cardIndex]) {
+        xmasActive[cardIndex] = false;
+        const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
+        if (xmasBtn) xmasBtn.setAttribute('aria-pressed', 'false');
+      }
+
+      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+      const noteField = document.getElementById('note' + cardIndex);
+
+      if (madeInItalyClaimsActive[cardIndex]) {
+        previousItalianText[cardIndex] = noteField.value;
+        noteField.value = 'Made in Italy';
+      } else if (previousItalianText[cardIndex] !== null) {
+        noteField.value = previousItalianText[cardIndex];
+        previousItalianText[cardIndex] = null;
+      }
+
+      document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
+      updateCards();
+    }
+
+    function toggleXmas(cardIndex) {
+      xmasActive[cardIndex] = !xmasActive[cardIndex];
+
+      if (xmasActive[cardIndex]) {
+        madeInItalyClaimsActive[cardIndex] = false;
+        const madeInItalyBtn = document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]');
+        if (madeInItalyBtn) madeInItalyBtn.setAttribute('aria-pressed', 'false');
+      }
+
+      const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
+      if (xmasBtn) xmasBtn.setAttribute('aria-pressed', xmasActive[cardIndex].toString());
+      updateCards();
+    }
+
+    function updateCards() {
+      // Cartello 1
+      const b1 = document.getElementById('brandSelect1').value;
+      const cb1 = document.getElementById('customBrandSelect1').value;
+      const brandContainer1 = document.getElementById('brandContainer1');
+      const noteDisplay1 = document.getElementById('noteDisplay1');
+      const noteVal1 = document.getElementById('note1').value;
+      const priceBlock1 = document.querySelector('#card1 .price-block');
+      const hasBrand1 = !!(cb1 || b1);
+      
+      if (cb1) {
+        brandContainer1.innerHTML = `<img src="${cb1}" alt="Custom Logo">`;
+        brandContainer1.classList.add('has-logo');
+        PrintLogoColors.getBrandLogoSrc(cb1, '', '', 'red').then(src => {
+          const imgEl = brandContainer1.querySelector('img');
+          if (imgEl) imgEl.src = src;
+        });
+      } else if (b1) {
+        brandContainer1.innerHTML = `<img src="${LOGO_PATH + b1}" alt="Brand Logo">`;
+        brandContainer1.classList.add('has-logo');
+        PrintLogoColors.getBrandLogoSrc('', b1, '', 'red').then(src => {
+          const imgEl = brandContainer1.querySelector('img');
+          if (imgEl) imgEl.src = src;
+        });
+      } else {
+        brandContainer1.innerHTML = '';
+        brandContainer1.classList.remove('has-logo');
+      }
+
+      priceBlock1.classList.toggle('no-brand', !hasBrand1);
+
+      noteDisplay1.innerText = noteVal1;
+      noteDisplay1.style.display = noteVal1.trim() !== "" ? 'block' : 'none';
+      noteDisplay1.classList.toggle('made-in-italy-active', madeInItalyClaimsActive[1]);
+
+      const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
+      const xmasMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/tema_xmas.png" alt="Natale">';
+      const xmasMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/tema_xmas.png" alt="Natale">';
+      document.getElementById('card1').classList.toggle('xmas-active', xmasActive[1]);
+      document.getElementById('headLeft1').innerHTML = xmasActive[1] ? xmasMarkupLeft : (madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>'));
+      document.getElementById('headRight1').innerHTML = xmasActive[1] ? xmasMarkupRight : (madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>'));
+      
+      const pn1 = document.getElementById('pNew1').value;
+      document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
+
+      // Cartello 2
+      const b2 = document.getElementById('brandSelect2').value;
+      const cb2 = document.getElementById('customBrandSelect2').value;
+      const brandContainer2 = document.getElementById('brandContainer2');
+      const noteDisplay2 = document.getElementById('noteDisplay2');
+      const noteVal2 = document.getElementById('note2').value;
+      const priceBlock2 = document.querySelector('#card2 .price-block');
+      const hasBrand2 = !!(cb2 || b2);
+      
+      if (cb2) {
+        brandContainer2.innerHTML = `<img src="${cb2}" alt="Custom Logo">`;
+        brandContainer2.classList.add('has-logo');
+        PrintLogoColors.getBrandLogoSrc(cb2, '', '', 'red').then(src => {
+          const imgEl = brandContainer2.querySelector('img');
+          if (imgEl) imgEl.src = src;
+        });
+      } else if (b2) {
+        brandContainer2.innerHTML = `<img src="${LOGO_PATH + b2}" alt="Brand Logo">`;
+        brandContainer2.classList.add('has-logo');
+        PrintLogoColors.getBrandLogoSrc('', b2, '', 'red').then(src => {
+          const imgEl = brandContainer2.querySelector('img');
+          if (imgEl) imgEl.src = src;
+        });
+      } else {
+        brandContainer2.innerHTML = '';
+        brandContainer2.classList.remove('has-logo');
+      }
+
+      priceBlock2.classList.toggle('no-brand', !hasBrand2);
+
+      noteDisplay2.innerText = noteVal2;
+      noteDisplay2.style.display = noteVal2.trim() !== "" ? 'block' : 'none';
+      noteDisplay2.classList.toggle('made-in-italy-active', madeInItalyClaimsActive[2]);
+
+      document.getElementById('card2').classList.toggle('xmas-active', xmasActive[2]);
+      document.getElementById('headLeft2').innerHTML = xmasActive[2] ? xmasMarkupLeft : (madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>'));
+      document.getElementById('headRight2').innerHTML = xmasActive[2] ? xmasMarkupRight : (madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>'));
+      
+      const pn2 = document.getElementById('pNew2').value;
+      document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
+    }
+
+    window.onload = loadLocalLogos;
+  </script>
+</body>
+</html>

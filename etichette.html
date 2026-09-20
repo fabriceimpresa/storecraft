@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etichette DYMO // STORE CRAFT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
+  <script src="assets/js/logos.js"></script>
+  <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="assets/js/dymo-direct.js"></script>
+
+  <style>
+    :root {
+      --bg: #121110;
+      --sidebar: #181715;
+      --card: #1e1d1a;
+      --border: #2e2b27;
+      --accent: #d4a373;
+      --accent-hover: #e5ba73;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+      --success: #2a9d8f;
+      --error: #e76f51;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR CON GALLERIA TEMPLATES */
+    aside { width: 300px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .brand { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 1rem; text-align: center; }
+    .nav-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: 1px solid var(--border); transition: all 0.2s; margin-bottom: 1.2rem; }
+    .nav-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    .gallery-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; margin-bottom: 0.6rem; text-align: center; }
+    .template-gallery { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .template-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .template-card:hover, .template-card.active {
+      border-color: var(--accent);
+      background: rgba(212, 163, 115, 0.08);
+    }
+
+    .template-card .tpl-name { font-size: 0.75rem; font-weight: 600; color: var(--text); text-align: center; }
+    
+    .tpl-preview-box {
+      width: 100%;
+      max-width: 145px;
+      aspect-ratio: 57 / 32;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      overflow: hidden;
+      background: transparent;
+      align-self: center;
+    }
+
+    .tpl-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    main { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; gap: 2rem; }
+    .editor-section { flex: 1; max-width: 450px; }
+    .preview-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0908; border-radius: 8px; border: 1px solid var(--border); padding: 2rem; position: relative; }
+
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.2rem; }
+    header h1 { font-family: 'Cinzel', serif; font-size: 1.4rem; }
+    header p { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
+
+    .usb-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.2rem;
+    }
+    .status-badge { font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; background: #333; color: #aaa; }
+    .status-badge.connected { background: rgba(42, 157, 143, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .status-badge.disconnected { background: rgba(231, 111, 81, 0.2); color: var(--error); border: 1px solid var(--error); }
+
+    .btn-scan { width: 100%; padding: 0.6rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.2rem; transition: all 0.2s; }
+    .btn-scan:hover { color: var(--text); border-color: var(--accent); }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.4rem; font-weight: 600; }
+    .form-control { width: 100%; padding: 0.65rem; background: var(--card); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.9rem; outline: none; }
+    .form-control:focus { border-color: var(--accent); }
+    .row { display: flex; gap: 0.8rem; }
+
+    .custom-brand-box {
+      background: rgba(212, 163, 115, 0.04);
+      border: 1px solid rgba(212, 163, 115, 0.35);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .custom-brand-header {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e5ba73;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .form-control.custom-select {
+      background: #141312;
+      border: 1px solid #b48b37;
+      color: #f3d5a3;
+      font-weight: 600;
+    }
+    .form-control.custom-select:focus {
+      border-color: #e5ba73;
+      box-shadow: 0 0 6px rgba(229, 186, 115, 0.3);
+    }
+
+    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
+    select option.priority-brand-option {
+      background-color: #2e2b27;
+      color: #e5ba73;
+      font-weight: bold;
+    }
+
+    .btn-print { width: 100%; padding: 0.9rem; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; margin-top: 0.5rem; }
+    .btn-print:hover { background: var(--accent-hover); }
+
+    /* CONTENITORE ANTEPRIMA SCHERMO (456x256px) */
+    .label-preview-wrapper {
+      background: #ffffff;
+      width: 456px;
+      height: 256px;
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    /* ELEMENTI SCHERMO COMUNI */
+    .brand-logo-container { display: flex; align-items: center; justify-content: flex-start; }
+    .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
+    .brand-text-fallback { font-family: Arial, sans-serif; font-weight: 800; color: #000; line-height: 1.1; letter-spacing: -0.5px; }
+
+    /* LAYOUT 1: OUTLET DOPPIO PREZZO */
+    .tpl-outlet { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 112px; width: 100%; }
+    .tpl-outlet .brand-logo-container { width: 256px; height: 112px; }
+    .tpl-outlet .brand-text-fallback { font-size: 26px; }
+    .tpl-outlet .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
+    .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 96px !important; height: 96px !important; }
+    .tpl-outlet .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 18px; width: 100%; }
+    .tpl-outlet .price-box { display: flex; flex-direction: column; align-items: flex-start; }
+    .tpl-outlet .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; }
+    .tpl-outlet .price-val { font-size: 37px; line-height: 1; letter-spacing: -0.5px; }
+    .tpl-outlet .discount-val { font-size: 37px; font-weight: bold; line-height: 1; }
+    .tpl-outlet .price-outlet { align-items: flex-end; }
+    .tpl-outlet .price-outlet .price-val { font-size: 48px; font-weight: bold; }
+
+    /* LAYOUT 2: FINAL PRICE */
+    .tpl-final { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 112px; width: 100%; }
+    .tpl-final .brand-logo-container { width: 256px; height: 112px; }
+    .tpl-final .brand-text-fallback { font-size: 26px; }
+    .tpl-final .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
+    .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 96px !important; height: 96px !important; }
+    .tpl-final .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 18px; width: 100%; }
+    .tpl-final .custom-text-box { display: flex; align-items: flex-end; margin-bottom: 4px; }
+    .tpl-final .custom-text-val { font-size: 34px; font-weight: 400; letter-spacing: -0.3px; text-transform: uppercase; color: #000; line-height: 1; }
+    .tpl-final .price-box { display: flex; flex-direction: column; align-items: flex-end; }
+    .tpl-final .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; }
+    .tpl-final .price-val { font-size: 51px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+
+    /* LAYOUT 3 E 4: LAST CHANCE E LUXURY LABEL */
+    .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 100%; width: 100%; padding: 0 5px; }
+    .tpl-promo .left-logo-box, .tpl-luxury .left-logo-box { width: 225px; height: 195px; display: flex; align-items: center; justify-content: flex-start; }
+    .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .tpl-promo .price-box, .tpl-luxury .price-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+    .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; font-weight: normal; }
+    .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 54px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+
+    /* LAYOUT 5: PROMO 50+50 */
+    .tpl-promo50 { display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; }
+    .tpl-promo50 .top-row { display: flex; justify-content: space-between; align-items: flex-end; padding: 2px 8px 6px 8px; height: 78px; }
+    .tpl-promo50 .price-col { display: flex; flex-direction: column; align-items: flex-start; }
+    .tpl-promo50 .price-col.align-right { align-items: flex-end; }
+    .tpl-promo50 .top-row .price-label { font-size: 20px; line-height: 1; color: #000; font-weight: 400; margin-bottom: 4px; }
+    .tpl-promo50 .top-row .price-val { font-size: 38px; font-weight: 400; line-height: 1; color: #000; letter-spacing: -0.5px; white-space: nowrap; }
+    .tpl-promo50 .disc-middle { font-size: 38px; font-weight: 400; line-height: 1; color: #000; text-align: center; }
+    .tpl-promo50 .black-banner { background: #000; color: #fff; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: stretch; height: 146px; }
+    .tpl-promo50 .banner-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+    .tpl-promo50 .banner-promo-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .tpl-promo50 .promo-title { font-size: 21px; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; text-align: center; }
+    .tpl-promo50 .promo-subtitle { font-size: 25px; font-weight: 800; line-height: 1.1; text-align: center; }
+    .tpl-promo50 .promo-discount { font-size: 62px; font-weight: 800; line-height: 0.95; text-align: left; }
+    .tpl-promo50 .banner-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; height: 100%; }
+    .tpl-promo50 .banner-right .price-label { color: #fff; font-size: 24px; font-weight: 400; line-height: 1; margin-bottom: 2px; text-align: right; }
+    .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 62px; font-weight: 800; line-height: 1; letter-spacing: -1px; white-space: nowrap; text-align: right; }
+
+    /* LAYOUT 6: TAGLIE | DOPPIA CIFRA */
+    .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; width: 100%; height: 100%; padding: 2px 0; color: #000; }
+    .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; align-items: center; width: 110px; }
+    .tpl-tagliedoppiacifra .size-title { font-size: 18px; font-weight: 400; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase; }
+    .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; }
+    .tpl-tagliedoppiacifra .size-box { width: 48px; height: 48px; border: 2.5px solid #000000; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; background-color: #ffffff; text-align: center; }
+    .tpl-tagliedoppiacifra .price-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 10px; padding-bottom: 6px; }
+    .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 14px; width: 100%; margin-top: 2px; }
+    .tpl-tagliedoppiacifra .original-price { font-size: 32px; font-weight: 400; letter-spacing: -0.5px; }
+    .tpl-tagliedoppiacifra .discount-tag { font-size: 32px; font-weight: 900; }
+    
+    /* FONT DINAMICO PREZZO FINALE (SCHERMO) */
+    .tpl-tagliedoppiacifra .final-price { 
+      font-size: var(--final-price-size-screen, 76px); 
+      font-weight: 900; 
+      line-height: 0.85; 
+      letter-spacing: -2px; 
+      margin-top: -2px; 
+      white-space: nowrap; 
+    }
+    
+    .tpl-tagliedoppiacifra .footer-text { font-size: 19px; font-weight: 400; letter-spacing: 0.3px; text-transform: uppercase; text-align: right; margin-bottom: 4px; }
+
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b48b37;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    /* NAV MOBILE PULSANTE HEADER */
+    .mobile-nav-btn { display: none; }
+
+    /* ==========================================
+       MEDIA QUERIES PER RESPONSIVE MOBILE
+    ========================================== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .mobile-nav-btn {
+        display: inline-flex;
+        margin-bottom: 0.8rem;
+        width: fit-content;
+      }
+
+      /* MENU COMANDI SCORREVOLE CON LE DITA */
+      main {
+        flex: 1;
+        flex-direction: column;
+        padding: 150px 1rem 100px 1rem; /* Spazio in alto per preview fissa e in basso per carosello fisso */
+        overflow-y: auto;
+        gap: 1.5rem;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .editor-section {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      /* ANTEPRIMA ETICHETTA FISSA IN ALTO */
+      .preview-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        z-index: 9990;
+        background: #0a0908;
+        border-radius: 0 0 10px 10px;
+        border: none;
+        border-bottom: 1px solid var(--accent);
+        padding: 0.5rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+      }
+
+      .preview-title {
+        position: absolute !important;
+        top: 6px !important;
+        left: 0 !important;
+        right: 0 !important;
+        text-align: center !important;
+        margin: 0 !important;
+      }
+
+      .preview-title label {
+        font-size: 0.65rem;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+      }
+
+      /* Ridimensionamento compattezza anteprima etichetta */
+      .label-preview-wrapper {
+        transform: scale(0.48);
+        transform-origin: center center;
+        margin: 0;
+        margin-top: 12px;
+      }
+
+      /* CAROSELLO IN BASSO PER SELEZIONE MODELLI ETICHETTE */
+      aside {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        background: var(--sidebar);
+        border-right: none;
+        border-top: 1px solid var(--accent);
+        padding: 0.5rem 0.8rem 0.6rem 0.8rem;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+      }
+
+      aside .brand, aside .nav-btn {
+        display: none;
+      }
+
+      .gallery-title {
+        font-size: 0.65rem;
+        margin-bottom: 0.35rem;
+        text-align: left;
+      }
+
+      .template-gallery {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 0.6rem;
+        padding-bottom: 0.3rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .template-gallery::-webkit-scrollbar {
+        height: 4px;
+      }
+      .template-gallery::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .template-gallery::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 4px;
+      }
+
+      .template-card {
+        flex: 0 0 115px;
+        min-width: 115px;
+        scroll-snap-align: start;
+        padding: 0.4rem 0.35rem;
+      }
+
+      .template-card .tpl-name {
+        font-size: 0.65rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tpl-preview-box {
+        max-width: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding-top: 135px;
+        padding-bottom: 95px;
+      }
+      .preview-section {
+        height: 125px;
+      }
+      .label-preview-wrapper {
+        transform: scale(0.42);
+        margin-top: 10px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      main {
+        padding-top: 125px;
+        padding-bottom: 90px;
+      }
+      .preview-section {
+        height: 115px;
+      }
+      .label-preview-wrapper {
+        transform: scale(0.38);
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+
+  <aside>
+    <div>
+      <div class="brand">STORE // CRAFT</div>
+      <a href="index.html" class="nav-btn">← Torna al Dashboard</a>
+
+      <div class="gallery-title">Galleria Modelli (57x32)</div>
+      <div class="template-gallery">
+        
+        <div class="template-card" id="card-tpl-outlet" onclick="setTemplate('outlet')">
+          <span class="tpl-name">1. Outlet Doppio Prezzo</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/doppioprezzo.png" alt="Miniatura Doppio Prezzo">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-final" onclick="setTemplate('final')">
+          <span class="tpl-name">2. Final | Outlet Price</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/finalprice.png" alt="Miniatura Final Price">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-promo" onclick="setTemplate('promo')">
+          <span class="tpl-name">3. Last Chance</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/lastchance.png" alt="Miniatura Last Chance">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-luxury" onclick="setTemplate('luxury')">
+          <span class="tpl-name">4. Luxury Label</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/outlet.png" alt="Miniatura Luxury Label">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-promo50" onclick="setTemplate('promo50')">
+          <span class="tpl-name">5. Promo 50+50</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/promo50.png" alt="Miniatura Promo 50+50">
+          </div>
+        </div>
+
+        <div class="template-card active" id="card-tpl-tagliedoppiacifra" onclick="setTemplate('tagliedoppiacifra')">
+          <span class="tpl-name">6. Taglie | Doppia Cifra</span>
+          <div class="tpl-preview-box">
+            <img src="assets/thumbnail/tagliedoppiacifra.png" alt="Miniatura Taglie Doppia Cifra">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="editor-section">
+      <header>
+        <a href="index.html" class="nav-btn mobile-nav-btn">← Torna al Dashboard</a>
+        <h1 id="templateTitle">Etichette DYMO</h1>
+        <p>Stampa Diretta 57x32mm (11354)</p>
+      </header>
+
+      <div class="usb-status">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: bold;">Stampante DYMO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);" id="usbDeviceName">Verifica hardware...</div>
+        </div>
+        <span class="status-badge disconnected" id="usbStatusBadge">NON CONNESSA</span>
+      </div>
+
+      <button class="btn-scan" onclick="checkDymoPresence()">🔄 Ricontrolla stampante DYMO</button>
+
+      <div class="form-group" id="groupBrand">
+        <label for="brandSelect">Brand Ufficiale</label>
+        <select id="brandSelect" class="form-control" onchange="onBrandSelectChange()"></select>
+      </div>
+
+      <div class="custom-brand-box" id="groupCustomBrand">
+        <div class="custom-brand-header">
+          <span>★ LOGHI PERSONALIZZATI</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <select id="customLogoSelect" class="form-control custom-select" onchange="onCustomLogoSelectChange()">
+            <option value="">-- Nessun Logo Personalizzato --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- SELEZIONE TAGLIE GRID (6 DROPDOWN) -->
+      <div class="form-group" id="groupSizes" style="display:none;">
+        <label>Seleziona Taglie (6 Riquadri)</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.4rem;">
+          <select id="sizeSelect1" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect2" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect3" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect4" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect5" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect6" class="form-control" onchange="updateLabel()"></select>
+        </div>
+      </div>
+
+      <div class="form-group" id="groupCustomText" style="display:none;">
+        <label id="lblCustomTextTitle">Testo Personalizzato / Etichetta</label>
+        <input type="text" id="inputCustomText" class="form-control" value="FINAL PRICE" oninput="updateLabel()">
+      </div>
+
+      <div class="form-group" id="groupProdName" style="display:none;">
+        <label>Nome Prodotto / Descrizione</label>
+        <input type="text" id="inputProdName" class="form-control" value="GIACCA IN PELLE" oninput="updateLabel()">
+      </div>
+
+      <div class="form-group" id="groupCode" style="display:none;">
+        <label>Codice Articolo / Barcode</label>
+        <input type="text" id="inputCode" class="form-control" value="ART-890214" oninput="updateLabel()">
+      </div>
+
+      <div class="row" id="groupPriceRow">
+        <div class="form-group" id="groupOrig" style="flex:1;">
+          <label id="lblOrigTitle">Prezzo Originario (€)</label>
+          <input type="text" id="inputOrig" class="form-control" value="330,00" oninput="calculateDiscount()">
+        </div>
+        <div class="form-group" id="groupDiscounted" style="flex:1;">
+          <label>Prezzo Scontato (€)</label>
+          <input type="text" id="inputDiscounted" class="form-control" value="99,00" oninput="updateLabel()">
+        </div>
+        <div class="form-group" id="groupDiscount" style="flex:1; display:none;">
+          <label>Sconto (%)</label>
+          <input type="text" id="inputDiscount" class="form-control" value="-70%" oninput="formatDiscountInput(this); updateLabel()">
+        </div>
+      </div>
+
+      <div class="form-group" id="groupOutlet">
+        <label id="lblPriceTitle">Prezzo Finito (€)</label>
+        <input type="text" id="inputOutlet" class="form-control" value="99,00" oninput="updateLabel()">
+      </div>
+
+      <button class="btn-print" id="btnPrint" onclick="printLabel()">🖨️ STAMPA ETICHETTA (11354)</button>
+    </div>
+
+    <div class="preview-section">
+      <div style="position: absolute; top: 15px; left: 20px;" class="form-group preview-title">
+        <label>Anteprima Etichetta 11354 (57 x 32 mm)</label>
+      </div>
+
+      <div class="label-preview-wrapper" id="labelPreview"></div>
+    </div>
+  </main>
+
+  <script>
+    const LOGO_PATH = "assets/logos/";
+    const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+    const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '54', '56', '58', '60'];
+    const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+    let selectedBrand = '';
+    let selectedCustomLogo = '';
+    let currentTemplateKey = 'tagliedoppiacifra';
+
+    const TEMPLATES = {
+      'outlet': {
+        name: '1. Outlet Doppio Prezzo',
+        fields: ['groupBrand', 'groupCustomBrand', 'groupOrig', 'groupDiscount', 'groupOutlet'],
+        render: () => `
+          <div class="tpl-outlet">
+            <div class="label-top">
+              <div class="brand-logo-container">
+                <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
+                <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span>
+              </div>
+              <div class="qr-container" id="labelQR"></div>
+            </div>
+            <div class="label-bottom">
+              <div class="price-box">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOrig">89,90</span>
+              </div>
+              <div class="discount-val" id="lblDiscount">-67%</div>
+              <div class="price-box price-outlet">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOutlet">29,50</span>
+              </div>
+            </div>
+          </div>`
+      },
+      'final': {
+        name: '2. Final | Outlet Price',
+        fields: ['groupBrand', 'groupCustomBrand', 'groupCustomText', 'groupOutlet'],
+        render: () => `
+          <div class="tpl-final">
+            <div class="label-top">
+              <div class="brand-logo-container">
+                <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
+                <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span>
+              </div>
+              <div class="qr-container" id="labelQR"></div>
+            </div>
+            <div class="label-bottom">
+              <div class="custom-text-box">
+                <span id="lblCustomText" class="custom-text-val">FINAL PRICE</span>
+              </div>
+              <div class="price-box">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOutlet">89,00</span>
+              </div>
+            </div>
+          </div>`
+      },
+      'promo': {
+        name: '3. Last Chance',
+        fields: ['groupOutlet'],
+        render: () => `
+          <div class="tpl-promo">
+            <div class="left-logo-box">
+              <img src="assets/img/lclogobn.png" alt="Last Chance Logo">
+            </div>
+            <div class="price-box">
+              <span class="price-label">Euro</span>
+              <span class="price-val" id="lblOutlet">29,50</span>
+            </div>
+          </div>`
+      },
+      'luxury': {
+        name: '4. Luxury Label',
+        fields: ['groupOutlet'],
+        render: () => `
+          <div class="tpl-luxury">
+            <div class="left-logo-box">
+              <img src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet Logo">
+            </div>
+            <div class="price-box">
+              <span class="price-label">Euro</span>
+              <span class="price-val" id="lblOutlet">29,50</span>
+            </div>
+          </div>`
+      },
+      'promo50': {
+        name: '5. Promo 50+50',
+        fields: ['groupOrig', 'groupDiscounted', 'groupOutlet'],
+        render: () => `
+          <div class="tpl-promo50">
+            <div class="top-row">
+              <div class="price-col">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOrig">198,00</span>
+              </div>
+              <div class="disc-middle">-50%</div>
+              <div class="price-col align-right">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblDiscounted">99,00</span>
+              </div>
+            </div>
+            <div class="black-banner">
+              <div class="banner-left">
+                <div class="banner-promo-text">
+                  <div class="promo-title">PROMOZIONE</div>
+                  <div class="promo-subtitle">50% + 50%</div>
+                </div>
+                <div class="promo-discount">-50%</div>
+              </div>
+              <div class="banner-right">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOutlet">49,50</span>
+              </div>
+            </div>
+          </div>`
+      },
+      'tagliedoppiacifra': {
+        name: '6. Taglie | Doppia Cifra',
+        fields: ['groupSizes', 'groupOrig', 'groupDiscount', 'groupOutlet', 'groupCustomText'],
+        render: () => `
+          <div class="tpl-tagliedoppiacifra">
+            <div class="size-section">
+              <div class="size-title">SIZE</div>
+              <div class="size-grid">
+                <div class="size-box" id="lblSize1">S</div>
+                <div class="size-box" id="lblSize2">M</div>
+                <div class="size-box" id="lblSize3">L</div>
+                <div class="size-box" id="lblSize4">XL</div>
+                <div class="size-box" id="lblSize5">2XL</div>
+                <div class="size-box" id="lblSize6">3XL</div>
+              </div>
+            </div>
+            <div class="price-section">
+              <div class="top-price-row">
+                <span class="original-price" id="lblOrig">€ 330,00</span>
+                <span class="discount-tag" id="lblDiscount">-70%</span>
+              </div>
+              <div class="final-price" id="lblOutlet">€ 99,00</div>
+              <div class="footer-text" id="lblCustomText">OUTLET PRICE • FW26</div>
+            </div>
+          </div>`
+      }
+    };
+
+    function initSizeSelects() {
+      for (let i = 1; i <= 6; i++) {
+        const sel = document.getElementById(`sizeSelect${i}`);
+        if (!sel) continue;
+        sel.innerHTML = '';
+        SIZE_OPTIONS.forEach(opt => {
+          const el = document.createElement('option');
+          el.value = opt;
+          el.textContent = opt;
+          if (opt === DEFAULT_SIZES[i - 1]) el.selected = true;
+          sel.appendChild(el);
+        });
+      }
+    }
+
+    function setTemplate(key) {
+      if (!TEMPLATES[key]) return;
+      currentTemplateKey = key;
+
+      document.querySelectorAll('.template-card').forEach(card => card.classList.remove('active'));
+      const activeCard = document.getElementById(`card-tpl-${key}`);
+      if (activeCard) activeCard.classList.add('active');
+
+      document.getElementById('labelPreview').innerHTML = TEMPLATES[key].render();
+
+      const allFields = ['groupBrand', 'groupCustomBrand', 'groupCustomText', 'groupProdName', 'groupCode', 'groupOrig', 'groupDiscounted', 'groupDiscount', 'groupOutlet', 'groupSizes'];
+      allFields.forEach(fId => {
+        const elem = document.getElementById(fId);
+        if (elem) elem.style.display = TEMPLATES[key].fields.includes(fId) ? 'block' : 'none';
+      });
+
+      const priceRow = document.getElementById('groupPriceRow');
+      const showOrig = TEMPLATES[key].fields.includes('groupOrig');
+      const showDiscounted = TEMPLATES[key].fields.includes('groupDiscounted');
+      const showDiscount = TEMPLATES[key].fields.includes('groupDiscount');
+      if (priceRow) {
+        priceRow.style.display = (showOrig || showDiscounted || showDiscount) ? 'flex' : 'none';
+      }
+
+      const lblOrigTitle = document.getElementById('lblOrigTitle');
+      const lblPriceTitle = document.getElementById('lblPriceTitle');
+      const lblCustomTextTitle = document.getElementById('lblCustomTextTitle');
+
+      if (key === 'tagliedoppiacifra') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finale (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Frase Descrittiva / Testo Libero";
+        document.getElementById('inputOrig').value = "330,00";
+        document.getElementById('inputDiscount').value = "-70%";
+        document.getElementById('inputOutlet').value = "99,00";
+        document.getElementById('inputCustomText').value = "OUTLET PRICE • FW26";
+      } else if (key === 'final') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Pieno (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Testo Personalizzato / Etichetta";
+        document.getElementById('inputCustomText').value = "FINAL PRICE";
+      } else if (key === 'promo50') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finito (€)";
+      } else {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Pieno (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Testo Personalizzato / Etichetta";
+      }
+
+      initQR();
+      updateLabel();
+    }
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function init() {
+      initSizeSelects();
+      loadBrandSelect();
+      loadCustomLogosSelect();
+      checkDymoPresence();
+
+      // PARSING PARAMETRI URL PER SELEZIONE AUTOMATICA TEMPLATE
+      const urlParams = new URLSearchParams(window.location.search);
+      const labelParam = urlParams.get('label') || urlParams.get('tpl') || urlParams.get('template');
+      
+      const paramMap = {
+        'doppioprezzo': 'outlet',
+        'outlet': 'luxury',
+        'finalprice': 'final',
+        'final': 'final',
+        'lastchance': 'promo',
+        'promo': 'promo',
+        'luxury': 'luxury',
+        'promo50': 'promo50',
+        'tagliedoppiacifra': 'tagliedoppiacifra'
+      };
+
+      if (labelParam && paramMap[labelParam.toLowerCase()]) {
+        setTemplate(paramMap[labelParam.toLowerCase()]);
+      } else {
+        setTemplate('tagliedoppiacifra');
+      }
+
+    }
+
+    function setDymoStatus(badgeText, connected, detail) {
+      const badge = document.getElementById('usbStatusBadge');
+      badge.innerText = badgeText;
+      badge.className = `status-badge ${connected ? 'connected' : 'disconnected'}`;
+      document.getElementById('usbDeviceName').innerText = detail;
+    }
+
+    // STATO STAMPANTE LETTO DAL WEB SERVICE DI DYMO CONNECT (PORTA 41951)
+    async function checkDymoPresence() {
+      try {
+        const printer = await DymoDirect.dymoFindPrinter();
+        if (printer) {
+          setDymoStatus('CONNESSA', true, printer.name);
+        } else {
+          setDymoStatus('NON TROVATA', false, 'Collega e accendi la LabelWriter');
+        }
+        return printer;
+      } catch (err) {
+        setDymoStatus('SERVIZIO OFF', false, 'Avvia DYMO Connect sul computer');
+        return null;
+      }
+    }
+
+    function loadBrandSelect() {
+      const select = document.getElementById('brandSelect');
+      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
+        // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
+        const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+        [...priorityFiles, ...remainingFiles].forEach(fileName => {
+          appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
+        });
+      }
+
+      // Posizionato di default sulla voce placeholder
+      select.value = "";
+      selectedBrand = "";
+    }
+
+    function loadCustomLogosSelect() {
+      const select = document.getElementById('customLogoSelect');
+      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || localStorage.getItem('customLogos') || '[]');
+
+      select.innerHTML = '<option value="">-- Nessun Logo Personalizzato --</option>';
+
+      if (Array.isArray(customLogos) && customLogos.length > 0) {
+        customLogos.forEach((item, index) => {
+          const option = document.createElement('option');
+          option.value = item.data || item.url || item.src || item;
+          option.textContent = "★ " + (item.name || `Logo Personalizzato ${index + 1}`);
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function onBrandSelectChange() {
+      const val = document.getElementById('brandSelect').value;
+      selectedBrand = val;
+      if (val) {
+        selectedCustomLogo = '';
+        document.getElementById('customLogoSelect').value = '';
+      }
+      updateLabel();
+    }
+
+    function onCustomLogoSelectChange() {
+      const val = document.getElementById('customLogoSelect').value;
+      selectedCustomLogo = val;
+      if (val) {
+        selectedBrand = '';
+        document.getElementById('brandSelect').value = '';
+      }
+      updateLabel();
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) return;
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
+    }
+
+    function adjustFinalPriceFontSize() {
+      const elemOutlet = document.getElementById('lblOutlet');
+      if (!elemOutlet || currentTemplateKey !== 'tagliedoppiacifra') return;
+
+      const text = elemOutlet.innerText.trim();
+      const len = text.length;
+
+      let screenSize = '76px';
+      let printSize = '28pt';
+
+      if (len <= 7) {
+        screenSize = '84px';
+        printSize = '31pt';
+      } else if (len === 8) {
+        screenSize = '70px';
+        printSize = '25pt';
+      } else if (len === 9) {
+        screenSize = '62px';
+        printSize = '22pt';
+      } else if (len === 10) {
+        screenSize = '52px';
+        printSize = '18.5pt';
+      } else if (len >= 11) {
+        screenSize = '44px';
+        printSize = '15.5pt';
+      }
+
+      elemOutlet.style.setProperty('--final-price-size-screen', screenSize);
+      elemOutlet.style.setProperty('--final-price-size-print', printSize);
+    }
+
+    function updateLabel() {
+      const imgElement = document.getElementById('labelLogo');
+      const textElement = document.getElementById('labelFallbackText');
+
+      if (imgElement) {
+        if (selectedCustomLogo) {
+          imgElement.src = selectedCustomLogo;
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
+        } else if (selectedBrand) {
+          imgElement.src = LOGO_PATH + selectedBrand;
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
+        } else {
+          // SE L'UTENTE NON HA SELEZIONATO ALCUN BRAND:
+          // Mostra di default a schermo il file assets/logos/LXRY_BRAND.png
+          imgElement.src = LOGO_PATH + 'LXRY_BRAND.png';
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
+        }
+      }
+
+      const elemOrig = document.getElementById('lblOrig');
+      const elemDiscounted = document.getElementById('lblDiscounted');
+      const elemDisc = document.getElementById('lblDiscount');
+      const elemOutlet = document.getElementById('lblOutlet');
+      const elemCustomText = document.getElementById('lblCustomText');
+      const elemProd = document.getElementById('lblProdName');
+      const elemCode = document.getElementById('lblCode');
+
+      if (elemOrig) {
+        const origValue = document.getElementById('inputOrig').value.trim();
+        if (currentTemplateKey === 'tagliedoppiacifra') {
+          elemOrig.innerText = origValue === '' ? '' : (origValue.includes('€') ? origValue : `€ ${origValue}`);
+        } else {
+          elemOrig.innerText = origValue;
+        }
+      }
+
+      if (elemDiscounted && document.getElementById('inputDiscounted')) {
+        elemDiscounted.innerText = document.getElementById('inputDiscounted').value;
+      }
+      if (elemDisc) elemDisc.innerText = document.getElementById('inputDiscount').value;
+      
+      if (elemOutlet) {
+        const outletValue = document.getElementById('inputOutlet').value;
+        if (currentTemplateKey === 'tagliedoppiacifra') {
+          elemOutlet.innerText = outletValue.includes('€') ? outletValue : `€ ${outletValue}`;
+        } else {
+          const noSymbol = (currentTemplateKey === 'outlet' || currentTemplateKey === 'final' || currentTemplateKey === 'promo' || currentTemplateKey === 'luxury' || currentTemplateKey === 'promo50');
+          elemOutlet.innerText = outletValue + (noSymbol ? '' : ' €');
+        }
+      }
+      
+      if (elemCustomText) elemCustomText.innerText = document.getElementById('inputCustomText').value;
+      if (elemProd) elemProd.innerText = document.getElementById('inputProdName').value;
+      if (elemCode) elemCode.innerText = document.getElementById('inputCode').value;
+
+      if (currentTemplateKey === 'tagliedoppiacifra') {
+        for (let i = 1; i <= 6; i++) {
+          const sBox = document.getElementById(`lblSize${i}`);
+          const sSel = document.getElementById(`sizeSelect${i}`);
+          if (sBox && sSel) {
+            sBox.innerText = sSel.value;
+          }
+        }
+        adjustFinalPriceFontSize();
+      }
+    }
+
+    function onLogoError() {
+      const imgElement = document.getElementById('labelLogo');
+      if (imgElement) imgElement.style.display = 'none';
+      
+      const textElement = document.getElementById('labelFallbackText');
+      if (textElement) {
+        textElement.innerHTML = "LXRY<br>BRAND";
+        textElement.style.display = 'block';
+      }
+    }
+
+    function initQR() {
+      const qrBox = document.getElementById('labelQR');
+      if (!qrBox) return;
+      qrBox.innerHTML = '';
+      new QRCode(qrBox, {
+        text: "https://instagram.com/luxuryoutletroma",
+        width: 96,
+        height: 96,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function calculateDiscount() {
+      if (currentTemplateKey === 'promo50') {
+        updateLabel();
+        return;
+      }
+      let orig = parseFloat(document.getElementById('inputOrig').value.replace('€', '').replace(',', '.').trim());
+      let outlet = parseFloat(document.getElementById('inputOutlet').value.replace(',', '.').trim());
+
+      if (orig > 0 && outlet > 0 && orig > outlet) {
+        let disc = Math.round(((orig - outlet) / orig) * 100);
+        document.getElementById('inputDiscount').value = `-${disc}%`;
+      }
+      updateLabel();
+    }
+
+    // STAMPA DIRETTA SU DYMO; SE IL SERVIZIO NON RISPONDE RIPIEGA SULLA STAMPA DEL BROWSER
+    async function printLabel() {
+      const btn = document.getElementById('btnPrint');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = '⏳ STAMPA IN CORSO…';
+
+      try {
+        let printer, png;
+        try {
+          printer = await checkDymoPresence();
+          if (!printer) throw new Error('nessuna stampante DYMO connessa');
+          png = await renderLabelPng();
+        } catch (err) {
+          console.warn('Stampa DYMO diretta non disponibile:', err);
+          alert(`Stampa DYMO diretta non disponibile (${err.message}).\nUso la stampa del browser.`);
+          printLabelIsolated();
+          return;
+        }
+
+        try {
+          await DymoDirect.dymoPrintPng(printer.name, png);
+          setDymoStatus('CONNESSA', true, `${printer.name} · etichetta inviata`);
+        } catch (err) {
+          // La richiesta potrebbe essere già arrivata alla stampante: niente fallback automatico
+          console.error('Errore stampa DYMO:', err);
+          if (confirm(`Errore durante la stampa DYMO (${err.message}).\nVuoi usare la stampa del browser?`)) {
+            printLabelIsolated();
+          }
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    }
+
+    function getPrintIframe() {
+      let iframe = document.getElementById('printIframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'printIframe';
+        iframe.style.position = 'fixed';
+        // Dimensioni reali dell'etichetta fuori schermo: servono a html2canvas per il rendering
+        iframe.style.left = '-10000px';
+        iframe.style.top = '0';
+        iframe.style.width = '57mm';
+        iframe.style.height = '32mm';
+        iframe.style.border = '0px';
+        document.body.appendChild(iframe);
+      }
+      return iframe;
+    }
+
+    function writePrintIframe(autoPrint) {
+      const iframe = getPrintIframe();
+      const labelHTML = document.getElementById('labelPreview').innerHTML;
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(buildPrintDocument(labelHTML, autoPrint));
+      doc.close();
+      return iframe;
+    }
+
+    function printLabelIsolated() {
+      writePrintIframe(true);
+    }
+
+    // RENDERING DELL'ETICHETTA DI STAMPA IN PNG A 300 DPI (RISOLUZIONE LABELWRITER 450)
+    async function renderLabelPng() {
+      if (typeof html2canvas === 'undefined') throw new Error('html2canvas non caricato');
+
+      const iframe = writePrintIframe(false);
+      const doc = iframe.contentWindow.document;
+
+      await Promise.all([...doc.images].map(img => img.complete ? null : new Promise(resolve => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+      })));
+      if (doc.fonts) await doc.fonts.ready;
+
+      // html2canvas ignora i filtri CSS: applica a mano il filter: brightness(0) dei loghi brand
+      doc.querySelectorAll('.brand-logo-container img').forEach(img => {
+        if (!img.naturalWidth) return;
+        const canvas = doc.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = 'brightness(0)';
+        ctx.drawImage(img, 0, 0);
+        img.src = canvas.toDataURL('image/png');
+      });
+
+      const canvas = await html2canvas(doc.querySelector('.print-wrapper'), {
+        scale: 300 / 96,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false
+      });
+      return canvas.toDataURL('image/png').split(',')[1];
+    }
+
+    function buildPrintDocument(labelHTML, autoPrint) {
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Stampa DYMO 11354</title>
+          <style>
+            @page {
+              size: 57mm 32mm;
+              margin: 0 !important;
+            }
+            * { 
+              box-sizing: border-box; 
+              margin: 0; 
+              padding: 0; 
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            html, body {
+              width: 57mm !important;
+              height: 32mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff;
+              font-family: Arial, Helvetica, sans-serif;
+              overflow: hidden !important;
+            }
+            
+            .print-wrapper {
+              width: 57mm !important;
+              height: 32mm !important;
+              padding: 1.5mm 2.5mm 1.5mm 2.5mm !important;
+              background: #ffffff;
+              color: #000000;
+              box-sizing: border-box;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+
+            .tpl-outlet, .tpl-final, .tpl-promo, .tpl-luxury, .tpl-promo50, .tpl-tagliedoppiacifra {
+              width: 100% !important;
+              box-sizing: border-box;
+            }
+
+            .brand-logo-container { display: flex; align-items: center; justify-content: flex-start; }
+            .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
+            .brand-text-fallback { font-family: Arial, sans-serif; font-weight: 800; color: #000; line-height: 1.1; letter-spacing: -0.5px; }
+
+            /* TEMPLATE 1 PRINT */
+            .tpl-outlet { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; }
+            .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 14mm; width: 100%; }
+            .tpl-outlet .brand-logo-container { width: 32mm; height: 14mm; }
+            .tpl-outlet .brand-text-fallback { font-size: 10pt; }
+            .tpl-outlet .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
+            .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 12mm !important; height: 12mm !important; }
+            .tpl-outlet .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 2.5mm; width: 100%; }
+            .tpl-outlet .price-box { display: flex; flex-direction: column; }
+            .tpl-outlet .price-label { font-size: 7.5pt; line-height: 1; }
+            .tpl-outlet .price-val { font-size: 13pt; line-height: 1; }
+            .tpl-outlet .discount-val { font-size: 13pt; font-weight: bold; line-height: 1; }
+            .tpl-outlet .price-outlet .price-val { font-size: 17pt; font-weight: bold; }
+
+            /* TEMPLATE 2 PRINT */
+            .tpl-final { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; }
+            .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 14mm; width: 100%; }
+            .tpl-final .brand-logo-container { width: 32mm; height: 14mm; }
+            .tpl-final .brand-text-fallback { font-size: 10pt; }
+            .tpl-final .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
+            .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 12mm !important; height: 12mm !important; }
+            .tpl-final .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 2.5mm; width: 100%; }
+            .tpl-final .custom-text-box { display: flex; align-items: flex-end; margin-bottom: 0.6mm; }
+            .tpl-final .custom-text-val { font-size: 12pt; font-weight: 400; text-transform: uppercase; line-height: 1; letter-spacing: -0.3px; }
+            .tpl-final .price-box { display: flex; flex-direction: column; align-items: flex-end; }
+            .tpl-final .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; }
+            .tpl-final .price-val { font-size: 18pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+
+            /* TEMPLATE 3 & 4 PRINT */
+            .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 29mm; width: 100%; padding: 0 0.5mm; }
+            .tpl-promo .left-logo-box, .tpl-luxury .left-logo-box { width: 28mm; height: 23.5mm; display: flex; align-items: center; justify-content: flex-start; }
+            .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+            .tpl-promo .price-box, .tpl-luxury .price-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+            .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; font-weight: normal; }
+            .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 19pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+
+            /* TEMPLATE 5 PRINT (PROMO 50+50) */
+            .tpl-promo50 { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; width: 100%; }
+            .tpl-promo50 .top-row { display: flex; justify-content: space-between; align-items: flex-end; padding: 0.3mm 1mm 0.8mm 1mm; height: 9.8mm; }
+            .tpl-promo50 .price-col { display: flex; flex-direction: column; align-items: flex-start; }
+            .tpl-promo50 .price-col.align-right { align-items: flex-end; }
+            .tpl-promo50 .top-row .price-label { font-size: 7.5pt; line-height: 1; color: #000; font-weight: 400; margin-bottom: 0.5mm; }
+            .tpl-promo50 .top-row .price-val { font-size: 13.5pt; font-weight: 400; line-height: 1; color: #000; letter-spacing: -0.3pt; white-space: nowrap; }
+            .tpl-promo50 .disc-middle { font-size: 13.5pt; font-weight: 400; line-height: 1; color: #000; text-align: center; }
+            .tpl-promo50 .black-banner { background: #000 !important; color: #fff !important; border-radius: 1.8mm; padding: 1.2mm 1.8mm; display: flex; justify-content: space-between; align-items: stretch; height: 18.2mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .tpl-promo50 .banner-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+            .tpl-promo50 .banner-promo-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+            .tpl-promo50 .promo-title { font-size: 8pt; font-weight: 800; letter-spacing: 0.2pt; line-height: 1.1; color: #fff; text-align: center; }
+            .tpl-promo50 .promo-subtitle { font-size: 9.5pt; font-weight: 800; line-height: 1.1; color: #fff; text-align: center; }
+            .tpl-promo50 .promo-discount { font-size: 23pt; font-weight: 800; line-height: 0.95; color: #fff; text-align: left; }
+            .tpl-promo50 .banner-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; height: 100%; }
+            .tpl-promo50 .banner-right .price-label { color: #fff; font-size: 8.5pt; font-weight: 400; line-height: 1; margin-bottom: 0.3mm; text-align: right; }
+            .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 23pt; font-weight: 800; line-height: 1; letter-spacing: -0.5pt; white-space: nowrap; text-align: right; }
+
+            /* TEMPLATE 6 PRINT (TAGLIE DOPPIA CIFRA CON FONT STAMPA DINAMICO) */
+            .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; height: 29mm; width: 100%; }
+            .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; align-items: center; width: 15mm; }
+            .tpl-tagliedoppiacifra .size-title { font-size: 8pt; font-weight: 400; letter-spacing: 0.2pt; margin-bottom: 0.5mm; text-transform: uppercase; }
+            .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8mm; width: 100%; }
+            .tpl-tagliedoppiacifra .size-box { width: 7mm; height: 7mm; border: 0.5mm solid #000000; display: flex; align-items: center; justify-content: center; font-size: 7.5pt; font-weight: 400; background-color: #ffffff; }
+            .tpl-tagliedoppiacifra .price-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 1mm; padding-bottom: 1.5mm; }
+            .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 2mm; width: 100%; }
+            .tpl-tagliedoppiacifra .original-price { font-size: 12.5pt; font-weight: 400; }
+            .tpl-tagliedoppiacifra .discount-tag { font-size: 12.5pt; font-weight: 900; }
+            .tpl-tagliedoppiacifra .final-price { 
+              font-size: var(--final-price-size-print, 28pt) !important; 
+              font-weight: 900; 
+              line-height: 0.85; 
+              letter-spacing: -0.5pt; 
+              white-space: nowrap; 
+            }
+            .tpl-tagliedoppiacifra .footer-text { font-size: 8.5pt; font-weight: 400; text-transform: uppercase; text-align: right; margin-bottom: 1mm; }
+          </style>
+        </head>
+        <body>
+          <div class="print-wrapper">
+            ${labelHTML}
+          </div>
+          ${autoPrint ? `<script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.focus();
+                window.print();
+              }, 300);
+            };
+          <\/script>` : ''}
+        </body>
+        </html>
+      `;
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

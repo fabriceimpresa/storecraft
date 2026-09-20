@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Etichette DYMO // STORE CRAFT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #121110;
+      --sidebar: #181715;
+      --card: #1e1d1a;
+      --border: #2e2b27;
+      --accent: #d4a373;
+      --accent-hover: #e5ba73;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+      --success: #2a9d8f;
+      --error: #e76f51;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; }
+    .brand { font-family: 'Cinzel', serif; font-size: 1.2rem; letter-spacing: 2px; color: var(--accent); margin-bottom: 1.5rem; text-align: center; }
+    .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+    .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
+    
+    main { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; gap: 2rem; }
+    
+    .editor-section { flex: 1; max-width: 450px; }
+    .preview-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0908; border-radius: 8px; border: 1px solid var(--border); padding: 2rem; position: relative; }
+
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    header h1 { font-family: 'Cinzel', serif; font-size: 1.5rem; }
+    header p { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
+
+    .usb-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.2rem;
+    }
+    .status-badge { font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; background: #333; color: #aaa; }
+    .status-badge.connected { background: rgba(42, 157, 143, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .status-badge.disconnected { background: rgba(231, 111, 81, 0.2); color: var(--error); border: 1px solid var(--error); }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.4rem; font-weight: 600; }
+    .form-control { width: 100%; padding: 0.65rem; background: var(--card); border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.9rem; outline: none; }
+    .form-control:focus { border-color: var(--accent); }
+    .row { display: flex; gap: 0.8rem; }
+
+    .btn-scan { width: 100%; padding: 0.6rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.2rem; transition: all 0.2s; }
+    .btn-scan:hover { color: var(--text); border-color: var(--accent); }
+
+    .btn-print { width: 100%; padding: 0.9rem; background: var(--accent); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; margin-top: 0.5rem; }
+    .btn-print:hover { background: var(--accent-hover); }
+
+    /* ANTEPRIMA SCHERMO */
+    .label-preview-wrapper {
+      background: #ffffff;
+      width: 456px;
+      height: 256px;
+      border-radius: 12px;
+      padding: 16px;
+      color: #000;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .label-top { display: flex; justify-content: space-between; align-items: center; height: 100px; }
+    .brand-logo-container { width: 250px; height: 90px; display: flex; align-items: center; justify-content: flex-start; }
+    .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
+    .brand-text-fallback { font-family: 'Cinzel', serif; font-size: 22px; font-weight: bold; color: #000; display: none; }
+
+    .qr-container { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
+    .qr-container img, .qr-container canvas { width: 90px !important; height: 90px !important; }
+
+    .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 4px; }
+    .price-box { display: flex; flex-direction: column; align-items: flex-start; }
+    .price-label { font-size: 18px; line-height: 1; margin-bottom: 2px; }
+    .price-val { font-size: 38px; line-height: 1; letter-spacing: -1px; }
+    .discount-val { font-size: 38px; font-weight: bold; line-height: 1; }
+    .price-outlet { align-items: flex-end; }
+    .price-outlet .price-val { font-size: 44px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div>
+      <div class="brand">STORE // CRAFT</div>
+      <a href="index.html" class="nav-btn">← Torna al Dashboard</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="editor-section">
+      <header>
+        <h1>Etichette DYMO</h1>
+        <p>Stampa Diretta 57x32mm (11354)</p>
+      </header>
+
+      <div class="usb-status">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: bold;">Stampante DYMO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);" id="usbDeviceName">Verifica hardware...</div>
+        </div>
+        <span class="status-badge disconnected" id="usbStatusBadge">NON CONNESSA</span>
+      </div>
+
+      <button class="btn-scan" onclick="requestDymoAccess()">🔄 Associa / Rileva DYMO USB</button>
+
+      <div class="form-group">
+        <label for="brandSelect">Brand Ufficiale</label>
+        <select id="brandSelect" class="form-control" onchange="updateLabel()">
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="form-group" style="flex:1;">
+          <label>Prezzo Pieno (€)</label>
+          <input type="text" id="inputOrig" class="form-control" value="89,90" oninput="calculateDiscount()">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Sconto (%)</label>
+          <input type="text" id="inputDiscount" class="form-control" value="-67%" oninput="formatDiscountInput(this); updateLabel()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Prezzo Outlet (€)</label>
+        <input type="text" id="inputOutlet" class="form-control" value="29,50" oninput="updateLabel()">
+      </div>
+
+      <button class="btn-print" onclick="printLabelIsolated()">🖨️ STAMPA ETICHETTA (11354)</button>
+    </div>
+
+    <div class="preview-section">
+      <div style="position: absolute; top: 15px; left: 20px;" class="form-group preview-title">
+        <label>Anteprima Etichetta 11354 (57 x 32 mm)</label>
+      </div>
+
+      <div class="label-preview-wrapper" id="labelPreview">
+        <div class="label-top">
+          <div class="brand-logo-container">
+            <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
+            <span id="labelFallbackText" class="brand-text-fallback">BRAND</span>
+          </div>
+          <div class="qr-container" id="labelQR"></div>
+        </div>
+
+        <div class="label-bottom">
+          <div class="price-box">
+            <span class="price-label">Euro</span>
+            <span class="price-val" id="lblOrig">89,90</span>
+          </div>
+
+          <div class="discount-val" id="lblDiscount">-67%</div>
+
+          <div class="price-box price-outlet">
+            <span class="price-label">Euro</span>
+            <span class="price-val" id="lblOutlet">29,50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const LOGO_FILES = [
+      "269TEBE.PNG","ABIDDIKKIA.png","AFTERLABEL.png","AIRWALK.png","ALESSANDRODELLACQUA.png",
+      "ALEXANDERMCQUEEN.png","ARMANI.png","ARMANI_COLLEZIONI.png","ARMANI_EXCHANGE.png",
+      "ARMANI_GIORGIO.png","ARMANI_JEANS.png","ARNALDIMILANO.PNG","AVIREX.png","AYLIE.png",
+      "BAGUTTA.png","BALDININI.png","BALMAIN.PNG","BASTONCINO.png","BCBG.png","BEATRICE.png",
+      "BELSTAF.png","BENSHERMAN.png","BIKKENBERGS.png","BLAUER.png","BLKER.png","BLUGIRL.png",
+      "BLUMARINE.png","BRICS.png","BURBERRY.png","BYBLOS.png","CALVINKLEIN.png","CARHARTT.png",
+      "CAVALLI_CLASS.png","CAVALLI_ROBERTO.png","CHIARABONI.png","CIESSEPIUMINI.png","COCACOLA.png",
+      "COCCINELLE.png","COSTUMENATIONAL.png","DAINESE.png","DEVORE.png","DIADORA.png","DICKIES.png",
+      "DIESEL.png","DIOR.png","DIXIE.png","DOLCEANDGABBANA.png","DRSCHOLL.png","DSQUARED2.png",
+      "DUCAHOMME.png","EASTPAK.png","EGONVONFURSTENBERG.png","ELISAFANTI.png","EMMAANDGAIA.png",
+      "ENTREAMIS.png","ERMANNOSCERVINO.png","ERMENEGILDOZEGNA.png","EVERLAST.png","FACCONABLE.png",
+      "FELEPPA.png","FERRARI.png","FERRE.png","FILA.png","FRANKLINMARSHALL.png","GAELLE.png",
+      "GANT.png","GARMENT.png","GATTINONI.png","GCDS.png","GERMANS.png","GIVENCHY.png","GOORIN.png",
+      "GUESS.png","GUYLAROCHE.png","H953.png","HACKETTLONDON.png","HARMONT&BLAINE.png","HAVEONE.png",
+      "HERSCHELL.png","HOPPER.png","HUSKY.png","IMPERIAL.png","IMPURE.png","INVICTA.png",
+      "ISABELMARANT.png","JACKDANIELS.png","JEIO.PNG","JEREMYSCOTT.png","JIJIL.png",
+      "JOHNGALLIANO.png","JOHNRICHMOND.png","JUSTCAVALLI.png","KARLLAGERFELD.png","KENZO.png",
+      "KRIZIA.png","KWAY.png","LACOSTE.png","LAMARTHE.png","LAPERLA.png","LASTCHANCE.png",
+      "LAURABIAGIOTTI.png","LEE.png","LESARTEDELSOLE.png","LEVIS.png","LIUJO.png","LONSDALE.png",
+      "LOVE.png","LUCKYLU.png","LUXURY_GOLD.png","LXRY.png","LXRY_BRAND.png","MADEINITALY.png",
+      "MAISONMARGIELA.png","MAJE.png","MALIPARNI.png","MALONESOULIERS.png","MARCJACOBS.png",
+      "MARELLA.png","MARIOVALENTINO.png","MARLBORO.png","MARNI.png","MASSIMOREBECCHI.png",
+      "MAXMARA.png","MEIMEIJ.png","MELISSA.png","MICHAELKORS.png","MIRONCE.png","MISSONI.png",
+      "MIZUNO.png","MODFITTERS.png","MONCLER.png","MONTECERVINO.png","MOSCHINO.png","MOTEL.png",
+      "MSGM.png","NAPAPIJRI.png","NENETTE.png","NEWBALANCE.png","OBAG.png","OFFICINA36.png",
+      "ONLY.png","OTTODROM.png","PACIOTTI_4US.png","PACIOTTI_CESARE.png","PATRIZIAPEPE.png",
+      "PAULANDSHARK.png","PEOPLEOFSHIBUYA.png","PHILIPPPLEIN.png","PIERRECARDIN.png","PINKO.png",
+      "PIQUADRO.png","POLAROID.png","RALPHLAUREN.png","RANSOM.png","REFRIGIWEAR.png","REFRIGUE.png",
+      "RICHMOND.png","ROCCOBAROCCO.png","ROYROGERS.png","RUEBISQUIT.png","RUSSEL.png",
+      "SALVATOREFERRAGAMO.png","SERGIOTACCHINI.png","SFIZIO.png","SIMONACORSELLINI.png","SKYWARD.png",
+      "SOUVENIR.png","STEVEMADDEN.png","SUPERDRY.png","TEBE.png","TENSIONEIN.png","TOMMYHILFIGER.png",
+      "TOMMYJEANS.png","TOYG.png","TRUSSARDI.png","TRUSSARDI_JEANS.png","TWINSET.png","UNGARO.png",
+      "UNIFORM.png","USPOLOASSN.png","VERSACE.png","VERSACE_VERSUS.png","VICBEE.png","VIONNET.png",
+      "WEILIZHENG.png","WRANGLER.png"
+    ];
+
+    LOGO_FILES.push("ARMANI_EMPORIO.png", "COLUMBIA.png", "COTTONBELT.png", "ONLYANDSONS.png", "PANAM.png");
+    LOGO_FILES.sort((firstLogo, secondLogo) => firstLogo.localeCompare(secondLogo));
+
+    const LOGO_PATH = "assets/logos/";
+    const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function init() {
+      loadBrandSelect();
+      initQR();
+      updateLabel();
+      checkDymoPresence();
+      
+      if ('usb' in navigator) {
+        navigator.usb.addEventListener('connect', checkDymoPresence);
+        navigator.usb.addEventListener('disconnect', checkDymoPresence);
+      }
+    }
+
+    async function checkDymoPresence() {
+      const badge = document.getElementById('usbStatusBadge');
+      const nameElem = document.getElementById('usbDeviceName');
+
+      if (!('usb' in navigator)) {
+        badge.innerText = "NON SUPPORTATO";
+        nameElem.innerText = "Usare Chrome per il rilievo USB";
+        return;
+      }
+
+      try {
+        const devices = await navigator.usb.getDevices();
+        const dymo = devices.find(d => d.vendorId === 0x0922);
+
+        if (dymo) {
+          let name = "DYMO LabelWriter";
+          if (dymo.productId === 0x0007) name = "DYMO LW 400";
+          else if (dymo.productId === 0x0008) name = "DYMO LW 400 Turbo";
+          else if (dymo.productId === 0x0013) name = "DYMO LW 450";
+          else if (dymo.productId === 0x0014) name = "DYMO LW 450 Turbo";
+
+          badge.innerText = "CONNESSA";
+          badge.className = "status-badge connected";
+          nameElem.innerText = name;
+        } else {
+          badge.innerText = "NON TROVATA";
+          badge.className = "status-badge disconnected";
+          nameElem.innerText = "Collega il cavo USB";
+        }
+      } catch (err) {
+        badge.innerText = "DISCONNESSA";
+        badge.className = "status-badge disconnected";
+      }
+    }
+
+    async function requestDymoAccess() {
+      if ('usb' in navigator) {
+        try {
+          await navigator.usb.requestDevice({ filters: [{ vendorId: 0x0922 }] });
+          checkDymoPresence();
+        } catch (e) {}
+      }
+    }
+
+    function loadBrandSelect() {
+      const select = document.getElementById('brandSelect');
+      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      LOGO_FILES.forEach(fileName => {
+        const option = document.createElement('option');
+        option.value = fileName;
+        option.textContent = cleanBrandName(fileName);
+        select.appendChild(option);
+      });
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) {
+        return;
+      }
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
+    }
+
+    function updateLabel() {
+      const select = document.getElementById('brandSelect');
+      const selectedFile = select.value;
+
+      const imgElement = document.getElementById('labelLogo');
+      const textElement = document.getElementById('labelFallbackText');
+
+      if (selectedFile) {
+        imgElement.src = LOGO_PATH + selectedFile;
+        imgElement.style.display = 'block';
+        textElement.style.display = 'none';
+      } else {
+        imgElement.style.display = 'none';
+        textElement.innerText = "BRAND";
+        textElement.style.display = 'block';
+      }
+
+      document.getElementById('lblOrig').innerText = document.getElementById('inputOrig').value;
+      document.getElementById('lblDiscount').innerText = document.getElementById('inputDiscount').value;
+      document.getElementById('lblOutlet').innerText = document.getElementById('inputOutlet').value;
+    }
+
+    function onLogoError() {
+      const select = document.getElementById('brandSelect');
+      const brandName = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : "BRAND";
+      
+      document.getElementById('labelLogo').style.display = 'none';
+      const textElement = document.getElementById('labelFallbackText');
+      textElement.innerText = brandName !== PLACEHOLDER_TEXT ? brandName : "BRAND";
+      textElement.style.display = 'block';
+    }
+
+    function initQR() {
+      const qrBox = document.getElementById('labelQR');
+      qrBox.innerHTML = '';
+      new QRCode(qrBox, {
+        text: "https://instagram.com/luxuryoutletroma",
+        width: 90,
+        height: 90,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function calculateDiscount() {
+      let orig = parseFloat(document.getElementById('inputOrig').value.replace(',', '.'));
+      let outlet = parseFloat(document.getElementById('inputOutlet').value.replace(',', '.'));
+
+      if (orig > 0 && outlet > 0 && orig > outlet) {
+        let disc = Math.round(((orig - outlet) / orig) * 100);
+        document.getElementById('inputDiscount').value = `-${disc}%`;
+      }
+      updateLabel();
+    }
+
+    /* STAMPA DIRETTA 57mm x 32mm PER DYMO 11354 */
+    function printLabelIsolated() {
+      let iframe = document.getElementById('printIframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'printIframe';
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0px';
+        iframe.style.height = '0px';
+        iframe.style.border = '0px';
+        document.body.appendChild(iframe);
+      }
+
+      const labelHTML = document.getElementById('labelPreview').innerHTML;
+
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Stampa DYMO 11354</title>
+          <style>
+            @page {
+              size: 57mm 32mm;
+              margin: 0 !important;
+            }
+            * { 
+              box-sizing: border-box; 
+              margin: 0; 
+              padding: 0; 
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            html, body {
+              width: 57mm !important;
+              height: 32mm !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff;
+              font-family: Arial, sans-serif;
+              overflow: hidden !important;
+            }
+            
+            .print-wrapper {
+              width: 57mm;
+              height: 32mm;
+              padding: 1.5mm 2.5mm;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              background: #ffffff;
+              color: #000000;
+              box-sizing: border-box;
+            }
+
+            .label-top { display: flex; justify-content: space-between; align-items: center; height: 14mm; }
+            .brand-logo-container { width: 33mm; height: 14mm; display: flex; align-items: center; justify-content: flex-start; }
+            .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
+            .brand-text-fallback { font-family: 'Cinzel', serif; font-size: 13pt; font-weight: bold; color: #000; }
+            
+            .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
+            .qr-container img, .qr-container canvas { width: 12mm !important; height: 12mm !important; }
+            
+            .label-bottom { display: flex; justify-content: space-between; align-items: flex-end; height: 13mm; padding-bottom: 0.5mm; }
+            .price-box { display: flex; flex-direction: column; }
+            .price-label { font-size: 7.5pt; line-height: 1; }
+            .price-val { font-size: 13pt; line-height: 1; }
+            .discount-val { font-size: 13pt; font-weight: bold; line-height: 1; }
+            .price-outlet .price-val { font-size: 17pt; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div class="print-wrapper">
+            ${labelHTML}
+          </div>
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.focus();
+                window.print();
+              }, 300);
+            };
+          <\/script>
+        </body>
+        </html>
+      `);
+      doc.close();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

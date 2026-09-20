@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>CREATORE LOGHI PERSONALIZZATI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      color: #fff;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      color: #e5ba73;
+      border-bottom: 2px solid #d4a373;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .upload-box {
+      border: 2px dashed #d4a373;
+      border-radius: 6px;
+      padding: 25px;
+      text-align: center;
+      background: #26292e;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .upload-box.dragover {
+      background: #353b45;
+      border-color: #e5ba73;
+    }
+
+    .upload-box:hover { background: #2f333a; }
+    .upload-box input { display: none; }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #dddddd;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #4a4237;
+      border-radius: 4px;
+      background-color: #26292e;
+      color: #ffffff;
+    }
+
+    .preview-section {
+      display: flex;
+      gap: 20px;
+      margin-top: 20px;
+      background: #111214;
+      padding: 15px;
+      border-radius: 6px;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    .preview-box {
+      text-align: center;
+    }
+
+    .preview-box p {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .preview-card {
+      width: 200px;
+      height: 100px;
+      background: #ffffff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    .preview-card img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .btn-save {
+      width: 100%;
+      background-color: #e5ba73;
+      color: #181a1d;
+      border: 1px solid #d4a373;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .btn-save:hover { background-color: #d4a373; }
+
+    /* LISTA LOGHI SALVATI */
+    .saved-list {
+      margin-top: 30px;
+    }
+
+    .saved-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .saved-list-header h2 {
+      font-size: 1rem;
+      color: #e5ba73;
+    }
+
+    .sort-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-sort {
+      background: #26292e;
+      border: 1px solid #d4a373;
+      border-radius: 3px;
+      color: #e5ba73;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 6px 8px;
+    }
+
+    .btn-sort:hover,
+    .btn-sort.active {
+      background: #d4a373;
+      color: #181a1d;
+    }
+
+    .saved-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #26292e;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      border-left: 3px solid #d4a373;
+      gap: 15px;
+    }
+
+    .saved-item-preview {
+      width: 80px;
+      height: 40px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+
+    .saved-item-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .saved-item-details {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .saved-item-details input {
+      padding: 4px 8px;
+      background: #181a1d;
+      border: 1px solid #4a4237;
+      color: #fff;
+      border-radius: 3px;
+      font-size: 0.9rem;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .saved-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-update {
+      background: #0056b3;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .btn-update:hover { background: #004085; }
+
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .btn-delete:hover { background: #c82333; }
+
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #d4a373;
+      color: #000;
+      border-radius: 50%;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="index.html" class="app-close-btn" title="Torna all'index">✕</a>
+
+  <div class="container">
+    <h1>AGGIUNGI LOGO BRAND PERSONALIZZATO</h1>
+
+    <!-- AREA UPLOAD CON DRAG AND DROPPING CORRETTO -->
+    <div class="upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      📂 <strong>Clicca o Trascina qui l'immagine del Logo</strong>
+      <p style="font-size:0.9rem; color:#aaa; margin-top:5px;">(Funziona con sfondi Bianchi o Neri)</p>
+      <input type="file" id="fileInput" accept="image/*" onchange="processImage(this.files[0])">
+    </div>
+
+    <!-- IMPOSTAZIONI E INPUT -->
+    <div class="form-group">
+      <label>Nome del Brand:</label>
+      <input type="text" id="brandNameInput" placeholder="Es. NIKE, ZARA, MIO BRAND" oninput="this.value = this.value.toUpperCase()" style="text-transform: uppercase;">
+    </div>
+
+
+    <!-- ANTEPRIMA RISULTATO -->
+    <div class="preview-section" id="previewArea" style="display:none;">
+      <div class="preview-box">
+        <p>Anteprima su Cartello</p>
+        <div class="preview-card">
+          <img id="processedPreview" src="" alt="Anteprima Logo">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-save" id="btnSave" style="display:none;" onclick="saveCustomLogo()">💾 SALVA NEI BRAND PERSONALIZZATI</button>
+
+    <div style="margin-top: 20px;  margin-bottom: 20px;"></div>
+    <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
+    <div class="saved-list">
+      <div class="saved-list-header">
+        <h2>La tua Lista Personale <a href="gestisci_lista.html" class="btn-sort btn-manage"><span style="font-size:2em; line-height:1;">⚙</span></a></h2>
+        <div class="sort-actions">
+          <button type="button" class="btn-sort" id="sortAlphabetical" onclick="setLogoSortOrder('alphabetical')">A-Z</button>
+          <button type="button" class="btn-sort active" id="sortChronological" onclick="setLogoSortOrder('chronological')">Data creazione</button>
+        </div>
+      </div>
+      <div id="customLogosContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    let processedBase64 = "";
+    let rawImage = null;
+    let logoSortOrder = 'chronological';
+
+    // Configurazione eventi Drag and Drop
+    const dropZone = document.getElementById('dropZone');
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('dragover');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files && files.length > 0) {
+        processImage(files[0]);
+      }
+    }, false);
+
+    function processImage(file) {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        rawImage = new Image();
+        rawImage.onload = function() {
+          runColorToAlpha();
+        };
+        rawImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function runColorToAlpha() {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = rawImage.width;
+      canvas.height = rawImage.height;
+
+      ctx.drawImage(rawImage, 0, 0);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imgData.data;
+
+      const topLeftR = data[0], topLeftG = data[1], topLeftB = data[2];
+      const avgBrightness = (topLeftR + topLeftG + topLeftB) / 3;
+      const finalMode = avgBrightness > 127 ? 'white' : 'black';
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const brightness = (r + g + b) / 3;
+
+        if (finalMode === 'black') {
+          if (brightness < 60) {
+            data[i + 3] = 0;
+          } else {
+            data[i] = 0;     
+            data[i + 1] = 0; 
+            data[i + 2] = 0; 
+          }
+        } else {
+          if (brightness > 200) {
+            data[i + 3] = 0;
+          }
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+      processedBase64 = canvas.toDataURL('image/png');
+
+      document.getElementById('processedPreview').src = processedBase64;
+      document.getElementById('previewArea').style.display = 'flex';
+      document.getElementById('btnSave').style.display = 'block';
+    }
+
+    function saveCustomLogo() {
+      const nameInput = document.getElementById('brandNameInput').value.trim();
+      if (!nameInput) {
+        alert("Inserisci un nome per il brand prima di salvare!");
+        return;
+      }
+
+      const existingLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      existingLogos.push({
+        id: 'custom_' + Date.now(),
+        name: nameInput.toUpperCase(),
+        data: processedBase64
+      });
+
+      localStorage.setItem('custom_brand_logos', JSON.stringify(existingLogos));
+      
+      document.getElementById('brandNameInput').value = '';
+      document.getElementById('previewArea').style.display = 'none';
+      document.getElementById('btnSave').style.display = 'none';
+      rawImage = null;
+
+      renderSavedLogos();
+    }
+
+
+    function escapeHtml(value) {
+      return value.replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[character]);
+    }
+
+    function renderSavedLogos() {
+      const container = document.getElementById('customLogosContainer');
+      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const sortedLogos = logos.map((item, index) => ({ item, index }));
+
+      if (logoSortOrder === 'alphabetical') {
+        sortedLogos.sort((first, second) => first.item.name.localeCompare(second.item.name, 'it', { sensitivity: 'base' }));
+      }
+
+      document.getElementById('sortAlphabetical').classList.toggle('active', logoSortOrder === 'alphabetical');
+      document.getElementById('sortChronological').classList.toggle('active', logoSortOrder === 'chronological');
+      
+      if (logos.length === 0) {
+        container.innerHTML = '<p style="font-size:0.8rem; color:#888;">Nessun logo personalizzato salvato.</p>';
+        return;
+      }
+
+      container.innerHTML = sortedLogos.map(({ item, index }) => `
+        <div class="saved-item">
+          <div class="saved-item-preview">
+            <img src="${item.data}" alt="${escapeHtml(item.name)}">
+          </div>
+          <div class="saved-item-details">
+            <input type="text" id="editName_${index}" value="${escapeHtml(item.name)}">
+          </div>
+          <div class="saved-item-actions">
+            <button class="btn-update" onclick="updateLogoName(${index})">Aggiorna Nome</button>
+            <button class="btn-delete" onclick="deleteLogo(${index})">Elimina</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setLogoSortOrder(sortOrder) {
+      logoSortOrder = sortOrder;
+      renderSavedLogos();
+    }
+
+    function updateLogoName(index) {
+      const newName = document.getElementById(`editName_${index}`).value.trim();
+      if (!newName) {
+        alert("Il nome non può essere vuoto!");
+        return;
+      }
+
+      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      logos[index].name = newName.toUpperCase();
+      localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
+      renderSavedLogos();
+    }
+
+    function deleteLogo(index) {
+      if (confirm("Sei sicuro di voler eliminare questo logo personalizzato?")) {
+        const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+        logos.splice(index, 1);
+        localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
+        renderSavedLogos();
+      }
+    }
+
+    window.onload = renderSavedLogos;
+  </script>
+</body>
+</html>
