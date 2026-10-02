@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
@@ -29,26 +29,25 @@
     .mobile-brand { display: none; }
     .mobile-nav-toggle { display: none; }
 
-    aside { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 2rem 1.2rem; display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 1000; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 34px 23px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 1000; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
     
     .sidebar-header {
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 2.4rem;
+      padding: 0 8px 56px;
       width: 100%;
     }
 
-    .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 1.28rem; letter-spacing: 2px; color: var(--accent); text-align: center; background: transparent; border: none; cursor: pointer; }
+    .brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 17px; line-height: 1.15; letter-spacing: .16em; font-weight: 600; color: var(--accent); text-align: center; white-space: nowrap; background: transparent; border: none; cursor: pointer; }
     .brand:hover, .brand:focus-visible { animation: brand-hover 0.6s ease-in-out; outline: none; }
 
     .mobile-close-btn {
       display: none;
       position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
+      right: -10px;
+      top: -16px;
       width: 28px;
       height: 28px;
       background-color: var(--accent);
@@ -65,7 +64,7 @@
 
     .mobile-close-btn:hover {
       background-color: var(--accent-hover);
-      transform: translateY(-50%) scale(1.1);
+      transform: scale(1.1);
     }
 
     .sidebar-overlay {
@@ -78,94 +77,168 @@
       70% { transform: translateY(0) scale(0.98); }
     }
     
-    .menu-label { 
-      font-size: 0.7rem; 
-      color: #ffffff; 
-      text-transform: uppercase; 
-      letter-spacing: 2px; 
-      font-weight: 700;
-      margin: 1.8rem 0 0.6rem 0.5rem; 
-      padding-bottom: 4px;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.2);
-    }
-
-    .menu-group { margin-top: 1.8rem; }
-    .menu-group:first-of-type { margin-top: 0; }
-    .menu-toggle {
-      width: 100%;
+    /* Menu laterale: struttura del menu di TEBE, colori di StoreCraft.
+       Il clic sul titolo di una sezione (non solo sulla freccia) la apre o la chiude. */
+    .sidebar-section .label {
+      position: relative;
+      z-index: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.5rem;
-      padding: 0 0.5rem 4px;
+      padding: 0 9px 10px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .24em;
+      color: #fff;
+      cursor: pointer;
+      transition: color .18s ease;
+    }
+    .sidebar-section + .sidebar-section .label { margin-top: 28px; }
+    /* Area illuminata sotto il titolo, con 12 px sopra come le voci, così la spaziatura non cambia. */
+    .sidebar-section .label::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: 0;
+      right: 0;
+      top: -12px;
+      bottom: -2px;
+      transition: background .18s ease, box-shadow .18s ease;
+    }
+    .sidebar-section .label:hover { color: var(--text); }
+    .sidebar-section .label:hover::before { background: rgba(212, 163, 115, 0.08); box-shadow: inset 2px 0 var(--accent); }
+    .section-toggle {
+      border: 0;
       background: transparent;
-      border: none;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.2);
-      color: #ffffff;
+      color: var(--accent);
+      padding: 2px 4px;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform .18s ease;
+    }
+    .section-toggle[aria-expanded="false"] { transform: rotate(-90deg); }
+
+    .sidebar-section nav { display: grid; gap: 3px; }
+    .sidebar-section.is-collapsed nav { display: none; }
+    .nav-btn {
+      display: block;
+      padding: 12px 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .18s ease, box-shadow .18s ease, color .18s ease;
+    }
+    .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); box-shadow: inset 2px 0 var(--accent); color: var(--text); }
+    /* Gruppi di voci dentro una sezione (in CREA CARTELLI: cartelli e promo stagionali). */
+    .nav-group { display: grid; gap: 3px; }
+    .nav-group[hidden] { display: none; }
+    /* Sottosezione PROMO STAGIONALI dentro CREA CARTELLI, chiusa all'apertura: aprendola si chiudono le voci
+       dei cartelli e sotto compaiono le promo (togglePromoSubsection). */
+    .nav-subtoggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 10px;
+      border: 0;
+      background: transparent;
+      color: var(--accent);
       font: inherit;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 700;
+      font-size: 13px;
       text-align: left;
       cursor: pointer;
+      transition: background .18s ease, box-shadow .18s ease, color .18s ease;
     }
-    .menu-toggle:hover, .menu-toggle:focus-visible { color: var(--accent); outline: none; }
-    .menu-arrow {
-      color: var(--accent);
-      font-size: 1rem;
-      line-height: 0.7;
-      transition: transform 0.25s ease;
-    }
-    .menu-toggle[aria-expanded="false"] .menu-arrow { transform: rotate(-90deg); }
-    .menu-items {
-      overflow: hidden;
-      max-height: 520px;
-      opacity: 1;
-      transition: max-height 0.3s ease, opacity 0.2s ease;
-    }
-    .menu-items.is-collapsed { max-height: 0; opacity: 0; }
-
-    .nav-btn { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.8rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s; }
-    .nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); color: var(--accent); }
+    .nav-subtoggle:hover { background: rgba(212, 163, 115, 0.08); box-shadow: inset 2px 0 var(--accent); color: var(--text); }
+    .nav-subtoggle-arrow { color: var(--accent); font-size: 14px; line-height: 1; padding: 0 4px; transition: transform .18s ease; }
+    .nav-subtoggle[aria-expanded="false"] .nav-subtoggle-arrow { transform: rotate(-90deg); }
+    .nav-star { color: var(--gold); }
 
     .sidebar-bottom {
       margin-top: auto;
-      padding-top: 1.5rem;
+      padding: 34px 8px 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      text-align: center;
     }
 
-    .sidebar-logo {
-      width: 100%;
-      max-width: 195px;
-      height: auto;
-      margin-bottom: 1.2rem;
+    .storecraft-mark {
+      width: 158px;
+      height: 76px;
+      margin: 12px auto 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .storecraft-mark img {
       display: block;
+      width: 100%;
+      height: auto;
+      max-height: 76px;
+      object-fit: contain;
+      opacity: .78;
       filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%);
     }
 
-    .sidebar-footer {
-      font-size: 0.7rem; 
-      color: var(--text-muted); 
-      text-align: center; 
-      line-height: 1.45; 
-      padding-top: 12px; 
-      border-top: 1px solid var(--border);
-      width: 100%;
+    .signature-caption {
+      display: block;
+      font-size: 8px;
+      line-height: 1.2;
+      letter-spacing: .20em;
+      color: var(--text-muted);
+      white-space: nowrap;
     }
 
+    /* Credits: al clic su CREDITS // CONTACTS i contatti si aprono sotto e spingono il logo verso l'alto. */
+    .sidebar-credits {
+      width: 100%;
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .credits-toggle {
+      width: 100%;
+      padding: 7px 9px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--accent);
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: .18em;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+    }
+    .credits-toggle:hover, .credits-toggle:focus-visible { border-color: var(--accent); background: var(--card); box-shadow: 0 8px 20px rgba(0,0,0,0.4); transform: translateY(-2px); outline: none; }
+    .credits-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .3s ease; }
+    .sidebar-credits.is-collapsed .credits-body { grid-template-rows: 0fr; }
+    .credits-body > * { min-height: 0; overflow: hidden; }
+    .sidebar-disclaimer {
+      padding-top: 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+    .sidebar-disclaimer > span { display: block; white-space: nowrap; font-size: 10px; }
+    .sidebar-disclaimer .release-number, .sidebar-disclaimer a { color: var(--accent); text-decoration: none; }
+
     main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+    /* Come in TEBE: sugli schermi molto larghi il contenuto si ferma a 1450 px (margini compresi) e resta al centro,
+       invece di allargare le schede all'infinito; la barra di scorrimento resta sul bordo destro della finestra. */
+    main > * { max-width: calc(1450px - 6rem); margin-left: auto; margin-right: auto; }
     header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
-    .home-mark { position: fixed; top: 1rem; left: calc(280px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+    .home-mark { position: fixed; top: 1rem; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
     
-    .mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 0.55rem; z-index: 30; }
-    .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
-    .mode-btn:hover { background: var(--accent); color: #000; border-color: var(--accent-hover); }
+    /* Selettore CASSIERE / CREATOR: un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro */
+    .mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 3px; padding: 3px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
+    .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
+    .mode-btn:hover { color: var(--accent); }
     .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
     
-    .menu-group, #generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+    #generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
     body.cassiere-mode #tools { margin-bottom: 3rem; }
     .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
     body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
@@ -183,18 +256,26 @@
       text-shadow: 0 0 6px rgba(229, 186, 115, 0.35);
     }
     
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; padding-top: 0.4rem; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 3rem; padding-top: 0.4rem; }
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
     
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
     .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
-    .preview { height: 140px; background: #0a0908; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--border); padding: 10px 14px; position: relative; }
-    .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; border-radius: 3px; }
+    /* Anteprima nel riquadro 16:9 come le card-thumb di TEBE: l'immagine resta intera, senza tagli né deformazioni.
+       I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura). */
+    .preview { position: relative; aspect-ratio: 16 / 9; margin: 0 14px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 
-    .card-body { padding: 1rem; }
-    .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; margin-bottom: 0.3rem; }
-    .card-body p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+    /* Schede del corpo centrale: stessi elementi delle card di TEBE (numero e tipo in alto,
+       anteprima, solo titolo, freccia per le pagine), con gli angoli arrotondati di StoreCraft. */
+    .card-top { display: flex; justify-content: space-between; gap: 10px; padding: 12px 14px 10px; font-size: 10px; letter-spacing: .16em; color: var(--accent); }
+    .card-type { text-align: right; }
+
+    .card-body { position: relative; padding: 1rem; }
+    .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; padding-right: 30px; }
+    .card-body .arrow { position: absolute; right: 1rem; bottom: 1rem; color: var(--text-muted); font-family: Arial, Helvetica, sans-serif; font-size: 17px; line-height: 1; font-variant-emoji: text; transition: color .18s ease; }
+    .card:hover .arrow, .carousel-card:hover .arrow { color: var(--accent); }
 
     /* STILI ESCLUSIVI WIDGET / CARD DORATA CON COLORE LOGO STORE CRAFT (#d4a373 / #e5ba73) */
     .gold-bf-card {
@@ -237,21 +318,6 @@
       letter-spacing: 0.2px;
     }
 
-    .gold-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73);
-      color: #000;
-      font-size: 0.62rem;
-      font-weight: 800;
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-      z-index: 5;
-    }
 
     /* CAROSELLI CON FRECCE FLOATING */
     #generators-section, #seasonal-promo-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
@@ -264,7 +330,7 @@
 
     .carousel-container {
       display: flex;
-      gap: 1.5rem;
+      gap: 12px;
       overflow-x: auto;
       padding: 0.4rem 0.2rem 1.2rem 0.2rem;
       scroll-snap-type: x mandatory;
@@ -281,7 +347,7 @@
       display: grid;
       grid-template-rows: repeat(2, auto);
       grid-auto-flow: column;
-      grid-auto-columns: 250px;
+      grid-auto-columns: calc((100% - 36px) / 4);
     }
 
     .carousel-arrow {
@@ -317,8 +383,8 @@
     .carousel-arrow.next { right: -18px; }
 
     .carousel-card {
-      flex: 0 0 250px;
-      scroll-snap-align: center;
+      flex: 0 0 calc((100% - 36px) / 4);
+      scroll-snap-align: start;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -351,13 +417,25 @@
       padding: 0.55rem 0.5rem;
     }
     
+    /* Misure delle schede come in TEBE: 4 per riga con 12 px di spazio, DYMO larghe 340 px;
+       sotto i 1300 px 2 per riga, sul telefono una alla volta (regole mobile più sotto). */
+    #dymo-carousel .carousel-card { flex: 0 0 340px; }
+    @media (max-width: 1300px) {
+      .carousel-card { flex: 0 0 calc((100% - 12px) / 2); }
+      .carousel-container.two-rows { grid-auto-columns: calc((100% - 12px) / 2); }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1000px) {
+      #dymo-carousel .carousel-card { flex: 0 0 320px; }
+    }
+
     /* FIX SPAZIATURA SAFARI PER SEZIONE PROMO STAGIONALI */
     @supports (-webkit-hyphens: none) {
       #seasonal-promo-carousel {
         gap: 0 !important;
       }
       #seasonal-promo-carousel .carousel-card {
-        margin-right: 1.5rem !important;
+        margin-right: 12px !important;
       }
       #seasonal-promo-carousel .carousel-card:last-child {
         margin-right: 0 !important;
@@ -399,7 +477,7 @@
       transform: translateY(-3px);
     }
 
-    .widget h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .widget h3 { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
     .widget-compact h3 { margin-bottom: 0.8rem; }
 
     .widget.expanded {
@@ -589,6 +667,9 @@
         scroll-snap-align: center;
       }
 
+      #dymo-carousel .carousel-card { flex: 0 0 100%; }
+      .grid { grid-template-columns: 1fr; }
+
       .mobile-top-bar {
         display: flex;
         position: fixed;
@@ -639,14 +720,15 @@
       .mobile-top-bar .mode-switcher {
         position: static;
         display: flex;
-        gap: 0.25rem;
+        gap: 2px;
+        padding: 2px;
         flex-shrink: 0;
       }
 
       .mobile-top-bar .mode-btn {
         padding: 0.3rem 0.45rem;
         font-size: 0.62rem;
-        border-radius: 4px;
+        border-radius: 3px;
         letter-spacing: 0.3px;
       }
 
@@ -714,90 +796,110 @@
 </div>
 
 <aside id="sidebar-menu">
-    <div>
-      <div class="sidebar-header">
-        <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
-        <button class="mobile-close-btn" type="button" onclick="toggleMobileSidebar()" aria-label="Chiudi menu">✕</button>
-      </div>
-      
-      <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-generators" onclick="toggleMenu('menu-generators', this)">
-          <span>Genera Cartelli</span><span class="menu-arrow" aria-hidden="true">⌄</span>
-        </button>
-        <div class="menu-items is-collapsed" id="menu-generators">
-          <a href="cartelli_semplici.html" class="nav-btn">🏷️ Cartello Semplice</a>
-          <a href="cartelli_outlet.html" class="nav-btn">🏷️ Cartello Outlet</a>
-          <a href="cartelli_outletmulti.html" class="nav-btn">🏷️ Cartello Outlet Multi</a>
-          <a href="cartelli_multireferenza.html" class="nav-btn">🏷️ Cartello Multi Brand Articolo</a>
-          <a href="cartellopercentuale.html" class="nav-btn">🏷️ Cartello Percentuale</a>
-          <a href="cartelli_lastchance.html" class="nav-btn">🏷️ Promo Last Chance</a>
-          <a href="cartello_banco.html" class="nav-btn">🏷️ Cartello da Banco</a>
-          <a href="magazzino.html" class="nav-btn">🏷️ Cartello Magazzino</a>
-          <a href="promo_multibrand.html" class="nav-btn" style="color: var(--gold); font-weight: 600;">🏷️ Promo Multibrand ✦</a>
-          <a href="blackfriday.html" class="nav-btn" style="color: var(--gold); font-weight: 600;">🏷️ Black Friday ✦</a>
-          <a href="blackfridaylips.html" class="nav-btn" style="color: var(--gold); font-weight: 600;">🏷️ Black Friday Lips ✦</a>
-          <a href="xmas_ball.html" class="nav-btn" style="color: var(--gold); font-weight: 600;">🏷️ Xmas Ball ✦</a>
-        </div>
-      </div>
-
-      <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tickets" onclick="toggleMenu('menu-tickets', this)">
-          <span>Genera Cartellini</span><span class="menu-arrow" aria-hidden="true">⌄</span>
-        </button>
-        <div class="menu-items is-collapsed" id="menu-tickets">
-          <a href="cartellinivetrina.html" class="nav-btn">🏷️ Cartellini Vetrina</a>
-          <a href="cartellinipromo.html" class="nav-btn">🏷️ Cartellini Promozionali</a>
-        </div>
-      </div>
-
-      <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-dymo" onclick="toggleMenu('menu-dymo', this)">
-          <span>Etichette Dymo</span><span class="menu-arrow" aria-hidden="true">⌄</span>
-        </button>
-        <div class="menu-items is-collapsed" id="menu-dymo">
-          <a href="etichette.html?label=outlet" class="nav-btn">🏷️ Etichette LXRY</a>
-        </div>
-      </div>
-
-      <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-logos" onclick="toggleMenu('menu-logos', this)">
-          <span>Loghi Personalizzati</span><span class="menu-arrow" aria-hidden="true">⌄</span>
-        </button>
-        <div class="menu-items is-collapsed" id="menu-logos">
-          <a href="genera_loghi.html" class="nav-btn">⚡ Genera Loghi Personalizzati</a>
-          <a href="gestisci_lista.html" class="nav-btn">⚙️ Gestisci Lista Personale</a>
-        </div>
-      </div>
-
-      <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-prints" onclick="toggleMenu('menu-prints', this)">
-          <span>Stampe Pronte</span><span class="menu-arrow" aria-hidden="true">⌄</span>
-        </button>
-        <div class="menu-items is-collapsed" id="menu-prints">
-          <a href="#prints-section" class="nav-btn" onclick="scrollToSection('prints-section')">📄 Listini & Punto Vendita</a>
-          <a href="#prints-promo-section" class="nav-btn" onclick="scrollToSection('prints-promo-section')">📄 Operazioni Fast 'N' Beautiful</a>
-        </div>
-      </div>
-
-      <div class="menu-group">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-tools" onclick="toggleMenu('menu-tools', this)">
-          <span>Utilità Cassa</span><span class="menu-arrow" aria-hidden="true">⌄</span>
-        </button>
-        <div class="menu-items is-collapsed" id="menu-tools">
-          <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">🧮 Calcola Sconto</a>
-          <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">🧮 Calcola Aliquota</a>
-          <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">💰 Cambio Valuta</a>
-          <a class="nav-btn" onclick="focusWidget(event, 'widget-iva')">🧮 Calcola IVA</a>
-          <a class="nav-btn" onclick="focusWidget(event, 'widget-qrcode')">📱 Generatore QR Code</a>
-        </div>
-      </div>
+    <div class="sidebar-header">
+      <button class="brand" type="button" onclick="returnToHomeTop()">STORE // CRAFT</button>
+      <button class="mobile-close-btn" type="button" onclick="toggleMobileSidebar()" aria-label="Chiudi menu">✕</button>
     </div>
-    
+
+    <div class="sidebar-section" data-sidebar-section="cartelli">
+      <div class="label">
+        <span>CREA CARTELLI</span>
+        <button class="section-toggle" type="button" aria-label="Comprimi CREA CARTELLI" aria-expanded="true" onclick="toggleSidebarSection('cartelli')">⌄</button>
+      </div>
+      <nav>
+        <div class="nav-group" id="cartelliItems">
+          <a href="cartelli_semplici.html" class="nav-btn">Semplice</a>
+          <a href="cartelli_outlet.html" class="nav-btn">Outlet</a>
+          <a href="cartelli_outletmulti.html" class="nav-btn">Outlet Multi</a>
+          <a href="cartelli_multireferenza.html" class="nav-btn">Multi Brand</a>
+          <a href="cartellopercentuale.html" class="nav-btn">Percentuale</a>
+          <a href="cartelli_lastchance.html" class="nav-btn">Last Chance</a>
+          <a href="cartello_banco.html" class="nav-btn">Paletto 15x10</a>
+          <a href="magazzino.html" class="nav-btn">Magazzino</a>
+        </div>
+        <button class="nav-subtoggle" type="button" aria-expanded="false" aria-controls="promoItems" onclick="togglePromoSubsection(this)">
+          <span>Promo Stagionali <span class="nav-star" aria-hidden="true">✦</span></span><span class="nav-subtoggle-arrow" aria-hidden="true">⌄</span>
+        </button>
+        <div class="nav-group" id="promoItems" hidden>
+          <a href="promo_multibrand.html" class="nav-btn">Promo Multibrand <span class="nav-star" aria-hidden="true">✦</span></a>
+          <a href="blackfriday.html" class="nav-btn">Black Friday <span class="nav-star" aria-hidden="true">✦</span></a>
+          <a href="blackfridaylips.html" class="nav-btn">Black Friday Lips <span class="nav-star" aria-hidden="true">✦</span></a>
+          <a href="xmas_ball.html" class="nav-btn">Xmas Ball <span class="nav-star" aria-hidden="true">✦</span></a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="cartellini">
+      <div class="label">
+        <span>CARTELLINI</span>
+        <button class="section-toggle" type="button" aria-label="Espandi CARTELLINI" aria-expanded="false" onclick="toggleSidebarSection('cartellini')">⌄</button>
+      </div>
+      <nav>
+        <a href="cartellinivetrina.html" class="nav-btn">Vetrina</a>
+        <a href="cartellinipromo.html" class="nav-btn">Promozionali</a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="etichette">
+      <div class="label">
+        <span>ETICHETTE</span>
+        <button class="section-toggle" type="button" aria-label="Espandi ETICHETTE" aria-expanded="false" onclick="toggleSidebarSection('etichette')">⌄</button>
+      </div>
+      <nav>
+        <a href="etichette.html?label=outlet" class="nav-btn">Etichette DYMO</a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="loghi">
+      <div class="label">
+        <span>LOGHI PERSONALIZZATI</span>
+        <button class="section-toggle" type="button" aria-label="Espandi LOGHI PERSONALIZZATI" aria-expanded="false" onclick="toggleSidebarSection('loghi')">⌄</button>
+      </div>
+      <nav>
+        <a href="genera_loghi.html" class="nav-btn">Importa Loghi</a>
+        <a href="gestisci_lista.html" class="nav-btn">Gestisci Loghi</a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="stampe">
+      <div class="label">
+        <span>STAMPE PRONTE</span>
+        <button class="section-toggle" type="button" aria-label="Espandi STAMPE PRONTE" aria-expanded="false" onclick="toggleSidebarSection('stampe')">⌄</button>
+      </div>
+      <nav>
+        <a href="#prints-section" class="nav-btn" onclick="scrollToSection('prints-section')">Listini &amp; Punto Vendita</a>
+        <a href="#prints-promo-section" class="nav-btn" onclick="scrollToSection('prints-promo-section')">Fast 'N' Beautiful</a>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="cassa">
+      <div class="label">
+        <span>UTILITA' CASSA</span>
+        <button class="section-toggle" type="button" aria-label="Espandi UTILITA' CASSA" aria-expanded="false" onclick="toggleSidebarSection('cassa')">⌄</button>
+      </div>
+      <nav>
+        <a class="nav-btn" onclick="focusWidget(event, 'widget-sconto')">Calcola Sconto</a>
+        <a class="nav-btn" onclick="focusWidget(event, 'widget-aliquota')">Calcola Aliquota</a>
+        <a class="nav-btn" onclick="focusWidget(event, 'widget-valuta')">Cambio Valuta</a>
+        <a class="nav-btn" onclick="focusWidget(event, 'widget-iva')">Calcola IVA</a>
+        <a class="nav-btn" onclick="focusWidget(event, 'widget-qrcode')">Generatore QR</a>
+      </nav>
+    </div>
+
     <div class="sidebar-bottom">
-      <img src="assets/img/storecraftlogo.png" alt="STORE CRAFT Logo" class="sidebar-logo">
-      <div class="sidebar-footer">
-        <strong>V 1.0 2026 • Developed by Fabrizio Notte</strong><br>©Marchi e loghi appartengono ai rispettivi proprietari<br>
-        <a href="mailto:fabriceimpresa@gmail.com" style="color: var(--accent); text-decoration: none;">fabriceimpresa@gmail.com</a>
+      <div class="storecraft-mark">
+        <img src="assets/img/storecraftlogo.png" alt="StoreCraft">
+      </div>
+      <div class="signature-caption">CRAFTED WITH STORECRAFT</div>
+      <div class="sidebar-credits is-collapsed">
+        <button class="credits-toggle" type="button" aria-expanded="false" aria-controls="sidebar-credits-body" onclick="toggleCredits(this)">CREDITS // CONTACTS</button>
+        <div class="credits-body" id="sidebar-credits-body">
+          <div class="sidebar-disclaimer">
+            <span><span class="release-number">V 1.0 2026</span> · Developed by Fabrizio Notte</span>
+            © Marchi e loghi appartengono ai rispettivi proprietari<br>
+            <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
+          </div>
+        </div>
       </div>
     </div>
   </aside>
@@ -817,82 +919,83 @@
         <div class="carousel-container two-rows" id="generators-carousel">
           
           <a href="cartelli_semplici.html" class="carousel-card">
+            <div class="card-top"><span class="number">01</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/cartellosemplice.png" alt="Anteprima Cartello Semplice">
+              <img class="preview-image" src="assets/thumbnail/cartellosemplice.png" alt="Anteprima Cartello Semplice">
             </div>
             <div class="card-body">
-              <h3>Cartello Semplice</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | Prezzo di Vendita&nbsp;&nbsp; <br>&nbsp;</p>
+              <h3>Semplice</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <a href="cartelli_outlet.html" class="carousel-card">
+            <div class="card-top"><span class="number">02</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/doppiacifra.png" alt="Anteprima Cartello Outlet">
+              <img class="preview-image" src="assets/thumbnail/doppiacifra.png" alt="Anteprima Cartello Outlet">
             </div>
             <div class="card-body">
-              <h3>Cartello Outlet</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione (facoltativa)&nbsp;&nbsp; | Prezzo Originario&nbsp;&nbsp; | &nbsp;&nbsp;% Sconto&nbsp;&nbsp; | Prezzo Outlet&nbsp;&nbsp; </p>
+              <h3>Outlet</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <a href="cartelli_outletmulti.html" class="carousel-card">
+            <div class="card-top"><span class="number">03</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
+              <img class="preview-image" src="assets/thumbnail/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
             </div>
             <div class="card-body">
-              <h3>Cartello Outlet Multi</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Fino a 3 Articoli&nbsp;&nbsp; | &nbsp;&nbsp;Scontistica&nbsp;&nbsp; <br> &nbsp;&nbsp;</p>
+              <h3>Outlet Multi</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
+
           <a href="cartelli_multireferenza.html" class="carousel-card">
+            <div class="card-top"><span class="number">04</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
+              <img class="preview-image" src="assets/thumbnail/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
             </div>
             <div class="card-body">
-              <h3>Cartello Multi Brand-Articolo</h3>
-              <p>Brand o doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio o Triplo Articolo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione e Prezzi</p>
+              <h3>Multi Brand</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <a href="cartellopercentuale.html" class="carousel-card">
+            <div class="card-top"><span class="number">05</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/percentuale.png" alt="Anteprima Promo Percentuale">
+              <img class="preview-image" src="assets/thumbnail/percentuale.png" alt="Anteprima Promo Percentuale">
             </div>
             <div class="card-body">
-              <h3>Cartello Percentuale</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Sconto&nbsp;&nbsp; | Testo Libero&nbsp;&nbsp; <br> &nbsp;&nbsp; </p>
+              <h3>Percentuale</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <a href="cartelli_lastchance.html" class="carousel-card">
+            <div class="card-top"><span class="number">06</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/promolastchance.png" alt="Anteprima Promo Last Chance">
+              <img class="preview-image" src="assets/thumbnail/promolastchance.png" alt="Anteprima Promo Last Chance">
             </div>
             <div class="card-body">
-              <h3>Promo Last Chance</h3>
-              <p>Logo Last Chance&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promo&nbsp;&nbsp; | Brand (facoltativo).&nbsp;&nbsp; <br> &nbsp;&nbsp; </p>
+              <h3>Last Chance</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <a href="cartello_banco.html" class="carousel-card">
+            <div class="card-top"><span class="number">07</span><span class="card-type">PALETTO FERRO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/cartellobanco.png" alt="Anteprima Cartello da Banco">
+              <img class="preview-image" src="assets/thumbnail/cartellobanco.png" alt="Anteprima Cartello da Banco">
             </div>
             <div class="card-body">
-              <h3>Cartello da Banco</h3>
-              <p>Formato 15x10&nbsp;&nbsp; | &nbsp;&nbsp;Singolo o Doppio Brand&nbsp;&nbsp; | &nbsp;&nbsp;Doppi Prezzi o Testo Descrittivo</p>
+              <h3>Paletto 15x10</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <a href="magazzino.html" class="carousel-card">
+            <div class="card-top"><span class="number">08</span><span class="card-type">CARTELLO</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
+              <img class="preview-image" src="assets/thumbnail/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
             </div>
             <div class="card-body">
-              <h3>Cartelli Magazzino</h3>
-              <p>Brand Ufficiale / Personalizzato&nbsp;&nbsp; | Elenco Categorie&nbsp;&nbsp; | &nbsp;&nbsp;Frecce Direzionali</p>
+              <h3>Magazzino</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
@@ -910,49 +1013,45 @@
           
           <!-- CARD DORATA PROMO MULTIBRAND -->
           <a href="promo_multibrand.html" class="carousel-card gold-bf-card">
-            <span class="gold-badge">FASCE COLORE</span>
+            <div class="card-top"><span class="number">01</span><span class="card-type">FASCE COLORE</span></div>
             <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
-              <img class="preview-image" src="assets/img/promomultibrand.png" alt="Anteprima Promo Multibrand">
+              <img class="preview-image" src="assets/thumbnail/promomultibrand.png" alt="Anteprima Promo Multibrand">
             </div>
             <div class="card-body">
-              <h3>Promo Multibrand ✦</h3>
-              <p>Promo 50% + 50%&nbsp;&nbsp; | &nbsp;&nbsp;Promo Fasce Colore&nbsp;&nbsp; | &nbsp;&nbsp;Promo Testo Libero <br> &nbsp;&nbsp; </p>
+              <h3>Promo Multibrand ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <!-- CARD DORATA BLACK FRIDAY -->
           <a href="blackfriday.html" class="carousel-card gold-bf-card">
-            <span class="gold-badge">BLACK FRIDAY</span>
+            <div class="card-top"><span class="number">02</span><span class="card-type">BLACK FRIDAY</span></div>
             <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
-              <img class="preview-image" src="assets/img/blackfriday.png" alt="Anteprima Black Friday">
+              <img class="preview-image" src="assets/thumbnail/blackfriday.png" alt="Anteprima Black Friday">
             </div>
             <div class="card-body">
-              <h3>Black Friday ✦</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promozionale&nbsp;&nbsp; | Doppio Prezzo&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione&nbsp;&nbsp; | Grafica Black Friday</p>
+              <h3>Black Friday ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <!-- CARD DORATA BLACK FRIDAY LIPS -->
           <a href="blackfridaylips.html" class="carousel-card gold-bf-card">
-            <span class="gold-badge">BLACK FRIDAY</span>
+            <div class="card-top"><span class="number">03</span><span class="card-type">BLACK FRIDAY</span></div>
             <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
-              <img class="preview-image" src="assets/thumbnail/blackfridaylips.png" alt="Anteprima Black Friday Lips" onerror="this.onerror=null; this.src='assets/img/blackfridaylips.png';">
+              <img class="preview-image" src="assets/thumbnail/blackfridaylips.png" alt="Anteprima Black Friday Lips">
             </div>
             <div class="card-body">
-              <h3>Black Friday Lips ⭐</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promozionale&nbsp;&nbsp; | Grafica Black Friday Lips &nbsp;&nbsp; <br> &nbsp;&nbsp; </p>
+              <h3>Black Friday Lips ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
           <!-- CARD DORATA XMAS BALL -->
           <a href="xmas_ball.html" class="carousel-card gold-bf-card">
-            <span class="gold-badge">CHRISTMAS</span>
+            <div class="card-top"><span class="number">04</span><span class="card-type">CHRISTMAS</span></div>
             <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
-              <img class="preview-image" src="assets/img/xmasball.png" alt="Anteprima Xmas Ball">
+              <img class="preview-image" src="assets/thumbnail/xmasball.png" alt="Anteprima Xmas Ball">
             </div>
             <div class="card-body">
-              <h3>Xmas Ball ⭐</h3>
-              <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo Promozionale&nbsp;&nbsp; | Doppia Cifra <br> &nbsp;&nbsp; </p>
+              <h3>Xmas Ball ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
             </div>
           </a>
 
@@ -965,22 +1064,22 @@
       <div class="section-title">Genera Cartellini</div>
       <div class="grid">
         <a href="cartellinivetrina.html" class="card">
+          <div class="card-top"><span class="number">01</span><span class="card-type">CARTELLINO</span></div>
           <div class="preview">
-            <img class="preview-image" src="assets/img/cartellini.png" alt="Anteprima Cartellini Vetrina">
+            <img class="preview-image" src="assets/thumbnail/cartellini.png" alt="Anteprima Cartellini Vetrina">
           </div>
           <div class="card-body">
-            <h3>Cartellini Vetrina</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Descrizione Articolo&nbsp;&nbsp; | Prezzo e Promozione</p>
+            <h3>Vetrina</h3><span class="arrow" aria-hidden="true">↗︎</span>
           </div>
         </a>
 
         <a href="cartellinipromo.html" class="card">
+          <div class="card-top"><span class="number">02</span><span class="card-type">CARTELLINO</span></div>
           <div class="preview">
-            <img class="preview-image" src="assets/img/cartellinipromo.png" alt="Anteprima Cartellini Promozionali">
+            <img class="preview-image" src="assets/thumbnail/cartellinipromo.png" alt="Anteprima Cartellini Promozionali">
           </div>
           <div class="card-body">
-            <h3>Cartellini Promozionali</h3>
-            <p>Brand&nbsp;&nbsp; | &nbsp;&nbsp;Prezzo e Promozione&nbsp;&nbsp; | 50% + 50% Saldi</p>
+            <h3>Promozionali</h3><span class="arrow" aria-hidden="true">↗︎</span>
           </div>
         </a>
       </div>
@@ -993,28 +1092,34 @@
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('dymo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
         <div class="carousel-container" id="dymo-carousel">
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=doppioprezzo'">
+            <div class="card-top"><span class="number">01</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/doppioprezzo.png" alt="1. Outlet Doppio Prezzo"></div>
-            <div class="card-body"><h3>1. Outlet Doppio Prezzo</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
+            <div class="card-body"><h3>Outlet Doppio Prezzo</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=finalprice'">
+            <div class="card-top"><span class="number">02</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/finalprice.png" alt="2. Final | Outlet Price"></div>
-            <div class="card-body"><h3>2. Final | Outlet Price</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
+            <div class="card-body"><h3>Final | Outlet Price</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=lastchance'">
+            <div class="card-top"><span class="number">03</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/lastchance.png" alt="3. Last Chance"></div>
-            <div class="card-body"><h3>3. Last Chance</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
+            <div class="card-body"><h3>Last Chance</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=outlet'">
+            <div class="card-top"><span class="number">04</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/outlet.png" alt="4. Luxury Label"></div>
-            <div class="card-body"><h3>4. Luxury Label</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
+            <div class="card-body"><h3>Luxury Label</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=promo50'">
+            <div class="card-top"><span class="number">05</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/promo50.png" alt="5. Promo 50+50"></div>
-            <div class="card-body"><h3>5. Promo 50+50</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
+            <div class="card-body"><h3>Promo 50+50</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=tagliedoppiacifra'">
+            <div class="card-top"><span class="number">06</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/tagliedoppiacifra.png" alt="6. Taglie | Doppia Cifra"></div>
-            <div class="card-body"><h3>6. Taglie | Doppia Cifra</h3><p>Stampa Diretta 57x32mm (11354)</p></div>
+            <div class="card-body"><h3>Taglie | Doppia Cifra</h3></div>
           </div>
         </div>
         <button class="carousel-arrow next" type="button" onclick="scrollCarousel('dymo-carousel', 1)" aria-label="Scorri a destra">›</button>
@@ -1028,91 +1133,91 @@
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('prints-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
         <div class="carousel-container" id="prints-carousel">
           <div class="carousel-card" onclick="openPdf('assets/pdf/egoncatalogo.pdf')">
+            <div class="card-top"><span class="number">01</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/egoncatalogo.png" alt="Catalogo Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/egoncatalogo.png" alt="Catalogo Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">📄</span>
             </div>
             <div class="card-body">
               <h3>Catalogo Fürstenberg</h3>
-              <p>Listino Generale con foto, dettagli, mesures, ed apertura colori Borse EVF</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/egonlistino.pdf')">
+            <div class="card-top"><span class="number">02</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/egonlistino.png" alt="Listino Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/egonlistino.png" alt="Listino Egon Von Fürstenberg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">📄</span>
             </div>
             <div class="card-body">
               <h3>Listino Fürstenberg</h3>
-              <p>Listino Generale EVF con scontistica outlet</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/taglie.pdf')">
+            <div class="card-top"><span class="number">03</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/taglie.png" alt="Taglie Internazionali" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/taglie.png" alt="Taglie Internazionali" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🏷️</span>
             </div>
             <div class="card-body">
               <h3>Taglie Internazionali</h3>
-              <p>Collezione di cartellini per taglie, scala numerica ed internazionale.</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/orari.pdf')">
+            <div class="card-top"><span class="number">04</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/orari.png" alt="Orari Apertura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/orari.png" alt="Orari Apertura" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🕒</span>
             </div>
             <div class="card-body">
               <h3>Orari Apertura</h3>
-              <p>Cartello con schema e orari di apertura del punto vendita. <br> &nbsp; </p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/nofood_indoor.pdf')">
+            <div class="card-top"><span class="number">05</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/nofoodindoor.png" alt="No Food Drinks Indoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/nofoodindoor.png" alt="No Food Drinks Indoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🚫</span>
             </div>
             <div class="card-body">
               <h3>No Food & Drinks Indoor</h3>
-              <p>Divieto di consumo cibi e bevande negli spazi interni del punto vendita. <br></p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/nofood_outdoor.pdf')">
+            <div class="card-top"><span class="number">06</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/nofoodoutdoor.png" alt="No Food Drinks Outdoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/nofoodoutdoor.png" alt="No Food Drinks Outdoor" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🥤</span>
             </div>
             <div class="card-body">
               <h3>No Food & Drinks Outdoor</h3>
-              <p>Divieto di consumo cibi e bevande all'esterno del punto vendita.</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/staffonly.pdf')">
+            <div class="card-top"><span class="number">07</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/staffonly.png" alt="Staff Only" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/staffonly.png" alt="Staff Only" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🔒</span>
             </div>
             <div class="card-body">
               <h3>Staff Only</h3>
-              <p>Cartello di accesso riservato esclusivamente al personale autorizzato.</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/vietatofumare.pdf')">
+            <div class="card-top"><span class="number">08</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/vietatofumare.png" alt="Vietato Fumare" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/vietatofumare.png" alt="Vietato Fumare" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🚭</span>
             </div>
             <div class="card-body">
               <h3>Vietato Fumare</h3>
-              <p>Cartello normativo di divieto di fumo ai sensi di legge. <br> &nbsp; </p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
         </div>
@@ -1127,91 +1232,91 @@
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('prints-promo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
         <div class="carousel-container" id="prints-promo-carousel">
           <div class="carousel-card" onclick="openPdf('assets/pdf/lastchance.pdf')">
+            <div class="card-top"><span class="number">01</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/lastchancepronte.png" alt="Collezione Last Chance" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/lastchancepronte.png" alt="Collezione Last Chance" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🏷️</span>
             </div>
             <div class="card-body">
               <h3>Set Last Chance ✦</h3>
-              <p>Stampe pronte generiche Last Chance da € 10,00 fino a € 90,00</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/lastchanceverticali.pdf')">
+            <div class="card-top"><span class="number">02</span><span class="card-type">PDF</span></div>
             <div class="preview">
-              <img class="preview-image" src="assets/img/lastchanceprontevert.png" alt="Collezione Last Chance Verticale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+              <img class="preview-image" src="assets/thumbnail/lastchanceprontevert.png" alt="Collezione Last Chance Verticale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🏷️</span>
             </div>
             <div class="card-body">
               <h3 class="compact-title">Last Chance Verticale ✦</h3>
-              <p>Stampe pronte Verticali per Last Chance da € 10,00 a € 90,00</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/wintersale.pdf')">
+            <div class="card-top"><span class="number">03</span><span class="card-type">PDF</span></div>
             <div class="preview">
               <img class="preview-image" src="assets/thumbnail/wintersalethumb.jpg" alt="Set Winter Sale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">❄️</span>
             </div>
             <div class="card-body">
               <h3>SET WINTER SALE ✦</h3>
-              <p>Set completo stampe pronte Winter Sale 10/90 euro</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/wintersalevert.pdf')">
+            <div class="card-top"><span class="number">04</span><span class="card-type">PDF</span></div>
             <div class="preview">
               <img class="preview-image" src="assets/thumbnail/wintersalevertthumb.jpg" alt="Set Winter Sale Vert" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">❄️</span>
             </div>
             <div class="card-body">
               <h3 class="compact-title">SET WINTER SALE VERT ✦</h3>
-              <p>Set completo stampe pronte Winter Sale Verticali 10/90 euro</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/summersale.pdf')">
+            <div class="card-top"><span class="number">05</span><span class="card-type">PDF</span></div>
             <div class="preview">
               <img class="preview-image" src="assets/thumbnail/summersalethumb.jpg" alt="Set Summer Sale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">☀️</span>
             </div>
             <div class="card-body">
               <h3>SET SUMMER SALE ✦</h3>
-              <p>Set completo stampe pronte Summer Sale 10/90 euro</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/summersalevert.pdf')">
+            <div class="card-top"><span class="number">06</span><span class="card-type">PDF</span></div>
             <div class="preview">
               <img class="preview-image" src="assets/thumbnail/summersalevertthumb.jpg" alt="Set Summer Vert" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">☀️</span>
             </div>
             <div class="card-body">
               <h3 class="compact-title">SET SUMMER SALE VERT ✦</h3>
-              <p>Set completo stampe pronte Summer Sale Verticali 10/90 euro</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/springsale.pdf')">
+            <div class="card-top"><span class="number">07</span><span class="card-type">PDF</span></div>
             <div class="preview">
               <img class="preview-image" src="assets/thumbnail/springsalethumb.jpg" alt="Set Spring Sale" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🌸</span>
             </div>
             <div class="card-body">
               <h3>SET SPRING SALE ✦</h3>
-              <p>Set completo stampe pronte Spring Sale 10/90 euro</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
           <div class="carousel-card" onclick="openPdf('assets/pdf/springsalevert.pdf')">
+            <div class="card-top"><span class="number">08</span><span class="card-type">PDF</span></div>
             <div class="preview">
               <img class="preview-image" src="assets/thumbnail/springsalevertthumb.jpg" alt="Set Spring Sale Vert" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
               <span class="preview-icon" style="display:none;">🌸</span>
             </div>
             <div class="card-body">
               <h3 class="compact-title">SET SPRING SALE VERT ✦</h3>
-              <p>Set completo stampe pronte Spring Sale Verticali 10/90 euro</p>
-              <button type="button" class="tool-btn print-pdf-btn">Apri / Stampa PDF</button>
+              <button type="button" class="tool-btn print-pdf-btn">Apri &amp; Stampa</button>
             </div>
           </div>
         </div>
@@ -1228,7 +1333,7 @@
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>🧮 Calcola Sconto</h3>
+        <h3>Calcola Sconto</h3>
         <div class="tool-row">
           <div class="input-group">
             <span class="input-prefix">€</span>
@@ -1248,7 +1353,7 @@
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>🧮 Calcola Aliquota Sconto</h3>
+        <h3>Calcola Aliquota Sconto</h3>
         <div class="tool-row">
           <div class="input-group">
             <span class="input-prefix">€</span>
@@ -1268,7 +1373,7 @@
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>💰 Cambio Valuta</h3>
+        <h3>Cambio Valuta</h3>
         
         <div class="tool-row">
           <select id="val-direction" class="tool-input-select" onchange="calcValuta()">
@@ -1301,7 +1406,7 @@
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>🧮 Calcola IVA</h3>
+        <h3>Calcola IVA</h3>
         
         <div class="rate-grid-widget">
           <button class="rate-btn-widget" onclick="setIvaRate(4, this, event)">4%</button>
@@ -1342,7 +1447,7 @@
           <button class="back-btn" onclick="resetDefaultView(event)">← Torna alle Utilità</button>
           <button class="close-btn" onclick="resetDefaultView(event)" title="Chiudi e torna alla home">✕</button>
         </div>
-        <h3>📱 Generatore QR Code</h3>
+        <h3>Generatore QR Code</h3>
         
         <div class="tool-row">
           <div class="input-group">
@@ -1403,13 +1508,70 @@
       setTimeout(updateCarouselArrows, 300);
     }
 
-    function toggleMenu(menuId, buttonElem) {
-      const menu = document.getElementById(menuId);
-      if (!menu) return;
+    // Apre o chiude una sezione del menu laterale e ricorda nel browser quali sezioni sono chiuse.
+    function toggleSidebarSection(sectionId) {
+      const section = document.querySelector(`[data-sidebar-section="${sectionId}"]`);
+      if (!section) return;
 
+      const toggle = section.querySelector('.section-toggle');
+      const title = section.querySelector('.label span').textContent;
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isExpanded));
+      toggle.setAttribute('aria-label', `${isExpanded ? 'Espandi' : 'Comprimi'} ${title}`);
+      section.classList.toggle('is-collapsed', isExpanded);
+
+      const collapsedSections = [...document.querySelectorAll('.sidebar-section.is-collapsed')]
+        .map(item => item.dataset.sidebarSection);
+      try {
+        localStorage.setItem('collapsed_sidebar_sections', JSON.stringify(collapsedSections));
+      } catch (error) {
+        console.error('Salvataggio stato menu laterale fallito.', error);
+      }
+    }
+
+    // Il clic sul titolo di una sezione (non solo sulla freccia) la apre o la chiude.
+    function enableSidebarLabelToggle() {
+      document.querySelectorAll('.sidebar-section > .label').forEach(label => {
+        const sectionId = label.parentElement.dataset.sidebarSection;
+        label.addEventListener('click', event => {
+          if (event.target.closest('.section-toggle')) return;
+          toggleSidebarSection(sectionId);
+        });
+      });
+    }
+
+    function restoreSidebarSections() {
+      let collapsedSections = null;
+      try {
+        collapsedSections = JSON.parse(localStorage.getItem('collapsed_sidebar_sections'));
+      } catch (error) {
+        console.error('Ripristino stato menu laterale fallito.', error);
+      }
+      if (!Array.isArray(collapsedSections)) return;
+
+      document.querySelectorAll('.sidebar-section').forEach(section => {
+        const toggle = section.querySelector('.section-toggle');
+        const title = section.querySelector('.label span').textContent;
+        const isCollapsed = collapsedSections.includes(section.dataset.sidebarSection);
+        section.classList.toggle('is-collapsed', isCollapsed);
+        toggle.setAttribute('aria-expanded', String(!isCollapsed));
+        toggle.setAttribute('aria-label', `${isCollapsed ? 'Espandi' : 'Comprimi'} ${title}`);
+      });
+    }
+
+    // PROMO STAGIONALI dentro CREA CARTELLI: aperta nasconde le voci dei cartelli e mostra le promo, chiusa il contrario.
+    function togglePromoSubsection(buttonElem) {
+      const isOpen = buttonElem.getAttribute('aria-expanded') !== 'true';
+      buttonElem.setAttribute('aria-expanded', String(isOpen));
+      document.getElementById('cartelliItems').hidden = isOpen;
+      document.getElementById('promoItems').hidden = !isOpen;
+    }
+
+    function toggleCredits(buttonElem) {
+      const credits = buttonElem.closest('.sidebar-credits');
       const isExpanded = buttonElem.getAttribute('aria-expanded') === 'true';
-      buttonElem.setAttribute('aria-expanded', !isExpanded);
-      menu.classList.toggle('is-collapsed', isExpanded);
+      buttonElem.setAttribute('aria-expanded', String(!isExpanded));
+      credits.classList.toggle('is-collapsed', isExpanded);
     }
 
     function scrollCarousel(carouselId, direction) {
@@ -1727,6 +1889,8 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      restoreSidebarSections();
+      enableSidebarLabelToggle();
       generateQRCode();
       fetchExchangeRates();
       updateCarouselArrows();

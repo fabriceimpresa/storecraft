@@ -1,0 +1,358 @@
+/*
+ * Pannello standard degli editor (Crea Cartelli e Cartellini), con i colori scuri di StoreCraft.
+ * Struttura e misure sono quelle del pannello standard di TEBE (vedi AGENTS.md):
+ * - campi, menu, selettori e tasto di stampa con i caratteri predefiniti dei controlli (Arial), campi e menu alti 31,4 px;
+ * - 0,35rem tra etichetta e campo, 0,8rem tra un campo e l'etichetta successiva, sotto il titolo,
+ *   sotto i selettori e prima del tasto di stampa (sul telefono 0,55rem);
+ * - i selettori a pulsanti (.mode-switch) non hanno un titolo sopra: il nome sta in aria-label;
+ * - se il pannello comincia con un selettore, sopra c'è 1rem dalla linea del titolo;
+ * - i titoli dei menu a discesa (label.section-label) sono come le altre etichette, ma in oro;
+ * - i menu partono da "-- Seleziona … --" e il campo libero sotto un menu si chiama "Testo Libero".
+ * Va incluso dopo assets/css/font-arial.css.
+ */
+
+.sidebar {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.controls {
+  background: #1e1d1a;
+  color: #f4f1ea;
+  padding: 1rem;
+  border: 1px solid #2e2b27;
+  border-radius: 8px;
+}
+
+.controls h1,
+.controls h2 {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #d4a373;
+  border-bottom: 1px solid #2e2b27;
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
+  letter-spacing: 1.5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
+   (i margini si sommano a quello del titolo: vale il maggiore) */
+.controls h1 + .mode-switch,
+.controls h2 + .mode-switch { margin-top: 1rem; }
+
+.form-group { margin-bottom: 0.8rem; }
+
+.form-group label {
+  display: block;
+  font-weight: normal;
+  margin-bottom: 0.35rem;
+  color: #a39a8d;
+  font-size: 0.72rem;
+}
+
+/* Titoli dei menu a discesa: come le altre etichette, in oro */
+.form-group .section-label { color: #d4a373; }
+
+/* Due campi affiancati (es. Claim Sinistro / Claim Destro) */
+.form-row { display: flex; gap: 6px; }
+.form-row > .form-group { flex: 1; min-width: 0; }
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.45rem;
+  border: 1px solid #2e2b27;
+  border-radius: 4px;
+  background: #0a0908;
+  color: #f4f1ea;
+  font-size: 0.82rem;
+}
+
+.form-group select option { background: #0a0908; color: #f4f1ea; }
+/* Titoli dei gruppi nei menu (es. Promozioni e Articoli in Testi Pronti): oro su fondo scuro */
+.form-group select optgroup { background: #0a0908; color: #d4a373; }
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #d4a373;
+  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+}
+
+/* Menu a discesa con la freccia in un riquadro a destra */
+.preset-select {
+  position: relative;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  border: 1px solid #2e2b27;
+  border-radius: 4px;
+  background: #0a0908;
+}
+
+
+.preset-select:focus-within {
+  border-color: #d4a373;
+  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+}
+
+.form-group .preset-select select {
+  margin-bottom: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.preset-select::after {
+  content: '▼';
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #2e2b27;
+  background: #181715;
+  color: #d4a373;
+  font-size: 0.6rem;
+  pointer-events: none;
+}
+
+/* Selettori a pulsanti: il pulsante scelto è oro con testo scuro, come CREATOR / CASSIERE in dashboard */
+.mode-switch {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.8rem;
+  padding: 4px;
+  border: 1px solid #2e2b27;
+  border-radius: 6px;
+  background: #0a0908;
+}
+
+.mode-switch[hidden] { display: none; }
+
+.mode-switch button {
+  flex: 1;
+  padding: 9px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #8c857b;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-switch button:hover:not(.active):not(:disabled) { color: #f4f1ea; }
+
+.mode-switch button.active {
+  background: #d4a373;
+  color: #121110;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.mode-switch button:disabled { opacity: 0.35; cursor: default; }
+
+
+/* Pulsante a due stati a tutta larghezza (es. + AGGIUNGI 2° BRAND): vuoto con bordo e scritta oro,
+   che al passaggio del mouse si illuminano e si sollevano; attivo diventa verde con la scritta chiara. */
+.btn-toggle {
+  width: 100%;
+  margin-bottom: 0.8rem;
+  padding: 8px 8px;
+  border: 1px solid #d4a373;
+  border-radius: 6px;
+  background: transparent;
+  color: #d4a373;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.btn-toggle:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6);
+}
+
+.btn-toggle.active {
+  background: #5f8a55;
+  border-color: #5f8a55;
+  color: #f4f1ea;
+}
+
+/* Riga con una scritta e una casella da spuntare subito dopo (es. COPIA SU ALTRO CARTELLO) */
+.check-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  /* linea sottile oro chiaro che la separa dai comandi che seguono; sotto la linea un poco più dello spazio normale */
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(212, 163, 115, 0.28);
+  margin-bottom: 1.1rem;
+  color: #d4a373;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.check-row[hidden] { display: none; }
+
+/* Casella disegnata a mano, con il bordo scuro dei campi: spuntata diventa oro con il segno scuro */
+.check-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  border: 1px solid #2e2b27;
+  border-radius: 3px;
+  background: #0a0908 center / 10px 10px no-repeat;
+  cursor: pointer;
+}
+
+.check-row input[type="checkbox"]:checked {
+  border-color: #d4a373;
+  background-color: #d4a373;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5.2 4 7.6 8.6 2.6' fill='none' stroke='%23121110' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.check-row input[type="checkbox"]:focus-visible { outline: none; box-shadow: 0 0 4px rgba(212, 163, 115, 0.6); }
+
+.btn-print {
+  width: 100%;
+  margin-top: 0;
+  padding: 10px;
+  border: 1px solid #96382b;
+  border-radius: 4px;
+  background: #96382b;
+  color: #f4f1ea;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.btn-print:hover { background: #7a2d22; }
+
+/* Campo con un simbolo fisso (€ davanti ai prezzi, % dopo lo sconto) che l'utente non deve scrivere,
+   ed eventualmente le frecce ▲▼ per aumentare e diminuire il numero (come il campo percentuale di TEBE). */
+.input-affix {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #2e2b27;
+  border-radius: 4px;
+  background: #0a0908;
+  overflow: hidden;
+}
+
+.input-affix:focus-within {
+  border-color: #d4a373;
+  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+}
+
+.form-group .input-affix input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -moz-appearance: textfield;
+}
+
+.form-group .input-affix input:focus { box-shadow: none; }
+
+.input-affix input::-webkit-outer-spin-button,
+.input-affix input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-affix .affix {
+  display: flex;
+  align-items: center;
+  color: #d4a373;
+  font-size: 0.82rem;
+  pointer-events: none;
+}
+
+.input-affix .affix:first-child { padding-left: 0.45rem; }
+.input-affix .affix:first-child + input { padding-left: 0.3rem; }
+.input-affix input + .affix { padding-right: 0.35rem; }
+
+.input-affix .stepper {
+  flex: 0 0 1.4rem;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #2e2b27;
+}
+
+.input-affix .stepper button {
+  flex: 1;
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid #2e2b27;
+  background: #181715;
+  color: #d4a373;
+  font-size: 0.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.input-affix .stepper button:last-child { border-bottom: none; }
+.input-affix .stepper button:hover { background: #2e2b27; }
+
+@media print {
+  .sidebar { display: none !important; }
+}
+
+/* Vista telefono (solo cellulari): pannello più compatto */
+@media screen and (max-width: 760px) and (pointer: coarse) {
+  .sidebar { width: 100%; max-width: 560px; }
+  .controls { width: 100%; padding: 12px; }
+  .controls h1,
+  .controls h2 {
+    font-size: 0.95rem;
+    padding-bottom: 12px;
+    margin-bottom: 0.55rem;
+  }
+  .controls h1 + .mode-switch,
+  .controls h2 + .mode-switch { margin-top: 0.7rem; }
+  .form-group,
+  .preset-select,
+  .mode-switch { margin-bottom: 0.55rem; }
+  .btn-toggle { margin-bottom: 0.55rem; }
+  .check-row { padding-bottom: 0.55rem; margin-bottom: 0.75rem; }
+  .form-group label {
+    font-size: 0.68rem;
+    margin-bottom: 0.18rem;
+  }
+  .form-group input,
+  .form-group select { font-size: 16px; }
+  .mode-switch button {
+    min-height: 36px;
+    padding: 6px;
+    font-size: 0.64rem;
+  }
+  .btn-print { padding: 9px; }
+}

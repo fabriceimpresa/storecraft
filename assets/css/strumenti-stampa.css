@@ -1,0 +1,179 @@
+/* Pulsanti quadrati oro sotto il pannello delle pagine cartelli e cartellini:
+   guida al montaggio ("?") e lista di stampa, nei colori scuri di StoreCraft. Vedi assets/js/strumenti-stampa.js */
+.tool-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 6px;
+  /* il margine superiore lo calcola il modulo per avere 10 px dall'ultimo riquadro */
+  margin-top: 10px;
+}
+
+.tool-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: #d4a373;
+  color: #121110;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* Al passaggio del mouse l'oro si illumina e il pulsante si solleva appena, con un'ombra netta */
+.tool-btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6);
+}
+
+.tool-btn svg { width: 21px; height: 21px; display: block; }
+
+/* Etichetta del pulsante: compare subito sotto il pulsante e sparisce da sola (strumenti-stampa.js) */
+.tool-btn { position: relative; }
+.tool-tip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  padding: 5px 8px;
+  /* come il riquadro flottante "Torna al Menu Principale": fondo scuro, bordo e scritta oro */
+  border: 1px solid #d4a373;
+  border-radius: 6px;
+  background: #1e1d1a;
+  color: #e5ba73;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font: 600 11px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+.tool-tip.is-visible { opacity: 1; transform: translateY(0); }
+
+/* POPUP */
+.app-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.app-modal[hidden] { display: none; }
+
+.app-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.app-modal-dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: min(1000px, 100%);
+  max-height: 100%;
+  background: #1e1d1a;
+  border: 1px solid #2e2b27;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.app-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #2e2b27;
+}
+
+.app-modal-header h3 {
+  margin: 0;
+  color: #d4a373;
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.app-modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: #d4a373;
+  color: #1e1d1a;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.app-modal-body {
+  padding: 18px;
+  overflow: auto;
+  background: #121110;
+}
+
+/* Anteprima: copia del foglio rimpicciolita per stare nel popup */
+.preview-frame { position: relative; margin: 0 auto; overflow: hidden; }
+.preview-frame > * { position: absolute !important; top: 0; left: 0; margin: 0 !important; transform-origin: top left; }
+/* Come in stampa: i cartellini esclusi non compaiono */
+.preview-frame .cartellino.disabled { visibility: hidden; }
+
+/* Guida al montaggio */
+.guide-text { margin: 0 0 14px; font-size: 0.85rem; color: #8c857b; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+/* Una sola foto: il riquadro si stringe sulla foto, che sta intera nella finestra */
+.guide-grid:has(> .guide-item:only-child) { grid-template-columns: auto; justify-content: center; }
+.guide-item { margin: 0; background: #1e1d1a; border: 1px solid #2e2b27; border-radius: 8px; overflow: hidden; }
+.guide-item img { width: 100%; display: block; }
+.guide-item:only-child img { width: auto; max-width: 100%; max-height: calc(100vh - 230px); }
+.guide-item figcaption { padding: 8px 10px; font-size: 0.78rem; color: #f4f1ea; }
+.guide-placeholder {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  color: #d4a373;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: repeating-linear-gradient(45deg, #181715, #181715 10px, #1e1d1a 10px, #1e1d1a 20px);
+}
+
+/* Avviso della lista di stampa, in basso al centro (strumenti-stampa.js) */
+.tool-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 2100;
+  padding: 9px 14px;
+  border: 1px solid #d4a373;
+  border-radius: 8px;
+  background: #1e1d1a;
+  color: #e5ba73;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  font: 600 12px/1.3 Arial, Helvetica, sans-serif;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.tool-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+@media print {
+  .tool-buttons, .app-modal, .tool-toast { display: none !important; }
+}

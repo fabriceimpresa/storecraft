@@ -1,0 +1,39 @@
+/* Cursore a triangolo rosso (#96382b, come il pulsante Sale) con ombra netta. Vedi assets/js/cursore.js.
+   Sopra l'elemento punta in giù; di lato il triangolo ruota e punta verso l'elemento. Non si stampa. */
+.cursore {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 900;
+  opacity: 0;
+  filter: drop-shadow(1.2px 2.5px 0 rgba(40, 34, 28, 0.33));
+  transition: left 0.3s ease, top 0.3s ease, opacity 0.2s ease;
+}
+
+.cursore.is-visible { opacity: 1; }
+.cursore.is-instant { transition: opacity 0.2s ease; }
+
+.cursore::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #96382b;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* Di lato: triangolo verticale */
+.cursore--right,
+.cursore--left { width: 24px; height: 36px; }
+
+/* a sinistra dell'elemento, punta verso destra */
+.cursore--right::before { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+
+/* a destra dell'elemento, punta verso sinistra */
+.cursore--left::before { clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+
+@media print {
+  .cursore { display: none !important; }
+}
