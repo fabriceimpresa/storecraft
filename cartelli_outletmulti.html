@@ -698,7 +698,7 @@
         <div class="preset-select">
           <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
         </div>
-        <label for="customBrandSelect" id="customBrandLabel">Loghi personalizzati</label>
+        <label for="customBrandSelect" id="customBrandLabel">Loghi Personalizzati</label>
         <div class="preset-select">
           <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
         </div>
@@ -709,7 +709,7 @@
         <div class="preset-select">
           <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
         </div>
-        <label for="customBrandSelectBis">Loghi personalizzati 2</label>
+        <label for="customBrandSelectBis">Loghi Personalizzati 2</label>
         <div class="preset-select">
           <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
         </div>
@@ -1135,9 +1135,9 @@
       secondBrandBtn.textContent = state.twoBrands ? '2° BRAND ATTIVO' : '+ AGGIUNGI 2° BRAND';
       setActive(state.withDesc ? 'descriptionBtn' : 'doublePriceBtn', ['doublePriceBtn', 'descriptionBtn']);
       document.getElementById('brandBisGroup').hidden = !state.twoBrands;
-      // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi personalizzati 1
+      // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi Personalizzati 1
       document.getElementById('brandLabel').textContent = state.twoBrands ? 'BRAND 1' : 'BRAND';
-      document.getElementById('customBrandLabel').textContent = state.twoBrands ? 'Loghi personalizzati 1' : 'Loghi personalizzati';
+      document.getElementById('customBrandLabel').textContent = state.twoBrands ? 'Loghi Personalizzati 1' : 'Loghi Personalizzati';
       document.getElementById('descGroup').hidden = !state.withDesc;
 
       document.getElementById('selectItem2').hidden = state.itemCount < 3;

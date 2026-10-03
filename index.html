@@ -298,14 +298,12 @@
     .carousel-card:has(.card-desc) { justify-content: flex-start; }
     .card-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
     .card-desc > div { overflow: hidden; min-height: 0; }
-    /* Specifiche: i componenti del cartello divisi da un piccolo crocino (×) grigio come il testo. Le righe si riempiono normalmente da sinistra e vanno a capo
-       tra un componente e l'altro (un componente non si spezza a metà). Ogni componente tranne l'ultimo ha il suo crocino
-       attaccato dopo: andando a capo la riga sopra si chiude con il crocino, e nessuna riga inizia con un crocino.
+    /* Specifiche: i componenti del cartello divisi da | grigio come il testo, come nella versione originale. Vanno a capo
+       come un testo normale (anche dentro un componente, e il | può stare a inizio o a fine riga).
        Almeno due righe, così le schede aperte sono uguali. */
     .card-desc p { min-height: 3.2em; margin: 0 var(--card-pad) 18px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; letter-spacing: .01em; }
     .card-desc .spec-list { display: block; }
-    .card-desc .spec { white-space: nowrap; }
-    .card-desc .spec:not(:last-child)::after { content: "×"; display: inline-block; font-size: 0.85em; margin: 0 0.3em 0 0.6em; color: var(--text-muted); vertical-align: 0.12em; }
+    .card-desc .spec + .spec::before { content: "|"; margin: 0 0.45em 0 0.2em; color: var(--text-muted); }
     .desc-open .card-desc { grid-template-rows: 1fr; }
 
     /* STILI ESCLUSIVI WIDGET / CARD DORATA CON COLORE LOGO STORE CRAFT (#d4a373 / #e5ba73) */
