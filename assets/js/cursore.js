@@ -17,8 +17,9 @@
  *     sideGap: 9                      // facoltativo: distanza in px della punta quando il cursore sta di lato
  *   });
  *   cursore.point({ target, scope, obstacles, placement: 'above', gap });  // puntamento da codice
- * placement: 'above' = sempre sopra; 'side' = solo di lato (prima sinistra, poi destra).
- * Ogni regola (e point) accetta anche gap: distanza in px della punta quando il cursore sta sopra.
+ * placement: 'above' = sempre sopra; 'side' = solo di lato (prima sinistra, poi destra); 'left' / 'right' = sempre da quel lato.
+ * Ogni regola (e point) accetta anche gap: distanza in px della punta quando il cursore sta sopra; può essere una
+ * funzione che riceve l'elemento indicato e restituisce la distanza (es. per portare la punta fuori dal cartello).
  * target, scope e obstacles possono essere selettori, elementi o funzioni che li restituiscono.
  * Se target restituisce più elementi compare un triangolo per ciascuno (modifiche su più colonne);
  * i triangoli in più partono da dove era il primo e si spostano ognuno sul proprio elemento;
@@ -159,8 +160,10 @@
       const rect = inkRect(target);
       if (!rect || (clipRect && !intersects(rect, clipRect))) return null;
       const glyphs = inkRect(target, true);
-      const options = candidates(rect, glyphs, request.gap);
+      const gap = typeof request.gap === 'function' ? request.gap(target) : request.gap;
+      const options = candidates(rect, glyphs, gap);
       if (request.placement === 'above') return options.above;
+      if (request.placement === 'left' || request.placement === 'right') return options[request.placement];
 
       const scope = resolveOne(request.scope, target);
       const scopeRect = scope && scope.getBoundingClientRect();

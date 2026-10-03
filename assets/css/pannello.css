@@ -195,7 +195,7 @@
 .mode-switch {
   display: flex;
   gap: 4px;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;   /* tra un selettore e il selettore o il pulsante che segue: un poco meno dello spazio normale */
   padding: 4px;
   border: 1px solid #2e2b27;
   border-radius: 6px;
@@ -231,12 +231,6 @@
 
 .mode-switch button:disabled { opacity: 0.35; cursor: default; }
 
-/* Selettore CARTELLO SUPERIORE / INFERIORE: scritta più piccola e meno spaziata, come card-mode-switch di TEBE */
-.mode-switch.card-mode-switch button {
-  padding: 9px 3px;
-  font-size: 0.58rem;
-  letter-spacing: 0.02em;
-}
 
 
 /* Pulsante a due stati a tutta larghezza (es. + AGGIUNGI 2° BRAND): vuoto con bordo e scritta oro,

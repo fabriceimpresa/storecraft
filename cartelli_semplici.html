@@ -396,7 +396,7 @@
       width: 44px;
       height: 44px;
       padding: 0;
-      background: #ffffff;
+      background: #96382b;
       border: 1px solid #d4a373;
       border-radius: 50%;
       cursor: pointer;
@@ -413,6 +413,9 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      /* l'icona ha il fondo rosso dei cartelli: si tiene solo l'albero bianco e sotto resta il rosso del tasto di stampa */
+      filter: grayscale(1) contrast(10);
+      mix-blend-mode: screen;
     }
 
     .xmas-btn:hover,
@@ -570,7 +573,7 @@
     <div class="controls">
       <h2>Cartello Semplice</h2>
 
-      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
+      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
         <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
         <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
       </div>
@@ -1091,7 +1094,8 @@
       obstacles: target => cardOf(target).querySelectorAll('.header-text, .red-box, .desc-text, .price-final, .card-footer img'),
       rules: [
         { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
-        { controls: '#secondBrandBtn', target: inActiveCard('.red-box'), placement: 'above' },
+        // + AGGIUNGI 2° BRAND: acceso indica tutti e due i loghi (il cursore si sdoppia), spento solo il primo
+        { controls: '#secondBrandBtn', target: () => activeCard().querySelectorAll(cards[currentCard].twoBrands ? '.brand-logo-slot' : '.brand-logo-slot:not(.bis)'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
         { controls: '#brandSelect, #customBrandSelect', target: inActiveCard('.brand-logo-slot:not(.bis)'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
         { controls: '#brandSelectBis, #customBrandSelectBis', target: inActiveCard('.brand-logo-slot.bis'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
         { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },

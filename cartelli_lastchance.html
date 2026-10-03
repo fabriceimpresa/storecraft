@@ -374,7 +374,7 @@
       width: 44px;
       height: 44px;
       padding: 0;
-      background: #ffffff;
+      background: #96382b;
       border: 1px solid #d4a373;
       border-radius: 50%;
       cursor: pointer;
@@ -391,6 +391,9 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      /* l'icona ha il fondo rosso dei cartelli: si tiene solo l'albero bianco e sotto resta il rosso del tasto di stampa */
+      filter: grayscale(1) contrast(10);
+      mix-blend-mode: screen;
     }
 
     .xmas-btn:hover,
@@ -531,12 +534,14 @@
     <div class="controls">
       <h2>Promo Last Chance</h2>
 
-      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
+      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
         <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
         <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
       </div>
 
-      <div class="form-group">
+      <button type="button" class="btn-toggle" id="brandBtn" aria-pressed="false" onclick="toggleBrand()">+ AGGIUNGI BRAND</button>
+
+      <div class="form-group" id="brandGroup" hidden>
         <label class="section-label" for="brandSelect">BRAND</label>
         <div class="preset-select">
           <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
@@ -686,11 +691,13 @@
 
   <script>
     const LOGO_PATH = "assets/logos/";
+    const DEFAULT_LOGO = "LUXURY_GOLD.png";   // logo che compare con + AGGIUNGI BRAND finché non si sceglie un brand
     const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
 
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
     function createCardState() {
       return {
+        withBrand: false,                    // + AGGIUNGI BRAND: il logo sotto la grafica c'è solo se acceso
         brand: '', customBrand: '',          // brand sotto la grafica Last Chance: file ufficiale o logo personalizzato (data URL)
         left: 'SUMMER SALE', right: 'SHOP NOW',
         price: '69,90',
@@ -822,8 +829,21 @@
       document.getElementById('note').value = state.note;
 
       setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
+      const brandBtn = document.getElementById('brandBtn');
+      brandBtn.classList.toggle('active', state.withBrand);
+      brandBtn.setAttribute('aria-pressed', String(state.withBrand));
+      brandBtn.textContent = state.withBrand ? 'BRAND ATTIVO' : '+ AGGIUNGI BRAND';
+      document.getElementById('brandGroup').hidden = !state.withBrand;
       document.getElementById('linkCards').checked = linkedCards;
       document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    // + AGGIUNGI BRAND fa comparire BRAND e Loghi personalizzati del cartello in modifica; spento, il cartello torna
+    // senza logo (la scelta resta e ricompare riaccendendolo).
+    function toggleBrand() {
+      setField('withBrand', !cards[currentCard].withBrand);
+      syncPanel();
+      renderCards();
     }
 
     function selectCard(cardIndex) {
@@ -936,10 +956,11 @@
     }
 
     // Logo del brand sotto la grafica Last Chance, ricolorato in rosso; si ricrea solo quando cambia il logo scelto.
+    // Con + AGGIUNGI BRAND acceso e nessun brand scelto compare LUXURY GOLD (il menu resta su "-- Seleziona Brand --").
     function renderBrandLogo(cardIndex) {
       const state = cards[cardIndex];
       const container = document.getElementById('brandContainer' + cardIndex);
-      const logoKey = state.customBrand || state.brand;
+      const logoKey = state.withBrand ? state.customBrand || state.brand || DEFAULT_LOGO : '';
       container.classList.toggle('has-logo', Boolean(logoKey));
       document.querySelector('#card' + cardIndex + ' .price-block').classList.toggle('no-brand', !logoKey);
       if (container.dataset.logoKey === logoKey) return;
@@ -950,9 +971,9 @@
       }
       const image = document.createElement('img');
       image.alt = state.customBrand ? 'Logo personalizzato' : 'Logo Brand';
-      image.src = state.customBrand || LOGO_PATH + state.brand;
+      image.src = state.customBrand || LOGO_PATH + (state.brand || DEFAULT_LOGO);
       container.replaceChildren(image);
-      PrintLogoColors.getBrandLogoSrc(state.customBrand, state.brand, '', 'red').then(src => {
+      PrintLogoColors.getBrandLogoSrc(state.customBrand, state.brand, DEFAULT_LOGO, 'red').then(src => {
         if (image.isConnected) image.src = src;
       });
     }
@@ -998,25 +1019,36 @@
     const inActiveCard = selector => () => activeCard().querySelector(selector);
     const inActiveCardId = id => () => document.getElementById(id + currentCard);
     const cardOf = target => target.closest('.card');
-    // Brand: il logo sotto la grafica Last Chance, o la grafica stessa finché non c'è un logo.
-    const brandTarget = () => {
-      const container = document.getElementById('brandContainer' + currentCard);
-      return container.classList.contains('has-logo') ? container : document.getElementById('lastChanceImg' + currentCard);
-    };
+    // Brand: il logo sotto la grafica Last Chance.
+    const brandTarget = () => document.getElementById('brandContainer' + currentCard);
 
-    Cursore.create({
+    const cursore = Cursore.create({
       panel: '.controls',
       watch: '#printSheet',
       scope: cardOf,
       obstacles: target => cardOf(target).querySelectorAll('.header-text, .last-chance-graphic, .brand-logo-container.has-logo img, .price-final, .footer-ita-note, .red-bottom-banner'),
       rules: [
-        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
-        { controls: '#brandSelect, #customBrandSelect', target: brandTarget },
+        // la grafica Last Chance è ingrandita ed esce dal bordo del cartello, quindi sopra il cartello non c'è posto
+        // (il cursore coprirebbe la linea di taglio o uscirebbe dal foglio): il cartello scelto si indica di lato,
+        // nel margine bianco a sinistra, a metà altezza
+        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'side' },
         { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },
         { controls: '#rightClaim', target: inActiveCard('.header-text:last-child') },
         { controls: '#price', target: inActiveCardId('priceNewDisplay') },
         { controls: '#presetNote, #note', target: inActiveCardId('noteDisplay') }
       ]
+    });
+
+    // Loghi: con + AGGIUNGI BRAND acceso il cursore indica da destra il logo (sopra c'è la grafica), anche LUXURY GOLD
+    // finché non si sceglie un brand; spento indica il cartello come il selettore dei cartelli.
+    ['#brandBtn', '#brandSelect', '#customBrandSelect'].forEach(selector => {
+      ['focusin', 'change', 'click'].forEach(type => {
+        document.querySelector(selector).addEventListener(type, () => {
+          const hasLogo = document.getElementById('brandContainer' + currentCard).classList.contains('has-logo');
+          if (hasLogo) cursore.point({ target: brandTarget, placement: 'right' });
+          else cursore.point({ target: activeCard, placement: 'side' });
+        });
+      });
     });
   </script>
   <script src="assets/js/strumenti-stampa.js"></script>

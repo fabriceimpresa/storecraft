@@ -390,7 +390,7 @@
       width: 44px;
       height: 44px;
       padding: 0;
-      background: #ffffff;
+      background: #96382b;
       border: 1px solid #d4a373;
       border-radius: 50%;
       cursor: pointer;
@@ -407,6 +407,9 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      /* l'icona ha il fondo rosso dei cartelli: si tiene solo l'albero bianco e sotto resta il rosso del tasto di stampa */
+      filter: grayscale(1) contrast(10);
+      mix-blend-mode: screen;
     }
 
     .xmas-btn:hover,
@@ -542,7 +545,7 @@
     <div class="controls">
       <h2>Cartello da Banco</h2>
 
-      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
+      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
         <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
         <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
       </div>
@@ -1137,9 +1140,12 @@
     const inActiveCard = selector => () => activeCard().querySelector(selector);
     const inActiveCardId = id => () => document.getElementById(id + currentCard);
     const cardOf = target => target.closest('.card');
-    // I loghi brand stanno sul riquadro rosso, dove il triangolo rosso non si vedrebbe: il cursore sta sempre sopra
-    // il riquadro, centrato sul logo scelto (punta a 1 mm dal riquadro: 1,5 mm di margine interno + 1 mm).
-    const ABOVE_RED_BOX_GAP = 2.5 * 96 / 25.4;
+    // I loghi brand stanno sul riquadro rosso, dove il triangolo rosso non si vedrebbe, e sopra il riquadro c'è poco
+    // spazio fino al bordo nero del cartello: il cursore sta fuori dal cartello, con la punta 1 mm sopra il bordo,
+    // centrato sul logo. Con il 2° brand acceso indica tutti e due i loghi (il cursore si sdoppia).
+    const ABOVE_CARD_GAP = target => target.getBoundingClientRect().top - cardOf(target).getBoundingClientRect().top + 96 / 25.4;
+    const logo = slot => () => document.getElementById('cardLogo' + currentCard + '_' + slot);
+    const brandLogos = () => cards[currentCard].twoBrands ? [logo('A')(), logo('B')()] : [logo('A')()];
 
     Cursore.create({
       panel: '.controls',
@@ -1148,10 +1154,11 @@
       obstacles: target => cardOf(target).querySelectorAll('.header-text, .red-box, .promo-description, .price-original, .discount-tag, .price-final, .card-footer img'),
       rules: [
         { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
-        { controls: '#doublePriceBtn, #descriptionBtn', target: inActiveCard('.price-block'), placement: 'above' },
-        { controls: '#secondBrandBtn', target: inActiveCard('.red-box'), placement: 'above' },
-        { controls: '#brandSelect, #customBrandSelect', target: () => document.getElementById('cardLogo' + currentCard + '_A'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
-        { controls: '#brandSelectBis, #customBrandSelectBis', target: () => document.getElementById('cardLogo' + currentCard + '_B'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        // la modalità indica la riga che cambia: la descrizione o prezzo originario e sconto
+        { controls: '#doublePriceBtn, #descriptionBtn', target: () => document.getElementById((cards[currentCard].withDesc ? 'promoDesc' : 'priceOldRow') + currentCard) },
+        { controls: '#secondBrandBtn', target: brandLogos, placement: 'above', gap: ABOVE_CARD_GAP },
+        { controls: '#brandSelect, #customBrandSelect', target: logo('A'), placement: 'above', gap: ABOVE_CARD_GAP },
+        { controls: '#brandSelectBis, #customBrandSelectBis', target: logo('B'), placement: 'above', gap: ABOVE_CARD_GAP },
         { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },
         { controls: '#rightClaim', target: inActiveCard('.header-text:last-child') },
         { controls: '#presetDesc, #desc', target: inActiveCardId('promoDesc') },
