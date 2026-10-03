@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Promo Last Chance</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
-  <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
+  <link rel="stylesheet" href="assets/css/font-arial.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
+  <link rel="stylesheet" href="assets/css/cursore.css">
   <script src="assets/js/logos.js"></script>
   <script src="assets/js/print-logo-colors.js"></script>
   <style>
@@ -54,161 +57,14 @@
       position: relative;
     }
 
-    /* Filigrana di sfondo */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-image: url('assets/img/LASTCHANCE_BACK.png');
-      background-repeat: repeat;
-      background-size: 650px auto;
-      background-position: center;
-      opacity: 0.18;
-      filter: contrast(1.1);
-      pointer-events: none;
-      z-index: 0;
-    }
+    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
-    /* Contenitore Pannelli di Sinistra */
-    .sidebar {
-      width: 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      position: relative;
-      z-index: 1;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    /* Pannelli di Controllo */
-    .controls {
-      background: #1e1d1a;
-      color: #f4f1ea;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: none;
-      border: 1px solid #2e2b27;
-    }
-
-    .controls h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.1rem;
-      color: #d4a373;
-      border-bottom: 1px solid #2e2b27;
-      padding-bottom: 0.4rem;
-      margin-bottom: 1.2rem;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #e5ba73;
-      background-color: transparent;
-      border-left: none;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
-      padding: 0 0 0.6rem;
-      border-radius: 0;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-    }
-
-    .form-group { margin-bottom: 0.8rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: normal;
-      margin-bottom: 0.3rem;
-      color: #8c857b;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #2e2b27;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      background-color: #0a0908;
-      color: #fff;
-    }
-
-    .form-group select.custom-select {
-      border-color: #b48b37;
-      color: #f3d5a3;
-    }
-
-    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
-    select option.priority-brand-option {
+    /* Brand stagionali prioritari evidenziati nel menu Brand */
+    .form-group select option.priority-brand-option {
       background-color: #2e2b27;
       color: #e5ba73;
       font-weight: bold;
     }
-
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #b48b37;
-      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
-    }
-
-    select option:first-child {
-      color: #b48b37 !important;
-      font-weight: bold !important;
-    }
-
-    .btn-copy {
-      width: 100%;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 10px 0;
-    }
-
-    .btn-copy:hover { background-color: #218838; }
-
-    /* PULSANTI STAMPA */
-    .btn-print {
-      width: 100%;
-      background-color: #e00000;
-      color: #ffffff;
-      border: 1px solid #b30000;
-      padding: 10px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-print:hover { background-color: #cc0000; }
-
-    .btn-print-single {
-      width: 100%;
-      background-color: #0056b3;
-      color: #ffffff;
-      border: 1px solid #004085;
-      padding: 10px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-print-single:hover { background-color: #003d80; }
 
     /* FOGLIO STAMPA */
     .print-sheet {
@@ -672,86 +528,108 @@
   </div>
 
   <div class="sidebar">
-    <!-- PANNELLO PRINCIPALE -->
     <div class="controls">
       <h2>Promo Last Chance</h2>
 
-      <div class="section-title">CARTELLO 1 (Superiore)</div>
-      <div class="form-group">
-        <label>Brand Ufficiale:</label>
-        <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
+      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
+        <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+        <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
       </div>
+
       <div class="form-group">
-        <label>Claim SX 1 / DX 1:</label>
-        <div style="display:flex; gap:5px;">
-          <input type="text" id="left1" value="SUMMER SALE" oninput="updateCards()">
-          <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+        <label class="section-label" for="brandSelect">BRAND</label>
+        <div class="preset-select">
+          <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
+        </div>
+        <label for="customBrandSelect">Loghi personalizzati</label>
+        <div class="preset-select">
+          <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
         </div>
       </div>
-      <div class="form-group">
-        <label>Prezzo Finale:</label>
-        <input type="text" id="pNew1" value="69,90" placeholder="69,90" oninput="updateCards()">
-      </div>
-      <div class="form-group">
-        <label>Testo in italiano:</label>
-        <input type="text" id="note1" value="Fino ad esaurimento scorte" oninput="updateCards()">
-      </div>
 
-      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
-
-      <div id="sectionCard2">
-        <div class="section-title">CARTELLO 2 (Inferiore)</div>
+      <div class="form-row">
         <div class="form-group">
-          <label>Brand Ufficiale:</label>
-          <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
+          <label for="leftClaim">Claim Sinistro</label>
+          <input type="text" id="leftClaim" oninput="onFieldInput('left', this.value)">
         </div>
         <div class="form-group">
-          <label>Claim SX 2 / DX 2:</label>
-          <div style="display:flex; gap:5px;">
-            <input type="text" id="left2" value="SUMMER SALE" oninput="updateCards()">
-            <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Prezzo Finale:</label>
-          <input type="text" id="pNew2" value="69,90" placeholder="69,90" oninput="updateCards()">
-        </div>
-        <div class="form-group">
-          <label>Testo in italiano:</label>
-          <input type="text" id="note2" value="Fino ad esaurimento scorte" oninput="updateCards()">
+          <label for="rightClaim">Claim Destro</label>
+          <input type="text" id="rightClaim" oninput="onFieldInput('right', this.value)">
         </div>
       </div>
 
-      <div class="section-title">IMPOSTAZIONI STAMPA</div>
       <div class="form-group">
-        <label>Modalità Cartelli da Stampare:</label>
-        <select id="modeSelect" onchange="toggleCardMode()">
-          <option value="2">2 Cartelli (Foglio Intero A4)</option>
-          <option value="1">1 Solo Cartello (Superiore)</option>
-        </select>
-      </div>
-
-      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
-    </div>
-
-    <!-- PANNELLO LOGHI PERSONALIZZATI SEPARATO -->
-    <div class="controls">
-      <h2>LOGHI PERSONALIZZATI</h2>
-
-      <div class="form-group">
-        <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
-        <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
+        <label for="price">Prezzo</label>
+        <div class="input-affix">
+          <span class="affix">€</span>
+          <input type="text" id="price" inputmode="decimal" placeholder="69,90" oninput="onPriceInput(this)" onblur="onPriceBlur(this)">
+        </div>
       </div>
 
       <div class="form-group">
-        <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
-        <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
+        <label class="section-label" for="presetNote">Testi Pronti</label>
+        <div class="preset-select">
+          <select id="presetNote" onchange="applyPreset()">
+            <option value="">-- Seleziona un testo --</option>
+            <optgroup label="Promozioni">
+              <option value="Special Deal">Special Deal</option>
+              <option value="Final Price">Final Price</option>
+              <option value="Summer Sale">Summer Sale</option>
+              <option value="Spring Sale">Spring Sale</option>
+              <option value="Winter Sale">Winter Sale</option>
+              <option value="Black Friday">Black Friday</option>
+              <option value="Made in Italy">Made in Italy</option>
+              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            </optgroup>
+            <optgroup label="Articoli">
+              <option value="Abito">Abito</option>
+              <option value="Bermuda">Bermuda</option>
+              <option value="Blusa">Blusa</option>
+              <option value="Borsa">Borsa</option>
+              <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+              <option value="Camicia">Camicia</option>
+              <option value="Cappello">Cappello</option>
+              <option value="Cappotto">Cappotto</option>
+              <option value="Cardigan">Cardigan</option>
+              <option value="Cintura">Cintura</option>
+              <option value="Coprispalle">Coprispalle</option>
+              <option value="Foulard">Foulard</option>
+              <option value="Giacca">Giacca</option>
+              <option value="Gilet">Gilet</option>
+              <option value="Gonna">Gonna</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Maglia">Maglia</option>
+              <option value="Occhiali">Occhiali</option>
+              <option value="Pantaloncino">Pantaloncino</option>
+              <option value="Pantalone">Pantalone</option>
+              <option value="Shorts">Shorts</option>
+              <option value="T-Shirt">T-Shirt</option>
+              <option value="Top">Top</option>
+              <option value="Tutina">Tutina</option>
+            </optgroup>
+          </select>
+        </div>
+        <label for="note">Testo Libero</label>
+        <input type="text" id="note" maxlength="37" placeholder="-- Testo Libero --" oninput="onFieldInput('note', this.value)">
       </div>
+
+      <label class="check-row" id="linkCardsRow" for="linkCards">
+        <span>COPIA SU ALTRO CARTELLO</span>
+        <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+      </label>
+
+      <div class="form-group">
+        <div class="preset-select">
+          <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+            <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+            <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
     </div>
   </div>
 
@@ -807,230 +685,340 @@
   </div>
 
   <script>
+    const LOGO_PATH = "assets/logos/";
+    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
+
+    // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
+    function createCardState() {
+      return {
+        brand: '', customBrand: '',          // brand sotto la grafica Last Chance: file ufficiale o logo personalizzato (data URL)
+        left: 'SUMMER SALE', right: 'SHOP NOW',
+        price: '69,90',
+        notePreset: 'Fino ad esaurimento scorte', note: 'Fino ad esaurimento scorte'   // testo sopra la fascia rossa
+      };
+    }
+
+    const cards = { 1: createCardState(), 2: createCardState() };
+    let currentCard = 1;
+    let sheetMode = 'double';
+    let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
+
     const madeInItalyClaimsActive = { 1: false, 2: false };
     const xmasActive = { 1: false, 2: false };
-    const previousItalianText = { 1: null, 2: null };
+    const previousNoteState = { 1: null, 2: null };
 
-    const LOGO_PATH = "assets/logos/";
-    const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
+    // Con la casella spuntata (e il foglio intero) ogni modifica vale per tutti e due i cartelli.
+    function setField(field, value) {
+      const targets = linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+      targets.forEach(cardIndex => { cards[cardIndex][field] = value; });
+    }
 
     function cleanBrandName(filename) {
       return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
     }
 
+    function readCustomLogos() {
+      try {
+        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personalizzati fallita.', error);
+        return [];
+      }
+    }
+
+    function addPlaceholder(select, text) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = text;
+      select.replaceChildren(option);
+    }
+
     function loadLocalLogos() {
-      const select1 = document.getElementById('brandSelect1');
-      const select2 = document.getElementById('brandSelect2');
-
-      select1.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
-      select2.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
-
+      const select = document.getElementById('brandSelect');
+      addPlaceholder(select, '-- Seleziona Brand --');
       // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
       const { priorityFiles, remainingFiles } = getSortedLogoFiles();
       [...priorityFiles, ...remainingFiles].forEach(fileName => {
-        const displayName = cleanBrandName(fileName);
-        const isPriority = priorityFiles.includes(fileName);
-
-        appendBrandOption(select1, fileName, displayName, isPriority);
-        appendBrandOption(select2, fileName, displayName, isPriority);
+        appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
       });
 
-      loadCustomLogosDropdown();
-      updateCards();
-    }
-
-    function loadCustomLogosDropdown() {
-      const cSelect1 = document.getElementById('customBrandSelect1');
-      const cSelect2 = document.getElementById('customBrandSelect2');
-      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-
-      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
-      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
-
-      customLogos.forEach(item => {
-        const opt1 = document.createElement('option');
-        opt1.value = item.data;
-        opt1.textContent = "★ " + item.name;
-        cSelect1.appendChild(opt1);
-
-        const opt2 = document.createElement('option');
-        opt2.value = item.data;
-        opt2.textContent = "★ " + item.name;
-        cSelect2.appendChild(opt2);
+      const customSelect = document.getElementById('customBrandSelect');
+      addPlaceholder(customSelect, '-- Seleziona Logo Personalizzato --');
+      readCustomLogos().forEach(logo => {
+        const option = document.createElement('option');
+        option.value = logo.data;
+        option.textContent = '★ ' + logo.name;
+        customSelect.appendChild(option);
       });
+
+      syncPanel();
+      renderCards();
     }
 
-    function onOfficialBrandChange(cardIndex) {
-      document.getElementById('customBrandSelect' + cardIndex).value = "";
-      updateCards();
+    // Scegliere un brand ufficiale azzera il logo personalizzato, e viceversa.
+    function onOfficialBrandChange() {
+      setField('brand', document.getElementById('brandSelect').value);
+      setField('customBrand', '');
+      document.getElementById('customBrandSelect').value = '';
+      renderCards();
     }
 
-    function onCustomBrandChange(cardIndex) {
-      document.getElementById('brandSelect' + cardIndex).value = "";
-      updateCards();
+    function onCustomBrandChange() {
+      setField('customBrand', document.getElementById('customBrandSelect').value);
+      setField('brand', '');
+      document.getElementById('brandSelect').value = '';
+      renderCards();
     }
 
-    function copyCard1ToCard2() {
-      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
-      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
-      document.getElementById('left2').value = document.getElementById('left1').value;
-      document.getElementById('right2').value = document.getElementById('right1').value;
-      document.getElementById('pNew2').value = document.getElementById('pNew1').value;
-      document.getElementById('note2').value = document.getElementById('note1').value;
-      updateCards();
+    function onFieldInput(field, value) {
+      setField(field, value);
+      renderCards();
     }
 
-    function toggleCardMode() {
-      const count = document.getElementById('modeSelect').value;
-      const card2 = document.getElementById('card2');
-      const section2 = document.getElementById('sectionCard2');
-      const btnCopy = document.getElementById('btnCopy');
+    // Prezzo: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
+    // (69 → 69,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
+    function formatPriceValue(value) {
+      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
+      if (!/\d/.test(cleaned)) return '';
+      const [whole, ...rest] = cleaned.split(',');
+      const decimals = rest.join('').replace(/\D/g, '');
+      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
+    }
+
+    function onPriceInput(input) {
+      input.value = input.value.replace(/[^\d,.]/g, '');
+      onFieldInput('price', input.value);
+    }
+
+    function onPriceBlur(input) {
+      input.value = formatPriceValue(input.value);
+      onFieldInput('price', input.value);
+    }
+
+    function applyPreset() {
+      const value = document.getElementById('presetNote').value;
+      setField('notePreset', value);
+      if (value !== '') {
+        setField('note', value);
+        document.getElementById('note').value = value;
+      }
+      renderCards();
+    }
+
+    function setActive(activeId, ids) {
+      ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+    }
+
+    // Riporta nel pannello i valori del cartello scelto.
+    function syncPanel() {
+      const state = cards[currentCard];
+      document.getElementById('brandSelect').value = state.brand;
+      document.getElementById('customBrandSelect').value = state.customBrand;
+      document.getElementById('leftClaim').value = state.left;
+      document.getElementById('rightClaim').value = state.right;
+      document.getElementById('price').value = state.price;
+      document.getElementById('presetNote').value = state.notePreset;
+      document.getElementById('note').value = state.note;
+
+      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
+      document.getElementById('linkCards').checked = linkedCards;
+      document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    function selectCard(cardIndex) {
+      if (sheetMode === 'single' && cardIndex === 2) return;
+      currentCard = cardIndex;
+      syncPanel();
+    }
+
+    // Spuntando la casella i valori del cartello in modifica vanno anche sull'altro;
+    // togliendo la spunta il cartello sovrascritto torna ai valori che aveva prima.
+    let overwrittenCard = null;   // { cardIndex, state } salvato alla spunta
+
+    function setLinkedCards(isLinked) {
+      linkedCards = isLinked;
+      if (isLinked) {
+        const otherCard = currentCard === 1 ? 2 : 1;
+        overwrittenCard = { cardIndex: otherCard, state: { ...cards[otherCard] } };
+        cards[otherCard] = { ...cards[currentCard] };
+      } else if (overwrittenCard) {
+        cards[overwrittenCard.cardIndex] = overwrittenCard.state;
+        overwrittenCard = null;
+      }
+      renderCards();
+      syncPanel();
+    }
+
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore.
+    function setSheetMode(mode) {
+      sheetMode = mode;
+      const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
       const sheet = document.getElementById('printSheet');
-
-      if (count === "1") {
-        card2.classList.add('disabled');
-        section2.style.display = 'none';
-        btnCopy.style.display = 'none';
-        sheet.classList.remove('double-mode');
-      } else {
-        card2.classList.remove('disabled');
-        section2.style.display = 'block';
-        btnCopy.style.display = 'block';
-        sheet.classList.add('double-mode');
-      }
+      document.getElementById('card2').classList.toggle('disabled', isSingle);
+      sheet.classList.toggle('double-mode', !isSingle);
+      document.getElementById('selectCard2').disabled = isSingle;
+      document.getElementById('sheetModeSelect').value = mode;
+      if (isSingle && currentCard === 2) currentCard = 1;
+      syncPanel();
     }
 
-    function printSheet(count) {
-      document.getElementById('modeSelect').value = count.toString();
-      toggleCardMode();
-      window.print();
-    }
-
-    function toggleMadeInItaly(cardIndex) {
-      if (!madeInItalyClaimsActive[cardIndex] && xmasActive[cardIndex]) {
-        xmasActive[cardIndex] = false;
-        const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
-        if (xmasBtn) xmasBtn.setAttribute('aria-pressed', 'false');
-      }
-
-      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
-      const noteField = document.getElementById('note' + cardIndex);
-
-      if (madeInItalyClaimsActive[cardIndex]) {
-        previousItalianText[cardIndex] = noteField.value;
-        noteField.value = 'Made in Italy';
-      } else if (previousItalianText[cardIndex] !== null) {
-        noteField.value = previousItalianText[cardIndex];
-        previousItalianText[cardIndex] = null;
-      }
-
-      document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
-      updateCards();
+    function setThemeButtonsPressed(cardIndex) {
+      const buttons = { '.made-in-italy-btn': madeInItalyClaimsActive, '.xmas-btn': xmasActive };
+      Object.entries(buttons).forEach(([selector, activeState]) => {
+        const button = document.querySelector(selector + '[data-card-index="' + cardIndex + '"]');
+        if (button) button.setAttribute('aria-pressed', String(activeState[cardIndex]));
+      });
     }
 
     function toggleXmas(cardIndex) {
       xmasActive[cardIndex] = !xmasActive[cardIndex];
-
-      if (xmasActive[cardIndex]) {
-        madeInItalyClaimsActive[cardIndex] = false;
-        const madeInItalyBtn = document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]');
-        if (madeInItalyBtn) madeInItalyBtn.setAttribute('aria-pressed', 'false');
-      }
-
-      const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
-      if (xmasBtn) xmasBtn.setAttribute('aria-pressed', xmasActive[cardIndex].toString());
-      updateCards();
+      if (xmasActive[cardIndex] && madeInItalyClaimsActive[cardIndex]) toggleMadeInItaly(cardIndex);
+      setThemeButtonsPressed(cardIndex);
+      renderCards();
     }
 
-    function updateCards() {
-      // Cartello 1
-      const b1 = document.getElementById('brandSelect1').value;
-      const cb1 = document.getElementById('customBrandSelect1').value;
-      const brandContainer1 = document.getElementById('brandContainer1');
-      const noteDisplay1 = document.getElementById('noteDisplay1');
-      const noteVal1 = document.getElementById('note1').value;
-      const priceBlock1 = document.querySelector('#card1 .price-block');
-      const hasBrand1 = !!(cb1 || b1);
-      
-      if (cb1) {
-        brandContainer1.innerHTML = `<img src="${cb1}" alt="Custom Logo">`;
-        brandContainer1.classList.add('has-logo');
-        PrintLogoColors.getBrandLogoSrc(cb1, '', '', 'red').then(src => {
-          const imgEl = brandContainer1.querySelector('img');
-          if (imgEl) imgEl.src = src;
-        });
-      } else if (b1) {
-        brandContainer1.innerHTML = `<img src="${LOGO_PATH + b1}" alt="Brand Logo">`;
-        brandContainer1.classList.add('has-logo');
-        PrintLogoColors.getBrandLogoSrc('', b1, '', 'red').then(src => {
-          const imgEl = brandContainer1.querySelector('img');
-          if (imgEl) imgEl.src = src;
-        });
-      } else {
-        brandContainer1.innerHTML = '';
-        brandContainer1.classList.remove('has-logo');
+    // Made in Italy: bandierine al posto dei claim e "Made in Italy" come testo sopra la fascia rossa;
+    // alla disattivazione ripristina il testo di prima.
+    function toggleMadeInItaly(cardIndex) {
+      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+      const state = cards[cardIndex];
+
+      if (madeInItalyClaimsActive[cardIndex]) {
+        xmasActive[cardIndex] = false;
+        previousNoteState[cardIndex] = { note: state.note, notePreset: state.notePreset };
+        state.note = 'Made in Italy';
+        state.notePreset = 'Made in Italy';
+      } else if (previousNoteState[cardIndex]) {
+        state.note = previousNoteState[cardIndex].note;
+        state.notePreset = previousNoteState[cardIndex].notePreset;
+        previousNoteState[cardIndex] = null;
       }
 
-      priceBlock1.classList.toggle('no-brand', !hasBrand1);
+      setThemeButtonsPressed(cardIndex);
+      syncPanel();
+      renderCards();
+    }
 
-      noteDisplay1.innerText = noteVal1;
-      noteDisplay1.style.display = noteVal1.trim() !== "" ? 'block' : 'none';
-      noteDisplay1.classList.toggle('made-in-italy-active', madeInItalyClaimsActive[1]);
+    function createClaimImage(src, alt, side) {
+      const image = document.createElement('img');
+      image.className = 'claim-flag claim-flag-' + side;
+      image.src = src;
+      image.alt = alt;
+      return image;
+    }
 
-      const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
-      const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
-      const xmasMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/tema_xmas.png" alt="Natale">';
-      const xmasMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/tema_xmas.png" alt="Natale">';
-      document.getElementById('card1').classList.toggle('xmas-active', xmasActive[1]);
-      document.getElementById('headLeft1').innerHTML = xmasActive[1] ? xmasMarkupLeft : (madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>'));
-      document.getElementById('headRight1').innerHTML = xmasActive[1] ? xmasMarkupRight : (madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>'));
-      
-      const pn1 = document.getElementById('pNew1').value;
-      document.getElementById('priceNewDisplay1').innerText = pn1 ? '€ ' + pn1 : '';
-
-      // Cartello 2
-      const b2 = document.getElementById('brandSelect2').value;
-      const cb2 = document.getElementById('customBrandSelect2').value;
-      const brandContainer2 = document.getElementById('brandContainer2');
-      const noteDisplay2 = document.getElementById('noteDisplay2');
-      const noteVal2 = document.getElementById('note2').value;
-      const priceBlock2 = document.querySelector('#card2 .price-block');
-      const hasBrand2 = !!(cb2 || b2);
-      
-      if (cb2) {
-        brandContainer2.innerHTML = `<img src="${cb2}" alt="Custom Logo">`;
-        brandContainer2.classList.add('has-logo');
-        PrintLogoColors.getBrandLogoSrc(cb2, '', '', 'red').then(src => {
-          const imgEl = brandContainer2.querySelector('img');
-          if (imgEl) imgEl.src = src;
-        });
-      } else if (b2) {
-        brandContainer2.innerHTML = `<img src="${LOGO_PATH + b2}" alt="Brand Logo">`;
-        brandContainer2.classList.add('has-logo');
-        PrintLogoColors.getBrandLogoSrc('', b2, '', 'red').then(src => {
-          const imgEl = brandContainer2.querySelector('img');
-          if (imgEl) imgEl.src = src;
-        });
+    // Claim su due righe: la prima parola sopra, il resto sotto (es. "SHOP NOW" → SHOP / NOW).
+    function setClaimText(element, value) {
+      const spaceIndex = value.indexOf(' ');
+      if (spaceIndex === -1) {
+        element.replaceChildren(document.createTextNode(value));
       } else {
-        brandContainer2.innerHTML = '';
-        brandContainer2.classList.remove('has-logo');
+        element.replaceChildren(
+          document.createTextNode(value.slice(0, spaceIndex)),
+          document.createElement('br'),
+          document.createTextNode(value.slice(spaceIndex + 1))
+        );
+      }
+    }
+
+    // Testo Libero: fino a 31 caratteri (quanto "Made in Italy • Genuine Leather") il testo ha la sua grandezza;
+    // da 32 a 37 caratteri (il campo si ferma lì) il carattere si rimpicciolisce perché il testo resti largo uguale.
+    const DESC_FULL_LENGTH = 31;
+    function setDescriptionText(element, text) {
+      element.textContent = text;
+      element.style.fontSize = '';
+      if (text.length > DESC_FULL_LENGTH) {
+        const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        element.style.fontSize = (baseSize * DESC_FULL_LENGTH / text.length) + 'px';
+      }
+    }
+
+    // Logo del brand sotto la grafica Last Chance, ricolorato in rosso; si ricrea solo quando cambia il logo scelto.
+    function renderBrandLogo(cardIndex) {
+      const state = cards[cardIndex];
+      const container = document.getElementById('brandContainer' + cardIndex);
+      const logoKey = state.customBrand || state.brand;
+      container.classList.toggle('has-logo', Boolean(logoKey));
+      document.querySelector('#card' + cardIndex + ' .price-block').classList.toggle('no-brand', !logoKey);
+      if (container.dataset.logoKey === logoKey) return;
+      container.dataset.logoKey = logoKey;
+      if (!logoKey) {
+        container.replaceChildren();
+        return;
+      }
+      const image = document.createElement('img');
+      image.alt = state.customBrand ? 'Logo personalizzato' : 'Logo Brand';
+      image.src = state.customBrand || LOGO_PATH + state.brand;
+      container.replaceChildren(image);
+      PrintLogoColors.getBrandLogoSrc(state.customBrand, state.brand, '', 'red').then(src => {
+        if (image.isConnected) image.src = src;
+      });
+    }
+
+    function renderCard(cardIndex) {
+      const state = cards[cardIndex];
+      const headLeft = document.getElementById('headLeft' + cardIndex);
+      const headRight = document.getElementById('headRight' + cardIndex);
+
+      renderBrandLogo(cardIndex);
+      document.getElementById('card' + cardIndex).classList.toggle('xmas-active', xmasActive[cardIndex]);
+
+      if (xmasActive[cardIndex]) {
+        headLeft.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'left'));
+        headRight.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'right'));
+      } else if (madeInItalyClaimsActive[cardIndex]) {
+        headLeft.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'left'));
+        headRight.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'right'));
+      } else {
+        setClaimText(headLeft, state.left);
+        setClaimText(headRight, state.right);
       }
 
-      priceBlock2.classList.toggle('no-brand', !hasBrand2);
+      document.getElementById('priceNewDisplay' + cardIndex).textContent = state.price ? '€ ' + state.price : '';
 
-      noteDisplay2.innerText = noteVal2;
-      noteDisplay2.style.display = noteVal2.trim() !== "" ? 'block' : 'none';
-      noteDisplay2.classList.toggle('made-in-italy-active', madeInItalyClaimsActive[2]);
+      const noteDisplay = document.getElementById('noteDisplay' + cardIndex);
+      noteDisplay.classList.toggle('made-in-italy-active', madeInItalyClaimsActive[cardIndex]);
+      noteDisplay.style.display = state.note.trim() !== '' ? 'block' : 'none';
+      setDescriptionText(noteDisplay, state.note);
+    }
 
-      document.getElementById('card2').classList.toggle('xmas-active', xmasActive[2]);
-      document.getElementById('headLeft2').innerHTML = xmasActive[2] ? xmasMarkupLeft : (madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>'));
-      document.getElementById('headRight2').innerHTML = xmasActive[2] ? xmasMarkupRight : (madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>'));
-      
-      const pn2 = document.getElementById('pNew2').value;
-      document.getElementById('priceNewDisplay2').innerText = pn2 ? '€ ' + pn2 : '';
+    function renderCards() {
+      renderCard(1);
+      renderCard(2);
     }
 
     window.onload = loadLocalLogos;
   </script>
+  <script src="assets/js/cursore.js"></script>
+  <script>
+    // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
+    const activeCard = () => document.getElementById('card' + currentCard);
+    const inActiveCard = selector => () => activeCard().querySelector(selector);
+    const inActiveCardId = id => () => document.getElementById(id + currentCard);
+    const cardOf = target => target.closest('.card');
+    // Brand: il logo sotto la grafica Last Chance, o la grafica stessa finché non c'è un logo.
+    const brandTarget = () => {
+      const container = document.getElementById('brandContainer' + currentCard);
+      return container.classList.contains('has-logo') ? container : document.getElementById('lastChanceImg' + currentCard);
+    };
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: cardOf,
+      obstacles: target => cardOf(target).querySelectorAll('.header-text, .last-chance-graphic, .brand-logo-container.has-logo img, .price-final, .footer-ita-note, .red-bottom-banner'),
+      rules: [
+        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
+        { controls: '#brandSelect, #customBrandSelect', target: brandTarget },
+        { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },
+        { controls: '#rightClaim', target: inActiveCard('.header-text:last-child') },
+        { controls: '#price', target: inActiveCardId('priceNewDisplay') },
+        { controls: '#presetNote, #note', target: inActiveCardId('noteDisplay') }
+      ]
+    });
+  </script>
+  <script src="assets/js/strumenti-stampa.js"></script>
 </body>
 </html>

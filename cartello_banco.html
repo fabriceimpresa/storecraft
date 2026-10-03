@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Cartello da Banco</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/font-arial.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
+  <link rel="stylesheet" href="assets/css/cursore.css">
   <script src="assets/js/logos.js"></script>
   <script src="assets/js/print-logo-colors.js"></script>
   <script src="assets/js/print-white-logos.js"></script>
@@ -46,190 +50,13 @@
       position: relative;
     }
 
-    /* Filigrana di sfondo */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
-      background-repeat: repeat;
-      background-size: 650px auto;
-      background-position: center;
-      opacity: 0.18;
-      filter: contrast(1.1);
-      pointer-events: none;
-      z-index: 0;
-    }
+    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
-    /* Contenitore Pannelli di Sinistra */
-    .sidebar {
-      width: 360px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      position: relative;
-      z-index: 1;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    .controls {
-      background: #1e1d1a;
-      color: #f4f1ea;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #2e2b27;
-    }
-
-    .controls h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.1rem;
-      color: #d4a373;
-      border-bottom: 1px solid #2e2b27;
-      padding-bottom: 0.4rem;
-      margin-bottom: 1.2rem;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .section-title {
-      font-size: 0.88rem;
-      font-weight: bold;
-      color: #e5ba73;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
-      padding: 0 0 0.4rem;
-      margin-top: 1.2rem;
-      margin-bottom: 0.8rem;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-    }
-
-    .form-group { margin-bottom: 0.75rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.72rem;
-      margin-bottom: 0.3rem;
-      color: #8c857b;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 0.48rem;
-      border: 1px solid #2e2b27;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      background-color: #0a0908;
-      color: #fff;
-    }
-
-    .form-group select.custom-select {
-      border-color: #b48b37;
-      color: #f3d5a3;
-    }
-
-    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
-    select option.priority-brand-option {
+    /* Brand stagionali prioritari evidenziati nel menu Brand */
+    .form-group select option.priority-brand-option {
       background-color: #2e2b27;
       color: #e5ba73;
       font-weight: bold;
-    }
-
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #b48b37;
-      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
-    }
-
-    /* TASTO ORO METALLICO (GRADIENTE) CON STATO ATTIVO ROSSO */
-    .btn-toggle-brand {
-      width: 100%;
-      background: linear-gradient(180deg, #dfa961 0%, #c48927 100%);
-      color: #000000;
-      border: 1px solid #f3c27a;
-      padding: 9px 12px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-bottom: 12px;
-      transition: all 0.25s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-toggle-brand:hover {
-      background: linear-gradient(180deg, #ebba74 0%, #d59832 100%);
-    }
-
-    .btn-toggle-brand.active {
-      background: linear-gradient(180deg, #d92525 0%, #8b0000 100%);
-      border-color: #ff5555;
-      color: #ffffff;
-    }
-
-    .second-brand-container {
-      background: #141311;
-      border: 1px dashed #b48b37;
-      padding: 8px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    /* BOX SEPARATO E STACCATO PER LOGHI PERSONALIZZATI */
-    .custom-logos-box-detached {
-      background: #151412;
-      border: 1px solid #8a6a27;
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .btn-copy {
-      width: 100%;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 10px 0;
-    }
-
-    .btn-copy:hover { background-color: #218838; }
-
-    .btn-print {
-      width: 100%;
-      background-color: #e00000;
-      color: #ffffff;
-      border: 1px solid #b30000;
-      padding: 10px;
-      font-size: 0.92rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .btn-print-single {
-      width: 100%;
-      background-color: #0056b3;
-      color: #ffffff;
-      border: 1px solid #004085;
-      padding: 10px;
-      font-size: 0.92rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 6px;
     }
 
     /* CONTENITORE FOGLIO A4 PER LA STAMPA */
@@ -715,220 +542,143 @@
     <div class="controls">
       <h2>Cartello da Banco</h2>
 
-      <!-- CARTELLO 1 -->
-      <div class="section-title">CARTELLO 1 (Superiore)</div>
-      
-      <!-- TASTO AGGIUNGI 2° BRAND -->
-      <button type="button" class="btn-toggle-brand" id="btnToggleBrand1" onclick="toggleSecondBrand(1)">
-        ➕ AGGIUNGI 2° BRAND
-      </button>
-
-      <!-- BRAND 1A -->
-      <div class="form-group">
-        <label>Brand Ufficiale 1:</label>
-        <select id="brandSelect1_A" onchange="onOfficialBrandChange(1, 'A')"></select>
+      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
+        <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+        <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
       </div>
 
-      <!-- CONTAINER 2° BRAND -->
-      <div class="second-brand-container" id="secondBrandContainer1" style="display: none;">
-        <div class="form-group">
-          <label>Brand Ufficiale 2:</label>
-          <select id="brandSelect1_B" onchange="onOfficialBrandChange(1, 'B')"></select>
-        </div>
+      <div class="mode-switch" aria-label="Seleziona la modalità prezzo del cartello">
+        <button type="button" class="active" id="doublePriceBtn" onclick="setDescriptionMode(false)">DOPPIA CIFRA</button>
+        <button type="button" id="descriptionBtn" onclick="setDescriptionMode(true)">DESCRIZIONE ARTICOLO</button>
       </div>
+
+      <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
 
       <div class="form-group">
-        <label>Claim SX 1 / DX 1:</label>
-        <div style="display:flex; gap:5px;">
-          <input type="text" id="left1" value="SALDI 2026" oninput="updateCards()">
-          <input type="text" id="right1" value="SHOP NOW" oninput="updateCards()">
+        <label class="section-label" for="brandSelect" id="brandLabel">BRAND</label>
+        <div class="preset-select">
+          <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
+        </div>
+        <label for="customBrandSelect" id="customBrandLabel">Loghi personalizzati</label>
+        <div class="preset-select">
+          <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
         </div>
       </div>
 
-      <!-- SCELTA MODALITÀ CARTELLO 1 -->
-      <div class="form-group">
-        <label style="color: #e5ba73; font-weight: bold;">Modalità Contenuto Centro:</label>
-        <select id="displayMode1" onchange="toggleDisplayMode(1)">
-          <option value="discount" selected>Prezzo Listino + Sconto</option>
-          <option value="desc">Testo Descrittivo / Promozionale</option>
-        </select>
-      </div>
-
-      <!-- OPZIONE A: PREZZO ORIGINALE + SCONTO -->
-      <div class="form-group" id="discountGroup1">
-        <label>Prezzo Originale / Sconto:</label>
-        <div style="display:flex; gap:5px;">
-          <input type="text" id="pOld1" value="395,00" placeholder="395,00" oninput="updateCards()">
-          <input type="text" id="disc1" value="-75%" placeholder="-75%" oninput="formatDiscountInput(this); updateCards()">
+      <div class="form-group" id="brandBisGroup" hidden>
+        <label class="section-label" for="brandSelectBis">BRAND 2</label>
+        <div class="preset-select">
+          <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
+        </div>
+        <label for="customBrandSelectBis">Loghi personalizzati 2</label>
+        <div class="preset-select">
+          <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
         </div>
       </div>
 
-      <!-- OPZIONE B: DESCRIZIONE PREIMPOSTATA / LIBERA -->
-      <div class="form-group" id="descGroup1" style="display: none;">
-        <label style="color: #e5ba73;">Seleziona Testo Descrittivo:</label>
-        <select id="presetDesc1" onchange="applyPreset(1)">
-          <option value="">-- Seleziona un testo rapido --</option>
-          <option value="Outlet price" selected>Outlet price</option>
-          <option value="Special price">Special price</option>
-          <option value="Prezzo Outlet">Prezzo Outlet</option>
-          <option value="Prezzo Promo">Prezzo Promo</option>
-          <option value="Prezzo speciale">Prezzo speciale</option>
-          <option value="Prezzo finale">Prezzo finale</option>
-          <option value="Prezzo a partire da">Prezzo a partire da</option>
-          <option value="Starting price">Starting price</option>
-          <option value="Offerta speciale">Offerta speciale</option>
-          <option value="Nuova Collezione">Nuova Collezione</option>
-          <option value="New Collection">New Collection</option>
-          <option value="Ultimi Pezzi">Ultimi Pezzi</option>
-          <option value="Last Pieces">Last Pieces</option>
-          <option value="Campionario">Campionario</option>
-          <option value="Sample Sale">Sample Sale</option>
-          <option value="Made in Italy">Made in Italy</option>
-          <option value="Vera pelle • Genuine leather">Vera pelle • Genuine leather</option>
-          <option value="Made in Italy • Genuine leather">Made in Italy • Genuine leather</option>
-          <option value="Edizione limitata">Edizione limitata</option>
-          <option value="Limited Edition">Limited Edition</option>
-          <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
-        </select>
-        <label style="color: #e5ba73; margin-top: 0.5rem;">oppure Testo Descrittivo Libero:</label>
-        <input type="text" id="desc1" value="Outlet price" placeholder="Inserisci il testo" oninput="updateCards()">
-      </div>
-
-      <!-- PREZZO FINALE -->
-      <div class="form-group">
-        <label>Prezzo Finale (€):</label>
-        <input type="text" id="pNew1" value="99,00" placeholder="99,00" oninput="updateCards()">
-      </div>
-
-      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
-
-      <!-- CARTELLO 2 -->
-      <div id="sectionCard2">
-        <div class="section-title">CARTELLO 2 (Inferiore)</div>
-
-        <!-- TASTO AGGIUNGI 2° BRAND -->
-        <button type="button" class="btn-toggle-brand" id="btnToggleBrand2" onclick="toggleSecondBrand(2)">
-          ➕ AGGIUNGI 2° BRAND
-        </button>
-
-        <!-- BRAND 2A -->
+      <div class="form-row">
         <div class="form-group">
-          <label>Brand Ufficiale 1:</label>
-          <select id="brandSelect2_A" onchange="onOfficialBrandChange(2, 'A')"></select>
+          <label for="leftClaim">Claim Sinistro</label>
+          <input type="text" id="leftClaim" oninput="onFieldInput('left', this.value)">
         </div>
-
-        <div class="second-brand-container" id="secondBrandContainer2" style="display: none;">
-          <div class="form-group">
-            <label>Brand Ufficiale 2:</label>
-            <select id="brandSelect2_B" onchange="onOfficialBrandChange(2, 'B')"></select>
-          </div>
-        </div>
-
         <div class="form-group">
-          <label>Claim SX 2 / DX 2:</label>
-          <div style="display:flex; gap:5px;">
-            <input type="text" id="left2" value="SALDI 2026" oninput="updateCards()">
-            <input type="text" id="right2" value="SHOP NOW" oninput="updateCards()">
-          </div>
+          <label for="rightClaim">Claim Destro</label>
+          <input type="text" id="rightClaim" oninput="onFieldInput('right', this.value)">
         </div>
+      </div>
 
-        <!-- SCELTA MODALITÀ CARTELLO 2 -->
-        <div class="form-group">
-          <label style="color: #e5ba73; font-weight: bold;">Modalità Contenuto Centro:</label>
-          <select id="displayMode2" onchange="toggleDisplayMode(2)">
-            <option value="discount">Prezzo Listino + Sconto</option>
-            <option value="desc" selected>Testo Descrittivo / Promozionale</option>
+      <div class="form-group" id="descGroup" hidden>
+        <label class="section-label" for="presetDesc">Testi Pronti</label>
+        <div class="preset-select">
+          <select id="presetDesc" onchange="applyPreset()">
+            <option value="">-- Seleziona un testo --</option>
+            <optgroup label="Promozioni">
+              <option value="Special Deal">Special Deal</option>
+              <option value="Final Price">Final Price</option>
+              <option value="Summer Sale">Summer Sale</option>
+              <option value="Spring Sale">Spring Sale</option>
+              <option value="Winter Sale">Winter Sale</option>
+              <option value="Black Friday">Black Friday</option>
+              <option value="Made in Italy">Made in Italy</option>
+              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            </optgroup>
+            <optgroup label="Articoli">
+              <option value="Abito">Abito</option>
+              <option value="Bermuda">Bermuda</option>
+              <option value="Blusa">Blusa</option>
+              <option value="Borsa">Borsa</option>
+              <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+              <option value="Camicia">Camicia</option>
+              <option value="Cappello">Cappello</option>
+              <option value="Cappotto">Cappotto</option>
+              <option value="Cardigan">Cardigan</option>
+              <option value="Cintura">Cintura</option>
+              <option value="Coprispalle">Coprispalle</option>
+              <option value="Foulard">Foulard</option>
+              <option value="Giacca">Giacca</option>
+              <option value="Gilet">Gilet</option>
+              <option value="Gonna">Gonna</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Maglia">Maglia</option>
+              <option value="Occhiali">Occhiali</option>
+              <option value="Pantaloncino">Pantaloncino</option>
+              <option value="Pantalone">Pantalone</option>
+              <option value="Shorts">Shorts</option>
+              <option value="T-Shirt">T-Shirt</option>
+              <option value="Top">Top</option>
+              <option value="Tutina">Tutina</option>
+            </optgroup>
           </select>
         </div>
+        <label for="desc">Testo Libero</label>
+        <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" oninput="onFieldInput('desc', this.value)">
+      </div>
 
-        <div class="form-group" id="discountGroup2">
-          <label>Prezzo Originale / Sconto:</label>
-          <div style="display:flex; gap:5px;">
-            <input type="text" id="pOld2" value="395,00" placeholder="395,00" oninput="updateCards()">
-            <input type="text" id="disc2" value="-75%" placeholder="-75%" oninput="formatDiscountInput(this); updateCards()">
+      <div class="form-row">
+        <div class="form-group" id="priceOldGroup">
+          <label for="priceOld">Prezzo Originario</label>
+          <div class="input-affix">
+            <span class="affix">€</span>
+            <input type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)" onblur="onPriceBlur('old', this)">
           </div>
         </div>
-
-        <div class="form-group" id="descGroup2">
-          <label style="color: #e5ba73;">Seleziona Testo Descrittivo:</label>
-          <select id="presetDesc2" onchange="applyPreset(2)">
-            <option value="">-- Seleziona un testo rapido --</option>
-            <option value="Outlet price" selected>Outlet price</option>
-            <option value="Special price">Special price</option>
-            <option value="Prezzo Outlet">Prezzo Outlet</option>
-            <option value="Prezzo Promo">Prezzo Promo</option>
-            <option value="Prezzo speciale">Prezzo speciale</option>
-            <option value="Prezzo finale">Prezzo finale</option>
-            <option value="Prezzo a partire da">Prezzo a partire da</option>
-            <option value="Starting price">Starting price</option>
-            <option value="Offerta speciale">Offerta speciale</option>
-            <option value="Nuova Collezione">Nuova Collezione</option>
-            <option value="New Collection">New Collection</option>
-            <option value="Ultimi Pezzi">Ultimi Pezzi</option>
-            <option value="Last Pieces">Last Pieces</option>
-            <option value="Campionario">Campionario</option>
-            <option value="Sample Sale">Sample Sale</option>
-            <option value="Made in Italy">Made in Italy</option>
-            <option value="Vera pelle • Genuine leather">Vera pelle • Genuine leather</option>
-            <option value="Made in Italy • Genuine leather">Made in Italy • Genuine leather</option>
-            <option value="Edizione limitata">Edizione limitata</option>
-            <option value="Limited Edition">Limited Edition</option>
-            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
-          </select>
-          <label style="color: #e5ba73; margin-top: 0.5rem;">oppure Testo Descrittivo Libero:</label>
-          <input type="text" id="desc2" value="Outlet price" placeholder="Inserisci il testo" oninput="updateCards()">
+        <div class="form-group" id="discountGroup">
+          <label for="discount">Sconto</label>
+          <div class="input-affix">
+            <input type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
+            <span class="affix">%</span>
+            <div class="stepper" id="discountStepper">
+              <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
+              <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
+            </div>
+          </div>
         </div>
-
         <div class="form-group">
-          <label>Prezzo Finale (€):</label>
-          <input type="text" id="pNew2" value="99,00" placeholder="99,00" oninput="updateCards()">
+          <label for="priceNew">Prezzo Finale</label>
+          <div class="input-affix">
+            <span class="affix">€</span>
+            <input type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)" onblur="onPriceBlur('price', this)">
+          </div>
         </div>
       </div>
 
-      <!-- IMPOSTAZIONI STAMPA -->
-      <div class="section-title">IMPOSTAZIONI STAMPA</div>
-      <div class="form-group">
-        <label>Modalità Cartelli da Stampare:</label>
-        <select id="modeSelect" onchange="toggleCardMode()">
-          <option value="2">2 Cartelli (Foglio Intero A4)</option>
-          <option value="1">1 Solo Cartello (Superiore)</option>
-        </select>
-      </div>
-
-      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
-    </div>
-
-    <!-- BOX SEPARATO LOGHI PERSONALIZZATI -->
-    <div class="custom-logos-box-detached">
-      <div class="section-title" style="margin-top:0;">★ LOGHI PERSONALIZZATI</div>
-      <div class="form-group">
-        <label style="color: #e5ba73;">Cartello 1 - Logo Personalizzato 1:</label>
-        <select id="customBrandSelect1_A" class="custom-select" onchange="onCustomBrandChange(1, 'A')">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
-      </div>
-      <div class="form-group" id="customLogoGroup1_B" style="display: none;">
-        <label style="color: #e5ba73;">Cartello 1 - Logo Personalizzato 2:</label>
-        <select id="customBrandSelect1_B" class="custom-select" onchange="onCustomBrandChange(1, 'B')">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
-      </div>
-
-      <div style="border-top: 1px dashed #3a3225; margin: 10px 0;"></div>
+      <label class="check-row" id="linkCardsRow" for="linkCards">
+        <span>COPIA SU ALTRO CARTELLO</span>
+        <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+      </label>
 
       <div class="form-group">
-        <label style="color: #e5ba73;">Cartello 2 - Logo Personalizzato 1:</label>
-        <select id="customBrandSelect2_A" class="custom-select" onchange="onCustomBrandChange(2, 'A')">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
+        <div class="preset-select">
+          <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+            <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+            <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+          </select>
+        </div>
       </div>
-      <div class="form-group" id="customLogoGroup2_B" style="display: none;">
-        <label style="color: #e5ba73;">Cartello 2 - Logo Personalizzato 2:</label>
-        <select id="customBrandSelect2_B" class="custom-select" onchange="onCustomBrandChange(2, 'B')">
-          <option value="">-- Nessun Logo Personalizzato --</option>
-        </select>
-      </div>
+
+      <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
     </div>
   </div>
 
@@ -1001,367 +751,416 @@
   </div>
 
   <script>
-    let isSecondBrandActive1 = false;
-    let isSecondBrandActive2 = false;
+    const DEFAULT_LOGO = "LUXURY_GOLD.png";
+    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
+
+    // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
+    function createCardState(withDesc) {
+      return {
+        brand: '', customBrand: '',          // brand principale: file ufficiale o logo personalizzato (data URL)
+        brandBis: '', customBrandBis: '',    // secondo brand, visibile con + AGGIUNGI 2° BRAND
+        twoBrands: false,
+        left: 'SALDI 2026', right: 'SHOP NOW',
+        withDesc,                            // DOPPIA CIFRA (false) o DESCRIZIONE ARTICOLO (true)
+        descPreset: '', desc: 'Outlet Price',
+        old: '395,00', disc: '-75%', price: '99,00'
+      };
+    }
+
+    // Come prima del pannello standard: il cartello superiore parte con il doppio prezzo, l'inferiore con la descrizione.
+    const cards = { 1: createCardState(false), 2: createCardState(true) };
+    let currentCard = 1;
+    let sheetMode = 'double';
+    let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
+
     const madeInItalyClaimsActive = { 1: false, 2: false };
     const blackFridayActive = { 1: false, 2: false };
     const xmasActive = { 1: false, 2: false };
     const previousDescriptionState = { 1: null, 2: null };
 
-    const LOGO_PATH = "assets/logos/";
-    const DEFAULT_LOGO = "LUXURY_GOLD.png";
-    const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+    // Con la casella spuntata (e il foglio intero) ogni modifica vale per tutti e due i cartelli.
+    function setField(field, value) {
+      const targets = linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+      targets.forEach(cardIndex => { cards[cardIndex][field] = value; });
+    }
+
+    // La descrizione si vede con DESCRIZIONE ARTICOLO e, con DOPPIA CIFRA, quando è acceso Made in Italy.
+    const showsDescription = cardIndex => cards[cardIndex].withDesc || madeInItalyClaimsActive[cardIndex];
 
     function cleanBrandName(filename) {
       return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
     }
 
-    function toggleDisplayMode(cardIndex) {
-      const mode = document.getElementById(`displayMode${cardIndex}`).value;
-      const discountGroup = document.getElementById(`discountGroup${cardIndex}`);
-      const descGroup = document.getElementById(`descGroup${cardIndex}`);
-      const promoDesc = document.getElementById(`promoDesc${cardIndex}`);
-      const priceOldRow = document.getElementById(`priceOldRow${cardIndex}`);
-      const showMadeInItalyDescription = madeInItalyClaimsActive[cardIndex];
-
-      if (mode === 'desc') {
-        discountGroup.style.display = 'none';
-        descGroup.style.display = 'block';
-        promoDesc.style.display = 'block';
-        priceOldRow.style.display = 'none';
-      } else {
-        discountGroup.style.display = 'block';
-        descGroup.style.display = showMadeInItalyDescription ? 'block' : 'none';
-        promoDesc.style.display = showMadeInItalyDescription ? 'block' : 'none';
-        priceOldRow.style.display = 'flex';
+    function readCustomLogos() {
+      try {
+        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personalizzati fallita.', error);
+        return [];
       }
-      updateCards();
     }
 
-    function toggleMadeInItaly(cardIndex) {
-      if (!madeInItalyClaimsActive[cardIndex] && (blackFridayActive[cardIndex] || xmasActive[cardIndex])) {
-        blackFridayActive[cardIndex] = false;
-        xmasActive[cardIndex] = false;
-        const blackFridayBtn = document.querySelector('.black-friday-btn[data-card-index="' + cardIndex + '"]');
-        const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
-        if (blackFridayBtn) blackFridayBtn.setAttribute('aria-pressed', 'false');
-        if (xmasBtn) xmasBtn.setAttribute('aria-pressed', 'false');
-      }
-
-      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
-      const descriptionField = document.getElementById('desc' + cardIndex);
-      const descriptionPreset = document.getElementById('presetDesc' + cardIndex);
-      const displayMode = document.getElementById('displayMode' + cardIndex);
-
-      if (madeInItalyClaimsActive[cardIndex]) {
-        previousDescriptionState[cardIndex] = {
-          description: descriptionField.value,
-          preset: descriptionPreset.value,
-          displayMode: displayMode.value
-        };
-        descriptionField.value = 'Made in Italy';
-        descriptionPreset.value = 'Made in Italy';
-        toggleDisplayMode(cardIndex);
-      } else if (previousDescriptionState[cardIndex]) {
-        descriptionField.value = previousDescriptionState[cardIndex].description;
-        descriptionPreset.value = previousDescriptionState[cardIndex].preset;
-        displayMode.value = previousDescriptionState[cardIndex].displayMode;
-        previousDescriptionState[cardIndex] = null;
-        toggleDisplayMode(cardIndex);
-      }
-
-      document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]').setAttribute('aria-pressed', madeInItalyClaimsActive[cardIndex].toString());
-      updateCards();
-    }
-
-    function toggleBlackFriday(cardIndex) {
-      blackFridayActive[cardIndex] = !blackFridayActive[cardIndex];
-
-      if (blackFridayActive[cardIndex]) {
-        madeInItalyClaimsActive[cardIndex] = false;
-        xmasActive[cardIndex] = false;
-        const madeInItalyBtn = document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]');
-        const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
-        if (madeInItalyBtn) madeInItalyBtn.setAttribute('aria-pressed', 'false');
-        if (xmasBtn) xmasBtn.setAttribute('aria-pressed', 'false');
-      }
-
-      const blackFridayBtn = document.querySelector('.black-friday-btn[data-card-index="' + cardIndex + '"]');
-      if (blackFridayBtn) blackFridayBtn.setAttribute('aria-pressed', blackFridayActive[cardIndex].toString());
-
-      updateCards();
-    }
-
-    function toggleXmas(cardIndex) {
-      xmasActive[cardIndex] = !xmasActive[cardIndex];
-
-      if (xmasActive[cardIndex]) {
-        madeInItalyClaimsActive[cardIndex] = false;
-        blackFridayActive[cardIndex] = false;
-        const madeInItalyBtn = document.querySelector('.made-in-italy-btn[data-card-index="' + cardIndex + '"]');
-        const blackFridayBtn = document.querySelector('.black-friday-btn[data-card-index="' + cardIndex + '"]');
-        if (madeInItalyBtn) madeInItalyBtn.setAttribute('aria-pressed', 'false');
-        if (blackFridayBtn) blackFridayBtn.setAttribute('aria-pressed', 'false');
-      }
-
-      const xmasBtn = document.querySelector('.xmas-btn[data-card-index="' + cardIndex + '"]');
-      if (xmasBtn) xmasBtn.setAttribute('aria-pressed', xmasActive[cardIndex].toString());
-      updateCards();
-    }
-
-    function toggleSecondBrand(cardIndex) {
-      if (cardIndex === 1) {
-        isSecondBrandActive1 = !isSecondBrandActive1;
-        const btn = document.getElementById('btnToggleBrand1');
-        const container = document.getElementById('secondBrandContainer1');
-        const customGroupB = document.getElementById('customLogoGroup1_B');
-        const logoB = document.getElementById('cardLogo1_B');
-
-        if (isSecondBrandActive1) {
-          btn.classList.add('active');
-          btn.innerHTML = "➖ RIMUOVI 2° BRAND";
-          container.style.display = "block";
-          if (customGroupB) customGroupB.style.display = "block";
-          logoB.classList.remove('hidden-brand');
-        } else {
-          btn.classList.remove('active');
-          btn.innerHTML = "➕ AGGIUNGI 2° BRAND";
-          container.style.display = "none";
-          if (customGroupB) customGroupB.style.display = "none";
-          logoB.classList.add('hidden-brand');
-        }
-      } else {
-        isSecondBrandActive2 = !isSecondBrandActive2;
-        const btn = document.getElementById('btnToggleBrand2');
-        const container = document.getElementById('secondBrandContainer2');
-        const customGroupB = document.getElementById('customLogoGroup2_B');
-        const logoB = document.getElementById('cardLogo2_B');
-
-        if (isSecondBrandActive2) {
-          btn.classList.add('active');
-          btn.innerHTML = "➖ RIMUOVI 2° BRAND";
-          container.style.display = "block";
-          if (customGroupB) customGroupB.style.display = "block";
-          logoB.classList.remove('hidden-brand');
-        } else {
-          btn.classList.remove('active');
-          btn.innerHTML = "➕ AGGIUNGI 2° BRAND";
-          container.style.display = "none";
-          if (customGroupB) customGroupB.style.display = "none";
-          logoB.classList.add('hidden-brand');
-        }
-      }
-      updateCards();
+    function addPlaceholder(select, text) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = text;
+      select.replaceChildren(option);
     }
 
     function loadLocalLogos() {
-      const selectors = ['brandSelect1_A', 'brandSelect1_B', 'brandSelect2_A', 'brandSelect2_B'];
       const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-
-      selectors.forEach(id => {
+      ['brandSelect', 'brandSelectBis'].forEach(id => {
         const select = document.getElementById(id);
-        select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
-
+        addPlaceholder(select, '-- Seleziona Brand --');
         // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
         [...priorityFiles, ...remainingFiles].forEach(fileName => {
           appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
         });
       });
 
-      loadCustomLogosDropdown();
-      updateCards();
+      const customLogos = readCustomLogos();
+      ['customBrandSelect', 'customBrandSelectBis'].forEach(id => {
+        const select = document.getElementById(id);
+        addPlaceholder(select, '-- Seleziona Logo Personalizzato --');
+        customLogos.forEach(logo => {
+          const option = document.createElement('option');
+          option.value = logo.data;
+          option.textContent = '★ ' + logo.name;
+          select.appendChild(option);
+        });
+      });
+
+      syncPanel();
+      renderCards();
     }
 
-    function loadCustomLogosDropdown() {
-      const customSelectors = ['customBrandSelect1_A', 'customBrandSelect1_B', 'customBrandSelect2_A', 'customBrandSelect2_B'];
-      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+    // Scegliere un brand ufficiale azzera il logo personalizzato dello stesso posto, e viceversa.
+    function onOfficialBrandChange(slot) {
+      const suffix = slot === 'brandBis' ? 'Bis' : '';
+      const custom = slot === 'brandBis' ? 'customBrandBis' : 'customBrand';
+      setField(slot, document.getElementById('brandSelect' + suffix).value);
+      setField(custom, '');
+      document.getElementById('customBrandSelect' + suffix).value = '';
+      renderCards();
+    }
 
-      customSelectors.forEach(id => {
-        const cSelect = document.getElementById(id);
-        cSelect.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
+    function onCustomBrandChange(slot) {
+      const suffix = slot === 'brandBis' ? 'Bis' : '';
+      const custom = slot === 'brandBis' ? 'customBrandBis' : 'customBrand';
+      setField(custom, document.getElementById('customBrandSelect' + suffix).value);
+      setField(slot, '');
+      document.getElementById('brandSelect' + suffix).value = '';
+      renderCards();
+    }
 
-        customLogos.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.data;
-          opt.textContent = "★ " + item.name;
-          cSelect.appendChild(opt);
-        });
+    function onFieldInput(field, value) {
+      setField(field, value);
+      renderCards();
+    }
+
+    function applyPreset() {
+      const value = document.getElementById('presetDesc').value;
+      setField('descPreset', value);
+      if (value !== '') {
+        setField('desc', value);
+        document.getElementById('desc').value = value;
+      }
+      renderCards();
+    }
+
+    // Lo sconto si scrive come numero da 1 a 99 (con le frecce ▲▼ o a mano): il segno - e il simbolo %
+    // li aggiunge la pagina; nel pannello il % sta fisso accanto al campo. Come in cartelli_outlet.html.
+    function onDiscountInput() {
+      const digits = document.getElementById('discount').value.replace(/\D/g, '').slice(0, 2);
+      onFieldInput('disc', digits ? `-${digits}%` : '');
+    }
+
+    function stepDiscount(delta) {
+      const input = document.getElementById('discount');
+      const current = parseInt(input.value, 10);
+      input.value = Math.min(99, Math.max(1, (Number.isNaN(current) ? 0 : current) + delta));
+      onDiscountInput();
+      input.focus();
+    }
+
+    // Prezzi: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
+    // (395 → 395,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
+    function formatPriceValue(value) {
+      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
+      if (!/\d/.test(cleaned)) return '';
+      const [whole, ...rest] = cleaned.split(',');
+      const decimals = rest.join('').replace(/\D/g, '');
+      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
+    }
+
+    function onPriceInput(field, input) {
+      input.value = input.value.replace(/[^\d,.]/g, '');
+      onFieldInput(field, input.value);
+    }
+
+    function onPriceBlur(field, input) {
+      input.value = formatPriceValue(input.value);
+      onFieldInput(field, input.value);
+    }
+
+    function setActive(activeId, ids) {
+      ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+    }
+
+    // Riporta nel pannello i valori del cartello scelto.
+    function syncPanel() {
+      const state = cards[currentCard];
+      document.getElementById('brandSelect').value = state.brand;
+      document.getElementById('customBrandSelect').value = state.customBrand;
+      document.getElementById('brandSelectBis').value = state.brandBis;
+      document.getElementById('customBrandSelectBis').value = state.customBrandBis;
+      document.getElementById('leftClaim').value = state.left;
+      document.getElementById('rightClaim').value = state.right;
+      document.getElementById('presetDesc').value = state.descPreset;
+      document.getElementById('desc').value = state.desc;
+      document.getElementById('priceOld').value = state.old;
+      document.getElementById('discount').value = state.disc.replace(/\D/g, '');
+      document.getElementById('priceNew').value = state.price;
+
+      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
+      setActive(state.withDesc ? 'descriptionBtn' : 'doublePriceBtn', ['doublePriceBtn', 'descriptionBtn']);
+      const secondBrandBtn = document.getElementById('secondBrandBtn');
+      secondBrandBtn.classList.toggle('active', state.twoBrands);
+      secondBrandBtn.setAttribute('aria-pressed', String(state.twoBrands));
+      secondBrandBtn.textContent = state.twoBrands ? '2° BRAND ATTIVO' : '+ AGGIUNGI 2° BRAND';
+      document.getElementById('brandBisGroup').hidden = !state.twoBrands;
+      // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi personalizzati 1
+      document.getElementById('brandLabel').textContent = state.twoBrands ? 'BRAND 1' : 'BRAND';
+      document.getElementById('customBrandLabel').textContent = state.twoBrands ? 'Loghi personalizzati 1' : 'Loghi personalizzati';
+      // DOPPIA CIFRA: prezzo originario e sconto; DESCRIZIONE ARTICOLO: il testo al loro posto
+      document.getElementById('descGroup').hidden = !showsDescription(currentCard);
+      document.getElementById('priceOldGroup').hidden = state.withDesc;
+      document.getElementById('discountGroup').hidden = state.withDesc;
+
+      document.getElementById('linkCards').checked = linkedCards;
+      document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    function selectCard(cardIndex) {
+      if (sheetMode === 'single' && cardIndex === 2) return;
+      currentCard = cardIndex;
+      syncPanel();
+    }
+
+    // + AGGIUNGI 2° BRAND accende e spegne il secondo brand del cartello in modifica.
+    function toggleSecondBrand() {
+      setField('twoBrands', !cards[currentCard].twoBrands);
+      syncPanel();
+      renderCards();
+    }
+
+    function setDescriptionMode(withDesc) {
+      setField('withDesc', withDesc);
+      syncPanel();
+      renderCards();
+    }
+
+    // Spuntando la casella i valori del cartello in modifica vanno anche sull'altro;
+    // togliendo la spunta il cartello sovrascritto torna ai valori che aveva prima.
+    let overwrittenCard = null;   // { cardIndex, state } salvato alla spunta
+
+    function setLinkedCards(isLinked) {
+      linkedCards = isLinked;
+      if (isLinked) {
+        const otherCard = currentCard === 1 ? 2 : 1;
+        overwrittenCard = { cardIndex: otherCard, state: { ...cards[otherCard] } };
+        cards[otherCard] = { ...cards[currentCard] };
+      } else if (overwrittenCard) {
+        cards[overwrittenCard.cardIndex] = overwrittenCard.state;
+        overwrittenCard = null;
+      }
+      renderCards();
+      syncPanel();
+    }
+
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore (senza metà inferiore e linea di taglio).
+    function setSheetMode(mode) {
+      sheetMode = mode;
+      const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
+      document.getElementById('card2').classList.toggle('disabled', isSingle);
+      document.getElementById('halfContainer2').style.display = isSingle ? 'none' : 'flex';
+      document.getElementById('cutLine').style.display = isSingle ? 'none' : 'block';
+      document.getElementById('selectCard2').disabled = isSingle;
+      document.getElementById('sheetModeSelect').value = mode;
+      if (isSingle && currentCard === 2) currentCard = 1;
+      syncPanel();
+    }
+
+    function setThemeButtonsPressed(cardIndex) {
+      const buttons = {
+        '.made-in-italy-btn': madeInItalyClaimsActive,
+        '.black-friday-btn': blackFridayActive,
+        '.xmas-btn': xmasActive
+      };
+      Object.entries(buttons).forEach(([selector, activeState]) => {
+        const button = document.querySelector(selector + '[data-card-index="' + cardIndex + '"]');
+        if (button) button.setAttribute('aria-pressed', String(activeState[cardIndex]));
       });
     }
 
-    function onOfficialBrandChange(cardIndex, slot) {
-      document.getElementById(`customBrandSelect${cardIndex}_${slot}`).value = "";
-      updateCards();
-    }
-
-    function onCustomBrandChange(cardIndex, slot) {
-      document.getElementById(`brandSelect${cardIndex}_${slot}`).value = "";
-      updateCards();
-    }
-
-    function applyPreset(cardIndex) {
-      const value = document.getElementById('presetDesc' + cardIndex).value;
-      if (value !== "") {
-        document.getElementById('desc' + cardIndex).value = value;
-        updateCards();
+    function toggleBlackFriday(cardIndex) {
+      blackFridayActive[cardIndex] = !blackFridayActive[cardIndex];
+      if (blackFridayActive[cardIndex]) {
+        if (madeInItalyClaimsActive[cardIndex]) toggleMadeInItaly(cardIndex);
+        xmasActive[cardIndex] = false;
       }
+      setThemeButtonsPressed(cardIndex);
+      renderCards();
     }
 
-    function copyCard1ToCard2() {
-      document.getElementById('brandSelect2_A').value = document.getElementById('brandSelect1_A').value;
-      document.getElementById('customBrandSelect2_A').value = document.getElementById('customBrandSelect1_A').value;
-      
-      if (isSecondBrandActive1 !== isSecondBrandActive2) {
-        toggleSecondBrand(2);
+    function toggleXmas(cardIndex) {
+      xmasActive[cardIndex] = !xmasActive[cardIndex];
+      if (xmasActive[cardIndex]) {
+        if (madeInItalyClaimsActive[cardIndex]) toggleMadeInItaly(cardIndex);
+        blackFridayActive[cardIndex] = false;
+      }
+      setThemeButtonsPressed(cardIndex);
+      renderCards();
+    }
+
+    // Made in Italy: bandierine al posto dei claim e "Made in Italy" come testo (visibile anche con DOPPIA CIFRA);
+    // alla disattivazione ripristina il testo di prima.
+    function toggleMadeInItaly(cardIndex) {
+      madeInItalyClaimsActive[cardIndex] = !madeInItalyClaimsActive[cardIndex];
+      const state = cards[cardIndex];
+
+      if (madeInItalyClaimsActive[cardIndex]) {
+        blackFridayActive[cardIndex] = false;
+        xmasActive[cardIndex] = false;
+        previousDescriptionState[cardIndex] = { desc: state.desc, descPreset: state.descPreset };
+        state.desc = 'Made in Italy';
+        state.descPreset = 'Made in Italy';
+      } else if (previousDescriptionState[cardIndex]) {
+        state.desc = previousDescriptionState[cardIndex].desc;
+        state.descPreset = previousDescriptionState[cardIndex].descPreset;
+        previousDescriptionState[cardIndex] = null;
       }
 
-      document.getElementById('brandSelect2_B').value = document.getElementById('brandSelect1_B').value;
-      document.getElementById('customBrandSelect2_B').value = document.getElementById('customBrandSelect1_B').value;
-
-      document.getElementById('left2').value = document.getElementById('left1').value;
-      document.getElementById('right2').value = document.getElementById('right1').value;
-
-      const mode1 = document.getElementById('displayMode1').value;
-      document.getElementById('displayMode2').value = mode1;
-      toggleDisplayMode(2);
-
-      document.getElementById('desc2').value = document.getElementById('desc1').value;
-      document.getElementById('presetDesc2').value = document.getElementById('presetDesc1').value;
-      document.getElementById('pOld2').value = document.getElementById('pOld1').value;
-      document.getElementById('disc2').value = document.getElementById('disc1').value;
-      document.getElementById('pNew2').value = document.getElementById('pNew1').value;
-
-      updateCards();
+      setThemeButtonsPressed(cardIndex);
+      syncPanel();
+      renderCards();
     }
 
-    function toggleCardMode() {
-      const count = document.getElementById('modeSelect').value;
-      const card2 = document.getElementById('card2');
-      const half2 = document.getElementById('halfContainer2');
-      const cutLine = document.getElementById('cutLine');
-      const section2 = document.getElementById('sectionCard2');
-      const btnCopy = document.getElementById('btnCopy');
+    function createClaimImage(src, alt, side) {
+      const image = document.createElement('img');
+      image.className = 'claim-flag claim-flag-' + side;
+      image.src = src;
+      image.alt = alt;
+      return image;
+    }
 
-      if (count === "1") {
-        card2.classList.add('disabled');
-        if (half2) half2.style.display = 'none';
-        cutLine.style.display = 'none';
-        section2.style.display = 'none';
-        btnCopy.style.display = 'none';
+    // Claim su due righe: la prima parola sopra, il resto sotto (es. "SHOP NOW" → SHOP / NOW).
+    function setClaimText(element, value) {
+      const spaceIndex = value.indexOf(' ');
+      if (spaceIndex === -1) {
+        element.replaceChildren(document.createTextNode(value));
       } else {
-        card2.classList.remove('disabled');
-        if (half2) half2.style.display = 'flex';
-        cutLine.style.display = 'block';
-        section2.style.display = 'block';
-        btnCopy.style.display = 'block';
+        element.replaceChildren(
+          document.createTextNode(value.slice(0, spaceIndex)),
+          document.createElement('br'),
+          document.createTextNode(value.slice(spaceIndex + 1))
+        );
       }
     }
 
-    function printSheet(count) {
-      document.getElementById('modeSelect').value = count.toString();
-      toggleCardMode();
-      window.print();
-    }
-
-    function setLogoSrc(cardIndex, slot) {
-      const officialVal = document.getElementById(`brandSelect${cardIndex}_${slot}`).value;
-      const customVal = document.getElementById(`customBrandSelect${cardIndex}_${slot}`).value;
-      PrintLogoColors.setBrandLogoSrc(`cardLogo${cardIndex}_${slot}`, customVal, officialVal, DEFAULT_LOGO, 'white');
-    }
-
-    function formatDiscountInput(input) {
-      const value = input.value.replace(/[^\d,.-]/g, '');
-      if (!value) {
-        return;
+    // Testo Libero: fino a 31 caratteri (quanto "Made in Italy • Genuine Leather") il testo ha la sua grandezza;
+    // da 32 a 37 caratteri (il campo si ferma lì) il carattere si rimpicciolisce perché il testo resti largo uguale.
+    const DESC_FULL_LENGTH = 31;
+    function setDescriptionText(element, text) {
+      element.textContent = text;
+      element.style.fontSize = '';
+      if (text.length > DESC_FULL_LENGTH) {
+        const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        element.style.fontSize = (baseSize * DESC_FULL_LENGTH / text.length) + 'px';
       }
-      input.value = `${value}%`;
-      input.setSelectionRange(value.length, value.length);
     }
 
-    function updateCards() {
-      const claimMarkupBFLeft = '<img class="claim-flag claim-flag-left" src="assets/img/tema_blackfriday.png" alt="Black Friday">';
-      const claimMarkupBFRight = '<img class="claim-flag claim-flag-right" src="assets/img/tema_blackfriday.png" alt="Black Friday">';
-      const xmasMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/tema_xmas.png" alt="Natale">';
-      const xmasMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/tema_xmas.png" alt="Natale">';
+    function renderCard(cardIndex) {
+      const state = cards[cardIndex];
+      const card = document.getElementById('card' + cardIndex);
+      const headLeft = document.getElementById('headLeft' + cardIndex);
+      const headRight = document.getElementById('headRight' + cardIndex);
 
-      // CARTELLO 1 LOGHI
-      const card1 = document.getElementById('card1');
-      card1.classList.toggle('bf-active', blackFridayActive[1]);
-      card1.classList.toggle('xmas-active', xmasActive[1]);
-      card1.querySelector('.card-footer img').src = blackFridayActive[1]
-        ? 'assets/img/footer_orange.png'
-        : xmasActive[1] ? 'assets/img/footer_xmas.png' : 'assets/img/footer.png';
-      setLogoSrc(1, 'A');
-      setLogoSrc(1, 'B');
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex + '_A', state.customBrand, state.brand, DEFAULT_LOGO, 'white');
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex + '_B', state.customBrandBis, state.brandBis, DEFAULT_LOGO, 'white');
+      document.getElementById('cardLogo' + cardIndex + '_A').className = state.twoBrands ? 'double-brand' : 'single-brand';
+      document.getElementById('cardLogo' + cardIndex + '_B').className = state.twoBrands ? 'double-brand' : 'double-brand hidden-brand';
 
-      const logo1_A = document.getElementById('cardLogo1_A');
-      const logo1_B = document.getElementById('cardLogo1_B');
+      card.classList.toggle('bf-active', blackFridayActive[cardIndex]);
+      card.classList.toggle('xmas-active', xmasActive[cardIndex]);
+      card.querySelector('.card-footer img').src = blackFridayActive[cardIndex] ? 'assets/img/footer_orange.png'
+        : xmasActive[cardIndex] ? 'assets/img/footer_xmas.png'
+        : 'assets/img/footer.png';
 
-      if (isSecondBrandActive1) {
-        logo1_A.className = "double-brand";
-        logo1_B.className = "double-brand";
+      if (blackFridayActive[cardIndex]) {
+        headLeft.replaceChildren(createClaimImage('assets/img/tema_blackfriday.png', 'Black Friday', 'left'));
+        headRight.replaceChildren(createClaimImage('assets/img/tema_blackfriday.png', 'Black Friday', 'right'));
+      } else if (xmasActive[cardIndex]) {
+        headLeft.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'left'));
+        headRight.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'right'));
+      } else if (madeInItalyClaimsActive[cardIndex]) {
+        headLeft.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'left'));
+        headRight.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'right'));
       } else {
-        logo1_A.className = "single-brand";
-        logo1_B.className = "double-brand hidden-brand";
+        setClaimText(headLeft, state.left);
+        setClaimText(headRight, state.right);
       }
 
-      // CARTELLO 1 TESTI E PREZZI
-      const claimMarkupLeft = '<img class="claim-flag claim-flag-left" src="assets/img/madeinitaly.png" alt="Made in Italy">';
-      const claimMarkupRight = '<img class="claim-flag claim-flag-right" src="assets/img/madeinitaly.png" alt="Made in Italy">';
-      document.getElementById('headLeft1').innerHTML = blackFridayActive[1]
-        ? claimMarkupBFLeft
-        : xmasActive[1] ? xmasMarkupLeft : (madeInItalyClaimsActive[1] ? claimMarkupLeft : document.getElementById('left1').value.replace(' ', '<br>'));
-      document.getElementById('headRight1').innerHTML = blackFridayActive[1]
-        ? claimMarkupBFRight
-        : xmasActive[1] ? xmasMarkupRight : (madeInItalyClaimsActive[1] ? claimMarkupRight : document.getElementById('right1').value.replace(' ', '<br>'));
-      document.getElementById('promoDesc1').innerText = document.getElementById('desc1').value;
-
-      const po1 = document.getElementById('pOld1').value;
-      document.getElementById('priceOldDisplay1').innerText = po1 ? '€ ' + po1 : '';
-      document.getElementById('discountDisplay1').innerText = document.getElementById('disc1').value;
-      document.getElementById('priceVal1').innerText = document.getElementById('pNew1').value;
-
-      // CARTELLO 2 LOGHI
-      const card2 = document.getElementById('card2');
-      card2.classList.toggle('bf-active', blackFridayActive[2]);
-      card2.classList.toggle('xmas-active', xmasActive[2]);
-      card2.querySelector('.card-footer img').src = blackFridayActive[2]
-        ? 'assets/img/footer_orange.png'
-        : xmasActive[2] ? 'assets/img/footer_xmas.png' : 'assets/img/footer.png';
-      setLogoSrc(2, 'A');
-      setLogoSrc(2, 'B');
-
-      const logo2_A = document.getElementById('cardLogo2_A');
-      const logo2_B = document.getElementById('cardLogo2_B');
-
-      if (isSecondBrandActive2) {
-        logo2_A.className = "double-brand";
-        logo2_B.className = "double-brand";
-      } else {
-        logo2_A.className = "single-brand";
-        logo2_B.className = "double-brand hidden-brand";
-      }
-
-      // CARTELLO 2 TESTI E PREZZI
-      document.getElementById('headLeft2').innerHTML = blackFridayActive[2]
-        ? claimMarkupBFLeft
-        : xmasActive[2] ? xmasMarkupLeft : (madeInItalyClaimsActive[2] ? claimMarkupLeft : document.getElementById('left2').value.replace(' ', '<br>'));
-      document.getElementById('headRight2').innerHTML = blackFridayActive[2]
-        ? claimMarkupBFRight
-        : xmasActive[2] ? xmasMarkupRight : (madeInItalyClaimsActive[2] ? claimMarkupRight : document.getElementById('right2').value.replace(' ', '<br>'));
-      document.getElementById('promoDesc2').innerText = document.getElementById('desc2').value;
-
-      const po2 = document.getElementById('pOld2').value;
-      document.getElementById('priceOldDisplay2').innerText = po2 ? '€ ' + po2 : '';
-      document.getElementById('discountDisplay2').innerText = document.getElementById('disc2').value;
-      document.getElementById('priceVal2').innerText = document.getElementById('pNew2').value;
+      // DOPPIA CIFRA: riga prezzo originario e sconto; DESCRIZIONE ARTICOLO: il testo al suo posto
+      const promoDesc = document.getElementById('promoDesc' + cardIndex);
+      promoDesc.style.display = showsDescription(cardIndex) ? 'block' : 'none';
+      setDescriptionText(promoDesc, state.desc);
+      document.getElementById('priceOldRow' + cardIndex).style.display = state.withDesc ? 'none' : 'flex';
+      document.getElementById('priceOldDisplay' + cardIndex).textContent = state.old ? '€ ' + state.old : '';
+      document.getElementById('discountDisplay' + cardIndex).textContent = state.disc;
+      document.getElementById('priceVal' + cardIndex).textContent = state.price;
     }
 
-    window.onload = function() {
-      loadLocalLogos();
-      toggleDisplayMode(1);
-      toggleDisplayMode(2);
-    };
+    function renderCards() {
+      renderCard(1);
+      renderCard(2);
+    }
+
+    window.onload = loadLocalLogos;
   </script>
+  <script src="assets/js/cursore.js"></script>
+  <script>
+    // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
+    const activeCard = () => document.getElementById('card' + currentCard);
+    const inActiveCard = selector => () => activeCard().querySelector(selector);
+    const inActiveCardId = id => () => document.getElementById(id + currentCard);
+    const cardOf = target => target.closest('.card');
+    // I loghi brand stanno sul riquadro rosso, dove il triangolo rosso non si vedrebbe: il cursore sta sempre sopra
+    // il riquadro, centrato sul logo scelto (punta a 1 mm dal riquadro: 1,5 mm di margine interno + 1 mm).
+    const ABOVE_RED_BOX_GAP = 2.5 * 96 / 25.4;
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: cardOf,
+      obstacles: target => cardOf(target).querySelectorAll('.header-text, .red-box, .promo-description, .price-original, .discount-tag, .price-final, .card-footer img'),
+      rules: [
+        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
+        { controls: '#doublePriceBtn, #descriptionBtn', target: inActiveCard('.price-block'), placement: 'above' },
+        { controls: '#secondBrandBtn', target: inActiveCard('.red-box'), placement: 'above' },
+        { controls: '#brandSelect, #customBrandSelect', target: () => document.getElementById('cardLogo' + currentCard + '_A'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#brandSelectBis, #customBrandSelectBis', target: () => document.getElementById('cardLogo' + currentCard + '_B'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },
+        { controls: '#rightClaim', target: inActiveCard('.header-text:last-child') },
+        { controls: '#presetDesc, #desc', target: inActiveCardId('promoDesc') },
+        { controls: '#priceOld', target: inActiveCardId('priceOldDisplay') },
+        { controls: '#discount, #discountStepper', target: inActiveCardId('discountDisplay') },
+        { controls: '#priceNew', target: inActiveCardId('priceNewDisplay') }
+      ]
+    });
+  </script>
+  <script src="assets/js/strumenti-stampa.js"></script>
 </body>
 </html>

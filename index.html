@@ -155,6 +155,9 @@
     .nav-subtoggle-arrow { color: var(--accent); font-size: 14px; line-height: 1; padding: 0 4px; transition: transform .18s ease; }
     .nav-subtoggle[aria-expanded="false"] .nav-subtoggle-arrow { transform: rotate(-90deg); }
     .nav-star { color: var(--gold); }
+    /* Voci delle promo stagionali in oro come il titolo PROMO STAGIONALI. */
+    #promoItems .nav-btn { color: var(--accent); }
+    #promoItems .nav-btn:hover, #promoItems .nav-btn.active { color: var(--gold); }
 
     .sidebar-bottom {
       margin-top: auto;
@@ -259,23 +262,51 @@
     .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 3rem; padding-top: 0.4rem; }
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
     
+    .card, .carousel-card { --card-pad: 20px; }
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
     .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
     /* Anteprima nel riquadro 16:9 come le card-thumb di TEBE: l'immagine resta intera, senza tagli né deformazioni.
        I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura). */
-    .preview { position: relative; aspect-ratio: 16 / 9; margin: 0 14px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .preview { position: relative; aspect-ratio: 16 / 9; margin: 0 var(--card-pad); background: #0a0908; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 
     /* Schede del corpo centrale: stessi elementi delle card di TEBE (numero e tipo in alto,
-       anteprima, solo titolo, freccia per le pagine), con gli angoli arrotondati di StoreCraft. */
-    .card-top { display: flex; justify-content: space-between; gap: 10px; padding: 12px 14px 10px; font-size: 10px; letter-spacing: .16em; color: var(--accent); }
+       anteprima, titolo e pulsante + delle specifiche), con gli angoli arrotondati di StoreCraft. */
+    .card-top { display: flex; justify-content: space-between; gap: 10px; padding: 16px var(--card-pad) 12px; font-size: 10px; letter-spacing: .16em; color: var(--accent); }
     .card-type { text-align: right; }
 
-    .card-body { position: relative; padding: 1rem; }
-    .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; padding-right: 30px; }
-    .card-body .arrow { position: absolute; right: 1rem; bottom: 1rem; color: var(--text-muted); font-family: Arial, Helvetica, sans-serif; font-size: 17px; line-height: 1; font-variant-emoji: text; transition: color .18s ease; }
-    .card:hover .arrow, .carousel-card:hover .arrow { color: var(--accent); }
+    .card-body { position: relative; padding: 14px var(--card-pad) 18px; }
+    .card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; padding-right: 36px; }
+
+    /* Pulsante + delle specifiche: un + oro senza contorno, diverso dal resto della scheda (che apre la pagina); passandoci sopra compare dietro un cerchio oro pieno.
+       Un clic apre le specifiche di tutte le schede e il + ruota in ×; un altro clic le richiude. */
+    .spec-toggle { position: absolute; top: 12px; right: var(--card-pad); width: 24px; height: 24px; border: 0; border-radius: 50%; color: var(--accent); cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, transform .3s ease; }
+    .spec-toggle::before, .spec-toggle::after { content: ""; position: absolute; top: 50%; left: 50%; width: 11px; height: 1.6px; background: currentColor; border-radius: 1px; transform: translate(-50%, -50%); }
+    .spec-toggle::after { transform: translate(-50%, -50%) rotate(90deg); }
+    .spec-toggle:hover, .spec-toggle:focus-visible { background: var(--accent); color: #121110; outline: none; }
+    .desc-open .spec-toggle { transform: rotate(45deg); }
+    /* Etichetta del pulsante + (Mostra / Nascondi specifiche) sopra il pulsante, nello stile della .tool-tip
+       di strumenti-stampa.css (fondo scuro, bordo oro), con la scritta bianca nel carattere del pulsante HOME, più piccola e sottile. */
+    .spec-tip { position: absolute; bottom: calc(100% - 8px); right: var(--card-pad); padding: 4px 7px; border: 1px solid #d4a373; border-radius: 5px; background: #1e1d1a; color: var(--text); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.58rem; font-weight: 400; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; opacity: 0; transform: translateY(3px); transition: opacity .15s ease, transform .15s ease; pointer-events: none; z-index: 10; }
+    .spec-toggle:hover + .spec-tip, .spec-toggle:focus-visible + .spec-tip { opacity: 1; transform: translateY(0); }
+
+    .card:has(.card-desc) .card-body, .carousel-card:has(.card-desc) .card-body { transition: padding-bottom .3s ease; }
+    .desc-open .card-body { padding-bottom: 0.55rem; }
+    /* Le schede di una fila si allungano tutte come la più alta (anche quando le specifiche vanno su tre righe),
+       con il contenuto in alto e lo spazio in più in fondo. */
+    .carousel-card:has(.card-desc) { justify-content: flex-start; }
+    .card-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+    .card-desc > div { overflow: hidden; min-height: 0; }
+    /* Specifiche: i componenti del cartello divisi da un piccolo crocino (×) grigio come il testo. Le righe si riempiono normalmente da sinistra e vanno a capo
+       tra un componente e l'altro (un componente non si spezza a metà). Ogni componente tranne l'ultimo ha il suo crocino
+       attaccato dopo: andando a capo la riga sopra si chiude con il crocino, e nessuna riga inizia con un crocino.
+       Almeno due righe, così le schede aperte sono uguali. */
+    .card-desc p { min-height: 3.2em; margin: 0 var(--card-pad) 18px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; letter-spacing: .01em; }
+    .card-desc .spec-list { display: block; }
+    .card-desc .spec { white-space: nowrap; }
+    .card-desc .spec:not(:last-child)::after { content: "×"; display: inline-block; font-size: 0.85em; margin: 0 0.3em 0 0.6em; color: var(--text-muted); vertical-align: 0.12em; }
+    .desc-open .card-desc { grid-template-rows: 1fr; }
 
     /* STILI ESCLUSIVI WIDGET / CARD DORATA CON COLORE LOGO STORE CRAFT (#d4a373 / #e5ba73) */
     .gold-bf-card {
@@ -345,7 +376,7 @@
 
     .carousel-container.two-rows {
       display: grid;
-      grid-template-rows: repeat(2, auto);
+      grid-template-rows: repeat(2, 1fr);
       grid-auto-flow: column;
       grid-auto-columns: calc((100% - 36px) / 4);
     }
@@ -652,7 +683,7 @@
 
       .carousel-container.two-rows {
         display: grid;
-        grid-template-rows: repeat(2, auto);
+        grid-template-rows: repeat(2, 1fr);
         grid-auto-flow: column;
         grid-auto-columns: 100%;
       }
@@ -924,8 +955,9 @@
               <img class="preview-image" src="assets/thumbnail/cartellosemplice.png" alt="Anteprima Cartello Semplice">
             </div>
             <div class="card-body">
-              <h3>Semplice</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Semplice</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">2° Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Claim</span> <span class="spec">Descrizione</span> <span class="spec">Prezzo</span></span></p></div></div>
           </a>
 
           <a href="cartelli_outlet.html" class="carousel-card">
@@ -934,8 +966,9 @@
               <img class="preview-image" src="assets/thumbnail/doppiacifra.png" alt="Anteprima Cartello Outlet">
             </div>
             <div class="card-body">
-              <h3>Outlet</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Outlet</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">2° Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
           </a>
 
           <a href="cartelli_outletmulti.html" class="carousel-card">
@@ -944,8 +977,9 @@
               <img class="preview-image" src="assets/thumbnail/cartellomulti.png" alt="Anteprima Cartello Outlet Multi">
             </div>
             <div class="card-body">
-              <h3>Outlet Multi</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Outlet Multi</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">2° Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">2 o 3 Articoli</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
           </a>
 
 
@@ -955,8 +989,9 @@
               <img class="preview-image" src="assets/thumbnail/duereferenze.png" alt="Anteprima Cartello Multi Articolo">
             </div>
             <div class="card-body">
-              <h3>Multi Brand</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Multi Brand</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">2° Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">2 o 3 Articoli</span> <span class="spec">Descrizione</span> <span class="spec">Prezzo</span></span></p></div></div>
           </a>
 
           <a href="cartellopercentuale.html" class="carousel-card">
@@ -965,8 +1000,9 @@
               <img class="preview-image" src="assets/thumbnail/percentuale.png" alt="Anteprima Promo Percentuale">
             </div>
             <div class="card-body">
-              <h3>Percentuale</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Percentuale</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">2° Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Sconto %</span></span></p></div></div>
           </a>
 
           <a href="cartelli_lastchance.html" class="carousel-card">
@@ -975,8 +1011,9 @@
               <img class="preview-image" src="assets/thumbnail/promolastchance.png" alt="Anteprima Promo Last Chance">
             </div>
             <div class="card-body">
-              <h3>Last Chance</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Last Chance</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Logo Last Chance</span> <span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Claim</span> <span class="spec">Prezzo</span></span></p></div></div>
           </a>
 
           <a href="cartello_banco.html" class="carousel-card">
@@ -985,8 +1022,9 @@
               <img class="preview-image" src="assets/thumbnail/cartellobanco.png" alt="Anteprima Cartello da Banco">
             </div>
             <div class="card-body">
-              <h3>Paletto 15x10</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Paletto 15x10</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Formato 15x10</span> <span class="spec">Brand</span> <span class="spec">2° Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
           </a>
 
           <a href="magazzino.html" class="carousel-card">
@@ -995,8 +1033,9 @@
               <img class="preview-image" src="assets/thumbnail/magazzinothumb.png" alt="Anteprima Cartelli Magazzino">
             </div>
             <div class="card-body">
-              <h3>Magazzino</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Magazzino</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Categorie</span> <span class="spec">Frecce Direzionali</span> <span class="spec">Formato Pagina</span></span></p></div></div>
           </a>
 
         </div>
@@ -1018,8 +1057,9 @@
               <img class="preview-image" src="assets/thumbnail/promomultibrand.png" alt="Anteprima Promo Multibrand">
             </div>
             <div class="card-body">
-              <h3>Promo Multibrand ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Promo Multibrand ✦</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">50% + 50%</span> <span class="spec">Fasce Colore</span> <span class="spec">Testo Libero</span> <span class="spec">I Miei Loghi</span></span></p></div></div>
           </a>
 
           <!-- CARD DORATA BLACK FRIDAY -->
@@ -1029,8 +1069,9 @@
               <img class="preview-image" src="assets/thumbnail/blackfriday.png" alt="Anteprima Black Friday">
             </div>
             <div class="card-body">
-              <h3>Black Friday ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Black Friday ✦</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
           </a>
 
           <!-- CARD DORATA BLACK FRIDAY LIPS -->
@@ -1040,8 +1081,9 @@
               <img class="preview-image" src="assets/thumbnail/blackfridaylips.png" alt="Anteprima Black Friday Lips">
             </div>
             <div class="card-body">
-              <h3>Black Friday Lips ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Black Friday Lips ✦</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Grafica Lips</span> <span class="spec">Prezzo</span></span></p></div></div>
           </a>
 
           <!-- CARD DORATA XMAS BALL -->
@@ -1051,8 +1093,9 @@
               <img class="preview-image" src="assets/thumbnail/xmasball.png" alt="Anteprima Xmas Ball">
             </div>
             <div class="card-body">
-              <h3>Xmas Ball ✦</h3><span class="arrow" aria-hidden="true">↗︎</span>
+              <h3>Xmas Ball ✦</h3><span class="spec-toggle"></span>
             </div>
+            <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Colore Palla</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
           </a>
 
         </div>
@@ -1069,8 +1112,9 @@
             <img class="preview-image" src="assets/thumbnail/cartellini.png" alt="Anteprima Cartellini Vetrina">
           </div>
           <div class="card-body">
-            <h3>Vetrina</h3><span class="arrow" aria-hidden="true">↗︎</span>
+            <h3>Vetrina</h3><span class="spec-toggle"></span>
           </div>
+          <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
         </a>
 
         <a href="cartellinipromo.html" class="card">
@@ -1079,8 +1123,9 @@
             <img class="preview-image" src="assets/thumbnail/cartellinipromo.png" alt="Anteprima Cartellini Promozionali">
           </div>
           <div class="card-body">
-            <h3>Promozionali</h3><span class="arrow" aria-hidden="true">↗︎</span>
+            <h3>Promozionali</h3><span class="spec-toggle"></span>
           </div>
+          <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Promozione</span> <span class="spec">Evento</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
         </a>
       </div>
     </div>
@@ -1574,6 +1619,40 @@
       credits.classList.toggle('is-collapsed', isExpanded);
     }
 
+    // Pulsante + delle schede: apre e chiude insieme le specifiche di tutte le schede, senza aprire la pagina.
+    function enableCardDescriptions() {
+      const toggles = [...document.querySelectorAll('.card-body .spec-toggle')].filter(button => {
+        const card = button.closest('.card, .carousel-card');
+        return card && card.querySelector('.card-desc');
+      });
+      const setOpen = isOpen => {
+        toggles.forEach(button => {
+          button.closest('.card, .carousel-card').classList.toggle('desc-open', isOpen);
+          button.setAttribute('aria-expanded', String(isOpen));
+          button.setAttribute('aria-label', isOpen ? 'Nascondi specifiche' : 'Mostra specifiche');
+          button.nextElementSibling.textContent = isOpen ? 'Nascondi specifiche' : 'Mostra specifiche';
+        });
+      };
+      toggles.forEach(button => {
+        const tip = document.createElement('span');
+        tip.className = 'spec-tip';
+        tip.setAttribute('aria-hidden', 'true');
+        button.after(tip);
+        button.setAttribute('role', 'button');
+        button.setAttribute('tabindex', '0');
+        const toggle = event => {
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen(button.getAttribute('aria-expanded') !== 'true');
+        };
+        button.addEventListener('click', toggle);
+        button.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') toggle(event);
+        });
+      });
+      setOpen(false);
+    }
+
     function scrollCarousel(carouselId, direction) {
       const container = document.getElementById(carouselId);
       if (!container) return;
@@ -1891,6 +1970,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       restoreSidebarSections();
       enableSidebarLabelToggle();
+      enableCardDescriptions();
       generateQRCode();
       fetchExchangeRates();
       updateCarouselArrows();

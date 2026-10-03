@@ -1,7 +1,8 @@
 /*
  * Pannello standard degli editor (Crea Cartelli e Cartellini), con i colori scuri di StoreCraft.
  * Struttura e misure sono quelle del pannello standard di TEBE (vedi AGENTS.md):
- * - campi, menu, selettori e tasto di stampa con i caratteri predefiniti dei controlli (Arial), campi e menu alti 31,4 px;
+ * - campi, menu e tasto di stampa con i caratteri predefiniti dei controlli (Arial), campi e menu alti 31,4 px;
+ * - pulsanti dei selettori come nel paletto di TEBE: system-ui in grassetto leggero (600), interlinea 1,2;
  * - 0,35rem tra etichetta e campo, 0,8rem tra un campo e l'etichetta successiva, sotto il titolo,
  *   sotto i selettori e prima del tasto di stampa (sul telefono 0,55rem);
  * - i selettori a pulsanti (.mode-switch) non hanno un titolo sopra: il nome sta in aria-label;
@@ -129,6 +130,67 @@
   pointer-events: none;
 }
 
+/* Elenco che si apre dai menu: tema scuro. Dove il browser permette di
+   disegnare l'elenco (Chrome ed Edge recenti, appearance: base-select) ha il bordo oro, è largo quanto il campo e ha la barra di scorrimento larga come il riquadro della freccia, con la maniglia oro squadrata; altrove resta
+   l'elenco del browser, sempre scuro. */
+.form-group select { color-scheme: dark; }
+
+@supports (appearance: base-select) {
+  .form-group select,
+  .form-group .preset-select select,
+  .form-group select::picker(select) { appearance: base-select; }
+
+  /* come prima: Arial come gli altri campi (non il carattere del pannello) e testo su una riga sola, alto uguale */
+  .form-group select { font-family: Arial, Helvetica, sans-serif; white-space: nowrap; overflow: hidden; }
+
+  /* la freccia la disegna già .preset-select */
+  .form-group select::picker-icon { display: none; }
+
+  /* l'elenco è largo quanto il campo, bordo compreso (il menu sta dentro il bordo di .preset-select) */
+  .form-group select::picker(select) {
+    width: calc(anchor-size(width) + 2px);
+    margin: 2px 0 0 -1px;
+    max-height: 320px;
+    border: 1px solid #d4a373;
+    border-radius: 4px;
+    background: #0a0908;
+    color: #f4f1ea;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  }
+
+  /* barra di scorrimento larga come il riquadro della freccia, con lo stesso fondo; maniglia oro piena e squadrata (alta almeno 36 px),
+     che quasi riempie la colonna e si schiarisce passandoci sopra. Dentro, vicino ai bordi, due frecce scure sottili
+     (su in alto, giù in basso) come le frecce ⌄ dei menu della dashboard. */
+  .form-group select::picker(select)::-webkit-scrollbar { width: 1.6rem; }
+  .form-group select::picker(select)::-webkit-scrollbar-track { background: #181715; border-left: 1px solid #2e2b27; }
+  .form-group select::picker(select)::-webkit-scrollbar-thumb {
+    --arrow-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 4.2 4.5 1 8 4.2' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E");
+    --arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 .8 4.5 4 8 .8' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E");
+    border: solid transparent;
+    border-width: 3px 4px;
+    border-radius: 0;
+    min-height: 36px;
+    background: var(--arrow-up) center 5px / 9px 5px no-repeat padding-box,
+                var(--arrow-down) center calc(100% - 5px) / 9px 5px no-repeat padding-box,
+                #d4a373 padding-box;
+  }
+  .form-group select::picker(select)::-webkit-scrollbar-thumb:hover {
+    background: var(--arrow-up) center 5px / 9px 5px no-repeat padding-box,
+                var(--arrow-down) center calc(100% - 5px) / 9px 5px no-repeat padding-box,
+                #e5ba73 padding-box;
+  }
+
+  .form-group select option {
+    padding: 5px 8px;
+    font-size: 0.82rem;
+  }
+
+  .form-group select option::checkmark { display: none; }
+  .form-group select option:hover,
+  .form-group select option:focus-visible { background: #2e2b27; outline: none; }
+  .form-group select option:checked { color: #d4a373; }
+}
+
 /* Selettori a pulsanti: il pulsante scelto è oro con testo scuro, come CREATOR / CASSIERE in dashboard */
 .mode-switch {
   display: flex;
@@ -149,8 +211,11 @@
   border-radius: 4px;
   background: transparent;
   color: #8c857b;
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -165,6 +230,13 @@
 }
 
 .mode-switch button:disabled { opacity: 0.35; cursor: default; }
+
+/* Selettore CARTELLO SUPERIORE / INFERIORE: scritta più piccola e meno spaziata, come card-mode-switch di TEBE */
+.mode-switch.card-mode-switch button {
+  padding: 9px 3px;
+  font-size: 0.58rem;
+  letter-spacing: 0.02em;
+}
 
 
 /* Pulsante a due stati a tutta larghezza (es. + AGGIUNGI 2° BRAND): vuoto con bordo e scritta oro,
@@ -204,8 +276,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  /* linea sottile oro chiaro che la separa dai comandi che seguono; sotto la linea un poco più dello spazio normale */
-  padding-bottom: 0.8rem;
+  /* linea sottile oro chiaro che la separa dai comandi che seguono: sopra e sotto la linea lo stesso spazio,
+     un poco più di quello normale */
+  padding-bottom: 1.1rem;
   border-bottom: 1px solid rgba(212, 163, 115, 0.28);
   margin-bottom: 1.1rem;
   color: #d4a373;
@@ -342,7 +415,7 @@
   .preset-select,
   .mode-switch { margin-bottom: 0.55rem; }
   .btn-toggle { margin-bottom: 0.55rem; }
-  .check-row { padding-bottom: 0.55rem; margin-bottom: 0.75rem; }
+  .check-row { padding-bottom: 0.75rem; margin-bottom: 0.75rem; }
   .form-group label {
     font-size: 0.68rem;
     margin-bottom: 0.18rem;

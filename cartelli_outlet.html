@@ -573,7 +573,7 @@
     <div class="controls">
       <h2>Cartello Outlet</h2>
 
-      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
+      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
         <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
         <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
       </div>
@@ -709,7 +709,7 @@
         </div>
       </div>
 
-      <button type="button" class="btn-print" onclick="window.print()">STAMPA</button>
+      <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
     </div>
   </div>
 
@@ -1008,6 +1008,7 @@
     function setSheetMode(mode) {
       sheetMode = mode;
       const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
       const sheet = document.getElementById('printSheet');
       document.getElementById('card2').classList.toggle('disabled', isSingle);
       sheet.classList.toggle('single-mode', isSingle);
