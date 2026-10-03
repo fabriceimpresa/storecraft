@@ -1,0 +1,58 @@
+/*
+ * Riquadro fisso "Torna al Menu Principale" in basso a destra, uguale in tutte le pagine (regola unica: le pagine
+ * non ne tengono una copia). Cambia solo il testo del titolo in alcune tavole: STORE // CRAFT di solito,
+ * XMAS // CRAFT in Xmas Ball, BLACK FRIDAY // CRAFT in Black Friday, BLACK FRIDAY // LIPS in Black Friday Lips.
+ * Markup:
+ *   <div class="floating-nav-box">
+ *     <div class="floating-nav-title">STORE // CRAFT</div>
+ *     <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
+ *   </div>
+ */
+
+.floating-nav-box {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: #181a1d;
+  border: 1px solid #d4a373;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 1000;
+  /* carattere fisso, così non dipende da quello della pagina */
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: normal;
+}
+
+.floating-nav-title {
+  font-size: 0.65rem;
+  color: #e5ba73;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+  padding-bottom: 3px;
+}
+
+.floating-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.74rem;
+  font-weight: normal;
+  transition: all 0.2s;
+}
+
+.floating-nav-btn:hover {
+  color: #e5ba73;
+  transform: translateX(-2px);
+}
+
+@media print {
+  .floating-nav-box { display: none !important; }
+}

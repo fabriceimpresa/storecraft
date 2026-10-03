@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="assets/css/font-arial.css">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css">
   <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
   <!-- Inclusione script centralizzato loghi -->
   <script src="assets/js/logos.js"></script>
@@ -24,6 +25,11 @@
 
     /* Titolo di sezione dentro un blocco (SELEZIONA I MARCHI IN PROMOZIONE, IMPOSTAZIONI STAMPA) */
     .section-title { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding-bottom: .45rem; margin-bottom: .65rem; border-bottom: 1px solid; }
+    /* sotto la linea di ogni sezione lo stesso spazio libero visibile (13,4 px): nella prima sezione sotto la linea c'è una
+       scritta, che comincia un poco più in basso del suo riquadro; dove c'è subito una casella o il bordo di un campo
+       (Marchi in promozione, Impostazioni stampa) si aggiungono 3 px. */
+    .section-title + .logo-grid { padding-top: 3px; }
+    .section-title + .form-group:has(> .preset-select:first-child) { padding-top: 3px; }
 
     /* Scritta principale: il quadratino mostra il colore del cartello, accanto al menu */
     .select-color-preview { display: flex; align-items: center; gap: 8px; margin-bottom: .65rem; }
@@ -69,53 +75,14 @@
     .legend img { display: block; width: 100%; height: auto; }
     .app-close-btn { position: fixed; top: 1.5rem; right: 1.5rem; width: 36px; height: 36px; background: #d4a373; color: #000; border: 0; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; text-decoration: none; }
 
-    /* Riquadro "Torna al Menu Principale": quello standard delle pagine dei cartelli (es. cartelli_semplici.html) */
-    .floating-nav-box {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #181a1d;
-      border: 1px solid #d4a373;
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      z-index: 1000;
-    }
-
-    .floating-nav-title {
-      font-size: 0.65rem;
-      color: #e5ba73;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
-      padding-bottom: 3px;
-    }
-
-    .floating-nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .floating-nav-btn:hover {
-      color: #e5ba73;
-      transform: translateX(-2px);
-    }
-
     /* MENU SU MISURA DI PROMO MULTIBRAND: spazi e caratteri del pannello standard, ma, per distinguerlo dagli altri
        cartelli, fondo nell'oro tenue del pulsante ✕ che chiude la pagina (#d4a373), scritte scure e campi bordati di bianco. */
-    .controls { background: #d4a373; border-color: #d4a373; color: #121110; }
-    .controls h2 { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.3); }
-    .controls .section-title { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.45); }
+    .controls { background: #d9ad80; border-color: #d9ad80; color: #121110; --brand-dot-color: #8f6a1f; }   /* oro del pulsante ✕ (#d4a373) un poco più chiaro */
+    /* titolo della pagina (layout speciale): nero, con la linea sotto come negli altri menu, tra due stelline gialle come quelle dei brand prioritari */
+    .controls h2 { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.3); margin-bottom: 1.6rem; }   /* sotto la linea del titolo lo stesso spazio che c'è tra un blocco e l'altro (1,6rem) */
+    .controls h2::before { content: '★ '; color: #f2b705; }
+    .controls h2::after { content: ' ★'; color: #f2b705; }
+    .controls .section-title { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.3); }   /* nomi delle sezioni neri, con la stessa linea del titolo del menu */
     .controls .form-group label { color: #4a3a26; }
     .controls .form-group .section-label { color: #121110; }
     .controls .form-group input,
@@ -444,8 +411,9 @@
     <div class="controls">
       <h2>Promo Multibrand</h2>
 
-      <!-- Blocco 1: scritte del cartello (senza titolo) -->
+      <!-- Blocco 1: scritte del cartello -->
       <div class="panel-block">
+        <div class="section-title">Promozione speciale</div>
         <div class="form-group">
           <label class="section-label" for="mainText1">PROMO STAGIONALE</label>
           <div class="select-color-preview">
@@ -583,7 +551,7 @@
         }
         select.value = choice.custom;
       } else {
-        addLogoOption(select, '', '-- Seleziona Brand --');
+        addLogoOption(select, '', '— Seleziona Brand —', 'brand-placeholder');   // pallini oro prima e dopo (pannello.css)
         logoList.forEach(file => {
           const isPriority = priorityLogoFiles.includes(file);
           appendBrandOption(select, file, cleanName(file), isPriority);   // stella gialla dei brand prioritari, da logos.js

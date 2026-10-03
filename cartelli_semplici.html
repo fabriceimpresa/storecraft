@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="assets/css/font-arial.css">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css">
   <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
   <link rel="stylesheet" href="assets/css/cursore.css">
   <script src="assets/js/logos.js"></script>
@@ -428,47 +429,6 @@
       top: calc(50% + 8rem);
     }
 
-    .floating-nav-box {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #181a1d;
-      border: 1px solid #d4a373;
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      z-index: 1000;
-    }
-
-    .floating-nav-title {
-      font-size: 0.65rem;
-      color: #e5ba73;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
-      padding-bottom: 3px;
-    }
-
-    .floating-nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .floating-nav-btn:hover {
-      color: #e5ba73;
-      transform: translateX(-2px);
-    }
-
     @page {
       size: A4 portrait;
       margin: 0mm !important;
@@ -622,7 +582,7 @@
       <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
       <div class="panel-block">
         <div class="form-group">
-          <label class="section-label" for="presetDesc">Testi Pronti</label>
+          <label class="section-label" for="presetDesc">TESTI PRONTI</label>
           <div class="preset-select">
             <select id="presetDesc" onchange="applyPreset()">
               <option value="">-- Seleziona un testo --</option>
@@ -801,7 +761,8 @@
       const { priorityFiles, remainingFiles } = getSortedLogoFiles();
       ['brandSelect', 'brandSelectBis'].forEach(id => {
         const select = document.getElementById(id);
-        addPlaceholder(select, '-- Seleziona Brand --');
+        addPlaceholder(select, '— Seleziona Brand —');
+        select.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
         // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
         [...priorityFiles, ...remainingFiles].forEach(fileName => {
           appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));

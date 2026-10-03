@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="assets/css/font-arial.css">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css">
   <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
   <link rel="stylesheet" href="assets/css/cursore.css">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
@@ -327,47 +328,6 @@
       transform: scale(1.1);
     }
 
-    .floating-nav-box {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #181a1d;
-      border: 1px solid #d4a373;
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      z-index: 1000;
-    }
-
-    .floating-nav-title {
-      font-size: 0.65rem;
-      color: #e5ba73;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
-      padding-bottom: 3px;
-    }
-
-    .floating-nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .floating-nav-btn:hover {
-      color: #e5ba73;
-      transform: translateX(-2px);
-    }
-
     @page {
       size: A4 portrait;
       margin: 0mm !important;
@@ -425,7 +385,7 @@
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
 
   <div class="floating-nav-box">
-    <div class="floating-nav-title">STORE // CRAFT</div>
+    <div class="floating-nav-title">BLACK FRIDAY // CRAFT</div>
     <a href="index.html" class="floating-nav-btn">
       ← Torna al Menu Principale
     </a>
@@ -632,7 +592,8 @@
 
     function loadLocalLogos() {
       const select = document.getElementById('brandSelect');
-      addPlaceholder(select, '-- Seleziona Brand --');
+      addPlaceholder(select, '— Seleziona Brand —');
+      select.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
       // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
       const { priorityFiles, remainingFiles } = getSortedLogoFiles();
       [...priorityFiles, ...remainingFiles].forEach(fileName => {

@@ -38,7 +38,7 @@
 <body>
 
 <h1>STORE // CRAFT — Aggiornamento</h1>
-<p class="sub">Piano di lavoro riepilogativo · versione del 3 ottobre 2026</p>
+<p class="sub">Piano di lavoro riepilogativo · versione del 3 ottobre 2026, aggiornata a fine giornata</p>
 
 <div class="box gold">
   <p><strong>A cosa serve questo documento.</strong> Riassume il lavoro di aggiornamento di StoreCraft diviso in fasi. Va letto all'inizio di ogni sessione di lavoro, da una persona o da un'intelligenza artificiale, per riprendere il contesto. I dettagli tecnici di quanto già fatto stanno nel file <code>AGENTS.md</code> del repository: questo piano dice <em>cosa</em> fare e <em>in che ordine</em>, <code>AGENTS.md</code> dice <em>come</em> è stato fatto.</p>
@@ -76,6 +76,11 @@
   <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro.</li>
 </ol>
 
+<div class="box gold">
+  <p><strong>Dove siamo arrivati (3 ottobre 2026).</strong> Fasi 0 e 1 fatte. Fase 2 fatta, manca solo la decisione su <code>cartelli_outletmultismart</code>. Fase 3 a metà: Black Friday e Black Friday Lips fatte, Promo Multibrand in corso con il suo menu su misura, Xmas Ball da fare. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale" uguale ovunque e il cursore oro.</p>
+  <p><strong>Prossimi passi:</strong> finire Promo Multibrand (restano aperte: accorciare la voce di partenza dei menu stretti dei marchi, "Promo Stagionale" con l'iniziale maiuscola o tutto maiuscolo, versione <code>?v=</code> sui file comuni per non vedere online i file vecchi), poi Xmas Ball, poi la Fase 4 (cartellini, che hanno ancora la stella emoji ⭐ nei menu BRAND).</p>
+</div>
+
 <h2>4. Le fasi</h2>
 <p class="legend"><span class="ok">■ FATTO</span> <span style="color:#c08a45;font-weight:700">■ IN CORSO</span> <span class="muted" style="font-weight:700">■ DA FARE</span></p>
 
@@ -99,9 +104,9 @@
   </ul>
 </div>
 
-<div class="phase wip">
-  <h3><span>Fase 2 — Cartelli: pannello standard</span> <span class="tag">IN CORSO</span></h3>
-  <p>Ogni pagina riceve: <code>pannello.css</code>, Arial dal sito (<code>font-arial.css</code>), cursore rosso (<code>cursore.js</code>), pulsanti oro di stampa e lista di stampa (<code>strumenti-stampa.js</code>), selettore CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO, menu di stampa e un solo tasto STAMPA.</p>
+<div class="phase done">
+  <h3><span>Fase 2 — Cartelli: pannello standard</span> <span class="tag">QUASI FATTA</span></h3>
+  <p>Ogni pagina riceve: <code>pannello.css</code> diviso in quattro blocchi, Arial dal sito (<code>font-arial.css</code>), cursore oro (<code>cursore.js</code>), pulsanti oro di stampa e lista di stampa (<code>strumenti-stampa.js</code>), selettore CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO, menu di stampa e un solo tasto STAMPA.</p>
   <table>
     <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
     <tr><td><code>cartelli_semplici</code></td><td>Semplice</td><td class="ok">fatta</td></tr>
@@ -123,7 +128,7 @@
     <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
     <tr><td><code>blackfridaylips</code></td><td>Black Friday Lips</td><td class="ok">fatta</td></tr>
     <tr><td><code>blackfriday</code></td><td>Black Friday</td><td class="ok">fatta</td></tr>
-    <tr><td><code>promo_multibrand</code></td><td>Promo Multibrand</td><td class="muted">in corso: menu su misura (oro, blocchi, marchi con spunta Loghi Personalizzati)</td></tr>
+    <tr><td><code>promo_multibrand</code></td><td>Promo Multibrand</td><td class="muted">in corso: menu su misura (fondo oro, sfondo pagina dorato chiaro, tre sezioni con titolo, Promozioni, marchi 1–8 con la spunta Loghi Personalizzati, legenda rifatta, pulsantiera standard)</td></tr>
     <tr><td><code>xmas_ball</code></td><td>Xmas Ball</td><td class="no">da fare</td></tr>
   </table>
 </div>
@@ -146,10 +151,12 @@
   </ul>
 </div>
 
-<div class="phase todo">
-  <h3><span>Fase 7 — Elementi comuni a tutte le pagine</span> <span class="tag">DA FARE</span></h3>
+<div class="phase wip">
+  <h3><span>Fase 7 — Elementi comuni a tutte le pagine</span> <span class="tag">IN CORSO</span></h3>
   <ul>
-    <li>Pulsanti fissi: ✕ in alto a destra e "← Torna al Menu Principale" in basso a destra, uguali ovunque.</li>
+    <li><span class="ok">✓</span> "← Torna al Menu Principale" in basso a destra uguale ovunque: regola unica in <code>assets/css/torna-al-menu.css</code> (cambia solo il titolo: XMAS // CRAFT, BLACK FRIDAY // CRAFT, BLACK FRIDAY // LIPS).</li>
+    <li><span class="ok">✓</span> Cursore oro dei cartelli (<code>#b48b37</code>), un poco più grande, colore in una variabile per negozio.</li>
+    <li><span class="no">○</span> Pulsante ✕ in alto a destra: ancora copiato nelle pagine, da portare in un file comune come il riquadro.</li>
     <li>Pulsante Made in Italy: confrontare con il modulo condiviso <code>tema-italia</code> di TEBE.</li>
     <li>Foto guida "Dove montare la stampa?" (<code>GUIDE_PHOTOS</code>, oggi vuoto).</li>
     <li>Vista cellulare come TEBE (solo telefoni: <code>pointer: coarse</code> e massimo 760 px).</li>
@@ -188,6 +195,10 @@
   <ul>
     <li><strong>Blocchi del pannello</strong>: ogni menu di sinistra è diviso in quattro blocchi, sempre in quest'ordine, con un poco di spazio in più tra un blocco e l'altro: 1. selettori e pulsanti; 2. brand (ufficiali e personalizzati) e claim laterali; 3. campi del cartello (prezzi, descrizione o entrambi, secondo la modalità); 4. stampa.</li>
     <li><strong>Area Testo con Dimensione Testo</strong>: un campo di testo su più righe accoppiato a una barra Dimensione Testo può avere un limitatore. Fino a un certo numero di righe testo e misura sono liberi; oltre (nel Magazzino dalla quarta riga) il carattere si riduce da solo per entrare nel cartello, senza spostare logo e freccia; togliendo le righe in più il testo torna alla misura scelta.</li>
+    <li><strong>Menu BRAND</strong>: la voce di partenza è "● — Seleziona Brand — ●" con i pallini oro; i brand stagionali hanno la stella gialla ★ (la stessa dei loghi personalizzati).</li>
+    <li><strong>Titoli dei menu</strong>: iniziale maiuscola (Promozioni, Loghi Personalizzati), tranne BRAND e TESTI PRONTI, tutti in maiuscolo.</li>
+    <li><strong>Riquadro "Torna al Menu Principale"</strong>: uguale in tutte le pagine, cambia solo il titolo nelle tavole a tema.</li>
+    <li><strong>Menu su misura</strong> (es. Promo Multibrand): stessi spazi e caratteri del pannello standard, ma colori propri (fondo oro, sfondo della pagina dorato chiaro) per far capire che il layout è speciale.</li>
   </ul>
 </div>
 
