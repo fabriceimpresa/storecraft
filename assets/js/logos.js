@@ -230,8 +230,15 @@ function getOrderedLogoFiles() {
 function appendBrandOption(selectEl, fileName, displayName, isPriority) {
   const option = document.createElement('option');
   option.value = fileName;
-  option.textContent = isPriority ? `⭐ ${displayName}` : displayName;
-  if (isPriority) option.className = 'priority-brand-option';
+  option.textContent = displayName;
+  if (isPriority) {
+    // brand prioritari: la stella ★ dei loghi personalizzati, ma gialla (.brand-star, colore in pannello.css)
+    const star = document.createElement('span');
+    star.className = 'brand-star';
+    star.textContent = '★ ';
+    option.prepend(star);
+    option.className = 'priority-brand-option';
+  }
   selectEl.appendChild(option);
   return option;
 }

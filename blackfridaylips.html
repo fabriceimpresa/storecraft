@@ -2,8 +2,12 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Genera Cartelli - Black Friday Lips</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <title>Black Friday Lips</title>
+  <link rel="stylesheet" href="assets/css/font-arial.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
+  <link rel="stylesheet" href="assets/css/cursore.css">
   <style>
     @font-face {
       font-family: 'Franklin Gothic';
@@ -27,141 +31,7 @@
       position: relative;
     }
 
-    /* Filigrana di sfondo UI */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
-      background-repeat: repeat;
-      background-size: 650px auto;
-      background-position: center;
-      opacity: 0.18;
-      filter: contrast(1.1);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Contenitore Pannelli di Sinistra */
-    .sidebar {
-      width: 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      position: relative;
-      z-index: 10;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    /* Pannelli di Controllo */
-    .controls {
-      background: #1e1d1a;
-      color: #f4f1ea;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #2e2b27;
-    }
-
-    .controls h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.1rem;
-      color: #d4a373;
-      border-bottom: 1px solid #2e2b27;
-      padding-bottom: 0.4rem;
-      margin-bottom: 1.2rem;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #e5ba73;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
-      padding: 0 0 0.6rem;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-    }
-
-    .form-group { margin-bottom: 0.8rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: normal;
-      margin-bottom: 0.3rem;
-      color: #8c857b;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #2e2b27;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      background-color: #0a0908;
-      color: #fff;
-    }
-
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #b48b37;
-      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
-    }
-
-    .btn-copy {
-      width: 100%;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 10px 0;
-    }
-
-    .btn-copy:hover { background-color: #218838; }
-
-    /* PULSANTI STAMPA */
-    .btn-print {
-      width: 100%;
-      background-color: #e00000;
-      color: #ffffff;
-      border: 1px solid #b30000;
-      padding: 10px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-print:hover { background-color: #cc0000; }
-
-    .btn-print-single {
-      width: 100%;
-      background-color: #0056b3;
-      color: #ffffff;
-      border: 1px solid #004085;
-      padding: 10px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-print-single:hover { background-color: #003d80; }
+    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
     /* FOGLIO A4 */
     .print-sheet {
@@ -354,6 +224,10 @@
       margin: 0mm !important;
     }
 
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+    }
+
     @media print {
       html, body {
         width: 210mm;
@@ -366,8 +240,6 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-
-      body::before { display: none !important; }
 
       .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
 
@@ -398,7 +270,7 @@
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
 
   <div class="floating-nav-box">
-    <div class="floating-nav-title">BLACK FRIDAY // LIPS</div>
+    <div class="floating-nav-title">STORE // CRAFT</div>
     <a href="index.html" class="floating-nav-btn">
       ← Torna al Menu Principale
     </a>
@@ -406,35 +278,45 @@
 
   <div class="sidebar">
     <div class="controls">
-      <h2>BLACK FRIDAY LIPS</h2>
+      <h2>Black Friday Lips</h2>
 
-      <div class="section-title">CARTELLO 1 (Superiore)</div>
-      <div class="form-group">
-        <label>Prezzo (Es. 20,00):</label>
-        <input type="text" id="price1" value="20,00" placeholder="Es. 20,00" oninput="updateCards()">
-      </div>
-
-      <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
-
-      <div id="sectionCard2">
-        <div class="section-title">CARTELLO 2 (Inferiore)</div>
-        <div class="form-group">
-          <label>Prezzo (Es. 20,00):</label>
-          <input type="text" id="price2" value="20,00" placeholder="Es. 20,00" oninput="updateCards()">
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
+          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
         </div>
       </div>
 
-      <div class="section-title">IMPOSTAZIONI STAMPA</div>
-      <div class="form-group">
-        <label>Modalità Cartelli da Stampare:</label>
-        <select id="modeSelect" onchange="toggleCardMode()">
-          <option value="2">2 Cartelli (Foglio Intero A4)</option>
-          <option value="1">1 Solo Cartello (Superiore)</option>
-        </select>
+      <!-- Blocco 3: campi del cartello (il blocco 2, brand e claim, qui non c'è: il cartello ha solo prezzo e labbra) -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label for="price">Prezzo</label>
+          <div class="input-affix">
+            <span class="affix">€</span>
+            <input type="text" id="price" inputmode="decimal" placeholder="20,00" oninput="onPriceInput(this)" onblur="onPriceBlur(this)">
+          </div>
+        </div>
       </div>
 
-      <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-      <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <label class="check-row" id="linkCardsRow" for="linkCards">
+          <span>COPIA SU ALTRO CARTELLO</span>
+          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+        </label>
+
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
     </div>
   </div>
 
@@ -466,37 +348,96 @@
   </div>
 
   <script>
-    function copyCard1ToCard2() {
-      document.getElementById('price2').value = document.getElementById('price1').value;
-      updateCards();
+    // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
+    function createCardState() {
+      return { price: '20,00' };
     }
 
-    function toggleCardMode() {
-      const count = document.getElementById('modeSelect').value;
-      const card2 = document.getElementById('card2');
-      const section2 = document.getElementById('sectionCard2');
-      const btnCopy = document.getElementById('btnCopy');
-      const sheet = document.getElementById('printSheet');
+    const cards = { 1: createCardState(), 2: createCardState() };
+    let currentCard = 1;
+    let sheetMode = 'double';
+    let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
 
-      if (count === "1") {
-        card2.classList.add('disabled');
-        section2.style.display = 'none';
-        btnCopy.style.display = 'none';
-        sheet.classList.remove('double-mode');
-        sheet.classList.add('single-mode');
-      } else {
-        card2.classList.remove('disabled');
-        section2.style.display = 'block';
-        btnCopy.style.display = 'block';
-        sheet.classList.remove('single-mode');
-        sheet.classList.add('double-mode');
+    // Con la casella spuntata (e il foglio intero) ogni modifica vale per tutti e due i cartelli.
+    function setField(field, value) {
+      const targets = linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+      targets.forEach(cardIndex => { cards[cardIndex][field] = value; });
+    }
+
+    function onFieldInput(field, value) {
+      setField(field, value);
+      renderCards();
+    }
+
+    // Prezzo: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
+    // (20 → 20,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
+    function formatPriceValue(value) {
+      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
+      if (!/\d/.test(cleaned)) return '';
+      const [whole, ...rest] = cleaned.split(',');
+      const decimals = rest.join('').replace(/\D/g, '');
+      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
+    }
+
+    function onPriceInput(input) {
+      input.value = input.value.replace(/[^\d,.]/g, '');
+      onFieldInput('price', input.value);
+    }
+
+    function onPriceBlur(input) {
+      input.value = formatPriceValue(input.value);
+      onFieldInput('price', input.value);
+    }
+
+    function setActive(activeId, ids) {
+      ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+    }
+
+    // Riporta nel pannello i valori del cartello scelto.
+    function syncPanel() {
+      document.getElementById('price').value = cards[currentCard].price;
+      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
+      document.getElementById('linkCards').checked = linkedCards;
+      document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    function selectCard(cardIndex) {
+      if (sheetMode === 'single' && cardIndex === 2) return;
+      currentCard = cardIndex;
+      syncPanel();
+    }
+
+    // Spuntando la casella i valori del cartello in modifica vanno anche sull'altro;
+    // togliendo la spunta il cartello sovrascritto torna ai valori che aveva prima.
+    let overwrittenCard = null;   // { cardIndex, state } salvato alla spunta
+
+    function setLinkedCards(isLinked) {
+      linkedCards = isLinked;
+      if (isLinked) {
+        const otherCard = currentCard === 1 ? 2 : 1;
+        overwrittenCard = { cardIndex: otherCard, state: { ...cards[otherCard] } };
+        cards[otherCard] = { ...cards[currentCard] };
+      } else if (overwrittenCard) {
+        cards[overwrittenCard.cardIndex] = overwrittenCard.state;
+        overwrittenCard = null;
       }
+      renderCards();
+      syncPanel();
     }
 
-    function printSheet(count) {
-      document.getElementById('modeSelect').value = count.toString();
-      toggleCardMode();
-      window.print();
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore.
+    function setSheetMode(mode) {
+      sheetMode = mode;
+      const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
+      const sheet = document.getElementById('printSheet');
+      document.getElementById('card2').classList.toggle('disabled', isSingle);
+      sheet.classList.toggle('single-mode', isSingle);
+      sheet.classList.toggle('double-mode', !isSingle);
+      document.getElementById('selectCard2').disabled = isSingle;
+      document.getElementById('sheetModeSelect').value = mode;
+      if (isSingle && currentCard === 2) currentCard = 1;
+      syncPanel();
     }
 
     /* SCALATURA DINAMICA FONT DEL PREZZO NUMERICO */
@@ -517,18 +458,40 @@
       priceEl.style.fontSize = fontSize;
     }
 
-    function updateCards() {
-      for (let i = 1; i <= 2; i++) {
-        let rawPrice = document.getElementById('price' + i).value.trim();
-        rawPrice = rawPrice.replace(/€/g, '').trim();
-        
-        const priceDisplay = document.getElementById('priceDisplay' + i);
-        priceDisplay.innerText = rawPrice;
-        adjustPriceFontSize(priceDisplay, rawPrice);
-      }
+    // Sul cartello il prezzo compare senza € (sopra c'è la scritta EURO).
+    function renderCard(cardIndex) {
+      const priceDisplay = document.getElementById('priceDisplay' + cardIndex);
+      priceDisplay.textContent = cards[cardIndex].price;
+      adjustPriceFontSize(priceDisplay, cards[cardIndex].price);
     }
 
-    window.onload = updateCards;
+    function renderCards() {
+      renderCard(1);
+      renderCard(2);
+    }
+
+    window.onload = () => {
+      syncPanel();
+      renderCards();
+    };
   </script>
+  <script src="assets/js/cursore.js"></script>
+  <script>
+    // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
+    const activeCard = () => document.getElementById('card' + currentCard);
+    const cardOf = target => target.closest('.card');
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: cardOf,
+      obstacles: target => cardOf(target).querySelectorAll('.euro-title, .price-value, .lips-wrapper img'),
+      rules: [
+        { controls: '#selectCard1, #selectCard2', target: activeCard },
+        { controls: '#price', target: () => document.getElementById('priceDisplay' + currentCard) }
+      ]
+    });
+  </script>
+  <script src="assets/js/strumenti-stampa.js"></script>
 </body>
 </html>

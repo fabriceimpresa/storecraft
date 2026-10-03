@@ -534,107 +534,119 @@
     <div class="controls">
       <h2>Promo Last Chance</h2>
 
-      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
-        <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
-        <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
+          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
+        </div>
+
+        <button type="button" class="btn-toggle" id="brandBtn" aria-pressed="false" onclick="toggleBrand()">+ AGGIUNGI BRAND</button>
       </div>
 
-      <button type="button" class="btn-toggle" id="brandBtn" aria-pressed="false" onclick="toggleBrand()">+ AGGIUNGI BRAND</button>
-
-      <div class="form-group" id="brandGroup" hidden>
-        <label class="section-label" for="brandSelect">BRAND</label>
-        <div class="preset-select">
-          <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
+      <!-- Blocco 2: brand (ufficiali e personalizzati) e claim laterali -->
+      <div class="panel-block">
+        <div class="form-group" id="brandGroup" hidden>
+          <label class="section-label" for="brandSelect">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
+          </div>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
+          </div>
         </div>
-        <label for="customBrandSelect">Loghi Personalizzati</label>
-        <div class="preset-select">
-          <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="leftClaim">Claim Sinistro</label>
+            <input type="text" id="leftClaim" oninput="onFieldInput('left', this.value)">
+          </div>
+          <div class="form-group">
+            <label for="rightClaim">Claim Destro</label>
+            <input type="text" id="rightClaim" oninput="onFieldInput('right', this.value)">
+          </div>
         </div>
       </div>
 
-      <div class="form-row">
+      <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
+      <div class="panel-block">
         <div class="form-group">
-          <label for="leftClaim">Claim Sinistro</label>
-          <input type="text" id="leftClaim" oninput="onFieldInput('left', this.value)">
+          <label for="price">Prezzo</label>
+          <div class="input-affix">
+            <span class="affix">€</span>
+            <input type="text" id="price" inputmode="decimal" placeholder="69,90" oninput="onPriceInput(this)" onblur="onPriceBlur(this)">
+          </div>
         </div>
+
         <div class="form-group">
-          <label for="rightClaim">Claim Destro</label>
-          <input type="text" id="rightClaim" oninput="onFieldInput('right', this.value)">
+          <label class="section-label" for="presetNote">Testi Pronti</label>
+          <div class="preset-select">
+            <select id="presetNote" onchange="applyPreset()">
+              <option value="">-- Seleziona un testo --</option>
+              <optgroup label="Promozioni">
+                <option value="Special Deal">Special Deal</option>
+                <option value="Final Price">Final Price</option>
+                <option value="Summer Sale">Summer Sale</option>
+                <option value="Spring Sale">Spring Sale</option>
+                <option value="Winter Sale">Winter Sale</option>
+                <option value="Black Friday">Black Friday</option>
+                <option value="Made in Italy">Made in Italy</option>
+                <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+                <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+                <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+              </optgroup>
+              <optgroup label="Articoli">
+                <option value="Abito">Abito</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Blusa">Blusa</option>
+                <option value="Borsa">Borsa</option>
+                <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+                <option value="Camicia">Camicia</option>
+                <option value="Cappello">Cappello</option>
+                <option value="Cappotto">Cappotto</option>
+                <option value="Cardigan">Cardigan</option>
+                <option value="Cintura">Cintura</option>
+                <option value="Coprispalle">Coprispalle</option>
+                <option value="Foulard">Foulard</option>
+                <option value="Giacca">Giacca</option>
+                <option value="Gilet">Gilet</option>
+                <option value="Gonna">Gonna</option>
+                <option value="Jeans">Jeans</option>
+                <option value="Maglia">Maglia</option>
+                <option value="Occhiali">Occhiali</option>
+                <option value="Pantaloncino">Pantaloncino</option>
+                <option value="Pantalone">Pantalone</option>
+                <option value="Shorts">Shorts</option>
+                <option value="T-Shirt">T-Shirt</option>
+                <option value="Top">Top</option>
+                <option value="Tutina">Tutina</option>
+              </optgroup>
+            </select>
+          </div>
+          <label for="note">Testo Libero</label>
+          <input type="text" id="note" maxlength="37" placeholder="-- Testo Libero --" oninput="onFieldInput('note', this.value)">
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="price">Prezzo</label>
-        <div class="input-affix">
-          <span class="affix">€</span>
-          <input type="text" id="price" inputmode="decimal" placeholder="69,90" oninput="onPriceInput(this)" onblur="onPriceBlur(this)">
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <label class="check-row" id="linkCardsRow" for="linkCards">
+          <span>COPIA SU ALTRO CARTELLO</span>
+          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+        </label>
+
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
         </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
       </div>
-
-      <div class="form-group">
-        <label class="section-label" for="presetNote">Testi Pronti</label>
-        <div class="preset-select">
-          <select id="presetNote" onchange="applyPreset()">
-            <option value="">-- Seleziona un testo --</option>
-            <optgroup label="Promozioni">
-              <option value="Special Deal">Special Deal</option>
-              <option value="Final Price">Final Price</option>
-              <option value="Summer Sale">Summer Sale</option>
-              <option value="Spring Sale">Spring Sale</option>
-              <option value="Winter Sale">Winter Sale</option>
-              <option value="Black Friday">Black Friday</option>
-              <option value="Made in Italy">Made in Italy</option>
-              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
-            </optgroup>
-            <optgroup label="Articoli">
-              <option value="Abito">Abito</option>
-              <option value="Bermuda">Bermuda</option>
-              <option value="Blusa">Blusa</option>
-              <option value="Borsa">Borsa</option>
-              <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
-              <option value="Camicia">Camicia</option>
-              <option value="Cappello">Cappello</option>
-              <option value="Cappotto">Cappotto</option>
-              <option value="Cardigan">Cardigan</option>
-              <option value="Cintura">Cintura</option>
-              <option value="Coprispalle">Coprispalle</option>
-              <option value="Foulard">Foulard</option>
-              <option value="Giacca">Giacca</option>
-              <option value="Gilet">Gilet</option>
-              <option value="Gonna">Gonna</option>
-              <option value="Jeans">Jeans</option>
-              <option value="Maglia">Maglia</option>
-              <option value="Occhiali">Occhiali</option>
-              <option value="Pantaloncino">Pantaloncino</option>
-              <option value="Pantalone">Pantalone</option>
-              <option value="Shorts">Shorts</option>
-              <option value="T-Shirt">T-Shirt</option>
-              <option value="Top">Top</option>
-              <option value="Tutina">Tutina</option>
-            </optgroup>
-          </select>
-        </div>
-        <label for="note">Testo Libero</label>
-        <input type="text" id="note" maxlength="37" placeholder="-- Testo Libero --" oninput="onFieldInput('note', this.value)">
-      </div>
-
-      <label class="check-row" id="linkCardsRow" for="linkCards">
-        <span>COPIA SU ALTRO CARTELLO</span>
-        <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
-      </label>
-
-      <div class="form-group">
-        <div class="preset-select">
-          <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
-            <option value="double" selected>2 CARTELLI (Foglio A4)</option>
-            <option value="single">1 CARTELLO (Solo cartello superiore)</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
     </div>
   </div>
 

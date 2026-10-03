@@ -28,8 +28,8 @@
 (function () {
   const GAP = 96 / 25.4;      // 1 mm tra la punta e l'elemento (sopra)
   const SIDE_GAP = GAP + 10;  // di lato più spazio libero (le pagine possono cambiarlo con sideGap)
-  const LONG = 36;            // lato lungo del triangolo
-  const SHORT = 24;           // altezza del triangolo
+  const LONG = 40;            // lato lungo del triangolo (in TEBE 36)
+  const SHORT = 27;           // altezza del triangolo (in TEBE 24)
   const CLEAR = 3;            // distanza minima dagli altri elementi
 
   function resolveOne(value, arg) {

@@ -1,11 +1,14 @@
-/* Cursore a triangolo rosso (#96382b, come il pulsante Sale) con ombra netta. Vedi assets/js/cursore.js.
-   Sopra l'elemento punta in giù; di lato il triangolo ruota e punta verso l'elemento. Non si stampa. */
+/* Cursore a triangolo con ombra netta. Vedi assets/js/cursore.js.
+   Sopra l'elemento punta in giù; di lato il triangolo ruota e punta verso l'elemento. Non si stampa.
+   Il colore sta in --cursore-colore: per Luxury Outlet l'oro dei cartelli (loghi oro e cartellini, #b48b37) (in TEBE è rosso #96382b, come il pulsante Sale). */
+:root { --cursore-colore: #b48b37; }
+
 .cursore {
   position: fixed;
   left: 0;
   top: 0;
-  width: 36px;
-  height: 24px;
+  width: 40px;
+  height: 27px;
   pointer-events: none;
   z-index: 900;
   opacity: 0;
@@ -20,13 +23,13 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: #96382b;
+  background: var(--cursore-colore);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
 
 /* Di lato: triangolo verticale */
 .cursore--right,
-.cursore--left { width: 24px; height: 36px; }
+.cursore--left { width: 27px; height: 40px; }
 
 /* a sinistra dell'elemento, punta verso destra */
 .cursore--right::before { clip-path: polygon(0 0, 100% 50%, 0 100%); }

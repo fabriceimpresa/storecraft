@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Promo Multibrand</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/font-arial.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css">
   <!-- Inclusione script centralizzato loghi -->
   <script src="assets/js/logos.js"></script>
   <style>
@@ -13,42 +16,125 @@
     @font-face { font-family: 'Space Invaders Project'; src: url('assets/fonts/space_invaders.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: block; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background: #212529; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
-    body::before { content: ''; position: fixed; inset: 0; background: url('assets/img/LUXURYOUTLET_BACK.png') center / 650px auto repeat; opacity: .18; filter: contrast(1.1); pointer-events: none; z-index: 0; }
-    
-    .sidebar { width: 340px; display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1; font-family: system-ui, -apple-system, sans-serif; }
-    .controls { background: #1e1d1a; color: #f4f1ea; padding: 1rem; border-radius: 8px; box-shadow: none; border: 1px solid #2e2b27; }
-    .controls h2 { font-family: 'Cinzel', serif; font-size: 1.1rem; color: #d4a373; border-bottom: 1px solid #2e2b27; padding-bottom: .4rem; margin-bottom: 1.2rem; text-align: center; text-transform: uppercase; letter-spacing: 1.5px; }
-    .section-title { font-size: .9rem; font-weight: bold; color: #e5ba73; background: transparent; border-left: none; border-bottom: 1px solid rgba(212, 163, 115, 0.9); padding: 0 0 .6rem; border-radius: 0; margin: 1rem 0 1rem; letter-spacing: 1.2px; text-transform: uppercase; }
-    .form-group { margin-bottom: .8rem; }
-    .form-group label { display: block; font-size: .72rem; font-weight: normal; margin-bottom: .3rem; color: #8c857b; }
-    .form-group input, .form-group select { width: 100%; padding: .5rem; border: 1px solid #2e2b27; border-radius: 4px; font-size: .82rem; background: #0a0908; color: #fff; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #b48b37; box-shadow: 0 0 4px rgba(180,139,55,.5); }
-    
-    .select-color-preview { display: flex; align-items: center; gap: 8px; }
+    /* sfondo della pagina: chiaro, un crema dorato tenue come le tinte avorio di TEBE, al posto del grigio scuro delle altre pagine (layout su misura) */
+    body { font-family: Arial, sans-serif; background: #ecd9b3; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
+
+    /* Il pannello segue spazi e caratteri del pannello standard (assets/css/pannello.css); qui solo ciò che è proprio
+       della pagina e, sotto, i colori del menu su misura. */
+
+    /* Titolo di sezione dentro un blocco (SELEZIONA I MARCHI IN PROMOZIONE, IMPOSTAZIONI STAMPA) */
+    .section-title { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding-bottom: .45rem; margin-bottom: .65rem; border-bottom: 1px solid; }
+
+    /* Scritta principale: il quadratino mostra il colore del cartello, accanto al menu */
+    .select-color-preview { display: flex; align-items: center; gap: 8px; margin-bottom: .65rem; }
+    .select-color-preview .preset-select { flex: 1; min-width: 0; margin-bottom: 0; }
     .color-badge { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #fff; background-color: #e00000; flex-shrink: 0; }
 
-    .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
+    /* Marchi: due menu per riga, con lo stesso spazio di Claim Sinistro / Destro. Accanto al numero di ogni posto la
+       spunta "Loghi Personalizzati" cambia l'elenco del menu. L'elenco che si apre è largo almeno quanto il nome più
+       lungo, così i nomi dei brand si leggono per intero anche se il campo è stretto. */
+    .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6px; }
     .logo-grid .form-group { min-width: 0; }
-    .form-group select.custom-select { border-color: #b48b37; color: #f3d5a3; }
-
-    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
-    select option.priority-brand-option {
-      background-color: #2e2b27;
-      color: #e5ba73;
-      font-weight: bold;
+    .logo-grid .preset-select { margin-bottom: 0; }
+    .controls .logo-grid select.custom-placeholder { font-size: .62rem; padding-top: 0; padding-bottom: 0; height: 29.375px; line-height: 29.375px; }
+    @supports (appearance: base-select) {
+      .logo-grid select::picker(select) { width: max-content; min-width: calc(anchor-size(width) + 2px); }
     }
-    
-    .custom-logo-controls { background: #1e1d1a; border-color: #2e2b27; }
-    .btn-print { width: 100%; border: 0; padding: 9px; color: #fff; font-size: .85rem; font-weight: bold; border-radius: 4px; cursor: pointer; background: #e00000; border: 1px solid #b30000; margin-top: 10px; }
-    .btn-print:hover { background: #c00; }
-    .btn-print-single { background: #0056b3; border-color: #004085; margin-top: 6px; }
+    .logo-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: .35rem; }
+    .form-group .logo-head label { margin-bottom: 0; }
+    .form-group .logo-head .logo-switch { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: .64rem; }
+    .logo-switch input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      flex-shrink: 0;
+      width: 12px;
+      height: 12px;
+      margin: 0;
+      border: 1px solid #ffffff;
+      border-radius: 3px;
+      background: #e3c095 center / 8px 8px no-repeat;
+      cursor: pointer;
+    }
+    .logo-switch input[type="checkbox"]:checked {
+      border-color: #96382b;
+      background-color: #96382b;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5.2 4 7.6 8.6 2.6' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+    .logo-switch input[type="checkbox"]:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6); }
+
+    /* Brand prioritari (stagionali) evidenziati nel menu */
+    .form-group select option.priority-brand-option { font-weight: bold; }
+
     .legend { margin-top: auto; background: #fff; border: 1px solid #d4a373; border-radius: 8px; padding: 8px; box-shadow: 0 4px 15px rgba(0,0,0,.6); }
     .legend img { display: block; width: 100%; height: auto; }
     .app-close-btn { position: fixed; top: 1.5rem; right: 1.5rem; width: 36px; height: 36px; background: #d4a373; color: #000; border: 0; border-radius: 50%; font-size: 1.2rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1000; text-decoration: none; }
-    .floating-nav-box { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #181a1d; border: 1px solid #d4a373; border-radius: 8px; padding: 10px 15px; z-index: 10; }
-    .floating-nav-title { color: #e5ba73; font-weight: bold; font-size: .8rem; }
-    .floating-nav-btn { color: #fff; text-decoration: none; font-size: .82rem; display: block; margin-top: 5px; }
+
+    /* Riquadro "Torna al Menu Principale": quello standard delle pagine dei cartelli (es. cartelli_semplici.html) */
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #181a1d;
+      border: 1px solid #d4a373;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #e5ba73;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #e5ba73;
+      transform: translateX(-2px);
+    }
+
+    /* MENU SU MISURA DI PROMO MULTIBRAND: spazi e caratteri del pannello standard, ma, per distinguerlo dagli altri
+       cartelli, fondo nell'oro tenue del pulsante ✕ che chiude la pagina (#d4a373), scritte scure e campi bordati di bianco. */
+    .controls { background: #d4a373; border-color: #d4a373; color: #121110; }
+    .controls h2 { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.3); }
+    .controls .section-title { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.45); }
+    .controls .form-group label { color: #4a3a26; }
+    .controls .form-group .section-label { color: #121110; }
+    .controls .form-group input,
+    .controls .form-group select { background: #e3c095; border-color: #ffffff; color: #121110; color-scheme: light; }
+    .controls .form-group input::placeholder { color: rgba(18, 17, 16, 0.5); }
+    .controls .preset-select { background: #e3c095; border-color: #ffffff; }
+    .controls .form-group .preset-select select { background: transparent; }
+    .controls .preset-select::after { background: #cf9a66; border-left-color: #ffffff; color: #121110; }
+    .controls .form-group input:focus,
+    .controls .preset-select:focus-within { border-color: #ffffff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6); }
+    .controls .form-group select option { background: #f4e6d4; color: #121110; }
+    .controls .form-group select option.priority-brand-option { background: #e3c095; }
+    @supports (appearance: base-select) {
+      .controls .form-group select::picker(select) { background: #f4e6d4; color: #121110; border-color: #ffffff; }
+      .controls .form-group select::picker(select)::-webkit-scrollbar-track { background: #e3c095; border-left-color: #ffffff; }
+      .controls .form-group select option:hover,
+      .controls .form-group select option:focus-visible { background: #e3c095; }
+      .controls .form-group select option:checked { color: #96382b; }
+    }
 
     /* LAYOUT A SCHERMO ANTEPRIMA */
     .print-sheet { width: 210mm; height: 297mm; background: #fff; padding: 10mm; box-shadow: 0 4px 20px rgba(0,0,0,.7); position: relative; z-index: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
@@ -73,7 +159,11 @@
     .main-promo.price-promo { font-size: 8.5rem; }
     .bottom-block { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5mm; }
     .secondary-promo { font-family: 'Nevis Project', sans-serif; font-size: 2.1rem; line-height: .95; letter-spacing: -0.05em; color: #e00000; text-transform: uppercase; text-align: center; }
-    .secondary-promo.secondary-promo-small { font-size: 1.3rem; }
+    /* La scritta sopra la fascetta ha sempre l'altezza di una riga normale, così la fascetta rossa sotto non si sposta:
+       un testo lungo (es. Fino ad esaurimento scorte, o il Testo Libero) diventa più piccolo e va su due righe dentro
+       la stessa altezza. */
+    .secondary-promo { height: 2rem; display: flex; align-items: flex-end; justify-content: center; }
+    .secondary-promo.secondary-promo-small { font-size: 1rem; }
     .small-red-banner { background: #e00000; color: #fff; padding: 2mm 5mm; }
     .small-red-banner span { font-family: 'Nevis Project', sans-serif; font-size: 1.5rem; line-height: .95; letter-spacing: -0.05em; text-transform: uppercase; white-space: nowrap; color: #ffffff !important; }
 
@@ -104,7 +194,7 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      body::before, body::after, .sidebar, .app-close-btn, .floating-nav-box { 
+      .sidebar, .app-close-btn, .floating-nav-box { 
         display: none !important; 
         content: none !important; 
       }
@@ -235,6 +325,11 @@
 
       .secondary-promo {
         font-size: 2rem !important;
+        height: 1.9rem !important;
+      }
+
+      .secondary-promo.secondary-promo-small {
+        font-size: .95rem !important;
       }
 
       .small-red-banner {
@@ -338,44 +433,84 @@
   </div>
 
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
-  <div class="floating-nav-box"><div class="floating-nav-title">STORE // CRAFT</div><a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a></div>
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
 
   <aside class="sidebar">
     <div class="controls">
       <h2>Promo Multibrand</h2>
-      <div class="section-title">CARTELLO 1 (Superiore)</div>
-      <div class="form-group">
-        <label>Scritta principale:</label>
-        <div class="select-color-preview">
-          <div class="color-badge" id="previewBadge"></div>
-          <select id="mainText1" onchange="updateCards()">
-            <option value="50% + 50%">50% + 50% (Rosso Standard)</option>
-            <option value="€ 10,00">€ 10,00 (Rosso Standard)</option>
-            <option value="€ 20,00">€ 20,00 (Arancione)</option>
-            <option value="€ 30,00">€ 30,00 (Blu)</option>
-            <option value="€ 40,00">€ 40,00 (Verde)</option>
-            <option value="€ 50,00">€ 50,00 (Viola)</option>
-            <option value="€ 60,00">€ 60,00 (Rosa)</option>
-            <option value="€ 70,00">€ 70,00 (Marrone/Oro)</option>
-            <option value="€ 80,00">€ 80,00 (Ottanio)</option>
-            <option value="€ 90,00">€ 90,00 (Blu Scuro)</option>
-          </select>
+
+      <!-- Blocco 1: scritte del cartello (senza titolo) -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="mainText1">PROMO STAGIONALE</label>
+          <div class="select-color-preview">
+            <div class="color-badge" id="previewBadge"></div>
+            <div class="preset-select">
+              <select id="mainText1" onchange="updateCards()">
+                <option value="50% + 50%">50% + 50% (Rosso Standard)</option>
+                <option value="€ 10,00">€ 10,00 (Rosso Standard)</option>
+                <option value="€ 20,00">€ 20,00 (Arancione)</option>
+                <option value="€ 30,00">€ 30,00 (Blu)</option>
+                <option value="€ 40,00">€ 40,00 (Verde)</option>
+                <option value="€ 50,00">€ 50,00 (Viola)</option>
+                <option value="€ 60,00">€ 60,00 (Rosa)</option>
+                <option value="€ 70,00">€ 70,00 (Marrone/Oro)</option>
+                <option value="€ 80,00">€ 80,00 (Ottanio)</option>
+                <option value="€ 90,00">€ 90,00 (Blu Scuro)</option>
+              </select>
+            </div>
+          </div>
+          <label for="mainFree1">Testo Libero</label>
+          <input id="mainFree1" type="text" placeholder="-- Testo Libero --" oninput="updateCards()">
+        </div>
+
+        <div class="form-group">
+          <label class="section-label" for="secondaryText1">Promozioni</label>
+          <div class="preset-select">
+            <select id="secondaryText1" onchange="updateCards()">
+              <option value="">-- Seleziona una promozione --</option>
+              <option value="Special Deal">Special Deal</option>
+              <option value="Final Price">Final Price</option>
+              <option value="Summer Sale">Summer Sale</option>
+              <option value="Spring Sale">Spring Sale</option>
+              <option value="Winter Sale" selected>Winter Sale</option>
+              <!-- In questa pagina le voci da Black Friday a Made in Italy • Genuine Leather sono nascoste -->
+              <option value="Black Friday" hidden>Black Friday</option>
+              <option value="Made in Italy" hidden>Made in Italy</option>
+              <option value="Vera Pelle • Genuine Leather" hidden>Vera Pelle • Genuine Leather</option>
+              <option value="Made in Italy • Genuine Leather" hidden>Made in Italy • Genuine Leather</option>
+              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            </select>
+          </div>
+          <label for="secondaryFree1">Testo Libero</label>
+          <input id="secondaryFree1" type="text" maxlength="22" placeholder="-- Testo Libero (max 22 caratteri) --" oninput="updateCards()">
         </div>
       </div>
-      <div class="form-group"><label>Oppure testo libero:</label><input id="mainFree1" type="text" placeholder="Lascia vuoto per usare il menu" oninput="updateCards()"></div>
-      <div class="form-group"><label>Scritta sopra il banner:</label><select id="secondaryText1" onchange="updateCards()"><option>Winter Sale</option><option>Summer Sale</option><option>Last Week</option><option>Shop Now</option><option>Su articoli selezionati</option></select></div>
-      <div class="form-group"><label>Oppure testo libero:</label><input id="secondaryFree1" type="text" maxlength="22" placeholder="Lascia vuoto per usare il menu (max 22 caratteri)" oninput="updateCards()"></div>
-      <div class="section-title">SELEZIONA I MARCHI IN PROMOZIONE</div>
-      <div class="logo-grid" id="logoControls1"></div>
-      <div class="section-title">IMPOSTAZIONI STAMPA</div>
-      <div class="form-group"><label>Modalità cartelli:</label><select id="modeSelect" onchange="toggleCardMode()"><option value="2">2 Cartelli (Foglio Intero A4)</option><option value="1">1 Solo Cartello (Superiore)</option></select></div>
-      <button class="btn-print" id="btnPrint2" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-      <button class="btn-print btn-print-single" id="btnPrint1" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
-    </div>
-    <div class="controls custom-logo-controls">
-      <h2>LOGHI PERSONALIZZATI</h2>
-      <p style="font-size:.75rem; color:#aaa; margin-bottom:10px;">Sostituisci, se necessario, i loghi scelti sopra. Le scelte vengono applicate a entrambi i cartelli.</p>
-      <div class="logo-grid" id="customLogoControls"></div>
+
+      <!-- Blocco 2: marchi in promozione -->
+      <div class="panel-block">
+        <div class="section-title">Marchi in promozione</div>
+        <div class="logo-grid" id="logoControls1"></div>
+      </div>
+
+      <!-- Blocco 3: stampa -->
+      <div class="panel-block">
+        <div class="section-title">Impostazioni stampa</div>
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="modeSelect" aria-label="Impostazioni di Stampa" onchange="toggleCardMode()">
+              <option value="2">2 CARTELLI (Foglio A4)</option>
+              <option value="1">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
     </div>
     <div class="legend"><img src="assets/img/legenda.png" alt="Legenda numerazione loghi"></div>
   </aside>
@@ -411,72 +546,108 @@
 
     function cleanName(file) { return file.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' '); }
     
-    function createLogoControls() {
-      const container = document.getElementById('logoControls1');
-      container.innerHTML = '';
-      for (let index = 1; index <= 8; index++) {
-        const group = document.createElement('div'); group.className = 'form-group';
-        const label = document.createElement('label'); label.textContent = 'Logo ' + index + ':';
-        const select = document.createElement('select'); select.id = 'logo' + index + 'Card1'; select.onchange = updateCards;
-        const empty = document.createElement('option'); empty.value = ''; empty.textContent = '-- Nessuno --'; select.appendChild(empty);
-        logoList.forEach(file => {
-          const option = document.createElement('option');
-          option.value = file;
-          const displayName = cleanName(file);
-          const isPriority = priorityLogoFiles.includes(file);
-          option.textContent = isPriority ? `⭐ ${displayName}` : displayName;
-          if (isPriority) option.className = 'priority-brand-option';
-          select.appendChild(option);
-        });
-        select.value = defaults[index - 1]; group.append(label, select); container.appendChild(group);
+    function readCustomLogos() {
+      try {
+        const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personalizzati fallita.', error);
+        return [];
       }
     }
 
-    function createCustomLogoControls() {
-      const container = document.getElementById('customLogoControls');
-      container.innerHTML = '';
-      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-      for (let index = 1; index <= 8; index++) {
-        const group = document.createElement('div'); group.className = 'form-group';
-        const label = document.createElement('label'); label.style.color = '#e5ba73'; label.textContent = '★ Logo Personalizzato ' + index + ':';
-        const select = document.createElement('select'); select.id = 'customLogo' + index; select.className = 'custom-select'; select.onchange = updateCards;
-        const empty = document.createElement('option'); empty.value = ''; empty.textContent = '-- Nessun Logo Personalizzato --'; select.appendChild(empty);
-        customLogos.forEach(item => { const option = document.createElement('option'); option.value = item.data; option.textContent = '★ ' + item.name; select.appendChild(option); });
-        group.append(label, select); container.appendChild(group);
+    // Marchi in promozione: per ogni posto (BRAND 1–8) la spunta "Loghi Personalizzati" sceglie quale elenco mostra
+    // il menu: spenta i brand ufficiali (predefinito), spuntata i loghi personalizzati (valore = data URL).
+    // Ogni posto ricorda tutte e due le scelte, così spegnendo e riaccendendo la spunta torna il logo di prima.
+    const logoChoices = defaults.map(file => ({ official: file, custom: '', useCustom: false }));
+    let customLogoList = [];
+
+    function addLogoOption(select, value, text, className) {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = text;
+      if (className) option.className = className;
+      select.appendChild(option);
+    }
+
+    function fillLogoSelect(index) {
+      const choice = logoChoices[index - 1];
+      const select = document.getElementById('logo' + index + 'Card1');
+      select.replaceChildren();
+      if (choice.useCustom) {
+        addLogoOption(select, '', '-- Seleziona Logo Personalizzato --');
+        customLogoList.forEach(logo => addLogoOption(select, logo.data, '★ ' + logo.name));
+        if (!customLogoList.length) {
+          addLogoOption(select, '', 'Nessun logo personalizzato: creali in Genera Loghi');
+          select.lastChild.disabled = true;
+        }
+        select.value = choice.custom;
+      } else {
+        addLogoOption(select, '', '-- Seleziona Brand --');
+        logoList.forEach(file => {
+          const isPriority = priorityLogoFiles.includes(file);
+          appendBrandOption(select, file, cleanName(file), isPriority);   // stella gialla dei brand prioritari, da logos.js
+        });
+        select.value = choice.official;
       }
+      markCustomPlaceholder(select, choice);
+    }
+
+    // Con la spunta Loghi Personalizzati e nessun logo scelto, la voce di partenza "-- Seleziona Logo Personalizzato --"
+    // è lunga per il campo stretto: il campo la mostra un poco più piccola (classe .custom-placeholder).
+    function markCustomPlaceholder(select, choice) {
+      select.classList.toggle('custom-placeholder', choice.useCustom && !select.value);
+    }
+
+    function createLogoControls() {
+      const container = document.getElementById('logoControls1');
+      container.replaceChildren();
+      customLogoList = readCustomLogos();
+      for (let index = 1; index <= 8; index++) {
+        const choice = logoChoices[index - 1];
+        const group = document.createElement('div'); group.className = 'form-group';
+
+        const head = document.createElement('div'); head.className = 'logo-head';
+        const label = document.createElement('label'); label.className = 'section-label'; label.textContent = String(index); label.htmlFor = 'logo' + index + 'Card1';
+        const switchLabel = document.createElement('label'); switchLabel.className = 'logo-switch';
+        const switchText = document.createElement('span'); switchText.textContent = 'Loghi Personalizzati';
+        const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = 'useCustom' + index;
+        checkbox.onchange = () => { choice.useCustom = checkbox.checked; fillLogoSelect(index); updateCards(); };
+        switchLabel.append(switchText, checkbox);
+        head.append(label, switchLabel);
+
+        const select = document.createElement('select'); select.id = 'logo' + index + 'Card1';
+        select.onchange = () => { choice[choice.useCustom ? 'custom' : 'official'] = select.value; markCustomPlaceholder(select, choice); updateCards(); };
+        const wrapper = document.createElement('div'); wrapper.className = 'preset-select'; wrapper.appendChild(select);
+
+        group.append(head, wrapper); container.appendChild(group);
+        fillLogoSelect(index);
+      }
+    }
+
+    // Logo di un posto: file ufficiale in assets/logos/ oppure logo personalizzato (data URL).
+    function createLogoImage(value, index, tintClass) {
+      const img = document.createElement('img');
+      img.className = tintClass;
+      img.alt = 'Logo ' + index;
+      img.src = value.startsWith('data:') ? value : LOGO_PATH + value;
+      return img;
     }
 
     function renderLogos(card, tintClass) {
-      const board = document.getElementById('brandBoard' + card); board.innerHTML = '';
+      const board = document.getElementById('brandBoard' + card); board.replaceChildren();
       for (let index = 1; index <= 6; index++) {
-        const custom = document.getElementById('customLogo' + index).value;
-        const file = custom || document.getElementById('logo' + index + 'Card1').value;
+        const value = document.getElementById('logo' + index + 'Card1').value;
         const slot = document.createElement('div'); slot.className = 'brand-slot slot' + index;
-        if (file) { 
-          const img = document.createElement('img'); 
-          img.className = tintClass; 
-          img.alt = 'Logo ' + index; 
-          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
-          slot.appendChild(img); 
-        } else {
-          slot.classList.add('empty');
-        }
+        if (value) slot.appendChild(createLogoImage(value, index, tintClass));
+        else slot.classList.add('empty');
         board.appendChild(slot);
       }
       [7, 8].forEach(index => {
-        const custom = document.getElementById('customLogo' + index).value;
-        const file = custom || document.getElementById('logo' + index + 'Card1').value;
-        const slot = document.getElementById('brandBottom' + index + 'Card' + card); slot.innerHTML = '';
-        if (file) { 
-          const img = document.createElement('img'); 
-          img.className = tintClass; 
-          img.alt = 'Logo ' + index; 
-          img.src = file.startsWith('data:') ? file : LOGO_PATH + file; 
-          slot.appendChild(img); 
-          slot.classList.remove('empty'); 
-        } else {
-          slot.classList.add('empty');
-        }
+        const value = document.getElementById('logo' + index + 'Card1').value;
+        const slot = document.getElementById('brandBottom' + index + 'Card' + card); slot.replaceChildren();
+        if (value) slot.appendChild(createLogoImage(value, index, tintClass));
+        slot.classList.toggle('empty', !value);
       });
     }
 
@@ -507,7 +678,7 @@
         mainDisplay.classList.toggle('price-promo', !freeText && selectedDropdownValue !== '50% + 50%');
         const secondaryDisplay = document.getElementById('secondaryDisplay' + card);
         secondaryDisplay.textContent = secondary;
-        secondaryDisplay.classList.toggle('secondary-promo-small', Boolean(secondaryFreeText) || secondary === 'Su articoli selezionati');
+        secondaryDisplay.classList.toggle('secondary-promo-small', Boolean(secondaryFreeText) || secondary.length > 13);
         renderLogos(card, activeTintClass);
       });
     }
@@ -515,6 +686,7 @@
     function toggleCardMode() {
       const single = document.getElementById('modeSelect').value === '1';
       document.getElementById('card2').classList.toggle('disabled', single);
+      document.getElementById('printBtn').textContent = single ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
     }
 
     // Rileva Safari desktop (usato solo per l'avviso browser consigliato).
@@ -523,17 +695,6 @@
       const isSafari = /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(ua);
       const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       return isSafari && !isIOS;
-    }
-
-    // Su Safari desktop l'export PDF via html2canvas si blocca spesso
-    // (canvas "tainted"/fetch bloccato su file://), risultando meno
-    // affidabile della stampa nativa. Dato che l'utente viene già avvisato
-    // con un popup di stampare preferibilmente da Chrome desktop, si usa
-    // sempre la stampa nativa su tutti i browser, Safari incluso.
-    function printSheet(count) {
-      document.getElementById('modeSelect').value = String(count);
-      toggleCardMode();
-      window.print();
     }
 
     // Rileva Chrome su mobile (Android/iOS): su questi browser la resa dei
@@ -560,9 +721,9 @@
     }
 
     createLogoControls(); 
-    createCustomLogoControls(); 
     updateCards();
     showBrowserWarningIfNeeded();
   </script>
+  <script src="assets/js/strumenti-stampa.js"></script>
 </body>
 </html>

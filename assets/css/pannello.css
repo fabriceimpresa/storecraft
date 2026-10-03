@@ -3,8 +3,8 @@
  * Struttura e misure sono quelle del pannello standard di TEBE (vedi AGENTS.md):
  * - campi, menu e tasto di stampa con i caratteri predefiniti dei controlli (Arial), campi e menu alti 31,4 px;
  * - pulsanti dei selettori come nel paletto di TEBE: system-ui in grassetto leggero (600), interlinea 1,2;
- * - 0,35rem tra etichetta e campo, 0,8rem tra un campo e l'etichetta successiva, sotto il titolo,
- *   sotto i selettori e prima del tasto di stampa (sul telefono 0,55rem);
+ * - 0,35rem tra etichetta e campo; dentro i blocchi del pannello 0,65rem tra un campo e l'etichetta successiva
+ *   e 0,5rem dopo un selettore (un poco meno che in TEBE: sul telefono 0,45rem); 0,8rem sotto il titolo; 1,6rem tra i blocchi;
  * - i selettori a pulsanti (.mode-switch) non hanno un titolo sopra: il nome sta in aria-label;
  * - se il pannello comincia con un selettore, sopra c'è 1rem dalla linea del titolo;
  * - i titoli dei menu a discesa (label.section-label) sono come le altre etichette, ma in oro;
@@ -49,7 +49,38 @@
 .controls h1 + .mode-switch,
 .controls h2 + .mode-switch { margin-top: 1rem; }
 
-.form-group { margin-bottom: 0.8rem; }
+/* Blocchi del pannello (.panel-block), uguali in tutti i menu e sempre in quest'ordine:
+   1. selettori e pulsanti (cartello superiore / inferiore, modalità, + AGGIUNGI 2° BRAND);
+   2. brand (ufficiali e personalizzati) e claim laterali;
+   3. campi del cartello: prezzi, descrizione o entrambi, secondo la modalità (con il selettore dell'articolo, se c'è);
+   4. stampa (COPIA SU ALTRO CARTELLO, impostazioni di stampa, tasto di stampa).
+   Dentro un blocco i campi sono un poco più vicini che in TEBE (0,65rem tra un campo e l'etichetta successiva,
+   0,5rem dopo un selettore); tra un blocco e l'altro ci sono in tutto 1,6rem, per leggere meglio.
+   Il primo blocco segue il titolo come prima; gli altri non lasciano uscire i margini (flow-root), così lo spazio
+   tra i blocchi è sempre lo spazio dei campi (0,65rem) più 0,95rem. */
+.panel-block + .panel-block {
+  display: flow-root;
+  margin-top: 0.95rem;
+}
+
+/* Un blocco che in quel momento non ha nulla da mostrare si nasconde intero (es. il brand in Black Friday con la descrizione) */
+.panel-block[hidden] { display: none; }
+
+/* Anche il primo blocco tiene dentro lo spazio sotto l'ultimo campo (un filo di padding impedisce che si fonda con lo
+   spazio tra i blocchi), così la distanza tra il primo e il secondo blocco è uguale a quella tra gli altri. */
+.panel-block { padding-bottom: 0.1px; }
+
+.controls h1 + .panel-block > .mode-switch:first-child,
+.controls h2 + .panel-block > .mode-switch:first-child { margin-top: 1rem; }
+
+/* Ogni blocco finisce con lo spazio dei campi (0,65rem), anche quando l'ultimo elemento è un selettore */
+.panel-block > .mode-switch:last-child { margin-bottom: 0.65rem; }
+
+/* COPIA SU ALTRO CARTELLO all'inizio del blocco di stampa: equidistante dal blocco sopra e dalla linea sotto
+   (1,6rem, quanto lo spazio tra i blocchi) */
+.panel-block > .check-row:first-child { padding-bottom: 1.6rem; }
+
+.form-group { margin-bottom: 0.65rem; }
 
 .form-group label {
   display: block;
@@ -158,7 +189,17 @@
 .form-group input[type="range"]:hover::-moz-range-thumb,
 .form-group input[type="range"]:focus-visible::-moz-range-thumb { background: #e5ba73; }
 
+/* Campi Claim Sinistro / Destro: il testo è in maiuscolo (es. SALDI 2026, SHOP NOW), quindi un poco più piccolo
+   degli altri campi, con il campo alto uguale (31,4 px). :where tiene la regola debole, così sul telefono vale
+   comunque la grandezza di 16 px. */
+.form-group input:where(#leftClaim, #rightClaim) {
+  height: 31.4px;
+  font-size: 0.74rem;
+}
+
 .form-group select option { background: #0a0908; color: #f4f1ea; }
+/* Stella dei brand prioritari (stagionali) nei menu BRAND: la ★ dei loghi personalizzati, sempre gialla */
+.brand-star { color: #f2b705; }
 /* Titoli dei gruppi nei menu (es. Promozioni e Articoli in Testi Pronti): oro su fondo scuro */
 .form-group select optgroup { background: #0a0908; color: #d4a373; }
 
@@ -172,7 +213,7 @@
 /* Menu a discesa con la freccia in un riquadro a destra */
 .preset-select {
   position: relative;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.65rem;
   overflow: hidden;
   border: 1px solid #2e2b27;
   border-radius: 4px;
@@ -276,7 +317,7 @@
 .mode-switch {
   display: flex;
   gap: 4px;
-  margin-bottom: 0.6rem;   /* tra un selettore e il selettore o il pulsante che segue: un poco meno dello spazio normale */
+  margin-bottom: 0.5rem;   /* tra un selettore e il selettore o il pulsante che segue: un poco meno dello spazio normale */
   padding: 4px;
   border: 1px solid #2e2b27;
   border-radius: 6px;
@@ -318,7 +359,7 @@
    che al passaggio del mouse si illuminano e si sollevano; attivo diventa verde con la scritta chiara. */
 .btn-toggle {
   width: 100%;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.65rem;
   padding: 8px 8px;
   border: 1px solid #d4a373;
   border-radius: 6px;
@@ -485,12 +526,17 @@
     margin-bottom: 0.55rem;
   }
   .controls h1 + .mode-switch,
-  .controls h2 + .mode-switch { margin-top: 0.7rem; }
+  .controls h2 + .mode-switch,
+  .controls h1 + .panel-block > .mode-switch:first-child,
+  .controls h2 + .panel-block > .mode-switch:first-child { margin-top: 0.7rem; }
+  .panel-block + .panel-block { margin-top: 0.65rem; }
   .form-group,
   .preset-select,
-  .mode-switch { margin-bottom: 0.55rem; }
-  .btn-toggle { margin-bottom: 0.55rem; }
+  .mode-switch { margin-bottom: 0.45rem; }
+  .btn-toggle { margin-bottom: 0.45rem; }
   .check-row { padding-bottom: 0.75rem; margin-bottom: 0.75rem; }
+  .panel-block > .mode-switch:last-child { margin-bottom: 0.45rem; }
+  .panel-block > .check-row:first-child { padding-bottom: 1.1rem; }
   .form-group label {
     font-size: 0.68rem;
     margin-bottom: 0.18rem;

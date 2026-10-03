@@ -676,154 +676,166 @@
     <div class="controls">
       <h2>Cartello Outlet Multi</h2>
 
-      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
-        <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
-        <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
-      </div>
-
-      <div class="mode-switch" aria-label="Seleziona il numero di articoli del cartello">
-        <button type="button" class="active" id="itemCount2Btn" onclick="setItemCount(2)">2 ARTICOLI</button>
-        <button type="button" id="itemCount3Btn" onclick="setItemCount(3)">3 ARTICOLI</button>
-      </div>
-
-      <div class="mode-switch" aria-label="Seleziona la modalità prezzo del cartello">
-        <button type="button" class="active" id="doublePriceBtn" onclick="setDescriptionMode(false)">DOPPIA CIFRA</button>
-        <button type="button" id="descriptionBtn" onclick="setDescriptionMode(true)">DESCRIZIONE ARTICOLO</button>
-      </div>
-
-      <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
-
-      <div class="form-group">
-        <label class="section-label" for="brandSelect" id="brandLabel">BRAND</label>
-        <div class="preset-select">
-          <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
+          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
         </div>
-        <label for="customBrandSelect" id="customBrandLabel">Loghi Personalizzati</label>
-        <div class="preset-select">
-          <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
+
+        <div class="mode-switch" aria-label="Seleziona il numero di articoli del cartello">
+          <button type="button" class="active" id="itemCount2Btn" onclick="setItemCount(2)">2 ARTICOLI</button>
+          <button type="button" id="itemCount3Btn" onclick="setItemCount(3)">3 ARTICOLI</button>
         </div>
+
+        <div class="mode-switch" aria-label="Seleziona la modalità prezzo del cartello">
+          <button type="button" class="active" id="doublePriceBtn" onclick="setDescriptionMode(false)">DOPPIA CIFRA</button>
+          <button type="button" id="descriptionBtn" onclick="setDescriptionMode(true)">DESCRIZIONE ARTICOLO</button>
+        </div>
+
+        <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
       </div>
 
-      <div class="form-group" id="brandBisGroup" hidden>
-        <label class="section-label" for="brandSelectBis">BRAND 2</label>
-        <div class="preset-select">
-          <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
-        </div>
-        <label for="customBrandSelectBis">Loghi Personalizzati 2</label>
-        <div class="preset-select">
-          <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
-        </div>
-      </div>
-
-      <div class="form-row">
+      <!-- Blocco 2: brand (ufficiali e personalizzati) e claim laterali -->
+      <div class="panel-block">
         <div class="form-group">
-          <label for="leftClaim">Claim Sinistro</label>
-          <input type="text" id="leftClaim" oninput="onCardFieldInput('left', this.value)">
-        </div>
-        <div class="form-group">
-          <label for="rightClaim">Claim Destro</label>
-          <input type="text" id="rightClaim" oninput="onCardFieldInput('right', this.value)">
-        </div>
-      </div>
-
-      <div class="mode-switch" id="itemSelector" aria-label="Seleziona l'articolo da modificare">
-        <button type="button" class="active" id="selectItem0" onclick="selectItem(0)">ARTICOLO 1</button>
-        <button type="button" id="selectItem1" onclick="selectItem(1)">ARTICOLO 2</button>
-        <button type="button" id="selectItem2" onclick="selectItem(2)">ARTICOLO 3</button>
-      </div>
-
-      <div class="form-group" id="descGroup" hidden>
-        <label class="section-label" for="presetDesc">Testi Pronti</label>
-        <div class="preset-select">
-          <select id="presetDesc" onchange="applyPreset()">
-            <option value="">-- Seleziona un testo --</option>
-            <optgroup label="Promozioni">
-              <option value="Special Deal">Special Deal</option>
-              <option value="Final Price">Final Price</option>
-              <option value="Summer Sale">Summer Sale</option>
-              <option value="Spring Sale">Spring Sale</option>
-              <option value="Winter Sale">Winter Sale</option>
-              <option value="Black Friday">Black Friday</option>
-              <option value="Made in Italy">Made in Italy</option>
-              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
-            </optgroup>
-            <optgroup label="Articoli">
-              <option value="Abito">Abito</option>
-              <option value="Bermuda">Bermuda</option>
-              <option value="Blusa">Blusa</option>
-              <option value="Borsa">Borsa</option>
-              <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
-              <option value="Camicia">Camicia</option>
-              <option value="Cappello">Cappello</option>
-              <option value="Cappotto">Cappotto</option>
-              <option value="Cardigan">Cardigan</option>
-              <option value="Cintura">Cintura</option>
-              <option value="Coprispalle">Coprispalle</option>
-              <option value="Foulard">Foulard</option>
-              <option value="Giacca">Giacca</option>
-              <option value="Gilet">Gilet</option>
-              <option value="Gonna">Gonna</option>
-              <option value="Jeans">Jeans</option>
-              <option value="Maglia">Maglia</option>
-              <option value="Occhiali">Occhiali</option>
-              <option value="Pantaloncino">Pantaloncino</option>
-              <option value="Pantalone">Pantalone</option>
-              <option value="Shorts">Shorts</option>
-              <option value="T-Shirt">T-Shirt</option>
-              <option value="Top">Top</option>
-              <option value="Tutina">Tutina</option>
-            </optgroup>
-          </select>
-        </div>
-        <label for="desc">Testo Libero</label>
-        <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" oninput="onItemFieldInput('desc', this.value)">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label for="priceOld">Prezzo Originario</label>
-          <div class="input-affix">
-            <span class="affix">€</span>
-            <input type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)" onblur="onPriceBlur('old', this)">
+          <label class="section-label" for="brandSelect" id="brandLabel">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
+          </div>
+          <label for="customBrandSelect" id="customBrandLabel">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="discount">Sconto</label>
-          <div class="input-affix">
-            <input type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
-            <span class="affix">%</span>
-            <div class="stepper" id="discountStepper">
-              <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
-              <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
+
+        <div class="form-group" id="brandBisGroup" hidden>
+          <label class="section-label" for="brandSelectBis">BRAND 2</label>
+          <div class="preset-select">
+            <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
+          </div>
+          <label for="customBrandSelectBis">Loghi Personalizzati 2</label>
+          <div class="preset-select">
+            <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="leftClaim">Claim Sinistro</label>
+            <input type="text" id="leftClaim" oninput="onCardFieldInput('left', this.value)">
+          </div>
+          <div class="form-group">
+            <label for="rightClaim">Claim Destro</label>
+            <input type="text" id="rightClaim" oninput="onCardFieldInput('right', this.value)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
+      <div class="panel-block">
+        <div class="mode-switch" id="itemSelector" aria-label="Seleziona l'articolo da modificare">
+          <button type="button" class="active" id="selectItem0" onclick="selectItem(0)">ARTICOLO 1</button>
+          <button type="button" id="selectItem1" onclick="selectItem(1)">ARTICOLO 2</button>
+          <button type="button" id="selectItem2" onclick="selectItem(2)">ARTICOLO 3</button>
+        </div>
+
+        <div class="form-group" id="descGroup" hidden>
+          <label class="section-label" for="presetDesc">Testi Pronti</label>
+          <div class="preset-select">
+            <select id="presetDesc" onchange="applyPreset()">
+              <option value="">-- Seleziona un testo --</option>
+              <optgroup label="Promozioni">
+                <option value="Special Deal">Special Deal</option>
+                <option value="Final Price">Final Price</option>
+                <option value="Summer Sale">Summer Sale</option>
+                <option value="Spring Sale">Spring Sale</option>
+                <option value="Winter Sale">Winter Sale</option>
+                <option value="Black Friday">Black Friday</option>
+                <option value="Made in Italy">Made in Italy</option>
+                <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+                <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+                <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+              </optgroup>
+              <optgroup label="Articoli">
+                <option value="Abito">Abito</option>
+                <option value="Bermuda">Bermuda</option>
+                <option value="Blusa">Blusa</option>
+                <option value="Borsa">Borsa</option>
+                <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+                <option value="Camicia">Camicia</option>
+                <option value="Cappello">Cappello</option>
+                <option value="Cappotto">Cappotto</option>
+                <option value="Cardigan">Cardigan</option>
+                <option value="Cintura">Cintura</option>
+                <option value="Coprispalle">Coprispalle</option>
+                <option value="Foulard">Foulard</option>
+                <option value="Giacca">Giacca</option>
+                <option value="Gilet">Gilet</option>
+                <option value="Gonna">Gonna</option>
+                <option value="Jeans">Jeans</option>
+                <option value="Maglia">Maglia</option>
+                <option value="Occhiali">Occhiali</option>
+                <option value="Pantaloncino">Pantaloncino</option>
+                <option value="Pantalone">Pantalone</option>
+                <option value="Shorts">Shorts</option>
+                <option value="T-Shirt">T-Shirt</option>
+                <option value="Top">Top</option>
+                <option value="Tutina">Tutina</option>
+              </optgroup>
+            </select>
+          </div>
+          <label for="desc">Testo Libero</label>
+          <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" oninput="onItemFieldInput('desc', this.value)">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="priceOld">Prezzo Originario</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)" onblur="onPriceBlur('old', this)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="discount">Sconto</label>
+            <div class="input-affix">
+              <input type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
+              <span class="affix">%</span>
+              <div class="stepper" id="discountStepper">
+                <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
+                <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="priceNew">Prezzo Finale</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)" onblur="onPriceBlur('price', this)">
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <label class="check-row" id="linkCardsRow" for="linkCards">
+          <span>COPIA SU ALTRO CARTELLO</span>
+          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+        </label>
+
         <div class="form-group">
-          <label for="priceNew">Prezzo Finale</label>
-          <div class="input-affix">
-            <span class="affix">€</span>
-            <input type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)" onblur="onPriceBlur('price', this)">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
           </div>
         </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
       </div>
-
-      <label class="check-row" id="linkCardsRow" for="linkCards">
-        <span>COPIA SU ALTRO CARTELLO</span>
-        <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
-      </label>
-
-      <div class="form-group">
-        <div class="preset-select">
-          <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
-            <option value="double" selected>2 CARTELLI (Foglio A4)</option>
-            <option value="single">1 CARTELLO (Solo cartello superiore)</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
     </div>
   </div>
 

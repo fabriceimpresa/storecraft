@@ -116,9 +116,16 @@
   </table>
 </div>
 
-<div class="phase todo">
-  <h3><span>Fase 3 — Promo stagionali</span> <span class="tag">DA FARE</span></h3>
-  <p>Pagine: <code>promo_multibrand</code>, <code>blackfriday</code>, <code>blackfridaylips</code>, <code>xmas_ball</code>. Portarle al pannello standard come i cartelli (pannello, Arial, cursore, strumenti di stampa), conservando grafiche e temi.</p>
+<div class="phase wip">
+  <h3><span>Fase 3 — Promo stagionali</span> <span class="tag">IN CORSO</span></h3>
+  <p>Portarle al pannello standard come i cartelli (pannello, Arial, cursore, strumenti di stampa), conservando grafiche e temi.</p>
+  <table>
+    <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
+    <tr><td><code>blackfridaylips</code></td><td>Black Friday Lips</td><td class="ok">fatta</td></tr>
+    <tr><td><code>blackfriday</code></td><td>Black Friday</td><td class="ok">fatta</td></tr>
+    <tr><td><code>promo_multibrand</code></td><td>Promo Multibrand</td><td class="muted">in corso: menu su misura (oro, blocchi, marchi con spunta Loghi Personalizzati)</td></tr>
+    <tr><td><code>xmas_ball</code></td><td>Xmas Ball</td><td class="no">da fare</td></tr>
+  </table>
 </div>
 
 <div class="phase todo">
@@ -177,6 +184,11 @@
     <li><strong>Guida per il titolare</strong>: tutte le regole, i menu e gli elementi di StoreCraft, descritti nell'aspetto e nel funzionamento, con l'elenco delle pagine in cui compaiono.</li>
     <li><strong>Guida tecnica</strong>: caratteristiche tecniche e di codice di elementi, pagine e moduli (struttura HTML/CSS/JS, misure di stampa, stato, dati salvati, contratti dei moduli), pensata per chi sviluppa un software SaaS che genera pagine di stampa simili.</li>
   </ol>
+  <p><strong>Regole già decise da riportare nelle guide</strong> (i dettagli sono in <code>AGENTS.md</code>):</p>
+  <ul>
+    <li><strong>Blocchi del pannello</strong>: ogni menu di sinistra è diviso in quattro blocchi, sempre in quest'ordine, con un poco di spazio in più tra un blocco e l'altro: 1. selettori e pulsanti; 2. brand (ufficiali e personalizzati) e claim laterali; 3. campi del cartello (prezzi, descrizione o entrambi, secondo la modalità); 4. stampa.</li>
+    <li><strong>Area Testo con Dimensione Testo</strong>: un campo di testo su più righe accoppiato a una barra Dimensione Testo può avere un limitatore. Fino a un certo numero di righe testo e misura sono liberi; oltre (nel Magazzino dalla quarta riga) il carattere si riduce da solo per entrare nel cartello, senza spostare logo e freccia; togliendo le righe in più il testo torna alla misura scelta.</li>
+  </ul>
 </div>
 
 <h2>5. Come riprendere il lavoro (checklist di inizio sessione)</h2>

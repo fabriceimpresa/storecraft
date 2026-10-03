@@ -22,7 +22,7 @@
       padding: 20px;
       display: flex;
       gap: 20px;
-      justify-content: center;
+      justify-content: safe center;   /* con la finestra stretta la pagina scorre invece di tagliare il pannello */
       align-items: flex-start;
       min-height: 100vh;
       position: relative;
@@ -194,12 +194,13 @@
     .has-2-brands .brand-area img { max-width: 92%; }
     .has-2-brands .brand-area .brand-text-fallback { font-size: 40px; }
 
-    /* 2° brand acceso ma non ancora scelto: scritta SELEZIONA 2º BRAND nel rosso del cursore */
+    /* 2° brand acceso ma non ancora scelto: scritta SELEZIONA 2º BRAND nello stesso colore del cursore */
     .brand-area .brand-text-fallback.is-placeholder,
     .has-2-brands .brand-area .brand-text-fallback.is-placeholder {
-      font-size: 30px;
+      font-size: 33px;
+      letter-spacing: 1.5px;
       line-height: 1.15;
-      color: #96382b;
+      color: var(--cursore-colore, #96382b);
     }
 
     /* Logo e freccia restano fermi: è il testo che si adatta allo spazio tra loro (vedi fitText) */
@@ -314,68 +315,80 @@
     <div class="controls">
       <h2>Cartello Magazzino</h2>
 
-      <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
-        <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
-        <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
-      </div>
-
-      <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
-
-      <div class="form-group">
-        <label class="section-label" for="brandSelect" id="brandLabel">BRAND</label>
-        <div class="preset-select">
-          <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
+          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
         </div>
-        <label for="customBrandSelect" id="customBrandLabel">Loghi Personalizzati</label>
-        <div class="preset-select">
-          <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
+
+        <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
+      </div>
+
+      <!-- Blocco 2: brand (ufficiali e personalizzati) e claim laterali -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="brandSelect" id="brandLabel">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
+          </div>
+          <label for="customBrandSelect" id="customBrandLabel">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
+          </div>
         </div>
-      </div>
 
-      <div class="form-group" id="brandBisGroup" hidden>
-        <label class="section-label" for="brandSelectBis">BRAND 2</label>
-        <div class="preset-select">
-          <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
-        </div>
-        <label for="customBrandSelectBis">Loghi Personalizzati 2</label>
-        <div class="preset-select">
-          <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="labelText">Area Testo</label>
-        <textarea id="labelText" rows="4" placeholder="Es.&#10;PANTALONI&#10;GIACCHE&#10;ABITI" oninput="onTextInput(this)"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="textSize">Dimensione Testo</label>
-        <input type="range" id="textSize" min="46" max="76" value="61" oninput="onFieldInput('fontSize', Number(this.value))">
-      </div>
-
-      <div class="mode-switch arrow-switch" id="arrowSwitch" aria-label="Direzione Freccia">
-        <button type="button" data-arrow="right" aria-label="Freccia a destra" onclick="setArrow('right')">➔</button>
-        <button type="button" data-arrow="down" aria-label="Freccia in giù" onclick="setArrow('down')">⬇</button>
-        <button type="button" data-arrow="left" aria-label="Freccia a sinistra" onclick="setArrow('left')">⬅</button>
-        <button type="button" data-arrow="up" aria-label="Freccia in su" onclick="setArrow('up')">⬆</button>
-        <button type="button" data-arrow="none" onclick="setArrow('none')">NESSUNA</button>
-      </div>
-
-      <label class="check-row" id="linkCardsRow" for="linkCards">
-        <span>COPIA SU ALTRO CARTELLO</span>
-        <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
-      </label>
-
-      <div class="form-group">
-        <div class="preset-select">
-          <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
-            <option value="double" selected>2 CARTELLI (Foglio A4)</option>
-            <option value="single">1 CARTELLO (Solo cartello superiore)</option>
-          </select>
+        <div class="form-group" id="brandBisGroup" hidden>
+          <label class="section-label" for="brandSelectBis">BRAND 2</label>
+          <div class="preset-select">
+            <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
+          </div>
+          <label for="customBrandSelectBis">Loghi Personalizzati 2</label>
+          <div class="preset-select">
+            <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
+          </div>
         </div>
       </div>
 
-      <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label for="labelText">Area Testo</label>
+          <textarea id="labelText" rows="4" placeholder="Es.&#10;PANTALONI&#10;GIACCHE&#10;ABITI" oninput="onTextInput(this)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="textSize">Dimensione Testo</label>
+          <input type="range" id="textSize" min="46" max="76" value="61" oninput="onFieldInput('fontSize', Number(this.value))">
+        </div>
+
+        <div class="mode-switch arrow-switch" id="arrowSwitch" aria-label="Direzione Freccia">
+          <button type="button" data-arrow="right" aria-label="Freccia a destra" onclick="setArrow('right')">➔</button>
+          <button type="button" data-arrow="down" aria-label="Freccia in giù" onclick="setArrow('down')">⬇</button>
+          <button type="button" data-arrow="left" aria-label="Freccia a sinistra" onclick="setArrow('left')">⬅</button>
+          <button type="button" data-arrow="up" aria-label="Freccia in su" onclick="setArrow('up')">⬆</button>
+          <button type="button" data-arrow="none" onclick="setArrow('none')">NESSUNA</button>
+        </div>
+      </div>
+
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <label class="check-row" id="linkCardsRow" for="linkCards">
+          <span>COPIA SU ALTRO CARTELLO</span>
+          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+        </label>
+
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
     </div>
   </div>
 
