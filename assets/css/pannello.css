@@ -77,6 +77,87 @@
   font-size: 0.82rem;
 }
 
+/* TEXT AREA: campo di testo su più righe (es. Area Testo del Magazzino). Regole diverse dai campi di
+   una riga: stesso bordo, fondo e carattere (Arial), ma alto quanto le righe che il cartello accetta (4, con
+   rows="4"), interlinea più ampia, nessuna maniglia per allargarlo; si va a capo con Invio e il numero massimo
+   di righe lo controlla la pagina. */
+.form-group textarea {
+  display: block;
+  width: 100%;
+  height: calc(4 * 1.4em + 0.9rem + 2px);
+  padding: 0.45rem;
+  border: 1px solid #2e2b27;
+  border-radius: 4px;
+  background: #0a0908;
+  color: #f4f1ea;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  resize: none;
+}
+
+.form-group textarea::placeholder { color: #5f5a53; }
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #d4a373;
+  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+}
+
+/* Barra da trascinare (es. Dimensione Testo): linea scura con il bordo dei campi e maniglia tonda oro,
+   alta come un campo perché gli spazi del pannello restino uguali. */
+.form-group input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  height: 31.4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.form-group input[type="range"]:focus { box-shadow: none; }
+
+.form-group input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border: 1px solid #2e2b27;
+  border-radius: 3px;
+  background: #0a0908;
+}
+
+.form-group input[type="range"]::-moz-range-track {
+  height: 4px;
+  border: 1px solid #2e2b27;
+  border-radius: 3px;
+  background: #0a0908;
+}
+
+.form-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border: none;
+  border-radius: 50%;
+  background: #d4a373;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.form-group input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: #d4a373;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.form-group input[type="range"]:hover::-webkit-slider-thumb,
+.form-group input[type="range"]:focus-visible::-webkit-slider-thumb { background: #e5ba73; }
+.form-group input[type="range"]:hover::-moz-range-thumb,
+.form-group input[type="range"]:focus-visible::-moz-range-thumb { background: #e5ba73; }
+
 .form-group select option { background: #0a0908; color: #f4f1ea; }
 /* Titoli dei gruppi nei menu (es. Promozioni e Articoli in Testi Pronti): oro su fondo scuro */
 .form-group select optgroup { background: #0a0908; color: #d4a373; }
@@ -415,7 +496,8 @@
     margin-bottom: 0.18rem;
   }
   .form-group input,
-  .form-group select { font-size: 16px; }
+  .form-group select,
+  .form-group textarea { font-size: 16px; }
   .mode-switch button {
     min-height: 36px;
     padding: 6px;

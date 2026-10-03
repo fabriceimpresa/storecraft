@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Storecraft Aggiornamento</title>
+<style>
+  @page { size: A4; margin: 16mm 16mm 18mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 10pt; line-height: 1.45; color: #22201d; margin: 0; }
+  h1 { font-family: Georgia, serif; font-size: 24pt; letter-spacing: .04em; margin: 0 0 2mm; color: #1d1b18; }
+  .sub { color: #8a6a2f; font-size: 10.5pt; margin: 0 0 6mm; text-transform: uppercase; letter-spacing: .12em; }
+  h2 { font-family: Georgia, serif; font-size: 14pt; color: #8a6a2f; border-bottom: 1.2pt solid #d4a373; padding-bottom: 1.5mm; margin: 7mm 0 3mm; break-after: avoid; }
+  h3 { font-size: 11pt; margin: 4mm 0 1.5mm; break-after: avoid; }
+  p { margin: 0 0 2.2mm; }
+  ul, ol { margin: 0 0 2.5mm; padding-left: 5.5mm; }
+  li { margin-bottom: 1mm; }
+  code { font-family: Consolas, monospace; font-size: 9pt; background: #f4efe6; padding: 0 1mm; border-radius: 1mm; }
+  .box { border: 1pt solid #e3d6bf; background: #fbf8f2; border-radius: 2mm; padding: 3mm 4mm; margin: 3mm 0; break-inside: avoid; }
+  .box.gold { border-color: #d4a373; background: #fdf6ea; }
+  .phase { border: 1pt solid #e3d6bf; border-left: 4pt solid #ccc; border-radius: 2mm; padding: 3mm 4mm 2mm; margin: 0 0 3.5mm; break-inside: avoid; }
+  .phase.done { border-left-color: #5f8a55; }
+  .phase.wip { border-left-color: #d4a373; }
+  .phase.todo { border-left-color: #b9b2a6; }
+  .phase h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 4mm; }
+  .tag { font-size: 8pt; font-weight: 700; letter-spacing: .08em; padding: .6mm 2mm; border-radius: 1mm; color: #fff; white-space: nowrap; }
+  .done .tag { background: #5f8a55; }
+  .wip .tag { background: #c08a45; }
+  .todo .tag { background: #8d867b; }
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 2mm 0 3mm; break-inside: avoid; }
+  th, td { border: .6pt solid #ddd2bf; padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
+  th { background: #f4ecdd; }
+  .ok { color: #3f6e37; font-weight: 700; }
+  .no { color: #96382b; font-weight: 700; }
+  .muted { color: #6f685e; }
+  .legend span { margin-right: 5mm; }
+</style>
+</head>
+<body>
+
+<h1>STORE // CRAFT — Aggiornamento</h1>
+<p class="sub">Piano di lavoro riepilogativo · versione del 3 ottobre 2026</p>
+
+<div class="box gold">
+  <p><strong>A cosa serve questo documento.</strong> Riassume il lavoro di aggiornamento di StoreCraft diviso in fasi. Va letto all'inizio di ogni sessione di lavoro, da una persona o da un'intelligenza artificiale, per riprendere il contesto. I dettagli tecnici di quanto già fatto stanno nel file <code>AGENTS.md</code> del repository: questo piano dice <em>cosa</em> fare e <em>in che ordine</em>, <code>AGENTS.md</code> dice <em>come</em> è stato fatto.</p>
+</div>
+
+<h2>1. L'obiettivo</h2>
+<p><strong>STORE // CRAFT</strong> è un software web (pagine HTML statiche, senza build né framework) con cui il personale di un negozio crea e stampa cartelli, cartellini ed etichette DYMO: apre una pagina, compila il pannello laterale, controlla l'anteprima e stampa.</p>
+<p>Oggi esistono due versioni separate:</p>
+<ul>
+  <li><strong>Luxury Outlet</strong> — la prima release di StoreCraft (tema scuro, oro). È quella su cui si lavora ora.</li>
+  <li><strong>TEBE e OPHILYA</strong> — una versione nata da StoreCraft e poi migliorata: menu uniformi, regole di stampa più precise (soprattutto DYMO), cursore sul foglio, pulsanti per la lista di stampa, documentazione completa.</li>
+</ul>
+<p><strong>Traguardo finale:</strong> un unico scheletro di StoreCraft che ospita più negozi (Luxury Outlet, TEBE, OPHILYA e in futuro altri). Ogni negozio mantiene il proprio aspetto preferito e le proprie pagine di stampa personalizzate, ma tutti usano gli <strong>stessi strumenti, le stesse regole, gli stessi menu, gli stessi elementi</strong> (pannelli, selettori, pulsanti fissi, cursore, lista di stampa, temi).</p>
+<p>Per arrivarci, prima si rende Luxury Outlet <strong>strutturalmente compatibile</strong> con TEBE, pagina per pagina; poi si costruisce lo scheletro comune, adattando a sua volta anche TEBE e OPHILYA.</p>
+
+<h2>2. I repository</h2>
+<table>
+  <tr><th>Cosa</th><th>Dove</th><th>Ruolo</th></tr>
+  <tr><td>StoreCraft (Luxury Outlet)</td><td><code>github.com/fabriceimpresa/storecraft</code><br>ramo di lavoro <code>aggiornamento-storecraft</code><br>cartella locale <code>Desktop\STORECRAFT</code></td><td>Qui si lavora. Il ramo <code>main</code> è quello pubblicato su <code>fabriceimpresa.github.io/storecraft</code> e non si tocca finché l'aggiornamento non è pronto.</td></tr>
+  <tr><td>TEBE / OPHILYA</td><td><code>github.com/fabriceimpresa/tebes</code><br>cartella locale <code>Desktop\TEBE</code></td><td><strong>Modello di riferimento.</strong> Finché si allinea Luxury Outlet si legge soltanto: se serve un suo file, lo si copia in StoreCraft e si modifica la copia. Nella Fase 9 andrà modificato anche TEBE / OPHILYA, per renderlo compatibile con lo scheletro comune.</td></tr>
+</table>
+<p class="muted">Nota: fino al 3 ottobre 2026 il ramo di lavoro si chiamava <code>aggiornamento-tebe</code>.</p>
+
+<h2>3. Regole di lavoro</h2>
+<ol>
+  <li><strong>TEBE per ora si legge e basta</strong>: finché si allinea Luxury Outlet resta il modello di riferimento e non si tocca. Nella Fase 9 andrà modificato anch'esso, per renderlo compatibile con lo scheletro comune (su un ramo di sicurezza, come StoreCraft).</li>
+  <li><strong>Un dettaglio alla volta, insieme all'utente.</strong> Si modifica solo quanto richiesto; eventuali alternative o migliorie si propongono prima, senza applicarle.</li>
+  <li><strong>Il tema scuro di StoreCraft resta</strong>: si prende la struttura di TEBE (stessi elementi, stesse regole di impaginazione) con i colori di StoreCraft.</li>
+  <li><strong>Prima uniformità interna, poi allineamento</strong>: le pagine dello stesso tipo si rendono uguali tra loro, poi si portano alle regole di TEBE.</li>
+  <li><strong>Lo stile comune sta in file condivisi</strong> (<code>assets/css/pannello.css</code> e i moduli in <code>assets/js/</code>), non copiato in ogni pagina.</li>
+  <li><strong>I temi Black Friday e Natale restano</strong> (pulsanti <code>toggleBlackFriday</code> / <code>toggleXmas</code>, esclusivi di StoreCraft).</li>
+  <li><strong>I fogli di stampa non si toccano</strong> (misure in cm, mm e pt, grafica, font di stampa) se il compito non lo chiede.</li>
+  <li><strong>Documentazione in italiano</strong>. Ogni pagina, modulo o convenzione aggiunta o cambiata va riportata in <code>AGENTS.md</code> nella stessa modifica. I problemi trovati si segnalano all'utente, non si scrivono nella documentazione.</li>
+  <li><strong>Verifica</strong>: non ci sono test automatici. Si serve la cartella (<code>python -m http.server 8000</code>), si apre la pagina, e l'utente controlla <em>Stampa → Anteprima</em> (scala 100 %, margini "Nessuno").</li>
+  <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro.</li>
+</ol>
+
+<h2>4. Le fasi</h2>
+<p class="legend"><span class="ok">■ FATTO</span> <span style="color:#c08a45;font-weight:700">■ IN CORSO</span> <span class="muted" style="font-weight:700">■ DA FARE</span></p>
+
+<div class="phase done">
+  <h3><span>Fase 0 — Preparazione</span> <span class="tag">FATTA</span></h3>
+  <ul>
+    <li><span class="ok">✓</span> Ramo di sicurezza creato e pubblicato su GitHub.</li>
+    <li><span class="ok">✓</span> <code>AGENTS.md</code> e <code>CLAUDE.md</code> scritti con le decisioni.</li>
+    <li><span class="ok">✓</span> Questo piano di lavoro.</li>
+    <li><span class="ok">✓</span> Ramo rinominato da <code>aggiornamento-tebe</code> ad <code>aggiornamento-storecraft</code> (in locale e su GitHub) e riferimenti aggiornati in <code>AGENTS.md</code>.</li>
+  </ul>
+</div>
+
+<div class="phase done">
+  <h3><span>Fase 1 — Dashboard (<code>index.html</code>)</span> <span class="tag">FATTA</span></h3>
+  <ul>
+    <li>Menu laterale con la struttura di TEBE e i colori di StoreCraft: sezioni apribili e ricordate, sottosezione PROMO STAGIONALI, voci brevi, firma e CREDITS in fondo.</li>
+    <li>Schede del corpo centrale come le card di TEBE: numero e tipo in alto, anteprima 16:9, specifiche in una tendina aperta dal pulsante +.</li>
+    <li>Selettore CASSIERE / CREATOR, misure e punti di rottura come TEBE.</li>
+    <li class="muted">Restano da ricontrollare alla fine: vista cellulare e modalità CASSIERE dopo le fasi successive.</li>
+  </ul>
+</div>
+
+<div class="phase wip">
+  <h3><span>Fase 2 — Cartelli: pannello standard</span> <span class="tag">IN CORSO</span></h3>
+  <p>Ogni pagina riceve: <code>pannello.css</code>, Arial dal sito (<code>font-arial.css</code>), cursore rosso (<code>cursore.js</code>), pulsanti oro di stampa e lista di stampa (<code>strumenti-stampa.js</code>), selettore CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO, menu di stampa e un solo tasto STAMPA.</p>
+  <table>
+    <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
+    <tr><td><code>cartelli_semplici</code></td><td>Semplice</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartelli_outlet</code></td><td>Outlet</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartelli_outletmulti</code></td><td>Outlet Multi</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartelli_multireferenza</code></td><td>Multi Brand</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartellopercentuale</code></td><td>Percentuale</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartello_banco</code></td><td>Paletto 15x10</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartelli_lastchance</code></td><td>Last Chance</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartelli_outletmultismart</code></td><td>— (non collegata)</td><td class="muted">conservata; decidere se collegarla o eliminarla</td></tr>
+    <tr><td><code>magazzino</code></td><td>Magazzino</td><td class="ok">fatta</td></tr>
+  </table>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 3 — Promo stagionali</span> <span class="tag">DA FARE</span></h3>
+  <p>Pagine: <code>promo_multibrand</code>, <code>blackfriday</code>, <code>blackfridaylips</code>, <code>xmas_ball</code>. Portarle al pannello standard come i cartelli (pannello, Arial, cursore, strumenti di stampa), conservando grafiche e temi.</p>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 4 — Cartellini</span> <span class="tag">DA FARE</span></h3>
+  <p>Pagine: <code>cartellinivetrina</code>, <code>cartellinipromo</code>. Modello TEBE: <code>cartellinitebe</code>, <code>cartellinilxry</code>, <code>prezzivetrina</code>. Pannello standard dentro i riquadri <code>.editor-section</code>, cursore al posto dei vecchi triangolini, pulsanti di stampa sotto il riquadro "Modifica Cartellino".</p>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 5 — Etichette DYMO</span> <span class="tag">DA FARE</span></h3>
+  <p>Pagine: <code>etichette</code> (più <code>etichettedb</code> ed <code>etichetteoriginal</code>: decidere se tenerle). Modello TEBE: <code>etichette.html</code>. Adottare le regole di stampa di TEBE: etichetta disegnata alla misura reale, rasterizzata a 300 dpi, inviata a DYMO Connect con <code>dymo-direct.js</code>, ripiego sulla stampa del browser e richiesta di conferma se l'invio fallisce; galleria dei modelli, cursore sull'anteprima.</p>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 6 — Loghi, utilità e pagine di servizio</span> <span class="tag">DA FARE</span></h3>
+  <ul>
+    <li>Loghi: <code>genera_loghi</code>, <code>gestisci_lista</code>, <code>logoimport</code>, <code>logogestione</code>; regole di TEBE su loghi ufficiali / personalizzati, varianti di colore pregenerate, versione degli asset (<code>LOGO_ASSET_VERSION</code>).</li>
+    <li>Servizio: <code>pdf-viewer</code>, <code>lista-stampa</code>; utilità di cassa in dashboard.</li>
+  </ul>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 7 — Elementi comuni a tutte le pagine</span> <span class="tag">DA FARE</span></h3>
+  <ul>
+    <li>Pulsanti fissi: ✕ in alto a destra e "← Torna al Menu Principale" in basso a destra, uguali ovunque.</li>
+    <li>Pulsante Made in Italy: confrontare con il modulo condiviso <code>tema-italia</code> di TEBE.</li>
+    <li>Foto guida "Dove montare la stampa?" (<code>GUIDE_PHOTOS</code>, oggi vuoto).</li>
+    <li>Vista cellulare come TEBE (solo telefoni: <code>pointer: coarse</code> e massimo 760 px).</li>
+    <li>Testi pronti, fasce prezzo e formati prezzi uguali in tutte le pagine.</li>
+  </ul>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 8 — Collaudo e pubblicazione di Luxury Outlet</span> <span class="tag">DA FARE</span></h3>
+  <ul>
+    <li>Prova di ogni pagina: anteprima, stampa A4 / cartellino / etichetta, Chrome e Safari, telefono.</li>
+    <li><code>AGENTS.md</code> completo e aggiornato.</li>
+    <li>Unione del ramo di lavoro in <code>main</code> e verifica del sito pubblicato.</li>
+  </ul>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 9 — Scheletro unico multi-negozio</span> <span class="tag">DA PROGETTARE</span></h3>
+  <p>Da definire insieme all'utente prima di scrivere codice. Temi da decidere:</p>
+  <ul>
+    <li>Come si sceglie il negozio (selettore in dashboard, parametro <code>?store=</code> come in TEBE, indirizzi separati).</li>
+    <li>Dove sta la configurazione di ogni negozio: nome, logo, tema (scuro StoreCraft o chiaro TEBE), loghi di casa, elenco delle pagine visibili.</li>
+    <li>Pagine comuni e pagine proprie di un negozio; cosa diventa modulo condiviso.</li>
+    <li>Dati del browser separati per negozio (loghi personalizzati, lista di stampa).</li>
+    <li>Modifica di TEBE e OPHILYA (repository <code>tebes</code>, su un ramo di sicurezza) per renderli compatibili, e loro inserimento nello scheletro.</li>
+  </ul>
+</div>
+
+<div class="phase todo">
+  <h3><span>Fase 10 — Le due guide in PDF</span> <span class="tag">ALLA FINE</span></h3>
+  <ol>
+    <li><strong>Guida per il titolare</strong>: tutte le regole, i menu e gli elementi di StoreCraft, descritti nell'aspetto e nel funzionamento, con l'elenco delle pagine in cui compaiono.</li>
+    <li><strong>Guida tecnica</strong>: caratteristiche tecniche e di codice di elementi, pagine e moduli (struttura HTML/CSS/JS, misure di stampa, stato, dati salvati, contratti dei moduli), pensata per chi sviluppa un software SaaS che genera pagine di stampa simili.</li>
+  </ol>
+</div>
+
+<h2>5. Come riprendere il lavoro (checklist di inizio sessione)</h2>
+<ol>
+  <li>Leggere questo piano, poi <code>AGENTS.md</code> e <code>CLAUDE.md</code> di StoreCraft.</li>
+  <li>Controllare di essere sul ramo di lavoro e guardare gli ultimi commit (<code>git log</code>) per sapere dove ci si era fermati.</li>
+  <li>Per la pagina da allineare, leggere la pagina corrispondente di TEBE e la sezione dell'<code>AGENTS.md</code> di TEBE che la descrive.</li>
+  <li>Concordare con l'utente il prossimo dettaglio, modificarlo, farlo verificare nel browser, aggiornare <code>AGENTS.md</code>, fare il commit quando l'utente lo chiede.</li>
+  <li>A fine fase, aggiornare lo stato in questo piano.</li>
+</ol>
+
+</body>
+</html>
