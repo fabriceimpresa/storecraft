@@ -218,6 +218,30 @@
       overflow: hidden;
     }
 
+    .card-content { display: contents; }
+    .a4-landscape.sale-theme .cartellino {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: 6mm minmax(0, 1fr) 13mm;
+      justify-content: stretch;
+      justify-items: center;
+    }
+    .a4-landscape.sale-theme .brand-box { position: absolute; }
+    .a4-landscape.sale-theme .card-content {
+      position: absolute;
+      top: 50%;
+      left: 3.1mm;
+      right: 3.1mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      width: auto;
+      transform: translateY(-50%) scale(0.95);
+    }
+    .a4-landscape.sale-theme .card-content .card-top { height: auto; margin-bottom: 1mm; }
+    .a4-landscape.sale-theme .card-price { height: auto; margin-bottom: 0; }
+
     /* Logo oro Luxury Outlet in basso; scritta SALE (segnaposto TEBE, da rifare) in alto.
        Il logo Luxury (verticale, "L X / R Y") ha bisogno di più altezza del logo TEBE (orizzontale):
        il riquadro del footer è quindi più alto di quello della scritta SALE. */
@@ -226,10 +250,12 @@
     .card-footer-logo { max-height: 13mm; }
     /* La scritta SALE compare solo con il tema Sale attivo */
     .card-header-logo { max-height: 0; opacity: 0; }
-    .a4-landscape.sale-theme .card-header-logo { max-height: 6mm; opacity: 1; }
+    .a4-landscape.sale-theme .card-header-logo { height: 6mm; max-height: 6mm; align-items: flex-start; opacity: 1; }
     .cartellino.is-brand .card-footer-logo,
     .cartellino.is-brand .card-header-logo { max-height: 0; opacity: 0; }
-    .card-footer-logo img { max-height: 100%; max-width: 90%; object-fit: contain; display: block; }
+    .card-footer-logo img { max-height: 100%; max-width: 90%; object-fit: contain; display: block; transform: scale(0.9); }
+    .a4-landscape.sale-theme .card-footer-logo { grid-row: 3; height: 13mm; max-height: 13mm; align-items: flex-end; transform: translateY(1.5mm); }
+    .a4-landscape.sale-theme .card-footer-logo img { transform: scale(0.77); transform-origin: center bottom; }
     .card-header-logo img { width: 25mm; height: auto; display: block; }
     .card-header-logo img { width: 25mm; height: auto; display: block; }
 
@@ -497,36 +523,6 @@
       return fileName.replace(/\.[^.]+$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
     }
 
-    // Logo "LUXURY OUTLET" (assets/img/footer.png, rosso) ricolorato in oro via canvas, come i loghi
-    // brand: lo stesso identico meccanismo di PrintLogoColors, qui per un'immagine fuori da assets/logos/.
-    let footerLogoGoldSrc = null;
-    function getFooterLogoSrc() {
-      if (footerLogoGoldSrc) return Promise.resolve(footerLogoGoldSrc);
-      return new Promise((resolve, reject) => {
-        const sourceImage = new Image();
-        sourceImage.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = sourceImage.naturalWidth;
-          canvas.height = sourceImage.naturalHeight;
-          const context = canvas.getContext('2d');
-          context.drawImage(sourceImage, 0, 0);
-          const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-          for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
-            if (pixels.data[pixel + 3] > 0) {
-              pixels.data[pixel] = 180;
-              pixels.data[pixel + 1] = 139;
-              pixels.data[pixel + 2] = 55;
-            }
-          }
-          context.putImageData(pixels, 0, 0);
-          footerLogoGoldSrc = canvas.toDataURL('image/png');
-          resolve(footerLogoGoldSrc);
-        };
-        sourceImage.onerror = () => reject(new Error('Logo Luxury Outlet non disponibile.'));
-        sourceImage.src = 'assets/img/footer.png';
-      });
-    }
-
     function readCustomLogos() {
       try {
         const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
@@ -538,17 +534,7 @@
     }
 
     function getDefaultBrandFile() {
-      const orderedFiles = getOrderedLogoFiles();
-      return orderedFiles[0] || '';
-    }
-
-    // Brand di partenza alternati: il primo cartellino ha il brand predefinito, gli altri scorrono
-    // i brand ufficiali, ricominciando se finiscono (come in Cartellini Vetrina).
-    function getDefaultCardBrandFile(index) {
-      const defaultFile = getDefaultBrandFile();
-      const otherFiles = getSortedLogoFiles().remainingFiles;
-      const rotation = [defaultFile].concat(otherFiles).filter(Boolean);
-      return rotation.length ? rotation[index % rotation.length] : '';
+      return 'LUXURY_GOLD.png';
     }
 
     // Ogni cartellino è in modalità Descrizione, Doppio Prezzo oppure Brand (mode: 'desc' | 'double' | 'brand').
@@ -573,7 +559,7 @@
       id: index + 1,
       enabled: true,
       ...card,
-      brand: { officialFile: getDefaultCardBrandFile(index), customLogoId: '' }
+      brand: { officialFile: getDefaultBrandFile(), customLogoId: '' }
     }));
 
     let currentCardIdx = 0;
@@ -667,10 +653,9 @@
         const footer = createElement('div', 'card-footer-logo');
         const logo = document.createElement('img');
         logo.alt = 'Luxury Outlet';
-        logo.onerror = () => { logo.style.display = 'none'; };
-        if (footerLogoGoldSrc) logo.src = footerLogoGoldSrc;
+        logo.onerror = () => console.error('Caricamento del logo Luxury Outlet fallito.', logo.src);
+        logo.src = 'assets/img/printlogos/goldLXRY_BRAND.png';
         footer.appendChild(logo);
-        getFooterLogoSrc().then(src => { logo.src = src; });
 
         const header = createElement('div', 'card-header-logo');
         const saleLogo = document.createElement('img');
@@ -680,7 +665,9 @@
         saleLogo.onerror = () => { saleLogo.style.display = 'none'; };
         header.appendChild(saleLogo);
 
-        el.append(header, brandBox, top, priceBox, footer);
+        const content = createElement('div', 'card-content');
+        content.append(top, priceBox);
+        el.append(header, brandBox, content, footer);
         grid.appendChild(el);
       });
 
