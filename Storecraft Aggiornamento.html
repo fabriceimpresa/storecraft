@@ -77,8 +77,8 @@
 </ol>
 
 <div class="box gold">
-  <p><strong>Dove siamo arrivati (4 ottobre 2026).</strong> Fasi 0 e 1 fatte. Fase 2 fatta, manca solo la decisione su <code>cartelli_outletmultismart</code>. Fase 3 a metà: Black Friday e Black Friday Lips fatte, Promo Multibrand in corso con il suo menu su misura, Xmas Ball da fare. Fase 4 fatta: tutte e quattro le pagine cartellini (Vetrina, Promo, Quadrati, Prezzi Vetrina). Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale" uguale ovunque e il cursore oro.</p>
-  <p><strong>Prossimi passi:</strong> far provare Xmas Ball all'utente (Promo Multibrand è chiusa; resta solo, rimandato, l'accorciamento della voce di partenza dei menu stretti dei marchi) e rifare la scritta SALE di Quadrati in stile Luxury (per ora è ancora quella di TEBE), poi la Fase 5 (etichette DYMO).</p>
+  <p><strong>Dove siamo arrivati (4 ottobre 2026).</strong> Fasi 0–5 fatte. La pagina aggiuntiva <code>cartelli_outletmultismart</code> è conservata nella radice del progetto, ma resta nascosta e non collegata a <code>index.html</code>. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale" uguale ovunque e il cursore oro.</p>
+  <p><strong>Prossimi passi:</strong> rifare la scritta SALE di Quadrati in stile Luxury (per ora è ancora quella di TEBE), poi la Fase 6 (loghi, utilità e pagine di servizio). Come ritocco facoltativo, resta rimandato l'accorciamento della voce di partenza dei menu stretti dei marchi in Promo Multibrand.</p>
 </div>
 
 <h2>4. Le fasi</h2>
@@ -105,7 +105,7 @@
 </div>
 
 <div class="phase done">
-  <h3><span>Fase 2 — Cartelli: pannello standard</span> <span class="tag">QUASI FATTA</span></h3>
+  <h3><span>Fase 2 — Cartelli: pannello standard</span> <span class="tag">FATTA</span></h3>
   <p>Ogni pagina riceve: <code>pannello.css</code> diviso in quattro blocchi, Arial dal sito (<code>font-arial.css</code>), cursore oro (<code>cursore.js</code>), pulsanti oro di stampa e lista di stampa (<code>strumenti-stampa.js</code>), selettore CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO, menu di stampa e un solo tasto STAMPA.</p>
   <table>
     <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
@@ -116,20 +116,20 @@
     <tr><td><code>cartellopercentuale</code></td><td>Percentuale</td><td class="ok">fatta</td></tr>
     <tr><td><code>cartello_banco</code></td><td>Paletto 15x10</td><td class="ok">fatta</td></tr>
     <tr><td><code>cartelli_lastchance</code></td><td>Last Chance</td><td class="ok">fatta</td></tr>
-    <tr><td><code>cartelli_outletmultismart</code></td><td>— (non collegata)</td><td class="muted">conservata; decidere se collegarla o eliminarla</td></tr>
+    <tr><td><code>cartelli_outletmultismart</code></td><td>— (nascosta)</td><td class="muted">conservata nella radice, non collegata a <code>index.html</code></td></tr>
     <tr><td><code>magazzino</code></td><td>Magazzino</td><td class="ok">fatta</td></tr>
   </table>
 </div>
 
-<div class="phase wip">
-  <h3><span>Fase 3 — Promo stagionali</span> <span class="tag">IN CORSO</span></h3>
+<div class="phase done">
+  <h3><span>Fase 3 — Promo stagionali</span> <span class="tag">FATTA</span></h3>
   <p>Portarle al pannello standard come i cartelli (pannello, Arial, cursore, strumenti di stampa), conservando grafiche e temi.</p>
   <table>
     <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
     <tr><td><code>blackfridaylips</code></td><td>Black Friday Lips</td><td class="ok">fatta</td></tr>
     <tr><td><code>blackfriday</code></td><td>Black Friday</td><td class="ok">fatta</td></tr>
     <tr><td><code>promo_multibrand</code></td><td>Promo Multibrand</td><td class="ok">fatta: menu su misura (fondo oro, tre sezioni con titolo, Promozioni, marchi 1–8 con la spunta Loghi Personalizzati, legenda rifatta, pulsantiera standard); rimandato l'accorciamento della voce di partenza dei menu stretti dei marchi</td></tr>
-    <tr><td><code>xmas_ball</code></td><td>Xmas Ball</td><td class="muted">in prova: struttura di Black Friday con menu su misura rosso natalizio</td></tr>
+    <tr><td><code>xmas_ball</code></td><td>Xmas Ball</td><td class="ok">fatta: menu su misura natalizio, colore palla, brand e loghi personalizzati, scontistica per cartello, copia tra cartelli e impostazioni di stampa</td></tr>
   </table>
 </div>
 
@@ -146,8 +146,8 @@
 </div>
 
 <div class="phase todo">
-  <h3><span>Fase 5 — Etichette DYMO</span> <span class="tag">DA FARE</span></h3>
-  <p>Pagine: <code>etichette</code> (più <code>etichettedb</code> ed <code>etichetteoriginal</code>: decidere se tenerle). Modello TEBE: <code>etichette.html</code>. Adottare le regole di stampa di TEBE: etichetta disegnata alla misura reale, rasterizzata a 300 dpi, inviata a DYMO Connect con <code>dymo-direct.js</code>, ripiego sulla stampa del browser e richiesta di conferma se l'invio fallisce; galleria dei modelli, cursore sull'anteprima.</p>
+  <h3><span>Fase 5 — Etichette DYMO</span> <span class="tag">FATTA</span></h3>
+  <p><code>etichette.html</code>: sei modelli nella galleria, cursore sull'anteprima, campo Numero di etichette (1–99), rasterizzazione a 300 dpi e invio diretto a DYMO Connect con il numero di copie richiesto. Stampa centrata e ingrandita a 1,08×, pulsante STAMPA allineato allo stile TEBE e ripiego sulla stampa del browser con indicazione delle copie. Le due vecchie pagine <code>etichettedb.html</code> e <code>etichetteoriginal.html</code> sono state rimosse.</p>
 </div>
 
 <div class="phase todo">
