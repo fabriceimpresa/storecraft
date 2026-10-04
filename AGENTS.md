@@ -10,7 +10,7 @@ Indicazioni per agenti AI (e persone) che lavorano su questo repository.
 
 Da StoreCraft è nata una seconda versione per i negozi TEBE e OPHILYA (cartella locale `Desktop\TEBE`, repository `github.com/fabriceimpresa/tebes`), con menu uniformi, regole di stampa più precise (soprattutto per le etichette DYMO), cursore sul foglio, pulsantiera con lista di stampa e documentazione completa (`AGENTS.md` di TEBE).
 
-L'obiettivo finale è un'unica interfaccia STORE // CRAFT che ospiti tutti e tre i negozi: Luxury Outlet, TEBE e OPHILYA. Per arrivarci, questo repository viene reso **strutturalmente compatibile** con la versione TEBE, sul ramo `aggiornamento-storecraft` (fino al 3 ottobre 2026 si chiamava `aggiornamento-tebe`). Il piano di lavoro a fasi sta in `Storecraft Aggiornamento.pdf` (sorgente `Storecraft Aggiornamento.html`): va letto a inizio sessione.
+L'obiettivo finale è un'unica interfaccia STORE // CRAFT che ospiti tutti e tre i negozi: Luxury Outlet, TEBE e OPHILYA. Per arrivarci, questo repository viene reso **strutturalmente compatibile** con la versione TEBE, sul ramo `aggiornamento-storecraft` (fino al 3 ottobre 2026 si chiamava `aggiornamento-tebe`). Il piano di lavoro a fasi sta in `Storecraft Aggiornamento.pdf` (sorgente `Storecraft Aggiornamento.html`): va letto a inizio sessione e **aggiornato a ogni commit** (vedi "Verifica delle modifiche" in fondo), altrimenti il piano perde gli aggiornamenti fatti.
 
 Decisioni prese:
 
@@ -77,3 +77,10 @@ Decisioni prese:
 ## Verifica delle modifiche
 
 Non ci sono test né linter. Servi la cartella con `Avvia server.bat` nella radice (doppio clic: server locale su `http://localhost:8000`, raggiungibile solo da questo computer, apre Chrome e si spegne chiudendo la sua finestra; non serve installare nulla, usa PowerShell di Windows) oppure con `python -m http.server 8000` dove c'è Python. Aprendo le pagine con il doppio clic (`file://`) la lista di stampa non funziona: Chrome non permette di fotografare immagini lette dal disco. Apri la pagina, poi controlla **Stampa → Anteprima** con scala 100 % e margini "Nessuno".
+
+**Prima di ogni commit**, aggiorna anche il piano di lavoro, altrimenti resta indietro e si perdono gli aggiornamenti fatti:
+1. `Storecraft Aggiornamento.html`: riquadro "Dove siamo arrivati" / "Prossimi passi" e la fase interessata (tabella e stato), con quanto fatto nel commit.
+2. `Storecraft Aggiornamento.pdf`, rigenerato dall'HTML appena aggiornato. Il browser condiviso non stampa in PDF da sé (`Page.printToPDF` non disponibile): si usa Chrome in locale, in modalità headless, da riga di comando:
+   ```
+   & "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="C:\Users\lanui\OneDrive\Desktop\STORECRAFT\Storecraft Aggiornamento.pdf" "file:///C:/Users/lanui/OneDrive/Desktop/STORECRAFT/Storecraft Aggiornamento.html"
+   ```

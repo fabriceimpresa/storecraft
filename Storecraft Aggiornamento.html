@@ -73,7 +73,7 @@
   <li><strong>I fogli di stampa non si toccano</strong> (misure in cm, mm e pt, grafica, font di stampa) se il compito non lo chiede.</li>
   <li><strong>Documentazione in italiano</strong>. Ogni pagina, modulo o convenzione aggiunta o cambiata va riportata in <code>AGENTS.md</code> nella stessa modifica. I problemi trovati si segnalano all'utente, non si scrivono nella documentazione.</li>
   <li><strong>Verifica</strong>: non ci sono test automatici. Si serve la cartella con <code>Avvia server.bat</code> (doppio clic, apre Chrome su <code>http://localhost:8000</code>), si apre la pagina, e l'utente controlla <em>Stampa → Anteprima</em> (scala 100 %, margini "Nessuno").</li>
-  <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro.</li>
+  <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro. A ogni commit si aggiornano anche <code>Storecraft Aggiornamento.html</code> (riquadro "Dove siamo arrivati" e la fase interessata) e il PDF rigenerato da esso, altrimenti il piano perde gli aggiornamenti fatti.</li>
 </ol>
 
 <div class="box gold">
@@ -217,7 +217,7 @@
   <li>Controllare di essere sul ramo di lavoro e guardare gli ultimi commit (<code>git log</code>) per sapere dove ci si era fermati.</li>
   <li>Per la pagina da allineare, leggere la pagina corrispondente di TEBE e la sezione dell'<code>AGENTS.md</code> di TEBE che la descrive.</li>
   <li>Concordare con l'utente il prossimo dettaglio, modificarlo, farlo verificare nel browser, aggiornare <code>AGENTS.md</code>, fare il commit quando l'utente lo chiede.</li>
-  <li>A fine fase, aggiornare lo stato in questo piano.</li>
+  <li>A ogni commit, aggiornare questo piano (riquadro "Dove siamo arrivati" e la fase interessata) e rigenerare il PDF dall'HTML (Chrome headless, vedi "Verifica delle modifiche" in <code>AGENTS.md</code>).</li>
 </ol>
 
 </body>
