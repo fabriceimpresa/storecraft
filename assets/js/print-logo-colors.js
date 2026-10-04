@@ -140,6 +140,29 @@
     return resolvePrintLogoSource(source, color);
   }
 
+  // Attende che le immagini scelte (selettore CSS) abbiano finito di caricare, così la stampa
+  // (o la foto per la lista di stampa) non parte con un logo ancora a metà o mancante.
+  function waitForImagesToLoad(images) {
+    return Promise.all(Array.from(images).map(image => {
+      if (!image.getAttribute('src')) {
+        return undefined;
+      }
+      if (image.complete && image.naturalWidth > 0) {
+        return typeof image.decode === 'function' ? image.decode().catch(() => {}) : undefined;
+      }
+      return new Promise((resolve, reject) => {
+        image.addEventListener('load', resolve, { once: true });
+        image.addEventListener('error', () => reject(new Error(`Impossibile caricare il logo ${image.alt || ''}.`)), { once: true });
+      });
+    }));
+  }
+
+  // Attende sia i font locali sia i loghi (selettore CSS) prima di stampare.
+  function prepareForPrint(selector = '[class*="logo"]') {
+    const fontsReady = document.fonts?.ready || Promise.resolve();
+    return Promise.all([fontsReady, waitForImagesToLoad(document.querySelectorAll(selector))]).then(() => undefined);
+  }
+
   /**
    * Imposta il logo (ufficiale o personalizzato) di un <img id="imgId">
    * usando direttamente la versione già colorata, così sia a schermo sia in
@@ -168,6 +191,7 @@
     getOfficialPrintLogoPath,
     setBrandLogoSrc,
     getBrandLogoSrc,
+    prepareForPrint,
     invalidateCustomLogoCache
   };
 })();

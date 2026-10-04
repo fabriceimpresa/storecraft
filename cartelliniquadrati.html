@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Quadrati</title>
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261004">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261004">
+
+  <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
+  <script src="assets/js/logos.js?v=20261004"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261004"></script>
+
+  <style>
+    /* Definizione Font Locali Bodoni Std da assets/fonts */
+    @font-face {
+      font-family: 'Bodoni Std';
+      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --bg: #121110;
+      --sidebar: #181715;
+      --card: #1e1d1a;
+      --border: #2e2b27;
+      --accent: #b48b37;
+      --accent-hover: #c99c43;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+      --gold: #b48b37;
+      /* Oro di stampa dei cartelli (stesso dei loghi) */
+      --print-gold: #b48b37;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: auto; }
+
+    /* --- SIDEBAR --- */
+    aside { width: 360px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 3rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .brand-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 1.5px; color: #d4a373; margin-bottom: 1rem; text-align: center; font-weight: 600; text-transform: uppercase; }
+
+    .tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
+    .tab-item { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; cursor: pointer; transition: all 0.2s; }
+    .tab-item:hover { border-color: var(--gold); }
+    .tab-item.active { border-color: var(--gold); background: rgba(180, 139, 55, 0.15); }
+    .tab-item label { font-size: 0.7rem; font-weight: 700; cursor: pointer; color: var(--text); }
+    .tab-item input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; }
+
+    .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
+    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+
+    /* Il riquadro "Modifica Cartellino" segue il pannello standard (assets/css/pannello.css), diviso nei quattro
+       blocchi; qui solo ciò che è proprio dei cartellini (come in Cartellini Vetrina e Promo). */
+    .editor-title + .panel-block > .mode-switch:first-child { margin-top: 1rem; }
+    .editor-section > .panel-block:last-child > :last-child { margin-bottom: 0; }
+    .editor-section .panel-block + .panel-block { margin-top: 0; }
+    .editor-section .panel-block > .mode-switch:last-child { margin-bottom: 1rem; }
+    #editorPanel { padding-bottom: 1.25rem; }
+    .editor-section .btn-print { margin-top: 0.35rem; }
+
+    /* Brand stagionali prioritari evidenziati nel menu BRAND */
+    .form-group select option.priority-brand-option { background-color: #2e2b27; color: #e5ba73; font-weight: bold; }
+
+    /* --- PREVIEW MAIN --- */
+    main { flex: 1; min-width: 0; padding: 1.5rem; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0908; -webkit-overflow-scrolling: touch; }
+    .sheet-wrap { position: relative; flex-shrink: 0; }
+
+    /* Griglia Foglio A4 Landscape: 4 × 3 cartellini quadrati da 60 mm, distanziati di 3 mm */
+    .a4-landscape {
+      width: 282mm;
+      height: 196mm;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: grid;
+      grid-template-columns: repeat(4, 60mm);
+      grid-template-rows: repeat(3, 60mm);
+      gap: 3mm;
+      justify-content: center;
+      align-content: center;
+      transform-origin: top center;
+    }
+
+    /* CARTELLINO QUADRATO CON CORNICE DORATA */
+    .cartellino {
+      width: 60mm;
+      height: 60mm;
+      border: 0.9mm solid var(--print-gold);
+      padding: 5.8mm 3.1mm 8mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      background: #fff;
+      color: #000;
+      overflow: hidden;
+      position: relative;
+      transition: padding-top 0.45s ease, padding-bottom 0.45s ease;
+    }
+
+    /* In Brand la riga del doppio prezzo si stringe al testo, così il logo brand sta più vicino */
+    .cartellino.is-brand .card-top { height: auto; margin-bottom: 2.4mm; }
+
+    /* Tema Sale attivo: SALE in alto e logo in basso alla stessa distanza dai bordi */
+    .a4-landscape.sale-theme .cartellino { padding-top: 6.5mm; padding-bottom: 6.5mm; }
+
+    /* In modalità Brand SALE e logo in basso spariscono e logo brand + prezzi si centrano nel cartellino */
+    .a4-landscape .cartellino.is-brand { padding-top: 3.8mm; padding-bottom: 3.8mm; }
+
+    /* Filetto interno sottile */
+    .cartellino::after {
+      content: '';
+      position: absolute;
+      inset: 0.9mm;
+      border: 0.2mm solid var(--print-gold);
+      pointer-events: none;
+    }
+
+    .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
+
+    /* Logo brand oro (modalità Brand): chiuso ha altezza zero; aprendosi spinge giù il blocco prezzi.
+       Logo brand, riga superiore e prezzo formano un blocco unico centrato nello spazio sopra il logo in fondo. */
+    .brand-box {
+      width: 100%;
+      height: 0;
+      margin-top: auto;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateY(-2mm) scale(0.92);
+      transition: height 0.45s ease, margin-bottom 0.45s ease, opacity 0.35s ease 0.1s, transform 0.45s ease;
+    }
+
+    .brand-box.open {
+      height: 13mm;
+      margin-bottom: 2mm;
+      opacity: 1;
+      transform: none;
+    }
+
+    .brand-box img { max-height: 100%; max-width: 80%; object-fit: contain; }
+
+    /* Riga superiore: descrizione oppure doppio prezzo, in Arial.
+       Altezza e distanza fisse in tutte le modalità, testo appoggiato in basso:
+       così la riga sta sempre alla stessa distanza dal prezzo finale. */
+    .card-top {
+      width: 100%;
+      height: 7mm;
+      margin-bottom: 1.8mm;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .desc-text {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15.5pt;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: #000;
+      width: 100%;
+      max-height: 7mm;
+      overflow: hidden;
+      word-break: break-word;
+    }
+
+    .double-price {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14.5pt;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: #000;
+      display: flex;
+      gap: 2mm;
+      align-items: baseline;
+      justify-content: center;
+      white-space: nowrap;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .double-price .strike { text-decoration: line-through; text-decoration-color: var(--print-gold); }
+    .double-price .badge-sconto { color: var(--print-gold); font-weight: bold; }
+
+    /* Prezzo finale in Bodoni Std */
+    /* Altezza fissa pari al prezzo a corpo pieno: i prezzi ridotti (3-4 cifre) non spostano il blocco */
+    .card-price {
+      flex: 0 0 auto;
+      height: 18mm;
+      margin-bottom: auto;
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .final-price {
+      font-family: 'Bodoni Std', serif;
+      font-weight: normal;
+      font-size: 50pt;
+      color: #000;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    /* Logo oro Luxury Outlet in basso; scritta SALE (segnaposto TEBE, da rifare) in alto.
+       Il logo Luxury (verticale, "L X / R Y") ha bisogno di più altezza del logo TEBE (orizzontale):
+       il riquadro del footer è quindi più alto di quello della scritta SALE. */
+    .card-footer-logo,
+    .card-header-logo { display: flex; align-items: center; justify-content: center; width: 100%; flex-shrink: 0; overflow: hidden; transition: max-height 0.45s ease, opacity 0.3s ease; }
+    .card-footer-logo { max-height: 13mm; }
+    /* La scritta SALE compare solo con il tema Sale attivo */
+    .card-header-logo { max-height: 0; opacity: 0; }
+    .a4-landscape.sale-theme .card-header-logo { max-height: 6mm; opacity: 1; }
+    .cartellino.is-brand .card-footer-logo,
+    .cartellino.is-brand .card-header-logo { max-height: 0; opacity: 0; }
+    .card-footer-logo img { max-height: 100%; max-width: 90%; object-fit: contain; display: block; }
+    .card-header-logo img { width: 25mm; height: auto; display: block; }
+    .card-header-logo img { width: 25mm; height: auto; display: block; }
+
+    /* Tema Sale + modalità Brand: SALE in alto, il logo in basso sparisce ma tiene il suo spazio,
+       così il blocco prezzi resta esattamente dove sta negli altri cartellini Sale.
+       Il logo brand, fuori dal flusso, si appoggia in basso al posto del logo. */
+    .a4-landscape.sale-theme .cartellino.is-brand { padding-top: 6.5mm; padding-bottom: 6.5mm; }
+    .a4-landscape.sale-theme .cartellino.is-brand .card-header-logo { max-height: 6mm; opacity: 1; }
+    .a4-landscape.sale-theme .cartellino.is-brand .brand-box.open {
+      position: absolute;
+      left: 0;
+      bottom: 6.5mm;
+      height: auto;
+      margin: 0;
+    }
+
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b48b37;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    /* Pulsante flottante del tema Sale, sotto la ✕ */
+    .sale-theme-btn {
+      position: fixed;
+      top: calc(1.5rem + 36px + 0.5rem);
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      background: #96382b;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.72rem;
+      font-weight: bold;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+      opacity: 0.9;
+      transition: transform 0.2s, opacity 0.2s, box-shadow 0.2s;
+      z-index: 1000;
+    }
+
+    .sale-theme-btn:hover,
+    .sale-theme-btn.is-active {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+
+    .sale-theme-btn.is-active {
+      box-shadow: 0 0 0 2px #1e1d1a, 0 0 0 3.5px #96382b, 0 3px 10px rgba(0, 0, 0, 0.35);
+    }
+
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+      .sale-theme-btn { top: calc(1.5rem + 44px + 0.5rem); width: 44px; height: 44px; font-size: 0.85rem; }
+    }
+
+    /* REGOLA DI STAMPA */
+    @media print {
+      html, body {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      body { background: none; display: block; }
+      aside { display: none !important; }
+      main {
+        padding: 0;
+        background: none;
+        margin: 0;
+        display: block;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      .a4-landscape {
+        box-shadow: none;
+        margin: 0 auto;
+        width: 282mm !important;
+        height: 196mm !important;
+        max-height: 196mm !important;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .cartellino.disabled { visibility: hidden; opacity: 0; }
+      .app-close-btn, .floating-nav-box, .sale-theme-btn { display: none !important; }
+      @page {
+        size: A4 landscape;
+        margin: 4mm;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      main { align-items: flex-start; justify-content: flex-start; }
+      .a4-landscape { flex: 0 0 auto; }
+    }
+
+  </style>
+</head>
+<body>
+  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+  <button type="button" class="sale-theme-btn" id="saleThemeBtn" title="Tema Sale" aria-pressed="false" onclick="toggleSaleTheme()">Sale</button>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
+
+  <aside>
+    <div class="brand-title">QUADRATI</div>
+
+    <div class="tabs-grid" id="tabs-container"></div>
+
+    <div class="editor-section" id="editorPanel">
+      <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
+
+      <!-- Blocco 1: selettore della modalità -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Modalità del cartellino">
+          <button type="button" id="modeDescrizione" onclick="setCardMode('desc')">DESCRIZIONE</button>
+          <button type="button" id="modeDoppioPrezzo" onclick="setCardMode('double')">DOPPIO<br>PREZZO</button>
+          <button type="button" id="modeBrand" onclick="setCardMode('brand')">BRAND</button>
+        </div>
+      </div>
+
+      <!-- Blocco 2: brand (ufficiali e personalizzati), solo in modalità Brand -->
+      <div class="panel-block" id="group-brand" hidden>
+        <div class="form-group">
+          <label class="section-label" for="brandSelect">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="updateBrandSelection()"></select>
+          </div>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="updateCustomBrandSelection()"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocco 3: campi del cartellino, secondo la modalità, e Prezzo Finale -->
+      <div class="panel-block">
+        <div id="group-desc">
+          <div class="form-group">
+            <label class="section-label" for="descPreset">Testi Pronti</label>
+            <div class="preset-select">
+              <select id="descPreset" onchange="applyDescPreset()">
+                <option value="">-- Seleziona un testo --</option>
+                <optgroup label="Articoli">
+                  <option value="Abito">Abito</option>
+                  <option value="Bermuda">Bermuda</option>
+                  <option value="Blusa">Blusa</option>
+                  <option value="Borsa">Borsa</option>
+                  <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+                  <option value="Camicia">Camicia</option>
+                  <option value="Cappello">Cappello</option>
+                  <option value="Cappotto">Cappotto</option>
+                  <option value="Cardigan">Cardigan</option>
+                  <option value="Cintura">Cintura</option>
+                  <option value="Coprispalle">Coprispalle</option>
+                  <option value="Foulard">Foulard</option>
+                  <option value="Giacca">Giacca</option>
+                  <option value="Gilet">Gilet</option>
+                  <option value="Gonna">Gonna</option>
+                  <option value="Jeans">Jeans</option>
+                  <option value="Maglia">Maglia</option>
+                  <option value="Occhiali">Occhiali</option>
+                  <option value="Pantaloncino">Pantaloncino</option>
+                  <option value="Pantalone">Pantalone</option>
+                  <option value="Shorts">Shorts</option>
+                  <option value="T-Shirt">T-Shirt</option>
+                  <option value="Top">Top</option>
+                  <option value="Tutina">Tutina</option>
+                </optgroup>
+                <optgroup label="Promozioni">
+                  <option value="Special Deal">Special Deal</option>
+                  <option value="Final Price">Final Price</option>
+                  <option value="Summer Sale">Summer Sale</option>
+                  <option value="Spring Sale">Spring Sale</option>
+                  <option value="Winter Sale">Winter Sale</option>
+                  <option value="Black Friday">Black Friday</option>
+                  <option value="Made in Italy">Made in Italy</option>
+                  <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+                  <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+                  <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+                </optgroup>
+              </select>
+            </div>
+            <label for="inp-desc">Testo Libero</label>
+            <input type="text" id="inp-desc" placeholder="es. Giubbino" oninput="updateCurrentCard()">
+          </div>
+        </div>
+
+        <div id="group-double">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="inp-orig">Prezzo Originario</label>
+              <div class="input-affix">
+                <span class="affix">€</span>
+                <input type="text" id="inp-orig" inputmode="decimal" placeholder="396,00" oninput="updateCurrentCard()">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="discountValue">Sconto</label>
+              <div class="input-affix">
+                <input type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="updateCurrentCard()">
+                <span class="affix">%</span>
+                <div class="stepper">
+                  <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
+                  <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inp-final">Prezzo Finale</label>
+          <div class="input-affix">
+            <span class="affix">€</span>
+            <input type="text" id="inp-final" inputmode="decimal" placeholder="198,00" oninput="updateCurrentCard()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" onclick="printCards()">STAMPA FOGLIO A4</button>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="sheet-wrap">
+      <div class="a4-landscape" id="printable-grid"></div>
+    </div>
+  </main>
+
+  <script>
+    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
+
+    function cleanBrandName(fileName) {
+      return fileName.replace(/\.[^.]+$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
+    }
+
+    // Logo "LUXURY OUTLET" (assets/img/footer.png, rosso) ricolorato in oro via canvas, come i loghi
+    // brand: lo stesso identico meccanismo di PrintLogoColors, qui per un'immagine fuori da assets/logos/.
+    let footerLogoGoldSrc = null;
+    function getFooterLogoSrc() {
+      if (footerLogoGoldSrc) return Promise.resolve(footerLogoGoldSrc);
+      return new Promise((resolve, reject) => {
+        const sourceImage = new Image();
+        sourceImage.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = sourceImage.naturalWidth;
+          canvas.height = sourceImage.naturalHeight;
+          const context = canvas.getContext('2d');
+          context.drawImage(sourceImage, 0, 0);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+          for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
+            if (pixels.data[pixel + 3] > 0) {
+              pixels.data[pixel] = 180;
+              pixels.data[pixel + 1] = 139;
+              pixels.data[pixel + 2] = 55;
+            }
+          }
+          context.putImageData(pixels, 0, 0);
+          footerLogoGoldSrc = canvas.toDataURL('image/png');
+          resolve(footerLogoGoldSrc);
+        };
+        sourceImage.onerror = () => reject(new Error('Logo Luxury Outlet non disponibile.'));
+        sourceImage.src = 'assets/img/footer.png';
+      });
+    }
+
+    function readCustomLogos() {
+      try {
+        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.id && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personalizzati fallita.', error);
+        return [];
+      }
+    }
+
+    function getDefaultBrandFile() {
+      const orderedFiles = getOrderedLogoFiles();
+      return orderedFiles[0] || '';
+    }
+
+    // Brand di partenza alternati: il primo cartellino ha il brand predefinito, gli altri scorrono
+    // i brand ufficiali, ricominciando se finiscono (come in Cartellini Vetrina).
+    function getDefaultCardBrandFile(index) {
+      const defaultFile = getDefaultBrandFile();
+      const otherFiles = getSortedLogoFiles().remainingFiles;
+      const rotation = [defaultFile].concat(otherFiles).filter(Boolean);
+      return rotation.length ? rotation[index % rotation.length] : '';
+    }
+
+    // Ogni cartellino è in modalità Descrizione, Doppio Prezzo oppure Brand (mode: 'desc' | 'double' | 'brand').
+    // In Brand sopra il doppio prezzo compare il logo del brand in oro (ufficiale o personalizzato).
+    // Valori predefiniti alternati a scacchiera sulla griglia 4 × 3.
+    const DEFAULT_CARDS = [
+      { mode: 'double', priceOrig: '396,00', sconto: '50', desc: '', priceFinal: '198,00' },
+      { mode: 'desc', priceOrig: '', sconto: '', desc: 'Special Deal', priceFinal: '40,00' },
+      { mode: 'double', priceOrig: '120,00', sconto: '30', desc: '', priceFinal: '84,00' },
+      { mode: 'desc', priceOrig: '', sconto: '', desc: 'Giubbino', priceFinal: '59,90' },
+      { mode: 'desc', priceOrig: '', sconto: '', desc: 'Winter Sale', priceFinal: '29,90' },
+      { mode: 'double', priceOrig: '310,00', sconto: '55', desc: '', priceFinal: '139,50' },
+      { mode: 'desc', priceOrig: '', sconto: '', desc: 'Abito', priceFinal: '49,90' },
+      { mode: 'double', priceOrig: '180,00', sconto: '40', desc: '', priceFinal: '108,00' },
+      { mode: 'double', priceOrig: '89,90', sconto: '50', desc: '', priceFinal: '44,95' },
+      { mode: 'desc', priceOrig: '', sconto: '', desc: 'Final Price', priceFinal: '19,90' },
+      { mode: 'double', priceOrig: '150,00', sconto: '30', desc: '', priceFinal: '105,00' },
+      { mode: 'desc', priceOrig: '', sconto: '', desc: 'Made in Italy', priceFinal: '69,90' }
+    ];
+
+    const cardsData = DEFAULT_CARDS.map((card, index) => ({
+      id: index + 1,
+      enabled: true,
+      ...card,
+      brand: { officialFile: getDefaultCardBrandFile(index), customLogoId: '' }
+    }));
+
+    let currentCardIdx = 0;
+
+    // Id del cartellino il cui logo brand va animato in apertura al prossimo render.
+    let brandOpeningCardId = null;
+    const BRAND_ANIMATION_MS = 450;
+
+    function init() {
+      loadBrandSelect();
+      loadCustomBrandSelect();
+      renderTabs();
+      renderGrid();
+      loadEditorData();
+      // Il ridimensionamento dei testi va rifatto quando il Bodoni locale è caricato.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitAllCards);
+      }
+    }
+
+    function renderTabs() {
+      const container = document.getElementById('tabs-container');
+      container.innerHTML = '';
+      cardsData.forEach((card, index) => {
+        const item = document.createElement('div');
+        item.className = `tab-item ${index === currentCardIdx ? 'active' : ''}`;
+        item.onclick = (e) => {
+          if (e.target.type !== 'checkbox') {
+            currentCardIdx = index;
+            renderTabs();
+            loadEditorData();
+          }
+        };
+
+        const label = document.createElement('label');
+        label.textContent = `#${card.id}`;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = card.enabled;
+        checkbox.onchange = () => toggleCardEnabled(index, checkbox.checked);
+        item.append(label, checkbox);
+        container.appendChild(item);
+      });
+    }
+
+    function createElement(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text !== undefined) el.textContent = text;
+      return el;
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('printable-grid');
+      grid.innerHTML = '';
+
+      cardsData.forEach((card) => {
+        const el = createElement('div', `cartellino ${!card.enabled ? 'disabled' : ''}`);
+        el.id = `card-view-${card.id}`;
+
+        const brandBox = createElement('div', 'brand-box');
+        if (card.mode === 'brand') {
+          loadBrandImage(brandBox, card.brand);
+          if (card.id === brandOpeningCardId) {
+            // Parte chiuso e si apre al fotogramma successivo, così scatta la transizione.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              brandBox.classList.add('open');
+              el.classList.add('is-brand');
+            }));
+          } else {
+            brandBox.classList.add('open');
+            el.classList.add('is-brand');
+          }
+        }
+
+        const top = createElement('div', 'card-top');
+        if (card.mode === 'desc') {
+          top.appendChild(createElement('div', 'desc-text', card.desc));
+        } else {
+          const doublePrice = createElement('div', 'double-price');
+          if (card.priceOrig) doublePrice.appendChild(createElement('span', 'strike', `€ ${card.priceOrig}`));
+          if (card.sconto) doublePrice.appendChild(createElement('span', 'badge-sconto', `-${card.sconto}%`));
+          top.appendChild(doublePrice);
+        }
+
+        const priceBox = createElement('div', 'card-price');
+        const finalPrice = createElement('div', 'final-price', card.priceFinal ? `€ ${card.priceFinal}` : '');
+        finalPrice.dataset.price = card.priceFinal;
+        priceBox.appendChild(finalPrice);
+
+        const footer = createElement('div', 'card-footer-logo');
+        const logo = document.createElement('img');
+        logo.alt = 'Luxury Outlet';
+        logo.onerror = () => { logo.style.display = 'none'; };
+        if (footerLogoGoldSrc) logo.src = footerLogoGoldSrc;
+        footer.appendChild(logo);
+        getFooterLogoSrc().then(src => { logo.src = src; });
+
+        const header = createElement('div', 'card-header-logo');
+        const saleLogo = document.createElement('img');
+        // Segnaposto: va rifatta nello stile Luxury Outlet (per ora è ancora quella di TEBE)
+        saleLogo.src = 'assets/img/sale_tebe.png';
+        saleLogo.alt = 'SALE';
+        saleLogo.onerror = () => { saleLogo.style.display = 'none'; };
+        header.appendChild(saleLogo);
+
+        el.append(header, brandBox, top, priceBox, footer);
+        grid.appendChild(el);
+      });
+
+      brandOpeningCardId = null;
+      fitAllCards();
+    }
+
+    // Tema Sale: aggiunge la scritta SALE oro in alto su tutti i cartellini (in Brand il logo brand scende al posto del logo in fondo).
+    function toggleSaleTheme() {
+      const active = document.getElementById('printable-grid').classList.toggle('sale-theme');
+      const button = document.getElementById('saleThemeBtn');
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+      // Il cursore indica la scritta SALE appena comparsa, oppure torna sul cartellino
+      if (window.cursore) {
+        cursore.point(active ? { target: inCurrentCard('.card-header-logo img') } : { target: currentCardView, placement: 'above' });
+      }
+    }
+
+    function loadBrandSelect() {
+      const select = document.getElementById('brandSelect');
+      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+      [...priorityFiles, ...remainingFiles].forEach(fileName => {
+        appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
+      });
+    }
+
+    function loadCustomBrandSelect() {
+      const select = document.getElementById('customBrandSelect');
+      readCustomLogos()
+        .slice()
+        .sort((first, second) => first.name.localeCompare(second.name, 'it', { sensitivity: 'base' }))
+        .forEach(logo => {
+          const option = document.createElement('option');
+          option.value = logo.id;
+          option.textContent = `★ ${logo.name}`;
+          select.appendChild(option);
+        });
+    }
+
+    function updateBrandSelection() {
+      const card = cardsData[currentCardIdx];
+      card.brand.officialFile = document.getElementById('brandSelect').value;
+      card.brand.customLogoId = '';
+      document.getElementById('customBrandSelect').value = '';
+
+      // Senza brand scelto si torna al brand predefinito, mai a un cartellino senza logo.
+      if (!card.brand.officialFile) {
+        card.brand.officialFile = getDefaultBrandFile();
+        document.getElementById('brandSelect').value = card.brand.officialFile;
+      }
+      renderGrid();
+    }
+
+    function updateCustomBrandSelection() {
+      const card = cardsData[currentCardIdx];
+      card.brand.customLogoId = document.getElementById('customBrandSelect').value;
+      card.brand.officialFile = '';
+      document.getElementById('brandSelect').value = '';
+
+      // Deselezionando il logo personalizzato si torna al brand predefinito, mai a un cartellino senza logo.
+      if (!card.brand.customLogoId) {
+        card.brand.officialFile = getDefaultBrandFile();
+        document.getElementById('brandSelect').value = card.brand.officialFile;
+      }
+      renderGrid();
+    }
+
+    function getBrandLogoSource(brand) {
+      const customLogo = readCustomLogos().find(logo => logo.id === brand.customLogoId);
+      if (brand.customLogoId && !customLogo) {
+        return Promise.reject(new Error(`Logo personalizzato non trovato: ${brand.customLogoId}`));
+      }
+
+      return PrintLogoColors.getBrandLogoSrc(
+        customLogo?.data || '',
+        brand.customLogoId ? '' : brand.officialFile,
+        '',
+        'gold'
+      );
+    }
+
+    // Logo brand in oro: file pregenerato per i loghi ufficiali, ricolorato via canvas per i personalizzati.
+    // L'ultimo indirizzo risolto resta in cache, così ridisegnando i cartellini il logo non lampeggia.
+    const brandSourceCache = new Map();
+
+    function getBrandKey(brand) {
+      return brand.customLogoId ? `custom:${brand.customLogoId}` : `file:${brand.officialFile}`;
+    }
+
+    function loadBrandImage(brandBox, brand) {
+      if (!brand.customLogoId && !brand.officialFile) return;
+      const brandImage = document.createElement('img');
+      const customLogo = readCustomLogos().find(logo => logo.id === brand.customLogoId);
+      brandImage.alt = customLogo?.name || cleanBrandName(brand.officialFile);
+      const key = getBrandKey(brand);
+      if (brandSourceCache.has(key)) brandImage.src = brandSourceCache.get(key);
+      brandBox.appendChild(brandImage);
+      getBrandLogoSource(brand).then(source => {
+        brandSourceCache.set(key, source);
+        if (brandImage.isConnected && brandImage.getAttribute('src') !== source) brandImage.src = source;
+      }).catch(error => {
+        console.error('Caricamento del logo brand fallito.', error);
+      });
+    }
+
+    // Riduce il corpo del testo finché non entra nel suo riquadro (larghezza e, se richiesto, altezza).
+    // I testi su una riga sola (prezzi) controllano solo la larghezza: da Chrome 154 lo scrollHeight
+    // del Bodoni con line-height 1 supera il riquadro anche quando il testo entra, e il prezzo
+    // finiva ridotto al corpo minimo.
+    function fitText(el, maxPt, minPt, checkHeight = true) {
+      if (!el) return;
+      let size = maxPt;
+      el.style.fontSize = `${size}pt`;
+      while (size > minPt && (el.scrollWidth > el.clientWidth + 0.5 || (checkHeight && el.scrollHeight > el.clientHeight + 0.5))) {
+        size -= 0.5;
+        el.style.fontSize = `${size}pt`;
+      }
+    }
+
+    // Corpo del prezzo finale: 50 pt fino a due cifre intere, poi ridotto in proporzione
+    // alla larghezza del testo (€, spazio e virgola valgono circa quattro cifre in tutto).
+    const FINAL_PRICE_BASE_PT = 50;
+
+    function getFinalPriceSize(price) {
+      const integerDigits = (String(price).split(',')[0].match(/\d/g) || []).length;
+      if (integerDigits <= 2) return FINAL_PRICE_BASE_PT;
+      return FINAL_PRICE_BASE_PT * 6 / (integerDigits + 4);
+    }
+
+    function fitAllCards() {
+      document.querySelectorAll('.cartellino').forEach(card => {
+        fitText(card.querySelector('.desc-text'), 15.5, 8);
+        fitText(card.querySelector('.double-price'), 14.5, 8, false);
+        const finalPrice = card.querySelector('.final-price');
+        fitText(finalPrice, getFinalPriceSize(finalPrice.dataset.price || ''), 20, false);
+      });
+    }
+
+    function printCards() {
+      const logoPreparation = cardsData
+        .filter(card => card.enabled && card.mode === 'brand')
+        .map(card => {
+          const brandImage = document.querySelector(`#card-view-${card.id} .brand-box img`);
+          if (!brandImage) return Promise.resolve();
+          return getBrandLogoSource(card.brand).then(source => {
+            if (source) brandImage.src = source;
+          });
+        });
+
+      Promise.all(logoPreparation)
+        .then(() => PrintLogoColors.prepareForPrint('.brand-box img, .card-header-logo img, .card-footer-logo img'))
+        .then(() => {
+          fitAllCards();
+          window.print();
+        })
+        .catch(error => console.error('Preparazione della stampa fallita.', error));
+    }
+
+    function loadEditorData() {
+      const card = cardsData[currentCardIdx];
+      document.getElementById('editor-header').textContent = `Modifica Cartellino #${card.id}`;
+
+      document.getElementById('brandSelect').value = card.brand.officialFile;
+      document.getElementById('customBrandSelect').value = card.brand.customLogoId;
+      document.getElementById('inp-desc').value = card.desc;
+      document.getElementById('descPreset').value = '';
+      document.getElementById('inp-orig').value = card.priceOrig;
+      document.getElementById('discountValue').value = card.sconto;
+      document.getElementById('inp-final').value = card.priceFinal;
+
+      syncMode();
+    }
+
+    // Entrando in Brand il logo si apre spingendo giù i prezzi; uscendo si richiude prima di cambiare modalità.
+    function setCardMode(mode) {
+      const card = cardsData[currentCardIdx];
+      if (card.mode === mode) return;
+
+      if (card.mode === 'brand') {
+        const cardView = document.getElementById(`card-view-${card.id}`);
+        const brandBox = cardView && cardView.querySelector('.brand-box');
+        if (brandBox) brandBox.classList.remove('open');
+        if (cardView) cardView.classList.remove('is-brand');
+        setTimeout(() => {
+          card.mode = mode;
+          if (cardsData[currentCardIdx] === card) {
+            syncMode();
+          } else {
+            renderGrid();
+          }
+        }, BRAND_ANIMATION_MS);
+        return;
+      }
+
+      if (mode === 'brand') brandOpeningCardId = card.id;
+      card.mode = mode;
+      syncMode();
+    }
+
+    // Mostra i campi della modalità del cartellino corrente (Descrizione, Doppio Prezzo o Brand).
+    function syncMode() {
+      const mode = cardsData[currentCardIdx].mode;
+      const isDesc = mode === 'desc';
+      document.getElementById('modeDescrizione').classList.toggle('active', isDesc);
+      document.getElementById('modeDoppioPrezzo').classList.toggle('active', mode === 'double');
+      document.getElementById('modeBrand').classList.toggle('active', mode === 'brand');
+      document.getElementById('group-desc').style.display = isDesc ? 'block' : 'none';
+      document.getElementById('group-double').style.display = isDesc ? 'none' : 'block';
+      document.getElementById('group-brand').hidden = mode !== 'brand';
+
+      const finalPriceInput = document.getElementById('inp-final');
+      if (isDesc) {
+        const descInput = document.getElementById('inp-desc');
+        if (!descInput.value) descInput.value = 'Special Deal';
+        if (!finalPriceInput.value) finalPriceInput.value = '40,00';
+      } else {
+        const origInput = document.getElementById('inp-orig');
+        const scontoInput = document.getElementById('discountValue');
+        if (!origInput.value) origInput.value = '100,00';
+        if (!scontoInput.value) scontoInput.value = '50';
+        if (!finalPriceInput.value) finalPriceInput.value = '50,00';
+      }
+
+      updateCurrentCard();
+    }
+
+    function updateCurrentCard() {
+      const card = cardsData[currentCardIdx];
+      card.desc = document.getElementById('inp-desc').value;
+      card.priceOrig = document.getElementById('inp-orig').value;
+      card.sconto = document.getElementById('discountValue').value;
+      card.priceFinal = document.getElementById('inp-final').value;
+
+      renderGrid();
+    }
+
+    // Il testo scelto riempie la descrizione, che resta modificabile a mano.
+    function applyDescPreset() {
+      const preset = document.getElementById('descPreset').value;
+      if (preset) {
+        document.getElementById('inp-desc').value = preset;
+        updateCurrentCard();
+      }
+    }
+
+    function stepDiscount(delta) {
+      const input = document.getElementById('discountValue');
+      const min = Number.parseInt(input.min, 10) || 1;
+      const max = Number.parseInt(input.max, 10) || 99;
+      let val = Number.parseInt(input.value, 10);
+      if (Number.isNaN(val)) val = min;
+      val = Math.min(max, Math.max(min, val + delta));
+      input.value = val;
+      updateCurrentCard();
+    }
+
+    function toggleCardEnabled(index, enabled) {
+      cardsData[index].enabled = enabled;
+      renderGrid();
+    }
+
+    function applySafariPrintFix() {
+      const ua = navigator.userAgent;
+      const isSafari = /^((?!chrome|android).)*safari/i.test(ua) && !/Edg|OPR|Brave/i.test(ua);
+      if (!isSafari) return;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @media print {
+          @page {
+            size: 297mm 210mm;
+            margin: 4mm;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    init();
+    applySafariPrintFix();
+  </script>
+  <script src="assets/js/cursore.js?v=20261004"></script>
+  <script>
+    // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
+    // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
+    const currentCardView = () => document.getElementById(`card-view-${cardsData[currentCardIdx].id}`);
+    const inCurrentCard = selector => () => currentCardView()?.querySelector(selector);
+
+    var cursore = Cursore.create({
+      panel: 'aside',
+      watch: '#printable-grid',
+      clip: 'main',
+      sideGap: 96 / 25.4 + 5,   // nei cartellini di lato basta 1 mm + 5 px
+      scope: '#printable-grid',
+      obstacles: '#printable-grid .card-header-logo img, #printable-grid .brand-box img, #printable-grid .desc-text, #printable-grid .double-price .strike, #printable-grid .double-price .badge-sconto, #printable-grid .final-price, #printable-grid .card-footer-logo img',
+      rules: [
+        { controls: '.tab-item', target: currentCardView, placement: 'above' },
+        { controls: '#modeDescrizione', target: inCurrentCard('.desc-text') },
+        { controls: '#modeDoppioPrezzo', target: inCurrentCard('.double-price') },
+        { controls: '#modeBrand, #brandSelect, #customBrandSelect', target: inCurrentCard('.brand-box img') },
+        { controls: '#descPreset, #inp-desc', target: inCurrentCard('.desc-text') },
+        { controls: '#inp-orig', target: inCurrentCard('.double-price .strike') },
+        { controls: '#discountValue', target: inCurrentCard('.double-price .badge-sconto') },
+        { controls: '#inp-final', target: inCurrentCard('.final-price') }
+      ]
+    });
+    cursore.point({ target: currentCardView, placement: 'above' });
+  </script>
+  <script src="assets/js/strumenti-stampa.js?v=20261004" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+</body>
+</html>
