@@ -2,7 +2,8 @@
  * Lista di stampa condivisa tra le pagine cartelli e cartellini.
  * - "Aggiungi a lista stampa" (strumenti-stampa.js) fotografa il foglio della pagina (html2canvas, da cdnjs)
  *   e lo salva come pagina JPEG nel browser (IndexedDB, database "storecraft-lista-stampa"): il localStorage
- *   (circa 5 MB) basterebbe solo per poche pagine.
+ *   (circa 5 MB) basterebbe solo per poche pagine. Le immagini colorate con un filtro CSS vengono prima
+ *   ridisegnate già colorate (colorFilteredImages), perché html2canvas i filtri non li applica.
  * - lista-stampa.html mostra le pagine, le elimina, svuota la lista e la stampa come lista.pdf, generato qui
  *   senza librerie: un PDF A4 con una pagina per immagine (JPEG incorporato così com'è, filtro DCTDecode).
  * La lista resta nel browser e nel computer in cui è stata creata, come i loghi personalizzati.
@@ -55,6 +56,44 @@
 
   const canvasToBlob = (canvas, type, quality) => new Promise(resolve => canvas.toBlob(resolve, type, quality));
 
+  // Il browser sa applicare un filtro CSS mentre disegna su un canvas? (Chrome ed Edge sì)
+  function canvasFilterSupported() {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (!('filter' in ctx)) return false;
+    ctx.filter = 'brightness(0)';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 1, 1);
+    return ctx.getImageData(0, 0, 1, 1).data[0] === 0;
+  }
+
+  // html2canvas non applica il filtro CSS "filter": i loghi colorati con un filtro (es. le tinte di
+  // promo_multibrand) uscirebbero neri. Ogni immagine filtrata del foglio viene ridisegnata su un canvas
+  // con lo stesso filtro; nella copia fotografata si usa quell'immagine già colorata, senza filtro.
+  // Restituisce le immagini colorate, segnate sull'originale con data-lista-colore (copiato nella copia).
+  function colorFilteredImages(sheet) {
+    const colored = [];
+    if (!canvasFilterSupported()) return colored;
+    sheet.querySelectorAll('img').forEach(img => {
+      const filter = getComputedStyle(img).filter;
+      if (!filter || filter === 'none' || !img.naturalWidth) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.filter = filter;
+      ctx.drawImage(img, 0, 0);
+      try {
+        img.dataset.listaColore = String(colored.length);
+        colored.push(canvas.toDataURL('image/png'));
+      } catch (error) {
+        delete img.dataset.listaColore;   // immagine di un altro sito: resta com'è
+      }
+    });
+    return colored;
+  }
+
   // Fotografa il foglio così come verrà stampato: senza ombra né zoom della vista telefono,
   // con i cartellini esclusi nascosti come in stampa.
   async function addSheet(sheet) {
@@ -64,20 +103,30 @@
       img.addEventListener('load', done, { once: true });
       img.addEventListener('error', done, { once: true });
     })));
-    const canvas = await html2canvas(sheet, {
-      scale: CAPTURE_SCALE,
-      backgroundColor: '#ffffff',
-      useCORS: true,
-      logging: false,
-      onclone: doc => {
-        const style = doc.createElement('style');
-        style.textContent = `
-          .cartellino.disabled { visibility: hidden !important; }
-          .print-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; }
-          .cursore, .tool-buttons, .app-modal { display: none !important; }`;
-        doc.head.appendChild(style);
-      }
-    });
+    const colored = colorFilteredImages(sheet);
+    let canvas;
+    try {
+      canvas = await html2canvas(sheet, {
+        scale: CAPTURE_SCALE,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false,
+        onclone: doc => {
+          const style = doc.createElement('style');
+          style.textContent = `
+            .cartellino.disabled { visibility: hidden !important; }
+            .print-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; }
+            .cursore, .tool-buttons, .app-modal { display: none !important; }
+            img[data-lista-colore] { filter: none !important; }`;
+          doc.head.appendChild(style);
+          doc.querySelectorAll('img[data-lista-colore]').forEach(img => {
+            img.src = colored[Number(img.dataset.listaColore)];
+          });
+        }
+      });
+    } finally {
+      sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
+    }
     const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
     const thumbCanvas = document.createElement('canvas');
     thumbCanvas.width = THUMB_WIDTH;
