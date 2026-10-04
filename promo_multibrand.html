@@ -17,16 +17,17 @@
     @font-face { font-family: 'Space Invaders Project'; src: url('assets/fonts/space_invaders.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: block; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; background: #212529; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
+    /* sfondo della pagina: chiaro, un crema dorato tenue come le tinte avorio di TEBE, al posto del grigio scuro delle altre pagine (layout su misura) */
+    body { font-family: Arial, sans-serif; background: #ecd9b3; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
 
     /* Il pannello segue spazi e caratteri del pannello standard (assets/css/pannello.css); qui solo ciò che è proprio
        della pagina e, sotto, i colori del menu su misura. */
 
-    /* Titolo di sezione dentro un blocco (SELEZIONA I MARCHI IN PROMOZIONE, IMPOSTAZIONI STAMPA) */
+    /* Titolo di sezione dentro un blocco (BRANDS IN PROMOZIONE, IMPOSTAZIONI STAMPA) */
     .section-title { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding-bottom: .45rem; margin-bottom: .65rem; border-bottom: 1px solid; }
     /* sotto la linea di ogni sezione lo stesso spazio libero visibile (13,4 px): nella prima sezione sotto la linea c'è una
        scritta, che comincia un poco più in basso del suo riquadro; dove c'è subito una casella o il bordo di un campo
-       (Marchi in promozione, Impostazioni stampa) si aggiungono 3 px. */
+       (Brands in promozione, Impostazioni stampa) si aggiungono 3 px. */
     .section-title + .logo-grid { padding-top: 3px; }
     .section-title + .form-group:has(> .preset-select:first-child) { padding-top: 3px; }
 
@@ -77,10 +78,13 @@
     /* MENU SU MISURA DI PROMO MULTIBRAND: spazi e caratteri del pannello standard, ma, per distinguerlo dagli altri
        cartelli, fondo nell'oro tenue del pulsante ✕ che chiude la pagina (#d4a373), scritte scure e campi bordati di bianco. */
     .controls { background: #d9ad80; border-color: #d9ad80; color: #121110; --brand-dot-color: #8f6a1f; }   /* oro del pulsante ✕ (#d4a373) un poco più chiaro */
-    /* titolo della pagina (layout speciale): nero, con la linea sotto come negli altri menu, tra due stelline gialle come quelle dei brand prioritari */
-    .controls h2 { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.3); margin-bottom: 1.6rem; }   /* sotto la linea del titolo lo stesso spazio che c'è tra un blocco e l'altro (1,6rem) */
-    .controls h2::before { content: '★ '; color: #f2b705; }
-    .controls h2::after { content: ' ★'; color: #f2b705; }
+    /* titolo della pagina (layout speciale): bordeaux #6e1414 (contrasto 5,8 sul fondo oro), con la linea sotto come negli altri menu, tra due stelline gialle come quelle dei brand prioritari */
+    .controls h2 { color: #6e1414; border-bottom-color: rgba(18, 17, 16, 0.3); margin-bottom: 1.6rem; }   /* sotto la linea del titolo lo stesso spazio che c'è tra un blocco e l'altro (1,6rem) */
+    /* stelline gialle con un sottile contorno nell'oro scuro del menu (#8f6a1f, come i pallini dei menu BRAND), perché il giallo da solo sul fondo oro si vede poco */
+    .controls h2::before,
+    .controls h2::after { color: #f2b705; -webkit-text-stroke: 1px var(--brand-dot-color); paint-order: stroke fill; }
+    .controls h2::before { content: '★ '; }
+    .controls h2::after { content: ' ★'; }
     .controls .section-title { color: #121110; border-bottom-color: rgba(18, 17, 16, 0.3); }   /* nomi delle sezioni neri, con la stessa linea del titolo del menu */
     .controls .form-group label { color: #4a3a26; }
     .controls .form-group .section-label { color: #121110; }
@@ -459,9 +463,9 @@
         </div>
       </div>
 
-      <!-- Blocco 2: marchi in promozione -->
+      <!-- Blocco 2: brands in promozione -->
       <div class="panel-block">
-        <div class="section-title">Marchi in promozione</div>
+        <div class="section-title">BRANDS IN PROMOZIONE</div>
         <div class="logo-grid" id="logoControls1"></div>
       </div>
 
@@ -523,7 +527,7 @@
       }
     }
 
-    // Marchi in promozione: per ogni posto (BRAND 1–8) la spunta "Loghi Personalizzati" sceglie quale elenco mostra
+    // Brands in promozione: per ogni posto (BRAND 1–8) la spunta "Loghi Personalizzati" sceglie quale elenco mostra
     // il menu: spenta i brand ufficiali (predefinito), spuntata i loghi personalizzati (valore = data URL).
     // Ogni posto ricorda tutte e due le scelte, così spegnendo e riaccendendo la spunta torna il logo di prima.
     const logoChoices = defaults.map(file => ({ official: file, custom: '', useCustom: false }));

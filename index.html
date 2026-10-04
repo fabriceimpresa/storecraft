@@ -270,6 +270,9 @@
        I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura). */
     .preview { position: relative; aspect-ratio: 16 / 9; margin: 0 var(--card-pad); background: #0a0908; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    /* Pagine con il menu su misura (Promo Multibrand, Xmas Ball): etichetta MENU SPECIALE in basso a destra
+       nell'anteprima, con lo stile del .gold-badge della prima versione di StoreCraft (oro lucido, scritta nera) */
+    .card-badge { position: absolute; bottom: 11px; right: 10px; z-index: 1; padding: 2px 7px; border-radius: 4px; background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #000; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
 
     /* Schede del corpo centrale: stessi elementi delle card di TEBE (numero e tipo in alto,
        anteprima, titolo e pulsante + delle specifiche), con gli angoli arrotondati di StoreCraft. */
@@ -303,7 +306,9 @@
        Almeno due righe, così le schede aperte sono uguali. */
     .card-desc p { min-height: 3.2em; margin: 0 var(--card-pad) 18px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; letter-spacing: .01em; }
     .card-desc .spec-list { display: block; }
-    .card-desc .spec + .spec::before { content: "|"; margin: 0 0.45em 0 0.2em; color: var(--text-muted); }
+    /* Il separatore | sta in fondo alla specifica precedente (non all'inizio della successiva): andando a capo la riga
+       nuova comincia sempre con una parola, mai con uno spazio vuoto o con la barretta. */
+    .card-desc .spec:not(:last-child)::after { content: "|"; margin: 0 0.2em 0 0.45em; color: var(--text-muted); }
     .desc-open .card-desc { grid-template-rows: 1fr; }
 
     /* STILI ESCLUSIVI WIDGET / CARD DORATA CON COLORE LOGO STORE CRAFT (#d4a373 / #e5ba73) */
@@ -1053,6 +1058,7 @@
             <div class="card-top"><span class="number">01</span><span class="card-type">FASCE COLORE</span></div>
             <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
               <img class="preview-image" src="assets/thumbnail/promomultibrand.png" alt="Anteprima Promo Multibrand">
+              <span class="card-badge">MENU SPECIALE</span>
             </div>
             <div class="card-body">
               <h3>Promo Multibrand ✦</h3><span class="spec-toggle"></span>
@@ -1089,6 +1095,7 @@
             <div class="card-top"><span class="number">04</span><span class="card-type">CHRISTMAS</span></div>
             <div class="preview" style="background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);">
               <img class="preview-image" src="assets/thumbnail/xmasball.png" alt="Anteprima Xmas Ball">
+              <span class="card-badge">MENU SPECIALE</span>
             </div>
             <div class="card-body">
               <h3>Xmas Ball ✦</h3><span class="spec-toggle"></span>

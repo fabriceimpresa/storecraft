@@ -2,9 +2,13 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Genera Cartelli - Xmas</title>
+  <title>Xmas Ball</title>
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261004">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261004">
   <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261004">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261004">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
   <script src="assets/js/logos.js?v=20261004"></script>
   <script src="assets/js/print-logo-colors.js?v=20261004"></script>
@@ -35,246 +39,124 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    /* Sfondo principale dell'applicazione UI */
+
+    /* Sfondo della pagina: verde smeraldo scuro in tinta unita con sopra una filigrana a rombi grandi (200 px, poche ripetizioni)
+       nell'oro del menu: doppia riga sottile, puntini agli incroci e una stella a otto punte al centro di ogni rombo,
+       appena visibili. Al posto del grigio scuro delle altre pagine perché il layout è su misura.
+       In stampa lo sfondo torna bianco (@media print). */
     body {
       font-family: Arial, sans-serif;
-      background-color: #212529;
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Filigrana di sfondo UI */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-image: url('assets/img/LUXURYOUTLET_BACK.png');
-      background-repeat: repeat;
-      background-size: 650px auto;
-      background-position: center;
-      opacity: 0.18;
-      filter: contrast(1.1);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Contenitore generale flessibile per la UI e l'anteprima */
-    .app-container {
+      background-color: #0e4a3b;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23d6b25e' stroke-width='0.8'%3E%3Cpath d='M0 100L100 0L200 100L100 200Z' stroke-opacity='0.11'/%3E%3Cpath d='M14 100L100 14L186 100L100 186Z' stroke-opacity='0.06'/%3E%3C/g%3E%3Cg fill='%23d6b25e' fill-opacity='0.2'%3E%3Cpath d='M100 89l2.4 8.6 8.6 2.4-8.6 2.4-2.4 8.6-2.4-8.6-8.6-2.4 8.6-2.4z'/%3E%3Cpath d='M100 93.5l1.6 4.9 4.9 1.6-4.9 1.6-1.6 4.9-1.6-4.9-4.9-1.6 4.9-1.6z' transform='rotate(45 100 100)'/%3E%3C/g%3E%3Cg fill='%23d6b25e' fill-opacity='0.3'%3E%3Ccircle cx='100' cy='0' r='1.6'/%3E%3Ccircle cx='0' cy='100' r='1.6'/%3E%3Ccircle cx='200' cy='100' r='1.6'/%3E%3Ccircle cx='100' cy='200' r='1.6'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 200px 200px;   /* filigrana ripetuta ogni 200 px */
+      padding: 20px;
       display: flex;
       gap: 20px;
       justify-content: center;
-      padding: 20px;
+      min-height: 100vh;
       position: relative;
-      z-index: 10;
-      max-width: 100%;
     }
 
-    /* Contenitore Pannelli di Sinistra */
-    .sidebar {
-      width: 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      position: relative;
-      z-index: 10;
-      font-family: system-ui, -apple-system, sans-serif;
-      flex-shrink: 0;
-    }
+    /* Il pannello segue spazi e caratteri del pannello standard (assets/css/pannello.css); qui solo ciò che è proprio
+       della pagina e, sotto, i colori del menu su misura. */
 
-    /* Pannelli di Controllo */
-    .controls {
-      background: #1e1d1a;
-      color: #f4f1ea;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: none;
-      border: 1px solid #2e2b27;
-    }
+    /* Titolo di sezione (PALLA DI NATALE, IMPOSTAZIONI STAMPA), come in Promo Multibrand */
+    .section-title { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding-bottom: .45rem; margin-bottom: .65rem; border-bottom: 1px solid; }
 
-    .controls h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.1rem;
-      color: #d4a373;
-      border-bottom: 1px solid #2e2b27;
-      padding-bottom: 0.4rem;
-      margin-bottom: 1.2rem;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-transform: uppercase;
-    }
+    /* Spaziatura del menu su misura di Promo Multibrand: sotto la linea di ogni sezione lo stesso spazio libero visibile
+       (13,4 px); dove sotto c'è subito il bordo di un campo (IMPOSTAZIONI STAMPA) si aggiungono 3 px. */
+    .section-title + .form-group:has(> .preset-select:first-child) { padding-top: 3px; }
 
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #e5ba73;
-      background-color: transparent;
-      border-left: none;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.9);
-      padding: 0 0 0.6rem;
-      border-radius: 0;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-    }
+    /* COPIA SU ALTRO CARTELLO in fondo alla sezione PALLA DI NATALE: come nel resto del progetto è equidistante da ciò
+       che ha sopra e da ciò che ha sotto (1,6rem, quanto lo spazio tra le sezioni: 0,65rem del campo sopra + 0,95rem),
+       ma senza la linea sotto, perché subito dopo viene la sezione IMPOSTAZIONI STAMPA con la sua linea */
+    .controls .check-row.section-end { padding-bottom: 0; border-bottom: none; margin: .95rem 0 .65rem; }
 
-    .form-group { margin-bottom: 0.8rem; }
-
-    .form-group label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: normal;
-      margin-bottom: 0.3rem;
-      color: #8c857b;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #2e2b27;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      background-color: #0a0908;
-      color: #fff;
-    }
-
-    .form-group select.custom-select {
-      border-color: #b48b37;
-      color: #f3d5a3;
-    }
-
-    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
-    .form-group select option.priority-brand-option {
-      background-color: #2e2b27;
-      color: #e5ba73;
-      font-weight: bold;
-    }
-
-    .form-group input:focus, .form-group select:focus {
-      outline: none;
-      border-color: #b48b37;
-      box-shadow: 0 0 4px rgba(180, 139, 55, 0.5);
-    }
-
-    /* SELETTORE COLORI SFONDO (TASTINI A QUADRATINO PIÙ PICCOLI) */
-    .color-picker-group {
-      display: flex;
-      gap: 6px;
-      margin-top: 0.3rem;
-      margin-bottom: 0.8rem;
-    }
-
+    /* Colore della palla: quattro quadratini, quello scelto con il bordo bianco */
+    .color-picker-group { display: flex; gap: 6px; }
     .color-btn {
       width: 28px;
       height: 28px;
       border-radius: 4px;
-      border: 2px solid #2e2b27;
+      border: 2px solid rgba(255, 255, 255, 0.45);
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
-
-    .color-btn:hover {
-      transform: translateY(-2px);
-      border-color: #e5ba73;
-    }
-
-    .color-btn.active {
-      border-color: #ffffff;
-      box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
-      transform: scale(1.08);
-    }
-
+    .color-btn:hover { transform: translateY(-2px); border-color: #ffffff; }
+    .color-btn.active { border-color: #ffffff; box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); transform: scale(1.08); }
     .color-btn-red { background-color: #dc3545; }
     .color-btn-yellow { background-color: #ffc107; }
     .color-btn-green { background-color: #28a745; }
     .color-btn-blue { background-color: #007bff; }
 
-    /* PULSANTI TOGGLE */
-    .btn-toggle-desc {
-      width: 100%;
-      background: linear-gradient(135deg, #d4a373 0%, #b8860b 100%);
-      color: #000000;
-      border: 1px solid #e5ba73;
-      padding: 10px;
-      font-size: 0.88rem;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 5px 0;
-      box-shadow: 0 4px 10px rgba(212, 163, 115, 0.3);
-      transition: all 0.2s ease-in-out;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    /* MENU SU MISURA DI XMAS BALL: spazi e caratteri del pannello standard, ma, come Promo Multibrand, colori propri
+       per distinguerlo: fondo rosso natalizio come la palla del cartello, scritte bianche, campi in un rosso più chiaro
+       bordati di bianco, elenchi dei menu rosso scuro con la voce scelta oro. */
+    /* Oro natalizio elegante (oro antico satinato): pieno per linee divisorie, pallini dei menu BRAND e voce scelta;
+       sfumatura morbida per i pulsanti (+ AGGIUNGI SCONTISTICA e il cartello scelto nel selettore), con la scritta bordeaux scuro. */
+    .controls {
+      background: #9e1b22; border-color: #9e1b22; color: #ffffff;
+      --xmas-gold: #d6b25e;
+      --xmas-gold-shine: linear-gradient(180deg, #ead08f 0%, #d6b25e 50%, #b8913f 100%);
+      --xmas-gold-text: #4a0d10;
+      --brand-dot-color: var(--xmas-gold);
+      --divider-color: var(--xmas-gold);
     }
-
-    .btn-toggle-desc:hover {
-      background: linear-gradient(135deg, #e5ba73 0%, #d4a373 100%);
-      box-shadow: 0 6px 14px rgba(212, 163, 115, 0.5);
-      transform: translateY(-1px);
+    /* titolo della pagina (layout speciale): bianco, con la linea sotto come negli altri menu, tra due stelline gialle come quelle dei brand prioritari */
+    .controls h2 { color: #ffffff; border-bottom-color: var(--divider-color); margin-bottom: 1.6rem; }   /* sotto la linea del titolo lo stesso spazio che c'è tra una sezione e l'altra (1,6rem), come in Promo Multibrand */
+    .controls h2::before { content: '★ '; color: #f2b705; }
+    .controls h2::after { content: ' ★'; color: #f2b705; }
+    .controls .section-title { color: #ffffff; border-bottom-color: var(--divider-color); }
+    .controls .form-group label { color: #f6d9d4; }
+    .controls .form-group .section-label { color: #ffffff; }
+    .controls .form-group input,
+    .controls .form-group select { background: #b8323a; border-color: #ffffff; color: #ffffff; }
+    .controls .form-group input::placeholder { color: rgba(255, 255, 255, 0.6); }
+    .controls .preset-select { background: #b8323a; border-color: #ffffff; }
+    .controls .form-group .preset-select select { background: transparent; }
+    .controls .preset-select::after { background: #87161c; border-left-color: #ffffff; color: #ffffff; }
+    .controls .form-group input:focus,
+    .controls .preset-select:focus-within,
+    .controls .input-affix:focus-within { border-color: #ffffff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6); }
+    .controls .form-group select option,
+    .controls .form-group select optgroup { background: #7d141a; color: #ffffff; }
+    .controls .form-group select option.priority-brand-option { background: #87161c; color: var(--xmas-gold); font-weight: bold; }
+    @supports (appearance: base-select) {
+      .controls .form-group select::picker(select) { background: #7d141a; color: #ffffff; border-color: #ffffff; }
+      .controls .form-group select::picker(select)::-webkit-scrollbar-track { background: #6a1016; border-left-color: #ffffff; }
+      .controls .form-group select option:hover,
+      .controls .form-group select option:focus-visible { background: #9e1b22; }
+      .controls .form-group select option:checked { color: var(--brand-dot-color); }   /* voce scelta oro, come i pallini dei menu BRAND */
     }
-
-    .btn-toggle-desc.active {
-      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-      color: #ffffff;
-      border-color: #28a745;
-      box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4);
+    /* selettore CARTELLO SUPERIORE / INFERIORE: bordo oro, il pulsante scelto in oro lucido con la scritta rosso scuro */
+    .controls .mode-switch { background: #7d141a; border-color: var(--xmas-gold); }
+    .controls .mode-switch button { color: #f6d9d4; }
+    .controls .mode-switch button:hover:not(.active):not(:disabled) { color: #ffffff; }
+    .controls .mode-switch button.active { background: var(--xmas-gold-shine); color: var(--xmas-gold-text); }
+    /* + AGGIUNGI SCONTISTICA: oro lucido con la scritta rosso scuro, acceso verde come negli altri menu */
+    .controls .btn-toggle { background: var(--xmas-gold-shine); border-color: var(--xmas-gold); color: var(--xmas-gold-text); }
+    .controls .btn-toggle.active { background: #5f8a55; border-color: #5f8a55; color: #ffffff; }
+    /* COPIA SU ALTRO CARTELLO */
+    .controls .check-row { color: #ffffff; border-bottom-color: var(--divider-color); }
+    .controls .check-row input[type="checkbox"] { border-color: #ffffff; background-color: #b8323a; }
+    .controls .check-row input[type="checkbox"]:checked {
+      border-color: #ffffff;
+      background-color: #ffffff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5.2 4 7.6 8.6 2.6' fill='none' stroke='%239e1b22' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     }
-
-    .btn-copy {
-      width: 100%;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 8px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 10px 0;
-    }
-
-    .btn-copy:hover { background-color: #218838; }
-
-    /* PULSANTI STAMPA */
-    .btn-print {
-      width: 100%;
-      background-color: #e00000;
-      color: #ffffff;
-      border: 1px solid #b30000;
-      padding: 10px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-print:hover { background-color: #cc0000; }
-
-    .btn-print-single {
-      width: 100%;
-      background-color: #0056b3;
-      color: #ffffff;
-      border: 1px solid #004085;
-      padding: 10px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: background-color 0.2s;
-    }
-
-    .btn-print-single:hover { background-color: #003d80; }
+    .controls .check-row input[type="checkbox"]:focus-visible { box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6); }
+    /* campi con € e % fissi, frecce dello sconto */
+    .controls .input-affix { background: #b8323a; border-color: #ffffff; }
+    .controls .form-group .input-affix input { background: transparent; }
+    .controls .input-affix .affix { color: #ffffff; }
+    .controls .input-affix .stepper { border-left-color: #ffffff; }
+    .controls .input-affix .stepper button { background: #87161c; color: #ffffff; border-bottom-color: #ffffff; }
+    .controls .input-affix .stepper button:last-child { border-bottom: none; }
+    /* tasto di stampa: rosso più scuro del menu, bordato di bianco */
+    .controls .btn-print { background: #5e0b10; border-color: #ffffff; color: #ffffff; }
+    .controls .btn-print:hover { background: #470809; }
 
     /* FOGLIO A4 */
     .print-sheet {
@@ -516,27 +398,8 @@
       transform: scale(1.1);
     }
 
-    /* MEDIA QUERY PER DISPOSITIVI MOBILI / SCHERMI STRETTI */
-    @media (max-width: 1200px) {
-      .app-container {
-        flex-direction: row;
-        align-items: initial;
-        justify-content: center;
-        gap: 20px;
-        padding: 20px;
-      }
-
-      .sidebar {
-        width: 340px;
-        flex-shrink: 1;
-      }
-
-      .print-sheet {
-        transform: none;
-        margin: 0;
-        flex-shrink: 1;
-        min-width: 0;
-      }
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
     }
 
     @page {
@@ -557,15 +420,7 @@
         print-color-adjust: exact !important;
       }
 
-      body::before { display: none !important; }
-
       .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
-
-      .app-container {
-        display: block !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
 
       .print-sheet {
         box-shadow: none;
@@ -606,347 +461,360 @@
     </a>
   </div>
 
-  <div class="app-container">
-    <div class="sidebar">
-      <!-- PANNELLO PRINCIPALE -->
-      <div class="controls">
-        <h2>XMAS CARDS</h2>
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Xmas Ball</h2>
 
-        <!-- PULSANTE TOGGLE SCONTISTICA -->
-        <button type="button" class="btn-toggle-desc" id="btnToggleDiscount" onclick="toggleDiscount()">
-          + AGGIUNGI SCONTISTICA
-        </button>
-
-        <div class="section-title">CARTELLO 1 (Superiore)</div>
-        
-        <!-- SELETTORE COLORE SFONDO CARTELLO 1 -->
-        <div class="form-group">
-          <label>Colore Sfondo / Palla 1:</label>
-          <div class="color-picker-group" id="colorGroup1">
-            <button type="button" class="color-btn color-btn-red active" onclick="setCardBackground(1, 'red')" title="Rosso"></button>
-            <button type="button" class="color-btn color-btn-yellow" onclick="setCardBackground(1, 'yellow')" title="Giallo"></button>
-            <button type="button" class="color-btn color-btn-green" onclick="setCardBackground(1, 'green')" title="Verde"></button>
-            <button type="button" class="color-btn color-btn-blue" onclick="setCardBackground(1, 'blue')" title="Blu"></button>
-          </div>
+      <!-- Menu su misura: invece dei quattro blocchi standard, selettore e + AGGIUNGI SCONTISTICA, poi due sezioni con
+           la spaziatura di Promo Multibrand: PALLA DI NATALE con tutto il cartello (colore, brand, prezzi, COPIA SU ALTRO
+           CARTELLO) e IMPOSTAZIONI STAMPA. -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
+          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
+          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
         </div>
 
-        <div class="form-group">
-          <label>Brand Ufficiale 1:</label>
-          <select id="brandSelect1" onchange="onOfficialBrandChange(1)"></select>
-        </div>
-
-        <!-- CAMPI SCONTISTICA SEPARATI PER CARTELLO 1 -->
-        <div class="form-group" id="discountGroup1" style="display: none;">
-          <div style="display: flex; gap: 8px;">
-            <div style="flex: 1;">
-              <label style="color: #fae322;">Prezzo Originario</label>
-              <input type="text" id="pOrig1" value="59,80" placeholder="Es. 59,80" oninput="updateCards()">
-            </div>
-            <div style="flex: 1;">
-              <label style="color: #fae322;">Scontistica %</label>
-              <input type="text" id="pDisc1" value="-50" placeholder="Es. -50" oninput="updateCards()">
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Prezzo Finale:</label>
-          <input type="text" id="price1" value="29,90" placeholder="Es. 29,90" oninput="updateCards()">
-        </div>
-
-        <button class="btn-copy" id="btnCopy" onclick="copyCard1ToCard2()">📋 COPIA CARTELLO 1 ➔ CARTELLO 2</button>
-
-        <div id="sectionCard2">
-          <div class="section-title">CARTELLO 2 (Inferiore)</div>
-          
-          <!-- SELETTORE COLORE SFONDO CARTELLO 2 -->
-          <div class="form-group">
-            <label>Colore Sfondo / Palla 2:</label>
-            <div class="color-picker-group" id="colorGroup2">
-              <button type="button" class="color-btn color-btn-red active" onclick="setCardBackground(2, 'red')" title="Rosso"></button>
-              <button type="button" class="color-btn color-btn-yellow" onclick="setCardBackground(2, 'yellow')" title="Giallo"></button>
-              <button type="button" class="color-btn color-btn-green" onclick="setCardBackground(2, 'green')" title="Verde"></button>
-              <button type="button" class="color-btn color-btn-blue" onclick="setCardBackground(2, 'blue')" title="Blu"></button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Brand Ufficiale 2:</label>
-            <select id="brandSelect2" onchange="onOfficialBrandChange(2)"></select>
-          </div>
-
-          <!-- CAMPI SCONTISTICA SEPARATI PER CARTELLO 2 -->
-          <div class="form-group" id="discountGroup2" style="display: none;">
-            <div style="display: flex; gap: 8px;">
-              <div style="flex: 1;">
-                <label style="color: #fae322;">Prezzo Originario</label>
-                <input type="text" id="pOrig2" value="59,80" placeholder="Es. 59,80" oninput="updateCards()">
-              </div>
-              <div style="flex: 1;">
-                <label style="color: #fae322;">Scontistica %</label>
-                <input type="text" id="pDisc2" value="-50" placeholder="Es. -50" oninput="updateCards()">
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Prezzo Finale:</label>
-            <input type="text" id="price2" value="29,90" placeholder="Es. 29,90" oninput="updateCards()">
-          </div>
-        </div>
-
-        <div class="section-title">IMPOSTAZIONI STAMPA</div>
-        <div class="form-group">
-          <label>Modalità Cartelli da Stampare:</label>
-          <select id="modeSelect" onchange="toggleCardMode()">
-            <option value="2">2 Cartelli (Foglio Intero A4)</option>
-            <option value="1">1 Solo Cartello (Superiore)</option>
-          </select>
-        </div>
-
-        <button class="btn-print" onclick="printSheet(2)">🖨️ Stampa 2 Cartelli (A4)</button>
-        <button class="btn-print-single" onclick="printSheet(1)">🖨️ Stampa SOLO 1 Cartello</button>
+        <button type="button" class="btn-toggle" id="discountBtn" aria-pressed="false" onclick="toggleDiscount()">+ AGGIUNGI SCONTISTICA</button>
       </div>
 
-      <!-- PANNELLO LOGHI PERSONALIZZATI -->
-      <div class="controls">
-        <h2>LOGHI PERSONALIZZATI</h2>
-
+      <!-- Sezione PALLA DI NATALE -->
+      <div class="panel-block">
+        <div class="section-title">Palla di Natale</div>
         <div class="form-group">
-          <label style="color: #e5ba73;">★ Logo Personalizzato 1 (Superiore):</label>
-          <select id="customBrandSelect1" class="custom-select" onchange="onCustomBrandChange(1)">
-            <option value="">-- Nessun Logo Personalizzato --</option>
-          </select>
+          <label id="colorLabel">Colore Palla</label>
+          <div class="color-picker-group" id="colorGroup" role="group" aria-labelledby="colorLabel">
+            <button type="button" class="color-btn color-btn-red active" data-color="red" onclick="setBallColor('red')" title="Rosso" aria-label="Rosso"></button>
+            <button type="button" class="color-btn color-btn-yellow" data-color="yellow" onclick="setBallColor('yellow')" title="Giallo" aria-label="Giallo"></button>
+            <button type="button" class="color-btn color-btn-green" data-color="green" onclick="setBallColor('green')" title="Verde" aria-label="Verde"></button>
+            <button type="button" class="color-btn color-btn-blue" data-color="blue" onclick="setBallColor('blue')" title="Blu" aria-label="Blu"></button>
+          </div>
         </div>
 
         <div class="form-group">
-          <label style="color: #e5ba73;">★ Logo Personalizzato 2 (Inferiore):</label>
-          <select id="customBrandSelect2" class="custom-select" onchange="onCustomBrandChange(2)">
-            <option value="">-- Nessun Logo Personalizzato --</option>
-          </select>
+          <label class="section-label" for="brandSelect">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
+          </div>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" id="origGroup" hidden>
+            <label for="priceOrig">Prezzo Originario</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input type="text" id="priceOrig" inputmode="decimal" placeholder="59,80" oninput="onPriceInput(this, 'orig')" onblur="onPriceBlur(this, 'orig')">
+            </div>
+          </div>
+          <div class="form-group" id="discountGroup" hidden>
+            <label for="discount">Sconto</label>
+            <div class="input-affix">
+              <input type="number" id="discount" min="1" max="99" placeholder="50" oninput="onDiscountInput()">
+              <span class="affix">%</span>
+              <div class="stepper" id="discountStepper">
+                <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
+                <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="price">Prezzo Finale</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input type="text" id="price" inputmode="decimal" placeholder="29,90" oninput="onPriceInput(this, 'price')" onblur="onPriceBlur(this, 'price')">
+            </div>
+          </div>
+        </div>
+
+        <label class="check-row section-end" id="linkCardsRow" for="linkCards">
+          <span>COPIA SU ALTRO CARTELLO</span>
+          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
+        </label>
+      </div>
+
+      <!-- Sezione IMPOSTAZIONI STAMPA -->
+      <div class="panel-block">
+        <div class="section-title">Impostazioni stampa</div>
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1" style="background-image: url('assets/img/xmaslayout.png');">
+      <img class="xmas-gift-left" src="assets/img/tema_xmas.png" alt="Xmas Gift">
+      <img class="xmas-gift-right" src="assets/img/tema_xmas.png" alt="Xmas Gift">
+
+      <div class="xmas-ball-inner" id="ballInner1">
+        <div class="brand-slot">
+          <img id="cardLogo1" src="" alt="Brand Logo 1">
+        </div>
+        <div class="discount-top-row" id="discountTopRow1">
+          <span class="p-orig" id="pOrigDisplay1">€ 59,80</span>
+          <span class="p-disc" id="pDiscDisplay1">-50%</span>
+        </div>
+        <div class="euro-label">EURO</div>
+        <div class="price-container">
+          <span class="price-value" id="priceValue1">29,90</span>
+          <span class="euro-small">EURO</span>
         </div>
       </div>
     </div>
 
-    <div class="print-sheet double-mode" id="printSheet">
-      <!-- CARTELLO 1 -->
-      <div class="card" id="card1" style="background-image: url('assets/img/xmaslayout.png');">
-        <img class="xmas-gift-left" src="assets/img/tema_xmas.png" alt="Xmas Gift">
-        <img class="xmas-gift-right" src="assets/img/tema_xmas.png" alt="Xmas Gift">
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
 
-        <div class="xmas-ball-inner">
-          <div class="brand-slot">
-            <img id="cardLogo1" src="" alt="Brand Logo 1">
-          </div>
-          <div class="discount-top-row" id="discountTopRow1">
-            <span class="p-orig" id="pOrigDisplay1">€ 59,80</span>
-            <span class="p-disc" id="pDiscDisplay1">-50%</span>
-          </div>
-          <div class="euro-label">EURO</div>
-          <div class="price-container">
-            <span class="price-value" id="priceValue1">29,90</span>
-            <span class="euro-small">EURO</span>
-          </div>
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2" style="background-image: url('assets/img/xmaslayout.png');">
+      <img class="xmas-gift-left" src="assets/img/tema_xmas.png" alt="Xmas Gift">
+      <img class="xmas-gift-right" src="assets/img/tema_xmas.png" alt="Xmas Gift">
+
+      <div class="xmas-ball-inner" id="ballInner2">
+        <div class="brand-slot">
+          <img id="cardLogo2" src="" alt="Brand Logo 2">
         </div>
-      </div>
-
-      <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
-      <div class="cut-line"></div>
-
-      <!-- CARTELLO 2 -->
-      <div class="card" id="card2" style="background-image: url('assets/img/xmaslayout.png');">
-        <img class="xmas-gift-left" src="assets/img/tema_xmas.png" alt="Xmas Gift">
-        <img class="xmas-gift-right" src="assets/img/tema_xmas.png" alt="Xmas Gift">
-
-        <div class="xmas-ball-inner">
-          <div class="brand-slot">
-            <img id="cardLogo2" src="" alt="Brand Logo 2">
-          </div>
-          <div class="discount-top-row" id="discountTopRow2">
-            <span class="p-orig" id="pOrigDisplay2">€ 59,80</span>
-            <span class="p-disc" id="pDiscDisplay2">-50%</span>
-          </div>
-          <div class="euro-label">EURO</div>
-          <div class="price-container">
-            <span class="price-value" id="priceValue2">29,90</span>
-            <span class="euro-small">EURO</span>
-          </div>
+        <div class="discount-top-row" id="discountTopRow2">
+          <span class="p-orig" id="pOrigDisplay2">€ 59,80</span>
+          <span class="p-disc" id="pDiscDisplay2">-50%</span>
+        </div>
+        <div class="euro-label">EURO</div>
+        <div class="price-container">
+          <span class="price-value" id="priceValue2">29,90</span>
+          <span class="euro-small">EURO</span>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    let isDiscountActive = false;
-    const LOGO_PATH = "assets/logos/";
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
-    const PLACEHOLDER_TEXT = "🔴 ━━━  𝐒𝐄𝐋𝐄𝐙𝐈𝐎𝐍𝐀 𝐁𝐑𝐀𝐍𝐃  ━━━ 🔴";
+    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
 
-    const backgroundImages = {
-      red: 'assets/img/xmaslayout.png',
-      yellow: 'assets/img/xmaslayout_yellow.png',
-      green: 'assets/img/xmaslayout_green.png',
-      blue: 'assets/img/xmaslayout_blu.png'
+    // Sfondo del cartello (palla) per colore; con la palla gialla barra e sconto diventano rossi.
+    const BALL_COLORS = {
+      red: { image: 'assets/img/xmaslayout.png', accent: '#fae322' },
+      yellow: { image: 'assets/img/xmaslayout_yellow.png', accent: '#dc3545' },
+      green: { image: 'assets/img/xmaslayout_green.png', accent: '#fae322' },
+      blue: { image: 'assets/img/xmaslayout_blu.png', accent: '#fae322' }
     };
 
-    function setCardBackground(cardIndex, colorKey) {
-      const imgPath = backgroundImages[colorKey];
-      const card = document.getElementById('card' + cardIndex);
+    // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
+    function createCardState() {
+      return {
+        color: 'red',                        // colore della palla
+        brand: '', customBrand: '',          // logo nella palla: file ufficiale o logo personalizzato (data URL)
+        withDiscount: false,                 // + AGGIUNGI SCONTISTICA: prezzo originario e sconto sopra il prezzo
+        orig: '59,80', disc: '50',
+        price: '29,90'
+      };
+    }
 
-      card.style.backgroundImage = `url('${imgPath}')`;
+    const cards = { 1: createCardState(), 2: createCardState() };
+    let currentCard = 1;
+    let sheetMode = 'double';
+    let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
 
-      // Gestione dinamica dei colori di sbarramento e aliquota per il cartello specifico
-      if (colorKey === 'yellow') {
-        card.style.setProperty('--strike-bar-color', '#dc3545'); // Rosso
-        card.style.setProperty('--disc-text-color', '#dc3545');   // Rosso
-      } else {
-        card.style.setProperty('--strike-bar-color', '#fae322'); // Giallo predefinito
-        card.style.setProperty('--disc-text-color', '#fae322');   // Giallo predefinito
-      }
-
-      // Gestione stato attivo dei quadratini per il singolo cartello
-      const colorGroup = document.getElementById('colorGroup' + cardIndex);
-      const buttons = colorGroup.querySelectorAll('.color-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-      
-      // Trova il bottone specifico cliccato all'interno del gruppo
-      const activeBtn = colorGroup.querySelector(`.color-btn-${colorKey}`);
-      if (activeBtn) {
-        activeBtn.classList.add('active');
-      }
+    // Con la casella spuntata (e il foglio intero) ogni modifica vale per tutti e due i cartelli.
+    function setField(field, value) {
+      const targets = linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+      targets.forEach(cardIndex => { cards[cardIndex][field] = value; });
     }
 
     function cleanBrandName(filename) {
       return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
     }
 
-    function toggleDiscount() {
-      isDiscountActive = !isDiscountActive;
-      const btn = document.getElementById('btnToggleDiscount');
-      const discountGroup1 = document.getElementById('discountGroup1');
-      const discountGroup2 = document.getElementById('discountGroup2');
-      const card1 = document.getElementById('card1');
-      const card2 = document.getElementById('card2');
-
-      if (isDiscountActive) {
-        btn.classList.add('active');
-        btn.innerHTML = "✓ SCONTISTICA ATTIVA";
-        discountGroup1.style.display = "block";
-        discountGroup2.style.display = "block";
-        card1.classList.add('has-discount');
-        card2.classList.add('has-discount');
-      } else {
-        btn.classList.remove('active');
-        btn.innerHTML = "+ AGGIUNGI SCONTISTICA";
-        discountGroup1.style.display = "none";
-        discountGroup2.style.display = "none";
-        card1.classList.remove('has-discount');
-        card2.classList.remove('has-discount');
+    function readCustomLogos() {
+      try {
+        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personalizzati fallita.', error);
+        return [];
       }
-      updateCards();
+    }
+
+    function addPlaceholder(select, text) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = text;
+      select.replaceChildren(option);
     }
 
     function loadLocalLogos() {
-      const select1 = document.getElementById('brandSelect1');
-      const select2 = document.getElementById('brandSelect2');
-
-      select1.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
-      select2.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
-
-      if (typeof LOGO_FILES !== 'undefined' && typeof getSortedLogoFiles === 'function') {
-        const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-
-        priorityFiles.forEach(fileName => {
-          appendBrandOption(select1, fileName, cleanBrandName(fileName), true);
-          appendBrandOption(select2, fileName, cleanBrandName(fileName), true);
-        });
-
-        remainingFiles.forEach(fileName => {
-          appendBrandOption(select1, fileName, cleanBrandName(fileName), false);
-          appendBrandOption(select2, fileName, cleanBrandName(fileName), false);
-        });
-      }
-
-      loadCustomLogosDropdown();
-      updateCards();
-    }
-
-    function loadCustomLogosDropdown() {
-      const cSelect1 = document.getElementById('customBrandSelect1');
-      const cSelect2 = document.getElementById('customBrandSelect2');
-      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-
-      cSelect1.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
-      cSelect2.innerHTML = `<option value="">-- Nessun Logo Personalizzato --</option>`;
-
-      customLogos.forEach(item => {
-        const opt1 = document.createElement('option');
-        opt1.value = item.data;
-        opt1.textContent = "★ " + item.name;
-        cSelect1.appendChild(opt1);
-
-        const opt2 = document.createElement('option');
-        opt2.value = item.data;
-        opt2.textContent = "★ " + item.name;
-        cSelect2.appendChild(opt2);
+      const select = document.getElementById('brandSelect');
+      addPlaceholder(select, '— Seleziona Brand —');
+      select.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
+      // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
+      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+      [...priorityFiles, ...remainingFiles].forEach(fileName => {
+        appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
       });
+
+      const customSelect = document.getElementById('customBrandSelect');
+      addPlaceholder(customSelect, '-- Seleziona Logo Personalizzato --');
+      readCustomLogos().forEach(logo => {
+        const option = document.createElement('option');
+        option.value = logo.data;
+        option.textContent = '★ ' + logo.name;
+        customSelect.appendChild(option);
+      });
+
+      syncPanel();
+      renderCards();
     }
 
-    function onOfficialBrandChange(cardIndex) {
-      document.getElementById('customBrandSelect' + cardIndex).value = "";
-      updateCards();
+    // Scegliere un brand ufficiale azzera il logo personalizzato, e viceversa.
+    function onOfficialBrandChange() {
+      setField('brand', document.getElementById('brandSelect').value);
+      setField('customBrand', '');
+      document.getElementById('customBrandSelect').value = '';
+      renderCards();
     }
 
-    function onCustomBrandChange(cardIndex) {
-      document.getElementById('brandSelect' + cardIndex).value = "";
-      updateCards();
+    function onCustomBrandChange() {
+      setField('customBrand', document.getElementById('customBrandSelect').value);
+      setField('brand', '');
+      document.getElementById('brandSelect').value = '';
+      renderCards();
     }
 
-    function copyCard1ToCard2() {
-      document.getElementById('brandSelect2').value = document.getElementById('brandSelect1').value;
-      document.getElementById('customBrandSelect2').value = document.getElementById('customBrandSelect1').value;
-      document.getElementById('pOrig2').value = document.getElementById('pOrig1').value;
-      document.getElementById('pDisc2').value = document.getElementById('pDisc1').value;
-      document.getElementById('price2').value = document.getElementById('price1').value;
-      
-      // Copia anche il colore dello sfondo dal cartello 1 al cartello 2
-      const activeBtnCard1 = document.querySelector('#colorGroup1 .color-btn.active');
-      if (activeBtnCard1) {
-        // Estrai il colore dalla classe (es. color-btn-red -> red)
-        const colorClass = Array.from(activeBtnCard1.classList).find(c => c.startsWith('color-btn-') && c !== 'color-btn');
-        if (colorClass) {
-          const colorKey = colorClass.replace('color-btn-', '');
-          setCardBackground(2, colorKey);
-        }
+    function onFieldInput(field, value) {
+      setField(field, value);
+      renderCards();
+    }
+
+    // Prezzi: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
+    // (49 → 49,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
+    function formatPriceValue(value) {
+      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
+      if (!/\d/.test(cleaned)) return '';
+      const [whole, ...rest] = cleaned.split(',');
+      const decimals = rest.join('').replace(/\D/g, '');
+      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
+    }
+
+    function onPriceInput(input, field) {
+      input.value = input.value.replace(/[^\d,.]/g, '');
+      onFieldInput(field, input.value);
+    }
+
+    function onPriceBlur(input, field) {
+      input.value = formatPriceValue(input.value);
+      onFieldInput(field, input.value);
+    }
+
+    // Sconto: un numero da 1 a 99, con il % fisso nel campo; sul cartello diventa -50%.
+    function onDiscountInput() {
+      const digits = document.getElementById('discount').value.replace(/\D/g, '').slice(0, 2);
+      onFieldInput('disc', digits);
+    }
+
+    function stepDiscount(delta) {
+      const input = document.getElementById('discount');
+      const current = parseInt(input.value, 10);
+      input.value = Math.min(99, Math.max(1, (Number.isNaN(current) ? 0 : current) + delta));
+      onDiscountInput();
+      input.focus();
+    }
+
+    function setActive(activeId, ids) {
+      ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+    }
+
+    function setToggle(id, isActive, onText, offText) {
+      const button = document.getElementById(id);
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.textContent = isActive ? onText : offText;
+    }
+
+    // Riporta nel pannello i valori del cartello scelto.
+    function syncPanel() {
+      const state = cards[currentCard];
+      document.getElementById('brandSelect').value = state.brand;
+      document.getElementById('customBrandSelect').value = state.customBrand;
+      document.getElementById('priceOrig').value = state.orig;
+      document.getElementById('discount').value = state.disc;
+      document.getElementById('price').value = state.price;
+
+      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
+      setToggle('discountBtn', state.withDiscount, 'SCONTISTICA ATTIVA', '+ AGGIUNGI SCONTISTICA');
+      document.querySelectorAll('#colorGroup .color-btn').forEach(button => {
+        const isActive = button.dataset.color === state.color;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
+      document.getElementById('origGroup').hidden = !state.withDiscount;
+      document.getElementById('discountGroup').hidden = !state.withDiscount;
+
+      document.getElementById('linkCards').checked = linkedCards;
+      document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    function selectCard(cardIndex) {
+      if (sheetMode === 'single' && cardIndex === 2) return;
+      currentCard = cardIndex;
+      syncPanel();
+    }
+
+    // Colore della palla del cartello in modifica.
+    function setBallColor(color) {
+      setField('color', color);
+      syncPanel();
+      renderCards();
+    }
+
+    // + AGGIUNGI SCONTISTICA: sopra il prezzo compaiono prezzo originario e sconto, e EURO passa sotto il prezzo.
+    function toggleDiscount() {
+      setField('withDiscount', !cards[currentCard].withDiscount);
+      syncPanel();
+      renderCards();
+    }
+
+    // Spuntando la casella i valori del cartello in modifica vanno anche sull'altro;
+    // togliendo la spunta il cartello sovrascritto torna ai valori che aveva prima.
+    let overwrittenCard = null;   // { cardIndex, state } salvato alla spunta
+
+    function setLinkedCards(isLinked) {
+      linkedCards = isLinked;
+      if (isLinked) {
+        const otherCard = currentCard === 1 ? 2 : 1;
+        overwrittenCard = { cardIndex: otherCard, state: { ...cards[otherCard] } };
+        cards[otherCard] = { ...cards[currentCard] };
+      } else if (overwrittenCard) {
+        cards[overwrittenCard.cardIndex] = overwrittenCard.state;
+        overwrittenCard = null;
       }
-
-      updateCards();
+      renderCards();
+      syncPanel();
     }
 
-    function toggleCardMode() {
-      const count = document.getElementById('modeSelect').value;
-      const card2 = document.getElementById('card2');
-      const section2 = document.getElementById('sectionCard2');
-      const btnCopy = document.getElementById('btnCopy');
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore.
+    function setSheetMode(mode) {
+      sheetMode = mode;
+      const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
       const sheet = document.getElementById('printSheet');
-
-      if (count === "1") {
-        card2.classList.add('disabled');
-        section2.style.display = 'none';
-        btnCopy.style.display = 'none';
-        sheet.classList.remove('double-mode');
-      } else {
-        card2.classList.remove('disabled');
-        section2.style.display = 'block';
-        btnCopy.style.display = 'block';
-        sheet.classList.add('double-mode');
-      }
-    }
-
-    function printSheet(count) {
-      document.getElementById('modeSelect').value = count.toString();
-      toggleCardMode();
-      window.print();
+      document.getElementById('card2').classList.toggle('disabled', isSingle);
+      sheet.classList.toggle('double-mode', !isSingle);
+      document.getElementById('selectCard2').disabled = isSingle;
+      document.getElementById('sheetModeSelect').value = mode;
+      if (isSingle && currentCard === 2) currentCard = 1;
+      syncPanel();
     }
 
     /* SCALATURA DINAMICA FONT DEL PREZZO FINALE */
@@ -967,47 +835,55 @@
       priceEl.style.fontSize = fontSize;
     }
 
-    function updateCards() {
-      for (let i = 1; i <= 2; i++) {
-        // Prezzo Finale
-        const rawPrice = document.getElementById('price' + i).value.trim();
-        const priceValueEl = document.getElementById('priceValue' + i);
-        if (rawPrice) {
-          priceValueEl.innerText = rawPrice;
-          adjustPriceFontSize(priceValueEl, rawPrice);
-        } else {
-          priceValueEl.innerText = '';
-        }
+    function renderCard(cardIndex) {
+      const state = cards[cardIndex];
+      const card = document.getElementById('card' + cardIndex);
+      const ball = BALL_COLORS[state.color] || BALL_COLORS.red;
+      card.style.backgroundImage = `url('${ball.image}')`;
+      card.style.setProperty('--strike-bar-color', ball.accent);
+      card.style.setProperty('--disc-text-color', ball.accent);
+      card.classList.toggle('has-discount', state.withDiscount);
 
-        // Prezzo Originario
-        const rawOrig = document.getElementById('pOrig' + i).value.trim();
-        const pOrigDisplay = document.getElementById('pOrigDisplay' + i);
-        if (rawOrig) {
-          pOrigDisplay.innerText = rawOrig.includes('€') ? rawOrig : '€ ' + rawOrig;
-        } else {
-          pOrigDisplay.innerText = '';
-        }
+      const priceValue = document.getElementById('priceValue' + cardIndex);
+      priceValue.textContent = state.price;
+      adjustPriceFontSize(priceValue, state.price);
 
-        // Scontistica %
-        let rawDisc = document.getElementById('pDisc' + i).value.trim();
-        const pDiscDisplay = document.getElementById('pDiscDisplay' + i);
-        if (rawDisc) {
-          if (!rawDisc.endsWith('%')) {
-            rawDisc += '%';
-          }
-          pDiscDisplay.innerText = rawDisc;
-        } else {
-          pDiscDisplay.innerText = '';
-        }
+      document.getElementById('pOrigDisplay' + cardIndex).textContent = state.orig ? '€ ' + state.orig : '';
+      document.getElementById('pDiscDisplay' + cardIndex).textContent = state.disc ? '-' + state.disc + '%' : '';
 
-        // Loghi
-        const b = document.getElementById('brandSelect' + i).value;
-        const cb = document.getElementById('customBrandSelect' + i).value;
-        PrintLogoColors.setBrandLogoSrc('cardLogo' + i, cb, b, DEFAULT_LOGO, 'white');
-      }
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex, state.customBrand, state.brand, DEFAULT_LOGO, 'white');
+    }
+
+    function renderCards() {
+      renderCard(1);
+      renderCard(2);
     }
 
     window.onload = loadLocalLogos;
   </script>
+  <script src="assets/js/cursore.js?v=20261004"></script>
+  <script>
+    // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
+    const activeCard = () => document.getElementById('card' + currentCard);
+    const inActiveCardId = id => () => document.getElementById(id + currentCard);
+    const cardOf = target => target.closest('.card');
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: cardOf,
+      obstacles: target => cardOf(target).querySelectorAll('.xmas-gift-left, .xmas-gift-right, .brand-slot img, .discount-top-row span, .euro-label, .price-value'),
+      rules: [
+        { controls: '#selectCard1, #selectCard2', target: activeCard },
+        { controls: '#colorGroup', target: inActiveCardId('ballInner') },
+        { controls: '#discountBtn', target: () => cards[currentCard].withDiscount ? inActiveCardId('discountTopRow')() : inActiveCardId('priceValue')() },
+        { controls: '#brandSelect, #customBrandSelect', target: inActiveCardId('cardLogo') },
+        { controls: '#priceOrig', target: inActiveCardId('pOrigDisplay') },
+        { controls: '#discount, #discountStepper', target: inActiveCardId('pDiscDisplay') },
+        { controls: '#price', target: inActiveCardId('priceValue') }
+      ]
+    });
+  </script>
+  <script src="assets/js/strumenti-stampa.js?v=20261004"></script>
 </body>
 </html>
