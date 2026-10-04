@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Cartellini Promo</title>
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261004">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261004">
   <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261004">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
-  
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261004">
+
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
   <script src="assets/js/logos.js?v=20261004"></script>
   <script src="assets/js/print-logo-colors.js?v=20261004"></script>
@@ -22,7 +26,8 @@
     @font-face {
       font-family: 'Bodoni Std';
       src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
-      font-weight: italic;
+      font-weight: normal;
+      font-style: italic;
     }
 
     @font-face {
@@ -48,9 +53,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: auto; }
 
-    /* --- SIDEBAR ORIGINALE (COLORE ORO/SERIF) --- */
-    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
-    .brand-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 2px; color: #d4a373; margin-bottom: 1rem; text-align: center; font-weight: 700; }
+    /* --- SIDEBAR --- */
+    aside { width: 360px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 3rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    /* titolo come quello del pannello standard (Cinzel 600 oro, maiuscolo) */
+    .brand-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 1.5px; color: #d4a373; margin-bottom: 1rem; text-align: center; font-weight: 600; text-transform: uppercase; }
 
     .tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
     .tab-item { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; cursor: pointer; transition: all 0.2s; }
@@ -62,33 +68,28 @@
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
-    .form-group { margin-bottom: 0.8rem; }
-    .form-group label { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; }
-    .form-control { width: 100%; padding: 0.5rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-size: 0.82rem; outline: none; }
-    .form-control:focus { border-color: var(--gold); }
+    /* Il riquadro "Modifica Cartellino" segue il pannello standard (assets/css/pannello.css), diviso nei quattro
+       blocchi; qui solo ciò che è proprio dei cartellini. Come in TEBE il riquadro che comincia con un selettore ha
+       1rem sopra il selettore, e l'ultimo elemento (il tasto di stampa) non aggiunge spazio sotto. */
+    .editor-title + .panel-block > .mode-switch:first-child { margin-top: 1rem; }
+    .editor-section > .panel-block:last-child > :last-child { margin-bottom: 0; }
+    /* Nei cartellini i blocchi non hanno lo spazio in più dei cartelli: tra un blocco e l'altro c'è lo stesso spazio
+       che c'è tra i campi (0,65rem), così il menu resta compatto e semplice. */
+    .editor-section .panel-block + .panel-block { margin-top: 0; }
+    /* sotto il selettore PREZZO ORIGINARIO / DESCRIZIONE ARTICOLO lo stesso spazio che c'è sopra, tra la linea del titolo e il selettore (1rem) */
+    .editor-section .panel-block > .mode-switch:last-child { margin-bottom: 1rem; }
+    /* sotto il tasto di stampa lo stesso spazio che si vede in alto tra il bordo del riquadro e le lettere del titolo (20 px) */
+    #editorPanel { padding-bottom: 1.25rem; }
+    /* il tasto di stampa un poco più staccato dai campi (0,65rem + 0,35rem = 1rem) */
+    .editor-section .btn-print { margin-top: 0.35rem; }
 
-    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
-    select option.priority-brand-option {
-      background-color: #2e2b27;
-      color: #e5ba73;
-      font-weight: bold;
-    }
-    .currency-input-group { position: relative; }
-    .currency-input-group .currency-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #fff; font-weight: normal; font-size: 0.82rem; line-height: 1; pointer-events: none; }
-    .currency-input-group input { padding-left: 26px; }
+    /* Riga Prezzo Originario / Sconto: etichette su una riga sola, Sconto (due cifre) un poco più stretto */
+    .form-row .form-group label { white-space: nowrap; }
+    #origGroup { flex: 1.15; }
+    #discountGroup { flex: 0.85; }
 
-    .btn-print { width: 100%; padding: 0.75rem; background: var(--gold); color: #000; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 1.2rem; }
-    .btn-print:hover { background: var(--accent-hover); }
-    .btn-discount { width: 100%; padding: 0.75rem; background: transparent; color: var(--gold); font-weight: 700; border: 1px solid var(--gold); border-radius: 4px; cursor: pointer; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.7px; transition: all 0.2s; margin-bottom: 1.2rem; }
-    .btn-discount:hover, .btn-discount.active { background: var(--gold); color: #000; }
-
-    .custom-logos-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
-    .custom-logos-title { font-size: 0.75rem; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem; letter-spacing: 1px; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
-    .custom-logo-row { margin-bottom: 0.7rem; }
-    .custom-logo-row:last-child { margin-bottom: 0; }
-    .custom-logo-row label { display: block; font-size: 0.72rem; color: var(--gold); margin-bottom: 0.3rem; }
-    .custom-logo-select { width: 100%; padding: 0.5rem; background: #0a0908; border: 1px solid var(--gold); color: #f3d5a3; border-radius: 4px; font-size: 0.82rem; outline: none; }
-    .custom-logo-select:focus { box-shadow: 0 0 4px rgba(180, 139, 55, 0.5); }
+    /* Brand stagionali prioritari evidenziati nel menu BRAND */
+    .form-group select option.priority-brand-option { background-color: #2e2b27; color: #e5ba73; font-weight: bold; }
 
     /* --- PREVIEW MAIN --- */
     main { flex: 1; min-width: 0; padding: 1.5rem; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0a0908; -webkit-overflow-scrolling: touch; }
@@ -126,6 +127,7 @@
       height: 100%;
     }
     .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
+    .sheet-wrap { position: relative; flex-shrink: 0; }
 
     /* Brand Logo in alto (colore già applicato via canvas dal JS, vedi renderGrid) */
     .brand-box { height: 19mm; display: flex; align-items: center; justify-content: center; width: 100%; margin-top: 0.5mm; flex-shrink: 0; transform: translateY(-1mm); }
@@ -259,7 +261,7 @@
     .final-price {
       font-family: 'Bodoni Std', serif;
       font-weight: normal;
-      font-size: 38pt;
+      font-size: 42pt;
       color: #000;
       line-height: 0.95;
       letter-spacing: -0.04em;
@@ -269,6 +271,9 @@
     /* Logo Aziendale Rosso in basso */
     .card-footer-logo { height: 20mm; display: flex; align-items: center; justify-content: center; width: 100%; padding-bottom: 0.5mm; flex-shrink: 0; }
     .card-footer-logo img { max-height: 100%; max-width: 98%; object-fit: contain; }
+    /* logocartellini.png (oro, BLACK FRIDAY / BLACK WEEK) ha pochissimo margine interno rispetto a loghinored.png
+       (rosso): a parità di riquadro risulterebbe molto più grande e troppo vicino al bordo del cartellino */
+    .cartellino.is-black-event .card-footer-logo img { max-height: 82%; }
 
     /* NAVIGAZIONE */
     .app-close-btn {
@@ -352,111 +357,137 @@
     <div class="brand-title">CARTELLINI PROMO</div>
 
     <div class="tabs-grid" id="tabs-container"></div>
-    <button type="button" class="btn-discount" id="toggle-discount" onclick="toggleDiscount()">✨ + Aggiungi Aliquota Sconto</button>
-    <button type="button" class="btn-discount" id="toggle-description" onclick="toggleDescription()">+ INSERISCI DESCRIZIONE</button>
 
-    <div class="editor-section">
+    <div class="editor-section" id="editorPanel">
       <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
-      
-      <div class="form-group">
-        <label>Brand / Logo</label>
-        <select id="inp-brand" class="form-control" onchange="updateCurrentCard()"></select>
+
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div class="mode-switch" aria-label="Seleziona la modalità del cartellino">
+          <button type="button" id="modeOrig" class="active" onclick="setDescriptionMode(false)">PREZZO<br>ORIGINARIO</button>
+          <button type="button" id="modeDesc" onclick="setDescriptionMode(true)">DESCRIZIONE<br>ARTICOLO</button>
+        </div>
+        <button type="button" class="btn-toggle" id="discountBtn" aria-pressed="false" onclick="toggleDiscount()">+ AGGIUNGI SCONTISTICA</button>
       </div>
 
-      <div class="form-group">
-        <label>Prezzo Originario</label>
-        <div class="currency-input-group">
-          <span class="currency-prefix">€</span>
-          <input type="text" id="inp-orig" class="form-control" placeholder="99,00" oninput="updateCurrentCard()">
+      <!-- Blocco 2: brand (ufficiali e personalizzati) -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="brandSelect">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
+          </div>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
+          </div>
         </div>
       </div>
 
-      <div class="form-group" id="discount-rate-group" hidden>
-        <label>Aliquota Sconto</label>
-        <input type="text" id="inp-discount-rate" class="form-control" placeholder="-50%" oninput="formatDiscountInput(this); updateCurrentCard()">
-      </div>
+      <!-- Blocco 3: campi del cartellino (prezzo originario e sconto, o descrizione; fascia promozionale; prezzo finale) -->
+      <div class="panel-block">
+        <div class="form-row" id="origRow">
+          <div class="form-group" id="origGroup">
+            <label for="inp-orig">Prezzo Originario</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input type="text" id="inp-orig" inputmode="decimal" placeholder="99,00" oninput="onPriceInput(this, 'priceOrig')" onblur="onPriceBlur(this, 'priceOrig')">
+            </div>
+          </div>
+          <div class="form-group" id="discountGroup" hidden>
+            <label for="discountValue">Sconto</label>
+            <div class="input-affix">
+              <input type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="onDiscountInput()">
+              <span class="affix">%</span>
+              <div class="stepper" id="discountStepper">
+                <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
+                <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <div class="form-group" id="description-group" hidden>
-        <label>Articolo</label>
-        <select id="inp-description-article" class="form-control" onchange="updateCurrentCard()">
-          <option value="Bermuda">Bermuda</option>
-          <option value="Borsa">Borsa</option>
-          <option value="Blazer">Blazer</option>
-          <option value="Blusa">Blusa</option>
-          <option value="Camicia">Camicia</option>
-          <option value="Cappello">Cappello</option>
-          <option value="Foulard">Foulard</option>
-          <option value="Gilet">Gilet</option>
-          <option value="Giacca">Giacca</option>
-          <option value="Giubbino">Giubbino</option>
-          <option value="Gonna">Gonna</option>
-          <option value="Maglia">Maglia</option>
-          <option value="Pantalone">Pantalone</option>
-          <option value="Scarpe">Scarpe</option>
-          <option value="Sciarpa">Sciarpa</option>
-          <option value="Shorts">Shorts</option>
-          <option value="T-Shirt">T-Shirt</option>
-        </select>
-      </div>
-      <div class="form-group" id="description-custom-group" hidden>
-        <label>Testo libero</label>
-        <input type="text" id="inp-description-custom" class="form-control" placeholder="Inserisci testo personalizzato" oninput="updateCurrentCard()">
-      </div>
+        <div class="form-group" id="descriptionGroup" hidden>
+          <label class="section-label" for="descPreset">Articoli</label>
+          <div class="preset-select">
+            <select id="descPreset" onchange="applyDescPreset()">
+              <option value="">-- Seleziona un articolo --</option>
+              <option value="Bermuda">Bermuda</option>
+              <option value="Borsa">Borsa</option>
+              <option value="Blazer">Blazer</option>
+              <option value="Blusa">Blusa</option>
+              <option value="Camicia">Camicia</option>
+              <option value="Cappello">Cappello</option>
+              <option value="Foulard">Foulard</option>
+              <option value="Gilet">Gilet</option>
+              <option value="Giacca">Giacca</option>
+              <option value="Giubbino">Giubbino</option>
+              <option value="Gonna">Gonna</option>
+              <option value="Maglia">Maglia</option>
+              <option value="Pantalone">Pantalone</option>
+              <option value="Scarpe">Scarpe</option>
+              <option value="Sciarpa">Sciarpa</option>
+              <option value="Shorts">Shorts</option>
+              <option value="T-Shirt">T-Shirt</option>
+            </select>
+          </div>
+          <label for="inp-desc">Testo Libero</label>
+          <input type="text" id="inp-desc" placeholder="-- Testo Libero --" oninput="onFieldInput('desc', this.value)">
+        </div>
 
-      <div class="form-group">
-        <label>Stagionalità / Evento</label>
-        <select id="inp-sale-title" class="form-control" onchange="handleSaleTitleChange()">
-          <option value="">— LASCIA IL CAMPO VUOTO —</option>
-          <option value="SUMMER SALE">SUMMER SALE</option>
-          <option value="WINTER SALE">WINTER SALE</option>
-          <option value="SPECIAL SALE">SPECIAL SALE</option>
-          <option value="SPRING SALE">SPRING SALE</option>
-          <option value="BLACK FRIDAY">BLACK FRIDAY</option>
-          <option value="BLACK WEEK">BLACK WEEK</option>
-          <option value="LAST WEEK">LAST WEEK</option>
-          <option value="X-MAS SALE">X-MAS SALE</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label class="section-label" for="inp-sale-title">Stagionalità / Evento</label>
+          <div class="preset-select">
+            <select id="inp-sale-title" onchange="handleSaleTitleChange()">
+              <option value="">— LASCIA IL CAMPO VUOTO —</option>
+              <option value="SUMMER SALE">SUMMER SALE</option>
+              <option value="WINTER SALE">WINTER SALE</option>
+              <option value="SPECIAL SALE">SPECIAL SALE</option>
+              <option value="SPRING SALE">SPRING SALE</option>
+              <option value="BLACK FRIDAY">BLACK FRIDAY</option>
+              <option value="BLACK WEEK">BLACK WEEK</option>
+              <option value="LAST WEEK">LAST WEEK</option>
+              <option value="X-MAS SALE">X-MAS SALE</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label>Promozione</label>
-        <select id="inp-sale-sub" class="form-control" onchange="updateCurrentCard()">
-          <option value="">— LASCIA IL CAMPO VUOTO —</option>
-          <option value="50% + 50%">50% + 50%</option>
-          <option value="UP TO -70%">UP TO -70%</option>
-          <option value="EXTRA DISCOUNT">EXTRA DISCOUNT</option>
-          <option value="OUTLET PRICE">OUTLET PRICE</option>
-          <option value="FINAL PRICE">FINAL PRICE</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label class="section-label" for="promoPreset">Promozione</label>
+          <div class="preset-select">
+            <select id="promoPreset" onchange="applyPromoPreset()">
+              <option value="">— LASCIA IL CAMPO VUOTO —</option>
+              <option value="50% + 50%">50% + 50%</option>
+              <option value="UP TO -70%">UP TO -70%</option>
+              <option value="EXTRA DISCOUNT">EXTRA DISCOUNT</option>
+              <option value="OUTLET PRICE">OUTLET PRICE</option>
+              <option value="FINAL PRICE">FINAL PRICE</option>
+            </select>
+          </div>
+          <label for="inp-sale-sub">Testo Libero</label>
+          <input type="text" id="inp-sale-sub" placeholder="-- Testo Libero --" oninput="onFieldInput('saleSub', this.value)">
+        </div>
 
-      <div class="form-group">
-        <label>Oppure testo libero</label>
-        <input type="text" id="inp-sale-sub-custom" class="form-control" placeholder="Lascia vuoto per usare il menu" oninput="updateCurrentCard()">
-      </div>
-
-      <div class="form-group">
-        <label>Prezzo Finale</label>
-        <div class="currency-input-group">
-          <span class="currency-prefix">€</span>
-          <input type="text" id="inp-final" class="form-control" placeholder="150,00" oninput="updateCurrentCard()">
+        <div class="form-group">
+          <label for="inp-final">Prezzo Finale</label>
+          <div class="input-affix">
+            <span class="affix">€</span>
+            <input type="text" id="inp-final" inputmode="decimal" placeholder="150,00" oninput="onPriceInput(this, 'priceFinal')" onblur="onPriceBlur(this, 'priceFinal')">
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="custom-logos-box">
-      <div class="custom-logos-title">Loghi Personalizzati</div>
-      <div class="custom-logo-row">
-        <label for="inp-custom-logo" id="custom-logo-label">Logo Personalizzato Cartellino #1</label>
-        <select id="inp-custom-logo" class="custom-logo-select" onchange="applyCustomLogo()"></select>
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" onclick="window.print()">STAMPA FOGLIO A4</button>
       </div>
     </div>
-
-    <button class="btn-print" onclick="window.print()">🖨️ Stampa Foglio A4</button>
   </aside>
 
   <main>
-    <div class="a4-landscape" id="printable-grid"></div>
+    <div class="sheet-wrap">
+      <div class="a4-landscape" id="printable-grid"></div>
+    </div>
   </main>
 
   <script>
@@ -479,15 +510,17 @@
       return brand.includes('.') ? brand : `${brand}.png`;
     }
 
+    // Stato dei cartellini: priceOrig/sconto e desc sono mostrati in alternativa, secondo withDesc
+    // (PREZZO ORIGINARIO / DESCRIZIONE ARTICOLO); withDiscount accende la sola fascetta -XX% accanto al prezzo barrato.
     const cardsData = [
-      { id: 1, enabled: true, brand: 'DIXIE.png', customLogoUrl: '', priceOrig: '99,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '24,70', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 2, enabled: true, brand: 'PINKO.png', customLogoUrl: '', priceOrig: '350,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '150,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 3, enabled: true, brand: 'FELEPPA.png', customLogoUrl: '', priceOrig: '210,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '73,50', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 4, enabled: true, brand: 'GAELLE.png', customLogoUrl: '', priceOrig: '120,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '30,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 5, enabled: true, brand: 'WEILIZHENG.png', customLogoUrl: '', priceOrig: '180,00', discountRate: '-50%', saleTitle: 'SPECIAL SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '72,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 6, enabled: true, brand: 'HAVEONE.png', customLogoUrl: '', priceOrig: '89,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '22,25', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 7, enabled: true, brand: 'MEIMEIJ.png', customLogoUrl: '', priceOrig: '260,00', discountRate: '-50%', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '65,00', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' },
-      { id: 8, enabled: true, brand: 'TWINSET.png', customLogoUrl: '', priceOrig: '190,00', discountRate: '-50%', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', saleSubCustom: '', priceFinal: '47,50', showDiscount: false, showDescription: false, descriptionArticle: 'Giacca', descriptionText: '' }
+      { id: 1, enabled: true, brand: 'DIXIE.png', customLogoUrl: '', priceOrig: '99,00', withDiscount: false, sconto: '50', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '24,70', withDesc: false, desc: 'Giacca' },
+      { id: 2, enabled: true, brand: 'PINKO.png', customLogoUrl: '', priceOrig: '350,00', withDiscount: false, sconto: '50', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '150,00', withDesc: false, desc: 'Giacca' },
+      { id: 3, enabled: true, brand: 'FELEPPA.png', customLogoUrl: '', priceOrig: '210,00', withDiscount: false, sconto: '50', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', priceFinal: '73,50', withDesc: false, desc: 'Giacca' },
+      { id: 4, enabled: true, brand: 'GAELLE.png', customLogoUrl: '', priceOrig: '120,00', withDiscount: false, sconto: '50', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '30,00', withDesc: false, desc: 'Giacca' },
+      { id: 5, enabled: true, brand: 'WEILIZHENG.png', customLogoUrl: '', priceOrig: '180,00', withDiscount: false, sconto: '50', saleTitle: 'SPECIAL SALE', saleSub: '50% + 50%', priceFinal: '72,00', withDesc: false, desc: 'Giacca' },
+      { id: 6, enabled: true, brand: 'HAVEONE.png', customLogoUrl: '', priceOrig: '89,00', withDiscount: false, sconto: '50', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '22,25', withDesc: false, desc: 'Giacca' },
+      { id: 7, enabled: true, brand: 'MEIMEIJ.png', customLogoUrl: '', priceOrig: '260,00', withDiscount: false, sconto: '50', saleTitle: 'WINTER SALE', saleSub: '50% + 50%', priceFinal: '65,00', withDesc: false, desc: 'Giacca' },
+      { id: 8, enabled: true, brand: 'TWINSET.png', customLogoUrl: '', priceOrig: '190,00', withDiscount: false, sconto: '50', saleTitle: 'SUMMER SALE', saleSub: '50% + 50%', priceFinal: '47,50', withDesc: false, desc: 'Giacca' }
     ];
 
     let currentCardIdx = 0;
@@ -544,21 +577,21 @@
         el.innerHTML = `
           <div class="brand-box">${logoContent}</div>
           <div class="card-body-center">
-            ${card.showDescription ? `
+            ${card.withDesc ? `
               <div class="article-placeholder">
-                <div class="article-desc">${formatDescriptionText(card.descriptionText.trim() || card.descriptionArticle)}</div>
+                <div class="article-desc">${formatDescriptionText(card.desc)}</div>
               </div>
             ` : `
-              <div class="orig-price-row ${card.showDiscount ? 'has-discount' : ''}">
+              <div class="orig-price-row ${card.withDiscount ? 'has-discount' : ''}">
                 <div class="orig-price-box">
                   <span class="strike-line">€ ${card.priceOrig || '0,00'}</span>
                 </div>
-                ${card.showDiscount && card.discountRate ? `<span class="discount-rate">${card.discountRate}</span>` : ''}
+                ${card.withDiscount && card.sconto ? `<span class="discount-rate">-${card.sconto}%</span>` : ''}
               </div>
             `}
-            <div class="sale-banner-box ${['BLACK WEEK', 'BLACK FRIDAY'].includes(card.saleTitle) ? 'is-black-event' : ''}">
+            <div class="sale-banner-box ${isBlackEvent ? 'is-black-event' : ''}">
               ${card.saleTitle ? `<div class="sale-banner-title">${card.saleTitle}</div>` : ''}
-              ${card.saleSubCustom.trim() || card.saleSub ? `<div class="sale-banner-sub">${card.saleSubCustom.trim() || card.saleSub}</div>` : ''}
+              ${card.saleSub ? `<div class="sale-banner-sub">${card.saleSub}</div>` : ''}
             </div>
             <div class="final-price">€ ${card.priceFinal || '0,00'}</div>
           </div>
@@ -606,130 +639,195 @@
       });
     }
 
-    function populateLogoDropdowns() {
-      const brandSelect = document.getElementById('inp-brand');
+    function addPlaceholder(select, text) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = text;
+      select.replaceChildren(option);
+    }
 
-      if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
-        // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
-        const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-        brandSelect.innerHTML = [...priorityFiles, ...remainingFiles].map(file => {
-          const displayName = cleanBrandName(file);
-          return priorityFiles.includes(file)
-            ? `<option value="${file}" class="priority-brand-option">⭐ ${displayName}</option>`
-            : `<option value="${file}">${displayName}</option>`;
-        }).join('');
-      } else {
-        brandSelect.innerHTML = '<option value="">nessun logo caricato</option>';
+    function readCustomLogos() {
+      try {
+        const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personalizzati fallita.', error);
+        return [];
       }
-
-      const savedLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-      const customOptions = '<option value="">-- Nessun Logo Personalizzato --</option>' +
-        savedLogos.map((logo, index) => `<option value="${logo.data}">★ ${logo.name || 'Logo Custom #' + (index + 1)}</option>`).join('');
-      document.getElementById('inp-custom-logo').innerHTML = customOptions;
     }
 
-    function updateDescriptionButtonText(card) {
-      const toggleDescriptionBtn = document.getElementById('toggle-description');
-      toggleDescriptionBtn.textContent = card.showDescription ? '- RIMUOVI DESCRIZIONE' : '+ INSERISCI DESCRIZIONE';
+    // Menu BRAND come nelle altre pagine: "— Seleziona Brand —" con i pallini oro, brand prioritari per primi con la ★;
+    // sotto il menu dei loghi personalizzati.
+    function populateLogoDropdowns() {
+      const brandSelect = document.getElementById('brandSelect');
+      addPlaceholder(brandSelect, '— Seleziona Brand —');
+      brandSelect.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
+      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+      [...priorityFiles, ...remainingFiles].forEach(fileName => {
+        appendBrandOption(brandSelect, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
+      });
+
+      const customSelect = document.getElementById('customBrandSelect');
+      addPlaceholder(customSelect, '-- Seleziona Logo Personalizzato --');
+      readCustomLogos().forEach(logo => {
+        const option = document.createElement('option');
+        option.value = logo.data;
+        option.textContent = '★ ' + logo.name;
+        customSelect.appendChild(option);
+      });
     }
 
-    function updateDiscountButtonText(card) {
-      const toggleDiscountBtn = document.getElementById('toggle-discount');
-      toggleDiscountBtn.textContent = card.showDiscount ? '- RIMUOVI ALIQUOTA SCONTO' : '✨ + Aggiungi Aliquota Sconto';
+    function setToggle(id, isActive, onText, offText) {
+      const button = document.getElementById(id);
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+      button.textContent = isActive ? onText : offText;
     }
 
+    // Riporta nel pannello i valori del cartellino scelto con le linguette.
     function loadEditorData() {
       const card = cardsData[currentCardIdx];
-      document.getElementById('editor-header').innerText = `Modifica Cartellino #${card.id}`;
-      document.getElementById('custom-logo-label').innerText = `Logo Personalizzato Cartellino #${card.id}`;
-      
-      const matchedFile = getLogoFilename(card.brand);
-      document.getElementById('inp-brand').value = matchedFile;
+      document.getElementById('editor-header').textContent = `Modifica Cartellino #${card.id}`;
+
+      // con un logo personalizzato il menu BRAND resta su "— Seleziona Brand —" (il brand di prima resta salvato)
+      document.getElementById('brandSelect').value = card.customLogoUrl ? '' : getLogoFilename(card.brand);
+      document.getElementById('customBrandSelect').value = card.customLogoUrl || '';
 
       document.getElementById('inp-orig').value = card.priceOrig;
-      document.getElementById('inp-discount-rate').value = card.discountRate || '';
+      document.getElementById('discountValue').value = card.sconto;
+
+      document.getElementById('descPreset').value = '';
+      document.getElementById('inp-desc').value = card.desc;
+
       document.getElementById('inp-sale-title').value = card.saleTitle;
+      document.getElementById('promoPreset').value = '';
       document.getElementById('inp-sale-sub').value = card.saleSub;
-      document.getElementById('inp-sale-sub-custom').value = card.saleSubCustom || '';
+
       document.getElementById('inp-final').value = card.priceFinal;
-      document.getElementById('inp-description-article').value = card.descriptionArticle || 'Giacca';
-      document.getElementById('inp-description-custom').value = card.descriptionText || '';
-      document.getElementById('inp-custom-logo').value = card.customLogoUrl || '';
-      document.getElementById('discount-rate-group').hidden = !card.showDiscount;
-      document.getElementById('description-group').hidden = !card.showDescription;
-      document.getElementById('description-custom-group').hidden = !card.showDescription;
-      document.getElementById('toggle-discount').classList.toggle('active', card.showDiscount);
-      document.getElementById('toggle-description').classList.toggle('active', card.showDescription);
-      updateDiscountButtonText(card);
-      updateDescriptionButtonText(card);
+
+      syncMode();
     }
 
-    function updateCurrentCard() {
+    // PREZZO ORIGINARIO: prezzo barrato ed eventuale fascetta sconto; DESCRIZIONE ARTICOLO: il testo al loro posto.
+    function syncMode() {
       const card = cardsData[currentCardIdx];
-      card.brand = document.getElementById('inp-brand').value;
-      card.priceOrig = document.getElementById('inp-orig').value;
-      card.discountRate = document.getElementById('inp-discount-rate').value;
-      card.saleTitle = document.getElementById('inp-sale-title').value;
-      card.saleSub = document.getElementById('inp-sale-sub').value;
-      card.saleSubCustom = document.getElementById('inp-sale-sub-custom').value;
-      card.priceFinal = document.getElementById('inp-final').value;
-      card.descriptionArticle = document.getElementById('inp-description-article').value;
-      card.descriptionText = document.getElementById('inp-description-custom').value;
+      document.getElementById('modeOrig').classList.toggle('active', !card.withDesc);
+      document.getElementById('modeDesc').classList.toggle('active', card.withDesc);
+      document.getElementById('origRow').hidden = card.withDesc;
+      document.getElementById('descriptionGroup').hidden = !card.withDesc;
+      document.getElementById('discountBtn').hidden = card.withDesc;
+      document.getElementById('discountGroup').hidden = !card.withDiscount;
+      setToggle('discountBtn', card.withDiscount, 'SCONTISTICA ATTIVA', '+ AGGIUNGI SCONTISTICA');
+    }
 
+    function setDescriptionMode(isDesc) {
+      const card = cardsData[currentCardIdx];
+      card.withDesc = isDesc;
+      // passando a una modalità con i campi vuoti, valori di partenza come prima
+      if (isDesc && !card.desc) card.desc = 'Giacca';
+      if (!isDesc && !card.priceOrig) card.priceOrig = '99,00';
+      loadEditorData();
       renderGrid();
+    }
+
+    // + AGGIUNGI SCONTISTICA: accanto al prezzo originario barrato compare la fascetta -XX%.
+    function toggleDiscount() {
+      const card = cardsData[currentCardIdx];
+      card.withDiscount = !card.withDiscount;
+      if (card.withDiscount && !card.sconto) card.sconto = '50';
+      loadEditorData();
+      renderGrid();
+    }
+
+    function onFieldInput(field, value) {
+      cardsData[currentCardIdx][field] = value;
+      renderGrid();
+    }
+
+    // Scegliere un brand ufficiale toglie il logo personalizzato; scegliendo un logo personalizzato il brand di prima
+    // resta salvato e torna togliendo il logo personalizzato.
+    function onOfficialBrandChange() {
+      const card = cardsData[currentCardIdx];
+      card.brand = document.getElementById('brandSelect').value;
+      card.customLogoUrl = '';
+      document.getElementById('customBrandSelect').value = '';
+      renderGrid();
+    }
+
+    function onCustomBrandChange() {
+      const card = cardsData[currentCardIdx];
+      card.customLogoUrl = document.getElementById('customBrandSelect').value;
+      document.getElementById('brandSelect').value = card.customLogoUrl ? '' : getLogoFilename(card.brand);
+      renderGrid();
+    }
+
+    // L'articolo scelto riempie il Testo Libero, che resta modificabile a mano (come in TEBE).
+    function applyDescPreset() {
+      const preset = document.getElementById('descPreset').value;
+      if (!preset) return;
+      document.getElementById('inp-desc').value = preset;
+      onFieldInput('desc', preset);
+    }
+
+    // La promozione scelta riempie il Testo Libero della fascia colorata, che resta modificabile a mano.
+    function applyPromoPreset() {
+      const preset = document.getElementById('promoPreset').value;
+      if (!preset) return;
+      document.getElementById('inp-sale-sub').value = preset;
+      onFieldInput('saleSub', preset);
+    }
+
+    // Con BLACK FRIDAY / BLACK WEEK la fascia mostra solo il titolo, più grande: la Promozione si svuota.
+    function handleSaleTitleChange() {
+      const saleTitle = document.getElementById('inp-sale-title').value;
+      cardsData[currentCardIdx].saleTitle = saleTitle;
+      if (['BLACK WEEK', 'BLACK FRIDAY'].includes(saleTitle)) {
+        cardsData[currentCardIdx].saleSub = '';
+        document.getElementById('promoPreset').value = '';
+        document.getElementById('inp-sale-sub').value = '';
+      }
+      renderGrid();
+    }
+
+    // Prezzi: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
+    // (49 → 49,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
+    function formatPriceValue(value) {
+      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
+      if (!/\d/.test(cleaned)) return '';
+      const [whole, ...rest] = cleaned.split(',');
+      const decimals = rest.join('').replace(/\D/g, '');
+      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
+    }
+
+    function onPriceInput(input, field) {
+      input.value = input.value.replace(/[^\d,.]/g, '');
+      onFieldInput(field, input.value);
+    }
+
+    function onPriceBlur(input, field) {
+      input.value = formatPriceValue(input.value);
+      onFieldInput(field, input.value);
+    }
+
+    // Sconto: un numero da 1 a 99, con il % fisso nel campo; sul cartellino diventa -50%.
+    function onDiscountInput() {
+      const digits = document.getElementById('discountValue').value.replace(/\D/g, '').slice(0, 2);
+      onFieldInput('sconto', digits);
+    }
+
+    function stepDiscount(delta) {
+      const input = document.getElementById('discountValue');
+      const current = parseInt(input.value, 10);
+      input.value = Math.min(99, Math.max(1, (Number.isNaN(current) ? 0 : current) + delta));
+      onDiscountInput();
+      input.focus();
     }
 
     function formatDescriptionText(value) {
-      const text = value.trim();
+      const text = (value || '').trim();
       if (!text) return '';
       const normalized = text.toLowerCase();
       return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-    }
-
-    function formatDiscountInput(input) {
-      const value = input.value.replace(/[^\d,.-]/g, '');
-      if (!value) {
-        return;
-      }
-      input.value = `${value}%`;
-      input.setSelectionRange(value.length, value.length);
-    }
-
-    function handleSaleTitleChange() {
-      const saleTitle = document.getElementById('inp-sale-title').value;
-      if (['BLACK WEEK', 'BLACK FRIDAY'].includes(saleTitle)) {
-        document.getElementById('inp-sale-sub').value = '';
-        document.getElementById('inp-sale-sub-custom').value = '';
-      }
-      updateCurrentCard();
-    }
-
-    function toggleDiscount() {
-      const card = cardsData[currentCardIdx];
-      card.showDiscount = !card.showDiscount;
-      document.getElementById('discount-rate-group').hidden = !card.showDiscount;
-      document.getElementById('toggle-discount').classList.toggle('active', card.showDiscount);
-      updateDiscountButtonText(card);
-      renderGrid();
-    }
-
-    function toggleDescription() {
-      const card = cardsData[currentCardIdx];
-      card.showDescription = !card.showDescription;
-      document.getElementById('description-group').hidden = !card.showDescription;
-      document.getElementById('description-custom-group').hidden = !card.showDescription;
-      document.getElementById('toggle-description').classList.toggle('active', card.showDescription);
-      updateDescriptionButtonText(card);
-      if (card.showDescription && !card.descriptionText && !card.descriptionArticle) {
-        card.descriptionArticle = 'Giacca';
-      }
-      renderGrid();
-    }
-
-    function applyCustomLogo() {
-      const customUrl = document.getElementById('inp-custom-logo').value;
-      cardsData[currentCardIdx].customLogoUrl = customUrl;
-      renderGrid();
     }
 
     function toggleCardEnabled(index, enabled) {
@@ -749,7 +847,7 @@
              "@page { size: A4 landscape }" (parola chiave) e stampa in
              portrait di default: il foglio (282mm di larghezza) va quindi
              in overflow orizzontale e genera una seconda pagina fantasma
-             vuota. Il foglio 282x196mm rientra gia' perfettamente nell'area
+             vuota. Il foglio 282x196mm rientra già perfettamente nell'area
              stampabile di un A4 landscape (289x202mm con margine 4mm), per
              cui basta forzare l'orientamento corretto con dimensioni
              esplicite, senza scalare o tagliare nulla.
@@ -766,5 +864,33 @@
     init();
     applySafariPrintFix();
   </script>
+  <script src="assets/js/cursore.js?v=20261004"></script>
+  <script>
+    // Cursore (come in Cartellini Vetrina): la linguetta lo porta sopra il cartellino scelto, i campi del pannello
+    // sopra (o di lato) l'elemento del cartellino legato al campo in uso.
+    const currentCardView = () => document.getElementById(`card-view-${cardsData[currentCardIdx].id}`);
+    const inCurrentCard = selector => () => currentCardView()?.querySelector(selector);
+
+    Cursore.create({
+      panel: 'aside',
+      watch: '#printable-grid',
+      clip: 'main',
+      sideGap: 96 / 25.4 + 5,   // nei cartellini di lato basta 1 mm + 5 px
+      // di lato il cursore può uscire dal cartellino (restando sul foglio), purché non copra testi e loghi
+      scope: '#printable-grid',
+      obstacles: '#printable-grid .brand-box > *, #printable-grid .orig-price-box .strike-line, #printable-grid .discount-rate, #printable-grid .article-desc, #printable-grid .sale-banner-title, #printable-grid .sale-banner-sub, #printable-grid .final-price, #printable-grid .card-footer-logo img',
+      rules: [
+        { controls: '.tab-item', target: currentCardView, placement: 'above' },
+        { controls: '#modeDesc, #descPreset, #inp-desc', target: inCurrentCard('.article-desc') },
+        { controls: '#modeOrig, #inp-orig', target: inCurrentCard('.orig-price-box .strike-line') },
+        { controls: '#discountBtn, #discountValue, #discountStepper', target: inCurrentCard('.discount-rate') },
+        { controls: '#brandSelect, #customBrandSelect', target: inCurrentCard('.brand-box > *') },
+        { controls: '#inp-sale-title', target: inCurrentCard('.sale-banner-title') },
+        { controls: '#promoPreset, #inp-sale-sub', target: inCurrentCard('.sale-banner-sub') },
+        { controls: '#inp-final', target: inCurrentCard('.final-price') }
+      ]
+    }).point({ target: currentCardView, placement: 'above' });
+  </script>
+  <script src="assets/js/strumenti-stampa.js?v=20261004" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

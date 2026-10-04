@@ -38,7 +38,7 @@
 <body>
 
 <h1>STORE // CRAFT — Aggiornamento</h1>
-<p class="sub">Piano di lavoro riepilogativo · versione del 3 ottobre 2026, aggiornata a fine giornata</p>
+<p class="sub">Piano di lavoro riepilogativo · versione del 4 ottobre 2026</p>
 
 <div class="box gold">
   <p><strong>A cosa serve questo documento.</strong> Riassume il lavoro di aggiornamento di StoreCraft diviso in fasi. Va letto all'inizio di ogni sessione di lavoro, da una persona o da un'intelligenza artificiale, per riprendere il contesto. I dettagli tecnici di quanto già fatto stanno nel file <code>AGENTS.md</code> del repository: questo piano dice <em>cosa</em> fare e <em>in che ordine</em>, <code>AGENTS.md</code> dice <em>come</em> è stato fatto.</p>
@@ -77,8 +77,8 @@
 </ol>
 
 <div class="box gold">
-  <p><strong>Dove siamo arrivati (3 ottobre 2026).</strong> Fasi 0 e 1 fatte. Fase 2 fatta, manca solo la decisione su <code>cartelli_outletmultismart</code>. Fase 3 a metà: Black Friday e Black Friday Lips fatte, Promo Multibrand in corso con il suo menu su misura, Xmas Ball da fare. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale" uguale ovunque e il cursore oro.</p>
-  <p><strong>Prossimi passi:</strong> far provare Xmas Ball all'utente (Promo Multibrand è chiusa; resta solo, rimandato, l'accorciamento della voce di partenza dei menu stretti dei marchi), poi la Fase 4 (cartellini, che hanno ancora la stella emoji ⭐ nei menu BRAND).</p>
+  <p><strong>Dove siamo arrivati (4 ottobre 2026).</strong> Fasi 0 e 1 fatte. Fase 2 fatta, manca solo la decisione su <code>cartelli_outletmultismart</code>. Fase 3 a metà: Black Friday e Black Friday Lips fatte, Promo Multibrand in corso con il suo menu su misura, Xmas Ball da fare. Fase 4 quasi fatta: Cartellini Vetrina e Cartellini Promo portate al pannello standard. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale" uguale ovunque e il cursore oro.</p>
+  <p><strong>Prossimi passi:</strong> far provare Cartellini Promo all'utente, poi far provare Xmas Ball (Promo Multibrand è chiusa; resta solo, rimandato, l'accorciamento della voce di partenza dei menu stretti dei marchi), poi la Fase 5 (etichette DYMO).</p>
 </div>
 
 <h2>4. Le fasi</h2>
@@ -134,8 +134,13 @@
 </div>
 
 <div class="phase wip">
-  <h3><span>Fase 4 — Cartellini</span> <span class="tag">IN CORSO</span></h3>
+  <h3><span>Fase 4 — Cartellini</span> <span class="tag">QUASI FATTA</span></h3>
   <p>Pagine: <code>cartellinivetrina</code>, <code>cartellinipromo</code>. Modello TEBE: <code>cartellinitebe</code>, <code>cartellinilxry</code>, <code>prezzivetrina</code>. Pannello standard dentro i riquadri <code>.editor-section</code>, cursore al posto dei vecchi triangolini, pulsanti di stampa sotto il riquadro "Modifica Cartellino".</p>
+  <table>
+    <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
+    <tr><td><code>cartellinivetrina</code></td><td>Cartellini Vetrina</td><td class="ok">fatta</td></tr>
+    <tr><td><code>cartellinipromo</code></td><td>Cartellini Promo</td><td class="ok">fatta: selettore PREZZO ORIGINARIO / DESCRIZIONE ARTICOLO (mode-switch, come Cartello da Banco) e pulsante + AGGIUNGI SCONTISTICA al posto dei vecchi pulsanti; Stagionalità/Evento e Promozione con Testo Libero</td></tr>
+  </table>
 </div>
 
 <div class="phase todo">
