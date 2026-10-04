@@ -25,7 +25,9 @@
 .controls {
   background: #1e1d1a;
   color: #f4f1ea;
-  padding: 1rem;
+  /* sotto (dopo il tasto di stampa) lo stesso spazio che si vede in alto tra il bordo e le lettere del titolo:
+     1rem più i 4 px di cui le maiuscole cominciano sotto il bordo della loro riga */
+  padding: 1rem 1rem 1.25rem;
   border: 1px solid #2e2b27;
   border-radius: 8px;
 }
@@ -537,7 +539,7 @@
 /* Vista telefono (solo cellulari): pannello più compatto */
 @media screen and (max-width: 760px) and (pointer: coarse) {
   .sidebar { width: 100%; max-width: 560px; }
-  .controls { width: 100%; padding: 12px; }
+  .controls { width: 100%; padding: 12px 12px 16px; }   /* sotto 4 px in più, come sopra le lettere del titolo */
   .controls h1,
   .controls h2 {
     font-size: 0.95rem;
