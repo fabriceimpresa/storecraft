@@ -72,7 +72,7 @@
   <li><strong>I temi Black Friday e Natale restano</strong> (pulsanti <code>toggleBlackFriday</code> / <code>toggleXmas</code>, esclusivi di StoreCraft).</li>
   <li><strong>I fogli di stampa non si toccano</strong> (misure in cm, mm e pt, grafica, font di stampa) se il compito non lo chiede.</li>
   <li><strong>Documentazione in italiano</strong>. Ogni pagina, modulo o convenzione aggiunta o cambiata va riportata in <code>AGENTS.md</code> nella stessa modifica. I problemi trovati si segnalano all'utente, non si scrivono nella documentazione.</li>
-  <li><strong>Verifica</strong>: non ci sono test automatici. Si serve la cartella (<code>python -m http.server 8000</code>), si apre la pagina, e l'utente controlla <em>Stampa → Anteprima</em> (scala 100 %, margini "Nessuno").</li>
+  <li><strong>Verifica</strong>: non ci sono test automatici. Si serve la cartella con <code>Avvia server.bat</code> (doppio clic, apre Chrome su <code>http://localhost:8000</code>), si apre la pagina, e l'utente controlla <em>Stampa → Anteprima</em> (scala 100 %, margini "Nessuno").</li>
   <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro.</li>
 </ol>
 
@@ -128,7 +128,7 @@
     <tr><th>Pagina</th><th>Nome in dashboard</th><th>Stato</th></tr>
     <tr><td><code>blackfridaylips</code></td><td>Black Friday Lips</td><td class="ok">fatta</td></tr>
     <tr><td><code>blackfriday</code></td><td>Black Friday</td><td class="ok">fatta</td></tr>
-    <tr><td><code>promo_multibrand</code></td><td>Promo Multibrand</td><td class="muted">in corso: menu su misura (fondo oro, sfondo pagina dorato chiaro, tre sezioni con titolo, Promozioni, marchi 1–8 con la spunta Loghi Personalizzati, legenda rifatta, pulsantiera standard)</td></tr>
+    <tr><td><code>promo_multibrand</code></td><td>Promo Multibrand</td><td class="muted">in corso: menu su misura (fondo oro, tre sezioni con titolo, Promozioni, marchi 1–8 con la spunta Loghi Personalizzati, legenda rifatta, pulsantiera standard)</td></tr>
     <tr><td><code>xmas_ball</code></td><td>Xmas Ball</td><td class="no">da fare</td></tr>
   </table>
 </div>
@@ -199,12 +199,13 @@
     <li><strong>Menu BRAND</strong>: la voce di partenza è "● — Seleziona Brand — ●" con i pallini oro; i brand stagionali hanno la stella gialla ★ (la stessa dei loghi personalizzati).</li>
     <li><strong>Titoli dei menu</strong>: iniziale maiuscola (Promozioni, Loghi Personalizzati), tranne BRAND e TESTI PRONTI, tutti in maiuscolo.</li>
     <li><strong>Riquadro "Torna al Menu Principale"</strong>: uguale in tutte le pagine, cambia solo il titolo nelle tavole a tema.</li>
-    <li><strong>Menu su misura</strong> (es. Promo Multibrand): stessi spazi e caratteri del pannello standard, ma colori propri (fondo oro, sfondo della pagina dorato chiaro) per far capire che il layout è speciale.</li>
+    <li><strong>Menu su misura</strong> (es. Promo Multibrand): stessi spazi e caratteri del pannello standard, ma colori propri (fondo oro; lo sfondo della pagina resta quello delle altre) per far capire che il layout è speciale.</li>
   </ul>
 </div>
 
 <h2 style="break-before: page;">5. Come riprendere il lavoro (checklist di inizio sessione)</h2>
 <ol>
+  <li>Ricordare all'utente di avviare il server locale: doppio clic su <code>Avvia server.bat</code> nella cartella STORECRAFT (le pagine si provano su <code>http://localhost:8000</code>).</li>
   <li>Leggere questo piano, poi <code>AGENTS.md</code> e <code>CLAUDE.md</code> di StoreCraft.</li>
   <li>Controllare di essere sul ramo di lavoro e guardare gli ultimi commit (<code>git log</code>) per sapere dove ci si era fermati.</li>
   <li>Per la pagina da allineare, leggere la pagina corrispondente di TEBE e la sezione dell'<code>AGENTS.md</code> di TEBE che la descrive.</li>

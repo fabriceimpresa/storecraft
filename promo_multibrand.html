@@ -17,8 +17,7 @@
     @font-face { font-family: 'Space Invaders Project'; src: url('assets/fonts/space_invaders.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: block; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    /* sfondo della pagina: chiaro, un crema dorato tenue come le tinte avorio di TEBE, al posto del grigio scuro delle altre pagine (layout su misura) */
-    body { font-family: Arial, sans-serif; background: #ecd9b3; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
+    body { font-family: Arial, sans-serif; background: #212529; padding: 20px; display: flex; gap: 20px; justify-content: center; min-height: 100vh; position: relative; }
 
     /* Il pannello segue spazi e caratteri del pannello standard (assets/css/pannello.css); qui solo ciò che è proprio
        della pagina e, sotto, i colori del menu su misura. */
@@ -100,7 +99,7 @@
       .controls .form-group select::picker(select)::-webkit-scrollbar-track { background: #e3c095; border-left-color: #ffffff; }
       .controls .form-group select option:hover,
       .controls .form-group select option:focus-visible { background: #e3c095; }
-      .controls .form-group select option:checked { color: #96382b; }
+      .controls .form-group select option:checked { color: var(--brand-dot-color); }   /* voce scelta nell'oro scuro del menu (#8f6a1f), come i pallini dei menu BRAND */
     }
 
     /* LAYOUT A SCHERMO ANTEPRIMA */
