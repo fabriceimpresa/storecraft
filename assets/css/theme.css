@@ -628,6 +628,10 @@
 
 #sidebar-menu { position: relative; }
 
+@media screen and (max-width: 720px) {
+  #sidebar-menu { position: fixed; }
+}
+
 .system-menu {
   position: absolute;
   z-index: 1001;

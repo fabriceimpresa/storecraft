@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-58">
-  <script src="assets/js/caroselli.js?v=20261005-58" defer></script>
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-64">
+  <script src="assets/js/caroselli.js?v=20261005-64" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -621,6 +621,13 @@
     }
     /* Solo telefoni: stessa condizione usata dal JavaScript. */
     @media screen and (max-width: 720px) and (pointer: coarse) {
+      body {
+        display: block;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+      }
+
       .section-title {
         text-align: center;
         font-size: 0.95rem;
@@ -632,10 +639,9 @@
 
       .mobile-top-bar {
         display: flex;
-        position: fixed;
+        position: sticky;
         top: 0;
-        left: 0;
-        right: 0;
+        width: 100%;
         height: 64px;
         background: #0a0908;
         border-bottom: 1px solid var(--border);
@@ -732,8 +738,13 @@
       }
 
       main {
-        padding: 88px 16px 0;
+        display: block;
         width: 100%;
+        height: auto;
+        min-height: calc(100vh - 64px);
+        padding: 24px 16px 0;
+        overflow: visible;
+        flex: none;
       }
       header { text-align: center; }
       .sidebar-header { padding-bottom: 29px; }
@@ -746,6 +757,29 @@
         font: 400 19px 'Cinzel', serif;
         letter-spacing: .16em;
         color: var(--accent);
+      }
+      #system-menu-toggle {
+        min-height: 48px;
+        padding: 11px 10px;
+        border: 1px solid var(--interface-accent);
+        border-radius: 6px;
+        background: var(--interface-accent);
+        color: #121110;
+        font: 600 12px/1.2 var(--interface-font);
+        letter-spacing: .14em;
+        box-shadow: 0 3px 10px var(--interface-shadow);
+      }
+      #system-menu-toggle:hover,
+      #system-menu-toggle:focus-visible,
+      #system-menu-toggle[aria-expanded="true"] {
+        border-color: var(--interface-accent);
+        background: var(--interface-accent);
+        box-shadow: 0 6px 16px var(--interface-shadow);
+        transform: translateY(-1px);
+      }
+      #system-menu-toggle:focus-visible {
+        outline: 2px solid var(--interface-accent-bright);
+        outline-offset: 3px;
       }
       body.cassiere-mode #tools-title { display: none; }
       .widget { cursor: default; scroll-margin-top: 80px; }
@@ -767,10 +801,10 @@
       .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-58">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-58"></script>
-  <script src="assets/js/theme.js?v=20261005-58"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-58">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-64">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-64"></script>
+  <script src="assets/js/theme.js?v=20261005-64"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-64">
 </head>
 <body class="sidebar-collapsed">
 
@@ -922,7 +956,7 @@
       </div>
       <div class="system-menu-view" data-system-view="contacts" hidden>
         <div class="system-credits">
-          <span><span class="release-number">V 1.6 2026</span> · Developed by Fabrizio Notte</span><br>
+          <span><span class="release-number">V 1.7 2026</span> · Developed by Fabrizio Notte</span><br>
           © Marchi e loghi appartengono ai rispettivi proprietari<br>
           <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
         </div>
@@ -1698,8 +1732,11 @@
 
     function returnToHomeTop() {
       const mainElem = document.getElementById('main-content');
-      if (mainElem) mainElem.scrollTo({ top: 0, behavior: 'smooth' });
-      else window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (phoneViewQuery.matches) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (mainElem) {
+        mainElem.scrollTo({ top: 0, behavior: 'smooth' });
+      }
       resetDefaultView();
     }
 
@@ -1766,8 +1803,6 @@
 
     function setLayoutMode(mode) {
       const mainElem = document.getElementById('main-content');
-      if (mainElem) mainElem.scrollTo({ top: 0, behavior: 'smooth' });
-      else window.scrollTo({ top: 0, behavior: 'smooth' });
 
       const creatorBtn = document.querySelector('.mode-btn[data-mode="creator"]');
       const cassiereBtn = document.querySelector('.mode-btn[data-mode="cassiere"]');
@@ -1790,12 +1825,16 @@
         if (cassiereBtn) cassiereBtn.classList.remove('active');
         if (creatorBtn) creatorBtn.classList.add('active');
 
-        const mainElem = document.getElementById('main-content');
         if (mainElem && toolsTitle && toolsSec) {
           mainElem.appendChild(toolsTitle);
           mainElem.appendChild(toolsSec);
           mainElem.appendChild(document.querySelector('.mobile-brand-footer'));
         }
+      }
+      if (phoneViewQuery.matches) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (mainElem) {
+        mainElem.scrollTo({ top: 0, behavior: 'smooth' });
       }
       setTimeout(updateCarouselArrows, 100);
     }
@@ -2039,13 +2078,17 @@
 
       const mainScroll = document.getElementById('main-content');
       if (mainScroll) {
-        mainScroll.addEventListener('scroll', () => {
-          if (mainScroll.scrollTop > 120) {
+        const updateScrollState = () => {
+          const scrollTop = phoneViewQuery.matches ? window.scrollY : mainScroll.scrollTop;
+          if (scrollTop > 120) {
             document.body.classList.add('is-scrolled');
           } else {
             document.body.classList.remove('is-scrolled');
           }
-        });
+        };
+        mainScroll.addEventListener('scroll', updateScrollState);
+        window.addEventListener('scroll', updateScrollState, { passive: true });
+        phoneViewQuery.addEventListener('change', updateScrollState);
 
         window.addEventListener('pageshow', event => {
           if (event.persisted) initializeSidebarSections();
