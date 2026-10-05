@@ -12,11 +12,12 @@
  */
 (() => {
   const PRINT_LOGOS_PATH = 'assets/img/printlogos/';
+  const LOGO_ASSET_VERSION = '20261005';
   const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
   let customLogoCache = new Map(); // chiave: `${sourceData}|${colorKey}`
 
   function getOfficialPrintLogoPath(logoFileName, color) {
-    return PRINT_LOGOS_PATH + color + getGeneratedLogoFileName(logoFileName);
+    return `${PRINT_LOGOS_PATH}${color}${getGeneratedLogoFileName(logoFileName)}?v=${LOGO_ASSET_VERSION}`;
   }
 
   // Se un logo personalizzato viene rinominato/eliminato in un'altra scheda
@@ -108,7 +109,7 @@
       return Promise.resolve(source);
     }
 
-    const officialMatch = source.match(/assets\/logos\/([^/?#]+)$/);
+    const officialMatch = source.match(/assets\/logos\/([^/?#]+)(?:[?#].*)?$/);
     if (officialMatch && COLOR_RGB[color]) {
       return Promise.resolve(getOfficialPrintLogoPath(officialMatch[1], color));
     }
@@ -136,7 +137,9 @@
    */
   function getBrandLogoSrc(customValue, officialFileName, defaultFileName, color) {
     const fileName = officialFileName || defaultFileName;
-    const source = customValue || (fileName ? 'assets/logos/' + fileName : '');
+    const source = customValue || (fileName
+      ? (typeof getLogoSource === 'function' ? getLogoSource(fileName) : 'assets/logos/' + fileName)
+      : '');
     return resolvePrintLogoSource(source, color);
   }
 

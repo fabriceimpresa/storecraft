@@ -7,10 +7,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261004"></script>
+  <script src="assets/js/logos.js?v=20261005"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="assets/js/dymo-direct.js?v=20261004"></script>
+  <script src="assets/js/dymo-direct.js?v=20261005"></script>
 
   <style>
     :root {
@@ -970,13 +970,13 @@
           imgElement.style.display = 'block';
           if (textElement) textElement.style.display = 'none';
         } else if (selectedBrand) {
-          imgElement.src = LOGO_PATH + selectedBrand;
+          imgElement.src = getLogoSource(selectedBrand);
           imgElement.style.display = 'block';
           if (textElement) textElement.style.display = 'none';
         } else {
           // SE L'UTENTE NON HA SELEZIONATO ALCUN BRAND:
           // Mostra di default a schermo il file assets/logos/LXRY_BRAND.png
-          imgElement.src = LOGO_PATH + 'LXRY_BRAND.png';
+          imgElement.src = getLogoSource('LXRY_BRAND.png');
           imgElement.style.display = 'block';
           if (textElement) textElement.style.display = 'none';
         }

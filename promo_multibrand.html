@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Promo Multibrand</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261004">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261004">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261004">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005">
   <!-- Inclusione script centralizzato loghi -->
-  <script src="assets/js/logos.js?v=20261004"></script>
+  <script src="assets/js/logos.js?v=20261005"></script>
   <style>
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd.otf') format('opentype'); font-style: normal; font-weight: 400; font-display: block; }
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype'); font-style: italic; font-weight: 400; font-display: block; }
@@ -601,7 +601,7 @@
       const img = document.createElement('img');
       img.className = tintClass;
       img.alt = 'Logo ' + index;
-      img.src = value.startsWith('data:') ? value : LOGO_PATH + value;
+      img.src = value.startsWith('data:') ? value : getLogoSource(value);
       return img;
     }
 
@@ -695,6 +695,6 @@
     updateCards();
     showBrowserWarningIfNeeded();
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261004"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005"></script>
 </body>
 </html>

@@ -77,8 +77,8 @@
 </ol>
 
 <div class="box gold">
-  <p><strong>Dove siamo arrivati (4 ottobre 2026).</strong> Fasi 0–5 fatte. Rifiniti i Quadrati: footer oro già pronto, LUXURY GOLD predefinito in modalità Brand e tema Sale con testi centrati e footer più piccolo. Verificata con l'utente la centratura DYMO di Outlet Doppio Prezzo rispetto a TEBE: la correzione di 1 mm verso l'alto è estesa a tutti e sei i modelli Luxury. La pagina aggiuntiva <code>cartelli_outletmultismart</code> è conservata nella radice del progetto, ma resta nascosta e non collegata a <code>index.html</code>. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale" uguale ovunque e il cursore oro.</p>
-  <p><strong>Prossimi passi:</strong> rifare la scritta SALE di Quadrati in stile Luxury (per ora è ancora quella di TEBE), poi la Fase 6 (loghi, utilità e pagine di servizio). Come ritocco facoltativo, resta rimandato l'accorciamento della voce di partenza dei menu stretti dei marchi in Promo Multibrand.</p>
+  <p><strong>Dove siamo arrivati (5 ottobre 2026).</strong> Fasi 0–5 fatte; avviata la ricognizione della Fase 6. Verificato che le pagine per creare, importare e gestire i loghi, il visualizzatore PDF, la lista di stampa e le cinque utilità di cassa esistono in StoreCraft come in TEBE. In <code>gestisci_lista.html</code> la conferma di importazione ora propone "Importa Lista" e le conferme di cancellazione mostrano i comandi adatti all'operazione. Allineato a TEBE anche il versionamento URL dei loghi ufficiali e delle varianti colore (<code>LOGO_ASSET_VERSION</code>); aggiunte le versioni agli URL dei loghi mostrati a schermo e aggiornati i riferimenti ai moduli comuni. Le 195 voci ufficiali di StoreCraft hanno tutte le quattro varianti pregenerate. Restano da confrontare le regole di persistenza e gestione dei loghi in vista della futura struttura multi-negozio. Rifiniti i Quadrati e completato l'allineamento di stampa dei sei modelli DYMO. La pagina aggiuntiva <code>cartelli_outletmultismart</code> è conservata nella radice del progetto, ma resta nascosta e non collegata a <code>index.html</code>. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale", il cursore oro e il versionamento dei file comuni.</p>
+  <p><strong>Prossimi passi:</strong> completare il confronto delle regole dei loghi e decidere come isolare i dati per negozio nello scheletro comune; poi proseguire con gli elementi ancora aperti della Fase 6 e della Fase 7. Rifare la scritta SALE di Quadrati in stile Luxury (per ora è ancora quella di TEBE). Come ritocco facoltativo, resta rimandato l'accorciamento della voce di partenza dei menu stretti dei marchi in Promo Multibrand.</p>
 </div>
 
 <h2>4. Le fasi</h2>
@@ -151,11 +151,14 @@
   <p>Prove di stampa dell'utente positive; centratura verticale di Outlet Doppio Prezzo verificata confrontandola con TEBE. Tutti e sei i layout Luxury hanno ora lo stesso spostamento di 1 mm verso l'alto, sia nella stampa diretta DYMO sia dal browser, mantenendo l'ingrandimento 1,08× e i caratteri esistenti.</p>
 </div>
 
-<div class="phase todo">
-  <h3><span>Fase 6 — Loghi, utilità e pagine di servizio</span> <span class="tag">DA FARE</span></h3>
+<div class="phase wip">
+  <h3><span>Fase 6 — Loghi, utilità e pagine di servizio</span> <span class="tag">IN CORSO</span></h3>
   <ul>
-    <li>Loghi: <code>genera_loghi</code>, <code>gestisci_lista</code>, <code>logoimport</code>, <code>logogestione</code>; regole di TEBE su loghi ufficiali / personalizzati, varianti di colore pregenerate, versione degli asset (<code>LOGO_ASSET_VERSION</code>).</li>
-    <li>Servizio: <code>pdf-viewer</code>, <code>lista-stampa</code>; utilità di cassa in dashboard.</li>
+    <li><span class="ok">✓</span> In entrambe le versioni esistono le pagine per creare e gestire i loghi, importare loghi ufficiali, visualizzare PDF e gestire la lista di stampa, oltre alle cinque utilità di cassa.</li>
+    <li><span class="ok">✓</span> In StoreCraft la conferma dell'importazione dei loghi personalizzati ora distingue l'importazione dalla cancellazione, come in TEBE.</li>
+    <li><span class="ok">✓</span> Aggiunto <code>LOGO_ASSET_VERSION</code> ai percorsi dei loghi ufficiali e delle varianti colore; le 195 voci ufficiali presenti hanno tutte e quattro le varianti pregenerate.</li>
+    <li>Completare il confronto delle regole per loghi ufficiali e personalizzati, incluse persistenza locale e possibile separazione dei dati fra negozi.</li>
+    <li>Verificare le pagine di servizio e la coerenza dei controlli e dei pulsanti fra StoreCraft e TEBE.</li>
   </ul>
 </div>
 

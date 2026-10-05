@@ -197,6 +197,13 @@ const LOGO_FILES = [
   "WRANGLER.png"
 ];
 
+const LOGO_ASSET_PATH = "assets/logos/";
+const LOGO_ASSET_VERSION = "20261005";
+
+function getLogoSource(fileName) {
+  return fileName ? `${LOGO_ASSET_PATH}${fileName}?v=${LOGO_ASSET_VERSION}` : '';
+}
+
 // BRAND PRIORITARI (STAGIONALI): mostrati per primi in ogni menu a cascata dei loghi,
 // subito dopo la voce di default, ed esclusi dal resto dell'elenco alfabetico.
 const PRIORITY_BRANDS = ["SPRINGSALE.png", "SUMMERSALE.png", "WINTERSALE.png"];

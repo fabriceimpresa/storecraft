@@ -315,6 +315,11 @@
       color: #fff;
     }
     .modal-btn-confirm:hover { background: #c82333; }
+    .modal-btn-import-custom {
+      background: #5f8a55;
+      color: #fff;
+    }
+    .modal-btn-import-custom:hover { background: #4d7544; }
   </style>
 </head>
 <body>
@@ -325,11 +330,7 @@
     <div class="modal-box">
       <div class="modal-warning-icon">⚠</div>
       <p class="modal-message" id="confirmModalMessage"></p>
-      <div class="modal-actions">
-        <button type="button" class="modal-btn modal-btn-cancel" onclick="closeConfirmModal(false)">Annulla</button>
-        <button type="button" class="modal-btn modal-btn-backup" onclick="exportCustomLogos()">⬇ Backup</button>
-        <button type="button" class="modal-btn modal-btn-confirm" onclick="closeConfirmModal(true)">Cancella Loghi</button>
-      </div>
+      <div class="modal-actions" id="modalActionsContainer"></div>
     </div>
   </div>
 
@@ -380,9 +381,33 @@
       URL.revokeObjectURL(downloadUrl);
     }
 
-    function showConfirmModal(message) {
+    function showConfirmModal(message, mode = 'clear-all') {
       return new Promise(resolve => {
         document.getElementById('confirmModalMessage').textContent = message;
+        const actionsContainer = document.getElementById('modalActionsContainer');
+        actionsContainer.replaceChildren();
+
+        const addButton = (label, className, onClick) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `modal-btn ${className}`;
+          button.textContent = label;
+          button.addEventListener('click', onClick);
+          actionsContainer.appendChild(button);
+        };
+
+        if (mode === 'import') {
+          addButton('Annulla', 'modal-btn-backup', () => closeConfirmModal(false));
+          addButton('Importa Lista', 'modal-btn-import-custom', () => closeConfirmModal(true));
+        } else if (mode === 'delete-single') {
+          addButton('Annulla', 'modal-btn-cancel', () => closeConfirmModal(false));
+          addButton('Cancella logo', 'modal-btn-confirm', () => closeConfirmModal(true));
+        } else {
+          addButton('Annulla', 'modal-btn-cancel', () => closeConfirmModal(false));
+          addButton('⬇ Backup', 'modal-btn-backup', exportCustomLogos);
+          addButton('Cancella Loghi', 'modal-btn-confirm', () => closeConfirmModal(true));
+        }
+
         document.getElementById('confirmModal').classList.add('active');
         pendingConfirmResolve = resolve;
       });
@@ -429,7 +454,7 @@
           return;
         }
 
-        const confirmed = await showConfirmModal('L importazione sostituira tutti i Loghi personalizzati attualmente salvati. Continuare?');
+        const confirmed = await showConfirmModal('L importazione sostituira tutti i Loghi personalizzati attualmente salvati. Continuare?', 'import');
         if (!confirmed) {
           return;
         }
@@ -620,7 +645,7 @@
     }
 
     async function deleteLogo(index) {
-      const confirmed = await showConfirmModal("Sei sicuro di voler eliminare questo logo personalizzato?");
+      const confirmed = await showConfirmModal("Sei sicuro di voler eliminare questo logo personalizzato?", 'delete-single');
       if (confirmed) {
         const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
         logos.splice(index, 1);
