@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>IMPORT LOGHI (uso interno)</title>
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -174,21 +175,6 @@
 
   .empty-msg { font-size: 0.8rem; color: #888; padding: 10px 0; }
 
-  .app-close-btn {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
-    width: 36px;
-    height: 36px;
-    background-color: #d4a373;
-    color: #000;
-    border-radius: 50%;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-  }
 
   /* MODAL DI CONFERMA CONFLITTO NOME */
   .modal-overlay {
@@ -267,7 +253,7 @@
 </head>
 <body>
 
-  <a href="index.html" class="app-close-btn" title="Torna all'index">✕</a>
+  <a href="index.html" class="app-close-btn" title="Torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="modal-overlay" id="conflictModal">
     <div class="modal-box">

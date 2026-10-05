@@ -13,6 +13,7 @@
   <script src="assets/js/logos.js?v=20261005"></script>
   <script src="assets/js/print-logo-colors.js?v=20261005"></script>
   <script src="assets/js/print-white-logos.js?v=20261005"></script>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -371,36 +372,9 @@
     }
 
     /* NAVIGAZIONE UI */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #d4a373;
-      color: #000000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: transform 0.2s, background-color 0.2s;
-      z-index: 1000;
-      text-decoration: none;
-    }
 
-    .app-close-btn:hover {
-      background-color: #e5ba73;
-      transform: scale(1.1);
-    }
 
-    @media (max-width: 1100px) {
-      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
-    }
+
 
     @page {
       size: A4 portrait;
@@ -420,7 +394,7 @@
         print-color-adjust: exact !important;
       }
 
-      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+      .sidebar, .floating-nav-box { display: none !important; }
 
       .print-sheet {
         box-shadow: none;
@@ -452,7 +426,7 @@
 <body>
 
   <!-- Pulsante Chiudi e Menu Fluttuante -->
-  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">XMAS // CRAFT</div>

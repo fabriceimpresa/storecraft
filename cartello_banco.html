@@ -12,6 +12,7 @@
   <script src="assets/js/logos.js?v=20261005"></script>
   <script src="assets/js/print-logo-colors.js?v=20261005"></script>
   <script src="assets/js/print-white-logos.js?v=20261005"></script>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -38,7 +39,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     /* Sfondo UI */
     body {
       font-family: Arial, sans-serif;
@@ -295,26 +296,6 @@
     }
 
     /* NAVIGAZIONE UI */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #d4a373;
-      color: #000000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 1000;
-      text-decoration: none;
-    }
 
     .made-in-italy-btn {
       position: fixed;
@@ -426,9 +407,7 @@
       margin: 0mm !important;
     }
 
-    @media (max-width: 1100px) {
-      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
-    }
+
 
     @media print {
       html, body {
@@ -443,7 +422,7 @@
       }
 
       body::before { display: none !important; }
-      .sidebar, .app-close-btn, .made-in-italy-btn, .black-friday-btn, .xmas-btn, .floating-nav-box { display: none !important; }
+      .sidebar, .made-in-italy-btn, .black-friday-btn, .xmas-btn, .floating-nav-box { display: none !important; }
 
       .print-sheet {
         box-shadow: none;
@@ -482,7 +461,7 @@
 <body>
 
   <!-- Pulsanti Navigazione UI -->
-  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
   <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
     <img src="assets/img/madeinitaly.png" alt="Made in Italy">
   </button>
@@ -665,7 +644,7 @@
 
   <!-- AREA STAMPA FOGLIO A4 -->
   <div class="print-sheet" id="printSheet">
-    
+
     <!-- METÀ SUPERIORE A4 -->
     <div class="half-container">
       <div class="card" id="card1">

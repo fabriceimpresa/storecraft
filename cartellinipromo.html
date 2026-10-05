@@ -14,6 +14,7 @@
   <script src="assets/js/logos.js?v=20261005"></script>
   <script src="assets/js/print-logo-colors.js?v=20261005"></script>
 
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -277,31 +278,9 @@
     .cartellino.is-black-event .card-footer-logo img { max-height: 82%; }
 
     /* NAVIGAZIONE */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #b48b37;
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 1000;
-      text-decoration: none;
-    }
 
     /* REGOLA DI STAMPA */
-    @media (max-width: 1100px) {
-      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
-    }
+
 
     @media print {
       html, body {
@@ -332,7 +311,7 @@
         print-color-adjust: exact;
       }
       .cartellino.disabled { visibility: hidden; opacity: 0; }
-      .app-close-btn, .floating-nav-box { display: none !important; }
+      .floating-nav-box { display: none !important; }
       @page { 
         size: A4 landscape; 
         margin: 4mm;
@@ -347,7 +326,7 @@
   </style>
 </head>
 <body>
-  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>

@@ -38,7 +38,7 @@
 <body>
 
 <h1>STORE // CRAFT — Aggiornamento</h1>
-<p class="sub">Piano di lavoro riepilogativo · versione del 4 ottobre 2026</p>
+<p class="sub">Piano di lavoro riepilogativo · versione del 5 ottobre 2026</p>
 
 <div class="box gold">
   <p><strong>A cosa serve questo documento.</strong> Riassume il lavoro di aggiornamento di StoreCraft diviso in fasi. Va letto all'inizio di ogni sessione di lavoro, da una persona o da un'intelligenza artificiale, per riprendere il contesto. I dettagli tecnici di quanto già fatto stanno nel file <code>AGENTS.md</code> del repository: questo piano dice <em>cosa</em> fare e <em>in che ordine</em>, <code>AGENTS.md</code> dice <em>come</em> è stato fatto.</p>
@@ -51,7 +51,15 @@
   <li><strong>Luxury Outlet</strong> — la prima release di StoreCraft (tema scuro, oro). È quella su cui si lavora ora.</li>
   <li><strong>TEBE e OPHILYA</strong> — una versione nata da StoreCraft e poi migliorata: menu uniformi, regole di stampa più precise (soprattutto DYMO), cursore sul foglio, pulsanti per la lista di stampa, documentazione completa.</li>
 </ul>
-<p><strong>Traguardo finale:</strong> un unico scheletro di StoreCraft che ospita più negozi (Luxury Outlet, TEBE, OPHILYA e in futuro altri). Ogni negozio mantiene il proprio aspetto preferito e le proprie pagine di stampa personalizzate, ma tutti usano gli <strong>stessi strumenti, le stesse regole, gli stessi menu, gli stessi elementi</strong> (pannelli, selettori, pulsanti fissi, cursore, lista di stampa, temi).</p>
+<p><strong>Traguardo finale:</strong> una struttura comune STORE // CRAFT in cui coesistono Luxury Outlet (l'attuale StoreCraft), TEBE e OPHILYA, estendibile a nuovi negozi simili ma con caratteristiche diverse. Strumenti, componenti e regole comuni devono permettere personalizzazioni di contenuti, loghi, pagine, menu e grafiche di stampa, senza rendere tutti i negozi identici.</p>
+<p>Il progetto finale ha quattro scopi:</p>
+<ol>
+  <li><strong>Ospitare più negozi nella stessa struttura</strong>, condividendo gli elementi riutilizzabili e mantenendo le specificità di ciascuno.</li>
+  <li><strong>Permettere la scelta del tema dell'interfaccia</strong>, attraverso una sezione di menu generale da aggiungere nella fase finale: tema chiaro di TEBE oppure tema scuro di Luxury. La scelta del tema è distinta dalla scelta del negozio e dai temi stagionali dei cartelli; non modifica la grafica o le misure dei fogli di stampa.</li>
+  <li><strong>Essere una demo online per nuovi clienti</strong>: mostrare il software funzionante, le differenze fra negozi e le personalizzazioni possibili, come base per sviluppare il loro StoreCraft.</li>
+  <li><strong>Essere il riferimento per il collaboratore che sviluppa la SaaS</strong>: una demo concreta accompagnata da un catalogo dettagliato degli elementi desiderati, per costruire nuove pagine di generazione di cartelli e cartellini. Il catalogo deve spiegare la dashboard, i menu, la posizione dei pulsanti e ogni campo, sia nell'aspetto sia nel funzionamento.</li>
+</ol>
+<p>Il software statico è la demo e il modello di riferimento per la SaaS, non viene trasformato ora nella SaaS stessa. Le due guide finali descriveranno le specifiche necessarie per riprodurre e combinare gli elementi.</p>
 <p>Per arrivarci, prima si rende Luxury Outlet <strong>strutturalmente compatibile</strong> con TEBE, pagina per pagina; poi si costruisce lo scheletro comune, adattando a sua volta anche TEBE e OPHILYA.</p>
 
 <h2>2. I repository</h2>
@@ -73,12 +81,15 @@
   <li><strong>I fogli di stampa non si toccano</strong> (misure in cm, mm e pt, grafica, font di stampa) se il compito non lo chiede.</li>
   <li><strong>Documentazione in italiano</strong>. Ogni pagina, modulo o convenzione aggiunta o cambiata va riportata in <code>AGENTS.md</code> nella stessa modifica. I problemi trovati si segnalano all'utente, non si scrivono nella documentazione.</li>
   <li><strong>Verifica</strong>: non ci sono test automatici. Si serve la cartella con <code>Avvia server.bat</code> (doppio clic, apre Chrome su <code>http://localhost:8000</code>), si apre la pagina, e l'utente controlla <em>Stampa → Anteprima</em> (scala 100 %, margini "Nessuno").</li>
-  <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro. A ogni commit si aggiornano anche <code>Storecraft Aggiornamento.html</code> (riquadro "Dove siamo arrivati" e la fase interessata) e il PDF rigenerato da esso, altrimenti il piano perde gli aggiornamenti fatti.</li>
+  <li><strong>Commit</strong> solo quando l'utente lo chiede, sul ramo di lavoro. Prima di ogni nuovo commit si incrementa la versione del prodotto visibile in CREDITS // CONTACTS di <code>index.html</code> (<code>1.0</code> → <code>1.1</code> → <code>1.2</code> … <code>1.10</code>), partendo dalla versione dell'ultimo commit del ramo; si aggiorna l'anno e si riporta la versione nel messaggio di commit. È una regola di lavoro, non un automatismo Git, ed è distinta dalle versioni di cache dei file. A ogni commit si aggiornano anche <code>Storecraft Aggiornamento.html</code> (riquadro "Dove siamo arrivati" e la fase interessata) e il PDF rigenerato da esso, altrimenti il piano perde gli aggiornamenti fatti.</li>
 </ol>
 
 <div class="box gold">
   <p><strong>Dove siamo arrivati (5 ottobre 2026).</strong> Fasi 0–5 fatte; avviata la ricognizione della Fase 6. Verificato che le pagine per creare, importare e gestire i loghi, il visualizzatore PDF, la lista di stampa e le cinque utilità di cassa esistono in StoreCraft come in TEBE. In <code>gestisci_lista.html</code> la conferma di importazione ora propone "Importa Lista" e le conferme di cancellazione mostrano i comandi adatti all'operazione. Allineato a TEBE anche il versionamento URL dei loghi ufficiali e delle varianti colore (<code>LOGO_ASSET_VERSION</code>); aggiunte le versioni agli URL dei loghi mostrati a schermo e aggiornati i riferimenti ai moduli comuni. Le 195 voci ufficiali di StoreCraft hanno tutte le quattro varianti pregenerate. Restano da confrontare le regole di persistenza e gestione dei loghi in vista della futura struttura multi-negozio. Rifiniti i Quadrati e completato l'allineamento di stampa dei sei modelli DYMO. La pagina aggiuntiva <code>cartelli_outletmultismart</code> è conservata nella radice del progetto, ma resta nascosta e non collegata a <code>index.html</code>. Della Fase 7 sono già fatti il riquadro "Torna al Menu Principale", il cursore oro e il versionamento dei file comuni.</p>
-  <p><strong>Prossimi passi:</strong> completare il confronto delle regole dei loghi e decidere come isolare i dati per negozio nello scheletro comune; poi proseguire con gli elementi ancora aperti della Fase 6 e della Fase 7. Rifare la scritta SALE di Quadrati in stile Luxury (per ora è ancora quella di TEBE). Come ritocco facoltativo, resta rimandato l'accorciamento della voce di partenza dei menu stretti dei marchi in Promo Multibrand.</p>
+  <p><strong>Elementi comuni:</strong> anche la ✕ di chiusura è ora raccolta in <code>assets/css/chiudi-pagina.css</code>, senza copie locali nelle 24 pagine interessate. Aspetto oro Luxury uniforme, con l'eccezione delle dimensioni e della posizione del visualizzatore PDF; logica di navigazione e di chiusura invariata. I cinque caroselli della dashboard hanno stile e comportamento centralizzati in <code>assets/css/caroselli.css</code> e <code>assets/js/caroselli.js</code>: avanzamento per colonne visibili, clic rapidi, riallineamento delle schede e maniglie come in TEBE, nei colori Luxury; sul telefono una sola riga e una scheda intera per volta. Cartellini resta una griglia. I moduli sono predisposti per i temi della futura struttura comune, senza modificare il progetto TEBE.</p>
+  <p><strong>Scopo finale chiarito:</strong> struttura comune per Luxury Outlet, TEBE e OPHILYA, menu generale per scegliere il tema chiaro o scuro, demo online per nuovi clienti e riferimento dettagliato degli elementi per lo sviluppo della SaaS (Fasi 9–10).</p>
+  <p><strong>Versione del prodotto: 1.1.</strong> Questo aggiornamento raccoglie lo scopo finale multi-negozio, demo e riferimento SaaS, il pulsante di chiusura comune e i caroselli della dashboard allineati a TEBE nei colori Luxury. Definita la progressione di un numero per ogni nuovo commit del nostro flusso di lavoro, visibile nei crediti della dashboard e ricercabile nel messaggio di commit: da <code>1.0</code> a <code>1.1</code>, poi <code>1.2</code>. Online il numero identifica il commit effettivamente pubblicato, utile anche per riconoscere la versione utilizzata da un cliente.</p>
+  <p><strong>Prossimi passi:</strong> completare il confronto delle regole dei loghi e decidere come isolare i dati per negozio nello scheletro comune; poi proseguire con gli elementi ancora aperti della Fase 6 e della Fase 7. Rifare la scritta SALE di Quadrati in stile Luxury (per ora è ancora quella di TEBE). Nelle Fasi 9–10 progettare la struttura multi-negozio e la scelta del tema, predisporre la demo online e completare il catalogo degli elementi per la SaaS. Come ritocco facoltativo, resta rimandato l'accorciamento della voce di partenza dei menu stretti dei marchi in Promo Multibrand.</p>
 </div>
 
 <h2>4. Le fasi</h2>
@@ -168,7 +179,9 @@
     <li><span class="ok">✓</span> "← Torna al Menu Principale" in basso a destra uguale ovunque: regola unica in <code>assets/css/torna-al-menu.css</code> (cambia solo il titolo: XMAS // CRAFT, BLACK FRIDAY // CRAFT, BLACK FRIDAY // LIPS).</li>
     <li><span class="ok">✓</span> Cursore oro dei cartelli (<code>#b48b37</code>), un poco più grande, colore in una variabile per negozio.</li>
     <li><span class="ok">✓</span> Numero di versione <code>?v=</code> sui file comuni (CSS e JS), uno solo per tutti, così online non si vedono i file vecchi salvati dal browser.</li>
-    <li><span class="no">○</span> Pulsante ✕ in alto a destra: ancora copiato nelle pagine, da portare in un file comune come il riquadro.</li>
+    <li><span class="ok">✓</span> Convenzione di versione del prodotto nei crediti: incremento a ogni nuovo commit del nostro flusso di lavoro (<code>1.0</code>, <code>1.1</code>…), con la stessa versione nel messaggio di commit. Separata dalle versioni tecniche di cache; il numero online identifica il commit pubblicato.</li>
+    <li><span class="ok">✓</span> Pulsante ✕ in alto a destra: stile unico in <code>assets/css/chiudi-pagina.css</code>, collegato dalle 24 pagine interessate; cerchio oro Luxury, Arial, ombra, effetto al passaggio del mouse e contorno per la tastiera. Il visualizzatore PDF conserva dimensioni e posizione proprie. Collegamenti e logica di chiusura invariati, pulsante nascosto in stampa.</li>
+    <li><span class="ok">✓</span> Caroselli e maniglie della dashboard: moduli comuni <code>caroselli.css</code> e <code>caroselli.js</code>, con colori impostabili dal tema. Scorrimento per tutte le colonne interamente visibili sul desktop, una scheda alla volta e una sola riga sul telefono (massimo 720 px e <code>pointer: coarse</code>), destinazioni accumulate per clic rapidi e riallineamento quando cambia il layout. Maniglie da 38 px (34 px sul telefono), disabilitate e nascoste ai bordi; focus tastiera e movimento ridotto. Regole applicate a tutti e cinque i caroselli; Cartellini resta una griglia e i fogli di stampa non cambiano.</li>
     <li>Pulsante Made in Italy: confrontare con il modulo condiviso <code>tema-italia</code> di TEBE.</li>
     <li>Foto guida "Dove montare la stampa?" (<code>GUIDE_PHOTOS</code>, oggi vuoto).</li>
     <li>Vista cellulare come TEBE (solo telefoni: <code>pointer: coarse</code> e massimo 760 px).</li>
@@ -186,23 +199,34 @@
 </div>
 
 <div class="phase todo">
-  <h3><span>Fase 9 — Scheletro unico multi-negozio</span> <span class="tag">DA PROGETTARE</span></h3>
-  <p>Da definire insieme all'utente prima di scrivere codice. Temi da decidere:</p>
+  <h3><span>Fase 9 — Struttura multi-negozio, temi e demo online</span> <span class="tag">DA PROGETTARE</span></h3>
+  <p><strong>Obiettivo concordato:</strong> ospitare Luxury Outlet, TEBE e OPHILYA nella stessa struttura, conservare le loro personalizzazioni, offrire la scelta del tema chiaro o scuro e pubblicare una demo funzionante da presentare ai nuovi clienti.</p>
+  <p>Soluzioni tecniche da definire insieme all'utente prima di scrivere codice:</p>
   <ul>
     <li>Come si sceglie il negozio (selettore in dashboard, parametro <code>?store=</code> come in TEBE, indirizzi separati).</li>
-    <li>Dove sta la configurazione di ogni negozio: nome, logo, tema (scuro StoreCraft o chiaro TEBE), loghi di casa, elenco delle pagine visibili.</li>
+    <li>Dove sta la configurazione di ogni negozio: nome, logo, loghi di casa, contenuti, elenco delle pagine visibili e personalizzazioni dei menu e delle stampe.</li>
+    <li>Sezione di menu generale per scegliere il tema chiaro di TEBE o scuro di Luxury, separato dall'identità del negozio; definire ambito e persistenza della scelta, preservando i fogli di stampa e i temi stagionali.</li>
     <li>Pagine comuni e pagine proprie di un negozio; cosa diventa modulo condiviso.</li>
     <li>Dati del browser separati per negozio (loghi personalizzati, lista di stampa).</li>
     <li>Modifica di TEBE e OPHILYA (repository <code>tebes</code>, su un ramo di sicurezza) per renderli compatibili, e loro inserimento nello scheletro.</li>
+    <li>Pubblicazione della demo online e percorso di presentazione ai nuovi clienti: mostrare i tre negozi, i temi e gli esempi di personalizzazione.</li>
   </ul>
 </div>
 
 <div class="phase todo">
   <h3><span>Fase 10 — Le due guide in PDF</span> <span class="tag">ALLA FINE</span></h3>
   <ol>
-    <li><strong>Guida per il titolare</strong>: tutte le regole, i menu e gli elementi di StoreCraft, descritti nell'aspetto e nel funzionamento, con l'elenco delle pagine in cui compaiono.</li>
-    <li><strong>Guida tecnica</strong>: caratteristiche tecniche e di codice di elementi, pagine e moduli (struttura HTML/CSS/JS, misure di stampa, stato, dati salvati, contratti dei moduli), pensata per chi sviluppa un software SaaS che genera pagine di stampa simili.</li>
+    <li><strong>Guida per il titolare</strong>: tutte le regole, i menu e gli elementi di StoreCraft, descritti nell'aspetto e nel funzionamento, con l'elenco delle pagine in cui compaiono. Spiegare anche le differenze e le personalizzazioni dei negozi e la scelta del tema, per accompagnare la presentazione della demo ai nuovi clienti.</li>
+    <li><strong>Guida tecnica per lo sviluppo della SaaS</strong>: specifica dettagliata destinata al collaboratore che costruisce la SaaS, per riprodurre gli elementi di StoreCraft e comporre nuove pagine di generazione di cartelli e cartellini. Includere struttura HTML/CSS/JS, misure di stampa, stato, dati salvati e contratti dei moduli.</li>
   </ol>
+  <p><strong>Catalogo degli elementi da includere nelle guide:</strong></p>
+  <ul>
+    <li>Dashboard <code>index.html</code>: struttura, sezioni, navigazione, schede, modalità CREATOR/CASSIERE e scelta di negozio e tema.</li>
+    <li>Menu degli editor: ordine dei blocchi e dei campi, spaziature, aspetto e posizione dei pulsanti, regole comuni ed eccezioni dei menu su misura.</li>
+    <li>Per ogni campo, selettore, casella e pulsante: nome, scopo, aspetto, formato, valori iniziali, limiti, validazioni, stati attivo/nascosto/disabilitato, dipendenze da altri controlli e comportamento delle azioni.</li>
+    <li>Effetto di ogni elemento sul cursore, sull'anteprima e sulla stampa; persistenza dei dati e differenze per negozio o tema.</li>
+    <li>Pagine funzionanti di esempio per ogni elemento, con riferimenti ai moduli e alle regole, così la demo è verificabile e utilizzabile come modello per la SaaS.</li>
+  </ul>
   <p><strong>Regole già decise da riportare nelle guide</strong> (i dettagli sono in <code>AGENTS.md</code>):</p>
   <ul>
     <li><strong>Blocchi del pannello</strong>: ogni menu di sinistra è diviso in quattro blocchi, sempre in quest'ordine, con un poco di spazio in più tra un blocco e l'altro: 1. selettori e pulsanti; 2. brand (ufficiali e personalizzati) e claim laterali; 3. campi del cartello (prezzi, descrizione o entrambi, secondo la modalità); 4. stampa.</li>

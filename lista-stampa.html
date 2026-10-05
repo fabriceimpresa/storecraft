@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005">
   <title>Lista di Stampa · STORE // CRAFT</title>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -181,30 +182,12 @@
 
     .status { min-height: 1.2em; color: #e5ba73; font: 600 0.72rem Arial, Helvetica, sans-serif; text-align: center; }
 
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      z-index: 1000;
-      display: flex;
-      width: 36px;
-      height: 36px;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: 50%;
-      background: #d4a373;
-      color: #1e1d1a;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
 
     .print-frame { position: fixed; width: 0; height: 0; border: 0; visibility: hidden; }
   </style>
 </head>
 <body>
-  <button type="button" class="app-close-btn" title="Chiudi la lista di stampa" onclick="closeList()">✕</button>
+  <button type="button" class="app-close-btn" title="Chiudi la lista di stampa" aria-label="Chiudi la lista di stampa" onclick="closeList()">✕</button>
 
   <aside class="thumbs-panel" aria-label="Pagine della lista">
     <h1 class="panel-title">Lista di Stampa</h1>

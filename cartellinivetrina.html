@@ -14,6 +14,7 @@
   <script src="assets/js/logos.js?v=20261005"></script>
   <script src="assets/js/print-logo-colors.js?v=20261005"></script>
 
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -149,7 +150,7 @@
     .desc-box { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 18pt; color: #000; margin-bottom: 1.5mm; line-height: 1.1; word-break: break-word; }
 
     .price-details-row { margin-bottom: 1mm; min-height: 5.5mm; display: flex; align-items: center; justify-content: center; }
-    
+
     /* Prezzo barrato e percentuale sconto oro */
     .orig-discount { font-family: 'Bodoni Std', serif; font-style: italic; font-size: 13pt; color: #000; display: flex; gap: 6px; align-items: center; white-space: nowrap; }
     .orig-discount .strike { text-decoration: line-through; }
@@ -167,31 +168,9 @@
     .card-footer-logo img { max-height: 100%; max-width: 98%; object-fit: contain; }
 
     /* NAVIGAZIONE */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #b48b37;
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 1000;
-      text-decoration: none;
-    }
 
     /* REGOLA DI STAMPA */
-    @media (max-width: 1100px) {
-      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
-    }
+
 
     @media print {
       html, body {
@@ -222,7 +201,7 @@
         print-color-adjust: exact;
       }
       .cartellino.disabled { visibility: hidden; opacity: 0; }
-      .app-close-btn, .floating-nav-box { display: none !important; }
+      .floating-nav-box { display: none !important; }
       @page { 
         size: A4 landscape; 
         margin: 4mm;
@@ -237,7 +216,7 @@
   </style>
 </head>
 <body>
-  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>

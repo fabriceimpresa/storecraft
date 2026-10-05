@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="assets/js/dymo-direct.js?v=20261005"></script>
 
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     :root {
       --bg: #121110;
@@ -57,7 +58,7 @@
     }
 
     .template-card .tpl-name { font-size: 0.75rem; font-weight: 600; color: var(--text); text-align: center; }
-    
+
     .tpl-preview-box {
       width: 100%;
       max-width: 145px;
@@ -232,7 +233,7 @@
     .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 14px; width: 100%; margin-top: 2px; }
     .tpl-tagliedoppiacifra .original-price { font-size: 32px; font-weight: 400; letter-spacing: -0.5px; }
     .tpl-tagliedoppiacifra .discount-tag { font-size: 32px; font-weight: 900; }
-    
+
     /* FONT DINAMICO PREZZO FINALE (SCHERMO) */
     .tpl-tagliedoppiacifra .final-price { 
       font-size: var(--final-price-size-screen, 76px); 
@@ -242,30 +243,10 @@
       margin-top: -2px; 
       white-space: nowrap; 
     }
-    
+
     .tpl-tagliedoppiacifra .footer-text { font-size: 19px; font-weight: 400; letter-spacing: 0.3px; text-transform: uppercase; text-align: right; margin-bottom: 4px; }
 
     /* NAVIGAZIONE */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #d4a373;
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 1000;
-      text-decoration: none;
-    }
 
     /* NAV MOBILE PULSANTE HEADER */
     .mobile-nav-btn { display: none; }
@@ -442,7 +423,7 @@
   </style>
 </head>
 <body>
-  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <aside>
     <div>
@@ -451,7 +432,7 @@
 
       <div class="gallery-title">Galleria Modelli (57x32)</div>
       <div class="template-gallery">
-        
+
         <div class="template-card" id="card-tpl-outlet" onclick="setTemplate('outlet')">
           <span class="tpl-name">1. Outlet Doppio Prezzo</span>
           <div class="tpl-preview-box">

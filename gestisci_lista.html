@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>GESTISCI LISTA PERSONALE</title>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -209,21 +210,6 @@
     }
     .btn-delete:hover { background: #c82333; }
 
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #d4a373;
-      color: #000;
-      border-radius: 50%;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-    }
 
     /* MODAL DI CONFERMA PERSONALIZZATO */
     .modal-overlay {
@@ -324,7 +310,7 @@
 </head>
 <body>
 
-  <a href="index.html" class="app-close-btn" title="Torna all'index">✕</a>
+  <a href="index.html" class="app-close-btn" title="Torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">

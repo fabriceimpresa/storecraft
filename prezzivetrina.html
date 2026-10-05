@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005">
   <link rel="stylesheet" href="assets/css/cursore.css?v=20261005">
 
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
   <style>
     /* Font locali da assets/fonts (stessa convenzione delle altre pagine: 'Nevis Project') */
     @font-face {
@@ -134,29 +135,8 @@
     }
 
     /* NAVIGAZIONE */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #b48b37;
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 1000;
-      text-decoration: none;
-    }
 
     @media (max-width: 1100px) {
-      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
       main { align-items: flex-start; }
     }
 
@@ -191,7 +171,7 @@
         print-color-adjust: exact;
       }
       .cartellino.disabled { visibility: hidden; opacity: 0; }
-      .app-close-btn, .floating-nav-box { display: none !important; }
+      .floating-nav-box { display: none !important; }
       .sheet-wrap { margin: 0; }
     }
 
@@ -221,7 +201,6 @@
       }
 
       .sheet-wrap { zoom: 0.8; margin: 12px auto 0; }
-      .app-close-btn { top: 10px; right: 10px; width: 44px; height: 44px; }
       .floating-nav-box { display: none; }
       .btn-print, .tab-item { min-height: 44px; }
     }
@@ -233,7 +212,7 @@
   </style>
 </head>
 <body>
-  <a href="index.html" class="app-close-btn" title="Chiudi">✕</a>
+  <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>

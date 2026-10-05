@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005">
+  <script src="assets/js/caroselli.js?v=20261005" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -356,69 +358,7 @@
     /* CAROSELLI CON FRECCE FLOATING */
     #generators-section, #seasonal-promo-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
     
-    .carousel-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .carousel-container {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 0.4rem 0.2rem 1.2rem 0.2rem;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      width: 100%;
-    }
-    .carousel-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .carousel-container.two-rows {
-      display: grid;
-      grid-template-rows: repeat(2, 1fr);
-      grid-auto-flow: column;
-      grid-auto-columns: calc((100% - 36px) / 4);
-    }
-
-    .carousel-arrow {
-      position: absolute;
-      top: calc(50% - 0.6rem);
-      transform: translateY(-50%);
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: rgba(18, 17, 16, 0.85);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      font-size: 1.4rem;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 10;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-      transition: opacity 0.25s ease, transform 0.25s ease, background 0.25s ease, color 0.25s ease;
-      user-select: none;
-    }
-
-    .carousel-arrow:hover {
-      background: var(--accent);
-      color: #000000;
-      box-shadow: 0 0 10px rgba(212, 163, 115, 0.5);
-      transform: translateY(-50%) scale(1.1);
-    }
-
-    .carousel-arrow.prev { left: -18px; }
-    .carousel-arrow.next { right: -18px; }
-
     .carousel-card {
-      flex: 0 0 calc((100% - 36px) / 4);
-      scroll-snap-align: start;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -451,39 +391,8 @@
       padding: 0.55rem 0.5rem;
     }
     
-    /* Misure delle schede come in TEBE: 4 per riga con 12 px di spazio, DYMO larghe 340 px;
-       sotto i 1300 px 2 per riga, sul telefono una alla volta (regole mobile più sotto). */
-    #dymo-carousel .carousel-card { flex: 0 0 340px; }
     @media (max-width: 1300px) {
-      .carousel-card { flex: 0 0 calc((100% - 12px) / 2); }
-      .carousel-container.two-rows { grid-auto-columns: calc((100% - 12px) / 2); }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    @media (max-width: 1000px) {
-      #dymo-carousel .carousel-card { flex: 0 0 320px; }
-    }
-
-    /* FIX SPAZIATURA SAFARI PER SEZIONE PROMO STAGIONALI */
-    @supports (-webkit-hyphens: none) {
-      #seasonal-promo-carousel {
-        gap: 0 !important;
-      }
-      #seasonal-promo-carousel .carousel-card {
-        margin-right: 12px !important;
-      }
-      #seasonal-promo-carousel .carousel-card:last-child {
-        margin-right: 0 !important;
-      }
-      @media (max-width: 768px) {
-        #seasonal-promo-carousel .carousel-card {
-          flex: 0 0 calc(100% - 1.5rem) !important;
-          margin-right: 1.5rem !important;
-        }
-        #seasonal-promo-carousel .carousel-card:last-child {
-          flex: 0 0 100% !important;
-          margin-right: 0 !important;
-        }
-      }
     }
 
     /* WIDGET ED ESPANSIONE ANIMATA */
@@ -684,24 +593,6 @@
         margin-bottom: 1rem;
       }
 
-      .carousel-container.two-rows {
-        display: grid;
-        grid-template-rows: repeat(2, 1fr);
-        grid-auto-flow: column;
-        grid-auto-columns: 100%;
-      }
-
-      .carousel-container.two-rows .carousel-card {
-        width: 100%;
-        scroll-snap-align: center;
-      }
-
-      .carousel-container:not(.two-rows) .carousel-card {
-        flex: 0 0 100%;
-        scroll-snap-align: center;
-      }
-
-      #dymo-carousel .carousel-card { flex: 0 0 100%; }
       .grid { grid-template-columns: 1fr; }
 
       .mobile-top-bar {
@@ -931,7 +822,7 @@
         <button class="credits-toggle" type="button" aria-expanded="false" aria-controls="sidebar-credits-body" onclick="toggleCredits(this)">CREDITS // CONTACTS</button>
         <div class="credits-body" id="sidebar-credits-body">
           <div class="sidebar-disclaimer">
-            <span><span class="release-number">V 1.0 2026</span> · Developed by Fabrizio Notte</span>
+            <span><span class="release-number">V 1.1 2026</span> · Developed by Fabrizio Notte</span>
             © Marchi e loghi appartengono ai rispettivi proprietari<br>
             <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
           </div>
@@ -1164,7 +1055,7 @@
       <div class="section-title">Etichette Dymo</div>
       <div class="carousel-wrapper">
         <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('dymo-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
-        <div class="carousel-container" id="dymo-carousel">
+        <div class="carousel-container dymo" id="dymo-carousel">
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=doppioprezzo'">
             <div class="card-top"><span class="number">01</span><span class="card-type">57 x 32 MM</span></div>
             <div class="preview"><img class="preview-image" src="assets/thumbnail/doppioprezzo.png" alt="1. Outlet Doppio Prezzo"></div>
@@ -1555,26 +1446,7 @@
     let qrCodeInstance = null;
 
     function updateCarouselArrows() {
-      document.querySelectorAll('.carousel-wrapper').forEach(wrapper => {
-        const container = wrapper.querySelector('.carousel-container');
-        const prevBtn = wrapper.querySelector('.carousel-arrow.prev');
-        const nextBtn = wrapper.querySelector('.carousel-arrow.next');
-
-        if (!container || !prevBtn || !nextBtn) return;
-
-        const isScrollable = container.scrollWidth > (container.clientWidth + 2);
-
-        if (!isScrollable) {
-          prevBtn.style.display = 'none';
-          nextBtn.style.display = 'none';
-        } else {
-          const isAtStart = container.scrollLeft <= 5;
-          const isAtEnd = (container.scrollLeft + container.clientWidth) >= (container.scrollWidth - 5);
-
-          prevBtn.style.display = isAtStart ? 'none' : 'flex';
-          nextBtn.style.display = isAtEnd ? 'none' : 'flex';
-        }
-      });
+      Caroselli.refresh();
     }
 
     function toggleMobileSidebar() {
@@ -1685,14 +1557,7 @@
     function scrollCarousel(carouselId, direction) {
       const container = document.getElementById(carouselId);
       if (!container) return;
-      const card = container.querySelector('.carousel-card');
-      if (!card) return;
-      
-      const style = window.getComputedStyle(container);
-      const gap = parseInt(style.gap) || 24;
-      const scrollAmount = card.offsetWidth + gap;
-      
-      container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+      Caroselli.scroll(container, direction);
     }
 
     function openPdf(pdfUrl) {
@@ -2002,13 +1867,7 @@
       enableCardDescriptions();
       generateQRCode();
       fetchExchangeRates();
-      updateCarouselArrows();
-
-      document.querySelectorAll('.carousel-container').forEach(container => {
-        container.addEventListener('scroll', updateCarouselArrows);
-      });
-
-      window.addEventListener('resize', updateCarouselArrows);
+      Caroselli.init();
 
       const mainScroll = document.getElementById('main-content');
       if (mainScroll) {

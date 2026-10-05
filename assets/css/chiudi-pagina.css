@@ -1,0 +1,63 @@
+.app-close-btn {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #d4a373;
+  color: #000;
+  font: bold 1.2rem/1 Arial, Helvetica, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.app-close-btn:hover {
+  background: #e5ba73;
+  transform: scale(1.1);
+}
+
+.app-close-btn:focus-visible {
+  outline: 2px solid #e5ba73;
+  outline-offset: 3px;
+}
+
+.app-close-btn--pdf {
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  font-size: 1.3rem;
+}
+
+@media (max-width: 1100px) {
+  .app-close-btn:not(.app-close-btn--pdf) {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-close-btn--pdf {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+}
+
+@media print {
+  .app-close-btn { display: none !important; }
+}
