@@ -528,6 +528,7 @@
     }
 
     .tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
+    .tool-status { margin-top: 0.6rem; color: var(--text-muted); font-size: 0.75rem; text-align: center; }
 
     /* STILI WIDGET IVA */
     .rate-grid-widget {
@@ -822,7 +823,7 @@
         <button class="credits-toggle" type="button" aria-expanded="false" aria-controls="sidebar-credits-body" onclick="toggleCredits(this)">CREDITS // CONTACTS</button>
         <div class="credits-body" id="sidebar-credits-body">
           <div class="sidebar-disclaimer">
-            <span><span class="release-number">V 1.1 2026</span> · Developed by Fabrizio Notte</span>
+            <span><span class="release-number">V 1.2 2026</span> · Developed by Fabrizio Notte</span>
             © Marchi e loghi appartengono ai rispettivi proprietari<br>
             <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
           </div>
@@ -1350,7 +1351,7 @@
         <div class="tool-row">
           <div class="input-group">
             <span class="input-prefix" id="val-curr-symbol">$</span>
-            <input type="number" id="val-amount" class="tool-input" placeholder="Importo" oninput="calcValuta()">
+            <input type="text" id="val-amount" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Importo" oninput="calcValuta()">
             <select id="val-currency" class="tool-input-select" style="max-width: 140px; border-left: 1px solid var(--border);" onchange="calcValuta()">
               <option value="USD">USD ($) USA</option>
               <option value="GBP">GBP (£) GBR</option>
@@ -1364,6 +1365,7 @@
 
         <button class="tool-btn" style="width:100%" onclick="calcValuta()">Calcola Cambio</button>
         <div class="tool-result" id="res-valuta">€ 0,00</div>
+        <div class="tool-status" id="val-status" role="status">Caricamento tassi di cambio…</div>
       </div>
 
       <div class="widget" id="widget-iva" onclick="focusWidget(event, 'widget-iva')">
@@ -1443,6 +1445,7 @@
 
   <script>
     let currentIvaRate = 22;
+    let currentIvaSource = 'iva-net';
     let qrCodeInstance = null;
 
     function updateCarouselArrows() {
@@ -1684,10 +1687,16 @@
       currentIvaRate = rate;
       document.querySelectorAll('.rate-btn-widget').forEach(b => b.classList.remove('active'));
       if (btnElem) btnElem.classList.add('active');
-      calcIvaFromNet();
+      const calculateFromSource = {
+        'iva-net': calcIvaFromNet,
+        'iva-vat': calcIvaFromVat,
+        'iva-gross': calcIvaFromGross
+      };
+      calculateFromSource[currentIvaSource]();
     }
 
     function calcIvaFromNet() {
+      currentIvaSource = 'iva-net';
       const netVal = parseFloat(document.getElementById('iva-net').value.replace(',', '.'));
       if (!isNaN(netVal) && netVal >= 0) {
         const vatVal = netVal * (currentIvaRate / 100);
@@ -1701,6 +1710,7 @@
     }
 
     function calcIvaFromVat() {
+      currentIvaSource = 'iva-vat';
       const vatVal = parseFloat(document.getElementById('iva-vat').value.replace(',', '.'));
       if (!isNaN(vatVal) && vatVal >= 0) {
         const netVal = vatVal / (currentIvaRate / 100);
@@ -1714,6 +1724,7 @@
     }
 
     function calcIvaFromGross() {
+      currentIvaSource = 'iva-gross';
       const grossVal = parseFloat(document.getElementById('iva-gross').value.replace(',', '.'));
       if (!isNaN(grossVal) && grossVal >= 0) {
         const netVal = grossVal / (1 + (currentIvaRate / 100));
@@ -1731,9 +1742,10 @@
       document.getElementById('iva-net').value = '';
       document.getElementById('iva-vat').value = '';
       document.getElementById('iva-gross').value = '';
+      currentIvaSource = 'iva-net';
     }
 
-    let liveRates = {
+    const reserveRates = {
       'USD': 1.08,
       'GBP': 0.85,
       'RUB': 98.0,
@@ -1741,6 +1753,7 @@
       'CNY': 7.80,
       'JPY': 160.5
     };
+    let liveRates = { ...reserveRates };
 
     const SYMBOLS = {
       'USD': '$',
@@ -1753,46 +1766,57 @@
     };
 
     async function fetchExchangeRates() {
+      const status = document.getElementById('val-status');
+      status.textContent = 'Caricamento tassi di cambio…';
       try {
         const response = await fetch('https://open.er-api.com/v6/latest/EUR');
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.rates) {
-            liveRates = data.rates;
-            calcValuta();
-          }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!data || !data.rates || !Object.keys(reserveRates).every(currency =>
+          Number.isFinite(data.rates[currency]) && data.rates[currency] > 0)) {
+          throw new Error('Risposta tassi di cambio non valida.');
         }
+        liveRates = data.rates;
+        status.textContent = 'Tassi di cambio aggiornati.';
       } catch (error) {
-        console.warn('Uso tassi di cambio di riserva:', error);
+        console.error('Aggiornamento tassi di cambio fallito.', error);
+        liveRates = { ...reserveRates };
+        status.textContent = 'Tassi di riserva in uso: aggiornamento non disponibile.';
       }
+      calcValuta();
     }
 
-    async function calcValuta() {
+    function calcValuta() {
       const direction = document.getElementById('val-direction').value;
-      const amount = parseFloat(document.getElementById('val-amount').value);
+      const amount = parseFloat(document.getElementById('val-amount').value.replace(',', '.'));
       const curr = document.getElementById('val-currency').value;
       const symbolSpan = document.getElementById('val-curr-symbol');
       const resElem = document.getElementById('res-valuta');
 
-      const foreignSymbol = SYMBOLS[curr] || '$';
-      const rate = liveRates[curr] || 1;
+      const foreignSymbol = SYMBOLS[curr];
+      const rate = liveRates[curr];
 
       if (direction === 'TO_EUR') {
-        symbolSpan.innerText = foreignSymbol;
+        symbolSpan.textContent = foreignSymbol;
       } else {
-        symbolSpan.innerText = '€';
+        symbolSpan.textContent = '€';
       }
 
-      if (!isNaN(amount) && amount > 0) {
+      if (!Number.isFinite(rate) || rate <= 0) {
+        console.error('Tasso di cambio non disponibile:', curr);
+        resElem.textContent = 'Cambio non disponibile';
+        return;
+      }
+      if (Number.isFinite(amount) && amount >= 0) {
         if (direction === 'TO_EUR') {
           const inEur = amount / rate;
-          resElem.innerText = `€ ${inEur.toFixed(2).replace('.', ',')}`;
+          resElem.textContent = `€ ${inEur.toFixed(2).replace('.', ',')}`;
         } else {
           const inForeign = amount * rate;
-          resElem.innerText = `${foreignSymbol} ${inForeign.toFixed(2).replace('.', ',')} (${curr})`;
+          resElem.textContent = `${foreignSymbol} ${inForeign.toFixed(2).replace('.', ',')} (${curr})`;
         }
       } else {
-        resElem.innerText = direction === 'TO_EUR' ? "€ 0,00" : `${foreignSymbol} 0,00`;
+        resElem.textContent = direction === 'TO_EUR' ? "€ 0,00" : `${foreignSymbol} 0,00`;
       }
     }
 
