@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-55">
-  <script src="assets/js/caroselli.js?v=20261005-55" defer></script>
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-58">
+  <script src="assets/js/caroselli.js?v=20261005-58" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -767,10 +767,10 @@
       .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-55">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-55"></script>
-  <script src="assets/js/theme.js?v=20261005-55"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-55">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-58">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-58"></script>
+  <script src="assets/js/theme.js?v=20261005-58"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-58">
 </head>
 <body class="sidebar-collapsed">
 
@@ -879,6 +879,78 @@
       </nav>
     </div>
 
+    <section class="system-menu" id="system-menu" aria-label="Menu di sistema" hidden>
+      <div class="system-menu-heading system-menu-title" id="system-menu-title">MENU</div>
+      <div class="system-menu-view" data-system-view="home">
+        <div class="system-menu-items">
+          <button class="system-menu-item" type="button" data-system-menu-item="settings" onclick="openSystemMenuView('settings')">
+            <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">⚙</span><span class="system-menu-label-text">IMPOSTAZIONI</span></span>
+            <span aria-hidden="true">›</span>
+          </button>
+          <button class="system-menu-item" type="button" data-system-menu-item="profile" onclick="openSystemMenuView('stores')">
+            <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">♙</span><span class="system-menu-label-text">PROFILO UTENTE</span></span>
+            <span class="system-store-current">LXRY</span>
+          </button>
+          <button class="system-menu-item" type="button" data-system-menu-item="store" disabled>
+            <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">▦</span><span class="system-menu-label-text">STORE</span></span>
+            <span class="system-menu-badge">COMING SOON</span>
+          </button>
+          <button class="system-menu-item" type="button" data-system-menu-item="contacts" onclick="openSystemMenuView('contacts')">
+            <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">ⓘ</span><span class="system-menu-label-text">CONTATTI &amp; CREDITS</span></span>
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
+      <div class="system-menu-view" data-system-view="settings" hidden>
+        <div class="system-setting-row">
+          <span class="system-setting-label">TEMA COLORE</span>
+          <div class="theme-choices" role="group" aria-label="Tema colore">
+            <button class="theme-choice" type="button" data-interface-theme-choice="light" aria-pressed="false">CHIARO</button>
+            <button class="theme-choice" type="button" data-interface-theme-choice="dark" aria-pressed="true">SCURO</button>
+          </div>
+        </div>
+        <div class="system-setting-row">
+          <span class="system-setting-label">ASPETTO</span>
+          <div class="theme-choices" role="group" aria-label="Aspetto interfaccia">
+            <button class="theme-choice" type="button" data-interface-look-choice="standard" aria-pressed="true">STANDARD</button>
+            <button class="theme-choice" type="button" data-interface-look-choice="minimal" aria-pressed="false">MINIMAL</button>
+          </div>
+        </div>
+        <div class="system-menu-footer">
+          <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Indietro</button>
+        </div>
+      </div>
+      <div class="system-menu-view" data-system-view="contacts" hidden>
+        <div class="system-credits">
+          <span><span class="release-number">V 1.6 2026</span> · Developed by Fabrizio Notte</span><br>
+          © Marchi e loghi appartengono ai rispettivi proprietari<br>
+          <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
+        </div>
+        <div class="system-menu-footer">
+          <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Indietro</button>
+        </div>
+      </div>
+      <div class="system-menu-view" data-system-view="stores" hidden>
+        <div class="system-store-list" role="group" aria-label="Seleziona negozio">
+          <button class="system-store-choice is-active" type="button" aria-pressed="true" disabled>
+            <span>LUXURY OUTLET</span>
+            <span class="system-store-status">LXRY · ATTIVO</span>
+          </button>
+          <button class="system-store-choice" type="button" aria-pressed="false" disabled>
+            <span>TEBE</span>
+            <span class="system-menu-badge">IN ARRIVO</span>
+          </button>
+          <button class="system-store-choice" type="button" aria-pressed="false" disabled>
+            <span>OPHILYA</span>
+            <span class="system-menu-badge">IN ARRIVO</span>
+          </button>
+        </div>
+        <div class="system-menu-footer">
+          <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Indietro</button>
+        </div>
+      </div>
+    </section>
+
     <div class="sidebar-bottom">
       <div class="storecraft-mark">
         <img src="assets/img/storecraftlogo.png" alt="StoreCraft">
@@ -889,61 +961,6 @@
       </div>
     </div>
   </aside>
-
-  <section class="system-menu" id="system-menu" aria-label="Menu di sistema" hidden>
-    <div class="system-menu-heading system-menu-title">MENU // IMPOSTAZIONI</div>
-    <div class="system-menu-view" data-system-view="home">
-      <div class="system-menu-items">
-        <button class="system-menu-item" type="button" data-system-menu-item="settings" onclick="openSystemMenuView('settings')">
-          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">⚙</span>IMPOSTAZIONI</span>
-          <span aria-hidden="true">›</span>
-        </button>
-        <button class="system-menu-item" type="button" data-system-menu-item="profile" disabled>
-          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">♙</span>PROFILO UTENTE</span>
-          <span class="system-menu-badge">COMING SOON</span>
-        </button>
-        <button class="system-menu-item" type="button" data-system-menu-item="store" disabled>
-          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">▦</span>STORE</span>
-          <span class="system-menu-badge">COMING SOON</span>
-        </button>
-        <button class="system-menu-item" type="button" data-system-menu-item="contacts" onclick="openSystemMenuView('contacts')">
-          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">ⓘ</span>CONTATTI &amp; CREDITS</span>
-          <span aria-hidden="true">›</span>
-        </button>
-      </div>
-    </div>
-    <div class="system-menu-view" data-system-view="contacts" hidden>
-      <div class="system-menu-heading">CONTATTI &amp; CREDITS</div>
-      <div class="system-credits">
-        <span><span class="release-number">V 1.5 2026</span> · Developed by Fabrizio Notte</span><br>
-        © Marchi e loghi appartengono ai rispettivi proprietari<br>
-        <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
-      </div>
-      <div class="system-menu-footer">
-        <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Menu Impostazioni</button>
-      </div>
-    </div>
-  </section>
-  <section class="system-settings-panel" id="system-settings-panel" aria-labelledby="system-settings-title" hidden>
-    <div class="system-menu-heading" id="system-settings-title">IMPOSTAZIONI</div>
-    <div class="system-setting-row">
-      <span class="system-setting-label">TEMA COLORE</span>
-      <div class="theme-choices" role="group" aria-label="Tema colore">
-        <button class="theme-choice" type="button" data-interface-theme-choice="light" aria-pressed="false">TEMA CHIARO</button>
-        <button class="theme-choice" type="button" data-interface-theme-choice="dark" aria-pressed="true">TEMA SCURO</button>
-      </div>
-    </div>
-    <div class="system-setting-row">
-      <span class="system-setting-label">LOOK</span>
-      <div class="theme-choices" role="group" aria-label="Look interfaccia">
-        <button class="theme-choice" type="button" data-interface-look-choice="standard" aria-pressed="true">STANDARD</button>
-        <button class="theme-choice" type="button" data-interface-look-choice="minimal" aria-pressed="false">MINIMAL</button>
-      </div>
-    </div>
-    <div class="system-menu-footer">
-      <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Menu Impostazioni</button>
-    </div>
-  </section>
 
   <main id="main-content">
     <header>

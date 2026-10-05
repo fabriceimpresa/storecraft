@@ -6,7 +6,7 @@
   const root = document.documentElement;
   let systemMenu;
   let systemMenuButton;
-  let settingsPanel;
+  let systemMenuTitle;
 
   function readTheme() {
     try {
@@ -71,6 +71,24 @@
     }
   }
 
+  function collapseSidebarSections() {
+    document.querySelectorAll('[data-sidebar-section]').forEach(section => {
+      section.classList.add('is-collapsed');
+      const toggle = section.querySelector('.section-toggle');
+      const title = section.querySelector('.label span')?.textContent;
+      if (!toggle || !title) return;
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', `Espandi ${title}`);
+    });
+
+    const promoToggle = document.querySelector('.nav-subtoggle[aria-controls="promoItems"]');
+    const cartelliItems = document.getElementById('cartelliItems');
+    const promoItems = document.getElementById('promoItems');
+    promoToggle?.setAttribute('aria-expanded', 'false');
+    if (cartelliItems) cartelliItems.hidden = false;
+    if (promoItems) promoItems.hidden = true;
+  }
+
   function loadMinimalDisplayFont() {
     const fontLinkId = 'interface-minimal-display-font';
     if (document.getElementById(fontLinkId)) return;
@@ -84,46 +102,43 @@
     document.head.append(link);
   }
 
-  applyTheme(readTheme());
+  const initialTheme = readTheme();
+  applyTheme(initialTheme);
   applyLook(readLook());
 
   function setSystemMenuOpen(open) {
     if (!systemMenu || !systemMenuButton) return;
     systemMenu.hidden = !open;
     systemMenuButton.setAttribute('aria-expanded', String(open));
-    if (!open) settingsPanel.hidden = true;
     if (open) {
-      systemMenu.querySelector('[data-system-menu-item="settings"]')?.focus({ preventScroll: true });
+      collapseSidebarSections();
+      showSystemMenuView('home');
     }
-  }
-
-  function positionSettingsPanel() {
-    if (!settingsPanel || settingsPanel.hidden || !systemMenu) return;
-    const menuRect = systemMenu.getBoundingClientRect();
-    const settingsButton = systemMenu.querySelector('[data-system-menu-item="settings"]');
-    const settingsRect = settingsButton.getBoundingClientRect();
-    const panelWidth = settingsPanel.getBoundingClientRect().width;
-    const gap = 8;
-    const fitsBesideMenu = menuRect.right + gap + panelWidth <= window.innerWidth - 12;
-
-    settingsPanel.style.left = `${fitsBesideMenu ? menuRect.right + gap : menuRect.left}px`;
-    settingsPanel.style.bottom = fitsBesideMenu
-      ? `${window.innerHeight - settingsRect.bottom}px`
-      : `${window.innerHeight - menuRect.top + gap}px`;
   }
 
   function showSystemMenuView(view) {
     if (!systemMenu) return;
-    const views = ['home', 'contacts'];
+    const views = ['home', 'settings', 'contacts', 'stores'];
     if (!views.includes(view)) throw new Error(`Vista del menu di sistema non riconosciuta: ${view}`);
     views.forEach(name => {
       const panel = systemMenu.querySelector(`[data-system-view="${name}"]`);
       panel.hidden = name !== view;
     });
     systemMenu.dataset.view = view;
-    settingsPanel.hidden = true;
+    systemMenuTitle.textContent = {
+      home: 'MENU',
+      settings: 'IMPOSTAZIONI',
+      contacts: 'CONTATTI & CREDITS',
+      stores: 'NEGOZI'
+    }[view];
     if (view === 'home') {
       systemMenu.querySelector('[data-system-menu-item="settings"]')?.focus({ preventScroll: true });
+    } else if (view === 'settings') {
+      systemMenu.querySelector('[data-system-view="settings"] [data-interface-theme-choice].is-selected')
+        ?.focus({ preventScroll: true });
+    } else if (view === 'contacts' || view === 'stores') {
+      systemMenu.querySelector(`[data-system-view="${view}"] [data-system-menu-back]`)
+        ?.focus({ preventScroll: true });
     } else {
       systemMenu.querySelector('[data-system-view="contacts"] [data-system-menu-back]')?.focus({ preventScroll: true });
     }
@@ -135,37 +150,31 @@
     if (!systemMenu.hidden) showSystemMenuView('home');
   };
   window.openSystemMenuView = view => {
-    if (view === 'settings') {
-      systemMenu.querySelector('[data-system-view="home"]').hidden = false;
-      systemMenu.querySelector('[data-system-view="contacts"]').hidden = true;
-      systemMenu.dataset.view = 'home';
-      settingsPanel.hidden = false;
-      positionSettingsPanel();
-      settingsPanel.querySelector('[data-interface-theme-choice].is-selected')?.focus({ preventScroll: true });
-      return;
-    }
-    if (view === 'contacts' || view === 'home') {
+    if (view === 'settings' || view === 'contacts' || view === 'stores' || view === 'home') {
       showSystemMenuView(view);
       return;
     }
-    if (view === 'profile' || view === 'store') return;
+    if (view === 'profile') {
+      showSystemMenuView('stores');
+      return;
+    }
+    if (view === 'store') return;
     throw new Error(`Sezione del menu di sistema non riconosciuta: ${view}`);
   };
 
   document.addEventListener('DOMContentLoaded', () => {
     systemMenu = document.getElementById('system-menu');
     systemMenuButton = document.getElementById('system-menu-toggle');
-    settingsPanel = document.getElementById('system-settings-panel');
-    if (!systemMenu || !systemMenuButton || !settingsPanel) return;
+    systemMenuTitle = document.getElementById('system-menu-title');
+    if (!systemMenu || !systemMenuButton || !systemMenuTitle) return;
 
-    [systemMenu, settingsPanel].forEach(panel => panel.addEventListener('keydown', event => {
+    systemMenu.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
         event.preventDefault();
         setSystemMenuOpen(false);
         systemMenuButton.focus({ preventScroll: true });
       }
-    }));
-    systemMenu.addEventListener('animationend', positionSettingsPanel);
+    });
     document.querySelectorAll('[data-interface-theme-choice]').forEach(button => {
       button.addEventListener('click', () => {
         applyTheme(button.dataset.interfaceThemeChoice, true);
@@ -180,10 +189,9 @@
     applyLook(root.dataset.interfaceLook || 'standard');
     document.addEventListener('pointerdown', event => {
       if (!systemMenu.hidden && !systemMenu.contains(event.target) &&
-          !settingsPanel.contains(event.target) && !systemMenuButton.contains(event.target)) {
+          !systemMenuButton.contains(event.target)) {
         setSystemMenuOpen(false);
       }
     });
-    window.addEventListener('resize', positionSettingsPanel);
   });
 })();
