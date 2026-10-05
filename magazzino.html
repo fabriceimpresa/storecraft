@@ -2,18 +2,19 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartelli Magazzino // STORE CRAFT</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261005"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005"></script>
+  <script src="assets/js/logos.js?v=20261005-4"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -237,8 +238,12 @@
     }
 
   </style>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
+  <script defer src="assets/js/responsive.js?v=20261005-4"></script>
 </head>
-<body>
+<body data-layout="cartelli">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna all'index">✕</a>
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>
@@ -657,7 +662,7 @@
       document.fonts.ready.then(renderCards);
     };
   </script>
-  <script src="assets/js/cursore.js?v=20261005"></script>
+  <script src="assets/js/cursore.js?v=20261005-4"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('cartelloBox' + currentCard);
@@ -688,6 +693,6 @@
       ]
     });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005" data-sheet="#a4Sheet"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-4" data-sheet="#a4Sheet"></script>
 </body>
 </html>

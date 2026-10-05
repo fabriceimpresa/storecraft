@@ -198,7 +198,7 @@ const LOGO_FILES = [
 ];
 
 const LOGO_ASSET_PATH = "assets/logos/";
-const LOGO_ASSET_VERSION = "20261005";
+const LOGO_ASSET_VERSION = "20261005-4";
 
 function getLogoSource(fileName) {
   return fileName ? `${LOGO_ASSET_PATH}${fileName}?v=${LOGO_ASSET_VERSION}` : '';

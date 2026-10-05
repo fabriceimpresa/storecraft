@@ -2,19 +2,20 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartellini Promo</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
 
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="assets/js/logos.js?v=20261005"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005"></script>
+  <script src="assets/js/logos.js?v=20261005-4"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -324,8 +325,11 @@
     }
 
   </style>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
 </head>
-<body>
+<body data-layout="cartellini">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <div class="floating-nav-box">
@@ -844,7 +848,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="assets/js/cursore.js?v=20261005"></script>
+  <script src="assets/js/cursore.js?v=20261005-4"></script>
   <script>
     // Cursore (come in Cartellini Vetrina): la linguetta lo porta sopra il cartellino scelto, i campi del pannello
     // sopra (o di lato) l'elemento del cartellino legato al campo in uso.
@@ -871,6 +875,6 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-4" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

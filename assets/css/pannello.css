@@ -301,28 +301,6 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   }
 
-  /* barra di scorrimento larga come il riquadro della freccia, con lo stesso fondo; maniglia oro piena e squadrata (alta almeno 36 px),
-     che quasi riempie la colonna e si schiarisce passandoci sopra. Dentro, vicino ai bordi, due frecce scure sottili
-     (su in alto, giù in basso) come le frecce ⌄ dei menu della dashboard. */
-  .form-group select::picker(select)::-webkit-scrollbar { width: 1.6rem; }
-  .form-group select::picker(select)::-webkit-scrollbar-track { background: #181715; border-left: 1px solid #2e2b27; }
-  .form-group select::picker(select)::-webkit-scrollbar-thumb {
-    --arrow-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 4.2 4.5 1 8 4.2' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E");
-    --arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 .8 4.5 4 8 .8' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E");
-    border: solid transparent;
-    border-width: 3px 4px;
-    border-radius: 0;
-    min-height: 36px;
-    background: var(--arrow-up) center 5px / 9px 5px no-repeat padding-box,
-                var(--arrow-down) center calc(100% - 5px) / 9px 5px no-repeat padding-box,
-                #d4a373 padding-box;
-  }
-  .form-group select::picker(select)::-webkit-scrollbar-thumb:hover {
-    background: var(--arrow-up) center 5px / 9px 5px no-repeat padding-box,
-                var(--arrow-down) center calc(100% - 5px) / 9px 5px no-repeat padding-box,
-                #e5ba73 padding-box;
-  }
-
   .form-group select option {
     padding: 5px 8px;
     font-size: 0.82rem;

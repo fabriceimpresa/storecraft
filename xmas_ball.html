@@ -2,18 +2,19 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xmas Ball</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261005"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005"></script>
-  <script src="assets/js/print-white-logos.js?v=20261005"></script>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
+  <script src="assets/js/logos.js?v=20261005-4"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
+  <script src="assets/js/print-white-logos.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -126,7 +127,7 @@
     .controls .form-group select option.priority-brand-option { background: #87161c; color: var(--xmas-gold); font-weight: bold; }
     @supports (appearance: base-select) {
       .controls .form-group select::picker(select) { background: #7d141a; color: #ffffff; border-color: #ffffff; }
-      .controls .form-group select::picker(select)::-webkit-scrollbar-track { background: #6a1016; border-left-color: #ffffff; }
+      .controls .form-group select { --menu-track-bg: #6a1016; --menu-track-border: #ffffff; }
       .controls .form-group select option:hover,
       .controls .form-group select option:focus-visible { background: #9e1b22; }
       .controls .form-group select option:checked { color: var(--brand-dot-color); }   /* voce scelta oro, come i pallini dei menu BRAND */
@@ -422,8 +423,12 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
+  <script defer src="assets/js/responsive.js?v=20261005-4"></script>
 </head>
-<body>
+<body data-layout="cartelli">
 
   <!-- Pulsante Chiudi e Menu Fluttuante -->
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -835,7 +840,7 @@
 
     window.onload = loadLocalLogos;
   </script>
-  <script src="assets/js/cursore.js?v=20261005"></script>
+  <script src="assets/js/cursore.js?v=20261005-4"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -858,6 +863,6 @@
       ]
     });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-4"></script>
 </body>
 </html>

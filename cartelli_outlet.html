@@ -2,19 +2,20 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartello Outlet</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005">
-  <script src="assets/js/logos.js?v=20261005"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005"></script>
-  <script src="assets/js/print-white-logos.js?v=20261005"></script>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
-  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261005">
-  <script src="assets/js/madeinitaly.js?v=20261005"></script>
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
+  <script src="assets/js/logos.js?v=20261005-4"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
+  <script src="assets/js/print-white-logos.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261005-4">
+  <script src="assets/js/madeinitaly.js?v=20261005-4"></script>
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -443,8 +444,12 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
+  <script defer src="assets/js/responsive.js?v=20261005-4"></script>
 </head>
-<body>
+<body data-layout="cartelli">
   <!-- Pulsanti e Riquadri Navigazione UI -->
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
 
@@ -1078,7 +1083,7 @@
 
     window.onload = loadLocalLogos;
   </script>
-  <script src="assets/js/cursore.js?v=20261005"></script>
+  <script src="assets/js/cursore.js?v=20261005-4"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -1113,6 +1118,6 @@
       ]
     });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-4"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@
  */
 (() => {
   const PRINT_LOGOS_PATH = 'assets/img/printlogos/';
-  const LOGO_ASSET_VERSION = '20261005';
+  const LOGO_ASSET_VERSION = '20261005-4';
   const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
   let customLogoCache = new Map(); // chiave: `${sourceData}|${colorKey}`
 

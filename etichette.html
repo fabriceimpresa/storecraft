@@ -7,12 +7,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261005"></script>
+  <script src="assets/js/logos.js?v=20261005-4"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="assets/js/dymo-direct.js?v=20261005"></script>
+  <script src="assets/js/dymo-direct.js?v=20261005-4"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
   <style>
     :root {
       --bg: #121110;
@@ -254,7 +254,7 @@
     /* ==========================================
        MEDIA QUERIES PER RESPONSIVE MOBILE
     ========================================== */
-    @media (max-width: 768px) {
+    @media screen and (max-width: 760px) and (pointer: coarse) {
       body {
         flex-direction: column;
         height: 100vh;
@@ -393,7 +393,7 @@
       }
     }
 
-    @media (max-width: 480px) {
+    @media screen and (max-width: 480px) and (pointer: coarse) {
       main {
         padding-top: 135px;
         padding-bottom: 95px;
@@ -407,7 +407,7 @@
       }
     }
 
-    @media (max-width: 380px) {
+    @media screen and (max-width: 380px) and (pointer: coarse) {
       main {
         padding-top: 125px;
         padding-bottom: 90px;
@@ -421,8 +421,11 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
 </head>
-<body>
+<body data-layout="dymo">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
 
   <aside>
