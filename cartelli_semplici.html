@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartello Semplice</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
-  <script src="assets/js/logos.js?v=20261005-4"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
-  <script src="assets/js/print-white-logos.js?v=20261005-4"></script>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261005-4">
-  <script src="assets/js/madeinitaly.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-22">
+  <script src="assets/js/logos.js?v=20261005-22"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-22"></script>
+  <script src="assets/js/print-white-logos.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261005-22">
+  <script src="assets/js/madeinitaly.js?v=20261005-22"></script>
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -438,10 +438,10 @@
     }
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
-  <script defer src="assets/js/responsive.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-22">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-22">
+  <script defer src="assets/js/responsive.js?v=20261005-22"></script>
 </head>
 <body data-layout="cartelli">
 
@@ -485,12 +485,9 @@
 
       <!-- Blocco 1: selettori e pulsanti -->
       <div class="panel-block">
-        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
-          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
-          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
-        </div>
+        <div id="cardSelector" data-selettore-cartello></div>
 
-        <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
+        <div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div>
       </div>
 
       <!-- Blocco 2: brand (ufficiali e personalizzati) e claim laterali -->
@@ -534,46 +531,8 @@
         <div class="form-group">
           <label class="section-label" for="presetDesc">TESTI PRONTI</label>
           <div class="preset-select">
-            <select id="presetDesc" onchange="applyPreset()">
-              <option value="">-- Seleziona un testo --</option>
-              <optgroup label="Promozioni">
-                <option value="Special Deal">Special Deal</option>
-                <option value="Final Price">Final Price</option>
-                <option value="Summer Sale">Summer Sale</option>
-                <option value="Spring Sale">Spring Sale</option>
-                <option value="Winter Sale">Winter Sale</option>
-                <option value="Black Friday">Black Friday</option>
-                <option value="Made in Italy">Made in Italy</option>
-                <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-                <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-                <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
-              </optgroup>
-              <optgroup label="Articoli">
-                <option value="Abito">Abito</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Blusa">Blusa</option>
-                <option value="Borsa">Borsa</option>
-                <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
-                <option value="Camicia">Camicia</option>
-                <option value="Cappello">Cappello</option>
-                <option value="Cappotto">Cappotto</option>
-                <option value="Cardigan">Cardigan</option>
-                <option value="Cintura">Cintura</option>
-                <option value="Coprispalle">Coprispalle</option>
-                <option value="Foulard">Foulard</option>
-                <option value="Giacca">Giacca</option>
-                <option value="Gilet">Gilet</option>
-                <option value="Gonna">Gonna</option>
-                <option value="Jeans">Jeans</option>
-                <option value="Maglia">Maglia</option>
-                <option value="Occhiali">Occhiali</option>
-                <option value="Pantaloncino">Pantaloncino</option>
-                <option value="Pantalone">Pantalone</option>
-                <option value="Shorts">Shorts</option>
-                <option value="T-Shirt">T-Shirt</option>
-                <option value="Top">Top</option>
-                <option value="Tutina">Tutina</option>
-              </optgroup>
+            <select id="presetDesc" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyPreset()">
+              <option value="" class="ready-text-placeholder">-- Seleziona Testo Pronto --</option>
             </select>
           </div>
           <label for="desc">Testo Libero</label>
@@ -591,10 +550,7 @@
 
       <!-- Blocco 4: stampa -->
       <div class="panel-block">
-        <label class="check-row" id="linkCardsRow" for="linkCards">
-          <span>COPIA SU ALTRO CARTELLO</span>
-          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
-        </label>
+        <div id="linkCardsRow" data-copia-cartello data-checkbox-id="linkCards" data-on-change="setLinkedCards"></div>
 
         <div class="form-group">
           <div class="preset-select">
@@ -652,6 +608,11 @@
       <div class="card-footer"><img class="luxuryLogo" id="footerLogo2" src="assets/img/footer.png" alt="Luxury Outlet"></div>
     </div>
   </div>
+
+  <script src="assets/js/testi-pronti.js?v=20261005-22"></script>
+
+  <script src="assets/js/second-brand-toggle.js?v=20261005-22"></script>
+  <script src="assets/js/selettore-cartello.js?v=20261005-22"></script>
 
   <script>
     const LOGO_PATH = "assets/logos/";
@@ -711,8 +672,8 @@
       const { priorityFiles, remainingFiles } = getSortedLogoFiles();
       ['brandSelect', 'brandSelectBis'].forEach(id => {
         const select = document.getElementById(id);
-        addPlaceholder(select, '— Seleziona Brand —');
-        select.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
+        addPlaceholder(select, '-- Seleziona Brand --');
+        select.firstChild.className = 'brand-placeholder';   // placeholder testuale del menu BRAND
         // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
         [...priorityFiles, ...remainingFiles].forEach(fileName => {
           appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
@@ -806,11 +767,8 @@
       document.getElementById('desc').value = state.desc;
       document.getElementById('price').value = state.price;
 
-      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
-      const secondBrandBtn = document.getElementById('secondBrandBtn');
-      secondBrandBtn.classList.toggle('active', state.twoBrands);
-      secondBrandBtn.setAttribute('aria-pressed', String(state.twoBrands));
-      secondBrandBtn.textContent = state.twoBrands ? '2° BRAND ATTIVO' : '+ AGGIUNGI 2° BRAND';
+      SelettoreCartello.setActive('selectCard' + currentCard);
+      SecondBrandToggle.setState('secondBrandBtn', state.twoBrands);
       document.getElementById('brandBisGroup').hidden = !state.twoBrands;
       // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi Personalizzati 1
       document.getElementById('brandLabel').textContent = state.twoBrands ? 'BRAND 1' : 'BRAND';
@@ -860,7 +818,7 @@
       document.getElementById('card2').classList.toggle('disabled', isSingle);
       sheet.classList.toggle('single-mode', isSingle);
       sheet.classList.toggle('double-mode', !isSingle);
-      document.getElementById('selectCard2').disabled = isSingle;
+      SelettoreCartello.setLowerDisabled(isSingle);
       document.getElementById('sheetModeSelect').value = mode;
       if (isSingle && currentCard === 2) currentCard = 1;
       syncPanel();
@@ -995,7 +953,8 @@
 
     window.onload = loadLocalLogos;
   </script>
-  <script src="assets/js/cursore.js?v=20261005-4"></script>
+  <script src="assets/js/cursore.js?v=20261005-22"></script>
+
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -1023,6 +982,7 @@
       ]
     });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005-4"></script>
+  <script src="assets/js/copia-cartello.js?v=20261005-22"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-22"></script>
 </body>
 </html>

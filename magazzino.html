@@ -4,17 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartelli Magazzino // STORE CRAFT</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-22">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261005-4"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
+  <script src="assets/js/logos.js?v=20261005-22"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-22"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-22">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -238,10 +238,10 @@
     }
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
-  <script defer src="assets/js/responsive.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-22">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-22">
+  <script defer src="assets/js/responsive.js?v=20261005-22"></script>
 </head>
 <body data-layout="cartelli">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna all'index">✕</a>
@@ -256,12 +256,9 @@
 
       <!-- Blocco 1: selettori e pulsanti -->
       <div class="panel-block">
-        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
-          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
-          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
-        </div>
+        <div id="cardSelector" data-selettore-cartello></div>
 
-        <button type="button" class="btn-toggle" id="secondBrandBtn" aria-pressed="false" onclick="toggleSecondBrand()">+ AGGIUNGI 2° BRAND</button>
+        <div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div>
       </div>
 
       <!-- Blocco 2: brand (ufficiali e personalizzati) e claim laterali -->
@@ -312,10 +309,7 @@
 
       <!-- Blocco 4: stampa -->
       <div class="panel-block">
-        <label class="check-row" id="linkCardsRow" for="linkCards">
-          <span>COPIA SU ALTRO CARTELLO</span>
-          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
-        </label>
+        <div id="linkCardsRow" data-copia-cartello data-checkbox-id="linkCards" data-on-change="setLinkedCards"></div>
 
         <div class="form-group">
           <div class="preset-select">
@@ -374,6 +368,13 @@
     </div>
 
   </div>
+
+
+
+  <script src="assets/js/second-brand-toggle.js?v=20261005-22"></script>
+  <script src="assets/js/selettore-cartello.js?v=20261005-22"></script>
+
+
 
   <script>
     const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
@@ -437,8 +438,8 @@
       const { priorityFiles, remainingFiles } = getSortedLogoFiles();
       ['brandSelect', 'brandSelectBis'].forEach(id => {
         const select = document.getElementById(id);
-        addPlaceholder(select, '— Seleziona Brand —');
-        select.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
+        addPlaceholder(select, '-- Seleziona Brand --');
+        select.firstChild.className = 'brand-placeholder';   // placeholder testuale del menu BRAND
         // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico
         [...priorityFiles, ...remainingFiles].forEach(fileName => {
           appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
@@ -518,11 +519,8 @@
         button.classList.toggle('active', button.dataset.arrow === state.arrow);
       });
 
-      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
-      const secondBrandBtn = document.getElementById('secondBrandBtn');
-      secondBrandBtn.classList.toggle('active', state.twoBrands);
-      secondBrandBtn.setAttribute('aria-pressed', String(state.twoBrands));
-      secondBrandBtn.textContent = state.twoBrands ? '2° BRAND ATTIVO' : '+ AGGIUNGI 2° BRAND';
+      SelettoreCartello.setActive('selectCard' + currentCard);
+      SecondBrandToggle.setState('secondBrandBtn', state.twoBrands);
       document.getElementById('brandBisGroup').hidden = !state.twoBrands;
       // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi Personalizzati 1
       document.getElementById('brandLabel').textContent = state.twoBrands ? 'BRAND 1' : 'BRAND';
@@ -570,7 +568,7 @@
       document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
       document.getElementById('a4Sheet').classList.toggle('single-mode', isSingle);
       document.getElementById('cartelloBox2').style.display = isSingle ? 'none' : 'flex';
-      document.getElementById('selectCard2').disabled = isSingle;
+      SelettoreCartello.setLowerDisabled(isSingle);
       document.getElementById('sheetModeSelect').value = mode;
       if (isSingle && currentCard === 2) currentCard = 1;
       syncPanel();
@@ -662,7 +660,10 @@
       document.fonts.ready.then(renderCards);
     };
   </script>
-  <script src="assets/js/cursore.js?v=20261005-4"></script>
+  <script src="assets/js/cursore.js?v=20261005-22"></script>
+
+
+
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('cartelloBox' + currentCard);
@@ -693,6 +694,7 @@
       ]
     });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005-4" data-sheet="#a4Sheet"></script>
+  <script src="assets/js/copia-cartello.js?v=20261005-22"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-22" data-sheet="#a4Sheet"></script>
 </body>
 </html>

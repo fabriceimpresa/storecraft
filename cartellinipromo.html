@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartellini Promo</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-22">
 
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="assets/js/logos.js?v=20261005-4"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261005-4"></script>
+  <script src="assets/js/logos.js?v=20261005-22"></script>
+  <script src="assets/js/print-logo-colors.js?v=20261005-22"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-22">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -68,7 +68,7 @@
     .tab-item input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; }
 
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
-    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #d4a373; margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
     /* Il riquadro "Modifica Cartellino" segue il pannello standard (assets/css/pannello.css), diviso nei quattro
        blocchi; qui solo ciò che è proprio dei cartellini. Come in TEBE il riquadro che comincia con un selettore ha
@@ -325,9 +325,10 @@
     }
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-22">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-22"></script>
+  <script defer src="assets/js/testi-pronti.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-22">
 </head>
 <body data-layout="cartellini">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -356,16 +357,7 @@
 
       <!-- Blocco 2: brand (ufficiali e personalizzati) -->
       <div class="panel-block">
-        <div class="form-group">
-          <label class="section-label" for="brandSelect">BRAND</label>
-          <div class="preset-select">
-            <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
-          </div>
-          <label for="customBrandSelect">Loghi Personalizzati</label>
-          <div class="preset-select">
-            <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
-          </div>
-        </div>
+        <div class="form-group" data-menu-brand-cartellini></div>
       </div>
 
       <!-- Blocco 3: campi del cartellino (prezzo originario e sconto, o descrizione; fascia promozionale; prezzo finale) -->
@@ -394,25 +386,8 @@
         <div class="form-group" id="descriptionGroup" hidden>
           <label class="section-label" for="descPreset">Articoli</label>
           <div class="preset-select">
-            <select id="descPreset" onchange="applyDescPreset()">
+            <select id="descPreset" data-testi-pronti="Articoli" onchange="applyDescPreset()">
               <option value="">-- Seleziona un articolo --</option>
-              <option value="Bermuda">Bermuda</option>
-              <option value="Borsa">Borsa</option>
-              <option value="Blazer">Blazer</option>
-              <option value="Blusa">Blusa</option>
-              <option value="Camicia">Camicia</option>
-              <option value="Cappello">Cappello</option>
-              <option value="Foulard">Foulard</option>
-              <option value="Gilet">Gilet</option>
-              <option value="Giacca">Giacca</option>
-              <option value="Giubbino">Giubbino</option>
-              <option value="Gonna">Gonna</option>
-              <option value="Maglia">Maglia</option>
-              <option value="Pantalone">Pantalone</option>
-              <option value="Scarpe">Scarpe</option>
-              <option value="Sciarpa">Sciarpa</option>
-              <option value="Shorts">Shorts</option>
-              <option value="T-Shirt">T-Shirt</option>
             </select>
           </div>
           <label for="inp-desc">Testo Libero</label>
@@ -474,6 +449,7 @@
     </div>
   </main>
 
+  <script src="assets/js/menu-brand-cartellini.js?v=20261005-22"></script>
   <script>
     const LOGO_PATH = "assets/logos/";
 
@@ -510,7 +486,6 @@
     let currentCardIdx = 0;
 
     function init() {
-      populateLogoDropdowns();
       renderTabs();
       renderGrid();
       loadEditorData();
@@ -623,44 +598,6 @@
       });
     }
 
-    function addPlaceholder(select, text) {
-      const option = document.createElement('option');
-      option.value = '';
-      option.textContent = text;
-      select.replaceChildren(option);
-    }
-
-    function readCustomLogos() {
-      try {
-        const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
-      } catch (error) {
-        console.error('Lettura dei loghi personalizzati fallita.', error);
-        return [];
-      }
-    }
-
-    // Menu BRAND come nelle altre pagine: "— Seleziona Brand —" con i pallini oro, brand prioritari per primi con la ★;
-    // sotto il menu dei loghi personalizzati.
-    function populateLogoDropdowns() {
-      const brandSelect = document.getElementById('brandSelect');
-      addPlaceholder(brandSelect, '— Seleziona Brand —');
-      brandSelect.firstChild.className = 'brand-placeholder';   // pallini oro prima e dopo (pannello.css)
-      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-      [...priorityFiles, ...remainingFiles].forEach(fileName => {
-        appendBrandOption(brandSelect, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
-      });
-
-      const customSelect = document.getElementById('customBrandSelect');
-      addPlaceholder(customSelect, '-- Seleziona Logo Personalizzato --');
-      readCustomLogos().forEach(logo => {
-        const option = document.createElement('option');
-        option.value = logo.data;
-        option.textContent = '★ ' + logo.name;
-        customSelect.appendChild(option);
-      });
-    }
-
     function setToggle(id, isActive, onText, offText) {
       const button = document.getElementById(id);
       button.classList.toggle('active', isActive);
@@ -673,7 +610,7 @@
       const card = cardsData[currentCardIdx];
       document.getElementById('editor-header').textContent = `Modifica Cartellino #${card.id}`;
 
-      // con un logo personalizzato il menu BRAND resta su "— Seleziona Brand —" (il brand di prima resta salvato)
+      // con un logo personalizzato il menu BRAND resta su "-- Seleziona Brand --" (il brand di prima resta salvato)
       document.getElementById('brandSelect').value = card.customLogoUrl ? '' : getLogoFilename(card.brand);
       document.getElementById('customBrandSelect').value = card.customLogoUrl || '';
 
@@ -848,7 +785,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="assets/js/cursore.js?v=20261005-4"></script>
+  <script src="assets/js/cursore.js?v=20261005-22"></script>
   <script>
     // Cursore (come in Cartellini Vetrina): la linguetta lo porta sopra il cartellino scelto, i campi del pannello
     // sopra (o di lato) l'elemento del cartellino legato al campo in uso.
@@ -875,6 +812,6 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005-4" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-22" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

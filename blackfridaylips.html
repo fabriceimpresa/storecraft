@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Black Friday Lips</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-22">
   <style>
     @font-face {
       font-family: 'Franklin Gothic';
@@ -198,10 +198,10 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
-  <script defer src="assets/js/responsive.js?v=20261005-4"></script>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-22">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-22">
+  <script defer src="assets/js/responsive.js?v=20261005-22"></script>
 </head>
 <body data-layout="cartelli">
 
@@ -221,10 +221,7 @@
 
       <!-- Blocco 1: selettori e pulsanti -->
       <div class="panel-block">
-        <div class="mode-switch" aria-label="Seleziona il cartello da modificare">
-          <button type="button" class="active" id="selectCard1" onclick="selectCard(1)">CARTELLO<br>SUPERIORE</button>
-          <button type="button" id="selectCard2" onclick="selectCard(2)">CARTELLO<br>INFERIORE</button>
-        </div>
+        <div id="cardSelector" data-selettore-cartello></div>
       </div>
 
       <!-- Blocco 3: campi del cartello (il blocco 2, brand e claim, qui non c'è: il cartello ha solo prezzo e labbra) -->
@@ -240,10 +237,7 @@
 
       <!-- Blocco 4: stampa -->
       <div class="panel-block">
-        <label class="check-row" id="linkCardsRow" for="linkCards">
-          <span>COPIA SU ALTRO CARTELLO</span>
-          <input type="checkbox" id="linkCards" onchange="setLinkedCards(this.checked)">
-        </label>
+        <div id="linkCardsRow" data-copia-cartello data-checkbox-id="linkCards" data-on-change="setLinkedCards"></div>
 
         <div class="form-group">
           <div class="preset-select">
@@ -285,6 +279,8 @@
       </div>
     </div>
   </div>
+
+  <script src="assets/js/selettore-cartello.js?v=20261005-22"></script>
 
   <script>
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
@@ -335,7 +331,7 @@
     // Riporta nel pannello i valori del cartello scelto.
     function syncPanel() {
       document.getElementById('price').value = cards[currentCard].price;
-      setActive('selectCard' + currentCard, ['selectCard1', 'selectCard2']);
+      SelettoreCartello.setActive('selectCard' + currentCard);
       document.getElementById('linkCards').checked = linkedCards;
       document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
     }
@@ -373,7 +369,7 @@
       document.getElementById('card2').classList.toggle('disabled', isSingle);
       sheet.classList.toggle('single-mode', isSingle);
       sheet.classList.toggle('double-mode', !isSingle);
-      document.getElementById('selectCard2').disabled = isSingle;
+      SelettoreCartello.setLowerDisabled(isSingle);
       document.getElementById('sheetModeSelect').value = mode;
       if (isSingle && currentCard === 2) currentCard = 1;
       syncPanel();
@@ -414,7 +410,7 @@
       renderCards();
     };
   </script>
-  <script src="assets/js/cursore.js?v=20261005-4"></script>
+  <script src="assets/js/cursore.js?v=20261005-22"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -431,6 +427,7 @@
       ]
     });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005-4"></script>
+  <script src="assets/js/copia-cartello.js?v=20261005-22"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-22"></script>
 </body>
 </html>

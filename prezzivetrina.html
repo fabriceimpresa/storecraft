@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-4">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-22">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261005-22">
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-22">
   <style>
     /* Font locali da assets/fonts (stessa convenzione delle altre pagine: 'Nevis Project') */
     @font-face {
@@ -57,7 +57,7 @@
     .tab-item input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; }
 
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
-    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #d4a373; margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
     /* I due riquadri (Modifica Pagina, con le Fasce Prezzo che valgono per tutta la pagina, e Modifica
        Colonna) seguono il pannello standard (assets/css/pannello.css): qui solo ciò che è proprio di
@@ -211,9 +211,9 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.38; } }
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-4">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-4"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-4">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-22">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-22">
 </head>
 <body data-layout="prezzi">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -232,34 +232,7 @@
       <!-- Riquadro a parte perché vale per tutta la pagina, non per la colonna in modifica -->
       <div class="panel-block">
         <div class="form-group">
-          <label class="section-label" for="pricePreset">Fasce Prezzo</label>
-          <div class="preset-select">
-            <select id="pricePreset" onchange="applyPricePreset()">
-              <option value="">-- Seleziona una fascia --</option>
-              <optgroup label="Prezzi tondi">
-                <option value="10,00">€ 10,00</option>
-                <option value="20,00">€ 20,00</option>
-                <option value="30,00">€ 30,00</option>
-                <option value="40,00">€ 40,00</option>
-                <option value="50,00">€ 50,00</option>
-                <option value="60,00">€ 60,00</option>
-                <option value="70,00">€ 70,00</option>
-                <option value="80,00">€ 80,00</option>
-                <option value="90,00">€ 90,00</option>
-                <option value="99,00">€ 99,00</option>
-              </optgroup>
-              <optgroup label="Prezzi ,90">
-                <option value="19,90">€ 19,90</option>
-                <option value="29,90">€ 29,90</option>
-                <option value="39,90">€ 39,90</option>
-                <option value="49,90">€ 49,90</option>
-                <option value="59,90">€ 59,90</option>
-                <option value="69,90">€ 69,90</option>
-                <option value="79,90">€ 79,90</option>
-                <option value="89,90">€ 89,90</option>
-              </optgroup>
-            </select>
-          </div>
+          <div data-fasce-prezzo data-select-id="pricePreset" data-on-change="applyPricePreset"></div>
         </div>
       </div>
     </div>
@@ -314,6 +287,7 @@
     </div>
   </main>
 
+  <script src="assets/js/fasce-prezzo.js?v=20261005-22"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -511,7 +485,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="assets/js/cursore.js?v=20261005-4"></script>
+  <script src="assets/js/cursore.js?v=20261005-22"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -537,6 +511,6 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005-4" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-22" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

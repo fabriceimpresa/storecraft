@@ -203,24 +203,16 @@
 /* Stella dei brand prioritari (stagionali) nei menu BRAND: la ★ dei loghi personalizzati, sempre gialla */
 .brand-star { color: #f2b705; }
 
-/* Voce di partenza dei menu BRAND ("— Seleziona Brand —", option.brand-placeholder): un pallino oro prima e dopo,
-   come le palline del menu di Xmas Ball ma oro, vicino alla scritta. Li disegna il CSS, sia nel campo chiuso sia
-   nell'elenco aperto (Chrome ed Edge recenti); negli altri browser resta il testo semplice. */
 @supports (appearance: base-select) {
-  .form-group select:has(> option.brand-placeholder:checked)::before,
-  .form-group select:has(> option.brand-placeholder:checked)::after,
-  .form-group select option.brand-placeholder::before,
-  .form-group select option.brand-placeholder::after {
-    content: '●';
-    color: var(--brand-dot-color, #d4a373);
-    font-size: 1.3em;
-    line-height: 1;
-    align-self: center;
+  .form-group select.ready-text-complete optgroup,
+  .form-group select.grouped-select optgroup {
+    font-style: italic;
+    text-align: right;
   }
-  /* pallini vicini alla scritta: meno spazio di quello che il browser mette tra le parti del campo */
-  .form-group select:has(> option.brand-placeholder:checked),
-  .form-group select option.brand-placeholder { column-gap: .3em; }
+  .form-group select.ready-text-complete optgroup option,
+  .form-group select.grouped-select optgroup option { font-style: normal; }
 }
+
 /* Titoli dei gruppi nei menu (es. Promozioni e Articoli in Testi Pronti): oro su fondo scuro */
 .form-group select optgroup { background: #0a0908; color: #d4a373; }
 
