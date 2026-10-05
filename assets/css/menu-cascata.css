@@ -7,22 +7,22 @@ select { color-scheme: dark; }
   select::picker(select) {
     width: anchor-size(width);
     max-height: 320px;
-    border: 1px solid #d4a373;
+    border: 1px solid var(--interface-accent, #d4a373);
     border-radius: 4px;
-    background: #0a0908;
-    color: #f4f1ea;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, .6);
+    background: var(--interface-control, #0a0908);
+    color: var(--interface-text, #f4f1ea);
+    box-shadow: 0 8px 24px var(--interface-dropdown-shadow, rgba(0, 0, 0, .6));
   }
   select option { padding: 5px 8px; }
   select option::checkmark { display: none; }
   select option:hover,
-  select option:focus-visible { background: #2e2b27; outline: none; }
-  select option:checked { color: #d4a373; }
+  select option:focus-visible { background: var(--interface-option-hover, #2e2b27); outline: none; }
+  select option:checked { color: var(--interface-accent, #d4a373); }
 
   select::picker(select)::-webkit-scrollbar { width: 1.6rem; }
   select::picker(select)::-webkit-scrollbar-track {
-    background: #181715;
-    border-left: 1px solid #2e2b27;
+    background: var(--interface-sidebar, #181715);
+    border-left: 1px solid var(--interface-border, #2e2b27);
   }
   select::picker(select)::-webkit-scrollbar-thumb {
     --arrow-up: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5' viewBox='0 0 9 5'%3E%3Cpath d='M1 4.2 4.5 1 8 4.2' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E");
@@ -33,12 +33,12 @@ select { color-scheme: dark; }
     min-height: 36px;
     background: var(--arrow-up) center 5px / 9px 5px no-repeat padding-box,
                 var(--arrow-down) center calc(100% - 5px) / 9px 5px no-repeat padding-box,
-                #d4a373 padding-box;
+                var(--interface-accent, #d4a373) padding-box;
   }
   select::picker(select)::-webkit-scrollbar-thumb:hover {
     background: var(--arrow-up) center 5px / 9px 5px no-repeat padding-box,
                 var(--arrow-down) center calc(100% - 5px) / 9px 5px no-repeat padding-box,
-                #e5ba73 padding-box;
+                var(--interface-accent-bright, #e5ba73) padding-box;
   }
 
   select.menu-cascata::picker(select) { overflow: hidden; }
@@ -53,8 +53,8 @@ select { color-scheme: dark; }
     position: absolute;
     inset: 0 0 0 auto;
     width: 1.6rem;
-    background: var(--menu-track-bg, #181715);
-    border-left: 1px solid var(--menu-track-border, #2e2b27);
+    background: var(--menu-track-bg, var(--interface-sidebar, #181715));
+    border-left: 1px solid var(--menu-track-border, var(--interface-border, #2e2b27));
     touch-action: none;
   }
   .menu-cascata-thumb {
@@ -66,10 +66,10 @@ select { color-scheme: dark; }
     border-radius: 0;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 4.2 4.5 1 8 4.2' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E") center 5px no-repeat,
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 .8 4.5 4 8 .8' fill='none' stroke='%23121110' stroke-width='1.2'/%3E%3C/svg%3E") center calc(100% - 5px) no-repeat,
-                #d4a373;
+                var(--interface-accent, #d4a373);
     cursor: grab;
   }
-  .menu-cascata-thumb:hover { background-color: #e5ba73; }
+  .menu-cascata-thumb:hover { background-color: var(--interface-accent-bright, #e5ba73); }
   .menu-cascata-thumb:active { cursor: grabbing; }
   .menu-cascata-track[hidden] { display: none; }
 }

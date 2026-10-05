@@ -199,7 +199,10 @@
   font-size: 0.74rem;
 }
 
-.form-group select option { background: #0a0908; color: #f4f1ea; }
+.form-group select option {
+  background: var(--interface-control, #0a0908);
+  color: var(--interface-text, #f4f1ea);
+}
 /* Stella dei brand prioritari (stagionali) nei menu BRAND: la ★ dei loghi personalizzati, sempre gialla */
 .brand-star { color: #f2b705; }
 
@@ -214,7 +217,10 @@
 }
 
 /* Titoli dei gruppi nei menu (es. Promozioni e Articoli in Testi Pronti): oro su fondo scuro */
-.form-group select optgroup { background: #0a0908; color: #d4a373; }
+.form-group select optgroup {
+  background: var(--interface-control, #0a0908);
+  color: var(--interface-accent, #d4a373);
+}
 
 .form-group input:focus,
 .form-group select:focus {
@@ -265,9 +271,8 @@
   pointer-events: none;
 }
 
-/* Elenco che si apre dai menu: tema scuro. Dove il browser permette di
-   disegnare l'elenco (Chrome ed Edge recenti, appearance: base-select) ha il bordo oro, è largo quanto il campo e ha la barra di scorrimento larga come il riquadro della freccia, con la maniglia oro squadrata; altrove resta
-   l'elenco del browser, sempre scuro. */
+/* Elenco a discesa: il tema scuro è predefinito; theme.css adatta colori e
+   selettori personalizzabili al tema chiaro quando viene scelto. */
 .form-group select { color-scheme: dark; }
 
 @supports (appearance: base-select) {
@@ -286,11 +291,11 @@
     width: calc(anchor-size(width) + 2px);
     margin: 2px 0 0 -1px;
     max-height: 320px;
-    border: 1px solid #d4a373;
+    border: 1px solid var(--interface-accent, #d4a373);
     border-radius: 4px;
-    background: #0a0908;
-    color: #f4f1ea;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    background: var(--interface-control, #0a0908);
+    color: var(--interface-text, #f4f1ea);
+    box-shadow: 0 8px 24px var(--interface-dropdown-shadow, rgba(0, 0, 0, 0.6));
   }
 
   .form-group select option {
@@ -300,8 +305,11 @@
 
   .form-group select option::checkmark { display: none; }
   .form-group select option:hover,
-  .form-group select option:focus-visible { background: #2e2b27; outline: none; }
-  .form-group select option:checked { color: #d4a373; }
+  .form-group select option:focus-visible {
+    background: var(--interface-option-hover, #2e2b27);
+    outline: none;
+  }
+  .form-group select option:checked { color: var(--interface-accent, #d4a373); }
 }
 
 /* Selettori a pulsanti: il pulsante scelto è oro con testo scuro, come CREATOR / CASSIERE in dashboard */

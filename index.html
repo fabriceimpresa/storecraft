@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-22">
-  <script src="assets/js/caroselli.js?v=20261005-22" defer></script>
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-55">
+  <script src="assets/js/caroselli.js?v=20261005-55" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -198,38 +198,13 @@
       white-space: nowrap;
     }
 
-    /* Credits: al clic su CREDITS // CONTACTS i contatti si aprono sotto e spingono il logo verso l'alto. */
+    /* Il menu di sistema si apre verso l'alto sopra il richiamo in fondo alla barra laterale. */
     .sidebar-credits {
       width: 100%;
       margin-top: 24px;
       padding-top: 14px;
       border-top: 1px solid var(--border);
     }
-    .credits-toggle {
-      width: 100%;
-      padding: 7px 9px;
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--accent);
-      font: inherit;
-      font-size: 11px;
-      letter-spacing: .18em;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
-    }
-    .credits-toggle:hover, .credits-toggle:focus-visible { border-color: var(--accent); background: var(--card); box-shadow: 0 8px 20px rgba(0,0,0,0.4); transform: translateY(-2px); outline: none; }
-    .credits-body { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .3s ease; }
-    .sidebar-credits.is-collapsed .credits-body { grid-template-rows: 0fr; }
-    .credits-body > * { min-height: 0; overflow: hidden; }
-    .sidebar-disclaimer {
-      padding-top: 8px;
-      color: var(--text-muted);
-      font-size: 11px;
-      line-height: 1.55;
-    }
-    .sidebar-disclaimer > span { display: block; white-space: nowrap; font-size: 10px; }
-    .sidebar-disclaimer .release-number, .sidebar-disclaimer a { color: var(--accent); text-decoration: none; }
 
     main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
     /* Come in TEBE: sugli schermi molto larghi il contenuto si ferma a 1450 px (margini compresi) e resta al centro,
@@ -270,7 +245,7 @@
     .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
     /* Anteprima nel riquadro 16:9 come le card-thumb di TEBE: l'immagine resta intera, senza tagli né deformazioni.
-       I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura). */
+       I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura) nel tema scuro. */
     .preview { position: relative; aspect-ratio: 16 / 9; margin: 0 var(--card-pad); background: #0a0908; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
     /* Pagine con il menu su misura (Promo Multibrand, Xmas Ball): etichetta MENU SPECIALE in basso a destra
@@ -792,8 +767,10 @@
       .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-22">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-22"></script>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-55">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-55"></script>
+  <script src="assets/js/theme.js?v=20261005-55"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-55">
 </head>
 <body class="sidebar-collapsed">
 
@@ -815,10 +792,10 @@
       <button class="mobile-close-btn" type="button" onclick="toggleMobileSidebar()" aria-label="Chiudi menu">✕</button>
     </div>
 
-    <div class="sidebar-section" data-sidebar-section="cartelli">
+    <div class="sidebar-section is-collapsed" data-sidebar-section="cartelli">
       <div class="label">
         <span>CREA CARTELLI</span>
-        <button class="section-toggle" type="button" aria-label="Comprimi CREA CARTELLI" aria-expanded="true" onclick="toggleSidebarSection('cartelli')">⌄</button>
+        <button class="section-toggle" type="button" aria-label="Espandi CREA CARTELLI" aria-expanded="false" onclick="toggleSidebarSection('cartelli')">⌄</button>
       </div>
       <nav>
         <div class="nav-group" id="cartelliItems">
@@ -907,18 +884,66 @@
         <img src="assets/img/storecraftlogo.png" alt="StoreCraft">
       </div>
       <div class="signature-caption">CRAFTED WITH STORECRAFT</div>
-      <div class="sidebar-credits is-collapsed">
-        <button class="credits-toggle" type="button" aria-expanded="false" aria-controls="sidebar-credits-body" onclick="toggleCredits(this)">CREDITS // CONTACTS</button>
-        <div class="credits-body" id="sidebar-credits-body">
-          <div class="sidebar-disclaimer">
-            <span><span class="release-number">V 1.4 2026</span> · Developed by Fabrizio Notte</span>
-            © Marchi e loghi appartengono ai rispettivi proprietari<br>
-            <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
-          </div>
-        </div>
+      <div class="sidebar-credits">
+        <button class="system-menu-toggle" id="system-menu-toggle" type="button" aria-expanded="false" aria-controls="system-menu" onclick="toggleSystemMenu()">MENU // IMPOSTAZIONI</button>
       </div>
     </div>
   </aside>
+
+  <section class="system-menu" id="system-menu" aria-label="Menu di sistema" hidden>
+    <div class="system-menu-heading system-menu-title">MENU // IMPOSTAZIONI</div>
+    <div class="system-menu-view" data-system-view="home">
+      <div class="system-menu-items">
+        <button class="system-menu-item" type="button" data-system-menu-item="settings" onclick="openSystemMenuView('settings')">
+          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">⚙</span>IMPOSTAZIONI</span>
+          <span aria-hidden="true">›</span>
+        </button>
+        <button class="system-menu-item" type="button" data-system-menu-item="profile" disabled>
+          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">♙</span>PROFILO UTENTE</span>
+          <span class="system-menu-badge">COMING SOON</span>
+        </button>
+        <button class="system-menu-item" type="button" data-system-menu-item="store" disabled>
+          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">▦</span>STORE</span>
+          <span class="system-menu-badge">COMING SOON</span>
+        </button>
+        <button class="system-menu-item" type="button" data-system-menu-item="contacts" onclick="openSystemMenuView('contacts')">
+          <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">ⓘ</span>CONTATTI &amp; CREDITS</span>
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
+    </div>
+    <div class="system-menu-view" data-system-view="contacts" hidden>
+      <div class="system-menu-heading">CONTATTI &amp; CREDITS</div>
+      <div class="system-credits">
+        <span><span class="release-number">V 1.5 2026</span> · Developed by Fabrizio Notte</span><br>
+        © Marchi e loghi appartengono ai rispettivi proprietari<br>
+        <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
+      </div>
+      <div class="system-menu-footer">
+        <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Menu Impostazioni</button>
+      </div>
+    </div>
+  </section>
+  <section class="system-settings-panel" id="system-settings-panel" aria-labelledby="system-settings-title" hidden>
+    <div class="system-menu-heading" id="system-settings-title">IMPOSTAZIONI</div>
+    <div class="system-setting-row">
+      <span class="system-setting-label">TEMA COLORE</span>
+      <div class="theme-choices" role="group" aria-label="Tema colore">
+        <button class="theme-choice" type="button" data-interface-theme-choice="light" aria-pressed="false">TEMA CHIARO</button>
+        <button class="theme-choice" type="button" data-interface-theme-choice="dark" aria-pressed="true">TEMA SCURO</button>
+      </div>
+    </div>
+    <div class="system-setting-row">
+      <span class="system-setting-label">LOOK</span>
+      <div class="theme-choices" role="group" aria-label="Look interfaccia">
+        <button class="theme-choice" type="button" data-interface-look-choice="standard" aria-pressed="true">STANDARD</button>
+        <button class="theme-choice" type="button" data-interface-look-choice="minimal" aria-pressed="false">MINIMAL</button>
+      </div>
+    </div>
+    <div class="system-menu-footer">
+      <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Menu Impostazioni</button>
+    </div>
+  </section>
 
   <main id="main-content">
     <header>
@@ -1147,12 +1172,12 @@
         <div class="carousel-container dymo" id="dymo-carousel">
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=doppioprezzo'">
             <div class="card-top"><span class="number">01</span><span class="card-type">57 x 32 MM</span></div>
-            <div class="preview"><img class="preview-image" src="assets/thumbnail/doppioprezzo.png" alt="1. Outlet Doppio Prezzo"></div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/doppioprezzo.png?v=20261005-01" alt="1. Outlet Doppio Prezzo"></div>
             <div class="card-body"><h3>Outlet Doppio Prezzo</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=finalprice'">
             <div class="card-top"><span class="number">02</span><span class="card-type">57 x 32 MM</span></div>
-            <div class="preview"><img class="preview-image" src="assets/thumbnail/finalprice.png" alt="2. Final | Outlet Price"></div>
+            <div class="preview"><img class="preview-image" src="assets/thumbnail/finalprice.png?v=20261005-01" alt="2. Final | Outlet Price"></div>
             <div class="card-body"><h3>Final | Outlet Price</h3></div>
           </div>
           <div class="carousel-card" onclick="window.location.href='etichette.html?label=lastchance'">
@@ -1552,7 +1577,7 @@
       setTimeout(updateCarouselArrows, 300);
     }
 
-    // Apre o chiude una sezione del menu laterale e ricorda nel browser quali sezioni sono chiuse.
+    // Apre o chiude una sezione del menu laterale; ogni caricamento della dashboard riparte da chiuso.
     function toggleSidebarSection(sectionId) {
       const section = document.querySelector(`[data-sidebar-section="${sectionId}"]`);
       if (!section) return;
@@ -1563,14 +1588,6 @@
       toggle.setAttribute('aria-expanded', String(!isExpanded));
       toggle.setAttribute('aria-label', `${isExpanded ? 'Espandi' : 'Comprimi'} ${title}`);
       section.classList.toggle('is-collapsed', isExpanded);
-
-      const collapsedSections = [...document.querySelectorAll('.sidebar-section.is-collapsed')]
-        .map(item => item.dataset.sidebarSection);
-      try {
-        localStorage.setItem('collapsed_sidebar_sections', JSON.stringify(collapsedSections));
-      } catch (error) {
-        console.error('Salvataggio stato menu laterale fallito.', error);
-      }
     }
 
     // Il clic sul titolo di una sezione (non solo sulla freccia) la apre o la chiude.
@@ -1584,23 +1601,19 @@
       });
     }
 
-    function restoreSidebarSections() {
-      let collapsedSections = null;
-      try {
-        collapsedSections = JSON.parse(localStorage.getItem('collapsed_sidebar_sections'));
-      } catch (error) {
-        console.error('Ripristino stato menu laterale fallito.', error);
-      }
-      if (!Array.isArray(collapsedSections)) return;
-
+    function initializeSidebarSections() {
       document.querySelectorAll('.sidebar-section').forEach(section => {
         const toggle = section.querySelector('.section-toggle');
         const title = section.querySelector('.label span').textContent;
-        const isCollapsed = collapsedSections.includes(section.dataset.sidebarSection);
-        section.classList.toggle('is-collapsed', isCollapsed);
-        toggle.setAttribute('aria-expanded', String(!isCollapsed));
-        toggle.setAttribute('aria-label', `${isCollapsed ? 'Espandi' : 'Comprimi'} ${title}`);
+        section.classList.add('is-collapsed');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', `Espandi ${title}`);
       });
+
+      const promoToggle = document.querySelector('.nav-subtoggle[aria-controls="promoItems"]');
+      promoToggle.setAttribute('aria-expanded', 'false');
+      document.getElementById('cartelliItems').hidden = false;
+      document.getElementById('promoItems').hidden = true;
     }
 
     // PROMO STAGIONALI dentro CREA CARTELLI: aperta nasconde le voci dei cartelli e mostra le promo, chiusa il contrario.
@@ -1609,13 +1622,6 @@
       buttonElem.setAttribute('aria-expanded', String(isOpen));
       document.getElementById('cartelliItems').hidden = isOpen;
       document.getElementById('promoItems').hidden = !isOpen;
-    }
-
-    function toggleCredits(buttonElem) {
-      const credits = buttonElem.closest('.sidebar-credits');
-      const isExpanded = buttonElem.getAttribute('aria-expanded') === 'true';
-      buttonElem.setAttribute('aria-expanded', String(!isExpanded));
-      credits.classList.toggle('is-collapsed', isExpanded);
     }
 
     // Pulsante + delle schede: apre e chiude insieme le specifiche di tutte le schede, senza aprire la pagina.
@@ -2007,7 +2013,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      restoreSidebarSections();
+      initializeSidebarSections();
       enableSidebarLabelToggle();
       enableCardDescriptions();
       generateQRCode();
@@ -2022,6 +2028,10 @@
           } else {
             document.body.classList.remove('is-scrolled');
           }
+        });
+
+        window.addEventListener('pageshow', event => {
+          if (event.persisted) initializeSidebarSections();
         });
       }
     });
