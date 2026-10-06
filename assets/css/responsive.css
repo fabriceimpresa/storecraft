@@ -1,6 +1,7 @@
 /* Le regole telefono richiedono sia uno schermo stretto sia un puntatore touch.
    Tablet e finestre desktop strette conservano la disposizione desktop. */
 .phone-theme-toolbar,
+.phone-action-bar,
 .mobile-brand-footer { display: none; }
 
 @media screen {
@@ -15,23 +16,6 @@
   body[data-layout="cartellini"] .cursore,
   body[data-layout="prezzi"] .cursore,
   body[data-layout="dymo"] .cursore { display: none !important; }
-  body[data-layout="cartelli"] {
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 64px 12px 24px;
-    overflow-x: hidden;
-  }
-  body[data-layout="cartelli"] > .sidebar { width: 100%; max-width: 560px; order: 1; }
-  body[data-layout="cartelli"] > .print-sheet,
-  body[data-layout="cartelli"] > .a4-sheet { zoom: 0.75; margin: 0 auto; order: 3; }
-  body[data-layout="cartelli"] .phone-theme-toolbar {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 1001;
-    pointer-events: none;
-  }
   .phone-theme-group {
     position: absolute;
     display: flex;
@@ -85,7 +69,6 @@
   body[data-layout="cartelli"] .floating-nav-box,
   body[data-layout="cartellini"] .floating-nav-box,
   body[data-layout="prezzi"] .floating-nav-box { display: none; }
-  body[data-layout="cartelli"] .app-close-btn,
   body[data-layout="cartellini"] .app-close-btn,
   body[data-layout="prezzi"] .app-close-btn {
     top: 10px;
@@ -96,21 +79,254 @@
   body[data-layout="dymo"] .app-close-btn { top: 10px; right: 10px; z-index: 10000; }
 }
 
-@media screen and (max-width: 680px) and (pointer: coarse) {
-  body[data-layout="cartelli"] > .print-sheet,
-  body[data-layout="cartelli"] > .a4-sheet { zoom: 0.64; }
+/* Vista telefono comune delle pagine cartelli e promo stagionali (body[data-layout="cartelli"]): in alto il cartello
+   in modifica resta fisso, al centro il pannello scorre, in fondo la barra di stampa. Regole e comportamento in un solo
+   posto (questo file e assets/js/responsive.js); le pagine non hanno copie locali.
+   Fuori dal telefono i contenitori aggiunti non esistono per l'impaginazione. */
+.phone-preview-head,
+.form-group > .phone-only-label,
+.phone-line-space { display: none; }
+.phone-preview,
+.phone-preview-frame { display: contents; }
+
+@media screen and (max-width: 760px) and (pointer: coarse) {
+  body[data-layout="cartelli"] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  body[data-layout="cartelli"] > .phone-preview {
+    display: block;
+    position: relative;
+    flex: none;
+    order: 1;
+    border-bottom: 1px solid var(--interface-border, #2e2b27);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .28);
+    z-index: 2;
+  }
+  /* Il riquadro esterno resta fermo (qui stanno i pulsanti dei temi); scorre solo il foglio dentro. */
+  body[data-layout="cartelli"] .phone-preview-frame {
+    display: block;
+    padding: 8px;
+    overflow: hidden;
+  }
+  body[data-layout="cartelli"] .phone-preview-frame > .print-sheet,
+  body[data-layout="cartelli"] .phone-preview-frame > .a4-sheet {
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+  }
+  body[data-layout="cartelli"] > .sidebar {
+    order: 2;
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    padding: 10px 10px 16px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  body[data-layout="cartelli"] .form-group input,
+  body[data-layout="cartelli"] .form-group select { font-size: 16px; }
+  /* I tre temi del cartello in modifica, in basso a destra dell'anteprima, dove il cartello non ha contenuti. */
+  body[data-layout="cartelli"] .phone-theme-toolbar {
+    display: block;
+    position: absolute;
+    inset: auto 14px 14px auto;
+    z-index: 3;
+  }
+  body[data-layout="cartelli"] .phone-theme-group { position: static; gap: 6px; }
+  body[data-layout="cartelli"] .phone-theme-toolbar :is(button, a) {
+    width: 38px;
+    height: 38px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+  }
+  /* Barra di stampa fissa in fondo: lista di stampa e tasto STAMPA. */
+  body[data-layout="cartelli"] > .phone-action-bar {
+    display: flex;
+    order: 3;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    background: var(--interface-sidebar, #181715);
+    border-top: 1px solid var(--interface-border, #2e2b27);
+    box-shadow: 0 -6px 14px rgba(0, 0, 0, .28);
+    z-index: 2;
+  }
+  body[data-layout="cartelli"] .phone-action-bar .tool-buttons { margin: 0 !important; gap: 6px; flex: none; }
+  body[data-layout="cartelli"] .phone-action-bar .tool-btn { width: 40px; height: 40px; box-shadow: none; }
+  body[data-layout="cartelli"] .phone-action-bar .tool-tip { display: none; }
+  /* La guida "Dove montare la stampa?" sul telefono non serve. */
+  body[data-layout="cartelli"] .phone-action-bar .tool-btn[aria-label="Dove montare la stampa?"] { display: none; }
+  body[data-layout="cartelli"] .phone-action-bar .btn-print:focus-visible {
+    outline: 2px solid #e5ba73;
+    outline-offset: 2px;
+  }
+  body[data-layout="cartelli"] .phone-action-bar .btn-print {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    margin: 0 !important;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    line-height: 1.1;
+  }
+  /* ANTEPRIMA: contorno oro, per distinguersi dal rosso della stampa; apre il foglio A4 intero. */
+  body[data-layout="cartelli"] .phone-preview-btn {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-height: 44px;
+    padding: 4px 12px;
+    border: 1.5px solid var(--interface-accent, #d4a373);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--interface-accent, #d4a373);
+    font: 700 0.78rem/1.1 Arial, sans-serif;
+    letter-spacing: .06em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body[data-layout="cartelli"] .phone-preview-btn svg { width: 20px; height: 20px; flex: none; }
+  body[data-layout="cartelli"] .phone-preview-btn:active { transform: scale(.97); }
+  body[data-layout="cartelli"] .phone-preview-btn:focus-visible,
+  body[data-layout="cartelli"] .phone-preview-close:focus-visible {
+    outline: 2px solid #e5ba73;
+    outline-offset: 2px;
+  }
+  body[data-layout="cartelli"] .form-group > .phone-only-label { display: block; }
+  body.phone-full-preview > .phone-preview {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 0;
+    background: #0a0908;
+  }
+  body.phone-full-preview .phone-preview-head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px 8px 16px;
+    color: #e5ba73;
+    font: 600 0.75rem/1 Arial, sans-serif;
+    letter-spacing: .12em;
+  }
+  body.phone-full-preview .phone-preview-frame { padding-top: 60px; }
+  body.phone-full-preview .phone-preview-close {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: #d4a373;
+    color: #121110;
+    font: 400 20px/1 Arial, sans-serif;
+    cursor: pointer;
+  }
+  body.phone-full-preview .app-close-btn,
+  body.phone-full-preview .phone-theme-toolbar { display: none !important; }
+  /* Titoli dei campi (BRAND, Loghi Personalizzati, Prezzo…) un poco più grandi che nel pannello desktop. */
+  body[data-layout="cartelli"] .sidebar .form-group label {
+    font-size: 0.78rem;
+    margin-bottom: 0.25rem;
+  }
+  /* Selettori a pulsanti (CARTELLO SUPERIORE / INFERIORE…) su una riga, con la scritta più grande. */
+  body[data-layout="cartelli"] .sidebar .mode-switch button {
+    min-height: 44px;
+    padding: 6px 8px;
+    font-size: clamp(0.66rem, 3vw, 0.78rem);
+    white-space: nowrap;
+  }
+  body[data-layout="cartelli"] .sidebar .mode-switch button br { display: none; }
+  body[data-layout="cartelli"] .sidebar .mode-switch button .phone-line-space { display: inline; }
+  /* Pulsanti a due stati (+ AGGIUNGI 2° BRAND…): forma da app, più alti e con la scritta leggibile. Colori invariati. */
+  body[data-layout="cartelli"] .sidebar .btn-toggle {
+    min-height: 48px;
+    margin-bottom: 0.6rem;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    letter-spacing: .06em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body[data-layout="cartelli"] .sidebar .btn-toggle:hover { transform: none; filter: none; }
+  body[data-layout="cartelli"] .sidebar .btn-toggle:active { transform: scale(.98); }
+  /* COPIA SU ALTRO CARTELLO come riga di impostazione da app: testo a sinistra, interruttore a destra.
+     Solo la riga creata da copia-cartello.js (.copia-cartello-row): le altre caselle restano come sono.
+     Fondo, bordo e interruttore spento derivano dal colore del testo, così valgono anche nei menu su misura
+     (oro nelle pagine standard, bianco in Xmas Ball); il colore oro ha specificità bassa per lasciarlo alle pagine. */
+  :where(body[data-layout="cartelli"] .sidebar) .copia-cartello-row { color: var(--interface-accent, #d4a373); }
+  body[data-layout="cartelli"] .sidebar .check-row.copia-cartello-row {
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 52px;
+    margin: 0 0 0.75rem;
+    padding: 8px 12px 8px 14px;
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: 10px;
+    background: color-mix(in srgb, currentColor 6%, transparent);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body[data-layout="cartelli"] .sidebar .check-row.copia-cartello-row input[type="checkbox"] {
+    --knob: currentColor;
+    width: 48px;
+    height: 28px;
+    border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+    border-radius: 14px;
+    background-color: color-mix(in srgb, currentColor 18%, transparent);
+    background-image: radial-gradient(circle, var(--knob) 0 10px, transparent 10.5px);
+    background-size: 26px 26px;
+    background-position: left center;
+    background-repeat: no-repeat;
+    box-shadow: none;
+    transition: background-color .2s ease, background-position .2s ease, border-color .2s ease;
+  }
+  body[data-layout="cartelli"] .sidebar .check-row.copia-cartello-row input[type="checkbox"]:checked {
+    --knob: #fff;
+    border-color: #5f8a55;
+    background-color: #5f8a55 !important;
+    background-image: radial-gradient(circle, var(--knob) 0 10px, transparent 10.5px);
+    background-size: 26px 26px;
+    background-position: right center;
+  }
+  body[data-layout="cartelli"] .sidebar .check-row.copia-cartello-row input[type="checkbox"]:focus-visible {
+    outline: 2px solid #e5ba73;
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body[data-layout="cartelli"] .sidebar .check-row.copia-cartello-row input[type="checkbox"] { transition: none; }
+  }
+  body[data-layout="cartelli"] .app-close-btn {
+    top: 6px;
+    right: 6px;
+    width: 36px;
+    height: 36px;
+    z-index: 10;
+  }
 }
-@media screen and (max-width: 530px) and (pointer: coarse) {
-  body[data-layout="cartelli"] > .print-sheet,
-  body[data-layout="cartelli"] > .a4-sheet { zoom: 0.53; }
-}
-@media screen and (max-width: 420px) and (pointer: coarse) {
-  body[data-layout="cartelli"] > .print-sheet,
-  body[data-layout="cartelli"] > .a4-sheet { zoom: 0.40; }
-}
+
 @media screen and (max-width: 360px) and (pointer: coarse) {
-  body[data-layout="cartelli"] > .print-sheet,
-  body[data-layout="cartelli"] > .a4-sheet { zoom: 0.34; }
   body[data-layout="cartellini"] .sheet-wrap { zoom: 0.27; }
 }
 @media screen and (min-width: 361px) and (max-width: 430px) and (pointer: coarse) {
@@ -153,5 +369,7 @@
 
 @media print {
   .phone-theme-toolbar,
+  .phone-action-bar,
   .mobile-brand-footer { display: none !important; }
+  body[data-layout="cartelli"] :is(.print-sheet, .a4-sheet) { zoom: 1 !important; }
 }

@@ -225,8 +225,9 @@
     background: var(--interface-sidebar) !important;
   }
 
+  /* I fogli di stampa restano bianchi anche quando sono un <main> (Promo Multibrand). */
   :root[data-interface-theme="light"] body :is(
-    main, .main-content, .preview-area, .viewer-main, .page-content
+    main:not(.print-sheet):not(.a4-sheet), .main-content, .preview-area, .viewer-main, .page-content
   ) {
     background-color: var(--interface-page) !important;
   }
@@ -457,6 +458,12 @@
     background-color: var(--interface-sidebar) !important;
     color: var(--interface-text) !important;
     border-color: var(--interface-border) !important;
+  }
+
+  /* Il fondo crema del simbolo (€, %) ha lo stesso spazio ai due lati, così il simbolo non sembra tagliato. */
+  :root[data-interface-theme="light"] body .input-affix .affix {
+    padding-left: 0.45rem;
+    padding-right: 0.45rem;
   }
 
   :root[data-interface-theme="light"] body :is(

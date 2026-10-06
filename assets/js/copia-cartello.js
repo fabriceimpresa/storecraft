@@ -10,7 +10,7 @@
     }
 
     const label = document.createElement('label');
-    label.className = 'check-row';
+    label.className = 'check-row copia-cartello-row';
     if (placeholder.dataset.extraClass) {
       label.classList.add(placeholder.dataset.extraClass);
     }

@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Promo Multibrand</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-65">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261005-70">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-65">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-65">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-65">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261005-70">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261005-70">
+  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261005-70">
   <!-- Inclusione script centralizzato loghi -->
-  <script src="assets/js/logos.js?v=20261005-65"></script>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-65">
+  <script src="assets/js/logos.js?v=20261005-70"></script>
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261005-70">
   <style>
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd.otf') format('opentype'); font-style: normal; font-weight: 400; font-display: block; }
     @font-face { font-family: 'Bodoni Project'; src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype'); font-style: italic; font-weight: 400; font-display: block; }
@@ -390,13 +390,27 @@
       color: #181a1d;
     }
     .modal-btn-confirm:hover { background: #e5ba73; }
+
+    /* Sul telefono: sfondo più scuro e sfocato, così il cartello sotto non distrae; testo e pulsante più grandi. */
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      .modal-overlay {
+        padding: 16px;
+        background: rgba(0, 0, 0, 0.82);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+        z-index: 4000;
+      }
+      .modal-box { width: 100%; padding: 36px 20px 20px; border-radius: 12px; }
+      .modal-message { font-size: 1.02rem; line-height: 1.5; }
+      .modal-btn-confirm { min-width: 60%; min-height: 48px; border-radius: 10px; font-size: 0.95rem; }
+    }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-65">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-65"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-65">
-  <script defer src="assets/js/responsive.js?v=20261005-65"></script>
-  <script src="assets/js/theme.js?v=20261005-65"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-65">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-70">
+  <script defer src="assets/js/menu-cascata.js?v=20261005-70"></script>
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261005-70">
+  <script defer src="assets/js/responsive.js?v=20261005-70"></script>
+  <script src="assets/js/theme.js?v=20261005-70"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-70">
 </head>
 <body data-layout="cartelli">
   <div class="modal-overlay" id="browserWarningModal">
@@ -702,6 +716,6 @@
     updateCards();
     showBrowserWarningIfNeeded();
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261005-65"></script>
+  <script src="assets/js/strumenti-stampa.js?v=20261005-70"></script>
 </body>
 </html>
