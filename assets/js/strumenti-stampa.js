@@ -1,5 +1,5 @@
 /*
- * Pulsanti "Dove montare la stampa?", "Gestisci lista di stampa" e "Aggiungi a lista stampa" per le pagine
+ * Pulsanti "Gestisci lista di stampa" e "Aggiungi a lista stampa" (più "Dove montare la stampa?" se SHOW_GUIDE) per le pagine
  * cartelli e cartellini (l'Anteprima di Stampa resta disponibile come StrumentiStampa.openPrintPreview).
  * Uso: <script src="assets/js/strumenti-stampa.js" data-panel="…" data-sheet="…"></script> in fondo al body.
  *   data-panel: elemento dopo il quale inserire i pulsanti (predefinito ".sidebar > .controls")
@@ -14,6 +14,9 @@
   // Foto guida per capire dove montare la stampa, per pagina: { src, caption }, con le foto in assets/foto/.
   // Finché l'elenco di una pagina è vuoto il popup mostra dei riquadri segnaposto "Foto in arrivo".
   const GUIDE_PHOTOS = {};
+  // Guida "Dove montare la stampa?": non serve a Luxury Outlet, quindi il pulsante non compare.
+  // Il codice resta per TEBE / OPHILYA, che la attiveranno nella futura struttura multi-negozio.
+  const SHOW_GUIDE = false;
 
   const panel = document.querySelector(panelSelector);
   if (!panel) return;
@@ -56,7 +59,7 @@
   const buttons = document.createElement('div');
   buttons.className = 'tool-buttons';
   buttons.append(
-    createButton('Dove montare la stampa?', HELP_ICON, openGuide),
+    ...(SHOW_GUIDE ? [createButton('Dove montare la stampa?', HELP_ICON, openGuide)] : []),
     createButton('Gestisci lista di stampa', PRINTER_ICON, openPrintList),
     createButton('Aggiungi a lista stampa', ADD_ICON, addToPrintList)
   );
@@ -147,7 +150,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = 'assets/js/lista-stampa.js?v=20261006-05';
+      tag.src = 'assets/js/lista-stampa.js?v=20261006-06';
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
