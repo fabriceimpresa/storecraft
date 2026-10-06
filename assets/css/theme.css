@@ -856,3 +856,16 @@
   .system-menu { animation: none; }
   .system-menu-item { transition: none; }
 }
+
+/* Barra superiore del telefono in tema chiaro: avorio come la topbar mobile di TEBE. */
+:root[data-interface-theme="light"] body .mobile-top-bar {
+  background: var(--interface-page);
+  border-bottom-color: var(--interface-border);
+  box-shadow: 0 2px 10px var(--interface-shadow);
+}
+
+:root[data-interface-theme="light"] body .mobile-nav-toggle {
+  background: var(--interface-sidebar);
+  border-color: var(--interface-border);
+  color: var(--interface-muted);
+}
