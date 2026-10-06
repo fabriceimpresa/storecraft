@@ -94,7 +94,24 @@
   :root[data-interface-look="minimal"] body:not([data-layout]) #sidebar-menu .nav-btn,
   :root[data-interface-look="minimal"] body:not([data-layout]) #sidebar-menu .nav-subtoggle {
     font-family: var(--interface-display-font) !important;
-    font-size: 14px;
+    font-size: 12.5px;
+  }
+
+  /* COMPATTO: Fraunces e Arial sembrano più grandi dei font STANDARD a parità di misura,
+     quindi nel menu laterale e nel menu di sistema le scritte sono un poco più piccole */
+  :root[data-interface-look="minimal"] body:not([data-layout]) #sidebar-menu {
+    @media not screen and (max-width: 720px) and (pointer: coarse) {
+      & #system-menu-toggle { font-size: 10px; }
+    }
+    & .system-menu-heading.system-menu-title { font-size: .72rem; }
+    & :is(.system-menu-item, .system-menu-back) { font-size: .62rem; }
+    & .system-menu-badge { font-size: .48rem; }
+    & .system-store-current { font-size: .52rem; }
+    & .system-setting-label { font-size: .64rem; }
+    & .theme-choice { font-size: .56rem; }
+    & .system-credits { font-size: .64rem; }
+    & .system-store-choice { font-size: .6rem; }
+    & .system-store-status { font-size: .44rem; }
   }
 
   :root[data-interface-look="minimal"] body:not([data-layout]) #main-content > header h1,
@@ -260,8 +277,10 @@
     color: #665e54 !important;
   }
 
+  /* Numero e tipo in testa alle schede: oro dei cartelli, più deciso sul fondo chiaro */
   :root[data-interface-theme="light"][data-interface-look="standard"] body .card-top {
-    color: #d4a373 !important;
+    color: #b48b37 !important;
+    font-weight: 600;
   }
 
   :root[data-interface-theme="light"] body :is(
@@ -501,13 +520,13 @@
     box-shadow: none !important;
   }
 
-  :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher {
+  :root[data-interface-look="minimal"] body:not([data-layout]) .mode-switcher {
     gap: 4px;
     padding: 4px;
     border-radius: 0;
   }
 
-  :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn {
+  :root[data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn {
     padding: 9px 13px;
     border: 0;
     border-radius: 0;
@@ -522,6 +541,22 @@
   :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn.active {
     background: #fffdfa !important;
     color: #282522 !important;
+  }
+
+  /* COMPATTO in tema scuro: forma del selettore di TEBE con i colori scuri di StoreCraft */
+  :root[data-interface-theme="dark"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn {
+    color: var(--text-muted);
+    box-shadow: none;
+  }
+
+  :root[data-interface-theme="dark"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn:hover {
+    background: var(--card);
+    color: var(--text);
+  }
+
+  :root[data-interface-theme="dark"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn.active {
+    background: var(--accent);
+    color: #121110;
   }
 
   :root[data-interface-theme="light"] body[data-layout="cartelli"] .mode-switch {
@@ -665,7 +700,7 @@
 }
 
 .system-menu-title {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   font-size: .8rem;
   font-weight: 400;
   text-align: center;
@@ -686,14 +721,14 @@
 }
 
 .system-menu-heading.system-menu-title {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
   font-size: .8rem;
   font-weight: 400;
   text-align: center;
   letter-spacing: .12em;
 }
 
-.system-menu-items { display: grid; gap: 5px; }
+.system-menu-items { display: grid; gap: 10px; }
 
 .system-menu-item {
   display: flex;
@@ -792,7 +827,7 @@
 .system-credits a { color: var(--interface-accent); text-decoration: none; }
 .system-credits a:hover { text-decoration: underline; }
 
-.system-setting-row + .system-setting-row { margin-top: 18px; }
+.system-setting-row + .system-setting-row { margin-top: 24px; }
 .system-setting-label { display: block; margin-bottom: 9px; color: var(--interface-text); font: 400 .71rem/1.3 var(--interface-font); letter-spacing: .12em; text-align: center; }
 .theme-choices { display: flex; width: 100%; gap: 4px; padding: 4px; border: 1px solid var(--interface-border); border-radius: 7px; background: var(--interface-control); }
 .theme-choice { min-height: 34px; padding: 7px 4px; flex: 1 1 0; border: 1px solid transparent; border-radius: 4px; background: transparent; color: var(--interface-muted); font: 400 .61rem/1.2 var(--interface-font); letter-spacing: .04em; white-space: nowrap; cursor: pointer; transition: background .16s ease, color .16s ease, border-color .16s ease, box-shadow .16s ease; }
@@ -801,7 +836,7 @@
 :root[data-interface-theme="dark"] .theme-choice.is-selected { color: #121110; }
 .system-menu-view[data-system-view="settings"] .system-menu-footer { margin-top: 20px; }
 
-.system-store-list { display: grid; gap: 8px; }
+.system-store-list { display: grid; gap: 12px; }
 .system-store-choice {
   display: flex;
   min-height: 44px;

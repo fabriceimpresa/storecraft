@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261005-70">
-  <script src="assets/js/caroselli.js?v=20261005-70" defer></script>
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261006-05">
+  <script src="assets/js/caroselli.js?v=20261006-05" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -236,9 +236,13 @@
       font-size: 1.1em;
       font-weight: 400;
       text-shadow: 0 0 6px rgba(229, 186, 115, 0.35);
+      line-height: 1;
     }
-    
+
     .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 3rem; padding-top: 0.4rem; }
+    /* Stessa distanza tra titolo e schede in tutte le sezioni: i caroselli ricevono lo spazio che la griglia ha nel padding-top */
+    .section-title + .carousel-wrapper { padding-top: 0.4rem; }
+    .section-title + .carousel-wrapper .carousel-arrow { top: calc(50% + 0.2rem); }
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
     
     .card, .carousel-card { --card-pad: 20px; }
@@ -802,10 +806,10 @@
       .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261005-70">
-  <script defer src="assets/js/menu-cascata.js?v=20261005-70"></script>
-  <script src="assets/js/theme.js?v=20261005-70"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261005-70">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261006-05">
+  <script defer src="assets/js/menu-cascata.js?v=20261006-05"></script>
+  <script src="assets/js/theme.js?v=20261006-05"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261006-05">
 </head>
 <body class="sidebar-collapsed">
 
@@ -938,8 +942,8 @@
       </div>
       <div class="system-menu-view" data-system-view="settings" hidden>
         <div class="system-setting-row">
-          <span class="system-setting-label">TEMA COLORE</span>
-          <div class="theme-choices" role="group" aria-label="Tema colore">
+          <span class="system-setting-label">TEMA</span>
+          <div class="theme-choices" role="group" aria-label="Tema">
             <button class="theme-choice" type="button" data-interface-theme-choice="light" aria-pressed="false">CHIARO</button>
             <button class="theme-choice" type="button" data-interface-theme-choice="dark" aria-pressed="true">SCURO</button>
           </div>
@@ -948,7 +952,7 @@
           <span class="system-setting-label">ASPETTO</span>
           <div class="theme-choices" role="group" aria-label="Aspetto interfaccia">
             <button class="theme-choice" type="button" data-interface-look-choice="standard" aria-pressed="true">STANDARD</button>
-            <button class="theme-choice" type="button" data-interface-look-choice="minimal" aria-pressed="false">MINIMAL</button>
+            <button class="theme-choice" type="button" data-interface-look-choice="minimal" aria-pressed="false">COMPATTO</button>
           </div>
         </div>
         <div class="system-menu-footer">
@@ -957,7 +961,7 @@
       </div>
       <div class="system-menu-view" data-system-view="contacts" hidden>
         <div class="system-credits">
-          <span><span class="release-number">V 1.10 2026</span> · Developed by Fabrizio Notte</span><br>
+          <span><span class="release-number">V 1.11 2026</span> · Developed by Fabrizio Notte</span><br>
           © Marchi e loghi appartengono ai rispettivi proprietari<br>
           <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
         </div>
