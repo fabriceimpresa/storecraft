@@ -96,8 +96,19 @@
 
   // Fotografa il foglio così come verrà stampato: senza ombra né zoom della vista telefono,
   // con i cartellini esclusi nascosti come in stampa.
+  // Segna sull'errore il passaggio in cui è avvenuto, per il messaggio del riquadro PDF.
+  async function step(name, action) {
+    try {
+      return await action();
+    } catch (error) {
+      const failure = error instanceof Error ? error : new Error(String(error));
+      if (!failure.step) failure.step = name;
+      throw failure;
+    }
+  }
+
   async function captureSheet(sheet) {
-    const html2canvas = await loadHtml2canvas();
+    const html2canvas = await step('caricamento di html2canvas', loadHtml2canvas);
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await Promise.all([...sheet.querySelectorAll('img')].map(img => img.complete ? null : new Promise(done => {
       img.addEventListener('load', done, { once: true });
@@ -106,7 +117,7 @@
     const colored = colorFilteredImages(sheet);
     let canvas;
     try {
-      canvas = await html2canvas(sheet, {
+      canvas = await step('foto del foglio', () => html2canvas(sheet, {
         scale: CAPTURE_SCALE,
         backgroundColor: '#ffffff',
         useCORS: true,
@@ -124,7 +135,7 @@
             img.src = colored[Number(img.dataset.listaColore)];
           });
         }
-      });
+      }));
     } finally {
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
     }
@@ -160,16 +171,21 @@
   // quando a schermo è rimpicciolito o schiacciato da una finestra stretta.
   async function sheetPdf(sheet) {
     const canvas = await captureSheet(sheet);
-    const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
+    const size = `${canvas.width} × ${canvas.height} px`;
+    const jpeg = await step(`immagine JPEG (${size})`, async () => {
+      const blob = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
+      if (!blob || !blob.size) throw new Error('il browser ha restituito un\'immagine vuota');
+      return blob;
+    });
     const toMm = px => px / CAPTURE_SCALE * 25.4 / 96;
-    return buildPdf([{
+    return step('creazione del PDF', () => buildPdf([{
       orientation: sheet.classList.contains('a4-landscape') ? 'landscape' : 'portrait',
       width: canvas.width,
       height: canvas.height,
       jpeg,
       mmWidth: toMm(canvas.width),
       mmHeight: toMm(canvas.height)
-    }]);
+    }]));
   }
 
   // lista.pdf: A4 (595,28 × 841,89 punti), verticale o orizzontale come il foglio,
@@ -237,8 +253,9 @@
   // Riquadro di consegna del PDF: mostra la preparazione e poi il pulsante SALVA O STAMPA PDF, che apre Condividi
   // (Salva su File, Stampa…) o, dove Condividi non accetta file, apre il PDF in una nuova scheda.
   // Il pulsante serve perché iOS apre Condividi solo dopo un tocco, non alla fine di un'attesa.
-  // pdfPromise: Promise<Blob>; fileName: nome del file proposto.
-  function offerPdf(pdfPromise, fileName) {
+  // pdfPromise: Promise<Blob>; fileName: nome del file proposto; fallback (facoltativo): { label, run }, pulsante
+  // offerto se il PDF non riesce.
+  function offerPdf(pdfPromise, fileName, fallback) {
     injectOfferStyle();
     const overlay = document.createElement('div');
     overlay.className = 'lista-pdf-overlay';
@@ -296,6 +313,23 @@
     }).catch(error => {
       console.error('Preparazione del PDF non riuscita.', error);
       text.textContent = 'Non è stato possibile preparare il PDF.';
+      // Dettaglio tecnico (passaggio e messaggio del browser), per poter correggere la causa.
+      const detail = document.createElement('small');
+      detail.className = 'lista-pdf-detail';
+      const reason = error && (error.message || error.name) ? (error.message || error.name) : String(error);
+      detail.textContent = `${error && error.step ? `${error.step}: ` : ''}${reason}`;
+      text.append(detail);
+      // Riserva: la stampa normale del browser (su iPhone con la riduzione di stampa-ios.js).
+      if (fallback) {
+        share.textContent = fallback.label;
+        share.disabled = false;
+        share.addEventListener('click', () => {
+          dismiss();
+          fallback.run();
+        }, { once: true });
+      } else {
+        share.hidden = true;
+      }
     });
   }
 
@@ -308,6 +342,7 @@
       .lista-pdf-box { width: min(360px, 100%); padding: 20px 18px 16px; border: 1px solid #d4a373; border-radius: 12px; background: #1e1d1a; color: #f4f1ea; box-shadow: 0 12px 32px rgba(0, 0, 0, .5); font-family: Arial, sans-serif; text-align: center; }
       .lista-pdf-title { margin-bottom: 10px; color: #d4a373; font: 600 0.8rem/1.2 Arial, sans-serif; letter-spacing: .14em; }
       .lista-pdf-text { margin: 0 0 16px; font-size: 0.95rem; line-height: 1.45; }
+      .lista-pdf-detail { display: block; margin-top: 8px; color: #8c857b; font-size: 0.75rem; line-height: 1.35; word-break: break-word; }
       .lista-pdf-share, .lista-pdf-close { display: block; width: 100%; min-height: 48px; border-radius: 8px; font: 700 0.9rem/1.1 Arial, sans-serif; letter-spacing: .06em; cursor: pointer; }
       .lista-pdf-share { border: 0; background: #96382b; color: #fff; }
       .lista-pdf-share:disabled { opacity: .45; cursor: default; }

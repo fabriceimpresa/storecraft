@@ -75,10 +75,16 @@
       document.head.appendChild(tag);
     });
   }
+  // Se il PDF non riesce, il riquadro offre la stampa normale del browser.
+  const browserPrint = window.print.bind(window);
+  const fallback = { label: 'USA LA STAMPA DEL BROWSER', run: () => { measure(); browserPrint(); } };
   window.print = () => {
     if (document.querySelector('.lista-pdf-overlay')) return;
     loadListaStampa()
-      .then(lista => lista.offerPdf(lista.sheetPdf(sheet), `${document.title}.pdf`))
-      .catch(error => console.error('Preparazione del PDF di stampa non riuscita.', error));
+      .then(lista => lista.offerPdf(lista.sheetPdf(sheet), `${document.title}.pdf`, fallback))
+      .catch(error => {
+        console.error('Preparazione del PDF di stampa non riuscita.', error);
+        fallback.run();
+      });
   };
 })();
