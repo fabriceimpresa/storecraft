@@ -163,6 +163,13 @@
           style.textContent = `
             .cartellino.disabled { visibility: hidden !important; }
             .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; flex-shrink: 0 !important; }
+            /* Vista telefono: l'anteprima fissa (scorrimento interno, zoom, scorrimento elastico di iOS) si smonta,
+               così anche Safari su iPhone fotografa il foglio come su computer. */
+            body { display: block !important; height: auto !important; overflow: visible !important; }
+            .phone-preview, .phone-preview-frame, .phone-preview > main {
+              position: static !important; display: block !important; height: auto !important; max-height: none !important;
+              overflow: visible !important; -webkit-overflow-scrolling: auto !important; transform: none !important;
+            }
             .cursore, .tool-buttons, .app-modal { display: none !important; }
             .phone-current-card { outline: none !important; }
             img[data-lista-colore] { filter: none !important; }`;
