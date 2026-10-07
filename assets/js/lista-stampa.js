@@ -94,55 +94,8 @@
     return colored;
   }
 
-  // Pagine bianche: una pagina è bianca se nella sua miniatura (larga THUMB_WIDTH) non c'è nessun punto più scuro
-  // del quasi bianco (BLANK_LEVEL, sopra le sbavature della compressione JPEG). Basta un tratto sottile, come la
-  // linea di taglio, perché la pagina non sia bianca.
-  const BLANK_LEVEL = 235;
-
-  function isBlankCanvas(canvas) {
-    const { data } = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < data.length; i += 4) {
-      if (Math.min(data[i], data[i + 1], data[i + 2]) < BLANK_LEVEL) return false;
-    }
-    return true;
-  }
-
-  function loadBlobImage(blob) {
-    return new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(blob);
-      const image = new Image();
-      image.onload = () => { URL.revokeObjectURL(url); resolve(image); };
-      image.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Miniatura non leggibile.')); };
-      image.src = url;
-    });
-  }
-
-  // Elimina dalla lista le pagine bianche (anche quelle aggiunte prima di questo controllo), guardando le miniature.
-  // Restituisce quante ne ha eliminate. Una miniatura che non si riesce a leggere non viene toccata.
-  async function removeBlankPages() {
-    let removed = 0;
-    for (const page of await getPages()) {
-      if (!page.thumb) continue;
-      try {
-        const image = await loadBlobImage(page.thumb);
-        const canvas = document.createElement('canvas');
-        canvas.width = image.naturalWidth;
-        canvas.height = image.naturalHeight;
-        canvas.getContext('2d').drawImage(image, 0, 0);
-        if (isBlankCanvas(canvas)) {
-          await deletePage(page.id);
-          removed++;
-        }
-      } catch (error) {
-        console.error('Controllo della pagina bianca non riuscito.', error);
-      }
-    }
-    return removed;
-  }
-
   // Fotografa il foglio così come verrà stampato: senza ombra né zoom della vista telefono,
-  // con i cartellini esclusi nascosti come in stampa. Restituisce il numero di pagine della lista,
-  // oppure null se il foglio è bianco e non è stato aggiunto.
+  // con i cartellini esclusi nascosti come in stampa.
   async function addSheet(sheet) {
     const html2canvas = await loadHtml2canvas();
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
@@ -162,14 +115,7 @@
           const style = doc.createElement('style');
           style.textContent = `
             .cartellino.disabled { visibility: hidden !important; }
-            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; flex-shrink: 0 !important; }
-            /* Vista telefono: l'anteprima fissa (scorrimento interno, zoom, scorrimento elastico di iOS) si smonta,
-               così anche Safari su iPhone fotografa il foglio come su computer. */
-            body { display: block !important; height: auto !important; overflow: visible !important; }
-            .phone-preview, .phone-preview-frame, .phone-preview > main {
-              position: static !important; display: block !important; height: auto !important; max-height: none !important;
-              overflow: visible !important; -webkit-overflow-scrolling: auto !important; transform: none !important;
-            }
+            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; }
             .cursore, .tool-buttons, .app-modal { display: none !important; }
             .phone-current-card { outline: none !important; }
             img[data-lista-colore] { filter: none !important; }`;
@@ -187,8 +133,6 @@
     thumbCanvas.width = THUMB_WIDTH;
     thumbCanvas.height = Math.round(canvas.height * THUMB_WIDTH / canvas.width);
     thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
-    // Pagina bianca (es. tutti i cartellini esclusi): non si aggiunge alla lista.
-    if (isBlankCanvas(thumbCanvas)) return null;
     const thumb = await canvasToBlob(thumbCanvas, 'image/jpeg', 0.85);
     const record = {
       createdAt: Date.now(),
@@ -258,5 +202,5 @@
     return new Blob(chunks, { type: 'application/pdf' });
   }
 
-  window.ListaStampa = { addSheet, getPages, deletePage, clearPages, countPages, removeBlankPages, buildPdf };
+  window.ListaStampa = { addSheet, getPages, deletePage, clearPages, countPages, buildPdf };
 })();

@@ -150,7 +150,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = 'assets/js/lista-stampa.js?v=20261007-08';
+      tag.src = 'assets/js/lista-stampa.js?v=20261007-09';
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -166,17 +166,10 @@
     try {
       const lista = await loadListaStampa();
       const count = await lista.addSheet(sheet);
-      // null: foglio bianco, scartato in silenzio da lista-stampa.js: si toglie solo l'avviso di attesa
-      if (count === null) {
-        if (toast) toast.classList.remove('is-visible');
-        return;
-      }
       showToast(`Pagina aggiunta alla lista di stampa (${count} ${count === 1 ? 'pagina' : 'pagine'})`, 2600);
     } catch (error) {
       console.error('Aggiunta alla lista di stampa non riuscita.', error);
-      // Con il motivo dato dal browser, per poter correggere la causa (es. su Safari per iPhone).
-      const reason = error && (error.message || error.name) ? ` (${error.message || error.name})` : '';
-      showToast(`Non è stato possibile aggiungere la pagina alla lista di stampa${reason}`, 6000);
+      showToast('Non è stato possibile aggiungere la pagina alla lista di stampa', 3200);
     } finally {
       adding = false;
     }
