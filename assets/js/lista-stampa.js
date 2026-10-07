@@ -123,11 +123,11 @@
     return rules.join('\n');
   }
 
-  // fullSize (solo per il PDF a misura reale di iOS): la copia fotografata usa le regole di stampa della pagina,
-  // così il foglio è impaginato esattamente come nella stampa da computer (alcune pagine in stampa allargano i
-  // cartelli o li spostano di qualche mm), e il foglio non può essere schiacciato, così la foto ha la sua grandezza
-  // di stampa anche quando una finestra stretta (es. iPad) lo restringe. La lista resta com'era.
-  async function captureSheet(sheet, fullSize = false) {
+  // La copia fotografata (per la lista e per il PDF di iOS) usa le regole di stampa della pagina, così il foglio è
+  // impaginato esattamente come nella stampa da computer (alcune pagine in stampa allargano i cartelli o li spostano
+  // di qualche mm rispetto allo schermo), e il foglio non può essere schiacciato, così la foto ha la sua grandezza di
+  // stampa anche quando una finestra stretta (es. iPad) lo restringe.
+  async function captureSheet(sheet) {
     const html2canvas = await step('caricamento di html2canvas', loadHtml2canvas);
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await Promise.all([...sheet.querySelectorAll('img')].map(img => img.complete ? null : new Promise(done => {
@@ -143,16 +143,13 @@
         useCORS: true,
         logging: false,
         onclone: doc => {
-          if (fullSize) {
-            const print = doc.createElement('style');
-            print.textContent = printRules(doc);
-            doc.head.appendChild(print);
-          }
+          const print = doc.createElement('style');
+          print.textContent = printRules(doc);
+          doc.head.appendChild(print);
           const style = doc.createElement('style');
           style.textContent = `
             .cartellino.disabled { visibility: hidden !important; }
-            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; }${fullSize ? `
-            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { flex-shrink: 0 !important; }` : ''}
+            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; flex-shrink: 0 !important; }
             .cursore, .tool-buttons, .app-modal { display: none !important; }
             .phone-current-card { outline: none !important; }
             img[data-lista-colore] { filter: none !important; }`;
@@ -168,6 +165,13 @@
     return canvas;
   }
 
+  // Misure del foglio in mm, ricavate dalla foto (px CSS × CAPTURE_SCALE).
+  const toMm = px => px / CAPTURE_SCALE * 25.4 / 96;
+  // Orientamento della carta come nella stampa da computer: orizzontale solo per i cartellini (A4 orizzontale),
+  // verticale per tutti gli altri fogli, anche per il mezzo A4 del Magazzino.
+  const paperOrientation = sheet => sheet.classList.contains('a4-landscape') ? 'landscape' : 'portrait';
+
+  // Ogni pagina della lista ricorda le misure vere del foglio (mmWidth, mmHeight): in lista.pdf sta a misura reale.
   async function addSheet(sheet) {
     const canvas = await captureSheet(sheet);
     const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
@@ -180,9 +184,11 @@
       createdAt: Date.now(),
       page: location.pathname.split('/').pop() || 'index.html',
       title: document.title,
-      orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+      orientation: paperOrientation(sheet),
       width: canvas.width,
       height: canvas.height,
+      mmWidth: toMm(canvas.width),
+      mmHeight: toMm(canvas.height),
       jpeg,
       thumb
     };
@@ -196,16 +202,15 @@
   // Le misure vengono dalla foto (px CSS × CAPTURE_SCALE), dove il foglio ha la sua grandezza di stampa anche
   // quando a schermo è rimpicciolito o schiacciato da una finestra stretta.
   async function sheetPdf(sheet) {
-    const canvas = await captureSheet(sheet, true);
+    const canvas = await captureSheet(sheet);
     const size = `${canvas.width} × ${canvas.height} px`;
     const jpeg = await step(`immagine JPEG (${size})`, async () => {
       const blob = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
       if (!blob || !blob.size) throw new Error('il browser ha restituito un\'immagine vuota');
       return blob;
     });
-    const toMm = px => px / CAPTURE_SCALE * 25.4 / 96;
     return step('creazione del PDF', () => buildPdf([{
-      orientation: sheet.classList.contains('a4-landscape') ? 'landscape' : 'portrait',
+      orientation: paperOrientation(sheet),
       width: canvas.width,
       height: canvas.height,
       jpeg,
@@ -214,9 +219,9 @@
     }]));
   }
 
-  // lista.pdf: A4 (595,28 × 841,89 punti), verticale o orizzontale come il foglio,
-  // immagine centrata e adattata alla pagina mantenendo le proporzioni.
-  // Con mmWidth / mmHeight (sheetPdf) l'immagine è invece a misura reale.
+  // lista.pdf (e il PDF di iOS): A4 (595,28 × 841,89 punti), verticale o orizzontale come nella stampa da
+  // computer. Le pagine con mmWidth / mmHeight stanno a misura reale; quelle salvate prima di queste misure
+  // (senza mmWidth) sono ancora adattate alla pagina mantenendo le proporzioni.
   async function buildPdf(pages) {
     const encoder = new TextEncoder();
     const chunks = [];
