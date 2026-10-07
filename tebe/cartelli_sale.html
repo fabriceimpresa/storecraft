@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="tebe">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <title>Cartello SALE</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Sfondo principale UI */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f6f1;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #fffdfa;
+      color: #282522;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid #e3dacb;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #b49a62;
+      border-bottom: 1px solid #e3dacb;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* SELETTORE MODALITA' */
+    .mode-switch {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: #f3ede0;
+      border: 1px solid #e3dacb;
+      border-radius: 6px;
+      margin-bottom: 0.8rem;
+    }
+
+    .mode-switch button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 9px 8px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8a7f6e;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-switch button.active {
+      background: #fffdfa;
+      color: #282522;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
+       (i margini si sommano a quello del titolo: vale il maggiore) */
+    .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 1rem; }
+
+    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
+       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettore e prima del tasto di stampa */
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.35rem;
+      color: #665e54;
+    }
+
+    /* Titoli dei menu a discesa: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
+    .form-group .section-label { color: #b49a62; }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background-color: #f8f6f1;
+      color: #282522;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .price-range-select {
+      position: relative;
+    }
+
+    .price-range-control select {
+      appearance: none;
+      margin-bottom: 0;
+      padding-right: 2rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .price-range-control select:focus {
+      border: none;
+      box-shadow: none;
+    }
+
+    .price-range-control {
+      position: relative;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background-color: #f8f6f1;
+      overflow: hidden;
+    }
+
+    .price-range-control:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .price-range-control::after {
+      content: '▼';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .preset-select {
+      position: relative;
+      margin-bottom: 0.8rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background-color: #f8f6f1;
+      overflow: hidden;
+    }
+
+    .preset-select:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .form-group .preset-select select {
+      appearance: none;
+      margin-bottom: 0;
+      padding-right: 2rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .form-group .preset-select select:focus {
+      border: none;
+      box-shadow: none;
+    }
+
+    .preset-select::after {
+      content: '▼';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .price-inputs-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .price-inputs-row .form-group { flex: 1; margin-bottom: 0; }
+
+    /* CAMPO PERCENTUALE con frecce sempre visibili */
+    .percent-input-wrapper {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background-color: #f8f6f1;
+      overflow: hidden;
+    }
+
+    .percent-input-wrapper:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .percent-input-wrapper input#discountValue {
+      flex: 1 1 auto;
+      width: auto;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 0.45rem 0 0.45rem 0.45rem;
+      -moz-appearance: textfield;
+    }
+
+    .percent-input-wrapper input#discountValue:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .percent-input-wrapper input#discountValue::-webkit-outer-spin-button,
+    .percent-input-wrapper input#discountValue::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .percent-input-wrapper .percent-stepper {
+      flex: 0 0 1.6rem;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e3dacb;
+      overflow: hidden;
+    }
+
+    .percent-input-wrapper .percent-stepper button {
+      flex: 1;
+      border: none;
+      border-bottom: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      cursor: pointer;
+      font-size: 0.6rem;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .percent-input-wrapper .percent-stepper button:last-child { border-bottom: none; }
+
+    .percent-input-wrapper .percent-stepper button:hover {
+      background: #e3dacb;
+      color: #8a6a35;
+    }
+
+    /* PULSANTE STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #96382b;
+      color: #fffdfa;
+      border: 1px solid #96382b;
+      padding: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #7a2d22; }
+
+    /* FOGLIO STAMPA */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      box-shadow: 0 20px 60px rgba(40,34,28,.18);
+      padding: 14.56mm 0 0 0; /* Bordo/distanziatore superiore identico */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* CARTELLO OUTLET — dimensioni 210mm x 118.35mm */
+    .card {
+      width: 210mm;
+      height: 118.35mm;
+      border: 0.34mm solid #9d9490;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3.808mm;
+      transform: translateY(-6mm);
+    }
+
+    #cardBottom {
+      border-bottom: none;
+      transform: rotate(180deg);
+    }
+
+    .sale-label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 76.23pt;
+      color: #cc9e25;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8mm;
+    }
+
+    .price-old {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 35.69pt;
+      color: #1a1a1a;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: -0.05em;
+      text-decoration-line: line-through;
+      text-decoration-color: #cc9e25;
+      text-decoration-thickness: 2px;
+    }
+
+    .price-percent {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 35.69pt;
+      color: #cc9e25;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: -0.05em;
+    }
+
+    .desc-text {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 28.55pt;
+      color: #1a1a1a;
+      line-height: 1;
+      white-space: nowrap;
+      text-align: center;
+      letter-spacing: -0.05em;
+    }
+
+    .desc-text.long-text {
+      font-size: 23pt;
+    }
+
+    .price-final {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 105.8pt;
+      color: #1a1a1a;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: -0.05em;
+    }
+
+    /* NAVIGAZIONE UI */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b49a62;
+      color: #fffdfa;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #8a6a35;
+      transform: scale(1.1);
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #fffdfa;
+      border: 1px solid #b49a62;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #8a6a35;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #282522;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #8a6a35;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 0 auto !important;
+        padding: 14.56mm 0 0 0 !important; /* Mantenuta la stessa misura anche in stampa */
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .sale-label, .price-percent, .price-old {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body { align-items: center; flex-direction: column; gap: 14px; overflow-x: hidden; padding: 20px 20px 84px; }
+      .sidebar { width: 100%; max-width: 560px; order: 1; }
+      .app-close-btn { right: 18px; }
+      .print-sheet { zoom: 1; margin: 0 auto; order: 3; }
+      /* Su schermi stretti il pulsante Made in Italy si stacca dal pannello
+         e resta sopra il foglio, incolonnato con il tasto di chiusura. */
+      body .tema-italia-btn {
+        position: relative;
+        z-index: 5;
+        order: 2;
+        align-self: flex-end;
+        margin: 0 -2px -48px auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        top: 8px;
+        transform: none;
+      }
+      body .tema-italia-btn:hover,
+      body .tema-italia-btn.is-active {
+        transform: scale(1.06);
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 12px;
+        overflow-x: hidden;
+        padding: 12px 12px 24px;
+      }
+
+      .sidebar { width: 100%; max-width: 560px; }
+      .controls { width: 100%; }
+      .form-group input, .form-group select { font-size: 16px; }
+      .mode-switch button { min-height: 44px; }
+      .print-sheet { zoom: 0.75; margin: 0 auto; }
+      body .tema-italia-btn { margin-right: -4px; }
+      .app-close-btn { top: 10px; right: 4px; width: 44px; height: 44px; }
+      .floating-nav-box { display: none; }
+    }
+
+    @media screen and (max-width: 680px) and (pointer: coarse) { .print-sheet { zoom: 0.64; } }
+    @media screen and (max-width: 530px) and (pointer: coarse) { .print-sheet { zoom: 0.53; } }
+    @media screen and (max-width: 420px) and (pointer: coarse) { .print-sheet { zoom: 0.40; } }
+    @media screen and (max-width: 360px) and (pointer: coarse) { .print-sheet { zoom: 0.34; } }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      .controls { padding: 12px 12px 12px; }
+      .controls h1, .controls h2 {
+        font-size: 0.95rem;
+        padding-bottom: 12px;
+        margin-bottom: 0.55rem;
+      }
+      /* Pannello piu' compatto: su cellulare pannello e foglio devono
+         stare in poco piu' di una schermata. */
+      .form-group, .preset-select, .mode-switch { margin-bottom: 0.55rem; }
+      .form-group label, .section-label {
+        font-size: 0.68rem;
+        margin-bottom: 0.18rem;
+      }
+      .form-group input, .form-group select, .preset-select select {
+        padding: 6px 8px;
+      }
+      .mode-switch button, .row-selector button, .card-selector button {
+        min-height: 36px;
+        padding: 6px;
+        font-size: 0.64rem;
+      }
+      .btn-print { margin-top: 0; padding: 9px; }
+      .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+</head>
+<body>
+
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <a href="index.html?store=tebe" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Cartello SALE</h2>
+
+      <div class="mode-switch">
+        <button type="button" class="active" id="modeDoppia" onclick="switchMode('doppia')">Doppia Cifra</button>
+        <button type="button" id="modeDescrizione" onclick="switchMode('descrizione')">Descrizione Articolo</button>
+      </div>
+
+      <div id="priceRowGroup">
+        <div class="form-group">
+          <label>Prezzo Originario</label>
+          <input type="text" id="oldPrice" value="59,80" placeholder="es. 59,80" oninput="updateCard()">
+        </div>
+
+        <div class="form-group">
+          <label class="section-label" for="discountValue">Percentuale Sconto</label>
+          <div class="percent-input-wrapper">
+            <input type="number" id="discountValue" value="50" min="1" max="99" oninput="updateCard()">
+            <div class="percent-stepper">
+              <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
+              <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" id="descGroup" style="display: none;">
+        <label class="section-label" for="descPreset">Promozione</label>
+        <div class="preset-select">
+          <select id="descPreset" onchange="applyDescPreset()">
+            <option value="">-- Seleziona un testo --</option>
+            <option value="Special Deal">Special Deal</option>
+            <option value="Final Price">Final Price</option>
+            <option value="Summer Sale">Summer Sale</option>
+            <option value="Spring Sale">Spring Sale</option>
+            <option value="Winter Sale">Winter Sale</option>
+            <option value="Black Friday">Black Friday</option>
+            <option value="Made in Italy">Made in Italy</option>
+            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+          </select>
+        </div>
+        <label for="descFree">Testo Libero</label>
+        <input type="text" id="descFree" value="" placeholder="-- Testo Libero --" oninput="updateCard()">
+      </div>
+
+      <div class="form-group price-range-select" id="priceRangeGroup">
+        <label class="section-label" for="priceRange">Fasce Prezzo</label>
+        <div class="price-range-control">
+          <select id="priceRange" onchange="applyPriceRange()">
+            <option value="">-- Seleziona Fascia Prezzo --</option>
+            <option value="10,00">€ 10,00</option>
+            <option value="19,90">€ 19,90</option>
+            <option value="29,90">€ 29,90</option>
+            <option value="39,90">€ 39,90</option>
+            <option value="49,90">€ 49,90</option>
+            <option value="59,90">€ 59,90</option>
+            <option value="69,90">€ 69,90</option>
+            <option value="79,90">€ 79,90</option>
+            <option value="89,90">€ 89,90</option>
+            <option value="99,00">€ 99,00</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Prezzo Finale</label>
+        <input type="text" id="newPrice" value="29,90" placeholder="es. 29,90" oninput="updateCard()">
+      </div>
+
+      <button class="btn-print" onclick="window.print()">Stampa Cartello (A4)</button>
+    </div>
+  </div>
+
+  <!-- AREA STAMPA A4 -->
+  <div class="print-sheet" id="printSheet">
+    <div class="card" id="cardTop">
+      <div class="card-content">
+        <div class="sale-label">sale</div>
+        <div id="middleRowTop"></div>
+        <div class="price-final" id="finalPriceTop">€ 29,90</div>
+      </div>
+    </div>
+
+    <div class="card" id="cardBottom">
+      <div class="card-content">
+        <div class="sale-label">sale</div>
+        <div id="middleRowBottom"></div>
+        <div class="price-final" id="finalPriceBottom">€ 29,90</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/tema-italia.js?v=20261007-16"></script>
+  <script>
+    function formatDiscount(value) {
+      const numeric = value.toString().replace(/[^0-9]/g, '').trim();
+      return '-' + (numeric || '50') + '%';
+    }
+
+    function stepDiscount(delta) {
+      const input = document.getElementById('discountValue');
+      const min = parseInt(input.min, 10);
+      const max = parseInt(input.max, 10);
+      let val = parseInt(input.value, 10);
+      if (isNaN(val)) val = min;
+      val = Math.min(max, Math.max(min, val + delta));
+      input.value = val;
+      updateCard();
+    }
+
+    function applyDescPreset() {
+      const preset = document.getElementById('descPreset').value;
+      document.getElementById('descFree').value = preset;
+      updateCard();
+    }
+
+    function parsePrice(value) {
+      const normalized = value.replace(',', '.').replace(/[^0-9.]/g, '');
+      const price = Number.parseFloat(normalized);
+      return Number.isFinite(price) ? price : 0;
+    }
+
+    function formatPrice(value) {
+      return value.toFixed(2).replace('.', ',');
+    }
+
+    function applyPriceRange() {
+      const selectedPrice = document.getElementById('priceRange').value;
+      if (!selectedPrice) {
+        updateCard();
+        return;
+      }
+
+      document.getElementById('newPrice').value = selectedPrice;
+
+      if (document.getElementById('modeDoppia').classList.contains('active')) {
+        const discount = Number.parseInt(document.getElementById('discountValue').value, 10) || 50;
+        const oldPrice = parsePrice(selectedPrice) / (1 - discount / 100);
+        document.getElementById('oldPrice').value = formatPrice(oldPrice);
+      }
+
+      updateCard();
+    }
+
+    function switchMode(mode) {
+      const isDoppia = mode === 'doppia';
+      const priceRangeGroup = document.getElementById('priceRangeGroup');
+      const priceRowGroup = document.getElementById('priceRowGroup');
+      const descGroup = document.getElementById('descGroup');
+      document.getElementById('modeDoppia').classList.toggle('active', isDoppia);
+      document.getElementById('modeDescrizione').classList.toggle('active', !isDoppia);
+      priceRowGroup.style.display = isDoppia ? 'block' : 'none';
+      descGroup.style.display = isDoppia ? 'none' : 'block';
+
+      if (isDoppia) {
+        priceRowGroup.parentNode.insertBefore(priceRangeGroup, priceRowGroup);
+      } else {
+        descGroup.parentNode.insertBefore(priceRangeGroup, descGroup.nextElementSibling);
+      }
+
+      updateCard();
+    }
+
+    function updateCard() {
+      const isDoppia = document.getElementById('modeDoppia').classList.contains('active');
+      const oldPrice = document.getElementById('oldPrice').value;
+      const newPrice = document.getElementById('newPrice').value;
+      const discount = formatDiscount(document.getElementById('discountValue').value);
+      const descText = document.getElementById('descFree').value || 'Descrizione Articolo';
+      const longDescription = [
+        'Vera Pelle • Genuine Leather',
+        'Made in Italy • Genuine Leather',
+        'Fino ad esaurimento scorte'
+      ].includes(descText);
+
+      let middleHtml;
+      if (isDoppia) {
+        middleHtml = `<div class="price-row"><span class="price-old">€ ${oldPrice}</span><span class="price-percent">${discount}</span></div>`;
+      } else {
+        middleHtml = `<div class="desc-text${longDescription ? ' long-text' : ''}">${descText}</div>`;
+      }
+
+      document.getElementById('middleRowTop').innerHTML = middleHtml;
+      document.getElementById('middleRowBottom').innerHTML = middleHtml;
+      document.getElementById('finalPriceTop').textContent = `€ ${newPrice}`;
+      document.getElementById('finalPriceBottom').textContent = `€ ${newPrice}`;
+    }
+
+    switchMode('doppia');
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: '#cardTop',
+      obstacles: '#cardTop .sale-label, #cardTop .price-old, #cardTop .price-percent, #cardTop .desc-text, #cardTop .price-final',
+      rules: [
+        { controls: '#modeDoppia, #modeDescrizione', target: '#middleRowTop > *' },
+        { controls: '#oldPrice', target: '#middleRowTop .price-old' },
+        { controls: '#discountValue, .percent-stepper', target: '#middleRowTop .price-percent' },
+        { controls: '#descPreset, #descFree', target: '#middleRowTop .desc-text' },
+        { controls: '#priceRange, #newPrice', target: '#finalPriceTop' }
+      ]
+    });
+  </script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-16"></script>
+</body>
+</html>
