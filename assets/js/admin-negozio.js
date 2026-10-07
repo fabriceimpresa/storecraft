@@ -3,7 +3,7 @@
    Stile in assets/css/admin-negozio.css.
 
    Uso:
-     <div data-admin-negozio></div>        qui compare il selettore LUXURY OUTLET / TEBE / OPHILYA
+     <div data-admin-negozio></div>        qui compare il selettore dei negozi installati (LUXURY OUTLET / TEBE / OPHILYA)
      <span data-admin-nome-negozio>        riceve il nome del negozio scelto
      <span data-admin-cartella-negozio>    riceve la cartella del negozio scelto (luxury, tebe, ophilya)
      AdminNegozio.negozio                  negozio scelto
@@ -12,15 +12,17 @@
      AdminNegozio.elencoVuoto()            testo di partenza di assets/logos/<negozio>/elenco.js, se non esiste
      AdminNegozio.alCambio(funzione)       chiamata quando si sceglie un altro negozio (prima di cambiare si può
                                            chiedere conferma con AdminNegozio.prima(funzione che restituisce true/false))
-   La scelta resta per la scheda (sessionStorage), così ricaricando la pagina non si torna a Luxury per sbaglio. */
+   La scelta resta per la scheda (sessionStorage), così ricaricando la pagina non si torna al primo negozio per sbaglio.
+   Nomi e oro dei negozi vengono dalle loro schede (assets/negozi/, vedi negozi.js); si scelgono solo i negozi installati
+   in questa copia (con un solo negozio il selettore mostra solo quello). */
 (() => {
-  const NEGOZI = {
-    luxury: { nome: 'LUXURY OUTLET', oro: [180, 139, 55] },   // #b48b37
-    tebe: { nome: 'TEBE', oro: [204, 158, 37] },              // #cc9e25
-    ophilya: { nome: 'OPHILYA', oro: [204, 158, 37] }         // per ora l'oro TEBE
-  };
+  // Negozi installati, con nome e oro (RGB) dalle loro schede
+  const NEGOZI = Object.fromEntries(Negozi.installati.map(id => {
+    const scheda = Negozi.scheda(id);
+    return [id, { nome: scheda.nome, oro: [1, 3, 5].map(i => parseInt(scheda.oro.slice(i, i + 2), 16)) }];
+  }));
   const CHIAVE = 'storecraft_admin_negozio';
-  let negozio = 'luxury';
+  let negozio = Negozi.installati[0];
   try {
     if (NEGOZI[sessionStorage.getItem(CHIAVE)]) negozio = sessionStorage.getItem(CHIAVE);
   } catch (error) {

@@ -4,6 +4,11 @@
   const THEMES = Object.freeze(['dark', 'light']);
   const LOOKS = Object.freeze(['standard', 'minimal']);
   const root = document.documentElement;
+  // Valori iniziali, finché l'utente non sceglie: quelli del negozio della pagina, nella sua scheda
+  // (assets/negozi/<negozio>.js, interfaccia), altrimenti tema scuro e look standard.
+  const INIZIALI = window.Negozi?.corrente()?.interfaccia || {};
+  const DEFAULT_THEME = THEMES.includes(INIZIALI.tema) ? INIZIALI.tema : 'dark';
+  const DEFAULT_LOOK = LOOKS.includes(INIZIALI.aspetto) ? INIZIALI.aspetto : 'standard';
   let systemMenu;
   let systemMenuButton;
   let systemMenuTitle;
@@ -11,20 +16,20 @@
   function readTheme() {
     try {
       const storedTheme = localStorage.getItem(STORAGE_KEY);
-      return THEMES.includes(storedTheme) ? storedTheme : 'dark';
+      return THEMES.includes(storedTheme) ? storedTheme : DEFAULT_THEME;
     } catch (error) {
       console.error('Lettura del tema dell’interfaccia non riuscita.', error);
-      return 'dark';
+      return DEFAULT_THEME;
     }
   }
 
   function readLook() {
     try {
       const storedLook = localStorage.getItem(LOOK_STORAGE_KEY);
-      return LOOKS.includes(storedLook) ? storedLook : 'standard';
+      return LOOKS.includes(storedLook) ? storedLook : DEFAULT_LOOK;
     } catch (error) {
       console.error('Lettura del look dell’interfaccia non riuscita.', error);
-      return 'standard';
+      return DEFAULT_LOOK;
     }
   }
 
@@ -185,8 +190,8 @@
         applyLook(button.dataset.interfaceLookChoice, true);
       });
     });
-    applyTheme(root.dataset.interfaceTheme || 'dark');
-    applyLook(root.dataset.interfaceLook || 'standard');
+    applyTheme(root.dataset.interfaceTheme || DEFAULT_THEME);
+    applyLook(root.dataset.interfaceLook || DEFAULT_LOOK);
     document.addEventListener('pointerdown', event => {
       if (!systemMenu.hidden && !systemMenu.contains(event.target) &&
           !systemMenuButton.contains(event.target)) {

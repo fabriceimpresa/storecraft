@@ -22,8 +22,13 @@
   const DB_NAME = 'storecraft-loghi-personalizzati';
   const STORE = 'liste';
   const VECCHIE_CHIAVI = ['custom_brand_logos', 'customLogos'];
-  const NOMI = { luxury: 'LUXURY OUTLET', tebe: 'TEBE', ophilya: 'OPHILYA' };
   const canale = 'BroadcastChannel' in window ? new BroadcastChannel(DB_NAME) : null;
+
+  // Nome del negozio dalla sua scheda (assets/negozi/<negozio>.js); per un negozio non installato in questa copia
+  // (es. un backup arrivato da un altro sito) la sua sigla in maiuscolo.
+  function nomeNegozio(id) {
+    return Negozi.scheda(id)?.nome || String(id || '').toUpperCase();
+  }
   let lista = [];
   let database = null;
 
@@ -107,7 +112,7 @@
   // Nome del negozio della lista accanto ai titoli che lo chiedono (data-nome-negozio), es. in genera_loghi e gestisci_lista.
   function scriviNomeNegozio() {
     document.querySelectorAll('[data-nome-negozio]').forEach(elemento => {
-      elemento.textContent = ` · ${NOMI[NEGOZIO] || String(NEGOZIO || '').toUpperCase()}`;
+      elemento.textContent = ` · ${nomeNegozio(NEGOZIO)}`;
     });
   }
   if (document.readyState === 'loading') {
@@ -118,7 +123,7 @@
 
   window.LoghiPersonalizzati = Object.freeze({
     negozio: NEGOZIO,
-    nomeNegozio: id => NOMI[id] || String(id || '').toUpperCase(),
+    nomeNegozio,
     pronto,
     elenco: () => lista.slice(),
     salva

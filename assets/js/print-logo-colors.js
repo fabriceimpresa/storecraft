@@ -69,12 +69,14 @@
     });
   }
 
-  // L'oro è quello del negozio: Luxury Outlet #b48b37, TEBE e OPHILYA #cc9e25 (come la variante gold dei loghi ufficiali).
+  // L'oro è quello del negozio, nella sua scheda (assets/negozi/<negozio>.js, oro: Luxury Outlet #b48b37, TEBE e
+  // OPHILYA #cc9e25), come la variante gold dei loghi ufficiali.
+  const ORO = Negozi.corrente()?.oro || '#b48b37';
   const COLOR_RGB = {
     white: [255, 255, 255],
     black: [0, 0, 0],
     red: [224, 0, 0],
-    gold: NEGOZIO === 'luxury' ? [180, 139, 55] : [204, 158, 37]
+    gold: [1, 3, 5].map(i => parseInt(ORO.slice(i, i + 2), 16))
   };
 
   function getGeneratedLogoFileName(logoFileName) {

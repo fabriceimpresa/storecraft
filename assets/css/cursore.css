@@ -1,11 +1,8 @@
 /* Cursore a triangolo con ombra netta. Vedi assets/js/cursore.js.
    Sopra l'elemento punta in giù; di lato il triangolo ruota e punta verso l'elemento. Non si stampa.
-   Colore e misure sono del negozio della pagina (data-negozio): --cursore-colore, --cursore-lungo (lato lungo) e
-   --cursore-corto (altezza), letti anche da cursore.js. Luxury Outlet: l'oro dei cartelli (loghi oro e cartellini,
-   #b48b37), 40 × 27 px; TEBE e OPHILYA: rosso #96382b come il pulsante Sale, 36 × 24 px. */
+   Colore e misure sono del negozio della pagina, nella sua scheda (assets/negozi/<negozio>.css): --cursore-colore,
+   --cursore-lungo (lato lungo) e --cursore-corto (altezza), letti anche da cursore.js. Qui i valori di riserva. */
 :root { --cursore-colore: #b48b37; --cursore-lungo: 40px; --cursore-corto: 27px; }
-:root[data-negozio="tebe"],
-:root[data-negozio="ophilya"] { --cursore-colore: #96382b; --cursore-lungo: 36px; --cursore-corto: 24px; }
 
 .cursore {
   position: fixed;

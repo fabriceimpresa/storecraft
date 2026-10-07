@@ -2,14 +2,19 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <script src="assets/js/negozi.js?v=20261008-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
   <!-- Splash page: scelta del punto vendita alla prima apertura della giornata (punto-vendita.js).
        Se oggi è già stato scelto un negozio si va subito alla sua dashboard, tranne quando si arriva dalla voce HOME
-       del menu di sistema (index.html?scegli), che chiede di scegliere di nuovo. -->
-  <script src="assets/js/punto-vendita.js?v=20261007-16"></script>
+       del menu di sistema (index.html?scegli), che chiede di scegliere di nuovo. Si vedono solo i negozi installati in
+       questa copia (assets/negozi/installati.js); con un solo negozio la scelta si salta sempre. -->
+  <script src="assets/js/punto-vendita.js?v=20261008-01"></script>
   <script>
-    if (PuntoVendita.sceltoOggi() && !new URLSearchParams(location.search).has('scegli')) {
+    if (PuntoVendita.unico()) {
+      PuntoVendita.ricorda(PuntoVendita.unico());
+      location.replace(PuntoVendita.dashboard(PuntoVendita.unico()));
+    } else if (PuntoVendita.sceltoOggi() && !new URLSearchParams(location.search).has('scegli')) {
       location.replace(PuntoVendita.dashboard(PuntoVendita.sceltoOggi()));
     }
   </script>
@@ -101,7 +106,8 @@
 
     .store-list {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      /* una colonna per negozio installato (--negozi, scritto dallo script in fondo alla pagina) */
+      grid-template-columns: repeat(var(--negozi, 3), 1fr);
       margin: 0;
       padding: 0;
       list-style: none;
@@ -135,9 +141,8 @@
       transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
-    .store-choice[data-negozio="luxury"] img { width: 150px; }
-    .store-choice[data-negozio="tebe"] img { width: 132px; }
-    .store-choice[data-negozio="ophilya"] img { width: 150px; }
+    /* larghezza del logo: quella della scheda del negozio (logoSplashLarghezza), scritta dallo script */
+    .store-choice img { width: 150px; }
 
     .store-choice::after {
       content: '';
@@ -216,23 +221,8 @@
   <main class="splash-frame">
     <img class="splash-brand" src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
     <h1 class="splash-title">Seleziona il tuo punto vendita</h1>
-    <ul class="store-list">
-      <li>
-        <button class="store-choice" type="button" data-negozio="luxury">
-          <img src="assets/img/luxury/printlogos/whiteLXRY_BRAND.png" alt="LUXURY OUTLET">
-        </button>
-      </li>
-      <li>
-        <button class="store-choice" type="button" data-negozio="tebe">
-          <img src="assets/img/tebe/tebeblack.png" alt="TEBE">
-        </button>
-      </li>
-      <li>
-        <button class="store-choice" type="button" data-negozio="ophilya">
-          <img src="assets/img/ophilya/ophilyablack.png" alt="OPHILYA">
-        </button>
-      </li>
-    </ul>
+    <!-- I negozi installati (logo dalla scheda del negozio) li aggiunge lo script in fondo alla pagina -->
+    <ul class="store-list"></ul>
   </main>
 
   <footer class="splash-footer">
@@ -241,15 +231,29 @@
   </footer>
 
   <script>
-    // I negozi già nella struttura si aprono; gli altri restano visibili con IN ARRIVO.
-    document.querySelectorAll('.store-choice').forEach(button => {
-      const negozio = button.dataset.negozio;
-      if (PuntoVendita.NEGOZI[negozio]?.pronto) {
+    // Un pulsante per ogni negozio installato, con il logo della sua scheda. I negozi già nella struttura si aprono;
+    // gli altri restano visibili con IN ARRIVO.
+    const lista = document.querySelector('.store-list');
+    lista.style.setProperty('--negozi', Object.keys(PuntoVendita.NEGOZI).length);
+    Object.entries(PuntoVendita.NEGOZI).forEach(([negozio, dati]) => {
+      const voce = document.createElement('li');
+      const button = document.createElement('button');
+      button.className = 'store-choice';
+      button.type = 'button';
+      button.dataset.negozio = negozio;
+      const logo = document.createElement('img');
+      logo.src = dati.logo;
+      logo.alt = dati.nome;
+      logo.style.width = `${dati.larghezzaLogo}px`;
+      button.append(logo);
+      voce.append(button);
+      lista.append(voce);
+      if (dati.pronto) {
         button.addEventListener('click', () => PuntoVendita.scegli(negozio));
         return;
       }
       button.disabled = true;
-      button.setAttribute('aria-label', `${PuntoVendita.NEGOZI[negozio].nome}, in arrivo`);
+      button.setAttribute('aria-label', `${dati.nome}, in arrivo`);
       const soon = document.createElement('span');
       soon.className = 'store-soon';
       soon.textContent = 'IN ARRIVO';

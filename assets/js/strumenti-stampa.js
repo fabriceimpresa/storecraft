@@ -11,40 +11,17 @@
   const panelSelector = script?.dataset.panel || '.sidebar > .controls';
   const sheetSelector = script?.dataset.sheet || '.print-sheet';
 
-  // Guida "Dove montare la stampa?" del negozio della pagina (data-negozio): Luxury Outlet non la usa, quindi il
-  // pulsante non compare; TEBE e OPHILYA sì, con le foto in assets/foto/<negozio>/ (per pagina: { src, caption }).
+  // Guida "Dove montare la stampa?" del negozio della pagina, nella sua scheda (assets/negozi/<negozio>.js, guida):
+  // null la spegne e il pulsante non compare (Luxury Outlet); altrimenti per pagina le foto in assets/foto/<negozio>/.
   // Finché l'elenco di una pagina è vuoto il popup mostra dei riquadri segnaposto "Foto in arrivo".
-  // Cartelli in morsa sulla rastrelliera: stessa foto, con sopra il cartello della pagina.
   const NEGOZIO = document.documentElement.dataset.negozio;
-  const GUIDE = {
-    luxury: { show: false, photos: {} },
-    tebe: {
-      show: true,
-      photos: {
-        'cartelli_semplici.html': ['morsasemplice.jpg'],
-        'cartelli_sale.html': ['morsasale.jpg'],
-        'cartelli_brand.html': ['morsabrand.jpg'],
-        'cartellopercentuale.html': ['morsapercentuale.jpg'],
-        'cartelli_multiarticolo.html': ['morsamultiarticolo.jpg'],
-        'albero.html': ['albero.jpg'],
-        'cornici10x15.html': ['cornice10x15.jpg'],
-        'paletto.html': ['paletto.jpg'],
-        'paletto18x12.html': ['paletto.jpg']
-      }
-    },
-    ophilya: {
-      show: true,
-      photos: {
-        'paletto-ophilya.html': ['palettoophilya.jpg'],
-        'paletto18x12-ophilya.html': ['palettoophilya.jpg']
-      }
-    }
-  }[NEGOZIO] || { show: false, photos: {} };
-  const SHOW_GUIDE = GUIDE.show;
-  const GUIDE_PHOTOS = Object.fromEntries(Object.entries(GUIDE.photos).map(([page, files]) =>
+  const SCHEDA = Negozi.corrente();
+  const GUIDE = SCHEDA?.guida || null;
+  const SHOW_GUIDE = Boolean(GUIDE);
+  const GUIDE_PHOTOS = Object.fromEntries(Object.entries(GUIDE || {}).map(([page, files]) =>
     [page, files.map(file => ({ src: new URL(`../foto/${NEGOZIO}/${file}`, script.src).href }))]));
-  // Finestra della lista di stampa: una per negozio (Luxury conserva il nome di prima).
-  const LIST_WINDOW = NEGOZIO === 'luxury' ? 'storecraft-lista-stampa' : `${NEGOZIO}-lista-stampa`;
+  // Finestra della lista di stampa: una per negozio, con il nome della lista nella scheda (listaStampa).
+  const LIST_WINDOW = SCHEDA?.listaStampa || `${NEGOZIO}-lista-stampa`;
 
   const panel = document.querySelector(panelSelector);
   if (!panel) return;
@@ -178,7 +155,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('lista-stampa.js?v=20261007-16', script.src).href;
+      tag.src = new URL('lista-stampa.js?v=20261008-01', script.src).href;
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);

@@ -1,0 +1,39 @@
+/* Colori del negozio OPHILYA (scheda in ophilya.js, vedi assets/js/negozi.js): per ora i colori chiari di TEBE, fondo crema e oro.
+   Le variabili sono lette dai file comuni; il selettore con data-negozio prevale sui valori di riserva dei file comuni. */
+:root[data-negozio="ophilya"] {
+  /* Cursore sul foglio (cursore.css / cursore.js): rosso come il pulsante Sale, 36 × 24 px */
+  --cursore-colore: #96382b;
+  --cursore-lungo: 36px;
+  --cursore-corto: 24px;
+
+  /* Pulsanti sotto il pannello e guida di montaggio (strumenti-stampa.css) */
+  --tool-btn-bg: #b49a62;
+  --tool-btn-color: #fff;
+  --tool-btn-shadow: rgba(40, 34, 28, 0.15);
+  --tool-btn-shadow-hover: rgba(40, 34, 28, 0.25);
+  --tool-float-border: #b49a62;
+  --tool-float-bg: #fffdfa;
+  --tool-float-color: #8a6a35;
+  --tool-tip-shadow: rgba(40, 34, 28, 0.18);
+  --tool-toast-shadow: rgba(40, 34, 28, 0.2);
+  --tool-modal-backdrop: rgba(40, 34, 28, 0.55);
+  --tool-modal-bg: #fffdfa;
+  --tool-modal-border: #e3dacb;
+  --tool-modal-shadow: rgba(40, 34, 28, 0.3);
+  --tool-modal-accent: #b49a62;
+  --tool-modal-close-color: #fffdfa;
+  --tool-modal-body: #eee8dd;
+  --tool-guide-text: #665e54;
+  --tool-guide-caption: #282522;
+  --tool-guide-stripe-1: #f8f6f1;
+  --tool-guide-stripe-2: #f3ede0;
+
+  /* Riquadro SALVA O STAMPA PDF di iPhone e iPad (lista-stampa.js) */
+  --lista-pdf-bg: #fffdfa;
+  --lista-pdf-text: #282522;
+  --lista-pdf-accent: #b49a62;
+  --lista-pdf-muted: #665e54;
+  --lista-pdf-focus: #8a6a35;
+  --lista-pdf-backdrop: rgba(40, 34, 28, .55);
+  --lista-pdf-shadow: rgba(40, 34, 28, .3);
+}

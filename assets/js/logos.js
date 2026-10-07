@@ -41,8 +41,9 @@ function appendBrandOption(selectEl, fileName, displayName, isPriority) {
   const option = document.createElement('option');
   option.value = fileName;
   option.textContent = displayName;
-  if (isPriority && document.documentElement.dataset.negozio !== 'luxury') {
-    // TEBE e OPHILYA: i brand della casa in maiuscolo con ⭐, come nel progetto TEBE
+  if (isPriority && window.Negozi?.corrente()?.brandPrioritari === 'maiuscolo') {
+    // Scheda del negozio con brandPrioritari 'maiuscolo' (TEBE e OPHILYA): i brand della casa in maiuscolo con ⭐,
+    // come nel progetto TEBE
     option.textContent = `⭐ ${displayName.toUpperCase()}`;
     option.className = 'priority-brand-option';
   } else if (isPriority) {

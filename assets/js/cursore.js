@@ -28,8 +28,8 @@
 (function () {
   const GAP = 96 / 25.4;      // 1 mm tra la punta e l'elemento (sopra)
   const SIDE_GAP = GAP + 10;  // di lato più spazio libero (le pagine possono cambiarlo con sideGap)
-  // Misure del triangolo del negozio della pagina, da cursore.css (--cursore-lungo, --cursore-corto):
-  // Luxury Outlet 40 × 27 px, TEBE e OPHILYA 36 × 24 px.
+  // Misure del triangolo del negozio della pagina, dalla sua scheda (assets/negozi/<negozio>.css: --cursore-lungo,
+  // --cursore-corto): Luxury Outlet 40 × 27 px, TEBE e OPHILYA 36 × 24 px.
   function size(name, fallback) {
     return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback;
   }

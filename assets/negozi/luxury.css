@@ -1,0 +1,39 @@
+/* Colori del negozio Luxury Outlet (scheda in luxury.js, vedi assets/js/negozi.js): i colori scuri di StoreCraft.
+   Le variabili sono lette dai file comuni; il selettore con data-negozio prevale sui valori di riserva dei file comuni. */
+:root[data-negozio="luxury"] {
+  /* Cursore sul foglio (cursore.css / cursore.js): l'oro dei cartelli, 40 × 27 px */
+  --cursore-colore: #b48b37;
+  --cursore-lungo: 40px;
+  --cursore-corto: 27px;
+
+  /* Pulsanti sotto il pannello e guida di montaggio (strumenti-stampa.css) */
+  --tool-btn-bg: #d4a373;
+  --tool-btn-color: #121110;
+  --tool-btn-shadow: rgba(0, 0, 0, 0.5);
+  --tool-btn-shadow-hover: rgba(0, 0, 0, 0.6);
+  --tool-float-border: #d4a373;
+  --tool-float-bg: #1e1d1a;
+  --tool-float-color: #e5ba73;
+  --tool-tip-shadow: rgba(0, 0, 0, 0.5);
+  --tool-toast-shadow: rgba(0, 0, 0, 0.6);
+  --tool-modal-backdrop: rgba(0, 0, 0, 0.75);
+  --tool-modal-bg: #1e1d1a;
+  --tool-modal-border: #2e2b27;
+  --tool-modal-shadow: rgba(0, 0, 0, 0.7);
+  --tool-modal-accent: #d4a373;
+  --tool-modal-close-color: #1e1d1a;
+  --tool-modal-body: #121110;
+  --tool-guide-text: #8c857b;
+  --tool-guide-caption: #f4f1ea;
+  --tool-guide-stripe-1: #181715;
+  --tool-guide-stripe-2: #1e1d1a;
+
+  /* Riquadro SALVA O STAMPA PDF di iPhone e iPad (lista-stampa.js) */
+  --lista-pdf-bg: #1e1d1a;
+  --lista-pdf-text: #f4f1ea;
+  --lista-pdf-accent: #d4a373;
+  --lista-pdf-muted: #8c857b;
+  --lista-pdf-focus: #e5ba73;
+  --lista-pdf-backdrop: rgba(10, 9, 8, .78);
+  --lista-pdf-shadow: rgba(0, 0, 0, .5);
+}

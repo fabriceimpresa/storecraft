@@ -2,9 +2,10 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
+  <script src="../assets/js/negozi.js?v=20261008-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <script src="../assets/js/punto-vendita.js?v=20261007-16"></script>
+  <script src="../assets/js/punto-vendita.js?v=20261008-01"></script>
   <script>
     // Senza un punto vendita scelto oggi si passa dalla splash page; aprendo questa dashboard il negozio di oggi è Luxury.
     if (!PuntoVendita.sceltoOggi()) {
@@ -13,8 +14,8 @@
       PuntoVendita.ricorda('luxury');
     }
   </script>
-  <link rel="stylesheet" href="../assets/css/caroselli.css?v=20261007-16">
-  <script src="../assets/js/caroselli.js?v=20261007-16" defer></script>
+  <link rel="stylesheet" href="../assets/css/caroselli.css?v=20261008-01">
+  <script src="../assets/js/caroselli.js?v=20261008-01" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -807,10 +808,10 @@
       .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-16">
-  <script defer src="../assets/js/menu-cascata.js?v=20261007-16"></script>
-  <script src="../assets/js/theme.js?v=20261007-16"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-01">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-01"></script>
+  <script src="../assets/js/theme.js?v=20261008-01"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261008-01">
 </head>
 <body class="sidebar-collapsed">
 
@@ -962,7 +963,7 @@
       </div>
       <div class="system-menu-view" data-system-view="contacts" hidden>
         <div class="system-credits">
-          <span><span class="release-number">V 1.38 2026</span> · Developed by Fabrizio Notte</span><br>
+          <span><span class="release-number">V 1.39 2026</span> · Developed by Fabrizio Notte</span><br>
           © Marchi e loghi appartengono ai rispettivi proprietari<br>
           <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
         </div>
@@ -972,18 +973,11 @@
       </div>
       <div class="system-menu-view" data-system-view="stores" hidden>
         <div class="system-store-list" role="group" aria-label="Seleziona negozio">
-          <!-- Scelta del punto vendita (punto-vendita.js): i negozi pronti si aprono, gli altri restano IN ARRIVO -->
+          <!-- Scelta del punto vendita (punto-vendita.js): Luxury Outlet attivo, poi gli altri negozi installati in questa
+               copia (assets/negozi/installati.js), aggiunti dallo script in fondo alla pagina -->
           <button class="system-store-choice is-active" type="button" aria-pressed="true" disabled>
             <span>LUXURY OUTLET</span>
             <span class="system-store-status">LXRY · ATTIVO</span>
-          </button>
-          <button class="system-store-choice" type="button" aria-pressed="false" data-punto-vendita="tebe" disabled>
-            <span>TEBE</span>
-            <span class="system-menu-badge">IN ARRIVO</span>
-          </button>
-          <button class="system-store-choice" type="button" aria-pressed="false" data-punto-vendita="ophilya" disabled>
-            <span>OPHILYA</span>
-            <span class="system-menu-badge">IN ARRIVO</span>
           </button>
         </div>
         <div class="system-menu-footer">
@@ -2109,13 +2103,29 @@
     });
   </script>
   <script>
-    // PROFILO UTENTE: un negozio già nella struttura si apre dalla sua voce; gli altri restano IN ARRIVO.
-    document.querySelectorAll('[data-punto-vendita]').forEach(button => {
-      const negozio = button.dataset.puntoVendita;
-      if (!PuntoVendita.NEGOZI[negozio]?.pronto) return;
-      button.disabled = false;
-      button.querySelector('.system-menu-badge')?.remove();
-      button.addEventListener('click', () => PuntoVendita.scegli(negozio));
+    // PROFILO UTENTE: sotto Luxury Outlet una voce per ogni altro negozio installato in questa copia; un negozio già
+    // nella struttura si apre dalla sua voce, gli altri restano IN ARRIVO.
+    const storeList = document.querySelector('[data-system-view="stores"] .system-store-list');
+    Object.entries(PuntoVendita.NEGOZI).forEach(([negozio, dati]) => {
+      if (negozio === 'luxury') return;
+      const button = document.createElement('button');
+      button.className = 'system-store-choice';
+      button.type = 'button';
+      button.setAttribute('aria-pressed', 'false');
+      button.dataset.puntoVendita = negozio;
+      const name = document.createElement('span');
+      name.textContent = dati.nome;
+      button.append(name);
+      if (dati.pronto) {
+        button.addEventListener('click', () => PuntoVendita.scegli(negozio));
+      } else {
+        button.disabled = true;
+        const badge = document.createElement('span');
+        badge.className = 'system-menu-badge';
+        badge.textContent = 'IN ARRIVO';
+        button.append(badge);
+      }
+      storeList.append(button);
     });
   </script>
 </body>

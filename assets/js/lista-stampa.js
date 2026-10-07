@@ -1,8 +1,9 @@
 /*
  * Lista di stampa condivisa tra le pagine cartelli e cartellini.
  * - "Aggiungi a lista stampa" (strumenti-stampa.js) fotografa il foglio della pagina (html2canvas, da cdnjs)
- *   e lo salva come pagina JPEG nel browser (IndexedDB, un database per negozio: "storecraft-lista-stampa" per
- *   Luxury Outlet, "tebe-lista-stampa", "ophilya-lista-stampa"): il localStorage (circa 5 MB) basterebbe solo per
+ *   e lo salva come pagina JPEG nel browser (IndexedDB, un database per negozio con il nome scritto nella scheda
+ *   del negozio, listaStampa: "storecraft-lista-stampa" per Luxury Outlet, "tebe-lista-stampa", "ophilya-lista-stampa"):
+ *   il localStorage (circa 5 MB) basterebbe solo per
  *   poche pagine. Le immagini colorate con un filtro CSS vengono prima
  *   ridisegnate già colorate (colorFilteredImages), perché html2canvas i filtri non li applica.
  * - lista-stampa.html mostra le pagine, le elimina, svuota la lista e la stampa come lista.pdf, generato qui
@@ -10,9 +11,10 @@
  * La lista resta nel browser e nel computer in cui è stata creata, come i loghi personalizzati.
  */
 (function initListaStampa() {
-  // Una lista per negozio (data-negozio della pagina): Luxury Outlet conserva il database di prima.
+  // Una lista per negozio (data-negozio della pagina): il nome del database è nella scheda del negozio
+  // (Luxury Outlet conserva il database di prima, "storecraft-lista-stampa").
   const NEGOZIO = document.documentElement.dataset.negozio;
-  const DB_NAME = NEGOZIO === 'luxury' ? 'storecraft-lista-stampa' : `${NEGOZIO}-lista-stampa`;
+  const DB_NAME = Negozi.corrente()?.listaStampa || `${NEGOZIO}-lista-stampa`;
   const STORE = 'pages';
   const HTML2CANVAS_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   const CAPTURE_SCALE = 2.5;      // foglio A4 a circa 240 dpi
@@ -375,7 +377,7 @@
     const style = document.createElement('style');
     style.id = 'lista-pdf-style';
     style.textContent = `
-/* Colori del negozio della pagina: Luxury Outlet scuri, TEBE e OPHILYA chiari come TEBE */      :root { --lista-pdf-bg: #1e1d1a; --lista-pdf-text: #f4f1ea; --lista-pdf-accent: #d4a373; --lista-pdf-muted: #8c857b; --lista-pdf-focus: #e5ba73; --lista-pdf-backdrop: rgba(10, 9, 8, .78); --lista-pdf-shadow: rgba(0, 0, 0, .5); }      :root[data-negozio="tebe"], :root[data-negozio="ophilya"] { --lista-pdf-bg: #fffdfa; --lista-pdf-text: #282522; --lista-pdf-accent: #b49a62; --lista-pdf-muted: #665e54; --lista-pdf-focus: #8a6a35; --lista-pdf-backdrop: rgba(40, 34, 28, .55); --lista-pdf-shadow: rgba(40, 34, 28, .3); }
+/* Colori del negozio della pagina nella sua scheda (assets/negozi/<negozio>.css); qui i valori di riserva */      :root { --lista-pdf-bg: #1e1d1a; --lista-pdf-text: #f4f1ea; --lista-pdf-accent: #d4a373; --lista-pdf-muted: #8c857b; --lista-pdf-focus: #e5ba73; --lista-pdf-backdrop: rgba(10, 9, 8, .78); --lista-pdf-shadow: rgba(0, 0, 0, .5); }
       .lista-pdf-overlay { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 16px; background: var(--lista-pdf-backdrop); backdrop-filter: blur(3px); }
       .lista-pdf-box { width: min(360px, 100%); padding: 20px 18px 16px; border: 1px solid var(--lista-pdf-accent); border-radius: 12px; background: var(--lista-pdf-bg); color: var(--lista-pdf-text); box-shadow: 0 12px 32px var(--lista-pdf-shadow); font-family: Arial, sans-serif; text-align: center; }
       .lista-pdf-title { margin-bottom: 10px; color: var(--lista-pdf-accent); font: 600 0.8rem/1.2 Arial, sans-serif; letter-spacing: .14em; }

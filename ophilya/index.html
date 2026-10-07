@@ -2,10 +2,11 @@
 <html lang="it" data-negozio="ophilya">
 <head>
 <meta charset="UTF-8">
+<script src="../assets/js/negozi.js?v=20261008-01"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="../assets/css/font-arial.css">
 <title>STORE // CRAFT — Visual Merchandising Studio</title>
-<script src="../assets/js/punto-vendita.js?v=20261007-16"></script>
+<script src="../assets/js/punto-vendita.js?v=20261008-01"></script>
 <script>
   // Senza un punto vendita scelto oggi si passa dalla splash page; aprendo questa dashboard il negozio di oggi è il suo.
   if (!PuntoVendita.sceltoOggi()) {
@@ -1608,7 +1609,7 @@ body.ophilya .cash-tools-coming-soon{
         </div>
         <div class="system-menu-view" data-system-view="contacts" hidden>
           <div class="system-credits">
-            <span><span class="release-number">V 1.38 2026</span> · Developed by Fabrizio Notte</span><br>
+            <span><span class="release-number">V 1.39 2026</span> · Developed by Fabrizio Notte</span><br>
             © Marchi e loghi appartengono ai rispettivi proprietari<br>
             <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
           </div>
@@ -2652,6 +2653,15 @@ document.addEventListener("pointerdown", event => {
   }
 });
 renderStoreChoices();
+
+// Negozi installati in questa copia (assets/negozi/installati.js): l'interruttore TEBE / OPHILYA compare solo se ci
+// sono tutti e due; la voce HOME (torna alla scelta del punto vendita) solo se c'è più di un negozio.
+if(!PuntoVendita.NEGOZI.tebe || !PuntoVendita.NEGOZI.ophilya){
+  document.querySelector(".topbar .switch").style.display = "none";
+}
+if(PuntoVendita.unico()){
+  document.querySelector('[data-system-menu-item="home"]').style.display = "none";
+}
 
 (function init(){
   // Il negozio è quello della cartella della dashboard (data-negozio): TEBE o OPHILYA.
