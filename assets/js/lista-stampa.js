@@ -94,32 +94,6 @@
     return colored;
   }
 
-  // Vista telefono: il foglio sta nell'anteprima fissa in alto (riquadri con scorrimento interno e zoom, pagina
-  // bloccata all'altezza dello schermo), che Safari su iPhone non riesce a fotografare. Durante la foto il foglio
-  // esce dall'anteprima: a misura piena, senza zoom, in alto a sinistra della pagina e dietro l'interfaccia, come
-  // nelle pagine di TEBE dove il foglio resta nella pagina normale. Restituisce la funzione che lo rimette a posto.
-  function isolateSheet(sheet) {
-    const phone = window.matchMedia('screen and (max-width: 760px) and (pointer: coarse)');
-    if (!phone.matches || !sheet.closest('.phone-preview')) return () => {};
-    const anchor = document.createComment('Posizione del foglio nell\'anteprima');
-    sheet.before(anchor);
-    const zoom = sheet.style.zoom;
-    sheet.style.removeProperty('zoom');
-    const holder = document.createElement('div');
-    holder.style.cssText = 'position: absolute; left: 0; top: 0; z-index: -1; pointer-events: none;';
-    holder.append(sheet);
-    document.body.prepend(holder);
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    window.scrollTo(0, 0);
-    return () => {
-      if (zoom) sheet.style.zoom = zoom;
-      anchor.replaceWith(sheet);
-      holder.remove();
-      window.scrollTo(scrollX, scrollY);
-    };
-  }
-
   // Fotografa il foglio così come verrà stampato: senza ombra né zoom della vista telefono,
   // con i cartellini esclusi nascosti come in stampa.
   async function addSheet(sheet) {
@@ -130,7 +104,6 @@
       img.addEventListener('error', done, { once: true });
     })));
     const colored = colorFilteredImages(sheet);
-    const restoreSheet = isolateSheet(sheet);
     let canvas;
     try {
       canvas = await html2canvas(sheet, {
@@ -153,7 +126,6 @@
         }
       });
     } finally {
-      restoreSheet();
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
     }
     const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
