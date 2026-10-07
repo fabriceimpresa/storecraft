@@ -150,7 +150,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = 'assets/js/lista-stampa.js?v=20261007-06';
+      tag.src = 'assets/js/lista-stampa.js?v=20261007-07';
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -166,9 +166,9 @@
     try {
       const lista = await loadListaStampa();
       const count = await lista.addSheet(sheet);
-      // null: foglio bianco, non aggiunto (lista-stampa.js scarta le pagine bianche)
+      // null: foglio bianco, scartato in silenzio da lista-stampa.js: si toglie solo l'avviso di attesa
       if (count === null) {
-        showToast('Pagina bianca: non aggiunta alla lista di stampa', 2600);
+        if (toast) toast.classList.remove('is-visible');
         return;
       }
       showToast(`Pagina aggiunta alla lista di stampa (${count} ${count === 1 ? 'pagina' : 'pagine'})`, 2600);
