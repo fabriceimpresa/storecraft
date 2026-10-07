@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261007-02">
-  <script src="assets/js/caroselli.js?v=20261007-02" defer></script>
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261007-03">
+  <script src="assets/js/caroselli.js?v=20261007-03" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Libreria qrcode.js integrata -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -239,15 +239,12 @@
       line-height: 1;
     }
 
-    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 3rem; padding-top: 0.4rem; }
-    /* Stessa distanza tra titolo e schede in tutte le sezioni: i caroselli ricevono lo spazio che la griglia ha nel padding-top */
+    /* Stessa distanza tra titolo e schede in tutte le sezioni (0,4rem, come la griglia Cartellini di prima); nel padding, perché un margine si fonderebbe con quello del titolo */
     .section-title + .carousel-wrapper { padding-top: 0.4rem; }
     .section-title + .carousel-wrapper .carousel-arrow { top: calc(50% + 0.2rem); }
     .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
     
     .card, .carousel-card { --card-pad: 20px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; transition: all 0.25s; }
-    .card:hover { border-color: var(--accent); transform: translateY(-3px); }
     
     /* Anteprima nel riquadro 16:9 come le card-thumb di TEBE: l'immagine resta intera, senza tagli né deformazioni.
        I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura) nel tema scuro. */
@@ -337,7 +334,7 @@
 
 
     /* CAROSELLI CON FRECCE FLOATING */
-    #generators-section, #seasonal-promo-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
+    #generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
     
     .carousel-card {
       background: var(--card);
@@ -372,9 +369,6 @@
       padding: 0.55rem 0.5rem;
     }
     
-    @media (max-width: 1300px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
 
     /* WIDGET ED ESPANSIONE ANIMATA */
     .widget { 
@@ -576,7 +570,6 @@
     @media screen and (max-width: 720px) {
       aside { display: none; }
       main { padding: 32px 20px; min-width: 0; }
-      .grid { grid-template-columns: 1fr; }
       #tools { grid-template-columns: 1fr; }
       .home-mark { left: auto; right: 18px; }
     }
@@ -640,7 +633,6 @@
         margin-bottom: 1rem;
       }
 
-      .grid { grid-template-columns: 1fr; }
 
       .mobile-top-bar {
         display: flex;
@@ -806,10 +798,10 @@
       .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-02">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-02"></script>
-  <script src="assets/js/theme.js?v=20261007-02"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-02">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-03">
+  <script defer src="assets/js/menu-cascata.js?v=20261007-03"></script>
+  <script src="assets/js/theme.js?v=20261007-03"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-03">
 </head>
 <body class="sidebar-collapsed">
 
@@ -961,7 +953,7 @@
       </div>
       <div class="system-menu-view" data-system-view="contacts" hidden>
         <div class="system-credits">
-          <span><span class="release-number">V 1.16 2026</span> · Developed by Fabrizio Notte</span><br>
+          <span><span class="release-number">V 1.17 2026</span> · Developed by Fabrizio Notte</span><br>
           © Marchi e loghi appartengono ai rispettivi proprietari<br>
           <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
         </div>
@@ -1173,8 +1165,10 @@
 
     <div id="tickets-section">
       <div class="section-title">Genera Cartellini</div>
-      <div class="grid">
-        <a href="cartellinivetrina.html" class="card">
+      <div class="carousel-wrapper">
+        <button class="carousel-arrow prev" type="button" onclick="scrollCarousel('tickets-carousel', -1)" aria-label="Scorri a sinistra">‹</button>
+        <div class="carousel-container" id="tickets-carousel">
+        <a href="cartellinivetrina.html" class="carousel-card">
           <div class="card-top"><span class="number">01</span><span class="card-type">CARTELLINI</span></div>
           <div class="preview">
             <img class="preview-image" src="assets/thumbnail/cartellini.png" alt="Anteprima Cartellini Vetrina">
@@ -1185,7 +1179,7 @@
           <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
         </a>
 
-        <a href="cartellinipromo.html" class="card">
+        <a href="cartellinipromo.html" class="carousel-card">
           <div class="card-top"><span class="number">02</span><span class="card-type">CARTELLINI</span></div>
           <div class="preview">
             <img class="preview-image" src="assets/thumbnail/cartellinipromo.png" alt="Anteprima Cartellini Promozionali">
@@ -1196,7 +1190,7 @@
           <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Promozione</span> <span class="spec">Evento</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span></span></p></div></div>
         </a>
 
-        <a href="cartelliniquadrati.html" class="card">
+        <a href="cartelliniquadrati.html" class="carousel-card">
           <div class="card-top"><span class="number">03</span><span class="card-type">CARTELLINI</span></div>
           <div class="preview">
             <img class="preview-image" src="assets/thumbnail/cartelliniquadrati.png" alt="Anteprima Quadrati">
@@ -1207,7 +1201,7 @@
           <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Brand</span> <span class="spec">I Miei Loghi</span> <span class="spec">Descrizione</span> <span class="spec">Doppio Prezzo</span> <span class="spec">Sconto</span> <span class="spec">Tema Sale</span></span></p></div></div>
         </a>
 
-        <a href="prezzivetrina.html" class="card">
+        <a href="prezzivetrina.html" class="carousel-card">
           <div class="card-top"><span class="number">04</span><span class="card-type">CARTELLINI</span></div>
           <div class="preview">
             <img class="preview-image" src="assets/thumbnail/prezzivetrina.png" alt="Anteprima Prezzi Vetrina">
@@ -1217,6 +1211,8 @@
           </div>
           <div class="card-desc"><div><p><span class="spec-list"><span class="spec">Fasce Prezzo</span> <span class="spec">Promozione</span> <span class="spec">24 cartellini</span></span></p></div></div>
         </a>
+        </div>
+        <button class="carousel-arrow next" type="button" onclick="scrollCarousel('tickets-carousel', 1)" aria-label="Scorri a destra">›</button>
       </div>
     </div>
 

@@ -488,7 +488,7 @@
   :root[data-interface-theme="light"] body :is(
     .tab-item, .mode-switch, .mode-switch button, .btn-toggle, .check-row,
     .nav-btn:hover, .nav-btn.active, .nav-subtoggle:hover, .sidebar-section .label:hover,
-    .credits-toggle:hover, .credits-toggle:focus-visible, .carousel-arrow
+    .credits-toggle:hover, .credits-toggle:focus-visible
   ) {
     border-color: var(--interface-border);
   }
