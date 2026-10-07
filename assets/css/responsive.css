@@ -1,5 +1,6 @@
 /* Le regole telefono richiedono sia uno schermo stretto sia un puntatore touch.
    Tablet e finestre desktop strette conservano la disposizione desktop. */
+.phone-lens-btn,
 .phone-theme-toolbar,
 .phone-action-bar,
 .mobile-brand-footer { display: none; }
@@ -352,6 +353,7 @@
   /* Linguette su una riga che scorre di lato, ferma in cima al pannello mentre i campi scorrono. */
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) .tabs-grid {
     position: sticky;
+    flex-shrink: 0;
     top: -10px;
     z-index: 1;
     display: flex;
@@ -411,6 +413,33 @@
     height: 36px;
     z-index: 10;
   }
+  /* Lente in basso a sinistra dell'anteprima: tutta la pagina (lente −) o cartellino ingrandito (lente +). */
+  body:is([data-layout="cartellini"], [data-layout="prezzi"]) .phone-lens-btn {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1.5px solid var(--interface-accent, #d4a373);
+    border-radius: 50%;
+    background: rgba(18, 17, 16, .88);
+    color: var(--interface-accent, #d4a373);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body:is([data-layout="cartellini"], [data-layout="prezzi"]) .phone-lens-btn svg { width: 22px; height: 22px; }
+  body:is([data-layout="cartellini"], [data-layout="prezzi"]) .phone-lens-btn:active { transform: scale(.95); }
+  body:is([data-layout="cartellini"], [data-layout="prezzi"]) .phone-lens-btn:focus-visible {
+    outline: 2px solid #e5ba73;
+    outline-offset: 2px;
+  }
+  body.phone-full-preview .phone-lens-btn { display: none; }
   /* Pulsante Sale dei Quadrati nella barra dei temi dell'anteprima: stessa forma, dimensione della barra. */
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) .phone-theme-toolbar .sale-theme-btn {
     font-size: 0.72rem;
@@ -455,6 +484,7 @@
 }
 
 @media print {
+  .phone-lens-btn,
   .phone-theme-toolbar,
   .phone-action-bar,
   .mobile-brand-footer { display: none !important; }

@@ -252,9 +252,10 @@
     update();
   }
 
-  /* Cartellini e Prezzi Vetrina: in alto la riga del foglio con il cartellino scelto, bordato d'oro; cambiando
-     linguetta l'anteprima scorre sulla nuova riga. In Prezzi Vetrina la linguetta sceglie una colonna: si vede la
-     prima riga con il cartellino di quella colonna bordato. Le linguette stanno su una riga che scorre di lato. */
+  /* Cartellini e Prezzi Vetrina: in alto il cartellino scelto, bordato d'oro e ingrandito al centro della sua riga,
+     con metà dei vicini ai lati; cambiando linguetta l'anteprima scorre sul nuovo cartellino. La lente in basso a
+     sinistra mostra tutta la pagina e riporta al cartellino. In Prezzi Vetrina la linguetta sceglie una colonna:
+     si vede il cartellino di quella colonna nella prima riga. Le linguette stanno su una riga che scorre di lato. */
   function setupCartellini() {
     const main = document.querySelector('body > main');
     const wrap = main && main.querySelector('.sheet-wrap');
@@ -305,16 +306,33 @@
       else if (card) card.classList.remove('phone-current-card');
     }
 
+    // Lente in basso a sinistra dell'anteprima: passa dal cartellino ingrandito a tutta la pagina e ritorno.
+    const LENS_ICON = sign => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><path d="M7.5 10.5h6"/>' + (sign === '+' ? '<path d="M10.5 7.5v6"/>' : '') + '</svg>';
+    let pageView = false;
+    const lens = document.createElement('button');
+    lens.type = 'button';
+    lens.className = 'phone-lens-btn';
+    lens.addEventListener('click', () => {
+      pageView = !pageView;
+      updateLens();
+      fitPreview(false);
+    });
+    preview.append(lens);
+    function updateLens() {
+      lens.setAttribute('aria-pressed', String(pageView));
+      lens.setAttribute('aria-label', pageView ? 'Ingrandisci il cartellino scelto' : 'Vedi tutta la pagina dei cartellini');
+      lens.title = pageView ? 'Cartellino' : 'Tutta la pagina';
+      lens.innerHTML = LENS_ICON(pageView ? '+' : '−');
+    }
+    updateLens();
+
     // Spazio del bordo oro attorno al cartellino scelto (outline 6 px + distanza 2 px, in responsive.css).
     const MARK = 8;
+    // Larghezza visibile nell'anteprima ingrandita, in cartellini: quello scelto al centro e metà dei vicini ai lati.
+    const CELLS = 2;
 
-    // Tratto della <main> da mostrare (in px, coordinate del suo contenuto) per la riga del cartellino: la riga con
-    // il suo bordo oro; la prima riga comincia dal bordo della <main>, l'ultima finisce sul bordo, così attorno al
-    // foglio resta il margine dell'anteprima.
-    function rowWindow(card, zoom, padTop, padBottom) {
-      const sheetRect = grid.getBoundingClientRect();
-      const whole = { top: 0, height: sheetRect.height + padTop + padBottom };
-      if (!card || !sheetRect.height) return whole;
+    // Riga del cartellino: posizione verticale (in px a schermo) della riga, della precedente e della successiva.
+    function rowsAround(card) {
       const rect = card.getBoundingClientRect();
       const rows = [];
       [...grid.children].forEach(child => {
@@ -323,12 +341,42 @@
       });
       rows.sort((a, b) => a.top - b.top);
       const at = rows.findIndex(row => Math.abs(row.top - rect.top) < 1);
+      return { rows, at };
+    }
+
+    // Larghezza di un cartellino con il suo spazio: distanza dal vicino nella stessa riga (o la sua larghezza).
+    function cellWidth(card) {
+      const rect = card.getBoundingClientRect();
+      const lefts = [...grid.children]
+        .map(child => child.getBoundingClientRect())
+        .filter(r => r.height && Math.abs(r.top - rect.top) < 1 && Math.abs(r.left - rect.left) > 1)
+        .map(r => Math.abs(r.left - rect.left));
+      return lefts.length ? Math.min(...lefts) : rect.width;
+    }
+
+    // Tratto della <main> da mostrare (in px, coordinate del suo contenuto) per la riga del cartellino: la riga con
+    // il suo bordo oro; la prima riga comincia dal bordo della <main>, l'ultima finisce sul bordo, così attorno al
+    // foglio resta il margine dell'anteprima.
+    function rowWindow(card, zoom, padTop, padBottom) {
+      const sheetRect = grid.getBoundingClientRect();
+      const whole = { top: 0, height: sheetRect.height + padTop + padBottom };
+      if (!card || !sheetRect.height) return whole;
+      const { rows, at } = rowsAround(card);
       if (at < 0) return whole;
       const top = at === 0 ? 0 : padTop + Math.max(0, rows[at].top - sheetRect.top - MARK * zoom);
       const bottom = at === rows.length - 1
         ? sheetRect.height + padTop + padBottom
         : padTop + Math.min(sheetRect.height, rows[at].bottom - sheetRect.top + MARK * zoom);
       return { top, height: bottom - top };
+    }
+
+    // Scorrimento orizzontale che mette il cartellino al centro dell'anteprima.
+    function centerLeft(card) {
+      if (!card) return 0;
+      const rect = card.getBoundingClientRect();
+      const mainRect = main.getBoundingClientRect();
+      const center = rect.left - mainRect.left + main.scrollLeft + rect.width / 2;
+      return Math.max(0, center - main.clientWidth / 2);
     }
 
     // Lo zoom sta sulla .sheet-wrap (come nelle regole di stampa e nella lista di stampa); le misure sono del foglio.
@@ -358,14 +406,23 @@
         const zoom = Math.min(1, (main.clientWidth - padX) / natural.width, (window.innerHeight - padY) / natural.height);
         const size = setZoom(zoom);
         main.style.height = `${Math.round(size.height + padY)}px`;
-        main.scrollTo({ top: 0 });
+        main.scrollTo({ top: 0, left: 0 });
         return;
       }
-      const zoom = Math.min(1, Math.max(1, main.clientWidth - padX) / natural.width);
+      const fitWidth = Math.min(1, Math.max(1, main.clientWidth - padX) / natural.width);
+      // Tutta la pagina: il foglio intero a tutta larghezza.
+      if (pageView || !card) {
+        const size = setZoom(fitWidth);
+        main.style.height = `${Math.round(size.height + padY)}px`;
+        main.scrollTo({ top: 0, left: 0, behavior: smooth ? 'smooth' : 'auto' });
+        return;
+      }
+      // Cartellino ingrandito: CELLS cartellini nella larghezza, mai meno della pagina intera.
+      const zoom = Math.max(fitWidth, Math.min(1, main.clientWidth / (CELLS * cellWidth(card))));
       setZoom(zoom);
       const view = rowWindow(card, zoom, padTop, padBottom);
       main.style.height = `${Math.round(view.height)}px`;
-      main.scrollTo({ top: view.top, behavior: smooth ? 'smooth' : 'auto' });
+      main.scrollTo({ top: view.top, left: centerLeft(card), behavior: smooth ? 'smooth' : 'auto' });
     }
 
     // La linguetta scelta resta visibile nella riga che scorre.
