@@ -117,6 +117,7 @@
             .cartellino.disabled { visibility: hidden !important; }
             .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; }
             .cursore, .tool-buttons, .app-modal { display: none !important; }
+            .phone-current-card { outline: none !important; }
             img[data-lista-colore] { filter: none !important; }`;
           doc.head.appendChild(style);
           doc.querySelectorAll('img[data-lista-colore]').forEach(img => {
