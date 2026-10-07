@@ -2,13 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-02"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
+  <script src="../assets/js/negozi.js?v=20261008-03"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-03">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-03">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello SALE</title>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-03">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -25,69 +26,13 @@
     }
 
     /* Contenitore Pannelli di Sinistra */
-    .sidebar {
-      width: 360px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      position: relative;
-      z-index: 1;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
 
     /* Pannelli di Controllo */
-    .controls {
-      background: #fffdfa;
-      color: #282522;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: none;
-      border: 1px solid #e3dacb;
-    }
 
-    .controls h2 {
-      font-family: 'Cinzel', serif;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #b49a62;
-      border-bottom: 1px solid #e3dacb;
-      padding-bottom: 0.6rem;
-      margin-bottom: 0.8rem;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-transform: uppercase;
-    }
 
     /* SELETTORE MODALITA' */
-    .mode-switch {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: #f3ede0;
-      border: 1px solid #e3dacb;
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-    }
 
-    .mode-switch button {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      padding: 9px 8px;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #8a7f6e;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
 
-    .mode-switch button.active {
-      background: #fffdfa;
-      color: #282522;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
 
     /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
        (i margini si sommano a quello del titolo: vale il maggiore) */
@@ -95,36 +40,11 @@
 
     /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
        un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettore e prima del tasto di stampa */
-    .form-group { margin-bottom: 0.8rem; }
 
-    .form-group label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: normal;
-      margin-bottom: 0.35rem;
-      color: #665e54;
-    }
 
     /* Titoli dei menu a discesa: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-    .form-group .section-label { color: #b49a62; }
 
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 0.45rem;
-      border: 1px solid #e3dacb;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      background-color: #f8f6f1;
-      color: #282522;
-    }
 
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
-    }
 
     .price-range-select {
       position: relative;
@@ -147,15 +67,15 @@
 
     .price-range-control {
       position: relative;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--pannello-bordo);
       border-radius: 4px;
-      background-color: #f8f6f1;
+      background-color: var(--pannello-campo);
       overflow: hidden;
     }
 
     .price-range-control:focus-within {
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+      border-color: var(--pannello-oro);
+      box-shadow: 0 0 4px var(--pannello-alone);
     }
 
     .price-range-control::after {
@@ -168,60 +88,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border-left: 1px solid #e3dacb;
-      background: #f3ede0;
-      color: #b49a62;
+      border-left: 1px solid var(--pannello-bordo);
+      background: var(--pannello-riquadro);
+      color: var(--pannello-oro);
       font-size: 0.6rem;
       line-height: 1;
       pointer-events: none;
     }
 
-    .preset-select {
-      position: relative;
-      margin-bottom: 0.8rem;
-      border: 1px solid #e3dacb;
-      border-radius: 4px;
-      background-color: #f8f6f1;
-      overflow: hidden;
-    }
 
-    .preset-select:focus-within {
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
-    }
 
-    .form-group .preset-select select {
-      appearance: none;
-      margin-bottom: 0;
-      padding-right: 2rem;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-    }
 
-    .form-group .preset-select select:focus {
-      border: none;
-      box-shadow: none;
-    }
 
-    .preset-select::after {
-      content: '▼';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 1.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-left: 1px solid #e3dacb;
-      background: #f3ede0;
-      color: #b49a62;
-      font-size: 0.6rem;
-      line-height: 1;
-      pointer-events: none;
-    }
 
     .price-inputs-row {
       display: flex;
@@ -234,15 +112,15 @@
     .percent-input-wrapper {
       display: flex;
       align-items: stretch;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--pannello-bordo);
       border-radius: 4px;
-      background-color: #f8f6f1;
+      background-color: var(--pannello-campo);
       overflow: hidden;
     }
 
     .percent-input-wrapper:focus-within {
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+      border-color: var(--pannello-oro);
+      box-shadow: 0 0 4px var(--pannello-alone);
     }
 
     .percent-input-wrapper input#discountValue {
@@ -270,16 +148,16 @@
       flex: 0 0 1.6rem;
       display: flex;
       flex-direction: column;
-      border-left: 1px solid #e3dacb;
+      border-left: 1px solid var(--pannello-bordo);
       overflow: hidden;
     }
 
     .percent-input-wrapper .percent-stepper button {
       flex: 1;
       border: none;
-      border-bottom: 1px solid #e3dacb;
-      background: #f3ede0;
-      color: #b49a62;
+      border-bottom: 1px solid var(--pannello-bordo);
+      background: var(--pannello-riquadro);
+      color: var(--pannello-oro);
       cursor: pointer;
       font-size: 0.6rem;
       line-height: 1;
@@ -292,28 +170,12 @@
     .percent-input-wrapper .percent-stepper button:last-child { border-bottom: none; }
 
     .percent-input-wrapper .percent-stepper button:hover {
-      background: #e3dacb;
-      color: #8a6a35;
+      background: var(--pannello-riquadro-hover);
+      color: var(--pannello-oro-chiaro);
     }
 
     /* PULSANTE STAMPA */
-    .btn-print {
-      width: 100%;
-      background-color: #96382b;
-      color: #fffdfa;
-      border: 1px solid #96382b;
-      padding: 10px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 0;
-      transition: background-color 0.2s;
-    }
 
-    .btn-print:hover { background-color: #7a2d22; }
 
     /* FOGLIO STAMPA */
     .print-sheet {
@@ -539,9 +401,11 @@
       .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-03">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-03"></script>
 </head>
 <body>
 
@@ -650,7 +514,7 @@
     </div>
   </div>
 
-  <script src="../assets/js/tema-italia.js?v=20261008-02"></script>
+  <script src="../assets/js/tema-italia.js?v=20261008-03"></script>
   <script>
     function formatDiscount(value) {
       const numeric = value.toString().replace(/[^0-9]/g, '').trim();
@@ -748,7 +612,7 @@
 
     switchMode('doppia');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-02"></script>
+  <script src="../assets/js/cursore.js?v=20261008-03"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -765,6 +629,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-02"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-03"></script>
 </body>
 </html>

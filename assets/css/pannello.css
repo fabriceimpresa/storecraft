@@ -1,5 +1,7 @@
 /*
- * Pannello standard degli editor (Crea Cartelli e Cartellini), con i colori scuri di StoreCraft.
+ * Pannello standard degli editor (Crea Cartelli e Cartellini), comune a tutti i negozi.
+ * I colori sono del negozio della pagina, nella sua scheda (assets/negozi/<negozio>.css: --pannello-*); qui i valori
+ * di riserva, i colori scuri di Luxury Outlet. Nelle pagine Luxury il tema chiaro li cambia con theme.css.
  * Struttura e misure sono quelle del pannello standard di TEBE (vedi AGENTS.md):
  * - campi, menu e tasto di stampa con i caratteri predefiniti dei controlli (Arial), campi e menu alti 31,4 px;
  * - pulsanti dei selettori come nel paletto di TEBE: system-ui in grassetto leggero (600), interlinea 1,2;
@@ -12,6 +14,30 @@
  * Va incluso dopo assets/css/font-arial.css.
  */
 
+:root {
+  --pannello-sfondo: #1e1d1a;            /* riquadro del pannello */
+  --pannello-testo: #f4f1ea;             /* testo del pannello e dei campi */
+  --pannello-bordo: #2e2b27;             /* bordi di riquadro, campi, selettori; linea sotto il titolo */
+  --pannello-titolo: #d4a373;            /* titolo del pannello */
+  --pannello-etichetta: #a39a8d;         /* etichette dei campi */
+  --pannello-oro: #d4a373;               /* titoli dei menu, bordo dei campi in uso, frecce, simboli, caselle */
+  --pannello-oro-chiaro: #e5ba73;        /* maniglia della barra al passaggio del mouse */
+  --pannello-alone: rgba(212, 163, 115, 0.35);  /* alone del campo in uso */
+  --pannello-campo: #0a0908;             /* fondo dei campi */
+  --pannello-segnaposto: #5f5a53;        /* testo di esempio nelle aree di testo */
+  --pannello-riquadro: #181715;          /* riquadro della freccia dei menu e frecce ▲▼ */
+  --pannello-riquadro-hover: #2e2b27;    /* frecce ▲▼ al passaggio del mouse */
+  --pannello-selettore: #0a0908;         /* fondo dei selettori a pulsanti */
+  --pannello-selettore-testo: #8c857b;   /* voci non scelte dei selettori */
+  --pannello-selettore-hover: #f4f1ea;   /* voce non scelta al passaggio del mouse */
+  --pannello-selettore-attivo: #d4a373;  /* voce scelta: fondo */
+  --pannello-selettore-attivo-testo: #121110;  /* voce scelta: testo */
+  --pannello-ombra: rgba(0, 0, 0, 0.5);  /* ombre di pulsanti, voce scelta e maniglia */
+  --pannello-linea: rgba(212, 163, 115, 0.28);  /* linea sotto COPIA SU ALTRO CARTELLO */
+  --pannello-stampa-testo: #f4f1ea;      /* scritta del tasto di stampa */
+  --pannello-schema: dark;               /* schema dei controlli nativi (elenchi dei menu): dark o light */
+}
+
 .sidebar {
   width: 360px;
   display: flex;
@@ -23,12 +49,12 @@
 }
 
 .controls {
-  background: #1e1d1a;
-  color: #f4f1ea;
+  background: var(--pannello-sfondo);
+  color: var(--pannello-testo);
   /* sotto (dopo il tasto di stampa) lo stesso spazio che si vede in alto tra il bordo e le lettere del titolo:
      1rem più i 4 px di cui le maiuscole cominciano sotto il bordo della loro riga */
   padding: 1rem 1rem 1.25rem;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 8px;
 }
 
@@ -37,8 +63,8 @@
   font-family: 'Cinzel', serif;
   font-weight: 600;
   font-size: 1.1rem;
-  color: #d4a373;
-  border-bottom: 1px solid #2e2b27;
+  color: var(--pannello-titolo);
+  border-bottom: 1px solid var(--pannello-bordo);
   padding-bottom: 0.6rem;
   margin-bottom: 0.8rem;
   letter-spacing: 1.5px;
@@ -88,12 +114,18 @@
   display: block;
   font-weight: normal;
   margin-bottom: 0.35rem;
-  color: #a39a8d;
+  color: var(--pannello-etichetta);
   font-size: 0.72rem;
 }
 
 /* Titoli dei menu a discesa: come le altre etichette, in oro */
-.form-group .section-label { color: #d4a373; }
+.form-group .section-label {
+  color: var(--pannello-oro);
+  /* come le altre etichette anche dove la pagina ha una regola generale .section-label (es. in maiuscolo) */
+  font-weight: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}
 
 /* Due campi affiancati (es. Claim Sinistro / Claim Destro) */
 .form-row { display: flex; gap: 6px; }
@@ -103,10 +135,10 @@
 .form-group select {
   width: 100%;
   padding: 0.45rem;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 4px;
-  background: #0a0908;
-  color: #f4f1ea;
+  background: var(--pannello-campo);
+  color: var(--pannello-testo);
   font-size: 0.82rem;
 }
 
@@ -119,22 +151,22 @@
   width: 100%;
   height: calc(4 * 1.4em + 0.9rem + 2px);
   padding: 0.45rem;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 4px;
-  background: #0a0908;
-  color: #f4f1ea;
+  background: var(--pannello-campo);
+  color: var(--pannello-testo);
   font-family: Arial, Helvetica, sans-serif;
   font-size: 0.82rem;
   line-height: 1.4;
   resize: none;
 }
 
-.form-group textarea::placeholder { color: #5f5a53; }
+.form-group textarea::placeholder { color: var(--pannello-segnaposto); }
 
 .form-group textarea:focus {
   outline: none;
-  border-color: #d4a373;
-  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+  border-color: var(--pannello-oro);
+  box-shadow: 0 0 4px var(--pannello-alone);
 }
 
 /* Barra da trascinare (es. Dimensione Testo): linea scura con il bordo dei campi e maniglia tonda oro,
@@ -154,16 +186,16 @@
 
 .form-group input[type="range"]::-webkit-slider-runnable-track {
   height: 6px;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 3px;
-  background: #0a0908;
+  background: var(--pannello-campo);
 }
 
 .form-group input[type="range"]::-moz-range-track {
   height: 4px;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 3px;
-  background: #0a0908;
+  background: var(--pannello-campo);
 }
 
 .form-group input[type="range"]::-webkit-slider-thumb {
@@ -173,8 +205,8 @@
   margin-top: -6px;
   border: none;
   border-radius: 50%;
-  background: #d4a373;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  background: var(--pannello-oro);
+  box-shadow: 0 1px 3px var(--pannello-ombra);
 }
 
 .form-group input[type="range"]::-moz-range-thumb {
@@ -182,14 +214,14 @@
   height: 16px;
   border: none;
   border-radius: 50%;
-  background: #d4a373;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  background: var(--pannello-oro);
+  box-shadow: 0 1px 3px var(--pannello-ombra);
 }
 
 .form-group input[type="range"]:hover::-webkit-slider-thumb,
-.form-group input[type="range"]:focus-visible::-webkit-slider-thumb { background: #e5ba73; }
+.form-group input[type="range"]:focus-visible::-webkit-slider-thumb { background: var(--pannello-oro-chiaro); }
 .form-group input[type="range"]:hover::-moz-range-thumb,
-.form-group input[type="range"]:focus-visible::-moz-range-thumb { background: #e5ba73; }
+.form-group input[type="range"]:focus-visible::-moz-range-thumb { background: var(--pannello-oro-chiaro); }
 
 /* Campi Claim Sinistro / Destro: il testo è in maiuscolo (es. SALDI 2026, SHOP NOW), quindi un poco più piccolo
    degli altri campi, con il campo alto uguale (31,4 px). :where tiene la regola debole, così sul telefono vale
@@ -225,8 +257,8 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #d4a373;
-  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+  border-color: var(--pannello-oro);
+  box-shadow: 0 0 4px var(--pannello-alone);
 }
 
 /* Menu a discesa con la freccia in un riquadro a destra */
@@ -234,15 +266,15 @@
   position: relative;
   margin-bottom: 0.65rem;
   overflow: hidden;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 4px;
-  background: #0a0908;
+  background: var(--pannello-campo);
 }
 
 
 .preset-select:focus-within {
-  border-color: #d4a373;
-  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+  border-color: var(--pannello-oro);
+  box-shadow: 0 0 4px var(--pannello-alone);
 }
 
 .form-group .preset-select select {
@@ -264,16 +296,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid #2e2b27;
-  background: #181715;
-  color: #d4a373;
+  border-left: 1px solid var(--pannello-bordo);
+  background: var(--pannello-riquadro);
+  color: var(--pannello-oro);
   font-size: 0.6rem;
   pointer-events: none;
 }
 
 /* Elenco a discesa: il tema scuro è predefinito; theme.css adatta colori e
    selettori personalizzabili al tema chiaro quando viene scelto. */
-.form-group select { color-scheme: dark; }
+.form-group select { color-scheme: var(--pannello-schema); }
 
 @supports (appearance: base-select) {
   .form-group select,
@@ -318,9 +350,9 @@
   gap: 4px;
   margin-bottom: 0.5rem;   /* tra un selettore e il selettore o il pulsante che segue: un poco meno dello spazio normale */
   padding: 4px;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 6px;
-  background: #0a0908;
+  background: var(--pannello-selettore);
 }
 
 .mode-switch[hidden] { display: none; }
@@ -331,7 +363,7 @@
   border: 0;
   border-radius: 4px;
   background: transparent;
-  color: #8c857b;
+  color: var(--pannello-selettore-testo);
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
@@ -342,12 +374,12 @@
   transition: all 0.2s ease;
 }
 
-.mode-switch button:hover:not(.active):not(:disabled) { color: #f4f1ea; }
+.mode-switch button:hover:not(.active):not(:disabled) { color: var(--pannello-selettore-hover); }
 
 .mode-switch button.active {
-  background: #d4a373;
-  color: #121110;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  background: var(--pannello-selettore-attivo);
+  color: var(--pannello-selettore-attivo-testo);
+  box-shadow: 0 1px 3px var(--pannello-ombra);
 }
 
 .mode-switch button:disabled { opacity: 0.35; cursor: default; }
@@ -360,23 +392,23 @@
   width: 100%;
   margin-bottom: 0.65rem;
   padding: 8px 8px;
-  border: 1px solid #d4a373;
+  border: 1px solid var(--pannello-oro);
   border-radius: 6px;
   background: transparent;
-  color: #d4a373;
+  color: var(--pannello-oro);
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 6px var(--pannello-ombra);
   transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .btn-toggle:hover {
   filter: brightness(1.12);
   transform: translateY(-2px);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: 0 3px 0 var(--pannello-ombra);
 }
 
 .btn-toggle.active {
@@ -394,9 +426,9 @@
   /* linea sottile oro chiaro che la separa dai comandi che seguono: sopra e sotto la linea lo stesso spazio,
      un poco più di quello normale */
   padding-bottom: 1.1rem;
-  border-bottom: 1px solid rgba(212, 163, 115, 0.28);
+  border-bottom: 1px solid var(--pannello-linea);
   margin-bottom: 1.1rem;
-  color: #d4a373;
+  color: var(--pannello-oro);
   font-size: 0.72rem;
   cursor: pointer;
 }
@@ -411,19 +443,19 @@
   width: 14px;
   height: 14px;
   margin: 0;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 3px;
-  background: #0a0908 center / 10px 10px no-repeat;
+  background: var(--pannello-campo) center / 10px 10px no-repeat;
   cursor: pointer;
 }
 
 .check-row input[type="checkbox"]:checked {
-  border-color: #d4a373;
-  background-color: #d4a373;
+  border-color: var(--pannello-oro);
+  background-color: var(--pannello-oro);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5.2 4 7.6 8.6 2.6' fill='none' stroke='%23121110' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
-.check-row input[type="checkbox"]:focus-visible { outline: none; box-shadow: 0 0 4px rgba(212, 163, 115, 0.6); }
+.check-row input[type="checkbox"]:focus-visible { outline: none; box-shadow: 0 0 4px var(--pannello-oro); }
 
 .btn-print {
   width: 100%;
@@ -432,7 +464,7 @@
   border: 1px solid #96382b;
   border-radius: 4px;
   background: #96382b;
-  color: #f4f1ea;
+  color: var(--pannello-stampa-testo);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.6px;
@@ -447,15 +479,15 @@
 .input-affix {
   display: flex;
   align-items: stretch;
-  border: 1px solid #2e2b27;
+  border: 1px solid var(--pannello-bordo);
   border-radius: 4px;
-  background: #0a0908;
+  background: var(--pannello-campo);
   overflow: hidden;
 }
 
 .input-affix:focus-within {
-  border-color: #d4a373;
-  box-shadow: 0 0 4px rgba(212, 163, 115, 0.35);
+  border-color: var(--pannello-oro);
+  box-shadow: 0 0 4px var(--pannello-alone);
 }
 
 .form-group .input-affix input {
@@ -479,7 +511,7 @@
 .input-affix .affix {
   display: flex;
   align-items: center;
-  color: #d4a373;
+  color: var(--pannello-oro);
   font-size: 0.82rem;
   pointer-events: none;
 }
@@ -492,23 +524,23 @@
   flex: 0 0 1.4rem;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #2e2b27;
+  border-left: 1px solid var(--pannello-bordo);
 }
 
 .input-affix .stepper button {
   flex: 1;
   padding: 0;
   border: none;
-  border-bottom: 1px solid #2e2b27;
-  background: #181715;
-  color: #d4a373;
+  border-bottom: 1px solid var(--pannello-bordo);
+  background: var(--pannello-riquadro);
+  color: var(--pannello-oro);
   font-size: 0.5rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .input-affix .stepper button:last-child { border-bottom: none; }
-.input-affix .stepper button:hover { background: #2e2b27; }
+.input-affix .stepper button:hover { background: var(--pannello-riquadro-hover); }
 
 @media print {
   .sidebar { display: none !important; }

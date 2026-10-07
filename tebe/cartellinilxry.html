@@ -2,18 +2,19 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-02"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
+  <script src="../assets/js/negozi.js?v=20261008-03"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-03">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-03">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini LXRY</title>
     <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-02"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-02"></script>
-  <script src="../assets/js/logos.js?v=20261008-02"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-02"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261008-03"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261008-03"></script>
+  <script src="../assets/js/logos.js?v=20261008-03"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261008-03"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-03">
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -67,28 +68,14 @@
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
-    .form-group { margin-bottom: 0.8rem; }
     /* Spazi regolari nel pannello (come le pagine Crea Cartelli): 0,35rem tra etichetta e campo, 0,8rem tra
        un campo e l'etichetta successiva, sotto il selettore e prima del tasto di stampa */
-    .form-group label { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.35rem; }
     /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-    .form-group .section-label { color: #b49a62; }
     .form-control { width: 100%; padding: 0.45rem; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.82rem; outline: none; }
     .form-control:focus { border-color: var(--gold); }
 
     /* MENU A DISCESA CON FRECCIA */
-    .preset-select {
-      position: relative;
-      border: 1px solid #e3dacb;
-      border-radius: 4px;
-      background-color: var(--card);
-      overflow: hidden;
-    }
 
-    .preset-select:focus-within {
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
-    }
 
     .preset-select select.form-control {
       appearance: none;
@@ -101,37 +88,20 @@
       cursor: pointer;
     }
 
-    .preset-select::after {
-      content: '▼';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 1.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-left: 1px solid #e3dacb;
-      background: #f3ede0;
-      color: #b49a62;
-      font-size: 0.6rem;
-      line-height: 1;
-      pointer-events: none;
-    }
 
     /* CAMPO PERCENTUALE CON FRECCE */
     .percent-input-wrapper {
       display: flex;
       align-items: stretch;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--pannello-bordo);
       border-radius: 4px;
       background-color: var(--card);
       overflow: hidden;
     }
 
     .percent-input-wrapper:focus-within {
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+      border-color: var(--pannello-oro);
+      box-shadow: 0 0 4px var(--pannello-alone);
     }
 
     .percent-input-wrapper input#discountValue {
@@ -154,16 +124,16 @@
       flex: 0 0 1.6rem;
       display: flex;
       flex-direction: column;
-      border-left: 1px solid #e3dacb;
+      border-left: 1px solid var(--pannello-bordo);
       overflow: hidden;
     }
 
     .percent-input-wrapper .percent-stepper button {
       flex: 1;
       border: none;
-      border-bottom: 1px solid #e3dacb;
-      background: #f3ede0;
-      color: #b49a62;
+      border-bottom: 1px solid var(--pannello-bordo);
+      background: var(--pannello-riquadro);
+      color: var(--pannello-oro);
       cursor: pointer;
       font-size: 0.6rem;
       line-height: 1;
@@ -176,8 +146,8 @@
     .percent-input-wrapper .percent-stepper button:last-child { border-bottom: none; }
 
     .percent-input-wrapper .percent-stepper button:hover {
-      background: #e3dacb;
-      color: #8a6a35;
+      background: var(--pannello-riquadro-hover);
+      color: var(--pannello-oro-chiaro);
     }
 
     /* Evidenzia i brand della casa TEBE (PRIORITY_BRANDS) in cima al menu brand */
@@ -187,41 +157,9 @@
       font-weight: bold;
     }
     
-    .mode-switch {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: #f3ede0;
-      border: 1px solid #e3dacb;
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-    }
 
-    .mode-switch button {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      padding: 9px 8px;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #8a7f6e;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      line-height: 1.2;
-      text-align: center;
-      font-family: Arial, Helvetica, sans-serif;
-    }
 
-    .mode-switch button.active {
-      background: #fffdfa;
-      color: #282522;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
 
-    .btn-print { width: 100%; padding: 0.75rem; background: #96382b; color: #fffdfa; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px; transition: all 0.2s; margin-bottom: 1.2rem; }
-    .btn-print:hover { background: #7a2d22; }
     /* Tasto di stampa dentro il riquadro di modifica, come nei cartelli */
     .editor-section .btn-print { margin: 0; }
     /* Riquadro che comincia con un selettore: un poco di spazio in più sopra il selettore; l'ultimo elemento
@@ -412,8 +350,10 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.27; } }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-03">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-03"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -873,7 +813,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-02"></script>
+  <script src="../assets/js/cursore.js?v=20261008-03"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -900,6 +840,6 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-02" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-03" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

@@ -2,13 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-02"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
+  <script src="../assets/js/negozi.js?v=20261008-03"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-03">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-03">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Albero Accessori · TEBE</title>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-03">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,32 +25,8 @@
       font-family: Arial, sans-serif;
     }
 
-    .sidebar {
-      flex: 0 1 360px;
-      position: relative;
-      z-index: 1;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
 
-    .controls {
-      padding: 1rem;
-      border: 1px solid #e3dacb;
-      border-radius: 8px;
-      background: #fffdfa;
-    }
 
-    .controls h1 {
-      font-family: 'Cinzel', serif;
-      font-weight: 600;
-      margin-bottom: 0.8rem;
-      padding-bottom: 0.6rem;
-      border-bottom: 1px solid #e3dacb;
-      color: #b49a62;
-      font-size: 1.1rem;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-transform: uppercase;
-    }
 
     .section-label {
       margin-bottom: 0.35rem;
@@ -65,9 +42,9 @@
       gap: 4px;
       margin-bottom: 0.8rem;
       padding: 4px;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--pannello-bordo);
       border-radius: 6px;
-      background: #f3ede0;
+      background: var(--pannello-riquadro);
     }
 
     .card-selector button {
@@ -76,7 +53,7 @@
       border: 0;
       border-radius: 4px;
       background: transparent;
-      color: #8a7f6e;
+      color: var(--pannello-selettore-testo);
       font: 600 0.78rem Arial, Helvetica, sans-serif;
       cursor: pointer;
     }
@@ -93,53 +70,14 @@
 
     /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
        un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
-    .form-group { margin-bottom: 0.8rem; }
 
-    .form-group label {
-      display: block;
-      margin-bottom: 0.35rem;
-      color: #665e54;
-      font-size: 0.72rem;
-    }
 
-    .form-group input {
-      width: 100%;
-      padding: 0.45rem;
-      border: 1px solid #e3dacb;
-      border-radius: 4px;
-      background: #f8f6f1;
-      color: #282522;
-      font: 0.82rem Arial, Helvetica, sans-serif;
-    }
 
-    .form-group input:focus {
-      outline: none;
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
-    }
 
     /* Titoli dei menu a discesa: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-    .form-group .section-label {
-      color: #b49a62;
-      font-weight: normal;
-      letter-spacing: normal;
-      text-transform: none;
-    }
 
     /* Menu a discesa con la casella del triangolo a destra, come nelle altre pagine */
-    .preset-select {
-      position: relative;
-      margin-bottom: 0.8rem;
-      overflow: hidden;
-      border: 1px solid #e3dacb;
-      border-radius: 4px;
-      background: #f8f6f1;
-    }
 
-    .preset-select:focus-within {
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
-    }
 
     .preset-select select {
       width: 100%;
@@ -153,36 +91,8 @@
 
     .preset-select select:focus { outline: none; }
 
-    .preset-select::after {
-      content: '▼';
-      position: absolute;
-      inset: 0 0 0 auto;
-      width: 1.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-left: 1px solid #e3dacb;
-      background: #f3ede0;
-      color: #b49a62;
-      font-size: 0.6rem;
-      pointer-events: none;
-    }
 
-    .btn-print {
-      width: 100%;
-      margin-top: 0;
-      padding: 10px;
-      border: 1px solid #96382b;
-      border-radius: 4px;
-      background: #96382b;
-      color: #fffdfa;
-      font: 700 0.78rem Arial, Helvetica, sans-serif;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
 
-    .btn-print:hover { background: #7a2d22; }
 
     .preview-area {
       flex: 0 0 210mm;
@@ -376,8 +286,10 @@
       .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-03">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-03"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna al menu principale">✕</a>
@@ -505,7 +417,7 @@
       document.getElementById('priceInput').value = signs[index].price;
     }
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-02"></script>
+  <script src="../assets/js/cursore.js?v=20261008-03"></script>
   <script>
     // Cursore: sopra il cartellino scelto con i pulsanti 1-2, sopra o di lato a testo e prezzo quando si usano i campi.
     const activeTreeSign = () => document.querySelectorAll('.tree-sign')[activeSign];
@@ -522,6 +434,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-02"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-03"></script>
 </body>
 </html>

@@ -54,4 +54,38 @@
   --torna-testo-hover: #8a6a35;
   --torna-testo-dimensione: 0.82rem;
   --torna-testo-peso: 600;
+
+  /* Pannello degli editor (pannello.css): colori chiari di TEBE, fondo avorio e oro, voce scelta dei selettori
+     bianca con il testo scuro */
+  --pannello-sfondo: #fffdfa;
+  --pannello-testo: #282522;
+  --pannello-bordo: #e3dacb;
+  --pannello-titolo: #b49a62;
+  --pannello-etichetta: #665e54;
+  --pannello-oro: #b49a62;
+  --pannello-oro-chiaro: #8a6a35;
+  --pannello-alone: rgba(180, 154, 98, 0.35);
+  --pannello-campo: #f8f6f1;
+  --pannello-segnaposto: #a39a8d;
+  --pannello-riquadro: #f3ede0;
+  --pannello-riquadro-hover: #e3dacb;
+  --pannello-selettore: #f3ede0;
+  --pannello-selettore-testo: #8a7f6e;
+  --pannello-selettore-hover: #282522;
+  --pannello-selettore-attivo: #fffdfa;
+  --pannello-selettore-attivo-testo: #282522;
+  --pannello-ombra: rgba(40, 34, 28, 0.12);
+  --pannello-linea: rgba(180, 154, 98, 0.28);
+  --pannello-stampa-testo: #fffdfa;
+  --pannello-schema: light;
+
+  /* Elenchi dei menu a cascata (menu-cascata.css e pannello.css), che usano i colori dell'interfaccia */
+  --interface-control: #fffdfa;
+  --interface-text: #282522;
+  --interface-accent: #b49a62;
+  --interface-accent-bright: #8a6a35;
+  --interface-option-hover: #f3ede0;
+  --interface-sidebar: #f3ede0;
+  --interface-border: #e3dacb;
+  --interface-dropdown-shadow: rgba(40, 34, 28, 0.14);
 }

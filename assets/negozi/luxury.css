@@ -54,4 +54,27 @@
   --torna-testo-hover: #e5ba73;
   --torna-testo-dimensione: 0.74rem;
   --torna-testo-peso: normal;
+
+  /* Pannello degli editor (pannello.css): colori scuri di StoreCraft, voce scelta dei selettori in oro */
+  --pannello-sfondo: #1e1d1a;
+  --pannello-testo: #f4f1ea;
+  --pannello-bordo: #2e2b27;
+  --pannello-titolo: #d4a373;
+  --pannello-etichetta: #a39a8d;
+  --pannello-oro: #d4a373;
+  --pannello-oro-chiaro: #e5ba73;
+  --pannello-alone: rgba(212, 163, 115, 0.35);
+  --pannello-campo: #0a0908;
+  --pannello-segnaposto: #5f5a53;
+  --pannello-riquadro: #181715;
+  --pannello-riquadro-hover: #2e2b27;
+  --pannello-selettore: #0a0908;
+  --pannello-selettore-testo: #8c857b;
+  --pannello-selettore-hover: #f4f1ea;
+  --pannello-selettore-attivo: #d4a373;
+  --pannello-selettore-attivo-testo: #121110;
+  --pannello-ombra: rgba(0, 0, 0, 0.5);
+  --pannello-linea: rgba(212, 163, 115, 0.28);
+  --pannello-stampa-testo: #f4f1ea;
+  --pannello-schema: dark;
 }

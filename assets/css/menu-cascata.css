@@ -1,4 +1,5 @@
-select { color-scheme: dark; }
+/* Schema dei controlli nativi: quello del negozio della pagina (--pannello-schema nella sua scheda), altrimenti scuro */
+select { color-scheme: var(--pannello-schema, dark); }
 
 @supports (appearance: base-select) {
   select,

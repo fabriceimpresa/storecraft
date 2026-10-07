@@ -2,13 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-02"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
+  <script src="../assets/js/negozi.js?v=20261008-03"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-03">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-03">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello Semplice</title>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-03">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -23,66 +24,16 @@
       color: #282522;
     }
 
-    .sidebar {
-      width: 360px;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      z-index: 1;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
 
-    .controls {
-      background: #fffdfa;
-      padding: 1rem;
-      border: 1px solid #e3dacb;
-      border-radius: 8px;
-    }
 
-    .controls h2 {
-      font-family: 'Cinzel', serif;
-      font-weight: 600;
-      font-size: 1.1rem;
-      color: #b49a62;
-      border-bottom: 1px solid #e3dacb;
-      padding-bottom: 0.6rem;
-      margin-bottom: 0.8rem;
-      letter-spacing: 1.5px;
-      text-align: center;
-      text-transform: uppercase;
-    }
 
     /* Spazi regolari nel pannello: 0,35rem tra etichetta e campo, 0,8rem tra un campo e l'etichetta
        successiva, tra i gruppi, sotto il titolo e prima del tasto di stampa */
-    .form-group { margin-bottom: 0.8rem; }
 
-    .form-group label {
-      display: block;
-      font-size: 0.72rem;
-      color: #665e54;
-      margin-bottom: 0.35rem;
-    }
 
     /* Titoli dei gruppi: come le altre etichette dei campi, nell'oro dei pulsanti sotto il pannello */
-    .form-group .section-label { color: #b49a62; }
 
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 0.45rem;
-      border: 1px solid #e3dacb;
-      border-radius: 4px;
-      font-size: 0.82rem;
-      background: #f8f6f1;
-      color: #282522;
-    }
 
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #b49a62;
-      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
-    }
 
     .select-control {
       position: relative;
@@ -127,22 +78,7 @@
       pointer-events: none;
     }
 
-    .btn-print {
-      width: 100%;
-      margin-top: 0;
-      padding: 10px;
-      border: 1px solid #96382b;
-      border-radius: 4px;
-      background: #96382b;
-      color: #fffdfa;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
 
-    .btn-print:hover { background: #7a2d22; }
 
     .print-sheet {
       width: 210mm;
@@ -338,9 +274,11 @@
       .btn-print { margin-top: 0; padding: 9px; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-03">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-03"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -420,7 +358,7 @@
     </div>
   </div>
 
-  <script src="../assets/js/tema-italia.js?v=20261008-02"></script>
+  <script src="../assets/js/tema-italia.js?v=20261008-03"></script>
   <script>
     function formatPrice(value) {
       const raw = value.trim().replace(/[€\s]/g, '');
@@ -475,7 +413,7 @@
     // L'Arial arriva da assets/fonts: a caricamento finito si rimisura il testo (getTitleFontSize usa measureText).
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateCards);
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-02"></script>
+  <script src="../assets/js/cursore.js?v=20261008-03"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -489,6 +427,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-02"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-03"></script>
 </body>
 </html>
