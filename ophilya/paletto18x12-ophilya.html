@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="ophilya">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <title>Paletto 18x12 · OPHILYA</title>
+  <style>
+    /* Bodoni del sito: dichiarato come nei Cartellini (senza font-display: swap) */
+    @font-face {
+      font-family: "Bodoni Std";
+      src: url("../assets/fonts/BodoniStd.otf") format("opentype");
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    @font-face {
+      font-family: "Bodoni Std";
+      src: url("../assets/fonts/BodoniStd-Italic.otf") format("opentype");
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px;
+      background: #f8f6f1;
+      color: #282522;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 1;
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .controls {
+      padding: 1rem;
+      border: 1px solid #e3dacb;
+      border-radius: 8px;
+      background: #fffdfa;
+    }
+
+    .controls h1 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid #e3dacb;
+      color: #b49a62;
+      font-size: 1.1rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
+       (i margini si sommano a quello del titolo: vale il maggiore) */
+    .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 1rem; }
+
+    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
+       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
+    .form-group {
+      margin-bottom: 0.8rem;
+    }
+
+    .section-label {
+      margin-bottom: 0.35rem;
+      color: #8a6a35;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.8rem;
+      padding: 4px;
+      border: 1px solid #e3dacb;
+      border-radius: 6px;
+      background: #f3ede0;
+    }
+
+    .mode-switch button {
+      flex: 1;
+      padding: 9px 8px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: #8a7f6e;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      line-height: 1.2;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-switch button.active {
+      background: #fffdfa;
+      color: #282522;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .mode-switch.card-mode-switch button {
+      padding: 9px 3px;
+      font-size: 0.58rem;
+      letter-spacing: 0.02em;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: #665e54;
+      font-size: 0.72rem;
+    }
+
+    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
+       pulsanti sotto il pannello */
+    .form-group .section-label {
+      color: #b49a62;
+      font-weight: normal;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background: #f8f6f1;
+      color: #282522;
+      font-size: 0.82rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .preset-select {
+      position: relative;
+      margin-bottom: 0.8rem;
+      overflow: hidden;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background: #f8f6f1;
+    }
+
+    .preset-select:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .form-group .preset-select select {
+      appearance: none;
+      padding-right: 2rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .preset-select::after {
+      content: '▼';
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      pointer-events: none;
+    }
+
+    .btn-print {
+      width: 100%;
+      margin-top: 0;
+      padding: 10px;
+      border: 1px solid #96382b;
+      border-radius: 4px;
+      background: #96382b;
+      color: #fffdfa;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-print:hover {
+      background: #7a2d22;
+    }
+
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #b49a62;
+      color: #fffdfa;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid #b49a62;
+      border-radius: 8px;
+      background: #fffdfa;
+    }
+
+    .floating-nav-title {
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      color: #8a6a35;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    .floating-nav-btn {
+      color: #282522;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .print-sheet {
+      position: relative;
+      width: 210mm;
+      height: 297mm;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(40, 34, 28, 0.18);
+    }
+
+    .print-sheet .card {
+      position: absolute;
+      left: 15.03mm;
+      width: 179.94mm;
+      height: 127.09mm;
+      overflow: hidden;
+      border: 0.34mm solid #c99a27;
+      background: #fff;
+      color: #231f20;
+      text-align: center;
+    }
+
+    .card-content {
+      position: absolute;
+      inset: 0;
+      transform: scale(0.94);
+      transform-origin: center;
+    }
+
+    #cardTop {
+      top: 10.71mm;
+    }
+
+    #cardBottom {
+      bottom: 10.71mm;
+    }
+
+    .card-title {
+      position: absolute;
+      top: 21.3mm;
+      left: 2.52mm;
+      width: calc(100% - 5.04mm);
+      font-family: "Bodoni Std", "Bodoni MT", serif;
+      font-size: 33.83pt;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      white-space: nowrap;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      transition: top 0.4s ease, opacity 0.35s ease, transform 0.4s ease, visibility 0.4s;
+    }
+
+    .card-title.is-long-description {
+      font-size: 26.31pt;
+    }
+
+    .card-title .separator {
+      color: #c99a27;
+    }
+
+    .card-title .description-tail {
+      color: #231f20;
+    }
+
+    .card.is-made-in-italy .card-title {
+      color: #231f20;
+      transition: color 0.35s ease;
+    }
+
+    .card.is-made-in-italy .card-title .separator {
+      color: #c99a27;
+    }
+
+    .card.is-made-in-italy .card-title .description-tail {
+      color: #231f20;
+    }
+
+    .card-content .paletto-made-in-italy-flag {
+      position: absolute;
+      top: 11.9mm;
+      left: 50%;
+      width: 8.77mm;
+      height: auto;
+      border: 0;
+      box-shadow: none;
+      object-fit: contain;
+      transform: translateX(-50%);
+    }
+
+    /* tema-italia.css ruota di 180° le bandierine di #cardBottom (nei cartelli bifacciali la metà inferiore è
+       capovolta); nei Paletti i due cartelli sono indipendenti e dritti, quindi la bandierina resta dritta */
+    #cardBottom .card-content .paletto-made-in-italy-flag {
+      transform: translateX(-50%);
+    }
+
+    .card.is-made-in-italy .card-title {
+      top: 30.7mm;
+    }
+
+    .card.is-made-in-italy .card-price {
+      top: 46.36mm;
+    }
+
+    .card.is-made-in-italy .card-logo {
+      top: 93.54mm;
+    }
+
+    .card-price {
+      position: absolute;
+      top: 38.84mm;
+      left: 1.26mm;
+      width: calc(100% - 2.52mm);
+      font-family: "Bodoni Std", "Bodoni MT", serif;
+      font-size: 128.64pt;
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      white-space: nowrap;
+      transition: top 0.4s ease;
+    }
+
+    .card-price-row {
+      position: absolute;
+      top: 21.3mm;
+      left: 2.52mm;
+      width: calc(100% - 5.04mm);
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8.82mm;
+      font-family: "Bodoni Std", "Bodoni MT", serif;
+      font-size: 35.08pt;
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6.27mm);
+      transition: opacity 0.35s ease, transform 0.4s ease, visibility 0.4s;
+    }
+
+    .price-old {
+      color: #231f20;
+      text-decoration-line: line-through;
+      text-decoration-color: #c99a27;
+      text-decoration-thickness: 0.75mm;
+    }
+
+    .price-percent {
+      color: #c99a27;
+    }
+
+    .card.is-double-price .card-price-row {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .card.is-double-price .card-title {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6.27mm);
+    }
+
+    .dual-items,
+    .dual-divider {
+      display: none;
+    }
+
+    .card.is-double-article .card-content > .card-title,
+    .card.is-double-article .card-content > .card-price-row,
+    .card.is-double-article .card-content > .card-price {
+      display: none;
+    }
+
+    .card.is-double-article .dual-items {
+      position: absolute;
+      top: 32.58mm;
+      left: 50%;
+      width: 108%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      transform: translateX(-50%);
+    }
+
+    .card.is-double-article .dual-item {
+      position: relative;
+      min-width: 0;
+      height: 47.61mm;
+    }
+
+    .card.is-double-article .dual-item-title {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      font-family: "Bodoni Std", "Bodoni MT", serif;
+      font-size: 17.54pt;
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      white-space: nowrap;
+      text-overflow: clip;
+    }
+
+    .card.is-double-article .dual-item-title.is-long-description {
+      font-size: 13.78pt;
+    }
+
+    .card.is-double-article .dual-item-price {
+      position: absolute;
+      top: 10.02mm;
+      left: 0;
+      width: 100%;
+      overflow: hidden;
+      font-family: "Bodoni Std", "Bodoni MT", serif;
+      font-size: 87.71pt;
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .card.is-double-article.is-article-double-price .dual-item-title {
+      display: none;
+    }
+
+    .card.is-double-article .dual-item-price-row {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: none;
+      align-items: baseline;
+      justify-content: center;
+      gap: 3.78mm;
+      font-family: "Bodoni Std", "Bodoni MT", serif;
+      font-size: 21.3pt;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .card.is-double-article.is-article-double-price .dual-item-price-row {
+      display: flex;
+    }
+
+    .card.is-double-article.is-article-double-price .dual-item-price {
+      top: 10.02mm;
+      font-size: 87.71pt;
+    }
+
+    .card.is-double-article .dual-divider {
+      position: absolute;
+      top: 45.11mm;
+      left: 50%;
+      height: 30.07mm;
+      display: block;
+      border-left: 0.88mm solid #c99a27;
+      transform: translateX(-50%);
+    }
+
+    .article-mode-switch {
+      margin: 0 0 0.8rem;
+    }
+
+    .article-mode-switch button {
+      padding-right: 4px;
+      padding-left: 4px;
+      white-space: nowrap;
+    }
+
+    .article-fields {
+      padding-top: 0.8rem;
+      border-top: 1px solid #e3dacb;
+    }
+
+    .article-fields h2 {
+      margin-bottom: 0.35rem;
+      color: #8a6a35;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .article-fields .form-group {
+      margin-bottom: 0.8rem;
+    }
+
+    .article-fields [data-article-fields="double"] {
+      display: none;
+    }
+
+    #doubleArticleFields.is-double-price [data-article-fields="standard"] {
+      display: none;
+    }
+
+    #doubleArticleFields.is-double-price [data-article-fields="double"] {
+      display: block;
+    }
+
+    /* Logo OPHILYA oro: in proporzione come in Albero Accessori OPHILYA (31 mm dove TEBE è 34 mm),
+       centrato dove sta il logo TEBE della pagina TEBE */
+    .card-logo {
+      position: absolute;
+      top: 87.27mm;
+      left: 50%;
+      width: 51.7mm;
+      height: auto;
+      transform: translateX(-50%);
+      transition: top 0.4s ease;
+    }
+
+    .cut-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      border-top: 0.2mm dashed #aaa;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html,
+      body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .sidebar,
+      .app-close-btn,
+      .floating-nav-box {
+        display: none !important;
+      }
+
+      .print-sheet {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 auto !important;
+        overflow: hidden !important;
+        box-shadow: none;
+        page-break-after: avoid !important;
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body { align-items: center; flex-direction: column; gap: 14px; overflow-x: hidden; padding: 20px 20px 84px; }
+      .sidebar { width: 100%; max-width: 560px; order: 1; }
+      .app-close-btn { right: 18px; }
+      .print-sheet { zoom: 1; margin: 0 auto; order: 3; }
+      /* Su schermi stretti il pulsante Made in Italy si stacca dal pannello
+         e resta sopra il foglio, incolonnato con il tasto di chiusura. */
+      body .tema-italia-btn {
+        position: relative;
+        z-index: 5;
+        order: 2;
+        align-self: flex-end;
+        margin: 0 -2px -48px auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        top: 8px;
+        transform: none;
+      }
+      body .tema-italia-btn:hover,
+      body .tema-italia-btn.is-active {
+        transform: scale(1.06);
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 12px;
+        overflow-x: hidden;
+        padding: 12px 12px 24px;
+      }
+
+      .sidebar { width: 100%; max-width: 560px; }
+      .controls { width: 100%; }
+      .form-group input, .form-group select { font-size: 16px; }
+      .mode-switch button { min-height: 44px; }
+      .print-sheet { zoom: 0.75; margin: 0 auto; }
+      body .tema-italia-btn { margin-right: -4px; }
+      .app-close-btn { top: 10px; right: 4px; width: 44px; height: 44px; }
+      .floating-nav-box { display: none; }
+    }
+
+    @media screen and (max-width: 680px) and (pointer: coarse) { .print-sheet { zoom: 0.64; } }
+    @media screen and (max-width: 530px) and (pointer: coarse) { .print-sheet { zoom: 0.53; } }
+    @media screen and (max-width: 420px) and (pointer: coarse) { .print-sheet { zoom: 0.40; } }
+    @media screen and (max-width: 360px) and (pointer: coarse) { .print-sheet { zoom: 0.34; } }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      .controls { padding: 12px 12px 12px; }
+      .controls h1, .controls h2 {
+        font-size: 0.95rem;
+        padding-bottom: 12px;
+        margin-bottom: 0.55rem;
+      }
+      /* Pannello piu' compatto: su cellulare pannello e foglio devono
+         stare in poco piu' di una schermata. */
+      .form-group, .preset-select, .mode-switch { margin-bottom: 0.55rem; }
+      .form-group label, .section-label {
+        font-size: 0.68rem;
+        margin-bottom: 0.18rem;
+      }
+      .form-group input, .form-group select, .preset-select select {
+        padding: 6px 8px;
+      }
+      .mode-switch button, .row-selector button, .card-selector button {
+        min-height: 36px;
+        padding: 6px;
+        font-size: 0.64rem;
+      }
+      .btn-print { margin-top: 0; padding: 9px; }
+      .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 0.7rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+</head>
+<body>
+  <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna all'indice">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <a href="index.html?store=ophilya" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
+
+  <aside class="sidebar">
+    <div class="controls">
+      <h1>Paletto 18x12</h1>
+
+      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
+        <button type="button" class="active" id="selectTop" onclick="selectCard('top')">CARTELLO<br>SUPERIORE</button>
+        <button type="button" id="selectBottom" onclick="selectCard('bottom')">CARTELLO<br>INFERIORE</button>
+      </div>
+
+      <div class="mode-switch" aria-label="Seleziona la modalità del cartello">
+        <button type="button" class="active" id="standardMode" onclick="setMode('standard')">STANDARD</button>
+        <button type="button" id="doublePriceMode" onclick="setMode('double')">DOPPIO<br>PREZZO</button>
+        <button type="button" id="doubleArticleMode" onclick="setMode('doubleArticle')">DOPPIO<br>ARTICOLO</button>
+      </div>
+
+      <div id="standardFields">
+        <div class="form-group">
+          <label class="section-label" for="descriptionPreset">Promozione</label>
+          <div class="preset-select">
+            <select id="descriptionPreset" onchange="applyDescriptionPreset()">
+              <option value="">-- Seleziona un testo --</option>
+              <option value="Special Deal">Special Deal</option>
+              <option value="Final Price">Final Price</option>
+              <option value="Summer Sale">Summer Sale</option>
+              <option value="Spring Sale">Spring Sale</option>
+              <option value="Winter Sale">Winter Sale</option>
+              <option value="Black Friday">Black Friday</option>
+              <option value="Made in Italy">Made in Italy</option>
+              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            </select>
+          </div>
+          <label for="description">Testo Libero</label>
+          <input id="description" type="text" value="Vera Pelle • Genuine Leather" placeholder="-- Testo Libero --" oninput="updateDescription()">
+        </div>
+
+        <div class="form-group">
+          <label for="price">Prezzo</label>
+          <input id="price" type="text" value="29,90" inputmode="decimal" oninput="updateCards()">
+        </div>
+      </div>
+
+      <div id="doublePriceFields" hidden>
+        <div class="form-group">
+          <label for="oldPrice">Prezzo Originario</label>
+          <input id="oldPrice" type="text" value="59,80" inputmode="decimal" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label class="section-label" for="discount">Percentuale Sconto</label>
+          <input id="discount" type="number" value="50" min="1" max="99" oninput="updateCards()">
+        </div>
+        <div class="form-group">
+          <label for="finalPrice">Prezzo Finale</label>
+          <input id="finalPrice" type="text" value="29,90" inputmode="decimal" oninput="updateCards()">
+        </div>
+      </div>
+
+      <div id="doubleArticleFields" hidden>
+        <div class="mode-switch article-mode-switch" aria-label="Seleziona la modalità degli articoli">
+          <button type="button" class="active" id="articleStandardMode" onclick="setArticlePriceMode('standard')">DESCRIZIONE</button>
+          <button type="button" id="articleDoublePriceMode" onclick="setArticlePriceMode('double')">DOPPIO PREZZO</button>
+        </div>
+        <div class="article-fields">
+          <h2>Articolo sinistro</h2>
+          <div data-article-fields="standard">
+            <div class="form-group">
+              <label class="section-label" for="firstDescriptionPreset">Promozione</label>
+              <div class="preset-select">
+                <select id="firstDescriptionPreset" onchange="applyArticleDescriptionPreset('first')">
+                  <option value="">-- Seleziona un testo --</option>
+                </select>
+              </div>
+              <label for="firstDescription">Testo Libero</label>
+              <input id="firstDescription" type="text" placeholder="-- Testo Libero --" oninput="updateArticleDescription('first')">
+            </div>
+            <div class="form-group">
+              <label for="firstPrice">Prezzo</label>
+              <input id="firstPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            </div>
+          </div>
+          <div data-article-fields="double">
+            <div class="form-group">
+              <label for="firstOldPrice">Prezzo Originario</label>
+              <input id="firstOldPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            </div>
+            <div class="form-group">
+              <label class="section-label" for="firstDiscount">Percentuale Sconto</label>
+              <input id="firstDiscount" type="number" min="1" max="99" oninput="updateCards()">
+            </div>
+            <div class="form-group">
+              <label for="firstFinalPrice">Prezzo Finale</label>
+              <input id="firstFinalPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            </div>
+          </div>
+        </div>
+        <div class="article-fields">
+          <h2>Articolo destro</h2>
+          <div data-article-fields="standard">
+            <div class="form-group">
+              <label class="section-label" for="secondDescriptionPreset">Promozione</label>
+              <div class="preset-select">
+                <select id="secondDescriptionPreset" onchange="applyArticleDescriptionPreset('second')">
+                  <option value="">-- Seleziona un testo --</option>
+                </select>
+              </div>
+              <label for="secondDescription">Testo Libero</label>
+              <input id="secondDescription" type="text" placeholder="-- Testo Libero --" oninput="updateArticleDescription('second')">
+            </div>
+            <div class="form-group">
+              <label for="secondPrice">Prezzo</label>
+              <input id="secondPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            </div>
+          </div>
+          <div data-article-fields="double">
+            <div class="form-group">
+              <label for="secondOldPrice">Prezzo Originario</label>
+              <input id="secondOldPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            </div>
+            <div class="form-group">
+              <label class="section-label" for="secondDiscount">Percentuale Sconto</label>
+              <input id="secondDiscount" type="number" min="1" max="99" oninput="updateCards()">
+            </div>
+            <div class="form-group">
+              <label for="secondFinalPrice">Prezzo Finale</label>
+              <input id="secondFinalPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-print" type="button" onclick="window.print()">Stampa Cartelli (A4)</button>
+    </div>
+  </aside>
+
+  <main class="print-sheet" aria-label="Anteprima paletto su foglio A4">
+    <article class="card tema-italia-no-side-flags" id="cardTop">
+      <div class="card-content">
+        <img class="tema-italia-flag paletto-made-in-italy-flag" src="../assets/img/ophilya/madeinitaly.png" alt="Bandiera italiana">
+        <div class="card-title"></div>
+        <div class="card-price-row"><span class="price-old"></span><span class="price-percent"></span></div>
+        <div class="card-price"></div>
+        <div class="dual-items">
+          <div class="dual-item">
+            <div class="card-title dual-item-title"></div>
+            <div class="dual-item-price-row"><span class="price-old"></span><span class="price-percent"></span></div>
+            <div class="dual-item-price"></div>
+          </div>
+          <div class="dual-item">
+            <div class="card-title dual-item-title"></div>
+            <div class="dual-item-price-row"><span class="price-old"></span><span class="price-percent"></span></div>
+            <div class="dual-item-price"></div>
+          </div>
+        </div>
+        <div class="dual-divider" aria-hidden="true"></div>
+        <img class="card-logo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA">
+      </div>
+    </article>
+    <article class="card tema-italia-no-side-flags" id="cardBottom">
+      <div class="card-content">
+        <img class="tema-italia-flag paletto-made-in-italy-flag" src="../assets/img/ophilya/madeinitaly.png" alt="Bandiera italiana">
+        <div class="card-title"></div>
+        <div class="card-price-row"><span class="price-old"></span><span class="price-percent"></span></div>
+        <div class="card-price"></div>
+        <div class="dual-items">
+          <div class="dual-item">
+            <div class="card-title dual-item-title"></div>
+            <div class="dual-item-price-row"><span class="price-old"></span><span class="price-percent"></span></div>
+            <div class="dual-item-price"></div>
+          </div>
+          <div class="dual-item">
+            <div class="card-title dual-item-title"></div>
+            <div class="dual-item-price-row"><span class="price-old"></span><span class="price-percent"></span></div>
+            <div class="dual-item-price"></div>
+          </div>
+        </div>
+        <div class="dual-divider" aria-hidden="true"></div>
+        <img class="card-logo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA">
+      </div>
+    </article>
+    <div class="cut-line" aria-hidden="true"></div>
+  </main>
+
+  <script src="../assets/js/tema-italia.js?v=20261007-16"></script>
+  <script>
+    const cardStates = {
+      top: {
+        mode: 'standard', description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '29,90',
+        oldPrice: '59,80', discount: '50', finalPrice: '29,90', articlePriceMode: 'standard',
+        articles: {
+          first: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '12,00', oldPrice: '24,00', discount: '50', finalPrice: '12,00' },
+          second: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '15,00', oldPrice: '30,00', discount: '50', finalPrice: '15,00' }
+        }
+      },
+      bottom: {
+        mode: 'standard', description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '29,90',
+        oldPrice: '59,80', discount: '50', finalPrice: '29,90', articlePriceMode: 'standard',
+        articles: {
+          first: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '12,00', oldPrice: '24,00', discount: '50', finalPrice: '12,00' },
+          second: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '15,00', oldPrice: '30,00', discount: '50', finalPrice: '15,00' }
+        }
+      }
+    };
+    const longDescriptions = new Set([
+      'Vera Pelle • Genuine Leather',
+      'Made in Italy • Genuine Leather',
+      'Fino ad esaurimento scorte'
+    ]);
+    const longDescriptionLengthThreshold = 'Fino ad esaurimento scorte'.length;
+    const descriptionPreset = document.getElementById('descriptionPreset');
+    const descriptionMaxLength = Math.max(
+      ...Array.from(descriptionPreset.options, option => option.value.length)
+    );
+    for (const articleKey of ['first', 'second']) {
+      const preset = document.getElementById(`${articleKey}DescriptionPreset`);
+      for (const option of Array.from(descriptionPreset.options).slice(1)) {
+        preset.add(new Option(option.textContent, option.value));
+      }
+      document.getElementById(`${articleKey}Description`).maxLength = descriptionMaxLength;
+    }
+    document.getElementById('description').maxLength = descriptionMaxLength;
+    let activeCard = 'top';
+
+    function formatPrice(value) {
+      const amount = value.trim().replace(/[€\s]/g, '');
+      return amount ? `€ ${amount}` : '€ 0,00';
+    }
+
+    function formatArticlePrice(value) {
+      return value.trim().replace(/[€\s]/g, '') || '0,00';
+    }
+
+    function selectCard(card) {
+      activeCard = card;
+      document.getElementById('selectTop').classList.toggle('active', card === 'top');
+      document.getElementById('selectBottom').classList.toggle('active', card === 'bottom');
+      syncControls();
+    }
+
+    function setMode(mode) {
+      const isTemaItaliaActive = document.querySelector('.tema-italia-btn.is-active');
+      if (
+        mode !== 'standard' &&
+        isTemaItaliaActive &&
+        typeof window.deactivateTemaItalia === 'function'
+      ) {
+        window.deactivateTemaItalia();
+      }
+
+      const state = cardStates[activeCard];
+      state.mode = mode;
+      document.getElementById('standardMode').classList.toggle('active', mode === 'standard');
+      document.getElementById('doublePriceMode').classList.toggle('active', mode === 'double');
+      document.getElementById('doubleArticleMode').classList.toggle('active', mode === 'doubleArticle');
+      document.getElementById('standardFields').hidden = mode !== 'standard';
+      document.getElementById('doublePriceFields').hidden = mode !== 'double';
+      document.getElementById('doubleArticleFields').hidden = mode !== 'doubleArticle';
+      renderCard(activeCard);
+    }
+
+    function setArticlePriceMode(mode) {
+      const state = cardStates[activeCard];
+      state.articlePriceMode = mode;
+      document.getElementById('articleStandardMode').classList.toggle('active', mode === 'standard');
+      document.getElementById('articleDoublePriceMode').classList.toggle('active', mode === 'double');
+      document.getElementById('doubleArticleFields').classList.toggle('is-double-price', mode === 'double');
+      renderCard(activeCard);
+    }
+
+    function applyDescriptionPreset() {
+      document.getElementById('description').value = document.getElementById('descriptionPreset').value;
+      updateCards();
+    }
+
+    function applyArticleDescriptionPreset(articleKey) {
+      document.getElementById(`${articleKey}Description`).value =
+        document.getElementById(`${articleKey}DescriptionPreset`).value;
+      updateCards();
+    }
+
+    function updateDescription() {
+      document.getElementById('descriptionPreset').value = '';
+      updateCards();
+    }
+
+    function updateArticleDescription(articleKey) {
+      document.getElementById(`${articleKey}DescriptionPreset`).value = '';
+      updateCards();
+    }
+
+    function syncControls() {
+      const state = cardStates[activeCard];
+      document.getElementById('description').value = state.description;
+      document.getElementById('descriptionPreset').value = state.descriptionPreset;
+      document.getElementById('price').value = state.price;
+      document.getElementById('oldPrice').value = state.oldPrice;
+      document.getElementById('discount').value = state.discount;
+      document.getElementById('finalPrice').value = state.finalPrice;
+      document.getElementById('standardMode').classList.toggle('active', state.mode === 'standard');
+      document.getElementById('doublePriceMode').classList.toggle('active', state.mode === 'double');
+      document.getElementById('doubleArticleMode').classList.toggle('active', state.mode === 'doubleArticle');
+      document.getElementById('standardFields').hidden = state.mode !== 'standard';
+      document.getElementById('doublePriceFields').hidden = state.mode !== 'double';
+      document.getElementById('doubleArticleFields').hidden = state.mode !== 'doubleArticle';
+      document.getElementById('articleStandardMode').classList.toggle('active', state.articlePriceMode === 'standard');
+      document.getElementById('articleDoublePriceMode').classList.toggle('active', state.articlePriceMode === 'double');
+      document.getElementById('doubleArticleFields').classList.toggle('is-double-price', state.articlePriceMode === 'double');
+      for (const articleKey of ['first', 'second']) {
+        const articleState = state.articles[articleKey];
+        document.getElementById(`${articleKey}Description`).value = articleState.description;
+        document.getElementById(`${articleKey}DescriptionPreset`).value = articleState.descriptionPreset;
+        document.getElementById(`${articleKey}Price`).value = articleState.price;
+        document.getElementById(`${articleKey}OldPrice`).value = articleState.oldPrice;
+        document.getElementById(`${articleKey}Discount`).value = articleState.discount;
+        document.getElementById(`${articleKey}FinalPrice`).value = articleState.finalPrice;
+      }
+    }
+
+    function updateCards() {
+      const state = cardStates[activeCard];
+      state.description = document.getElementById('description').value.trim();
+      state.descriptionPreset = document.getElementById('descriptionPreset').value;
+      state.price = document.getElementById('price').value;
+      state.oldPrice = document.getElementById('oldPrice').value;
+      state.discount = document.getElementById('discount').value;
+      state.finalPrice = document.getElementById('finalPrice').value;
+      for (const articleKey of ['first', 'second']) {
+        const articleState = state.articles[articleKey];
+        articleState.description = document.getElementById(`${articleKey}Description`).value.trim();
+        articleState.descriptionPreset = document.getElementById(`${articleKey}DescriptionPreset`).value;
+        articleState.price = document.getElementById(`${articleKey}Price`).value;
+        articleState.oldPrice = document.getElementById(`${articleKey}OldPrice`).value;
+        articleState.discount = document.getElementById(`${articleKey}Discount`).value;
+        articleState.finalPrice = document.getElementById(`${articleKey}FinalPrice`).value;
+      }
+      renderCard(activeCard);
+    }
+
+    function renderDescription(title, description) {
+      const normalizedDescription = description.trim();
+      title.classList.toggle(
+        'is-long-description',
+        longDescriptions.has(normalizedDescription) || normalizedDescription.length >= longDescriptionLengthThreshold
+      );
+      const descriptionParts = description.split(/\s+•\s+/);
+      title.replaceChildren();
+      title.append(document.createTextNode(descriptionParts[0]));
+      if (descriptionParts.length > 1) {
+        const separator = document.createElement('span');
+        separator.className = 'separator';
+        separator.textContent = ' · ';
+        title.append(separator);
+        const descriptionTail = document.createElement('span');
+        descriptionTail.className = 'description-tail';
+        descriptionTail.textContent = descriptionParts.slice(1).join(' • ');
+        title.append(descriptionTail);
+      }
+    }
+
+    function renderCard(cardName) {
+      const state = cardStates[cardName];
+      const card = document.getElementById(cardName === 'top' ? 'cardTop' : 'cardBottom');
+      const isDoublePrice = state.mode === 'double';
+      const isDoubleArticle = state.mode === 'doubleArticle';
+
+      card.classList.toggle('is-double-price', isDoublePrice);
+      card.classList.toggle('is-double-article', isDoubleArticle);
+      card.classList.toggle('is-article-double-price', isDoubleArticle && state.articlePriceMode === 'double');
+      renderDescription(card.querySelector('.card-content > .card-title'), state.description);
+      for (const [index, articleKey] of ['first', 'second'].entries()) {
+        const articleState = state.articles[articleKey];
+        const item = card.querySelectorAll('.dual-item')[index];
+        renderDescription(item.querySelector('.dual-item-title'), articleState.description);
+        item.querySelector('.dual-item-price').textContent =
+          formatArticlePrice(state.articlePriceMode === 'double' ? articleState.finalPrice : articleState.price);
+        item.querySelector('.price-old').textContent = formatArticlePrice(articleState.oldPrice);
+        item.querySelector('.price-percent').textContent = `-${articleState.discount || '0'}%`;
+      }
+      card.querySelector('.card-price').textContent = formatPrice(isDoublePrice ? state.finalPrice : state.price);
+      card.querySelector('.card-content > .card-price-row .price-old').textContent = formatPrice(state.oldPrice);
+      card.querySelector('.card-content > .card-price-row .price-percent').textContent = `-${state.discount || '0'}%`;
+    }
+
+    window.applyTemaItaliaDescription = function applyTemaItaliaDescription() {
+      for (const cardName of ['top', 'bottom']) {
+        cardStates[cardName].mode = 'standard';
+        cardStates[cardName].description = 'Made in Italy';
+        cardStates[cardName].descriptionPreset = 'Made in Italy';
+        document.getElementById(cardName === 'top' ? 'cardTop' : 'cardBottom')
+          .classList.add('is-made-in-italy');
+        renderCard(cardName);
+      }
+      syncControls();
+    };
+
+    window.captureTemaItaliaState = function captureTemaItaliaState() {
+      return {
+        activeCard,
+        cards: {
+          top: { ...cardStates.top },
+          bottom: { ...cardStates.bottom }
+        }
+      };
+    };
+
+    window.restoreTemaItaliaState = function restoreTemaItaliaState(state) {
+      if (!state || !state.cards || !state.cards.top || !state.cards.bottom) {
+        console.error('Impossibile ripristinare lo stato precedente del cartello Paletto.');
+        return;
+      }
+      Object.assign(cardStates.top, state.cards.top);
+      Object.assign(cardStates.bottom, state.cards.bottom);
+      activeCard = state.activeCard === 'bottom' ? 'bottom' : 'top';
+      document.getElementById('cardTop').classList.remove('is-made-in-italy');
+      document.getElementById('cardBottom').classList.remove('is-made-in-italy');
+      document.getElementById('selectTop').classList.toggle('active', activeCard === 'top');
+      document.getElementById('selectBottom').classList.toggle('active', activeCard === 'bottom');
+      renderCard('top');
+      renderCard('bottom');
+      syncControls();
+    };
+
+    syncControls();
+    updateCards();
+    renderCard('bottom');
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore: sopra il cartello scelto (superiore/inferiore) e sugli elementi legati al campo in uso.
+    const activePalettoCard = () => document.getElementById(activeCard === 'bottom' ? 'cardBottom' : 'cardTop');
+    const inPaletto = selector => () => activePalettoCard()?.querySelector(selector);
+
+    // doppio prezzo: sopra prezzo originale e sconto il cursore sta un po' più in alto (punta a 2 mm)
+    const DOUBLE_PRICE_GAP = 2 * 96 / 25.4;
+    Cursore.create({
+      panel: '.controls',
+      watch: '.print-sheet',
+      scope: activePalettoCard,
+      obstacles: () => activePalettoCard()?.querySelectorAll('.card-title, .price-old, .price-percent, .card-price, .dual-item-price, .card-logo, .paletto-made-in-italy-flag') || [],
+      rules: [
+        { controls: '#selectTop, #selectBottom', target: activePalettoCard, placement: 'above' },
+        { controls: '#standardMode, #price', target: inPaletto('.card-price') },
+        { controls: '#doublePriceMode', target: inPaletto('.card-price-row'), gap: DOUBLE_PRICE_GAP },
+        { controls: '#doubleArticleMode, #articleStandardMode, #articleDoublePriceMode', target: inPaletto('.dual-items') },
+        { controls: '#descriptionPreset, #description', target: inPaletto('.card-content > .card-title') },
+        { controls: '#oldPrice', target: inPaletto('.card-price-row .price-old'), gap: DOUBLE_PRICE_GAP },
+        { controls: '#discount', target: inPaletto('.card-price-row .price-percent'), gap: DOUBLE_PRICE_GAP },
+        { controls: '#finalPrice', target: inPaletto('.card-price') },
+        { controls: '#firstDescriptionPreset, #firstDescription', target: inPaletto('.dual-item:nth-child(1) .dual-item-title') },
+        { controls: '#firstPrice, #firstFinalPrice', target: inPaletto('.dual-item:nth-child(1) .dual-item-price') },
+        { controls: '#firstOldPrice', target: inPaletto('.dual-item:nth-child(1) .price-old'), gap: DOUBLE_PRICE_GAP },
+        { controls: '#firstDiscount', target: inPaletto('.dual-item:nth-child(1) .price-percent'), gap: DOUBLE_PRICE_GAP },
+        { controls: '#secondDescriptionPreset, #secondDescription', target: inPaletto('.dual-item:nth-child(2) .dual-item-title') },
+        { controls: '#secondPrice, #secondFinalPrice', target: inPaletto('.dual-item:nth-child(2) .dual-item-price') },
+        { controls: '#secondOldPrice', target: inPaletto('.dual-item:nth-child(2) .price-old'), gap: DOUBLE_PRICE_GAP },
+        { controls: '#secondDiscount', target: inPaletto('.dual-item:nth-child(2) .price-percent'), gap: DOUBLE_PRICE_GAP }
+      ]
+    });
+  </script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-16"></script>
+</body>
+</html>

@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="tebe">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <title>Etichette DYMO · TEBE · OPHILYA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-16"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261007-16"></script>
+  <script src="../assets/js/logos.js?v=20261007-16"></script>
+  <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261007-16"></script>
+
+  <style>
+    @font-face {
+      font-family: 'Bodoni Std';
+      src: url('../assets/fonts/BodoniStd.otf') format('opentype');
+    }
+
+    :root {
+      --bg: #f8f6f1;
+      --sidebar: #eee8dd;
+      --card: #fffdfa;
+      --border: #e3dacb;
+      --accent: #b49a62;
+      --accent-hover: #8a6a35;
+      --text: #282522;
+      --text-muted: #665e54;
+      --success: #2a9d8f;
+      --error: #c0533b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    /* SIDEBAR CON GALLERIA TEMPLATES */
+    aside { width: 300px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .brand { font-family: Arial, Helvetica, sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--accent); margin-bottom: 1rem; text-align: center; text-transform: uppercase; }
+    .nav-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; color: var(--text-muted); text-decoration: none; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: 1px solid var(--border); transition: all 0.2s; margin-bottom: 1.2rem; }
+    .nav-btn:hover { color: var(--text); border-color: var(--accent); }
+
+    .gallery-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); font-weight: 700; margin-bottom: 0.6rem; text-align: center; }
+    .template-gallery { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .template-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .template-card:hover, .template-card.active {
+      border-color: var(--accent);
+      background: rgba(212, 163, 115, 0.08);
+    }
+
+    .template-card .tpl-name { font-size: 0.75rem; font-weight: 600; color: var(--text); text-align: center; }
+    
+    /* Selettore a pulsanti, come nelle pagine dei cartelli. */
+    .mode-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 6px; background: #f3ede0; }
+    .mode-switch button { flex: 1; padding: 9px 8px; border: 0; border-radius: 4px; background: transparent; color: #8a7f6e; font-family: system-ui, -apple-system, sans-serif; font-size: 0.68rem; font-weight: 600; line-height: 1.2; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+    .mode-switch button.active { background: #fffdfa; color: #282522; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+
+    .tpl-preview-box {
+      width: 100%;
+      max-width: 145px;
+      aspect-ratio: 57 / 32;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      overflow: hidden;
+      /* La miniatura e' bianca come la card: bordo e ombra leggera la staccano, come un'etichetta appoggiata. */
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(40, 34, 28, 0.16);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      align-self: center;
+    }
+
+    .template-card:hover .tpl-preview-box,
+    .template-card.active .tpl-preview-box {
+      border-color: var(--accent);
+      box-shadow: 0 3px 10px rgba(40, 34, 28, 0.22);
+    }
+
+    .tpl-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    main { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; gap: 2rem; }
+    .editor-section { flex: 1; max-width: 450px; }
+    .preview-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--sidebar); border-radius: 8px; border: 1px solid var(--border); padding: 2rem; position: relative; }
+
+    header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.2rem; }
+    header h1 { font-family: Arial, Helvetica, sans-serif; font-weight: 400; font-size: 1.4rem; letter-spacing: 1px; }
+    header p { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
+
+    .usb-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.2rem;
+    }
+    .status-badge { font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--sidebar); color: var(--text-muted); }
+    .status-badge.connected { background: rgba(42, 157, 143, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .status-badge.disconnected { background: rgba(231, 111, 81, 0.2); color: var(--error); border: 1px solid var(--error); }
+
+    .btn-scan { width: 100%; padding: 0.6rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted); font-weight: 600; border-radius: 4px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.2rem; transition: all 0.2s; }
+    .btn-scan:hover { color: var(--text); border-color: var(--accent); }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 0.4rem; font-weight: 600; }
+    .form-control { width: 100%; padding: 0.65rem; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.9rem; outline: none; }
+    .form-control:focus { border-color: var(--accent); }
+
+    /* Menu a cascata come nelle pagine dei cartelli: niente freccia di sistema, fascetta beige a destra con ▼ oro. */
+    select.form-control {
+      -webkit-appearance: none;
+      appearance: none;
+      padding-right: 2.2rem;
+      background-color: var(--card);
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 7'%3E%3Cpath d='M0 0h10L5 7z' fill='%23b49a62'/%3E%3C/svg%3E"),
+        linear-gradient(var(--border), var(--border)),
+        linear-gradient(#f3ede0, #f3ede0);
+      background-repeat: no-repeat;
+      background-position: right 0.55rem center, right 1.6rem top, right top;
+      background-size: 0.5rem 0.35rem, 1px 100%, 1.6rem 100%;
+      cursor: pointer;
+    }
+    .row { display: flex; gap: 0.8rem; }
+
+    .custom-brand-box {
+      background: rgba(212, 163, 115, 0.04);
+      border: 1px solid rgba(212, 163, 115, 0.35);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .custom-brand-header {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-hover);
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .form-control.custom-select {
+      background-color: var(--card);
+      border: 1px solid var(--accent);
+      color: #6b4f1f;
+      font-weight: 600;
+    }
+    .form-control.custom-select:focus {
+      border-color: var(--accent-hover);
+      box-shadow: 0 0 6px rgba(180, 154, 98, 0.3);
+    }
+
+    /* EVIDENZIA LE VOCI STAGIONALI PRIORITARIE (SPRING/SUMMER/WINTER SALE) NEL MENU A CASCATA */
+    select option.priority-brand-option {
+      background-color: var(--sidebar);
+      color: #6b4f1f;
+      font-weight: bold;
+    }
+
+    .btn-print { width: 100%; padding: 0.9rem; background: var(--accent); color: #fff; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; margin-top: 0.5rem; }
+    .btn-print:hover { background: var(--accent-hover); }
+
+    /* CONTENITORE ANTEPRIMA SCHERMO (456x256px) */
+    .label-preview-wrapper {
+      background: #ffffff;
+      width: 456px;
+      height: 256px;
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    /* ELEMENTI SCHERMO COMUNI */
+    .brand-logo-container { display: flex; align-items: center; justify-content: flex-start; }
+    .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
+    .brand-text-fallback { font-family: Arial, sans-serif; font-weight: 800; color: #000; line-height: 1.1; letter-spacing: -0.5px; }
+
+    /* LAYOUT 1: OUTLET DOPPIO PREZZO */
+    .tpl-outlet { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: flex-start; }
+    .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 132px; width: 100%; }
+    .tpl-outlet .brand-logo-container { width: 285px; height: 112px; margin: 4px 0 0 10px; }
+    .tpl-outlet .brand-text-fallback { font-size: 26px; }
+    .tpl-outlet .qr-promo-box { width: 96px; display: flex; flex-direction: column; align-items: center; margin-right: 8px; }
+    .tpl-outlet .qr-container { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; }
+    .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 96px !important; height: 96px !important; }
+    /* SALE alzato di quanto serve per avere la stessa linea di base di "Euro" (Bodoni 30px: 9,06px sopra il fondo; Arial 36px: 5,52px). */
+    /* TEBE: la promo e' larga quanto il QR (96px) e ha lo stesso margine destro (8px), cosi' sta esattamente sotto il QR. */
+    .tpl-outlet .promo-label { position: relative; left: 0; bottom: 3.54px; width: 96px; font: 36px Arial, Helvetica, sans-serif; letter-spacing: -1.35px; text-transform: uppercase; line-height: 1; text-align: center; }
+    /* GENUINE LEATHER: due righe; la base di LEATHER resta sulla linea di "Euro" (Arial 19,5px, interlinea 1,05: 3,48px sopra il fondo). */
+    .tpl-outlet .promo-label.is-two-lines { bottom: 5.58px; font-size: 19.5px; letter-spacing: 0; line-height: 1.05; white-space: pre-line; }
+    .tpl-outlet .promo-label .promo-line { display: block; width: max-content; margin: 0 auto; }
+    /* Casella nera: il margine interno inferiore alza il testo, quindi si abbassa la casella di altrettanto per tenere la base sulla linea di "Euro". */
+    .tpl-outlet .promo-label.is-inverted { bottom: 1.58px; padding: 4px 0; background: #000; color: #fff; }
+    /* Casella solo bordata, un po' piu' grande (4px in piu' per lato, margine interno 6px): bordo e margine alzano il testo, quindi la casella scende di altrettanto. */
+    .tpl-outlet .promo-label.is-outlined { left: 0; bottom: -2.42px; width: 96px; padding: 6px 0; border: 2px solid #000; }
+    /* FINAL PRICE piu' grande: 23px, base di PRICE ricalcolata sulla linea di "Euro". */
+    .tpl-outlet .promo-label.is-large { bottom: 4.96px; font-size: 23px; }
+
+    /* MADE IN ITALY: logo allineato a sinistra con "Euro", adesivo a destra, a 6px dal bordo. */
+    .made-in-italy-sticker { display: none; }
+    .tpl-outlet.is-made-in-italy .label-top,
+    .tpl-final.is-made-in-italy .label-top { justify-content: space-between; padding: 0 6px 0 10px; }
+    /* Con l'adesivo il logo (TEBE, ufficiale o personalizzato) si rimpicciolisce un poco e l'adesivo cresce. */
+    .tpl-outlet.is-made-in-italy .brand-logo-container,
+    .tpl-final.is-made-in-italy .brand-logo-container { justify-content: flex-start; width: 240px; height: 96px; margin: 4px 0 0; }
+    /* Il QR code lascia il posto all'adesivo. */
+    .tpl-outlet.is-made-in-italy .qr-promo-box,
+    .tpl-final.is-made-in-italy .qr-container { display: none; }
+    .is-made-in-italy .made-in-italy-sticker { display: block; flex: 0 0 auto; width: 120px; height: auto; margin-top: 4px; }
+    /* La promo si centra sull'adesivo: centro dell'adesivo a 6 + 120/2 = 66px dal bordo destro;
+       la casella (96px, bordata 104px) parte a 8px dal bordo, quindi si sposta di 8 - (66 - larghezza/2). */
+    .tpl-outlet.is-made-in-italy .promo-label { left: -10px; }
+    .tpl-outlet.is-made-in-italy .promo-label.is-outlined { left: -6px; }
+    .tpl-outlet .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 52px; margin-top: 18px; padding: 0 8px 0 10px; width: 100%; }
+    .tpl-outlet .price-box { width: 290px; display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; }
+    .tpl-outlet .price-label { font: 300 30px/1 'Bodoni Std', serif; letter-spacing: -0.5px; }
+    .tpl-outlet .price-val { position: relative; top: 10px; left: -20px; transform-origin: right bottom; font: 300 60px/1 'Bodoni Std', serif; letter-spacing: -1.5px; -webkit-text-stroke: 0.35px #fff; paint-order: fill stroke; white-space: nowrap; }
+    .tpl-outlet.tpl-outlet-promo .label-bottom { justify-content: space-between; align-items: baseline; margin-top: 30px; padding: 0 8px 0 10px; }
+    .tpl-outlet.tpl-outlet-promo .promo-description { min-width: 0; max-width: 58%; overflow: hidden; font: 300 var(--promo-description-size-screen, 42px)/1 'Bodoni Std', serif; letter-spacing: -0.02em; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+    .tpl-outlet.tpl-outlet-promo .price-box { flex: 0 0 auto; width: auto; align-items: baseline; justify-content: flex-end; gap: 8px; text-align: right; }
+    .tpl-outlet.tpl-outlet-promo .price-val { top: 0; left: 0; font-size: 46px; }
+
+    /* LAYOUT 2: DOPPIO PREZZO */
+    .tpl-final { height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: flex-start; }
+    .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 132px; width: 100%; }
+    .tpl-final .brand-logo-container { width: 285px; height: 112px; margin: 4px 0 0 10px; }
+    .tpl-final .brand-text-fallback { font-size: 26px; }
+    .tpl-final .qr-container { width: 96px; height: 96px; margin-right: 8px; display: flex; align-items: center; justify-content: center; }
+    .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 96px !important; height: 96px !important; }
+    .tpl-final .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 52px; margin-top: 18px; padding: 0 8px 0 10px; width: 100%; }
+    .tpl-final .price-box { width: 145px; display: flex; flex-direction: column; align-items: flex-end; }
+    .tpl-final .price-box-original { transform: translateX(-12px); }
+    .tpl-final .price-label { font: 300 18px/1 'Bodoni Std', serif; letter-spacing: -0.3px; margin-bottom: 1px; text-align: right; }
+    .tpl-final .price-val { font: 300 42px/1 'Bodoni Std', serif; letter-spacing: -1px; white-space: nowrap; }
+    .tpl-final .discount-val { width: 88px; font: 300 38px/1 'Bodoni Std', serif; text-align: center; white-space: nowrap; }
+
+    /* LAYOUT 3 E 4: LAST CHANCE E LUXURY LABEL */
+    .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 100%; width: 100%; padding: 0 5px; }
+    .tpl-promo .left-logo-box { width: 225px; height: 195px; display: flex; align-items: center; justify-content: flex-start; }
+    .tpl-luxury .left-logo-box { width: 310px; height: 120px; margin-left: 5px; display: flex; align-items: center; justify-content: flex-start; }
+    .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .tpl-promo .price-box, .tpl-luxury .price-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+    .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 21px; line-height: 1; margin-bottom: 2px; text-align: right; font-weight: normal; }
+    .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 54px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+
+    /* LAYOUT 5: PROMO 50+50 */
+    .tpl-promo50 { display: flex; flex-direction: column; justify-content: space-between; height: 100%; width: 100%; }
+    .tpl-promo50 .top-row { display: flex; justify-content: space-between; align-items: flex-end; padding: 2px 8px 6px 8px; height: 78px; }
+    .tpl-promo50 .price-col { display: flex; flex-direction: column; align-items: flex-start; }
+    .tpl-promo50 .price-col.align-right { align-items: flex-end; }
+    .tpl-promo50 .top-row .price-label { font-size: 20px; line-height: 1; color: #000; font-weight: 400; margin-bottom: 4px; }
+    .tpl-promo50 .top-row .price-val { font-size: 38px; font-weight: 400; line-height: 1; color: #000; letter-spacing: -0.5px; white-space: nowrap; }
+    .tpl-promo50 .disc-middle { font-size: 38px; font-weight: 400; line-height: 1; color: #000; text-align: center; }
+    .tpl-promo50 .black-banner { background: #000; color: #fff; border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: stretch; height: 146px; }
+    .tpl-promo50 .banner-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+    .tpl-promo50 .banner-promo-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .tpl-promo50 .promo-title { font-size: 21px; font-weight: 800; letter-spacing: 0.5px; line-height: 1.1; text-align: center; }
+    .tpl-promo50 .promo-subtitle { font-size: 25px; font-weight: 800; line-height: 1.1; text-align: center; }
+    .tpl-promo50 .promo-discount { font-size: 62px; font-weight: 800; line-height: 0.95; text-align: left; }
+    .tpl-promo50 .banner-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; height: 100%; }
+    .tpl-promo50 .banner-right .price-label { color: #fff; font-size: 24px; font-weight: 400; line-height: 1; margin-bottom: 2px; text-align: right; }
+    .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 62px; font-weight: 800; line-height: 1; letter-spacing: -1px; white-space: nowrap; text-align: right; }
+
+    /* LAYOUT 6: TAGLIE | DOPPIA CIFRA */
+    .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; width: 100%; height: 100%; padding: 2px 0; color: #000; }
+    .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 110px; padding-bottom: 8px; }
+    /* "SIZE / TAGLIA" e' piu' lungo di "SIZE": corpo ridotto per restare nella larghezza della colonna taglie. */
+    /* Il margine a sinistra bilancia la spaziatura aggiunta dopo l'ultima lettera; la griglia e' larga quanto le caselle, cosi' titolo e caselle hanno lo stesso centro. */
+    .tpl-tagliedoppiacifra .size-title { font-size: 14px; font-weight: 400; letter-spacing: 0.5px; padding-left: 0.5px; margin-bottom: 13px; text-transform: uppercase; white-space: nowrap; }
+    .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 48px); gap: 6px; }
+    .tpl-tagliedoppiacifra .size-box { width: 48px; height: 48px; border: 2.5px solid #000000; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; background-color: #ffffff; text-align: center; }
+    /* Prezzo originario e sconto stanno subito sopra il prezzo finale, in Bodoni Std come le altre etichette TEBE. */
+    /* Colonna prezzi alta quanto il blocco taglie (titolo 16px + 13px + caselle 156px = 185px, centrato in 228px con 8px sotto):
+       riga prezzo originario/sconto centrata sul titolo SIZE / TAGLIA (padding sopra 9,5px), testo descrittivo sul fondo
+       delle caselle (padding sotto 25,5px), prezzo finale al centro dello spazio fra i due. */
+    .tpl-tagliedoppiacifra .price-section { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-end; padding: 13px 0 25.5px 10px; }
+    .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: baseline; justify-content: flex-end; gap: 14px; width: 100%; }
+    .tpl-tagliedoppiacifra .footer-text { position: relative; bottom: 3px; max-width: 100%; overflow: hidden; padding: 5px 0; margin: -5px 0; font: 400 var(--footer-size-screen, 20px)/20px Arial, Helvetica, sans-serif; letter-spacing: 0.3px; text-transform: uppercase; text-align: right; white-space: nowrap; }
+    /* BLACK FRIDAY: bianco su casella nera. I margini negativi annullano il margine interno: la casella si allarga solo
+       visivamente, il testo resta dov'era e il blocco prezzi non si sposta. */
+    .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 3px 6px; margin: -3px -6px -3px 0; font-size: 22px; background: #000; color: #fff; }
+    /* STANDARD: logo TEBE piccolo al posto della riga prezzo originario/sconto, centrato sul titolo SIZE / TAGLIA.
+       Tebe.png ha molto margine trasparente: la casella alta 28px mostra solo la scritta, il margine destro (62/1200) si compensa. */
+    .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 150px; height: 28px; margin-top: 2px; overflow: hidden; }
+    .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 150px; max-width: none; max-height: none; margin-right: -7.75px; }
+    .tpl-tagliedoppiacifra.is-standard .size-logo { display: flex; }
+    .tpl-tagliedoppiacifra.is-standard .top-price-row { display: none; }
+    /* 5. TAGLIE BRAND: logo scelto (ufficiale o personalizzato) in una casella 170x70,8 (proporzione 1200x500 dei loghi ufficiali),
+       senza ritaglio, cosi' anche i loghi alti (HAVEONE, 269TEBE) restano interi. In DOPPIA CIFRA il logo resta in alto a destra, il testo descrittivo sparisce e prezzo originario/sconto
+       scendono appena sopra il prezzo finale, appoggiato in basso. */
+    .tpl-tagliebrand .size-logo { width: 170px; height: 70.8px; margin-top: -9px; align-items: center; }
+    .tpl-tagliebrand .size-logo img { width: 170px; height: 70.8px; object-fit: contain; object-position: right center; margin-right: 0; }
+    .tpl-tagliebrand .size-logo .brand-text-fallback { font-size: 14px; text-align: right; }
+    .tpl-tagliebrand:not(.is-standard) .size-logo { display: flex; }
+    .tpl-tagliebrand:not(.is-standard) .top-price-row { margin-top: auto; margin-bottom: 12px; }
+    .tpl-tagliebrand:not(.is-standard) .final-price { margin: 0; }
+    /* Blocco prezzi un po' piu' in basso (padding sotto 22px invece di 25,5px). */
+    .tpl-tagliebrand:not(.is-standard) .price-section { padding-bottom: 22px; }
+    .tpl-tagliebrand:not(.is-standard) .footer-text { display: none; }
+    /* Tracking -50 = -0,05em. */
+    .tpl-tagliedoppiacifra .original-price { font: 300 32px/1 'Bodoni Std', serif; letter-spacing: -0.05em; }
+    .tpl-tagliedoppiacifra .discount-tag { font: 300 32px/1 'Bodoni Std', serif; letter-spacing: -0.05em; }
+    
+    /* FONT DINAMICO PREZZO FINALE (SCHERMO) */
+    /* Prezzo finale in Bodoni Std come il prezzo dell'etichetta Semplice. */
+    .tpl-tagliedoppiacifra .final-price {
+      margin: auto 0;
+      font-family: 'Bodoni Std', serif;
+      font-size: var(--final-price-size-screen, 80px);
+      font-weight: 300;
+      line-height: 0.85;
+      letter-spacing: -1.5px;
+      white-space: nowrap; 
+    }
+    
+
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b48b37;
+      color: #000;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    /* NAV MOBILE PULSANTE HEADER */
+    .mobile-nav-btn { display: none; }
+
+    /* ==========================================
+       MEDIA QUERIES PER RESPONSIVE MOBILE
+    ========================================== */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .mobile-nav-btn {
+        display: inline-flex;
+        margin-bottom: 0.8rem;
+        width: fit-content;
+      }
+
+      /* MENU COMANDI SCORREVOLE CON LE DITA */
+      main {
+        flex: 1;
+        flex-direction: column;
+        padding: 150px 1rem 100px 1rem; /* Spazio in alto per preview fissa e in basso per carosello fisso */
+        overflow-y: auto;
+        gap: 1.5rem;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .editor-section {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      /* ANTEPRIMA ETICHETTA FISSA IN ALTO */
+      .preview-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 140px;
+        z-index: 9990;
+        background: var(--sidebar);
+        border-radius: 0 0 10px 10px;
+        border: none;
+        border-bottom: 1px solid var(--accent);
+        padding: 0.5rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+      }
+
+      .preview-title {
+        position: absolute !important;
+        top: 6px !important;
+        left: 0 !important;
+        right: 0 !important;
+        text-align: center !important;
+        margin: 0 !important;
+      }
+
+      .preview-title label {
+        font-size: 0.65rem;
+        color: var(--accent);
+        letter-spacing: 0.5px;
+      }
+
+      /* Ridimensionamento compattezza anteprima etichetta */
+      .label-preview-wrapper {
+        transform: scale(0.48);
+        transform-origin: center center;
+        margin: 0;
+        margin-top: 12px;
+      }
+
+      /* CAROSELLO IN BASSO PER SELEZIONE MODELLI ETICHETTE */
+      aside {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        background: var(--sidebar);
+        border-right: none;
+        border-top: 1px solid var(--accent);
+        padding: 0.5rem 0.8rem 0.6rem 0.8rem;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+      }
+
+      aside .brand, aside .nav-btn {
+        display: none;
+      }
+
+      .gallery-title {
+        font-size: 0.65rem;
+        margin-bottom: 0.35rem;
+        text-align: left;
+      }
+
+      .template-gallery {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 0.6rem;
+        padding-bottom: 0.3rem;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .template-gallery::-webkit-scrollbar {
+        height: 4px;
+      }
+      .template-gallery::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .template-gallery::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 4px;
+      }
+
+      .template-card {
+        flex: 0 0 115px;
+        min-width: 115px;
+        scroll-snap-align: start;
+        padding: 0.4rem 0.35rem;
+      }
+
+      .template-card .tpl-name {
+        font-size: 0.65rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tpl-preview-box {
+        max-width: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      main {
+        padding-top: 135px;
+        padding-bottom: 95px;
+      }
+      .preview-section {
+        height: 125px;
+      }
+      .label-preview-wrapper {
+        transform: scale(0.42);
+        margin-top: 10px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      main {
+        padding-top: 125px;
+        padding-bottom: 90px;
+      }
+      .preview-section {
+        height: 115px;
+      }
+      .label-preview-wrapper {
+        transform: scale(0.38);
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+  <!-- Made in Italy: grafica del pulsante condivisa (tema-italia.css), logica propria della pagina. -->
+  <button type="button" class="tema-italia-btn" id="madeInItalyBtn" title="Attiva Made in Italy" aria-label="Attiva Made in Italy" aria-pressed="false" onclick="toggleMadeInItaly()">
+    <img src="../assets/img/tebe/madeinitaly.png" alt="">
+  </button>
+
+  <aside>
+    <div>
+      <div class="brand">TEBE · OPHILYA</div>
+      <a href="index.html?store=tebe" class="nav-btn">← Torna al Dashboard</a>
+
+      <div class="gallery-title">Galleria Modelli (57x32)</div>
+      <div class="template-gallery">
+        
+        <div class="template-card active" id="card-tpl-outlet" onclick="setTemplate('outlet')">
+          <span class="tpl-name">1. Semplice</span>
+          <div class="tpl-preview-box">
+            <img src="../assets/thumbnail/tebe/label1thumb.png" alt="Miniatura Semplice">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-final" onclick="setTemplate('final')">
+          <span class="tpl-name">2. Doppio Prezzo</span>
+          <div class="tpl-preview-box">
+            <img src="../assets/thumbnail/tebe/label2thumb.png" alt="Miniatura Doppio Prezzo">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-promo" onclick="setTemplate('promo')">
+          <span class="tpl-name">3. Articolo</span>
+          <div class="tpl-preview-box">
+            <img src="../assets/thumbnail/tebe/label3thumb.png" alt="Miniatura Articolo">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-tagliedoppiacifra" onclick="setTemplate('tagliedoppiacifra')">
+          <span class="tpl-name">4. Taglie Tebe</span>
+          <div class="tpl-preview-box">
+            <img src="../assets/thumbnail/tebe/label4thumb.png" alt="Miniatura Taglie">
+          </div>
+        </div>
+
+        <div class="template-card" id="card-tpl-tagliebrand" onclick="setTemplate('tagliebrand')">
+          <span class="tpl-name">5. Taglie Brand</span>
+          <div class="tpl-preview-box">
+            <img src="../assets/thumbnail/tebe/label5thumb.png" alt="Miniatura Taglie Brand">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="editor-section">
+      <header>
+        <a href="index.html?store=tebe" class="nav-btn mobile-nav-btn">← Torna al Dashboard</a>
+        <h1 id="templateTitle">Etichette DYMO</h1>
+        <p>Stampa Diretta 57x32mm (11354)</p>
+      </header>
+
+      <div class="usb-status">
+        <div>
+          <div style="font-size: 0.8rem; font-weight: bold;">Stampante DYMO</div>
+          <div style="font-size: 0.7rem; color: var(--text-muted);" id="usbDeviceName">Verifica hardware...</div>
+        </div>
+        <span class="status-badge disconnected" id="usbStatusBadge">NON CONNESSA</span>
+      </div>
+
+      <button class="btn-scan" onclick="checkDymoPresence()">🔄 Ricontrolla stampante DYMO</button>
+
+      <!-- TAGLIE: DOPPIA CIFRA (prezzo originario e sconto) o STANDARD (logo TEBE al loro posto) -->
+      <div class="form-group" id="groupSizeMode" style="display:none;">
+        <label>Tipo di etichetta</label>
+        <div class="mode-switch" role="group" aria-label="Tipo di etichetta">
+          <button type="button" data-size-mode="standard" class="active" onclick="setSizeMode('standard')">STANDARD</button>
+          <button type="button" data-size-mode="doppia" onclick="setSizeMode('doppia')">DOPPIA CIFRA</button>
+        </div>
+      </div>
+
+      <div class="form-group" id="groupBrand">
+        <label for="brandSelect">Brand Ufficiale</label>
+        <select id="brandSelect" class="form-control" onchange="onBrandSelectChange()"></select>
+      </div>
+
+      <div class="custom-brand-box" id="groupCustomBrand">
+        <div class="custom-brand-header">
+          <span>★ LOGHI PERSONALIZZATI</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <select id="customLogoSelect" class="form-control custom-select" onchange="onCustomLogoSelectChange()">
+            <option value="">-- Seleziona Logo Personalizzato --</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" id="groupPromo" style="display:none;">
+        <label for="promoSelect">Promo</label>
+        <select id="promoSelect" class="form-control" onchange="updateLabel()">
+          <option value="BLACK FRIDAY" class="priority-brand-option">⭐ BLACK FRIDAY</option>
+          <option value="SPRING SALE" class="priority-brand-option">⭐ SPRING SALE</option>
+          <option value="SUMMER SALE" class="priority-brand-option">⭐ SUMMER SALE</option>
+          <option value="WINTER SALE" class="priority-brand-option">⭐ WINTER SALE</option>
+          <option value="FINAL PRICE">FINAL PRICE</option>
+          <option value="GENUINE LEATHER">GENUINE LEATHER</option>
+          <option value="OUTLET PRICE">OUTLET PRICE</option>
+          <option value="SALE" selected>SALE</option>
+          <option value="SPECIAL DEAL">SPECIAL DEAL</option>
+          <option value="VERA PELLE">VERA PELLE</option>
+        </select>
+      </div>
+
+      <!-- SELEZIONE TAGLIE GRID (6 DROPDOWN) -->
+      <div class="form-group" id="groupSizes" style="display:none;">
+        <label>Seleziona Taglie (6 Riquadri)</label>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.4rem;">
+          <select id="sizeSelect1" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect2" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect3" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect4" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect5" class="form-control" onchange="updateLabel()"></select>
+          <select id="sizeSelect6" class="form-control" onchange="updateLabel()"></select>
+        </div>
+      </div>
+
+      <!-- TAGLIE: testi gia' pronti che riempiono il testo descrittivo (solo BLACK FRIDAY ha lo sfondo nero) -->
+      <div class="form-group" id="groupSizePreset" style="display:none;">
+        <label for="sizePresetSelect">Testo preimpostato</label>
+        <select id="sizePresetSelect" class="form-control" onchange="applySizePreset(this)">
+          <option value="">-- Scegli un testo --</option>
+          <option value="BLACK FRIDAY" class="priority-brand-option">⭐ BLACK FRIDAY</option>
+          <option value="FINAL PRICE">FINAL PRICE</option>
+          <option value="GENUINE LEATHER">GENUINE LEATHER</option>
+          <option value="OUTLET PRICE">OUTLET PRICE</option>
+          <option value="SALE">SALE</option>
+          <option value="SPECIAL DEAL">SPECIAL DEAL</option>
+          <option value="SPRING SALE">SPRING SALE</option>
+          <option value="SUMMER SALE">SUMMER SALE</option>
+          <option value="VERA PELLE">VERA PELLE</option>
+          <option value="WINTER SALE">WINTER SALE</option>
+        </select>
+      </div>
+
+      <div class="form-group" id="groupCustomText" style="display:none;">
+        <label id="lblCustomTextTitle">Testo Personalizzato / Etichetta</label>
+        <input type="text" id="inputCustomText" class="form-control" value="FINAL PRICE" oninput="updateLabel()">
+      </div>
+
+      <div class="form-group" id="groupProdName" style="display:none;">
+        <label>Nome Prodotto / Descrizione</label>
+        <input type="text" id="inputProdName" class="form-control" value="GIACCA IN PELLE" oninput="updateLabel()">
+      </div>
+
+      <div class="form-group" id="groupCode" style="display:none;">
+        <label>Codice Articolo / Barcode</label>
+        <input type="text" id="inputCode" class="form-control" value="ART-890214" oninput="updateLabel()">
+      </div>
+
+      <div class="row" id="groupPriceRow">
+        <div class="form-group" id="groupOrig" style="flex:1;">
+          <label id="lblOrigTitle">Prezzo Originario (€)</label>
+          <input type="text" id="inputOrig" class="form-control" value="330,00" oninput="calculateDiscount()">
+        </div>
+        <div class="form-group" id="groupDiscounted" style="flex:1;">
+          <label>Prezzo Scontato (€)</label>
+          <input type="text" id="inputDiscounted" class="form-control" value="99,00" oninput="updateLabel()">
+        </div>
+        <div class="form-group" id="groupDiscount" style="flex:1; display:none;">
+          <label>Sconto (%)</label>
+          <input type="text" id="inputDiscount" class="form-control" value="-70%" oninput="formatDiscountInput(this); updateLabel()">
+        </div>
+      </div>
+
+      <div class="form-group" id="groupOutlet">
+        <label id="lblPriceTitle">Prezzo Finito (€)</label>
+        <input type="text" id="inputOutlet" class="form-control" value="29,90" inputmode="decimal" oninput="handleOutletPriceInput(this)" onblur="formatOutletPrice(this)">
+      </div>
+
+      <!-- Copie da stampare: vale per tutti i layout, quindi resta sempre visibile. -->
+      <div class="form-group" id="groupCopies">
+        <label for="inputCopies">Numero di copie</label>
+        <input type="number" id="inputCopies" class="form-control" value="1" min="1" max="99" step="1" inputmode="numeric" onblur="this.value = getPrintCopies()">
+      </div>
+
+      <button class="btn-print" id="btnPrint" onclick="printLabel()">STAMPA ETICHETTA</button>
+    </div>
+
+    <div class="preview-section">
+      <div style="position: absolute; top: 15px; left: 20px;" class="form-group preview-title">
+        <label>Anteprima Etichetta 11354 (57 x 32 mm)</label>
+      </div>
+
+      <div class="label-preview-wrapper" id="labelPreview"></div>
+    </div>
+  </main>
+
+  <script>
+    const DEFAULT_LOGO_SRC = "../assets/logos/tebe/Tebe.png";
+    const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
+    const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '54', '56', '58', '60'];
+    const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
+
+    let selectedBrand = '';
+    let selectedCustomLogo = '';
+    let currentTemplateKey = 'outlet';
+    // Layout con le taglie: 4. Taglie Tebe e 5. Taglie Brand condividono struttura e logica.
+    const SIZE_TEMPLATES = ['tagliedoppiacifra', 'tagliebrand'];
+    function isSizeTemplate(key = currentTemplateKey) {
+      return SIZE_TEMPLATES.includes(key);
+    }
+    // Made in Italy: logo a sinistra e adesivo a destra (al posto del QR), solo nei layout con il logo in alto.
+    const MADE_IN_ITALY_TEMPLATES = ['outlet', 'final', 'promo'];
+    // Stato del Made in Italy per ciascun layout: ogni layout lo attiva o disattiva per conto suo.
+    const madeInItalyByTemplate = {};
+
+    function renderSimpleTemplate(showPromo) {
+      return `
+        <div class="tpl-outlet${showPromo ? '' : ' tpl-outlet-promo'}">
+          <div class="label-top">
+            <div class="brand-logo-container">
+              <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
+              <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span>
+            </div>
+            <div class="qr-promo-box">
+              <div class="qr-container" id="labelQR"></div>
+            </div>
+            <img class="made-in-italy-sticker" src="../assets/img/tebe/madeinitalysticker.png" alt="Made in Italy">
+          </div>
+          <div class="label-bottom">
+            ${showPromo ? '' : '<span class="promo-description" id="lblCustomText">Occhiali</span>'}
+            <div class="price-box">
+              ${showPromo ? '<span class="price-label">Euro</span>' : ''}
+              <span class="price-val" id="lblOutlet">${showPromo ? '29,50' : '€ 29,50'}</span>
+            </div>
+            ${showPromo ? '<span class="promo-label" id="lblPromo">SALE</span>' : ''}
+          </div>
+        </div>`;
+    }
+
+    const TEMPLATES = {
+      'outlet': {
+        name: '1. Semplice',
+        fields: ['groupBrand', 'groupCustomBrand', 'groupPromo', 'groupOutlet'],
+        render: () => renderSimpleTemplate(true)
+      },
+      'final': {
+        name: '2. Doppio Prezzo',
+        fields: ['groupBrand', 'groupCustomBrand', 'groupOrig', 'groupDiscount', 'groupOutlet'],
+        render: () => `
+          <div class="tpl-final">
+            <div class="label-top">
+              <div class="brand-logo-container">
+                <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
+                <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span>
+              </div>
+              <div class="qr-container" id="labelQR"></div>
+              <img class="made-in-italy-sticker" src="../assets/img/tebe/madeinitalysticker.png" alt="Made in Italy">
+            </div>
+            <div class="label-bottom">
+              <div class="price-box price-box-original">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOrig">250,00</span>
+              </div>
+              <span class="discount-val" id="lblDiscount">-50%</span>
+              <div class="price-box price-outlet">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOutlet">125,00</span>
+              </div>
+            </div>
+          </div>`
+      },
+      'promo': {
+        name: '3. Articolo',
+        fields: ['groupBrand', 'groupCustomBrand', 'groupCustomText', 'groupOutlet'],
+        render: () => renderSimpleTemplate(false)
+      },
+      'promo5': {
+        name: '5. Promo',
+        fields: ['groupOutlet'],
+        render: () => `
+          <div class="tpl-promo">
+            <div class="left-logo-box">
+              <img src="../assets/img/tebe/lclogobn.png" alt="Last Chance Logo">
+            </div>
+            <div class="price-box">
+              <span class="price-label">Euro</span>
+              <span class="price-val" id="lblOutlet">29,50</span>
+            </div>
+          </div>`
+      },
+      'luxury': {
+        name: '4. Luxury Label',
+        fields: ['groupBrand', 'groupCustomBrand', 'groupOutlet'],
+        render: () => `
+          <div class="tpl-luxury">
+            <div class="left-logo-box">
+              <img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()">
+              <span id="labelFallbackText" class="brand-text-fallback" style="display:none;">TEBE<br>269</span>
+            </div>
+            <div class="price-box">
+              <span class="price-label">Euro</span>
+              <span class="price-val" id="lblOutlet">29,50</span>
+            </div>
+          </div>`
+      },
+      'promo50': {
+        name: '5. Promo 50+50',
+        fields: ['groupOrig', 'groupDiscounted', 'groupOutlet'],
+        render: () => `
+          <div class="tpl-promo50">
+            <div class="top-row">
+              <div class="price-col">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOrig">198,00</span>
+              </div>
+              <div class="disc-middle">-50%</div>
+              <div class="price-col align-right">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblDiscounted">99,00</span>
+              </div>
+            </div>
+            <div class="black-banner">
+              <div class="banner-left">
+                <div class="banner-promo-text">
+                  <div class="promo-title">PROMOZIONE</div>
+                  <div class="promo-subtitle">50% + 50%</div>
+                </div>
+                <div class="promo-discount">-50%</div>
+              </div>
+              <div class="banner-right">
+                <span class="price-label">Euro</span>
+                <span class="price-val" id="lblOutlet">49,50</span>
+              </div>
+            </div>
+          </div>`
+      },
+      'tagliedoppiacifra': {
+        name: '4. Taglie Tebe',
+        fields: ['groupSizeMode', 'groupSizes', 'groupOrig', 'groupDiscount', 'groupOutlet', 'groupSizePreset', 'groupCustomText'],
+        render: () => `
+          <div class="tpl-tagliedoppiacifra">
+            <div class="size-section">
+              <div class="size-title">SIZE / TAGLIA</div>
+              <div class="size-grid">
+                <div class="size-box" id="lblSize1">S</div>
+                <div class="size-box" id="lblSize2">M</div>
+                <div class="size-box" id="lblSize3">L</div>
+                <div class="size-box" id="lblSize4">XL</div>
+                <div class="size-box" id="lblSize5">2XL</div>
+                <div class="size-box" id="lblSize6">3XL</div>
+              </div>
+            </div>
+            <div class="price-section">
+              <div class="brand-logo-container size-logo"><img src="${DEFAULT_LOGO_SRC}" alt="TEBE"></div>
+              <div class="top-price-row">
+                <span class="original-price" id="lblOrig">€ 330,00</span>
+                <span class="discount-tag" id="lblDiscount">-70%</span>
+              </div>
+              <div class="final-price" id="lblOutlet">€ 99,00</div>
+              <div class="footer-text" id="lblCustomText">GENUINE LEATHER</div>
+            </div>
+          </div>`
+      },
+      'tagliebrand': {
+        name: '5. Taglie Brand',
+        fields: ['groupSizeMode', 'groupBrand', 'groupCustomBrand', 'groupSizes', 'groupOrig', 'groupDiscount', 'groupOutlet', 'groupSizePreset', 'groupCustomText'],
+        render: () => `
+          <div class="tpl-tagliedoppiacifra tpl-tagliebrand">
+            <div class="size-section">
+              <div class="size-title">SIZE / TAGLIA</div>
+              <div class="size-grid">
+                <div class="size-box" id="lblSize1">S</div>
+                <div class="size-box" id="lblSize2">M</div>
+                <div class="size-box" id="lblSize3">L</div>
+                <div class="size-box" id="lblSize4">XL</div>
+                <div class="size-box" id="lblSize5">2XL</div>
+                <div class="size-box" id="lblSize6">3XL</div>
+              </div>
+            </div>
+            <div class="price-section">
+              <div class="brand-logo-container size-logo"><img id="labelLogo" src="" alt="Logo Brand" onerror="onLogoError()"><span id="labelFallbackText" class="brand-text-fallback" style="display:none;">SELEZIONA<br>IL BRAND</span></div>
+              <div class="top-price-row">
+                <span class="original-price" id="lblOrig">€ 330,00</span>
+                <span class="discount-tag" id="lblDiscount">-70%</span>
+              </div>
+              <div class="final-price" id="lblOutlet">€ 99,00</div>
+              <div class="footer-text" id="lblCustomText">GENUINE LEATHER</div>
+            </div>
+          </div>`
+      }
+    };
+
+    function initSizeSelects() {
+      for (let i = 1; i <= 6; i++) {
+        const sel = document.getElementById(`sizeSelect${i}`);
+        if (!sel) continue;
+        sel.innerHTML = '';
+        SIZE_OPTIONS.forEach(opt => {
+          const el = document.createElement('option');
+          el.value = opt;
+          el.textContent = opt;
+          if (opt === DEFAULT_SIZES[i - 1]) el.selected = true;
+          sel.appendChild(el);
+        });
+      }
+    }
+
+    function setTemplate(key) {
+      if (!TEMPLATES[key]) return;
+      currentTemplateKey = key;
+      document.getElementById('madeInItalyBtn').style.display = MADE_IN_ITALY_TEMPLATES.includes(key) ? '' : 'none';
+      refreshMadeInItalyButton();
+      const customTextInput = document.getElementById('inputCustomText');
+      // Articolo: oltre 16 caratteri il testo non sta piu' nello spazio dell'etichetta.
+      // Taglie: fino a 22, il corpo si riduce da solo quando serve (fitSizeFooterText).
+      if (key === 'promo') {
+        customTextInput.maxLength = 16;
+      } else if (isSizeTemplate(key)) {
+        customTextInput.maxLength = SIZE_FOOTER_MAX_LENGTH;
+      } else {
+        customTextInput.removeAttribute('maxlength');
+      }
+
+      document.querySelectorAll('.template-card').forEach(card => card.classList.remove('active'));
+      const activeCard = document.getElementById(`card-tpl-${key}`);
+      if (activeCard) activeCard.classList.add('active');
+
+      document.getElementById('labelPreview').innerHTML = TEMPLATES[key].render();
+
+      const allFields = ['groupBrand', 'groupCustomBrand', 'groupPromo', 'groupCustomText', 'groupProdName', 'groupCode', 'groupOrig', 'groupDiscounted', 'groupDiscount', 'groupOutlet', 'groupSizeMode', 'groupSizes', 'groupSizePreset'];
+      allFields.forEach(fId => {
+        const elem = document.getElementById(fId);
+        if (elem) elem.style.display = TEMPLATES[key].fields.includes(fId) ? 'block' : 'none';
+      });
+
+      const priceRow = document.getElementById('groupPriceRow');
+      const showOrig = TEMPLATES[key].fields.includes('groupOrig');
+      const showDiscounted = TEMPLATES[key].fields.includes('groupDiscounted');
+      const showDiscount = TEMPLATES[key].fields.includes('groupDiscount');
+      if (priceRow) {
+        priceRow.style.display = (showOrig || showDiscounted || showDiscount) ? 'flex' : 'none';
+      }
+      syncSizeModeFields();
+
+      const lblOrigTitle = document.getElementById('lblOrigTitle');
+      const lblPriceTitle = document.getElementById('lblPriceTitle');
+      const lblCustomTextTitle = document.getElementById('lblCustomTextTitle');
+
+      if (isSizeTemplate(key)) {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finale (€)";
+        document.getElementById('inputOrig').value = "330,00";
+        document.getElementById('inputDiscount').value = "-70%";
+        document.getElementById('inputOutlet').value = "99,00";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Testo Descrittivo";
+        document.getElementById('inputCustomText').value = "GENUINE LEATHER";
+      } else if (key === 'outlet' || key === 'promo') {
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo (€)";
+        document.getElementById('promoSelect').value = "SALE";
+        if (key === 'promo') {
+          if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Descrizione";
+          document.getElementById('inputCustomText').value = "Occhiali";
+        }
+      } else if (key === 'final') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Pieno (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finale (€)";
+        document.getElementById('inputOrig').value = "250,00";
+        document.getElementById('inputDiscount').value = "-50%";
+        document.getElementById('inputOutlet').value = "125,00";
+      } else if (key === 'promo50') {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Originario (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo Finito (€)";
+      } else {
+        if (lblOrigTitle) lblOrigTitle.innerText = "Prezzo Pieno (€)";
+        if (lblPriceTitle) lblPriceTitle.innerText = "Prezzo (€)";
+        if (lblCustomTextTitle) lblCustomTextTitle.innerText = "Testo Personalizzato / Etichetta";
+      }
+
+      initQR();
+      updateLabel();
+    }
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function init() {
+      initSizeSelects();
+      loadBrandSelect();
+      LoghiPersonalizzati.pronto.then(loadCustomLogosSelect);
+      checkDymoPresence();
+
+      // PARSING PARAMETRI URL PER SELEZIONE AUTOMATICA TEMPLATE
+      const urlParams = new URLSearchParams(window.location.search);
+      const labelParam = urlParams.get('label') || urlParams.get('tpl') || urlParams.get('template');
+      
+      const paramMap = {
+        'doppioprezzo': 'final',
+        'outlet': 'luxury',
+        'finalprice': 'final',
+        'final': 'final',
+        'lastchance': 'promo',
+        'promo': 'promo',
+        'luxury': 'luxury',
+        'promo50': 'promo50',
+        'tagliedoppiacifra': 'tagliedoppiacifra',
+        'tagliebrand': 'tagliebrand'
+      };
+
+      if (labelParam && paramMap[labelParam.toLowerCase()]) {
+        setTemplate(paramMap[labelParam.toLowerCase()]);
+      } else {
+        setTemplate('outlet');
+      }
+
+    }
+
+    function setDymoStatus(badgeText, connected, detail) {
+      const badge = document.getElementById('usbStatusBadge');
+      badge.innerText = badgeText;
+      badge.className = `status-badge ${connected ? 'connected' : 'disconnected'}`;
+      document.getElementById('usbDeviceName').innerText = detail;
+    }
+
+    // STATO STAMPANTE LETTO DAL WEB SERVICE DI DYMO CONNECT (PORTA 41951)
+    async function checkDymoPresence() {
+      try {
+        const printer = await DymoDirect.dymoFindPrinter();
+        if (printer) {
+          setDymoStatus('CONNESSA', true, printer.name);
+        } else {
+          setDymoStatus('NON TROVATA', false, 'Collega e accendi la LabelWriter');
+        }
+        return printer;
+      } catch (err) {
+        setDymoStatus('SERVIZIO OFF', false, 'Avvia DYMO Connect sul computer');
+        return null;
+      }
+    }
+
+    function loadBrandSelect() {
+      const select = document.getElementById('brandSelect');
+      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+
+      if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
+        const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+        [...priorityFiles, ...remainingFiles].forEach(fileName => {
+          appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
+        });
+      }
+
+      select.value = "";
+      selectedBrand = "";
+    }
+
+    function loadCustomLogosSelect() {
+      const select = document.getElementById('customLogoSelect');
+      const customLogos = LoghiPersonalizzati.elenco();
+
+      select.innerHTML = '<option value="">-- Seleziona Logo Personalizzato --</option>';
+
+      if (Array.isArray(customLogos) && customLogos.length > 0) {
+        customLogos.forEach((item, index) => {
+          const option = document.createElement('option');
+          option.value = item.data || item.url || item.src || item;
+          option.textContent = "★ " + (item.name || `Logo Personalizzato ${index + 1}`);
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function onBrandSelectChange() {
+      const val = document.getElementById('brandSelect').value;
+      selectedBrand = val;
+      if (val) {
+        selectedCustomLogo = '';
+        document.getElementById('customLogoSelect').value = '';
+      }
+      updateLabel();
+    }
+
+    function onCustomLogoSelectChange() {
+      const val = document.getElementById('customLogoSelect').value;
+      selectedCustomLogo = val;
+      if (val) {
+        selectedBrand = '';
+        document.getElementById('brandSelect').value = '';
+      }
+      updateLabel();
+    }
+
+    function formatDiscountInput(input) {
+      const value = input.value.replace(/[^\d,.-]/g, '');
+      if (!value) return;
+      input.value = `${value}%`;
+      input.setSelectionRange(value.length, value.length);
+    }
+
+    function adjustFinalPriceFontSize() {
+      const elemOutlet = document.getElementById('lblOutlet');
+      if (!elemOutlet || !isSizeTemplate()) return;
+
+      const text = elemOutlet.innerText.trim();
+      const len = text.length;
+
+      // Corpi originali +6%. In stampa il layout e' ingrandito x1,08: i corpi di stampa sono i valori originali divisi per 1,08,
+      // cosi' il prezzo stampato ha la stessa grandezza di prima e non viene tagliato.
+      let screenSize = '80px';
+      let printSize = '27.5pt';
+
+      if (len <= 7) {
+        screenSize = '89px';
+        printSize = '30.4pt';
+      } else if (len === 8) {
+        screenSize = '74px';
+        printSize = '24.5pt';
+      } else if (len === 9) {
+        screenSize = '66px';
+        printSize = '21.6pt';
+      } else if (len === 10) {
+        screenSize = '55px';
+        printSize = '18.1pt';
+      } else if (len >= 11) {
+        screenSize = '47px';
+        printSize = '15.2pt';
+      }
+
+      elemOutlet.style.setProperty('--final-price-size-screen', screenSize);
+      elemOutlet.style.setProperty('--final-price-size-print', printSize);
+    }
+
+    function adjustPromoDescriptionFontSize(root, isPrint = false) {
+      const description = root?.querySelector('.promo-description');
+      if (!description) return;
+
+      const length = Array.from(description.textContent).length;
+      const sizeProperty = isPrint ? '--promo-description-size-print' : '--promo-description-size-screen';
+      const baseSize = isPrint ? (17.5 * 4 / 3) : 42;
+
+      if (length <= 13) {
+        description.style.removeProperty(sizeProperty);
+        return;
+      }
+
+      const minimumSize = baseSize * 0.35;
+      let size = Math.max(minimumSize, baseSize * 13 / length);
+      description.style.setProperty(sizeProperty, `${size}px`);
+
+      while (description.clientWidth > 0 && description.scrollWidth > description.clientWidth && size > minimumSize) {
+        size = Math.max(minimumSize, size - 0.5);
+        description.style.setProperty(sizeProperty, `${size}px`);
+      }
+    }
+
+    // Taglie in modalita' STANDARD: niente prezzo originario e sconto, quindi i loro campi spariscono dal pannello.
+    // STANDARD / DOPPIA CIFRA, separato per ciascun layout taglie; entrambi partono da STANDARD.
+    const sizeModeByTemplate = { tagliedoppiacifra: 'standard', tagliebrand: 'standard' };
+    function getSizeMode() {
+      return sizeModeByTemplate[currentTemplateKey] || 'standard';
+    }
+
+    // Testo descrittivo delle Taglie: fino a 22 caratteri. Se non sta nella colonna prezzi il corpo si riduce,
+    // calcolato a parte per schermo (colonna 296px, corpo 20px) e stampa (colonna 91,5pt, corpo 8,2pt).
+    const SIZE_FOOTER_MAX_LENGTH = 22;
+    const sizeFooterMeasure = document.createElement('canvas').getContext('2d');
+
+    function applySizePreset(select) {
+      if (!select.value) return;
+      document.getElementById('inputCustomText').value = select.value;
+      updateLabel();
+    }
+
+    // BLACK FRIDAY (scelto dal menu o scritto a mano) esce bianco su casella nera.
+    const SIZE_FOOTER_INVERTED = ['BLACK FRIDAY'];
+
+    function fitSizeFooterText(element) {
+      if (!element) return;
+      const text = element.textContent.toUpperCase();
+      const chars = Array.from(text).length;
+      sizeFooterMeasure.font = '100px Arial, Helvetica, sans-serif';
+      const width100 = sizeFooterMeasure.measureText(text).width;
+      const screenWidth = width100 * 0.20 + 0.3 * chars;
+      const printWidth = width100 * 0.082 + 0.1 * chars;
+      const screenScale = Math.min(1, 290 / screenWidth);
+      const printScale = Math.min(1, 89 / printWidth);
+      element.style.setProperty('--footer-size-screen', `${(20 * screenScale).toFixed(2)}px`);
+      element.style.setProperty('--footer-size-print', `${(8.2 * printScale).toFixed(2)}pt`);
+    }
+
+    function setSizeMode(mode) {
+      sizeModeByTemplate[currentTemplateKey] = mode;
+      syncSizeModeFields();
+      updateLabel();
+    }
+
+    function syncSizeModeFields() {
+      if (!isSizeTemplate()) return;
+      const isStandard = getSizeMode() === 'standard';
+      document.querySelectorAll('[data-size-mode]').forEach(button => {
+        button.classList.toggle('active', button.dataset.sizeMode === getSizeMode());
+      });
+      document.getElementById('groupPriceRow').style.display = isStandard ? 'none' : 'flex';
+      // Taglie Brand in DOPPIA CIFRA: niente testo descrittivo (al suo posto scende il blocco prezzi).
+      const showDescription = currentTemplateKey !== 'tagliebrand' || isStandard;
+      document.getElementById('groupSizePreset').style.display = showDescription ? 'block' : 'none';
+      document.getElementById('groupCustomText').style.display = showDescription ? 'block' : 'none';
+    }
+
+    function isMadeInItalyActive() {
+      return Boolean(madeInItalyByTemplate[currentTemplateKey]);
+    }
+
+    // Allinea il pulsante allo stato del layout corrente (chiamata anche al cambio di layout).
+    function refreshMadeInItalyButton() {
+      const active = isMadeInItalyActive();
+      const btn = document.getElementById('madeInItalyBtn');
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', String(active));
+      btn.title = active ? 'Disattiva Made in Italy' : 'Attiva Made in Italy';
+    }
+
+    function toggleMadeInItaly() {
+      madeInItalyByTemplate[currentTemplateKey] = !isMadeInItalyActive();
+      refreshMadeInItalyButton();
+      updateLabel();
+    }
+
+    function updateLabel() {
+      const labelRoot = document.querySelector('#labelPreview > div');
+      if (labelRoot && isSizeTemplate()) {
+        labelRoot.classList.toggle('is-standard', getSizeMode() === 'standard');
+      }
+      if (labelRoot) {
+        labelRoot.classList.toggle('is-made-in-italy', isMadeInItalyActive() && MADE_IN_ITALY_TEMPLATES.includes(currentTemplateKey));
+      }
+
+      const imgElement = document.getElementById('labelLogo');
+      const textElement = document.getElementById('labelFallbackText');
+
+      if (imgElement) {
+        if (selectedCustomLogo) {
+          imgElement.src = selectedCustomLogo;
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
+        } else if (selectedBrand) {
+          imgElement.src = getLogoSource(selectedBrand);
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
+        } else {
+          imgElement.src = DEFAULT_LOGO_SRC;
+          imgElement.style.display = 'block';
+          if (textElement) textElement.style.display = 'none';
+        }
+      }
+
+      const elemOrig = document.getElementById('lblOrig');
+      const elemDiscounted = document.getElementById('lblDiscounted');
+      const elemDisc = document.getElementById('lblDiscount');
+      const elemOutlet = document.getElementById('lblOutlet');
+      const elemCustomText = document.getElementById('lblCustomText');
+      const elemProd = document.getElementById('lblProdName');
+      const elemCode = document.getElementById('lblCode');
+      const elemPromo = document.getElementById('lblPromo');
+
+      if (elemOrig) {
+        const origValue = document.getElementById('inputOrig').value.trim();
+        if (isSizeTemplate()) {
+          elemOrig.innerText = origValue === '' ? '' : (origValue.includes('€') ? origValue : `€ ${origValue}`);
+        } else {
+          elemOrig.innerText = origValue;
+        }
+      }
+
+      if (elemDiscounted && document.getElementById('inputDiscounted')) {
+        elemDiscounted.innerText = document.getElementById('inputDiscounted').value;
+      }
+      if (elemDisc) elemDisc.innerText = document.getElementById('inputDiscount').value;
+      
+      if (elemOutlet) {
+        const outletValue = document.getElementById('inputOutlet').value;
+        if (isSizeTemplate()) {
+          elemOutlet.innerText = outletValue.includes('€') ? outletValue : `€ ${outletValue}`;
+        } else if (currentTemplateKey === 'promo') {
+          const price = outletValue.trim();
+          elemOutlet.innerText = price.startsWith('€') ? price : `€ ${price}`;
+        } else {
+          const noSymbol = (currentTemplateKey === 'outlet' || currentTemplateKey === 'final' || currentTemplateKey === 'promo' || currentTemplateKey === 'promo5' || currentTemplateKey === 'luxury' || currentTemplateKey === 'promo50');
+          elemOutlet.innerText = outletValue + (noSymbol ? '' : ' €');
+        }
+      }
+      
+      const customTextInput = document.getElementById('inputCustomText');
+      const customTextLimit = currentTemplateKey === 'promo' ? 16 : (isSizeTemplate() ? SIZE_FOOTER_MAX_LENGTH : Infinity);
+      if (Array.from(customTextInput.value).length > customTextLimit) {
+        customTextInput.value = Array.from(customTextInput.value).slice(0, customTextLimit).join('');
+      }
+      if (elemCustomText) elemCustomText.innerText = customTextInput.value;
+      if (isSizeTemplate()) {
+        fitSizeFooterText(elemCustomText);
+        const footerText = customTextInput.value.trim().toUpperCase();
+        elemCustomText?.classList.toggle('is-inverted', SIZE_FOOTER_INVERTED.includes(footerText));
+        // Il menu mostra il testo preimpostato solo se il campo coincide ancora con uno dei suoi valori.
+        const presetSelect = document.getElementById('sizePresetSelect');
+        presetSelect.value = [...presetSelect.options].some(option => option.value === footerText) ? footerText : '';
+      }
+      if (currentTemplateKey === 'promo') {
+        adjustPromoDescriptionFontSize(document.querySelector('#labelPreview .tpl-outlet-promo'));
+      }
+      if (elemProd) elemProd.innerText = document.getElementById('inputProdName').value;
+      if (elemCode) elemCode.innerText = document.getElementById('inputCode').value;
+      if (elemPromo) {
+        // Le promo di due parole (es. GENUINE LEATHER) vanno su due righe, in corpo piu' piccolo.
+        const promo = document.getElementById('promoSelect').value;
+        const isTwoLines = promo.includes(' ');
+        elemPromo.classList.toggle('is-two-lines', isTwoLines);
+        elemPromo.classList.toggle('is-inverted', PROMO_INVERTED.includes(promo));
+        elemPromo.classList.toggle('is-outlined', PROMO_OUTLINED.includes(promo));
+        elemPromo.classList.toggle('is-large', PROMO_LARGE.includes(promo));
+        if (isTwoLines) {
+          renderTwoLinePromo(elemPromo, promo.split(' '), !PROMO_WITHOUT_STRETCH.includes(promo));
+        } else {
+          elemPromo.textContent = promo;
+        }
+      }
+
+      if (isSizeTemplate()) {
+        for (let i = 1; i <= 6; i++) {
+          const sBox = document.getElementById(`lblSize${i}`);
+          const sSel = document.getElementById(`sizeSelect${i}`);
+          if (sBox && sSel) {
+            sBox.innerText = sSel.value;
+          }
+        }
+        adjustFinalPriceFontSize();
+      }
+    }
+
+    // Le due righe di una promo (es. VERA / PELLE) devono essere larghe uguali:
+    // la parola piu' corta riceve una spaziatura in em, cosi' vale uguale in anteprima e in stampa.
+    const promoMeasureContext = document.createElement('canvas').getContext('2d');
+    // Promo che restano con la spaziatura normale: allargata, la parola corta viene male.
+    const PROMO_WITHOUT_STRETCH = ['SPECIAL DEAL', 'SUMMER SALE', 'SPRING SALE', 'WINTER SALE'];
+    // Promo in corpo un po' piu' grande.
+    const PROMO_LARGE = ['FINAL PRICE'];
+    // Promo in bianco su casella nera (nel menu hanno la stella e stanno in cima).
+    const PROMO_INVERTED = ['SUMMER SALE', 'WINTER SALE', 'SPRING SALE', 'BLACK FRIDAY'];
+    // Promo con testo nero in una casella solo bordata di nero (oggi nessuna).
+    const PROMO_OUTLINED = [];
+
+    function renderTwoLinePromo(element, words, stretch = true) {
+      promoMeasureContext.font = '100px Arial, Helvetica, sans-serif';
+      const widths = words.map(word => promoMeasureContext.measureText(word).width);
+      const target = Math.max(...widths);
+      const lines = words.map((word, index) => {
+        const line = document.createElement('span');
+        line.className = 'promo-line';
+        line.textContent = word;
+        const gaps = Array.from(word).length - 1;
+        if (stretch && gaps > 0 && widths[index] < target) {
+          const spacing = ((target - widths[index]) / gaps / 100).toFixed(4);
+          // La spaziatura si aggiunge anche dopo l'ultima lettera: un margine interno uguale a sinistra la bilancia.
+          line.style.letterSpacing = `${spacing}em`;
+          line.style.paddingLeft = `${spacing}em`;
+        }
+        return line;
+      });
+      element.replaceChildren(...lines);
+    }
+
+    function onLogoError() {
+      const imgElement = document.getElementById('labelLogo');
+      if (imgElement) imgElement.style.display = 'none';
+      
+      const textElement = document.getElementById('labelFallbackText');
+      if (textElement) {
+        textElement.innerHTML = "TEBE<br>269";
+        textElement.style.display = 'block';
+      }
+    }
+
+    function initQR() {
+      const qrBox = document.getElementById('labelQR');
+      if (!qrBox) return;
+      qrBox.innerHTML = '';
+      new QRCode(qrBox, {
+        text: "https://www.instagram.com/tebe_269/",
+        width: 96,
+        height: 96,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    function calculateDiscount() {
+      if (currentTemplateKey === 'promo50' || currentTemplateKey === 'final') {
+        updateLabel();
+        return;
+      }
+      let orig = parseFloat(document.getElementById('inputOrig').value.replace('€', '').replace(',', '.').trim());
+      let outlet = parseFloat(document.getElementById('inputOutlet').value.replace(',', '.').trim());
+
+      if (orig > 0 && outlet > 0 && orig > outlet) {
+        let disc = Math.round(((orig - outlet) / orig) * 100);
+        document.getElementById('inputDiscount').value = `-${disc}%`;
+      }
+      updateLabel();
+    }
+
+    function handleOutletPriceInput(input) {
+      if (currentTemplateKey !== 'outlet' && currentTemplateKey !== 'promo') {
+        updateLabel();
+        return;
+      }
+
+      let value = input.value.replace(/\./g, ',').replace(/[^\d,]/g, '');
+      const commaIndex = value.indexOf(',');
+      if (commaIndex !== -1) {
+        value = `${value.slice(0, commaIndex + 1)}${value.slice(commaIndex + 1).replace(/,/g, '').slice(0, 2)}`;
+      }
+      const [integerPart, decimalPart] = value.split(',');
+      value = `${integerPart.slice(0, 4)}${commaIndex !== -1 ? `,${decimalPart ?? ''}` : ''}`;
+      input.value = value;
+      updateLabel();
+    }
+
+    function formatOutletPrice(input) {
+      if (currentTemplateKey !== 'outlet' && currentTemplateKey !== 'promo') return;
+      const normalized = input.value.replace(',', '.');
+      if (!normalized || !/^\d{1,4}(?:\.\d{0,2})?$/.test(normalized)) {
+        input.value = '0,00';
+        updateLabel();
+        return;
+      }
+      input.value = Number(normalized).toFixed(2).replace('.', ',');
+      updateLabel();
+    }
+
+    // STAMPA DIRETTA SU DYMO; SE IL SERVIZIO NON RISPONDE RIPIEGA SULLA STAMPA DEL BROWSER
+    // Copie richieste, sempre un intero tra 1 e 99.
+    function getPrintCopies() {
+      const copies = Number.parseInt(document.getElementById('inputCopies').value, 10);
+      return Number.isFinite(copies) ? Math.min(99, Math.max(1, copies)) : 1;
+    }
+
+    async function printLabel() {
+      const btn = document.getElementById('btnPrint');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = '⏳ STAMPA IN CORSO…';
+
+      try {
+        let printer, png;
+        try {
+          printer = await checkDymoPresence();
+          if (!printer) throw new Error('nessuna stampante DYMO connessa');
+          png = await renderLabelPng();
+        } catch (err) {
+          console.warn('Stampa DYMO diretta non disponibile:', err);
+          const copies = getPrintCopies();
+          const copiesHint = copies > 1 ? `\nImposta ${copies} copie nella finestra di stampa.` : '';
+          alert(`Stampa DYMO diretta non disponibile (${err.message}).\nUso la stampa del browser.${copiesHint}`);
+          printLabelIsolated();
+          return;
+        }
+
+        try {
+          const copies = getPrintCopies();
+          await DymoDirect.dymoPrintPng(printer.name, png, copies);
+          setDymoStatus('CONNESSA', true, `${printer.name} · ${copies === 1 ? 'etichetta inviata' : `${copies} etichette inviate`}`);
+        } catch (err) {
+          // La richiesta potrebbe essere già arrivata alla stampante: niente fallback automatico
+          console.error('Errore stampa DYMO:', err);
+          if (confirm(`Errore durante la stampa DYMO (${err.message}).\nVuoi usare la stampa del browser?`)) {
+            printLabelIsolated();
+          }
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }
+    }
+
+    function getPrintIframe() {
+      let iframe = document.getElementById('printIframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.id = 'printIframe';
+        iframe.style.position = 'fixed';
+        // Dimensioni reali dell'etichetta fuori schermo: servono a html2canvas per il rendering
+        iframe.style.left = '-10000px';
+        iframe.style.top = '0';
+        iframe.style.width = '2.25in';
+        iframe.style.height = '1.25in';
+        iframe.style.border = '0px';
+        document.body.appendChild(iframe);
+      }
+      return iframe;
+    }
+
+    function writePrintIframe(autoPrint) {
+      const iframe = getPrintIframe();
+      const labelHTML = document.getElementById('labelPreview').innerHTML;
+      const doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(buildPrintDocument(labelHTML, autoPrint));
+      doc.close();
+      if ((currentTemplateKey === 'outlet' || currentTemplateKey === 'promo') && /^\d{4}(?:,\d{0,2})?$/.test(document.getElementById('inputOutlet').value.trim())) {
+        doc.querySelector('.tpl-outlet')?.classList.add('price-four-digits');
+      }
+      if (currentTemplateKey === 'promo') {
+        adjustPromoDescriptionFontSize(doc.querySelector('.tpl-outlet-promo'), true);
+      }
+      return iframe;
+    }
+
+    function printLabelIsolated() {
+      writePrintIframe(true);
+    }
+
+    // RENDERING DELL'ETICHETTA DI STAMPA IN PNG A 300 DPI (RISOLUZIONE LABELWRITER 450)
+    async function renderLabelPng() {
+      if (typeof html2canvas === 'undefined') throw new Error('html2canvas non caricato');
+
+      const iframe = writePrintIframe(false);
+      const doc = iframe.contentWindow.document;
+
+      await Promise.all([...doc.images].map(img => img.complete ? null : new Promise(resolve => {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+      })));
+      if (doc.fonts) await doc.fonts.ready;
+
+      // html2canvas ignora i filtri CSS: applica a mano il filter: brightness(0) dei loghi brand
+      doc.querySelectorAll('.brand-logo-container img').forEach(img => {
+        if (!img.naturalWidth) return;
+        const canvas = doc.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (img.closest('.tpl-tagliebrand')) {
+          // html2canvas ignora object-fit: il logo va gia' inscritto, allineato a destra, in una tela 1200x500 come la sua casella.
+          canvas.width = 1200;
+          canvas.height = 500;
+          const scale = Math.min(1200 / img.naturalWidth, 500 / img.naturalHeight);
+          const w = img.naturalWidth * scale;
+          const h = img.naturalHeight * scale;
+          ctx.filter = 'brightness(0)';
+          ctx.drawImage(img, 1200 - w, (500 - h) / 2, w, h);
+        } else {
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          ctx.filter = 'brightness(0)';
+          ctx.drawImage(img, 0, 0);
+        }
+        img.src = canvas.toDataURL('image/png');
+      });
+
+      // html2canvas disegna il testo un po' piu' in basso del browser: la classe attiva le correzioni solo per la stampa DYMO.
+      doc.documentElement.classList.add('is-raster');
+
+      const canvas = await html2canvas(doc.querySelector('.print-wrapper'), {
+        scale: 300 / 96,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        logging: false
+      });
+      return canvas.toDataURL('image/png').split(',')[1];
+    }
+
+    function buildPrintDocument(labelHTML, autoPrint) {
+      return `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Stampa DYMO 11354</title>
+          <style>
+            @font-face {
+              font-family: 'Bodoni Std';
+              src: url('../assets/fonts/BodoniStd.otf') format('opentype');
+            }
+            @font-face { font-family: 'Arial'; src: url('../assets/fonts/Arial.ttf') format('truetype'); font-weight: 400; font-style: normal; }
+            @font-face { font-family: 'Arial'; src: url('../assets/fonts/Arial%20Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; }
+            @font-face { font-family: 'Arial'; src: url('../assets/fonts/Arial%20Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; }
+            @font-face { font-family: 'Arial'; src: url('../assets/fonts/Arial%20Bold%20Italic.ttf') format('truetype'); font-weight: 700; font-style: italic; }
+            @page {
+              size: 2.25in 1.25in;
+              margin: 0 !important;
+            }
+            * { 
+              box-sizing: border-box; 
+              margin: 0; 
+              padding: 0; 
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            html, body {
+              width: 2.25in !important;
+              height: 1.25in !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              background: #ffffff;
+              font-family: Arial, Helvetica, sans-serif;
+              overflow: hidden !important;
+            }
+            
+            .print-wrapper {
+              width: 2.25in !important;
+              height: 1.25in !important;
+              padding: 1.5mm 2.5mm 1.5mm 2.5mm !important;
+              background: #ffffff;
+              color: #000000;
+              box-sizing: border-box;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+
+            .tpl-outlet, .tpl-final, .tpl-promo, .tpl-luxury, .tpl-promo50, .tpl-tagliedoppiacifra {
+              width: 100% !important;
+              box-sizing: border-box;
+            }
+
+            .brand-logo-container { display: flex; align-items: center; justify-content: flex-start; }
+            .brand-logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; filter: brightness(0); }
+            .brand-text-fallback { font-family: Arial, sans-serif; font-weight: 800; color: #000; line-height: 1.1; letter-spacing: -0.5px; }
+
+            /* TEMPLATE 1 PRINT */
+            .tpl-outlet { display: flex; flex-direction: column; justify-content: flex-start; height: 29mm; transform: translate(1mm, -1mm) scale(1.08); transform-origin: center center; }
+            .tpl-outlet .label-top { display: flex; justify-content: space-between; align-items: center; height: 16mm; width: 100%; }
+            .tpl-outlet .brand-logo-container { width: 35.625mm; height: 14mm; margin: 1mm 0 0 1.25mm; }
+            .tpl-outlet .brand-text-fallback { font-size: 10pt; }
+            .tpl-outlet .qr-promo-box { width: 12mm; display: flex; flex-direction: column; align-items: center; margin-right: 1mm; }
+            .tpl-outlet .qr-container { width: 12mm; height: 12mm; display: flex; align-items: center; justify-content: center; }
+            .tpl-outlet .qr-container img, .tpl-outlet .qr-container canvas { width: 12mm !important; height: 12mm !important; }
+            .tpl-outlet .promo-label { position: relative; left: 0; bottom: 1.33pt; width: 12mm; font: 13pt Arial, Helvetica, sans-serif; letter-spacing: -0.38px; text-transform: uppercase; line-height: 1; text-align: center; }
+            .tpl-outlet .promo-label.is-two-lines { bottom: 2.07pt; font-size: 7pt; letter-spacing: 0; line-height: 1.05; white-space: pre-line; }
+            .tpl-outlet .promo-label .promo-line { display: block; width: max-content; margin: 0 auto; }
+            .tpl-outlet .promo-label.is-inverted { bottom: 0.63pt; padding: 1.44pt 0; background: #000; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .tpl-outlet .promo-label.is-outlined { left: 0; bottom: -0.69pt; width: 12mm; padding: 2.16pt 0; border: 0.6pt solid #000; }
+            /* Solo stampa DYMO (html2canvas): il testo nella casella nera si alza per restare centrato. */
+            .is-raster .tpl-outlet .promo-label.is-inverted .promo-line,
+            .is-raster .tpl-outlet .promo-label.is-outlined .promo-line { position: relative; top: -0.6pt; }
+            .tpl-outlet .promo-label.is-large { bottom: 1.85pt; font-size: 8.26pt; }
+
+            /* MADE IN ITALY (stampa): adesivo 15 mm, a 1,08 mm dal bordo. */
+            .made-in-italy-sticker { display: none; }
+            .tpl-outlet.is-made-in-italy .label-top,
+            .tpl-final.is-made-in-italy .label-top { justify-content: space-between; padding: 0 1.08mm 0 1.25mm; }
+            .tpl-outlet.is-made-in-italy .brand-logo-container,
+            .tpl-final.is-made-in-italy .brand-logo-container { justify-content: flex-start; width: 30mm; height: 12mm; margin: 1mm 0 0; }
+            .tpl-outlet.is-made-in-italy .qr-promo-box,
+            .tpl-final.is-made-in-italy .qr-container { display: none; }
+            .is-made-in-italy .made-in-italy-sticker { display: block; flex: 0 0 auto; width: 15mm; height: auto; margin-top: 1mm; }
+            /* Promo centrata sull'adesivo: centro a 1,08 + 15/2 = 8,58 mm dal bordo destro, casella a 1 mm dal bordo. */
+            .tpl-outlet.is-made-in-italy .promo-label { left: -1.58mm; }
+            .tpl-outlet.is-made-in-italy .promo-label.is-outlined { left: -1.08mm; }
+            .tpl-outlet .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 9mm; margin-top: 1.5mm; padding: 0 1mm 0 1.25mm; width: 100%; }
+            .tpl-outlet .price-box { width: 36.25mm; display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; }
+            .tpl-outlet .price-label { font: 300 11pt/1 'Bodoni Std', serif; letter-spacing: -0.5px; }
+            .tpl-outlet .price-val { position: relative; top: 1.6mm; left: -5mm; transform-origin: right bottom; font: 300 24pt/1 'Bodoni Std', serif; letter-spacing: -1.5px; -webkit-text-stroke: 0.25px #fff; paint-order: fill stroke; white-space: nowrap; }
+            .tpl-outlet.price-four-digits .price-val { left: -2mm; }
+            .tpl-outlet.tpl-outlet-promo .label-bottom { justify-content: space-between; align-items: baseline; margin-top: 2.5mm; padding: 0 1mm 0 1.25mm; }
+            .tpl-outlet.tpl-outlet-promo .promo-description { min-width: 0; max-width: 58%; overflow: hidden; font: 300 var(--promo-description-size-print, 17.5pt)/1 'Bodoni Std', serif; letter-spacing: -0.02em; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+            .tpl-outlet.tpl-outlet-promo .price-box { flex: 0 0 auto; width: auto; align-items: baseline; justify-content: flex-end; gap: 1mm; text-align: right; }
+            .tpl-outlet.tpl-outlet-promo .price-val { top: 0; left: 0; font-size: 19.5pt; }
+
+            /* TEMPLATE 2 PRINT */
+            .tpl-final { display: flex; flex-direction: column; justify-content: flex-start; height: 29mm; transform: translate(1mm, -1mm) scale(1.08); transform-origin: center center; }
+            .tpl-final .label-top { display: flex; justify-content: space-between; align-items: center; height: 16mm; width: 100%; }
+            .tpl-final .brand-logo-container { width: 35.625mm; height: 14mm; margin: 1mm 0 0 1.25mm; }
+            .tpl-final .brand-text-fallback { font-size: 10pt; }
+            .tpl-final .qr-container { width: 12mm; height: 12mm; margin-right: 1mm; display: flex; align-items: center; justify-content: center; }
+            .tpl-final .qr-container img, .tpl-final .qr-container canvas { width: 12mm !important; height: 12mm !important; }
+            .tpl-final .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 9mm; margin-top: 1.5mm; padding: 0 1mm 0 1.25mm; width: 100%; }
+            .tpl-final .price-box { width: 18mm; display: flex; flex-direction: column; align-items: flex-end; }
+            .tpl-final .price-box-original { transform: translateX(-1.5mm); }
+            .tpl-final .price-label { font: 300 6.5pt/1 'Bodoni Std', serif; letter-spacing: -0.2px; margin-bottom: 0.3mm; text-align: right; }
+            .tpl-final .price-val { font: 300 17pt/1 'Bodoni Std', serif; letter-spacing: -0.3pt; white-space: nowrap; }
+            .tpl-final .discount-val { width: 11mm; font: 300 14pt/1 'Bodoni Std', serif; text-align: center; white-space: nowrap; }
+
+            /* TEMPLATE 3 & 4 PRINT */
+            .tpl-promo, .tpl-luxury { display: flex; align-items: center; justify-content: space-between; height: 29mm; width: 100%; padding: 0 0.5mm; }
+            .tpl-promo .left-logo-box { width: 28mm; height: 23.5mm; display: flex; align-items: center; justify-content: flex-start; }
+            .tpl-luxury .left-logo-box { width: 38.75mm; height: 15mm; margin-left: 0.75mm; display: flex; align-items: center; justify-content: flex-start; }
+            .tpl-promo .left-logo-box img, .tpl-luxury .left-logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+            .tpl-promo .price-box, .tpl-luxury .price-box { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; }
+            .tpl-promo .price-label, .tpl-luxury .price-label { font-size: 7.5pt; line-height: 1; margin-bottom: 0.5mm; font-weight: normal; }
+            .tpl-promo .price-val, .tpl-luxury .price-val { font-size: 19pt; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+
+            /* TEMPLATE 5 PRINT (PROMO 50+50) */
+            .tpl-promo50 { display: flex; flex-direction: column; justify-content: space-between; height: 29mm; width: 100%; }
+            .tpl-promo50 .top-row { display: flex; justify-content: space-between; align-items: flex-end; padding: 0.3mm 1mm 0.8mm 1mm; height: 9.8mm; }
+            .tpl-promo50 .price-col { display: flex; flex-direction: column; align-items: flex-start; }
+            .tpl-promo50 .price-col.align-right { align-items: flex-end; }
+            .tpl-promo50 .top-row .price-label { font-size: 7.5pt; line-height: 1; color: #000; font-weight: 400; margin-bottom: 0.5mm; }
+            .tpl-promo50 .top-row .price-val { font-size: 13.5pt; font-weight: 400; line-height: 1; color: #000; letter-spacing: -0.3pt; white-space: nowrap; }
+            .tpl-promo50 .disc-middle { font-size: 13.5pt; font-weight: 400; line-height: 1; color: #000; text-align: center; }
+            .tpl-promo50 .black-banner { background: #000 !important; color: #fff !important; border-radius: 1.8mm; padding: 1.2mm 1.8mm; display: flex; justify-content: space-between; align-items: stretch; height: 18.2mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .tpl-promo50 .banner-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+            .tpl-promo50 .banner-promo-text { display: flex; flex-direction: column; align-items: center; text-align: center; }
+            .tpl-promo50 .promo-title { font-size: 8pt; font-weight: 800; letter-spacing: 0.2pt; line-height: 1.1; color: #fff; text-align: center; }
+            .tpl-promo50 .promo-subtitle { font-size: 9.5pt; font-weight: 800; line-height: 1.1; color: #fff; text-align: center; }
+            .tpl-promo50 .promo-discount { font-size: 23pt; font-weight: 800; line-height: 0.95; color: #fff; text-align: left; }
+            .tpl-promo50 .banner-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; height: 100%; }
+            .tpl-promo50 .banner-right .price-label { color: #fff; font-size: 8.5pt; font-weight: 400; line-height: 1; margin-bottom: 0.3mm; text-align: right; }
+            .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 23pt; font-weight: 800; line-height: 1; letter-spacing: -0.5pt; white-space: nowrap; text-align: right; }
+
+            /* TEMPLATE 6 PRINT (TAGLIE DOPPIA CIFRA CON FONT STAMPA DINAMICO) */
+            /* Stesso ingrandimento x1,08 dei layout 1-3 (senza lo spostamento in alto, che faceva tagliare la riga prezzi). Il layout occupa tutta la larghezza utile:
+               parte largo 100%/1,08 e centrato, cosi' una volta ingrandito torna esattamente alla larghezza utile senza essere tagliato a destra. */
+            /* Spostato in alto di 0,5 mm: le caselle delle taglie arrivavano a 2,2 mm dal fondo, meno degli altri layout. */
+            .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; height: 29mm; transform: translate(0, -0.5mm) scale(1.08); transform-origin: center center; }
+            .print-wrapper .tpl-tagliedoppiacifra { width: calc(100% / 1.08) !important; align-self: center; }
+            .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 15mm; padding-bottom: 1mm; }
+            .tpl-tagliedoppiacifra .size-title { font-size: 5.6pt; font-weight: 400; letter-spacing: 0.2pt; padding-left: 0.2pt; margin-bottom: 1.4mm; text-transform: uppercase; white-space: nowrap; }
+            .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 7mm); gap: 0.8mm; }
+            .tpl-tagliedoppiacifra .size-box { width: 7mm; height: 7mm; border: 0.5mm solid #000000; display: flex; align-items: center; justify-content: center; font-size: 7.5pt; font-weight: 400; background-color: #ffffff; }
+            /* Come a schermo: blocco taglie da 26,27 mm centrato in 28 mm; riga prezzi in alto, testo sul fondo delle caselle (1,87 mm dal fondo). */
+            /* Riga prezzi 1,2 mm sotto il bordo: con l'ingrandimento x1,08 il layout sborda di circa 1,3 mm, e senza questo margine veniva tagliata. */
+            .tpl-tagliedoppiacifra .price-section { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-end; padding: 1.2mm 0 1.87mm 1mm; }
+            .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: baseline; justify-content: flex-end; gap: 2mm; width: 100%; }
+            /* Riga ad altezza fissa (il blocco prezzi non si muove anche se il testo si rimpicciolisce) e margine interno sopra e sotto, annullato dai margini negativi: il riquadro che taglia il testo in larghezza non taglia
+               la parte bassa delle lettere quando html2canvas le disegna un po' piu' in basso. */
+            .tpl-tagliedoppiacifra .footer-text { position: relative; bottom: 0.35mm; max-width: 100%; overflow: hidden; padding: 2pt 0; margin: -2pt 0; font: 400 var(--footer-size-print, 8.2pt)/8.2pt Arial, Helvetica, sans-serif; letter-spacing: 0.1pt; text-transform: uppercase; text-align: right; white-space: nowrap; }
+            .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 1.1pt 2.2pt; margin: -1.1pt -2.2pt -1.1pt 0; font-size: 9pt; background: #000; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            /* Solo stampa DYMO (html2canvas): testo alzato di 0,6pt per restare centrato nella casella nera. */
+            .is-raster .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 0.5pt 2.2pt 1.7pt; margin: -1.1pt -2.2pt -1.1pt 0; }
+            .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 19mm; height: 3.6mm; margin-top: 0.24mm; overflow: hidden; }
+            .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 19mm; max-width: none; max-height: none; margin-right: -0.99mm; }
+            .tpl-tagliedoppiacifra.is-standard .size-logo { display: flex; }
+            .tpl-tagliedoppiacifra.is-standard .top-price-row { display: none; }
+            /* Casella alta quanto l'immagine (niente ritaglio) e 0,9 mm sotto il bordo del layout: il logo piu' alto (HAVEONE) resta a oltre 1 mm dal bordo stampato. */
+            .tpl-tagliebrand .size-logo { width: 21.5mm; height: 8.96mm; margin-top: -0.3mm; align-items: center; }
+            .tpl-tagliebrand .size-logo img { width: 21.5mm; height: 8.96mm; object-fit: contain; object-position: right center; margin-right: 0; }
+            .tpl-tagliebrand .size-logo .brand-text-fallback { font-size: 5pt; text-align: right; }
+            /* DOPPIA CIFRA: logo brand un po' piu' grande in stampa (24 mm invece di 21,5), leggermente piu' in basso per restare lontano dal bordo. */
+            .tpl-tagliebrand:not(.is-standard) .size-logo { display: flex; width: 24mm; height: 10mm; margin-top: -0.3mm; }
+            .tpl-tagliebrand:not(.is-standard) .size-logo img { width: 24mm; height: 10mm; }
+            .tpl-tagliebrand:not(.is-standard) .top-price-row { margin-top: auto; margin-bottom: 1.6mm; }
+            .tpl-tagliebrand:not(.is-standard) .final-price { margin: 0; }
+            .tpl-tagliebrand:not(.is-standard) .price-section { padding-bottom: 1.6mm; }
+            .tpl-tagliebrand:not(.is-standard) .footer-text { display: none; }
+            .tpl-tagliedoppiacifra .original-price { font: 300 11.57pt/1 'Bodoni Std', serif; letter-spacing: -0.05em; }
+            .tpl-tagliedoppiacifra .discount-tag { font: 300 11.57pt/1 'Bodoni Std', serif; letter-spacing: -0.05em; }
+            .tpl-tagliedoppiacifra .final-price { 
+              margin: auto 0;
+              font-family: 'Bodoni Std', serif;
+              font-size: var(--final-price-size-print, 27.5pt) !important;
+              font-weight: 300;
+              line-height: 0.85;
+              letter-spacing: -1.5px;
+              white-space: nowrap; 
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-wrapper">
+            ${labelHTML}
+          </div>
+          ${autoPrint ? `<script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.focus();
+                window.print();
+              }, 300);
+            };
+          <\/script>` : ''}
+        </body>
+        </html>
+      `;
+    }
+
+    window.onload = () => {
+      init();
+      // Arial e Bodoni arrivano da assets/fonts: a caricamento finito si rimisurano i testi dell'etichetta.
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
+    };
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
+    // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.
+    Cursore.create({
+      panel: 'body',
+      watch: '#labelPreview',
+      clip: '.preview-section',
+      scope: '.preview-section',
+      obstacles: '#labelPreview .brand-logo-container img, #labelPreview .qr-container, #labelPreview .made-in-italy-sticker, #labelPreview .promo-description, #labelPreview .price-box, #labelPreview .promo-label, #labelPreview .discount-val, #labelPreview .size-title, #labelPreview .size-box, #labelPreview .original-price, #labelPreview .discount-tag, #labelPreview .final-price, #labelPreview .footer-text',
+      rules: [
+        // scelta del layout: dall'alto, sopra l'etichetta intera
+        { controls: '.template-card', target: '#labelPreview', placement: 'above' },
+        { controls: '#madeInItalyBtn', target: '#labelPreview .made-in-italy-sticker' },
+        // Taglie, STANDARD / DOPPIA CIFRA: il logo o la riga prezzo originario e sconto (quello visibile)
+        { controls: '#groupSizeMode', target: '#labelPreview .size-logo, #labelPreview .top-price-row' },
+        { controls: '#brandSelect, #customLogoSelect', target: '#labelLogo' },
+        { controls: '#promoSelect', target: '#lblPromo' },
+        // taglie: di lato, tra una casella e l'altra non c'è spazio
+        { controls: '#sizeSelect1', target: '#lblSize1', placement: 'side' },
+        { controls: '#sizeSelect2', target: '#lblSize2', placement: 'side' },
+        { controls: '#sizeSelect3', target: '#lblSize3', placement: 'side' },
+        { controls: '#sizeSelect4', target: '#lblSize4', placement: 'side' },
+        { controls: '#sizeSelect5', target: '#lblSize5', placement: 'side' },
+        { controls: '#sizeSelect6', target: '#lblSize6', placement: 'side' },
+        { controls: '#sizePresetSelect', target: '#labelPreview .size-grid' },
+        { controls: '#inputCustomText', target: '#lblCustomText' },
+        { controls: '#inputOrig', target: '#lblOrig' },
+        { controls: '#inputDiscount', target: '#lblDiscount' },
+        { controls: '#inputDiscounted', target: '#lblDiscounted' },
+        { controls: '#inputOutlet', target: '#lblOutlet' }
+      ]
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="tebe">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <title>Prezzi Vetrina</title>
+
+  <style>
+    /* Font locali da assets/fonts */
+    @font-face {
+      font-family: 'Nevis';
+      src: url('../assets/fonts/Nevis%20Bold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Std';
+      src: url('../assets/fonts/BodoniStd-BoldItalic.otf') format('opentype');
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    :root {
+      --bg: #f8f6f1;
+      --sidebar: #eee8dd;
+      --card: #fffdfa;
+      --border: #e3dacb;
+      --accent: #b49a62;
+      --accent-hover: #8a6a35;
+      --text: #282522;
+      --text-muted: #665e54;
+      --gold: #b49a62;
+      /* Marrone di stampa dei cartellini vetrina (dal layout di riferimento) */
+      --print-brown: #4f3c16;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: auto; }
+
+    /* --- SIDEBAR --- */
+    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    .brand-title { font-family: 'Cinzel', serif; font-size: 1.05rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; text-align: center; font-weight: 600; text-transform: uppercase; }
+
+    .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
+    .tab-item { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.2rem; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; cursor: pointer; transition: all 0.2s; }
+    .tab-item:hover { border-color: var(--gold); }
+    .tab-item.active { border-color: var(--gold); background: rgba(180, 139, 55, 0.15); }
+    .tab-item span { font-size: 0.7rem; font-weight: 700; cursor: pointer; color: var(--text); }
+    .tab-item input[type="checkbox"] { accent-color: var(--gold); cursor: pointer; }
+
+    .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
+    .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+
+    .form-group { margin-bottom: 0.8rem; }
+    /* Spazi regolari nel pannello (come le pagine Crea Cartelli): 0,35rem tra etichetta e campo, 0,8rem tra
+       un campo e l'etichetta successiva, sotto il selettore e prima del tasto di stampa */
+    .form-group label { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
+    .form-group .section-label { color: #b49a62; }
+    .form-control { width: 100%; padding: 0.45rem; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.82rem; outline: none; }
+    .form-control:focus { border-color: var(--gold); }
+
+    /* MENU A DISCESA CON FRECCIA */
+    .preset-select {
+      position: relative;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background-color: var(--card);
+      overflow: hidden;
+    }
+
+    .preset-select:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .preset-select select.form-control {
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 2rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      cursor: pointer;
+    }
+
+    .preset-select::after {
+      content: '▼';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .mode-switch {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: #f3ede0;
+      border: 1px solid #e3dacb;
+      border-radius: 6px;
+      margin-bottom: 0.8rem;
+    }
+
+    .mode-switch button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 9px 8px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8a7f6e;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1.2;
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .mode-switch button.active {
+      background: #fffdfa;
+      color: #282522;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .currency-input-group {
+      position: relative;
+    }
+
+    .currency-input-group .currency-prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text);
+      font-weight: normal;
+      font-size: 0.82rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .currency-input-group input {
+      padding-left: 26px;
+      line-height: 1.2;
+    }
+
+    .btn-print { width: 100%; padding: 0.75rem; background: #96382b; color: #fffdfa; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.6px; transition: all 0.2s; margin-bottom: 1.2rem; }
+    .btn-print:hover { background: #7a2d22; }
+    /* Tasto di stampa dentro il riquadro di modifica, come nei cartelli */
+    .editor-section .btn-print { margin: 0; }
+    /* Riquadro che comincia con un selettore: un poco di spazio in più sopra il selettore; l'ultimo elemento
+       del riquadro non aggiunge spazio sotto */
+    .editor-title + .mode-switch { margin-top: 1rem; }
+    .editor-section > :last-child { margin-bottom: 0; }
+
+
+    /* --- PREVIEW MAIN --- */
+    main { flex: 1; min-width: 0; padding: 1.5rem; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; background: var(--border); -webkit-overflow-scrolling: touch; }
+
+    /* Contenitore del foglio (lo zoom della vista telefono sta qui, non sul foglio) */
+    .sheet-wrap { position: relative; flex-shrink: 0; margin-top: 12px; }
+
+    /* Foglio A4 verticale: 3 colonne × 8 righe di cartellini da 709 × 354 px a 300 dpi
+       (60,03 × 29,97 mm), distanziati di 58 px (4,91 mm), come nel layout di riferimento. */
+    .a4-portrait {
+      width: 210mm;
+      height: 297mm;
+      flex-shrink: 0;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: grid;
+      grid-template-columns: repeat(3, 60.03mm);
+      grid-template-rows: repeat(8, 29.97mm);
+      gap: 4.91mm;
+      justify-content: center;
+      align-content: center;
+    }
+
+    /* CARTELLINO: bordo marrone sottile, contenuto allineato in basso a destra */
+    .cartellino {
+      width: 60.03mm;
+      height: 29.97mm;
+      border: 0.42mm solid var(--print-brown);
+      padding: 1.5mm 1.9mm 1.7mm;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      text-align: right;
+      background: #fff;
+      color: var(--print-brown);
+      overflow: hidden;
+    }
+
+    .cartellino.disabled { opacity: 0.15; filter: grayscale(1); }
+
+    /* Prezzo in Nevis Bold: cifre 25,33 pt, simbolo euro 18 pt (0,7106 em) */
+    .price {
+      font-family: 'Nevis', Arial, sans-serif;
+      font-weight: bold;
+      font-size: 25.33pt;
+      line-height: 1;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .price .currency { font-size: 0.7106em; margin-right: 0.06em; }
+
+    /* Testo descrittivo in Bodoni Std Bold Italic 15,19 pt */
+    .desc {
+      font-family: 'Bodoni Std', serif;
+      font-weight: bold;
+      font-style: italic;
+      font-size: 15.19pt;
+      line-height: 1.1;
+      margin-top: 0.9mm;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    /* NAVIGAZIONE */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: var(--gold);
+      color: #fffdfa;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(50,43,36,.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #c99c43;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(180, 139, 55, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1100px) {
+      .app-close-btn { width: 44px; height: 44px; font-size: 1.4rem; }
+      main { align-items: flex-start; }
+    }
+
+    /* REGOLA DI STAMPA */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      html, body {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      body { background: none; display: block; }
+      aside { display: none !important; }
+      main {
+        padding: 0;
+        background: none;
+        margin: 0;
+        display: block;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      .a4-portrait {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .cartellino.disabled { visibility: hidden; opacity: 0; }
+      .app-close-btn, .floating-nav-box { display: none !important; }
+      .sheet-wrap { margin: 0; }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        height: auto;
+        min-height: 100vh;
+        flex-direction: column;
+        overflow-x: hidden;
+        padding-bottom: 24px;
+      }
+
+      aside {
+        width: 100%;
+        max-height: none;
+        overflow: visible;
+        padding: 16px 12px;
+      }
+
+      main {
+        width: 100%;
+        min-height: 0;
+        padding: 12px;
+        overflow: auto;
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .sheet-wrap { zoom: 0.8; margin: 12px auto 0; }
+      .app-close-btn { top: 10px; right: 10px; width: 44px; height: 44px; }
+      .floating-nav-box { display: none; }
+      .btn-print, .tab-item { min-height: 44px; }
+    }
+
+    @media screen and (max-width: 600px) and (pointer: coarse) { .sheet-wrap { zoom: 0.62; } }
+    @media screen and (max-width: 430px) and (pointer: coarse) { .sheet-wrap { zoom: 0.45; } }
+    @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.38; } }
+
+  </style>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+</head>
+<body>
+  <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <a href="index.html?store=tebe" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
+
+  <aside>
+    <div class="brand-title">PREZZI VETRINA</div>
+
+    <div class="editor-section">
+      <div class="editor-title">Modifica Pagina</div>
+
+      <div class="form-group">
+        <label class="section-label" for="pricePreset">Fasce Prezzo</label>
+        <div class="preset-select">
+          <select id="pricePreset" class="form-control" onchange="applyPricePreset()">
+            <option value="">-- Seleziona una fascia --</option>
+            <optgroup label="Prezzi tondi">
+              <option value="10,00">€ 10,00</option>
+              <option value="20,00">€ 20,00</option>
+              <option value="30,00">€ 30,00</option>
+              <option value="40,00">€ 40,00</option>
+              <option value="50,00">€ 50,00</option>
+              <option value="60,00">€ 60,00</option>
+              <option value="70,00">€ 70,00</option>
+              <option value="80,00">€ 80,00</option>
+              <option value="90,00">€ 90,00</option>
+              <option value="99,00">€ 99,00</option>
+            </optgroup>
+            <optgroup label="Prezzi ,90">
+              <option value="19,90">€ 19,90</option>
+              <option value="29,90">€ 29,90</option>
+              <option value="39,90">€ 39,90</option>
+              <option value="49,90">€ 49,90</option>
+              <option value="59,90">€ 59,90</option>
+              <option value="69,90">€ 69,90</option>
+              <option value="79,90">€ 79,90</option>
+              <option value="89,90">€ 89,90</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs-grid" id="tabs-container"></div>
+
+    <div class="editor-section" id="editorPanel">
+      <div class="editor-title" id="editor-header">Modifica Colonna 1</div>
+
+      <div class="form-group">
+        <label for="inp-price">Prezzo</label>
+        <div class="currency-input-group">
+          <span class="currency-prefix">€</span>
+          <input type="text" id="inp-price" class="form-control" placeholder="30,00" inputmode="decimal" oninput="updateCurrentColumn()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="section-label" for="descriptionPreset">Promozione</label>
+        <div class="preset-select">
+          <select id="descriptionPreset" class="form-control" onchange="applyDescriptionPreset()">
+            <option value="">-- Seleziona un testo --</option>
+            <option value="Special Deal">Special Deal</option>
+            <option value="Final Price">Final Price</option>
+            <option value="Summer Sale">Summer Sale</option>
+            <option value="Spring Sale">Spring Sale</option>
+            <option value="Winter Sale">Winter Sale</option>
+            <option value="Black Friday">Black Friday</option>
+            <option value="Made in Italy">Made in Italy</option>
+            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="inp-desc">Testo Libero</label>
+        <input type="text" id="inp-desc" class="form-control" placeholder="-- Testo Libero --" oninput="updateCurrentColumn()">
+      </div>
+
+      <button class="btn-print" onclick="printCards()">Stampa Foglio A4</button>
+    </div>
+
+  </aside>
+
+  <main>
+    <div class="sheet-wrap">
+      <div class="a4-portrait" id="printable-grid"></div>
+    </div>
+  </main>
+
+  <script>
+    // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
+    // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
+    // Le Fasce prezzo invece cambiano il prezzo di tutta la pagina.
+    const COLUMN_COUNT = 3;
+    const ROW_COUNT = 8;
+    const columnsData = Array.from({ length: COLUMN_COUNT }, () => ({
+      enabled: true,
+      price: '30,00',
+      desc: 'Special Deal'
+    }));
+
+    let currentColumnIdx = 0;
+
+    function init() {
+      renderTabs();
+      renderGrid();
+      loadEditorData();
+      // Il ridimensionamento dei testi va rifatto quando i font locali sono caricati.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitAllCards);
+      }
+    }
+
+    // Linguette delle colonne: il clic seleziona la colonna da modificare, la casella la esclude dalla stampa.
+    function renderTabs() {
+      const container = document.getElementById('tabs-container');
+      container.innerHTML = '';
+      columnsData.forEach((column, index) => {
+        const item = document.createElement('div');
+        item.className = `tab-item ${index === currentColumnIdx ? 'active' : ''}`;
+        item.onclick = (e) => {
+          if (e.target.type !== 'checkbox') {
+            currentColumnIdx = index;
+            renderTabs();
+            loadEditorData();
+          }
+        };
+
+        const name = document.createElement('span');
+        name.textContent = `Colonna ${index + 1}`;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = column.enabled;
+        checkbox.title = 'Stampa questa colonna';
+        checkbox.onchange = () => toggleColumnEnabled(index, checkbox.checked);
+        item.append(name, checkbox);
+        container.appendChild(item);
+      });
+    }
+
+    function createElement(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text !== undefined) el.textContent = text;
+      return el;
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById('printable-grid');
+      grid.innerHTML = '';
+
+      // La griglia si riempie per righe: il cartellino i sta nella colonna i % 3.
+      for (let index = 0; index < COLUMN_COUNT * ROW_COUNT; index++) {
+        const column = columnsData[index % COLUMN_COUNT];
+        const el = createElement('div', `cartellino ${!column.enabled ? 'disabled' : ''}`);
+
+        const price = createElement('div', 'price');
+        if (column.price) {
+          price.append(createElement('span', 'currency', '€'), createElement('span', 'amount', column.price));
+        }
+
+        el.append(price, createElement('div', 'desc', column.desc));
+        grid.appendChild(el);
+      }
+
+      fitAllCards();
+    }
+
+    // Riduce il corpo del testo finché non entra nella larghezza del cartellino.
+    function fitText(el, maxPt, minPt) {
+      if (!el) return;
+      let size = maxPt;
+      el.style.fontSize = `${size}pt`;
+      while (size > minPt && el.scrollWidth > el.clientWidth + 0.5) {
+        size -= 0.5;
+        el.style.fontSize = `${size}pt`;
+      }
+    }
+
+    // Allinea a destra l'inchiostro, non la larghezza del carattere: lo spazio vuoto a destra
+    // dell'ultima cifra (Nevis) e la sporgenza del corsivo (Bodoni) vengono compensati,
+    // così l'ultimo zero del prezzo cade esattamente sopra l'ultima lettera del testo.
+    const measureContext = document.createElement('canvas').getContext('2d');
+
+    function resetInkAlignment(el) {
+      if (!el) return;
+      el.style.marginRight = '0px';
+      el.style.paddingRight = '0px';
+    }
+
+    function alignInkRight(el) {
+      if (!el) return;
+      resetInkAlignment(el);
+      const text = el.textContent;
+      if (!text) return;
+      const style = getComputedStyle(el.lastElementChild || el);
+      measureContext.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const lastChar = text.trimEnd().slice(-1);
+      const metrics = measureContext.measureText(lastChar);
+      const rightGap = metrics.width - metrics.actualBoundingBoxRight;
+      // Spazio vuoto: il riquadro sborda a destra. Sporgenza del corsivo: il riquadro si allarga,
+      // così l'inchiostro non viene tagliato dall'overflow nascosto.
+      if (rightGap > 0) {
+        el.style.marginRight = `${-rightGap}px`;
+      } else {
+        el.style.paddingRight = `${-rightGap}px`;
+      }
+    }
+
+    function fitAllCards() {
+      document.querySelectorAll('.cartellino').forEach(card => {
+        resetInkAlignment(card.querySelector('.price'));
+        resetInkAlignment(card.querySelector('.desc'));
+        fitText(card.querySelector('.price'), 25.33, 14);
+        fitText(card.querySelector('.desc'), 15.19, 8);
+        alignInkRight(card.querySelector('.price'));
+        alignInkRight(card.querySelector('.desc'));
+      });
+    }
+
+    function printCards() {
+      const fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+      fontsReady
+        .then(() => {
+          fitAllCards();
+          window.print();
+        })
+        .catch(error => console.error('Preparazione della stampa fallita.', error));
+    }
+
+    function loadEditorData() {
+      const column = columnsData[currentColumnIdx];
+      document.getElementById('editor-header').textContent = `Modifica Colonna ${currentColumnIdx + 1}`;
+      document.getElementById('inp-price').value = column.price;
+      document.getElementById('inp-desc').value = column.desc;
+    }
+
+    function updateCurrentColumn() {
+      const column = columnsData[currentColumnIdx];
+      column.price = document.getElementById('inp-price').value;
+      column.desc = document.getElementById('inp-desc').value;
+      renderGrid();
+    }
+
+    // La fascia scelta imposta lo stesso prezzo su tutte le colonne insieme.
+    function applyPricePreset() {
+      const select = document.getElementById('pricePreset');
+      if (!select.value) return;
+      columnsData.forEach(column => { column.price = select.value; });
+      document.getElementById('inp-price').value = select.value;
+      select.value = '';
+      renderGrid();
+    }
+
+    // Il testo scelto riempie il campo libero, che resta modificabile a mano.
+    function applyDescriptionPreset() {
+      const preset = document.getElementById('descriptionPreset').value;
+      if (preset) {
+        document.getElementById('inp-desc').value = preset;
+        document.getElementById('descriptionPreset').value = '';
+        updateCurrentColumn();
+      }
+    }
+
+    function toggleColumnEnabled(index, enabled) {
+      columnsData[index].enabled = enabled;
+      renderGrid();
+    }
+
+    init();
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
+    // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
+    const firstCardOfColumn = () => document.querySelectorAll('#printable-grid .cartellino')[currentColumnIdx];
+    const inFirstCard = selector => () => firstCardOfColumn()?.querySelector(selector);
+
+    Cursore.create({
+      panel: 'aside',
+      watch: '#printable-grid',
+      clip: 'main',
+      // ogni triangolo resta nel suo cartellino e non copre prezzo e testo
+      scope: target => target?.closest('.cartellino'),
+      obstacles: target => target?.closest('.cartellino')?.querySelectorAll('.price, .desc') || [],
+      rules: [
+        { controls: '.tab-item', target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 },
+        // Fasce prezzo cambia tutte le colonne: un triangolo sopra ciascuna colonna, come per le linguette
+        { controls: '#pricePreset', target: () => [...document.querySelectorAll('#printable-grid .cartellino')].slice(0, COLUMN_COUNT), placement: 'above', gap: 3.2 * 96 / 25.4 },
+        { controls: '#inp-price', target: inFirstCard('.price') },
+        { controls: '#descriptionPreset, #inp-desc', target: inFirstCard('.desc') }
+      ]
+    }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
+  </script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-16" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+</body>
+</html>

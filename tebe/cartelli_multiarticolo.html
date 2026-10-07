@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="tebe">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <title>Cartello Multi Articolo</title>
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    /* Sfondo principale UI */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f6f1;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Contenitore Pannelli di Sinistra */
+    .sidebar {
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Pannelli di Controllo */
+    .controls {
+      background: #fffdfa;
+      color: #282522;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: none;
+      border: 1px solid #e3dacb;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #b49a62;
+      border-bottom: 1px solid #e3dacb;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-label {
+      color: #8a6a35;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    /* SELETTORI MODALITA' E RIGHE */
+    .mode-switch,
+    .row-selector {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: #f3ede0;
+      border: 1px solid #e3dacb;
+      border-radius: 6px;
+      margin-bottom: 0.8rem;
+    }
+
+    .mode-switch button,
+    .row-selector button {
+      flex: 1;
+      border: 0;
+      background: transparent;
+      padding: 9px 8px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #8a7f6e;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: normal;
+    }
+
+    .mode-switch button.active,
+    .row-selector button.active {
+      background: #fffdfa;
+      color: #282522;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
+       (i margini si sommano a quello del titolo: vale il maggiore) */
+    .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 1rem; }
+
+    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
+       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: normal;
+      margin-bottom: 0.35rem;
+      color: #665e54;
+    }
+
+    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
+       pulsanti sotto il pannello */
+    .form-group .section-label {
+      color: #b49a62;
+      font-weight: normal;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background-color: #f8f6f1;
+      color: #282522;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .preset-select {
+      position: relative;
+      margin-bottom: 0.8rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background-color: #f8f6f1;
+      overflow: hidden;
+    }
+
+    .preset-select:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .form-group .preset-select select {
+      appearance: none;
+      margin-bottom: 0;
+      padding-right: 2rem;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .form-group .preset-select select:focus {
+      border: none;
+      box-shadow: none;
+    }
+
+    .preset-select::after {
+      content: '▼';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    /* CAMPO PERCENTUALE CON FRECCE */
+    .percent-input-wrapper {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background-color: #f8f6f1;
+      overflow: hidden;
+    }
+
+    .percent-input-wrapper:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .percent-input-wrapper input#discountValue {
+      flex: 1 1 auto;
+      width: auto;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 0.45rem 0 0.45rem 0.45rem;
+      -moz-appearance: textfield;
+    }
+
+    .percent-input-wrapper input#discountValue:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .percent-input-wrapper input#discountValue::-webkit-outer-spin-button,
+    .percent-input-wrapper input#discountValue::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .percent-input-wrapper .percent-stepper {
+      flex: 0 0 1.6rem;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e3dacb;
+      overflow: hidden;
+    }
+
+    .percent-input-wrapper .percent-stepper button {
+      flex: 1;
+      border: none;
+      border-bottom: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      cursor: pointer;
+      font-size: 0.6rem;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .percent-input-wrapper .percent-stepper button:last-child { border-bottom: none; }
+
+    .percent-input-wrapper .percent-stepper button:hover {
+      background: #e3dacb;
+      color: #8a6a35;
+    }
+
+    /* PULSANTE STAMPA */
+    .btn-print {
+      width: 100%;
+      background-color: #96382b;
+      color: #fffdfa;
+      border: 1px solid #96382b;
+      padding: 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0;
+      transition: background-color 0.2s;
+    }
+
+    .btn-print:hover { background-color: #7a2d22; }
+
+    /* FOGLIO STAMPA A4 */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      box-shadow: 0 20px 60px rgba(40,34,28,.18);
+      padding: 14.56mm 0 0 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* CARTELLO */
+    .card {
+      width: 210mm;
+      height: 118.35mm;
+      border: 0.34mm solid #9d9490;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      padding: 4mm 12mm;
+      box-sizing: border-box;
+    }
+
+    #cardBottom {
+      border-bottom: none;
+      transform: rotate(180deg);
+    }
+
+    /* CONTENITORE BLOCCO INTERNO PER TRASLAZIONE VERSO L'ALTO */
+    .card-content {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-6mm);
+    }
+
+    .sale-label {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 46pt;
+      color: #c49f3f;
+      line-height: 1;
+      text-align: center;
+      letter-spacing: -0.05em;
+      transition: all 0.3s ease;
+    }
+
+    .items-table-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .card-logo {
+      width: 38mm;
+      height: auto;
+      transition: all 0.3s ease;
+    }
+
+    /* MOVIMENTO DINAMICO DELLE SPAZIATURE E DISTANZIAMENTO LOGO */
+    .card.rows-2 .sale-label { margin-bottom: 1mm; }
+    .card.rows-2 .items-table-wrapper { margin: 1mm 0; width: 100%; }
+    .card.rows-2 .card-logo { margin-top: 4mm; }
+
+    .card.rows-3 .sale-label { margin-bottom: 4mm; }
+    .card.rows-3 .items-table-wrapper { margin: 3mm 0; }
+    .card.rows-3 .card-logo { margin-top: 8mm; }
+
+    .card.rows-4 .sale-label { margin-bottom: 5mm; }
+    .card.rows-4 .items-table-wrapper { margin: 1mm 0; }
+    .card.rows-4 .card-logo { margin-top: 9mm; }
+
+    /* LAYOUT A 2 ARTICOLI (DUE COLONNE AFFIANCATE CON ARIAL REGULAR E SPACING -50) */
+    .dual-items-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin: 2mm 0;
+    }
+
+    .item-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4mm;
+    }
+
+    .vertical-divider {
+      width: 1px;
+      height: 42mm;
+      background-color: rgba(40, 37, 34, 0.15);
+      flex-shrink: 0;
+    }
+
+    .item-column .item-title {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 22pt;
+      color: #282522;
+      margin-bottom: 2mm;
+      text-align: center;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+
+    .item-column .price-row-old {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 16pt;
+      margin-bottom: 2mm;
+      letter-spacing: -0.05em;
+    }
+
+    .item-column .price-original {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      color: #282522;
+      text-decoration: line-through;
+      text-decoration-color: #c49f3f;
+      text-decoration-thickness: 2px;
+    }
+
+    .item-column .discount-tag {
+      font-family: Arial, Helvetica, sans-serif;
+      color: #c49f3f;
+      font-weight: 700;
+    }
+
+    .item-column .price-final {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 42pt;
+      font-weight: 400;
+      color: #282522;
+      line-height: 0.9;
+      text-align: center;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+    }
+
+    /* TABELLA PRODOTTI ADATTIVA (PER 3 E 4 ARTICOLI) */
+    .items-table {
+      border-collapse: collapse;
+      table-layout: auto;
+      margin: 0 auto;
+    }
+
+    .items-table td {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 400;
+      font-size: 20pt;
+      line-height: 1.2;
+      white-space: nowrap;
+      letter-spacing: -0.05em;
+      transition: padding 0.3s ease;
+    }
+
+    .items-table.rows-3 td { padding-top: 1.5mm; padding-bottom: 1.5mm; }
+    .items-table.rows-4 td { padding-top: 0.5mm; padding-bottom: 0.5mm; }
+
+    /* DESCRIZIONE: DIMEZZATA A 21MM DI DISTANZA DAL PREZZO */
+    .col-desc {
+      text-align: left;
+      padding-right: 21mm;
+      color: #1a1a1a;
+      white-space: nowrap;
+    }
+
+    /* PREZZO ORIGINARIO */
+    .col-old-price {
+      text-align: right;
+      padding-right: 4mm;
+      color: #1a1a1a;
+      text-decoration: line-through;
+      text-decoration-color: #c49f3f;
+      text-decoration-thickness: 2.5px;
+      min-width: 28mm;
+    }
+
+    /* PERCENTUALE SCONTO DORATA IN GRASSETTO */
+    .col-discount {
+      text-align: center;
+      padding: 0 3mm;
+      color: #c49f3f;
+      font-weight: 700;
+      min-width: 22mm;
+    }
+
+    .col-new-price {
+      text-align: right;
+      padding-left: 2mm;
+      color: #1a1a1a;
+      min-width: 28mm;
+    }
+
+    /* NAVIGAZIONE UI */
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      background-color: #b49a62;
+      color: #fffdfa;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      transition: transform 0.2s, background-color 0.2s;
+      z-index: 1000;
+      text-decoration: none;
+    }
+
+    .app-close-btn:hover {
+      background-color: #8a6a35;
+      transform: scale(1.1);
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: #fffdfa;
+      border: 1px solid #b49a62;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      font-size: 0.65rem;
+      color: #8a6a35;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      padding-bottom: 3px;
+    }
+
+    .floating-nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #282522;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .floating-nav-btn:hover {
+      color: #8a6a35;
+      transform: translateX(-2px);
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 0 auto !important;
+        padding: 14.56mm 0 0 0 !important;
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .sale-label, .col-discount, .col-old-price, .discount-tag, .card-logo {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body { align-items: center; flex-direction: column; gap: 14px; overflow-x: hidden; padding: 20px 20px 84px; }
+      .sidebar { width: 100%; max-width: 560px; }
+      .print-sheet { zoom: 1; margin: 0 auto; }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 12px;
+        overflow-x: hidden;
+        padding: 12px 12px 24px;
+      }
+
+      .sidebar { width: 100%; max-width: 560px; }
+      .controls { width: 100%; }
+      .form-group input, .form-group select { font-size: 16px; }
+      .mode-switch button, .row-selector button { min-height: 44px; }
+      .print-sheet { zoom: 0.75; margin: 0 auto; }
+      .app-close-btn { top: 10px; right: 10px; width: 44px; height: 44px; }
+      .floating-nav-box { display: none; }
+    }
+
+    @media screen and (max-width: 680px) and (pointer: coarse) { .print-sheet { zoom: 0.64; } }
+    @media screen and (max-width: 530px) and (pointer: coarse) { .print-sheet { zoom: 0.53; } }
+    @media screen and (max-width: 420px) and (pointer: coarse) { .print-sheet { zoom: 0.40; } }
+    @media screen and (max-width: 360px) and (pointer: coarse) { .print-sheet { zoom: 0.34; } }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      .controls { padding: 12px 12px 12px; }
+      .controls h1, .controls h2 {
+        font-size: 0.95rem;
+        padding-bottom: 12px;
+        margin-bottom: 0.55rem;
+      }
+      /* Pannello piu' compatto: su cellulare pannello e foglio devono
+         stare in poco piu' di una schermata. */
+      .form-group, .preset-select, .mode-switch, .row-selector { margin-bottom: 0.55rem; }
+      .form-group label, .section-label {
+        font-size: 0.68rem;
+        margin-bottom: 0.18rem;
+      }
+      .form-group input, .form-group select, .preset-select select {
+        padding: 6px 8px;
+      }
+      .mode-switch button, .row-selector button, .card-selector button {
+        min-height: 36px;
+        padding: 6px;
+        font-size: 0.64rem;
+      }
+      .btn-print { margin-top: 0; padding: 9px; }
+      .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+</head>
+<body>
+
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <a href="index.html?store=tebe" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
+
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Cartello Multi Articolo</h2>
+
+      <div class="mode-switch">
+        <button type="button" id="btnNum2" onclick="setNumArticles(2)">2 Articoli</button>
+        <button type="button" id="btnNum3" class="active" onclick="setNumArticles(3)">3 Articoli</button>
+        <button type="button" id="btnNum4" onclick="setNumArticles(4)">4 Articoli</button>
+      </div>
+
+      <div class="row-selector" id="rowSelectorContainer">
+        <!-- Generati dinamicamente via JS -->
+      </div>
+
+      <!-- Form per la riga attiva -->
+      <div class="form-group">
+        <label class="section-label" for="descPreset">Articoli</label>
+        <div class="preset-select">
+          <select id="descPreset" onchange="applyDescPreset()">
+            <option value="">-- Seleziona un articolo --</option>
+            <option value="Abito">Abito</option>
+            <option value="Bermuda">Bermuda</option>
+            <option value="Blusa">Blusa</option>
+            <option value="Borsa">Borsa</option>
+            <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+            <option value="Camicia">Camicia</option>
+            <option value="Cappello">Cappello</option>
+            <option value="Cappotto">Cappotto</option>
+            <option value="Cardigan">Cardigan</option>
+            <option value="Cintura">Cintura</option>
+            <option value="Coprispalle">Coprispalle</option>
+            <option value="Foulard">Foulard</option>
+            <option value="Giacca">Giacca</option>
+            <option value="Gilet">Gilet</option>
+            <option value="Gonna">Gonna</option>
+            <option value="Jeans">Jeans</option>
+            <option value="Maglia">Maglia</option>
+            <option value="Occhiali">Occhiali</option>
+            <option value="Pantaloncino">Pantaloncino</option>
+            <option value="Pantalone">Pantalone</option>
+            <option value="Shorts">Shorts</option>
+            <option value="T-Shirt">T-Shirt</option>
+            <option value="Top">Top</option>
+            <option value="Tutina">Tutina</option>
+          </select>
+        </div>
+        <label for="descFree">Testo Libero</label>
+        <input type="text" id="descFree" value="" maxlength="25" placeholder="-- Testo Libero (Max 25 ch) --" oninput="onInputDesc()">
+      </div>
+
+      <div class="form-group">
+        <label>Prezzo Originario</label>
+        <input type="text" id="oldPrice" value="" placeholder="es. 49,90" oninput="onInputOldPrice()">
+      </div>
+
+      <div class="form-group">
+        <label class="section-label" for="discountValue">Percentuale Sconto</label>
+        <div class="percent-input-wrapper">
+          <input type="number" id="discountValue" value="20" min="1" max="99" oninput="onInputDiscount()">
+          <div class="percent-stepper">
+            <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
+            <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Prezzo Finale</label>
+        <input type="text" id="newPrice" value="" placeholder="es. 39,90" oninput="onInputNewPrice()">
+      </div>
+
+      <button class="btn-print" onclick="window.print()">Stampa Cartello (A4)</button>
+    </div>
+  </div>
+
+  <!-- AREA STAMPA A4 -->
+  <div class="print-sheet" id="printSheet">
+    <!-- Cartello Superiore -->
+    <div class="card rows-3" id="cardTop">
+      <div class="card-content">
+        <div class="sale-label">Sale</div>
+        <div class="items-table-wrapper">
+          <div id="itemsContainerTop" style="width:100%;"></div>
+        </div>
+        <img class="card-logo" src="../assets/img/tebe/footer_tebe.png" alt="TEBE">
+      </div>
+    </div>
+
+    <!-- Cartello Inferiore Ruotato 180° -->
+    <div class="card rows-3" id="cardBottom">
+      <div class="card-content">
+        <div class="sale-label">Sale</div>
+        <div class="items-table-wrapper">
+          <div id="itemsContainerBottom" style="width:100%;"></div>
+        </div>
+        <img class="card-logo" src="../assets/img/tebe/footer_tebe.png" alt="TEBE">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let articles = [
+      { desc: 'Top', oldPrice: '49,90', discount: '20', newPrice: '39,90' },
+      { desc: 'Camicia', oldPrice: '59,90', discount: '23', newPrice: '46,90' },
+      { desc: 'Pantalone', oldPrice: '75,90', discount: '20', newPrice: '59,90' },
+      { desc: 'Abito', oldPrice: '89,90', discount: '20', newPrice: '71,90' }
+    ];
+
+    let numArticles = 3;  
+    let activeRowIndex = 0; 
+
+    function setNumArticles(n) {
+      numArticles = n;
+      document.getElementById('btnNum2').classList.toggle('active', n === 2);
+      document.getElementById('btnNum3').classList.toggle('active', n === 3);
+      document.getElementById('btnNum4').classList.toggle('active', n === 4);
+
+      if (activeRowIndex >= numArticles) {
+        activeRowIndex = numArticles - 1;
+      }
+      renderRowSelector();
+      loadActiveRowIntoForm();
+      updateCards();
+    }
+
+    function renderRowSelector() {
+      const container = document.getElementById('rowSelectorContainer');
+      container.innerHTML = '';
+      for (let i = 0; i < numArticles; i++) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = `Riga ${i + 1}`;
+        if (i === activeRowIndex) btn.classList.add('active');
+        btn.onclick = () => selectRow(i);
+        container.appendChild(btn);
+      }
+    }
+
+    function selectRow(index) {
+      activeRowIndex = index;
+      renderRowSelector();
+      loadActiveRowIntoForm();
+    }
+
+    function loadActiveRowIntoForm() {
+      const art = articles[activeRowIndex];
+      document.getElementById('descFree').value = art.desc;
+      document.getElementById('descPreset').value = '';
+      document.getElementById('oldPrice').value = art.oldPrice;
+      document.getElementById('discountValue').value = art.discount;
+      document.getElementById('newPrice').value = art.newPrice;
+    }
+
+    function applyDescPreset() {
+      const preset = document.getElementById('descPreset').value;
+      if (preset) {
+        const truncated = preset.slice(0, 25);
+        document.getElementById('descFree').value = truncated;
+        articles[activeRowIndex].desc = truncated;
+        updateCards();
+      }
+    }
+
+    function onInputDesc() {
+      const input = document.getElementById('descFree');
+      if (input.value.length > 25) {
+        input.value = input.value.slice(0, 25);
+      }
+      articles[activeRowIndex].desc = input.value;
+      updateCards();
+    }
+
+    function onInputOldPrice() {
+      articles[activeRowIndex].oldPrice = document.getElementById('oldPrice').value;
+      updateCards();
+    }
+
+    function onInputDiscount() {
+      articles[activeRowIndex].discount = document.getElementById('discountValue').value;
+      updateCards();
+    }
+
+    function stepDiscount(delta) {
+      const input = document.getElementById('discountValue');
+      const min = Number.parseInt(input.min, 10) || 1;
+      const max = Number.parseInt(input.max, 10) || 99;
+      let val = Number.parseInt(input.value, 10);
+      if (Number.isNaN(val)) val = min;
+      val = Math.min(max, Math.max(min, val + delta));
+      input.value = val;
+      onInputDiscount();
+    }
+
+    function onInputNewPrice() {
+      articles[activeRowIndex].newPrice = document.getElementById('newPrice').value;
+      updateCards();
+    }
+
+    function updateCards() {
+      document.getElementById('cardTop').className = `card rows-${numArticles}`;
+      document.getElementById('cardBottom').className = `card rows-${numArticles}`;
+
+      let html = '';
+
+      if (numArticles === 2) {
+        // Layout Eccezione per 2 Articoli (Articolo 1 a sinistra, Articolo 2 a destra)
+        const art0 = articles[0]; // Sinistra
+        const art1 = articles[1]; // Destra
+        
+        const oldP0 = art0.oldPrice ? `€ ${art0.oldPrice}` : '';
+        const disc0 = art0.discount ? `-${art0.discount}%` : '';
+        const newP0 = art0.newPrice ? `€ ${art0.newPrice}` : '';
+
+        const oldP1 = art1.oldPrice ? `€ ${art1.oldPrice}` : '';
+        const disc1 = art1.discount ? `-${art1.discount}%` : '';
+        const newP1 = art1.newPrice ? `€ ${art1.newPrice}` : '';
+
+        html = `
+          <div class="dual-items-container">
+            <div class="item-column">
+              <div class="item-title">${art0.desc || ''}</div>
+              <div class="price-row-old">
+                <span class="price-original">${oldP0}</span>
+                <span class="discount-tag">${disc0}</span>
+              </div>
+              <div class="price-final">${newP0}</div>
+            </div>
+            <div class="vertical-divider"></div>
+            <div class="item-column">
+              <div class="item-title">${art1.desc || ''}</div>
+              <div class="price-row-old">
+                <span class="price-original">${oldP1}</span>
+                <span class="discount-tag">${disc1}</span>
+              </div>
+              <div class="price-final">${newP1}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        // Layout Standard per 3 o 4 Articoli (Tabella)
+        html = `<table class="items-table rows-${numArticles}"><tbody>`;
+        for (let i = 0; i < numArticles; i++) {
+          const art = articles[i];
+          const oldP = art.oldPrice ? `€ ${art.oldPrice}` : '';
+          const disc = art.discount ? `-${art.discount}%` : '';
+          const newP = art.newPrice ? `€ ${art.newPrice}` : '';
+
+          html += `
+            <tr>
+              <td class="col-desc">${art.desc || ''}</td>
+              <td class="col-old-price">${oldP}</td>
+              <td class="col-discount">${disc}</td>
+              <td class="col-new-price">${newP}</td>
+            </tr>
+          `;
+        }
+        html += '</tbody></table>';
+      }
+
+      document.getElementById('itemsContainerTop').innerHTML = html;
+      document.getElementById('itemsContainerBottom').innerHTML = html;
+    }
+
+    renderRowSelector();
+    loadActiveRowIntoForm();
+    updateCards();
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore: indica sulla metà superiore del cartello l'articolo (riga) in modifica e i suoi valori.
+    // Con 2 articoli ogni articolo è una colonna, con 3-4 una riga della tabella.
+    const activeArticle = () => numArticles === 2
+      ? document.querySelectorAll('#itemsContainerTop .item-column')[activeRowIndex]
+      : document.querySelectorAll('#itemsContainerTop tr')[activeRowIndex];
+    const inArticle = (twoSelector, tableSelector) => () => activeArticle()?.querySelector(numArticles === 2 ? twoSelector : tableSelector);
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: '#cardTop',
+      obstacles: '#cardTop .sale-label, #cardTop .card-logo, #itemsContainerTop td, #itemsContainerTop .item-title, #itemsContainerTop .price-original, #itemsContainerTop .discount-tag, #itemsContainerTop .price-final',
+      rules: [
+        // numero di articoli: dall'alto, sopra il cartello intero (sopra la tabella coprirebbe "Sale")
+        { controls: '#btnNum2, #btnNum3, #btnNum4', target: '#cardTop', placement: 'above' },
+        { controls: '#rowSelectorContainer', target: inArticle('.item-title', '.col-desc'), placement: 'side' },
+        { controls: '#descPreset, #descFree', target: inArticle('.item-title', '.col-desc') },
+        { controls: '#oldPrice', target: inArticle('.price-original', '.col-old-price') },
+        { controls: '#discountValue, button[onclick^="stepDiscount"]', target: inArticle('.discount-tag', '.col-discount') },
+        { controls: '#newPrice', target: inArticle('.price-final', '.col-new-price') }
+      ]
+    });
+  </script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-16"></script>
+</body>
+</html>

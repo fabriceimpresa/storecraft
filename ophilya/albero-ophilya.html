@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="ophilya">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <title>Albero Accessori · OPHILYA</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      background: #f8f6f1;
+      color: #282522;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      flex: 0 1 360px;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .controls {
+      padding: 1rem;
+      border: 1px solid #e3dacb;
+      border-radius: 8px;
+      background: #fffdfa;
+    }
+
+    .controls h1 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid #e3dacb;
+      color: #b49a62;
+      font-size: 1.1rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section-label {
+      margin-bottom: 0.35rem;
+      color: #8a6a35;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .card-selector {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.8rem;
+      padding: 4px;
+      border: 1px solid #e3dacb;
+      border-radius: 6px;
+      background: #f3ede0;
+    }
+
+    .card-selector button {
+      flex: 1;
+      padding: 9px 8px;
+      border: 0;
+      border-radius: 4px;
+      background: transparent;
+      color: #8a7f6e;
+      font: 600 0.78rem Arial, Helvetica, sans-serif;
+      cursor: pointer;
+    }
+
+    .card-selector button.active {
+      background: #fffdfa;
+      color: #282522;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
+       (i margini si sommano a quello del titolo: vale il maggiore) */
+    .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 1rem; }
+
+    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
+       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.35rem;
+      color: #665e54;
+      font-size: 0.72rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background: #f8f6f1;
+      color: #282522;
+      font: 0.82rem Arial, Helvetica, sans-serif;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    /* Titoli dei menu a discesa: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
+    .form-group .section-label {
+      color: #b49a62;
+      font-weight: normal;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    /* Menu a discesa con la casella del triangolo a destra, come nelle altre pagine */
+    .preset-select {
+      position: relative;
+      margin-bottom: 0.8rem;
+      overflow: hidden;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background: #f8f6f1;
+    }
+
+    .preset-select:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .preset-select select {
+      width: 100%;
+      padding: 0.45rem 2rem 0.45rem 0.45rem;
+      border: none;
+      background: transparent;
+      color: #282522;
+      font: 0.82rem Arial, Helvetica, sans-serif;
+      appearance: none;
+    }
+
+    .preset-select select:focus { outline: none; }
+
+    .preset-select::after {
+      content: '▼';
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      pointer-events: none;
+    }
+
+    .btn-print {
+      width: 100%;
+      margin-top: 0;
+      padding: 10px;
+      border: 1px solid #96382b;
+      border-radius: 4px;
+      background: #96382b;
+      color: #fffdfa;
+      font: 700 0.78rem Arial, Helvetica, sans-serif;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-print:hover { background: #7a2d22; }
+
+    .preview-area {
+      flex: 0 0 210mm;
+      width: 210mm;
+      display: flex;
+      align-items: flex-start;
+      overflow: auto;
+    }
+
+    .print-sheet {
+      position: relative;
+      width: 210mm;
+      height: 297mm;
+      flex: 0 0 auto;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(40, 34, 28, 0.18);
+    }
+
+    /* Cartellini OPHILYA: misure da Photoshop a 300 dpi (1971,53 × 990,16 px). Due cartellini, ciascuno centrato
+       nella sua metà dell'A4, con la linea di taglio tratteggiata a metà foglio (come nei Paletti) */
+    .tree-sign {
+      position: absolute;
+      left: 21.54mm;
+      width: 166.92mm;
+      height: 83.83mm;
+      overflow: hidden;
+      border: 0.25mm solid #8f8983;
+      background: #fff;
+      text-align: center;
+    }
+
+    .tree-sign:nth-child(1) { top: 32.34mm; }
+    .tree-sign:nth-child(2) { top: 180.84mm; }
+
+    .cut-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      border-top: 0.2mm dashed #aaa;
+    }
+
+    .sign-description {
+      position: absolute;
+      top: 14.92mm;
+      right: 3mm;
+      left: 3mm;
+      overflow: hidden;
+      color: #000;
+      font: 400 24.48pt/1.1 Arial, Helvetica, sans-serif;
+      letter-spacing: -0.05em;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    .sign-price {
+      position: absolute;
+      top: 27.62mm;
+      right: 2mm;
+      left: 2mm;
+      overflow: hidden;
+      color: #000;
+      font: 400 76.7pt/1 Arial, Helvetica, sans-serif;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+    }
+
+    .sign-logo {
+      position: absolute;
+      bottom: 20.72mm;
+      left: 50%;
+      /* logo OPHILYA oro, un poco più grande del logo TEBE di Albero Accessori */
+      width: 31mm;
+      height: auto;
+      object-fit: contain;
+      transform: translateX(-50%);
+    }
+
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      display: flex;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #b49a62;
+      color: #fffdfa;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid #b49a62;
+      border-radius: 8px;
+      background: #fffdfa;
+    }
+
+    .floating-nav-title {
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      color: #8a6a35;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    .floating-nav-btn {
+      color: #282522;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      body { display: block; }
+      .sidebar, .app-close-btn, .floating-nav-box { display: none !important; }
+
+      .preview-area {
+        display: block;
+        width: 210mm;
+        height: 297mm;
+        overflow: hidden;
+      }
+
+      .print-sheet {
+        width: 210mm;
+        height: 297mm !important;
+        margin: 0;
+        box-shadow: none;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 14px;
+        overflow-x: hidden;
+        padding: 20px 20px 84px;
+      }
+      .sidebar { flex: 0 0 auto; width: 100%; max-width: 560px; }
+      .preview-area {
+        flex: 0 1 auto;
+        width: 100%;
+        justify-content: center;
+        overflow: visible;
+      }
+      .print-sheet { zoom: 1; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 12px; }
+      .sidebar { flex-basis: 300px; }
+      .preview-area { padding-bottom: 12px; }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 12px;
+        overflow-x: hidden;
+        padding: 12px 12px 24px;
+      }
+      .sidebar { flex: 0 0 auto; width: 100%; max-width: 560px; }
+      .preview-area {
+        flex: 0 1 auto;
+        width: 100%;
+        justify-content: center;
+        overflow: visible;
+        padding-bottom: 12px;
+      }
+      .form-group input, .preset-select select { font-size: 16px; }
+      .card-selector button { min-height: 44px; }
+      .print-sheet { zoom: 0.75; }
+      .app-close-btn { top: 10px; right: 4px; width: 44px; height: 44px; }
+      .floating-nav-box { display: none; }
+    }
+
+    @media screen and (max-width: 680px) and (pointer: coarse) { .print-sheet { zoom: 0.64; } }
+    @media screen and (max-width: 530px) and (pointer: coarse) { .print-sheet { zoom: 0.53; } }
+    @media screen and (max-width: 420px) and (pointer: coarse) { .print-sheet { zoom: 0.40; } }
+    @media screen and (max-width: 360px) and (pointer: coarse) { .print-sheet { zoom: 0.34; } }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      .controls { padding: 12px 12px 12px; }
+      .controls h1, .controls h2 {
+        font-size: 0.95rem;
+        padding-bottom: 12px;
+        margin-bottom: 0.55rem;
+      }
+      /* Pannello piu' compatto: su cellulare pannello e foglio devono
+         stare in poco piu' di una schermata. */
+      .form-group, .card-selector, .preset-select { margin-bottom: 0.55rem; }
+      .form-group label, .section-label {
+        font-size: 0.68rem;
+        margin-bottom: 0.18rem;
+      }
+      .form-group input, .form-group select, .preset-select select {
+        padding: 6px 8px;
+      }
+      .mode-switch button, .row-selector button, .card-selector button {
+        min-height: 36px;
+        padding: 6px;
+        font-size: 0.64rem;
+      }
+      .btn-print { margin-top: 0; padding: 9px; }
+      .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 0.7rem; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+</head>
+<body>
+  <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna al menu principale">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <a href="index.html?store=ophilya" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
+
+  <aside class="sidebar">
+    <section class="controls" aria-labelledby="pageTitle">
+      <h1 id="pageTitle">Albero Accessori</h1>
+
+      <div class="card-selector" role="group" aria-label="Cartello in modifica">
+        <button type="button" class="active" aria-pressed="true" onclick="selectSign(0)">1</button>
+        <button type="button" aria-pressed="false" onclick="selectSign(1)">2</button>
+      </div>
+
+      <div class="form-group">
+        <label class="section-label" for="descPreset">Testi Pronti</label>
+        <div class="preset-select">
+          <select id="descPreset" onchange="applyDescPreset()">
+            <option value="">-- Seleziona un testo --</option>
+            <optgroup label="Articoli">
+              <option value="Abito">Abito</option>
+              <option value="Bermuda">Bermuda</option>
+              <option value="Blusa">Blusa</option>
+              <option value="Borsa">Borsa</option>
+              <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
+              <option value="Camicia">Camicia</option>
+              <option value="Cappello">Cappello</option>
+              <option value="Cappotto">Cappotto</option>
+              <option value="Cardigan">Cardigan</option>
+              <option value="Cintura">Cintura</option>
+              <option value="Coprispalle">Coprispalle</option>
+              <option value="Foulard">Foulard</option>
+              <option value="Giacca">Giacca</option>
+              <option value="Gilet">Gilet</option>
+              <option value="Gonna">Gonna</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Maglia">Maglia</option>
+              <option value="Occhiali">Occhiali</option>
+              <option value="Pantaloncino">Pantaloncino</option>
+              <option value="Pantalone">Pantalone</option>
+              <option value="Shorts">Shorts</option>
+              <option value="T-Shirt">T-Shirt</option>
+              <option value="Top">Top</option>
+              <option value="Tutina">Tutina</option>
+            </optgroup>
+            <optgroup label="Promozioni">
+              <option value="Special Deal">Special Deal</option>
+              <option value="Final Price">Final Price</option>
+              <option value="Summer Sale">Summer Sale</option>
+              <option value="Spring Sale">Spring Sale</option>
+              <option value="Winter Sale">Winter Sale</option>
+              <option value="Black Friday">Black Friday</option>
+              <option value="Made in Italy">Made in Italy</option>
+              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            </optgroup>
+          </select>
+        </div>
+        <label for="descriptionInput">Testo Libero</label>
+        <input id="descriptionInput" type="text" value="Foulard" maxlength="80" oninput="updateActiveSign()">
+      </div>
+
+      <div class="form-group">
+        <label for="priceInput">Prezzo</label>
+        <input id="priceInput" type="text" inputmode="decimal" value="10,00" maxlength="20" oninput="updateActiveSign()">
+      </div>
+
+      <button class="btn-print" type="button" onclick="window.print()">Stampa Foglio A4</button>
+    </section>
+  </aside>
+
+  <main class="preview-area">
+    <div class="print-sheet" aria-label="Anteprima del foglio A4 con due cartelli">
+      <section class="tree-sign" aria-label="Cartello 1">
+        <div class="sign-description" id="descriptionPreview0">Foulard</div>
+        <div class="sign-price" id="pricePreview0">€ 10,00</div>
+        <img class="sign-logo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA">
+      </section>
+      <section class="tree-sign" aria-label="Cartello 2">
+        <div class="sign-description" id="descriptionPreview1">Foulard</div>
+        <div class="sign-price" id="pricePreview1">€ 10,00</div>
+        <img class="sign-logo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA">
+      </section>
+      <div class="cut-line" aria-hidden="true"></div>
+    </div>
+  </main>
+
+  <script>
+    const signs = [
+      { description: 'Foulard', price: '10,00' },
+      { description: 'Foulard', price: '10,00' }
+    ];
+    let activeSign = 0;
+
+    function updateActiveSign() {
+      const sign = signs[activeSign];
+      sign.description = document.getElementById('descriptionInput').value;
+      sign.price = document.getElementById('priceInput').value;
+      document.getElementById(`descriptionPreview${activeSign}`).textContent = sign.description;
+      document.getElementById(`pricePreview${activeSign}`).textContent = `€ ${sign.price}`;
+    }
+
+    // Testi Pronti (lo stesso menu di Cartellini TEBE: articoli e testi promo) scrive il testo nel campo libero.
+    function applyDescPreset() {
+      const preset = document.getElementById('descPreset').value;
+      if (preset) document.getElementById('descriptionInput').value = preset;
+      updateActiveSign();
+    }
+
+    function selectSign(index) {
+      updateActiveSign();
+      activeSign = index;
+      document.querySelectorAll('.card-selector button').forEach((button, buttonIndex) => {
+        const isActive = buttonIndex === index;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
+      document.getElementById('descriptionInput').value = signs[index].description;
+      document.getElementById('descPreset').value = '';
+      document.getElementById('priceInput').value = signs[index].price;
+    }
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore: sopra il cartellino scelto con i pulsanti 1-2, sopra o di lato a testo e prezzo quando si usano i campi.
+    const activeTreeSign = () => document.querySelectorAll('.tree-sign')[activeSign];
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '.print-sheet',
+      scope: activeTreeSign,
+      obstacles: () => activeTreeSign()?.querySelectorAll('.sign-description, .sign-price, .sign-logo') || [],
+      rules: [
+        { controls: '.card-selector', target: activeTreeSign, placement: 'above' },
+        { controls: '#descPreset, #descriptionInput', target: () => document.getElementById(`descriptionPreview${activeSign}`) },
+        { controls: '#priceInput', target: () => document.getElementById(`pricePreview${activeSign}`) }
+      ]
+    });
+  </script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-16"></script>
+</body>
+</html>
