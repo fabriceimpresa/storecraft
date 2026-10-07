@@ -107,8 +107,26 @@
     }
   }
 
-  // fullSize (solo per il PDF a misura reale di iOS): il foglio non può essere schiacciato, così la foto ha la sua
-  // grandezza di stampa anche quando una finestra stretta (es. iPad) lo restringe; la lista resta com'era.
+  // Regole di stampa della pagina (i blocchi @media print), da attivare a schermo nella copia fotografata.
+  // I fogli di stampa non leggibili (es. i caratteri di Google Fonts, di un altro sito) si saltano.
+  function printRules(doc) {
+    const rules = [];
+    for (const sheet of doc.styleSheets) {
+      let list;
+      try { list = sheet.cssRules; } catch (error) { continue; }
+      for (const rule of list) {
+        if (rule.media && [...rule.media].some(medium => medium.trim() === 'print')) {
+          for (const inner of rule.cssRules) rules.push(inner.cssText);
+        }
+      }
+    }
+    return rules.join('\n');
+  }
+
+  // fullSize (solo per il PDF a misura reale di iOS): la copia fotografata usa le regole di stampa della pagina,
+  // così il foglio è impaginato esattamente come nella stampa da computer (alcune pagine in stampa allargano i
+  // cartelli o li spostano di qualche mm), e il foglio non può essere schiacciato, così la foto ha la sua grandezza
+  // di stampa anche quando una finestra stretta (es. iPad) lo restringe. La lista resta com'era.
   async function captureSheet(sheet, fullSize = false) {
     const html2canvas = await step('caricamento di html2canvas', loadHtml2canvas);
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
@@ -125,6 +143,11 @@
         useCORS: true,
         logging: false,
         onclone: doc => {
+          if (fullSize) {
+            const print = doc.createElement('style');
+            print.textContent = printRules(doc);
+            doc.head.appendChild(print);
+          }
           const style = doc.createElement('style');
           style.textContent = `
             .cartellino.disabled { visibility: hidden !important; }
@@ -300,7 +323,7 @@
     pdfPromise.then(pdf => {
       const file = new File([pdf], fileName, { type: 'application/pdf' });
       url = URL.createObjectURL(file);
-      text.textContent = `${fileName} è pronto: un foglio A4 a misura reale, senza margini aggiunti.`;
+      text.textContent = `${fileName} è pronto: foglio intero A4.`;
       share.disabled = false;
       share.focus();
       share.addEventListener('click', async () => {
