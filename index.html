@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
   <!-- Splash page: scelta del punto vendita alla prima apertura della giornata (punto-vendita.js).
-       Se oggi è già stato scelto un negozio si va subito alla sua dashboard. -->
+       Se oggi è già stato scelto un negozio si va subito alla sua dashboard, tranne quando si arriva dalla voce HOME
+       del menu di sistema (index.html?scegli), che chiede di scegliere di nuovo. -->
   <script src="assets/js/punto-vendita.js?v=20261007-15"></script>
   <script>
-    if (PuntoVendita.sceltoOggi()) location.replace(PuntoVendita.dashboard(PuntoVendita.sceltoOggi()));
+    if (PuntoVendita.sceltoOggi() && !new URLSearchParams(location.search).has('scegli')) {
+      location.replace(PuntoVendita.dashboard(PuntoVendita.sceltoOggi()));
+    }
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
   <style>

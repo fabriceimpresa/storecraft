@@ -1,0 +1,2688 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="ophilya">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../assets/css/font-arial.css">
+<title>STORE // CRAFT — Visual Merchandising Studio</title>
+<script src="../assets/js/punto-vendita.js?v=20261007-15"></script>
+<script>
+  // Senza un punto vendita scelto oggi si passa dalla splash page; aprendo questa dashboard il negozio di oggi è il suo.
+  if (!PuntoVendita.sceltoOggi()) {
+    location.replace(PuntoVendita.splash());
+  } else if (PuntoVendita.sceltoOggi() !== document.documentElement.dataset.negozio) {
+    PuntoVendita.ricorda(document.documentElement.dataset.negozio);
+  }
+</script>
+<link rel="icon" href="../assets/img/ophilya/favicon.ico?v=20260930c" sizes="any">
+<link rel="apple-touch-icon" href="../assets/img/ophilya/apple-touch-icon.png?v=20260930c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --ivory:#f8f6f1;
+  --cream:#eee8dd;
+  --beige:#e3dacb;
+  --taupe:#a79b8b;
+  --taupe-dark:#665e54;
+  --ink:#282522;
+  --gold:#ad8a3e;
+  --white:#fffdfa;
+  --line:rgba(60,52,44,.14);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ivory);
+  color:var(--ink);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button{font:inherit;cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}
+.sidebar{
+  background:var(--cream);
+  border-right:1px solid var(--line);
+  padding:34px 23px;
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:0;
+  height:100vh;
+  align-self:start;
+}
+.mobile-menu-toggle,
+.sidebar-overlay{display:none}
+.logo{
+  position:relative;
+  padding:0 8px 56px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.sidebar-close{
+  display:none;
+  position:absolute;
+  top:-16px;
+  right:-10px;
+  width:30px;
+  height:30px;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--gold);
+  border-radius:50%;
+  background:var(--ivory);
+  box-shadow:0 1px 4px rgba(60,52,44,.18);
+  color:var(--gold);
+  font-size:13px;
+  line-height:1;
+  cursor:pointer;
+}
+.logo-name{
+  font-family:'Cinzel',serif;
+  font-size:17px;
+  /* Stessa altezza di riga che aveva con Arial, così il divisorio sotto non si sposta. */
+  line-height:1.15;
+  letter-spacing:.16em;
+  font-weight:600;
+  color:var(--gold);
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.label{
+  font-size:9px;
+  letter-spacing:.24em;
+  color:#8b8175;
+  padding:0 9px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.section-toggle{
+  border:0;
+  background:transparent;
+  color:var(--taupe-dark);
+  padding:2px 4px;
+  font-size:14px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+.section-toggle[aria-expanded="false"]{
+  transform:rotate(-90deg);
+}
+.sidebar-section.is-collapsed nav{
+  display:none;
+}
+nav{display:grid;gap:3px}
+nav button{
+  border:0;
+  background:transparent;
+  text-align:left;
+  padding:12px 10px;
+  font-size:14px;
+  font-family:'Fraunces',serif;
+  color:var(--taupe-dark);
+}
+nav button:hover{
+  background:rgba(255,253,250,.7);
+  box-shadow:inset 2px 0 var(--gold);
+  color:var(--ink);
+}
+nav button:disabled{
+  opacity:1;
+}
+/* Titoli delle sezioni del menu: stesso evidenziamento delle voci al passaggio del mouse;
+   il clic sul titolo apre o chiude la sezione come la freccia.
+   L'area illuminata è un livello sotto il testo con 12 px sopra e sotto (come le voci),
+   così la spaziatura del titolo non cambia. */
+.sidebar-section:not([data-sidebar-section="credits"]) > .label{
+  position:relative;
+  z-index:0;
+  cursor:pointer;
+  transition:color .18s ease;
+}
+.sidebar-section:not([data-sidebar-section="credits"]) > .label::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:0;
+  right:0;
+  top:-12px;
+  bottom:-2px;
+  transition:background .18s ease, box-shadow .18s ease;
+}
+.sidebar-section:not([data-sidebar-section="credits"]) > .label:hover{
+  color:var(--ink);
+}
+.sidebar-section:not([data-sidebar-section="credits"]) > .label:hover::before{
+  background:rgba(255,253,250,.7);
+  box-shadow:inset 2px 0 var(--gold);
+}
+main{min-width:0}
+.topbar{
+  height:80px;
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  position:relative;
+  max-width:1450px;
+  height:100%;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 50px;
+}
+.switch{
+  display:flex;
+  gap:4px;
+  padding:4px;
+  background:var(--cream);
+  border:1px solid var(--line);
+}
+.switch button{
+  border:0;
+  background:transparent;
+  padding:9px 16px;
+  font-size:11px;
+  letter-spacing:.16em;
+  color:#887d70;
+}
+.switch button.selected{
+  background:var(--white);
+  color:var(--ink);
+}
+.status{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  letter-spacing:.2em;
+  color:#94897c;
+}
+.mode-switcher{
+  display:flex;
+  gap:4px;
+  padding:4px;
+  background:var(--cream);
+  border:1px solid var(--line);
+}
+.mode-btn{
+  border:0;
+  background:transparent;
+  padding:9px 13px;
+  font-size:10px;
+  letter-spacing:.14em;
+  color:#887d70;
+}
+.mode-btn:hover,
+.mode-btn.active{
+  background:var(--white);
+  color:var(--ink);
+}
+.home-mark{
+  position:fixed;
+  top:20px;
+  left:273px;
+  z-index:20;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 11px;
+  border:1px solid var(--gold);
+  background:var(--white);
+  color:var(--ink);
+  font-size:10px;
+  letter-spacing:.14em;
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-5px);
+  transition:opacity .2s ease, transform .2s ease, background .2s ease, color .2s ease;
+}
+body.is-scrolled .home-mark,
+.home-mark:hover,
+.home-mark:focus-visible{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+.home-mark:hover,
+.home-mark:focus-visible{
+  background:var(--gold);
+  color:var(--white);
+  outline:none;
+}
+.content{
+  display:flex;
+  flex-direction:column;
+  max-width:1450px;
+  padding:32px 50px 65px;
+  margin:auto;
+}
+.content > *{order:10}
+.content > .hero{order:0}
+body.cassiere-mode #strumenti-cassa{order:1}
+body.cassiere-mode #cash-tools-area{order:2}
+body.creator-mode #strumenti-cassa,
+body.creator-mode #cash-tools-area{order:20}
+/* OPHILYA in CREATOR: le Utilità di Cassa non compaiono (restano in CASSIERE). */
+body.ophilya.creator-mode #strumenti-cassa,
+body.ophilya.creator-mode #cash-tools-area{display:none}
+body.cassiere-mode .content > #cartelli,
+body.cassiere-mode .content > .cartelli-carousel-shell,
+body.cassiere-mode .content > #etichette,
+body.cassiere-mode .content > .dymo-carousel-shell,
+body.cassiere-mode .content > .prints-carousel-shell,
+body.cassiere-mode .content > .cartellini-carousel-shell,
+body.cassiere-mode .content > .section:not(#strumenti-cassa),
+body.cassiere-mode .content > .lower{
+  display:none;
+}
+.hero{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:30px;
+  margin-bottom:6px;
+}
+h1{
+  margin:0;
+  font-size:44px;
+  font-weight:400;
+  letter-spacing:.04em;
+}
+.hero-logo{
+  display:block;
+  max-width:205px;
+  width:100%;
+  height:auto;
+  margin-bottom:10px;
+}
+.hero p{
+  margin:13px 0 0;
+  max-width:570px;
+  color:#776e64;
+  font-size:14px;
+  line-height:1.65;
+}
+.identity{
+  text-align:right;
+  padding-bottom:3px;
+}
+.identity strong{
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:.2em;
+  color:var(--gold);
+}
+.identity span{
+  display:block;
+  margin-top:8px;
+  font-size:10px;
+  color:#958a7c;
+  letter-spacing:.16em;
+}
+.section{
+  font-size:10px;
+  letter-spacing:.25em;
+  color:var(--gold);
+  margin:31px 0 14px;
+}
+/* Un po' di respiro in piu' sopra la prima sezione (solo desktop: sul telefono vale la regola mobile). */
+#cartelli{margin-top:43px}
+.mobile-brand-footer{display:none}
+.cards{
+  display:grid;
+  grid-template-rows:repeat(2, minmax(220px, auto));
+  grid-auto-flow:column;
+  grid-auto-columns:calc((100% - 36px) / 4);
+  gap:12px;
+  padding:3px 0 6px;
+  margin:-3px 0 -6px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+.cards::-webkit-scrollbar{
+  display:none;
+}
+.cartelli-carousel-shell{
+  position:relative;
+}
+.cartelli-carousel .card,
+.cartelli-carousel .coming-soon-card{
+  scroll-snap-align:start;
+}
+.card{
+  position:relative;
+  min-height:220px;
+  padding:20px;
+  background:var(--white);
+  border:1px solid var(--line);
+  transition:.18s ease;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.card:hover{
+  transform:translateY(-2px);
+  border-color:var(--gold);
+  box-shadow:0 10px 30px rgba(40,37,34,.12);
+}
+.coming-soon-card{
+  position:relative;
+  min-height:220px;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--cream);
+  border:1px solid rgba(102,94,84,.25);
+  color:var(--taupe-dark);
+  pointer-events:none;
+  overflow:hidden;
+}
+.coming-soon-card h2{
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:20px;
+  z-index:3;
+  margin:0;
+  color:var(--taupe-dark);
+  font-family:'Fraunces',serif;
+  font-size:17px;
+  font-weight:400;
+  line-height:1.2;
+  text-align:left;
+}
+.coming-soon-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(238,232,221,.72);
+  backdrop-filter:blur(2px);
+}
+.coming-soon-card::after{
+  content:"Coming Soon";
+  position:absolute;
+  z-index:2;
+  top:50%;
+  left:50%;
+  width:max-content;
+  padding:4px 9px;
+  border:1px solid var(--line);
+  background:rgba(255,253,250,.88);
+  color:var(--taupe-dark);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  transform:translate(-50%, -50%);
+}
+.number{
+  font-size:10px;
+  color:var(--gold);
+  letter-spacing:.16em;
+}
+/* CREA CARTELLI: numero a sinistra e tipo di supporto a destra, stesso stile. */
+#cartelli-carousel .number,
+#cartellini-carousel .number{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.card-type{
+  text-align:right;
+}
+.card-thumb{
+  width:100%;
+  aspect-ratio:16 / 9;
+  margin:12px 0 16px;
+  background:var(--cream);
+  border:1px solid var(--line);
+  overflow:hidden;
+}
+.card-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.card-thumb.slideshow{
+  position:relative;
+}
+.card-thumb.slideshow img{
+  position:absolute;
+  inset:0;
+  opacity:0;
+  animation:none;
+}
+.card-thumb.slideshow img:first-child{
+  opacity:1;
+}
+.card-thumb.slideshow img:nth-child(2){
+  opacity:0;
+}
+.card:hover .card-thumb.slideshow img{
+  animation-duration:4.2s;
+  animation-iteration-count:infinite;
+}
+.card:hover .card-thumb.slideshow img:first-child{
+  animation-name:thumbnail-fade-first;
+}
+.card:hover .card-thumb.slideshow img:nth-child(2){
+  animation-name:thumbnail-fade-second;
+}
+@keyframes thumbnail-fade-first{
+  0%, 42.86%{opacity:1}
+  50%, 92.86%{opacity:0}
+  100%{opacity:1}
+}
+@keyframes thumbnail-fade-second{
+  0%, 42.86%{opacity:0}
+  50%, 92.86%{opacity:1}
+  100%{opacity:0}
+}
+.card h2{
+  margin:auto 0 0 0;
+  padding-right:30px;
+  font-size:17px;
+  font-weight:400;
+  font-family:'Fraunces',serif;
+  line-height:1.2;
+}
+.card p{
+  margin:8px 0 0;
+  max-width:200px;
+  color:#8a8074;
+  font-size:12px;
+  line-height:1.5;
+}
+.arrow{
+  position:absolute;
+  right:20px;
+  bottom:20px;
+  color:var(--taupe);
+  font-size:17px;
+  line-height:1;
+  font-family:Arial,Helvetica,sans-serif;
+  font-variant-emoji:text;
+}
+.lower{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+.wide-card{
+  position:relative;
+  min-height:145px;
+  background:#f1ece4;
+  border:1px solid var(--line);
+  padding:23px;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.wide-card:hover{
+  transform:translateY(-2px);
+  border-color:var(--gold);
+  box-shadow:0 10px 30px rgba(40,37,34,.12);
+}
+.wide-card h2{
+  margin:0 0 6px;
+  font-size:17px;
+  font-weight:400;
+  font-family:'Fraunces',serif;
+}
+.wide-card p{
+  margin:0;
+  font-size:12px;
+  color:#857b70;
+}
+.lower-single{
+  grid-template-columns:1fr;
+}
+/* Cartellini: carosello a una riga che riusa le regole di .cartelli-carousel. */
+.cartellini-carousel-shell{
+  position:relative;
+}
+.cartellini-carousel{
+  grid-template-rows:minmax(220px, auto);
+}
+/* Stampe pronte: carosello a una riga che riusa le regole di .cartelli-carousel;
+   solo titolo e tasto Apri & Stampa, il PDF si apre in pdf-viewer.html. */
+.prints-carousel-shell{
+  position:relative;
+}
+.prints-carousel{
+  grid-template-rows:minmax(220px, auto);
+}
+.print-card .card-thumb img{
+  object-fit:contain;
+}
+.print-card h2{
+  padding-right:0;
+}
+.print-card-btn{
+  align-self:flex-start;
+  margin-top:14px;
+  padding:8px 12px;
+  border:1px solid var(--gold);
+  background:var(--gold);
+  color:var(--white);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  transition:.18s ease;
+}
+.print-card:hover .print-card-btn{
+  background:var(--white);
+  color:var(--gold);
+}
+.dymo-carousel-shell{
+  position:relative;
+}
+.dymo-carousel{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:340px;
+  gap:12px;
+  padding:3px 0 6px;
+  margin:-3px 0 -6px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+/* Durante il cambio di negozio i caroselli tornano all'inizio di colpo, senza
+   animazione e senza riagganciarsi alla card di prima (vedi resetCarousels). */
+body.store-switching .cards,
+body.store-switching .dymo-carousel{
+  scroll-snap-type:none;
+  scroll-behavior:auto;
+}
+.dymo-carousel::-webkit-scrollbar{
+  display:none;
+}
+.dymo-card{
+  height:auto;
+  min-height:0;
+  padding:0;
+  scroll-snap-align:start;
+  border-radius:8px;
+  overflow:hidden;
+  color:var(--ink);
+  text-decoration:none;
+}
+.dymo-card-preview{
+  position:relative;
+  height:140px;
+  flex:0 0 140px;
+  padding:10px 14px;
+  background:var(--cream);
+}
+.dymo-card-preview .number{
+  position:absolute;
+  top:10px;
+  left:14px;
+  z-index:1;
+}
+.dymo-card .card-thumb{
+  height:120px;
+  aspect-ratio:auto;
+  margin:0;
+  background:transparent;
+  border:0;
+}
+.dymo-card .card-thumb img{
+  object-fit:contain;
+}
+.dymo-card-body{
+  min-height:0;
+  flex:0 0 auto;
+  padding:11px 16px;
+  background:var(--white);
+}
+.dymo-card h2{
+  margin:0;
+  padding-right:20px;
+  text-align:left;
+  font-family:'Fraunces',serif;
+  font-size:17px;
+  font-weight:400;
+}
+.dymo-card .arrow{
+  display:none;
+}
+.labels-coming-soon-card{
+  position:relative;
+  background:var(--white);
+  border-color:rgba(102,94,84,.25);
+  pointer-events:none;
+  overflow:hidden;
+}
+.labels-coming-soon-card::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  background:rgba(238,232,221,.72);
+  backdrop-filter:blur(2px);
+}
+.labels-coming-soon-card::after{
+  content:"Coming Soon";
+  position:absolute;
+  z-index:2;
+  top:50%;
+  left:50%;
+  width:max-content;
+  padding:4px 9px;
+  border:1px solid var(--line);
+  background:rgba(255,253,250,.88);
+  color:var(--taupe-dark);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  transform:translate(-50%, -50%);
+}
+.labels-coming-soon-card h2{
+  position:relative;
+  z-index:3;
+  margin:auto 0 0;
+  color:var(--taupe-dark);
+}
+.carousel-control{
+  position:absolute;
+  z-index:4;
+  top:50%;
+  width:38px;
+  height:38px;
+  padding:0 0 3px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:var(--white);
+  color:var(--gold);
+  display:grid;
+  place-items:center;
+  font-family:'Fraunces',serif;
+  font-size:27px;
+  line-height:1;
+  box-shadow:0 8px 20px rgba(50,43,36,.1);
+  transform:translateY(-50%);
+  transition:.18s ease;
+}
+.carousel-control:hover:not(:disabled){
+  border-color:var(--gold);
+  color:var(--gold);
+  box-shadow:0 10px 24px rgba(50,43,36,.15);
+}
+.carousel-control:disabled{
+  display:none;
+}
+.carousel-control.previous{
+  left:-19px;
+}
+.carousel-control.next{
+  right:-19px;
+}
+.card,.wide-card{
+  text-decoration:none;
+  color:inherit;
+}
+.card.soon,.wide-card.soon{
+  cursor:default;
+  background:var(--cream);
+  border-style:dashed;
+}
+.card.soon:hover,.wide-card.soon:hover{
+  transform:none;
+  box-shadow:none;
+  border-color:var(--line);
+}
+.card.soon h2,.wide-card.soon h2{
+  color:#948a7d;
+  margin-bottom:0;
+}
+.card.soon p,.wide-card.soon p{
+  color:#a49a8d;
+}
+.soon-tag{
+  position:absolute;
+  right:20px;
+  bottom:18px;
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--taupe-dark);
+  border:1px solid var(--line);
+  padding:4px 9px;
+  background:var(--white);
+}
+.wide-card .soon-tag{
+  position:static;
+}
+nav button.soon{
+  color:#a89e91;
+  cursor:default;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+nav button.soon:hover{
+  background:transparent;
+}
+.soon-tag-inline,
+nav button .soon-tag{
+  position:static;
+  font-size:9px;
+  padding:2px 6px;
+  border:1px solid var(--line);
+  letter-spacing:.14em;
+}
+.cash-tools-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+.cash-tools-area{
+  position:relative;
+}
+.cash-tools-area.is-focused::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:20;
+  background:rgba(40,37,34,.28);
+  backdrop-filter:blur(2px);
+}
+.cash-tool{
+  position:relative;
+  min-height:224px;
+  padding:22px;
+  background:var(--white);
+  border:1px solid var(--line);
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.cash-tool:hover,
+.cash-tool.cash-tool-active{
+  border-color:var(--gold);
+  box-shadow:0 10px 30px rgba(40,37,34,.12);
+  transform:translateY(-2px);
+}
+.cash-tool.cash-tool-expanded{
+  position:fixed;
+  z-index:21;
+  top:50%;
+  left:50%;
+  width:min(620px, calc(100vw - 40px));
+  min-height:min(390px, calc(100vh - 80px));
+  max-height:calc(100vh - 56px);
+  overflow:auto;
+  transform:translate(-50%, -50%);
+  box-shadow:0 18px 55px rgba(40,37,34,.2);
+}
+.cash-tool.cash-tool-expanded#cash-discount,
+.cash-tool.cash-tool-expanded#cash-rate,
+.cash-tool.cash-tool-expanded#cash-currency{
+  width:min(520px, calc(100vw - 40px));
+}
+.cash-tool.cash-tool-expanded:hover{
+  transform:translate(-50%, -50%);
+}
+.cash-tool-close{
+  display:none;
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:28px;
+  height:28px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--taupe-dark);
+  font-size:18px;
+  line-height:1;
+}
+.cash-tool-expanded .cash-tool-close{
+  display:block;
+}
+.cash-tool-expanded h2{
+  padding-right:38px;
+}
+.cash-tool h2{
+  margin:0 0 22px;
+  color:var(--ink);
+  font-family:'Fraunces',serif;
+  font-size:18px;
+  font-weight:400;
+}
+.cash-tool p{
+  margin:0 0 14px;
+  color:#857b70;
+  font-size:12px;
+  line-height:1.5;
+}
+.cash-tool-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+}
+.cash-input-group{
+  display:flex;
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:var(--ivory);
+}
+.cash-prefix,
+.cash-suffix{
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  color:var(--gold);
+  border-right:1px solid var(--line);
+  font-size:12px;
+  font-weight:700;
+}
+.cash-suffix{
+  color:var(--taupe-dark);
+  border-right:0;
+  border-left:1px solid var(--line);
+  font-size:10px;
+  letter-spacing:.06em;
+}
+.cash-input,
+.cash-select{
+  width:100%;
+  min-width:0;
+  padding:10px;
+  border:0;
+  outline:0;
+  color:var(--ink);
+  background:transparent;
+  font:12px Arial,Helvetica,sans-serif;
+}
+.cash-select{
+  border:1px solid var(--line);
+  background:var(--ivory);
+}
+.cash-input-group .currency-code{
+  flex:0 0 185px;
+  width:185px;
+  border:1px solid var(--gold);
+  padding:10px 8px;
+  color:var(--ink);
+  font-weight:400;
+  background:transparent;
+  box-shadow:none;
+}
+.cash-input-group .currency-code:focus{
+  border:1px solid var(--gold);
+  box-shadow:none;
+}
+.cash-tool:not(.cash-tool-expanded) .cash-input-group .currency-code{
+  flex-basis:96px;
+  width:96px;
+  padding:10px 4px;
+  font-size:10px;
+}
+.cash-input:focus,
+.cash-select:focus{
+  box-shadow:inset 0 0 0 1px var(--gold);
+}
+.cash-input[type="number"]{
+  appearance:textfield;
+  -moz-appearance:textfield;
+}
+.cash-input[type="number"]::-webkit-inner-spin-button,
+.cash-input[type="number"]::-webkit-outer-spin-button{
+  margin:0;
+  -webkit-appearance:none;
+}
+.cash-button{
+  width:100%;
+  padding:10px;
+  border:1px solid var(--gold);
+  background:var(--gold);
+  color:var(--white);
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  transition:.18s ease;
+}
+.cash-tool .cash-button + .cash-result{
+  margin-top:18px;
+}
+.cash-button:hover{
+  background:#927331;
+  border-color:#927331;
+}
+.cash-button.secondary{
+  background:transparent;
+  color:var(--gold);
+}
+.cash-result{
+  display:block;
+  width:100%;
+  min-height:29px;
+  margin-top:18px;
+  color:var(--gold);
+  font-family:'Fraunces',serif;
+  font-size:22px;
+  text-align:center;
+}
+.cash-rate-buttons{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:6px;
+  margin-bottom:14px;
+}
+.cash-rate{
+  padding:8px 0;
+  border:1px solid var(--line);
+  background:var(--ivory);
+  color:var(--taupe-dark);
+  font-size:11px;
+  font-weight:700;
+}
+.cash-rate.active,
+.cash-rate:hover{
+  border-color:var(--gold);
+  background:#f3ecd9;
+  color:var(--gold);
+}
+.cash-qr-preview{
+  display:flex;
+  justify-content:center;
+  min-height:116px;
+  margin:18px 0;
+}
+.cash-qr-preview > div{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px;
+  background:#fff;
+  border:1px solid var(--line);
+}
+.cash-tools-status{
+  min-height:18px;
+  margin-top:6px;
+  color:#857b70;
+  font-size:10px;
+  text-align:center;
+}
+.cash-tools-coming-soon{
+  position:absolute;
+  inset:0;
+  display:none;
+  place-items:center;
+  border:1px solid rgba(173,138,62,.45);
+  background:rgba(238,232,221,.78);
+  backdrop-filter:blur(2px);
+  color:var(--gold);
+  font-family:'Fraunces',serif;
+  font-size:32px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+body.ophilya .cards .card:not(.print-card):not(.ophilya-only),
+body.ophilya .dymo-carousel .dymo-card:not([data-link]),
+body.ophilya .lower .wide-card{
+  pointer-events:none;
+  border-color:rgba(102,94,84,.25);
+  box-shadow:inset 0 0 0 1px rgba(102,94,84,.04);
+  background:var(--cream);
+}
+body.ophilya .cards .card:not(.print-card):not(.ophilya-only) > *,
+body.ophilya .dymo-carousel .dymo-card:not([data-link]) > *,
+body.ophilya .lower .wide-card > *,
+body.ophilya .coming-soon-card h2{
+  visibility:hidden;
+}
+body.ophilya .cards .card:not(.print-card):not(.ophilya-only)::before,
+body.ophilya .dymo-carousel .dymo-card:not([data-link])::before,
+body.ophilya .lower .wide-card::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:0;
+  background:var(--cream);
+}
+body.ophilya .cards .card:not(.print-card):not(.ophilya-only)::after,
+body.ophilya .dymo-carousel .dymo-card:not([data-link])::after,
+body.ophilya .lower .wide-card::after{
+  content:"Coming Soon";
+  position:absolute;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  top:50%;
+  left:50%;
+  width:max-content;
+  padding:4px 9px;
+  border:1px solid var(--line);
+  background:var(--white);
+  color:var(--taupe-dark);
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  transform:translate(-50%, -50%);
+}
+body.ophilya .lower{
+  pointer-events:none;
+}
+/* Widget presenti solo in TEBE (es. etichetta Taglie Brand, che OPHILYA non ha). */
+body.ophilya .tebe-only{display:none}/* Widget presenti solo in OPHILYA (es. Albero Accessori OPHILYA, primo di CREA CARTELLI). */
+body:not(.ophilya) .ophilya-only{display:none}
+/* OPHILYA: in CREA CARTELLI i cartelli TEBE lasciano il posto a voci "Presto disponibile" non cliccabili. */
+.sidebar-nav-ophilya,
+body.ophilya .sidebar-nav-tebe{display:none}
+body.ophilya .sidebar-nav-ophilya{display:grid}
+body.ophilya .sidebar-section.is-collapsed .sidebar-nav-ophilya{display:none}
+body.ophilya .cash-tools-coming-soon{
+  display:none;
+}
+@media(max-width:1300px){
+  .cartelli-carousel{grid-auto-columns:calc((100% - 12px) / 2)}
+}
+@media(max-width:1000px){
+  .dymo-carousel{grid-auto-columns:320px}
+  .cash-tools-grid{grid-template-columns:repeat(2, minmax(0, 1fr))}
+}
+@media(max-width:850px){
+  .cartelli-carousel{
+    grid-auto-columns:100%;
+    padding-left:0;
+    padding-right:0;
+  }
+  .cartelli-carousel .card,
+  .cartelli-carousel .coming-soon-card{scroll-snap-align:center}
+}
+/* Finestra desktop stretta o tablet: si mantiene il comportamento storico. */
+@media(max-width:720px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .topbar-inner{padding:0 18px}
+  .status{display:none}
+  .mode-btn{padding:8px 9px;font-size:9px}
+  .home-mark{left:auto;right:18px}
+  .content{padding:32px 20px}
+  .hero{display:block}
+  .identity{text-align:left;margin-top:24px}
+  .lower{grid-template-columns:1fr}
+  .dymo-carousel{grid-auto-columns:85%}
+  .carousel-control.previous{left:-10px}
+  .carousel-control.next{right:-10px}
+  .cash-tools-grid{grid-template-columns:1fr}
+  .cash-tool.cash-tool-expanded{
+    width:calc(100vw - 28px);
+    min-height:0;
+    max-height:calc(100vh - 28px);
+  }
+}
+
+/* Solo cellulari: schermo stretto e puntatore impreciso (dito).
+   I tablet restano sulla vista desktop. */
+@media(max-width:720px) and (pointer:coarse){
+  /* Sul telefono non c'e' il passaggio del mouse: le miniature a due immagini
+     partono da sole con la stessa dissolvenza. */
+  .card-thumb.slideshow img{
+    animation-duration:4.2s;
+    animation-iteration-count:infinite;
+  }
+  .card-thumb.slideshow img:first-child{animation-name:thumbnail-fade-first}
+  .card-thumb.slideshow img:nth-child(2){animation-name:thumbnail-fade-second}
+  .app{grid-template-columns:1fr}
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:35;
+    height:64px;
+    background:var(--ivory);
+  }
+  .topbar-inner{gap:8px;padding:0 12px}
+  .mobile-menu-toggle{
+    display:inline-flex;
+    flex:0 0 36px;
+    width:36px;
+    height:36px;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--line);
+    background:var(--cream);
+    color:var(--taupe-dark);
+    font-size:18px;
+  }
+  .switch{flex:0 0 auto}
+  .switch button{padding:8px;font-size:9px}
+  .mode-switcher{flex:0 0 auto}
+  .mode-btn{padding:8px 6px;font-size:8px;letter-spacing:.06em}
+  .sidebar{
+    position:fixed;
+    top:64px;
+    bottom:0;
+    left:0;
+    z-index:45;
+    display:flex;
+    width:min(278px,82vw);
+    height:calc(100dvh - 64px);
+    padding:16px 14px 18px;
+    overflow-y:auto;
+    transform:translateX(-102%);
+    transition:transform .22s ease;
+  }
+  body.mobile-menu-open .sidebar{transform:translateX(0)}
+  .sidebar-close{display:flex}
+  .logo{padding:0 4px 29px}
+  .logo-name{font-size:15px}
+  .sidebar-section .label{margin-top:12px !important;padding:0 6px 6px}
+  .sidebar-section:not([data-sidebar-section="credits"]) > .label::before{top:-9px;bottom:-3px}
+  nav{gap:1px}
+  nav button{padding:9px 8px;font-size:13px}
+  .bottom{margin-bottom:0;padding:18px 4px 0}
+  .storecraft-mark{width:118px;height:56px;margin:0 auto 4px}
+  .storecraft-mark img{max-height:56px}
+  .sidebar-credits{margin-top:12px;padding-top:10px}
+  .sidebar-overlay{
+    position:fixed;
+    inset:64px 0 0;
+    z-index:40;
+    display:block;
+    border:0;
+    background:rgba(40,37,34,.42);
+    opacity:0;
+    pointer-events:none;
+    visibility:hidden;
+    transition:opacity .22s ease;
+  }
+  body.mobile-menu-open .sidebar-overlay{opacity:1;pointer-events:auto;visibility:visible}
+  .status{display:none}
+  .home-mark{left:auto;right:18px}
+  .content{padding:24px 16px 0}
+  .hero{
+    display:block;
+    text-align:center;
+  }
+  .hero-logo{max-width:185px;margin-left:auto;margin-right:auto}
+  .identity{text-align:center;margin-top:8px}
+  .identity strong{font-size:10px;color:#8b8175}
+  .identity span{display:none}
+  .section{margin:26px 0 12px;text-align:center;color:var(--gold)}
+  #cartelli{margin-top:26px}
+  /* In cassa il titolo e' superfluo: i widget seguono subito l'intestazione. */
+  body.cassiere-mode .content > #strumenti-cassa{display:none}
+  body.cassiere-mode #cash-tools-area{margin-top:26px}
+  .mobile-brand-footer{
+    display:block;
+    margin:20px 0 0;
+    padding-bottom:26px;
+    text-align:center;
+    font-size:19px;
+    letter-spacing:.16em;
+    font-weight:400;
+    color:var(--gold);
+    text-transform:uppercase;
+  }
+  .cartelli-carousel{
+    grid-template-rows:minmax(220px,auto);
+    grid-auto-columns:100%;
+  }
+  .cartelli-carousel .card,
+  .cartelli-carousel .coming-soon-card{scroll-snap-align:center}
+  .lower{grid-template-columns:1fr}
+  .dymo-carousel{grid-auto-columns:100%}
+  .dymo-carousel .dymo-card{scroll-snap-align:center}
+  .carousel-control{
+    width:34px;
+    height:34px;
+    font-size:23px;
+  }
+  .carousel-control.previous{left:-6px}
+  .carousel-control.next{right:-6px}
+  .cash-tools-grid{grid-template-columns:1fr}
+  /* Sul telefono gli strumenti cassa non si aprono in popup: sono gia' pronti all'uso. */
+  .cash-tool{scroll-margin-top:80px}
+}
+@media(max-width:360px) and (pointer:coarse){
+  .topbar-inner{gap:5px;padding:0 8px}
+  .mobile-menu-toggle{flex-basis:32px;width:32px;height:34px}
+  .switch button{padding:7px 6px;font-size:8px}
+  .mode-btn{padding:7px 4px;font-size:7px}
+}
+
+
+.bottom{
+  margin-top:auto;
+  /* la base di CREDITS // CONTACTS sta dal fondo della finestra quanto STORE // CRAFT dal bordo in alto (~37 px) */
+  margin-bottom:-9px;
+  width:100%;
+  padding:34px 8px 2px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.studio-label{
+  font-size:10px;
+  line-height:1.2;
+  letter-spacing:.08em;
+  color:#766d62;
+  white-space:nowrap;
+}
+
+.storecraft-mark{
+  position:relative;
+  width:158px;
+  height:76px;
+  margin:12px auto 5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.storecraft-mark img{
+  display:block;
+  width:100%;
+  height:auto;
+  max-height:76px;
+  object-fit:contain;
+  filter:invert(43%) sepia(8%) saturate(430%) hue-rotate(350deg) brightness(88%) contrast(87%);
+  opacity:.78;
+  mix-blend-mode:multiply;
+}
+
+.signature-caption{
+  display:block;
+  font-size:8px;
+  line-height:1.2;
+  letter-spacing:.20em;
+  color:#766d62;
+  white-space:nowrap;
+}
+
+/* MENU // IMPOSTAZIONI in fondo alla colonna, al posto di CREDITS // CONTACTS, con lo stesso aspetto: sopra la linea
+   sottile, scritta oro spaziata; al passaggio del mouse riquadro bianco con bordo oro. */
+.sidebar-credits{
+  width:100%;
+  margin-top:24px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+}
+
+.system-menu-toggle{
+  width:100%;
+  min-height:38px;
+  padding:7px 9px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--gold);
+  font-size:11px;
+  letter-spacing:.18em;
+  white-space:nowrap;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+}
+
+.system-menu-toggle:hover,
+.system-menu-toggle:focus-visible,
+.system-menu-toggle[aria-expanded="true"]{
+  border-color:var(--gold);
+  background:var(--white);
+  box-shadow:0 8px 20px rgba(50,43,36,.1);
+  transform:translateY(-2px);
+  outline:none;
+}
+
+/* Il menu si apre dentro la colonna, sopra il pulsante, largo quanto il contenuto della colonna */
+.system-menu[hidden],
+.system-menu-view[hidden]{display:none}
+
+.system-menu{
+  position:absolute;
+  z-index:60;
+  left:23px;
+  right:23px;
+  bottom:96px;
+  max-height:calc(100% - 130px);
+  overflow:auto;
+  padding:12px;
+  border:1px solid var(--gold);
+  background:var(--cream);
+  color:var(--ink);
+  box-shadow:0 5px 14px rgba(50,43,36,.14);
+  text-align:left;
+  transform-origin:bottom left;
+  animation:system-menu-open .18s ease-out;
+}
+
+@keyframes system-menu-open{
+  from{opacity:0;transform:translateY(9px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.system-menu-view{min-width:0;padding:3px}
+
+.system-menu-title{
+  margin:3px 4px 20px;
+  color:var(--gold);
+  font-size:.8rem;
+  letter-spacing:.12em;
+  text-align:center;
+}
+
+.system-menu-items{display:grid;gap:10px}
+
+.system-menu-item,
+.system-store-choice{
+  display:flex;
+  width:100%;
+  align-items:center;
+  justify-content:space-between;
+  gap:6px;
+  border:1px solid transparent;
+  background:transparent;
+  text-align:left;
+  text-transform:uppercase;
+}
+
+.system-menu-item{
+  min-height:40px;
+  padding:8px 7px;
+  color:var(--ink);
+  font-size:.68rem;
+  letter-spacing:.08em;
+  transition:background .16s ease, color .16s ease;
+}
+
+.system-menu-item:not(:disabled):hover,
+.system-menu-item:focus-visible,
+.system-menu-back:hover,
+.system-menu-back:focus-visible,
+.system-store-choice:not(:disabled):hover,
+.system-store-choice:focus-visible{
+  background:var(--ivory);
+  box-shadow:inset 2px 0 var(--gold);
+  color:var(--gold);
+  outline:none;
+}
+
+.system-menu-item:disabled{color:var(--taupe);cursor:not-allowed}
+.system-menu-item-label{display:flex;min-width:0;align-items:center;gap:7px;line-height:1.3}
+.system-menu-icon{
+  display:inline-flex;
+  flex:0 0 18px;
+  justify-content:center;
+  color:var(--gold);
+  font-size:.92rem;
+  line-height:1;
+}
+.system-menu-badge{flex:0 0 auto;color:var(--taupe);font-size:.52rem;letter-spacing:.03em}
+.system-store-current,
+.system-store-status{
+  flex:0 0 auto;
+  padding:4px 7px;
+  border:1px solid var(--gold);
+  color:var(--gold);
+  font-size:.57rem;
+  letter-spacing:.08em;
+}
+.system-store-status{padding:4px 6px;font-size:.48rem;letter-spacing:.03em}
+
+.system-menu-footer{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid var(--line);
+}
+
+.system-menu-back{
+  min-height:36px;
+  padding:7px 9px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--gold);
+  font-size:.68rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.system-credits{
+  padding:8px 5px 14px;
+  color:#766d62;
+  font-size:.71rem;
+  line-height:1.7;
+  text-align:center;
+}
+.system-credits .release-number,
+.system-credits a{color:var(--gold);text-decoration:none}
+.system-credits a:hover{text-decoration:underline}
+
+.system-store-list{display:grid;gap:12px}
+.system-store-choice{
+  min-height:44px;
+  padding:9px 8px;
+  color:var(--taupe-dark);
+  font-size:.66rem;
+  letter-spacing:.07em;
+}
+.system-store-choice.is-active{border-color:var(--gold);background:var(--white);color:var(--ink)}
+.system-store-choice:disabled{cursor:default}
+
+@media (prefers-reduced-motion: reduce){
+  .system-menu{animation:none}
+  .system-menu-item,.system-menu-toggle{transition:none}
+}
+
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <aside class="sidebar" id="dashboard-sidebar">
+    <div class="logo">
+      <div class="logo-name">STORE // CRAFT</div>
+      <button class="sidebar-close" type="button" aria-label="Chiudi il menu" onclick="toggleMobileSidebar(false)">✕</button>
+    </div>
+
+    <div class="sidebar-section" data-sidebar-section="cartelli">
+      <div class="label">
+        <span>CREA CARTELLI</span>
+        <button class="section-toggle" type="button" aria-label="Comprimi CREA CARTELLI" aria-expanded="true" onclick="toggleSidebarSection('cartelli')">⌄</button>
+      </div>
+      <nav class="sidebar-nav-tebe">
+      <button onclick="openPage('cartelli_semplici.html')">Semplice</button>
+      <button onclick="openPage('cartelli_sale.html')">Sale</button>
+      <button onclick="openPage('cartellopercentuale.html')">Percentuale</button>
+      <button onclick="openPage('cartelli_brand.html')">Brand</button>
+      <button onclick="openPage('cartelli_multiarticolo.html')">Multi Articolo</button>
+      <button onclick="openPage('albero.html')">Albero Accessori</button>
+      <button onclick="openPage('cornici10x15.html')">Cornici 10 x 15</button>
+      <button onclick="openPage('cornice21x27.html')">Cornice 21 x 27</button>
+      <button onclick="openPage('paletto.html')">Paletto 15x10</button>
+      <button onclick="openPage('paletto18x12.html')">Paletto 18x12</button>
+      </nav>
+      <nav class="sidebar-nav-ophilya" aria-label="Cartelli OPHILYA">
+      <button onclick="openPage('albero-ophilya.html')">Albero Accessori</button>
+      <button onclick="openPage('paletto-ophilya.html')">Paletto 15x10</button>
+      <button onclick="openPage('paletto18x12-ophilya.html')">Paletto 18x12</button>
+      <button class="soon" type="button" disabled>Presto disponibile</button>
+      <button class="soon" type="button" disabled>Presto disponibile</button>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="custom-logos">
+      <div class="label" style="margin-top:28px">
+        <span>LOGHI PERSONALIZZATI</span>
+        <button class="section-toggle" type="button" aria-label="Espandi LOGHI PERSONALIZZATI" aria-expanded="false" onclick="toggleSidebarSection('custom-logos')">⌄</button>
+      </div>
+      <nav>
+      <button onclick="openPage('genera_loghi.html')">Importa Loghi</button>
+      <button onclick="openPage('gestisci_lista.html')">Gestisci Loghi</button>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="cartellini">
+      <div class="label" style="margin-top:28px">
+        <span>CARTELLINI</span>
+        <button class="section-toggle" type="button" aria-label="Espandi CARTELLINI" aria-expanded="false" onclick="toggleSidebarSection('cartellini')">⌄</button>
+      </div>
+      <nav class="sidebar-nav-tebe">
+        <button onclick="openPage('cartellinitebe.html')">Cartellini TEBE</button>
+        <button onclick="openPage('cartellinilxry.html')">Cartellini LXRY</button>
+        <button onclick="openPage('prezzivetrina.html')">Prezzi Vetrina</button>
+      </nav>
+      <nav class="sidebar-nav-ophilya" aria-label="Cartellini OPHILYA">
+        <button class="soon" type="button" disabled>Presto disponibile</button>
+        <button class="soon" type="button" disabled>Presto disponibile</button>
+        <button class="soon" type="button" disabled>Presto disponibile</button>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="labels">
+      <div class="label" style="margin-top:28px">
+        <span>ETICHETTE</span>
+        <button class="section-toggle" type="button" aria-label="Espandi ETICHETTE" aria-expanded="false" onclick="toggleSidebarSection('labels')">⌄</button>
+      </div>
+      <nav>
+        <button onclick="openPage('etichette.html')">Etichette DYMO</button>
+      </nav>
+    </div>
+
+    <div class="sidebar-section is-collapsed" data-sidebar-section="tools">
+      <div class="label" style="margin-top:28px">
+        <span>UTILITA' CASSA</span>
+        <button class="section-toggle" type="button" aria-label="Espandi UTILITA' CASSA" aria-expanded="false" onclick="toggleSidebarSection('tools')">⌄</button>
+      </div>
+      <nav>
+      <button onclick="openCashTool('cash-discount')">Calcola Sconto</button>
+      <button onclick="openCashTool('cash-rate')">Calcola Aliquota</button>
+      <button onclick="openCashTool('cash-currency')">Cambio Valuta</button>
+      <button onclick="openCashTool('cash-vat')">Calcola IVA</button>
+      <button onclick="openCashTool('cash-qr')">Generatore QR</button>
+      </nav>
+    </div>
+
+    <div class="bottom">
+      <div class="storecraft-mark">
+        <img src="../assets/img/storecraftlogo.png" alt="StoreCraft">
+      </div>
+      <div class="signature-caption">CRAFTED WITH STORECRAFT</div>
+      <!-- Menu di sistema (come nella dashboard Luxury, nei colori TEBE): PROFILO UTENTE sceglie il punto vendita
+           (punto-vendita.js), CONTATTI & CREDITS mostra versione e contatti. -->
+      <section class="system-menu" id="system-menu" aria-label="Menu di sistema" hidden>
+        <div class="system-menu-title" id="system-menu-title">MENU</div>
+        <div class="system-menu-view" data-system-view="home">
+          <div class="system-menu-items">
+            <button class="system-menu-item" type="button" data-system-menu-item="profile" onclick="openSystemMenuView('stores')">
+              <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">♙</span><span>PROFILO UTENTE</span></span>
+              <span class="system-store-current" id="system-store-current"></span>
+            </button>
+            <button class="system-menu-item" type="button" data-system-menu-item="store" disabled>
+              <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">▦</span><span>STORE</span></span>
+              <span class="system-menu-badge">COMING SOON</span>
+            </button>
+            <button class="system-menu-item" type="button" data-system-menu-item="contacts" onclick="openSystemMenuView('contacts')">
+              <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">ⓘ</span><span>CONTATTI &amp; CREDITS</span></span>
+              <span aria-hidden="true">›</span>
+            </button>
+            <button class="system-menu-item" type="button" data-system-menu-item="home" onclick="PuntoVendita.apriSplash()">
+              <span class="system-menu-item-label"><span class="system-menu-icon" aria-hidden="true">⌂</span><span>HOME</span></span>
+              <span aria-hidden="true">›</span>
+            </button>
+          </div>
+        </div>
+        <div class="system-menu-view" data-system-view="contacts" hidden>
+          <div class="system-credits">
+            <span><span class="release-number">V 1.33 2026</span> · Developed by Fabrizio Notte</span><br>
+            © Marchi e loghi appartengono ai rispettivi proprietari<br>
+            <a href="mailto:fabriceimpresa@gmail.com">fabriceimpresa@gmail.com</a>
+          </div>
+          <div class="system-menu-footer">
+            <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Indietro</button>
+          </div>
+        </div>
+        <div class="system-menu-view" data-system-view="stores" hidden>
+          <div class="system-store-list" id="system-store-list" role="group" aria-label="Seleziona negozio"></div>
+          <div class="system-menu-footer">
+            <button class="system-menu-back" type="button" data-system-menu-back onclick="openSystemMenuView('home')">← Indietro</button>
+          </div>
+        </div>
+      </section>
+      <div class="sidebar-credits">
+        <button class="system-menu-toggle" id="system-menu-toggle" type="button" aria-expanded="false" aria-controls="system-menu" onclick="toggleSystemMenu()">MENU // IMPOSTAZIONI</button>
+      </div>
+    </div>
+  </aside>
+  <button class="sidebar-overlay" type="button" aria-label="Chiudi il menu" onclick="toggleMobileSidebar(false)"></button>
+
+  <main>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <button class="mobile-menu-toggle" type="button" aria-label="Apri il menu" aria-controls="dashboard-sidebar" aria-expanded="false" onclick="toggleMobileSidebar()">☰</button>
+        <div class="switch">
+          <button id="tebe" class="selected" onclick="switchStore('tebe')">TEBE</button>
+          <button id="ophilya" onclick="switchStore('ophilya')">OPHILYA</button>
+        </div>
+        <div class="mode-switcher" aria-label="Modalità interfaccia">
+          <button class="mode-btn" data-mode="cassiere" type="button" onclick="setLayoutMode('cassiere')">CASSIERE</button>
+          <button class="mode-btn active" data-mode="creator" type="button" onclick="setLayoutMode('creator')">CREATOR</button>
+        </div>
+      </div>
+    </header>
+    <button class="home-mark" type="button" onclick="returnToHomeTop()" aria-label="Torna all'inizio della home">
+      <span aria-hidden="true">⌂</span> HOME
+    </button>
+
+    <section class="content">
+
+      <div class="hero">
+        <div>
+          <img id="title" class="hero-logo" src="../assets/img/ophilya/ophilyablack.png" alt="OPHILYA">
+        </div>
+
+        <div class="identity">
+          <strong id="identity">VIA DEL CORSO 269</strong>
+          <span id="detail">MODA DONNA · BRANDS · LINEA 269</span>
+        </div>
+      </div>
+
+      <div class="section" id="cartelli">CREA CARTELLI</div>
+
+      <div class="cartelli-carousel-shell">
+        <button class="carousel-control previous" id="cartelli-previous" type="button" aria-label="Cartelli precedenti" onclick="scrollCartelliCarousel(-1)">‹</button>
+        <div class="cards cartelli-carousel" id="cartelli-carousel">
+        <a class="card ophilya-only" data-link="albero-ophilya.html">
+          <div>
+            <div class="number">01<span class="card-type">RASTRELLIERA</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/alberoophilyathumb.png?v=20261002" alt="Albero Accessori OPHILYA">
+              <img src="../assets/thumbnail/ophilya/alberoophilyathumb2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Albero Accessori</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card ophilya-only" data-link="paletto-ophilya.html">
+          <div>
+            <div class="number">02<span class="card-type">PALETTO METALLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/palettoophilyathumb.png" alt="Paletto 15x10 OPHILYA">
+              <img src="../assets/thumbnail/ophilya/palettothumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Paletto 15x10</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card ophilya-only" data-link="paletto18x12-ophilya.html">
+          <div>
+            <div class="number">03<span class="card-type">PALETTO METALLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/palettoophilyathumb.png" alt="Paletto 18x12 OPHILYA">
+              <img src="../assets/thumbnail/ophilya/palettothumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Paletto 18x12</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card" data-link="cartelli_semplici.html">
+          <div>
+            <div class="number">01<span class="card-type">CARTELLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/semplicethumb.png" alt="Semplice">
+              <img src="../assets/thumbnail/ophilya/semplicethumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Semplice</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card" data-link="cartelli_sale.html">
+          <div>
+            <div class="number">02<span class="card-type">CARTELLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/salethumb.png" alt="Sale">
+              <img src="../assets/thumbnail/ophilya/salethumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Sale</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card" data-link="cartellopercentuale.html">
+          <div>
+            <div class="number">03<span class="card-type">CARTELLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/percentualethumb.png" alt="Percentuale">
+              <img src="../assets/thumbnail/ophilya/percentualethumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Percentuale</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card" data-link="cartelli_brand.html">
+          <div>
+            <div class="number">04<span class="card-type">CARTELLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/brandthumb.png" alt="Brand">
+              <img src="../assets/thumbnail/ophilya/brandthumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Brand</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card" data-link="cartelli_multiarticolo.html">
+          <div>
+            <div class="number">05<span class="card-type">CARTELLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/multithumb.png" alt="Multi Articolo">
+              <img src="../assets/thumbnail/ophilya/multithumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Multi Articolo</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+
+        <a class="card" data-link="albero.html">
+          <div>
+            <div class="number">06<span class="card-type">RASTRELLIERA</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/alberothumb.png" alt="Albero Accessori">
+              <img src="../assets/thumbnail/ophilya/alberothumb2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Albero Accessori</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        
+        <a class="card" data-link="cornici10x15.html">
+          <div>
+            <div class="number">07<span class="card-type">CORNICE</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/cornicithumb.png" alt="Cornice 10x15">
+              <img src="../assets/thumbnail/ophilya/cornicithumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Cornici 10x15</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        
+        <a class="card" data-link="cornice21x27.html">
+          <div>
+            <div class="number">08<span class="card-type">CORNICE</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/cornice21x27thumb.png" alt="Cornice 21x27">
+              <img src="../assets/thumbnail/ophilya/cornice21x27thumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Cornice 21x27</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        <a class="card" data-link="paletto.html">
+          <div>
+            <div class="number">09<span class="card-type">PALETTO METALLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/palettothumb.png" alt="Paletto 15x10">
+              <img src="../assets/thumbnail/ophilya/palettothumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Paletto 15x10</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        <a class="card" data-link="paletto18x12.html">
+          <div>
+            <div class="number">10<span class="card-type">PALETTO METALLO</span></div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/palettothumb.png" alt="Paletto 18x12">
+              <img src="../assets/thumbnail/ophilya/palettothumb-2.png" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Paletto 18x12</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        </div>
+        <button class="carousel-control next" id="cartelli-next" type="button" aria-label="Cartelli successivi" onclick="scrollCartelliCarousel(1)">›</button>
+      </div>
+
+      <div class="section" id="cartellini">CARTELLINI</div>
+
+      <div class="cartellini-carousel-shell">
+        <button class="carousel-control previous" id="cartellini-previous" type="button" aria-label="Cartellini precedenti" onclick="scrollCartelliniCarousel(-1)">‹</button>
+        <div class="cards cartelli-carousel cartellini-carousel" id="cartellini-carousel">
+        <a class="card" data-link="cartellinitebe.html">
+          <div>
+            <div class="number">01</div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/cartellinitebethumb.png?v=20260930" alt="Cartellini TEBE">
+              <img src="../assets/thumbnail/ophilya/cartellinitebethumb-2.png?v=20260930" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Cartellini TEBE</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        <a class="card" data-link="cartellinilxry.html">
+          <div>
+            <div class="number">02</div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/cartellinithumb.png?v=20260930b" alt="Cartellini LXRY">
+              <img src="../assets/thumbnail/ophilya/cartellinithumb-2.png?v=20260930b" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Cartellini LXRY</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        <a class="card" data-link="prezzivetrina.html">
+          <div>
+            <div class="number">03</div>
+            <div class="card-thumb slideshow">
+              <img src="../assets/thumbnail/ophilya/prezzivetrinathumb.png?v=20260930b" alt="Prezzi Vetrina">
+              <img src="../assets/thumbnail/ophilya/prezzivetrinathumb-2.png?v=20260930b" alt="" aria-hidden="true">
+            </div>
+          </div>
+          <h2>Prezzi Vetrina</h2>
+          <div class="arrow">↗︎</div>
+        </a>
+        </div>
+        <button class="carousel-control next" id="cartellini-next" type="button" aria-label="Cartellini successivi" onclick="scrollCartelliniCarousel(1)">›</button>
+      </div>
+
+      <div class="section" id="etichette">ETICHETTE</div>
+
+      <div class="dymo-carousel-shell">
+        <button class="carousel-control previous" id="dymo-previous" type="button" aria-label="Etichette precedenti" onclick="scrollDymoCarousel(-1)">‹</button>
+        <div class="dymo-carousel" id="dymo-carousel">
+          <a class="card dymo-card" data-link="etichette.html" aria-label="Apri etichette DYMO Semplice">
+            <div class="dymo-card-preview">
+              <div class="number">01</div>
+              <div class="card-thumb"><img src="../assets/thumbnail/ophilya/label1thumb.png" data-ophilya-src="../assets/thumbnail/ophilya/label1thumb-ophilya.png" alt="Anteprima etichetta Semplice"></div>
+            </div>
+            <div class="dymo-card-body">
+              <h2>Semplice</h2>
+            </div>
+            <div class="arrow">↗︎</div>
+          </a>
+
+          <a class="card dymo-card" data-link="etichette.html?label=doppioprezzo" aria-label="Apri etichette DYMO Doppio Prezzo">
+            <div class="dymo-card-preview">
+              <div class="number">02</div>
+              <div class="card-thumb"><img src="../assets/thumbnail/ophilya/label2thumb.png" data-ophilya-src="../assets/thumbnail/ophilya/label2thumb-ophilya.png" alt="Anteprima etichetta Doppio Prezzo"></div>
+            </div>
+            <div class="dymo-card-body">
+              <h2>Doppio Prezzo</h2>
+            </div>
+            <div class="arrow">↗︎</div>
+          </a>
+          <a class="card dymo-card" data-link="etichette.html?label=promo" aria-label="Apri etichette DYMO Articolo">
+            <div class="dymo-card-preview">
+              <div class="number">03</div>
+              <div class="card-thumb"><img src="../assets/thumbnail/ophilya/label3thumb.png" data-ophilya-src="../assets/thumbnail/ophilya/label3thumb-ophilya.png" alt="Anteprima etichetta Articolo"></div>
+            </div>
+            <div class="dymo-card-body">
+              <h2>Articolo</h2>
+            </div>
+            <div class="arrow">↗︎</div>
+          </a>
+          <a class="card dymo-card" data-link="etichette.html?label=tagliedoppiacifra" aria-label="Apri etichette DYMO Taglie">
+            <div class="dymo-card-preview">
+              <div class="number">04</div>
+              <div class="card-thumb"><img src="../assets/thumbnail/ophilya/label4thumb.png" data-ophilya-src="../assets/thumbnail/ophilya/label4thumb-ophilya.png" alt="Anteprima etichetta Taglie"></div>
+            </div>
+            <div class="dymo-card-body">
+              <h2>Taglie</h2>
+            </div>
+            <div class="arrow">↗︎</div>
+          </a>
+          <a class="card dymo-card tebe-only" data-link="etichette.html?label=tagliebrand" aria-label="Apri etichette DYMO Taglie Brand">
+            <div class="dymo-card-preview">
+              <div class="number">05</div>
+              <div class="card-thumb"><img src="../assets/thumbnail/ophilya/label5thumb.png" alt="Anteprima etichetta Taglie Brand"></div>
+            </div>
+            <div class="dymo-card-body">
+              <h2>Taglie Brand</h2>
+            </div>
+            <div class="arrow">↗︎</div>
+          </a>
+
+        </div>
+        <button class="carousel-control next" id="dymo-next" type="button" aria-label="Etichette successive" onclick="scrollDymoCarousel(1)">›</button>
+      </div>
+
+      <div class="section">MATERIALI PRONTI</div>
+
+      <div class="prints-carousel-shell">
+        <button class="carousel-control previous" id="prints-previous" type="button" aria-label="Stampe precedenti" onclick="scrollPrintsCarousel(-1)">‹</button>
+        <div class="cards cartelli-carousel prints-carousel" id="prints-carousel">
+        <a class="card print-card" data-link="pdf-viewer.html?file=../assets/pdf/ophilya/taglie.pdf">
+          <div>
+            <div class="number">01</div>
+            <div class="card-thumb"><img src="../assets/thumbnail/ophilya/taglieinternazionalithumb.png" alt="Taglie Internazionali"></div>
+          </div>
+          <h2>Taglie Internazionali</h2>
+          <span class="print-card-btn">Apri &amp; Stampa</span>
+        </a>
+        <a class="card print-card" data-link="pdf-viewer.html?file=../assets/pdf/ophilya/orari.pdf" data-ophilya-link="pdf-viewer.html?file=../assets/pdf/ophilya/orari-ophilya.pdf">
+          <div>
+            <div class="number">02</div>
+            <div class="card-thumb"><img src="../assets/thumbnail/ophilya/orarithumb.png" data-ophilya-src="../assets/thumbnail/ophilya/orarithumb-ophilya.png" alt="Orari"></div>
+          </div>
+          <h2>Orari</h2>
+          <span class="print-card-btn">Apri &amp; Stampa</span>
+        </a>
+        <a class="card print-card" data-link="pdf-viewer.html?file=../assets/pdf/ophilya/staffonly.pdf" data-ophilya-link="pdf-viewer.html?file=../assets/pdf/ophilya/staffonly-ophilya.pdf">
+          <div>
+            <div class="number">03</div>
+            <div class="card-thumb"><img src="../assets/thumbnail/ophilya/staffthumb.png" data-ophilya-src="../assets/thumbnail/ophilya/staffthumb-ophilya.png" alt="Staff Only"></div>
+          </div>
+          <h2>Staff Only</h2>
+          <span class="print-card-btn">Apri &amp; Stampa</span>
+        </a>
+        <a class="card print-card" data-link="pdf-viewer.html?file=../assets/pdf/ophilya/cercasi.pdf" data-ophilya-link="pdf-viewer.html?file=../assets/pdf/ophilya/cercasi-ophilya.pdf">
+          <div>
+            <div class="number">04</div>
+            <div class="card-thumb"><img src="../assets/thumbnail/ophilya/cercasithumb.png" data-ophilya-src="../assets/thumbnail/ophilya/cercasithumb-ophilya.png" alt="Cercasi Personale"></div>
+          </div>
+          <h2>Cercasi Personale</h2>
+          <span class="print-card-btn">Apri &amp; Stampa</span>
+        </a>
+        <a class="card print-card" data-link="pdf-viewer.html?file=../assets/pdf/ophilya/nofood_indoor.pdf" data-ophilya-link="pdf-viewer.html?file=../assets/pdf/ophilya/nofood_indoor-ophilya.pdf">
+          <div>
+            <div class="number">05</div>
+            <div class="card-thumb"><img src="../assets/thumbnail/ophilya/nofoodthumb.png" data-ophilya-src="../assets/thumbnail/ophilya/nofoodthumb-ophilya.png" alt="No Food &amp; Drinks"></div>
+          </div>
+          <h2>No Food &amp; Drinks</h2>
+          <span class="print-card-btn">Apri &amp; Stampa</span>
+        </a>
+        <a class="card print-card" data-link="pdf-viewer.html?file=../assets/pdf/ophilya/vietatofumare.pdf">
+          <div>
+            <div class="number">06</div>
+            <div class="card-thumb"><img src="../assets/thumbnail/ophilya/fumothumb.png" alt="Vietato Fumare"></div>
+          </div>
+          <h2>Vietato Fumare</h2>
+          <span class="print-card-btn">Apri &amp; Stampa</span>
+        </a>
+        </div>
+        <button class="carousel-control next" id="prints-next" type="button" aria-label="Stampe successive" onclick="scrollPrintsCarousel(1)">›</button>
+      </div>
+
+      <div class="section" id="strumenti-cassa">UTILITA' DI CASSA</div>
+
+      <div class="cash-tools-area" id="cash-tools-area">
+      <div class="cash-tools-grid">
+        <section class="cash-tool" id="cash-discount" onclick="focusCashTool(event, this)">
+          <h2>Calcola Sconto</h2>
+          <button class="cash-tool-close" type="button" aria-label="Chiudi Calcola Sconto" onclick="closeCashTool(event)">×</button>
+          <div class="cash-tool-row">
+            <div class="cash-input-group"><span class="cash-prefix">€</span><input id="discount-original" class="cash-input" type="number" min="0" step="0.01" placeholder="Prezzo pieno"></div>
+            <div class="cash-input-group"><span class="cash-prefix">%</span><input id="discount-percent" class="cash-input" type="number" min="0" max="100" step="0.01" placeholder="Sconto"></div>
+          </div>
+          <button class="cash-button" type="button" onclick="calculateDiscount()">Calcola prezzo finale</button>
+          <output class="cash-result" id="discount-result">€ 0,00</output>
+        </section>
+
+        <section class="cash-tool" id="cash-rate" onclick="focusCashTool(event, this)">
+          <h2>Calcola Aliquota</h2>
+          <button class="cash-tool-close" type="button" aria-label="Chiudi Calcola Aliquota" onclick="closeCashTool(event)">×</button>
+          <div class="cash-tool-row">
+            <div class="cash-input-group"><span class="cash-prefix">€</span><input id="rate-original" class="cash-input" type="number" min="0" step="0.01" placeholder="Prezzo pieno"></div>
+            <div class="cash-input-group"><span class="cash-prefix">€</span><input id="rate-final" class="cash-input" type="number" min="0" step="0.01" placeholder="Prezzo scontato"></div>
+          </div>
+          <button class="cash-button" type="button" onclick="calculateDiscountRate()">Trova % sconto</button>
+          <output class="cash-result" id="rate-result">0%</output>
+        </section>
+
+        <section class="cash-tool" id="cash-currency" onclick="focusCashTool(event, this)">
+          <h2>Cambio Valuta</h2>
+          <button class="cash-tool-close" type="button" aria-label="Chiudi Cambio Valuta" onclick="closeCashTool(event)">×</button>
+          <div class="cash-tool-row"><select class="cash-select" id="currency-direction" onchange="calculateCurrency()"><option value="to-eur">Da Valuta Estera a EUR</option><option value="from-eur">Da EUR a Valuta Estera</option></select></div>
+          <div class="cash-tool-row">
+            <div class="cash-input-group">
+              <span class="cash-prefix" id="currency-symbol">$</span>
+              <input id="currency-amount" class="cash-input" type="text" inputmode="decimal" autocomplete="off" placeholder="Importo" oninput="calculateCurrency()">
+              <select class="cash-select currency-code" id="currency-code" onchange="calculateCurrency()">
+                <option value="USD" data-short="USD" data-full="USD ($) USA">USD</option>
+                <option value="GBP" data-short="GBP" data-full="GBP (£) Regno Unito">GBP</option>
+                <option value="RUB" data-short="RUB" data-full="RUB (₽) Russia">RUB</option>
+                <option value="ILS" data-short="ILS" data-full="ILS (₪) Israele">ILS</option>
+                <option value="CNY" data-short="CNY" data-full="CNY (¥) Cina">CNY</option>
+                <option value="JPY" data-short="JPY" data-full="JPY (¥) Giappone">JPY</option>
+              </select>
+            </div>
+          </div>
+          <button class="cash-button" type="button" onclick="calculateCurrency()">Calcola cambio</button>
+          <output class="cash-result" id="currency-result">€ 0,00</output>
+          <div class="cash-tools-status" id="currency-status">Caricamento tassi di cambio…</div>
+        </section>
+
+        <section class="cash-tool" id="cash-vat" onclick="focusCashTool(event, this)">
+          <h2>Calcola IVA</h2>
+          <button class="cash-tool-close" type="button" aria-label="Chiudi Calcola IVA" onclick="closeCashTool(event)">×</button>
+          <div class="cash-rate-buttons"><button class="cash-rate" type="button" onclick="setVatRate(4, this)">4%</button><button class="cash-rate" type="button" onclick="setVatRate(5, this)">5%</button><button class="cash-rate" type="button" onclick="setVatRate(10, this)">10%</button><button class="cash-rate active" type="button" onclick="setVatRate(22, this)">22%</button></div>
+          <div class="cash-tool-row"><div class="cash-input-group"><span class="cash-prefix">€</span><input id="vat-net" class="cash-input" type="text" inputmode="decimal" autocomplete="off" placeholder="Imponibile" oninput="calculateVatFromNet()"><span class="cash-suffix">SENZA IVA</span></div></div>
+          <div class="cash-tool-row"><div class="cash-input-group"><span class="cash-prefix">€</span><input id="vat-value" class="cash-input" type="text" inputmode="decimal" autocomplete="off" placeholder="Importo IVA" oninput="calculateVatFromValue()"><span class="cash-suffix">IVA</span></div></div>
+          <div class="cash-tool-row"><div class="cash-input-group"><span class="cash-prefix">€</span><input id="vat-gross" class="cash-input" type="text" inputmode="decimal" autocomplete="off" placeholder="Totale" oninput="calculateVatFromGross()"><span class="cash-suffix">CON IVA</span></div></div>
+          <button class="cash-button secondary" type="button" onclick="resetVat()">Azzera IVA</button>
+        </section>
+
+        <section class="cash-tool" id="cash-qr" onclick="focusCashTool(event, this)">
+          <h2>Generatore QR Code</h2>
+          <button class="cash-tool-close" type="button" aria-label="Chiudi Generatore QR Code" onclick="closeCashTool(event)">×</button>
+          <div class="cash-tool-row"><div class="cash-input-group"><input id="qr-content" class="cash-input" type="text" value="https://www.instagram.com/tebe_269/" placeholder="Inserisci link o testo" oninput="generateQrCode()"></div></div>
+          <div class="cash-tool-row"><select class="cash-select" id="qr-size" onchange="generateQrCode()"><option value="100">Dimensione: piccola</option><option value="160">Dimensione: media</option><option value="240">Dimensione: grande</option></select></div>
+          <div class="cash-qr-preview"><div id="qr-preview"></div></div>
+          <div class="cash-tool-row"><button class="cash-button" type="button" onclick="downloadQrCode()">Scarica QR</button><button class="cash-button secondary" type="button" onclick="printQrCode()">Stampa QR</button></div>
+        </section>
+      </div>
+      <div class="cash-tools-coming-soon" aria-live="polite">Coming Soon</div>
+      </div>
+
+    </section>
+
+    <div class="mobile-brand-footer">STORE // CRAFT</div>
+  </main>
+</div>
+
+<script>
+const stores = {
+  tebe:{
+    name:"TEBE",
+    sub:"VIA DEL CORSO 269",
+    detail:"MODA DONNA · BRANDS · LINEA 269",
+    logo:"../assets/img/tebe/tebeblack.png"
+  },
+  ophilya:{
+    name:"OPHILYA",
+    sub:"VIA DEL CORSO 268",
+    detail:"LEATHER GOODS · MADE IN ITALY",
+    logo:"../assets/img/ophilya/ophilyablack.png"
+  }
+};
+
+let currentStore = "tebe";
+
+// OPHILYA ha una sua pagina etichette: i link a etichette.html vengono dirottati li'.
+function storePage(page){
+  return currentStore === "ophilya" ? page.replace(/^etichette\.html/, "etichetteophilya.html") : page;
+}
+
+function updateLinks(){
+  document.querySelectorAll("[data-link]").forEach(el=>{
+    // Alcuni widget hanno un file diverso per OPHILYA (es. stampe pronte col logo OPHILYA).
+    const link = currentStore === "ophilya" && el.dataset.ophilyaLink ? el.dataset.ophilyaLink : el.dataset.link;
+    const url = new URL(storePage(link), window.location.href);
+    url.searchParams.set("store", currentStore);
+    el.setAttribute("href", url.href);
+  });
+}
+
+// Interruttore TEBE / OPHILYA in alto: ogni negozio ha la sua dashboard (tebe/, ophilya/), quindi l'altro negozio
+// si apre come punto vendita di oggi (punto-vendita.js).
+function switchStore(store){
+  if(store !== document.documentElement.dataset.negozio) PuntoVendita.scegli(store);
+}
+
+function changeStore(store){
+  currentStore = store;
+  const s=stores[store];
+
+  const titleImg = document.getElementById("title");
+  titleImg.src = s.logo;
+  titleImg.alt = s.name;
+  document.getElementById("identity").textContent=s.sub;
+  document.getElementById("detail").textContent=s.detail;
+
+  document.getElementById("tebe").classList.toggle("selected",store==="tebe");
+  document.getElementById("ophilya").classList.toggle("selected",store==="ophilya");
+  document.body.classList.add("store-switching");
+  document.body.classList.toggle("ophilya", store === "ophilya");
+  // Miniature con una versione OPHILYA (es. etichette DYMO).
+  document.querySelectorAll("img[data-ophilya-src]").forEach(img => {
+    if(!img.dataset.tebeSrc) img.dataset.tebeSrc = img.getAttribute("src");
+    img.src = store === "ophilya" ? img.dataset.ophilyaSrc : img.dataset.tebeSrc;
+  });
+
+  updateLinks();
+  resetCarousels();
+}
+
+/* Al cambio di negozio compaiono o spariscono card in testa ai caroselli
+   (es. .ophilya-only): lo scroll-snap resterebbe agganciato alla card di prima,
+   più avanti nel carosello, e lo scorrimento animato si vedrebbe. Con la classe
+   store-switching (aggiunta da changeStore) snap e animazione sono sospesi:
+   i caroselli tornano subito al primo widget e solo dopo si riattiva lo snap,
+   che a quel punto si aggancia proprio al primo. */
+function resetCarousels(){
+  const carousels = document.querySelectorAll(".cartelli-carousel, .dymo-carousel");
+  const reset = () => carousels.forEach(carousel => {
+    carousel._carouselTarget = null;
+    carousel.scrollLeft = 0;
+  });
+  reset();
+  requestAnimationFrame(() => {
+    reset();
+    document.body.classList.remove("store-switching");
+    updateDymoCarouselControls();
+    updateCartelliCarouselControls();
+    updatePrintsCarouselControls();
+    updateCartelliniCarouselControls();
+  });
+}
+
+function goTo(sectionId){
+  document.getElementById(sectionId)?.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function openPage(page){
+  window.location.href = `${storePage(page)}?store=${encodeURIComponent(currentStore)}`;
+}
+
+function toggleMobileSidebar(forceOpen){
+  const isOpen = typeof forceOpen === "boolean"
+    ? forceOpen
+    : !document.body.classList.contains("mobile-menu-open");
+  document.body.classList.toggle("mobile-menu-open", isOpen);
+  const toggle = document.querySelector(".mobile-menu-toggle");
+  toggle?.setAttribute("aria-expanded", String(isOpen));
+  toggle?.setAttribute("aria-label", isOpen ? "Chiudi il menu" : "Apri il menu");
+}
+
+// Stessa soglia delle regole CSS della vista cellulare.
+const phoneViewQuery = window.matchMedia("(max-width:720px) and (pointer:coarse)");
+
+function isPhoneView(){
+  return phoneViewQuery.matches;
+}
+
+function openCashTool(toolId){
+  // Sul telefono i widget sono gia' pronti nella pagina: si scorre fino allo strumento, senza popup.
+  if(isPhoneView()){
+    const tool = document.getElementById(toolId);
+    toggleMobileSidebar(false);
+    tool?.scrollIntoView({behavior:"smooth", block:"start"});
+    setActiveCashTool(tool);
+    window.setTimeout(() => tool?.querySelector("input, select, button")?.focus({preventScroll:true}), 450);
+    return;
+  }
+  document.getElementById("strumenti-cassa")?.scrollIntoView({behavior:"smooth", block:"start"});
+  focusCashTool(null, document.getElementById(toolId));
+  window.setTimeout(() => document.getElementById(toolId)?.querySelector("input, select, button:not(.cash-tool-close)")?.focus({preventScroll:true}), 450);
+}
+
+function focusCashTool(event, tool){
+  if(event?.target.closest(".cash-tool-close")) return;
+  const area = document.querySelector(".cash-tools-area");
+  if(!area || !tool) return;
+  if(isPhoneView()){
+    setActiveCashTool(tool);
+    return;
+  }
+  document.querySelectorAll(".cash-tool-expanded").forEach(item => item.classList.remove("cash-tool-expanded"));
+  area.classList.add("is-focused");
+  tool.classList.add("cash-tool-expanded");
+  if(tool.id === "cash-currency") updateCurrencyLabels(true);
+}
+
+// Sul telefono lo strumento in uso resta evidenziato finche' non se ne usa un altro.
+function setActiveCashTool(tool){
+  document.querySelectorAll(".cash-tool-active").forEach(item => {
+    if(item !== tool) item.classList.remove("cash-tool-active");
+  });
+  tool?.classList.add("cash-tool-active");
+}
+
+function closeCashTool(event){
+  event?.stopPropagation();
+  document.querySelector(".cash-tools-area")?.classList.remove("is-focused");
+  document.querySelectorAll(".cash-tool-expanded").forEach(tool => {
+    tool.classList.remove("cash-tool-expanded");
+    if(tool.id === "cash-currency") updateCurrencyLabels(false);
+  });
+}
+
+function returnToHomeTop(){
+  closeCashTool();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function setLayoutMode(mode){
+  const isCassiere = mode === "cassiere";
+  document.body.classList.toggle("cassiere-mode", isCassiere);
+  document.body.classList.toggle("creator-mode", !isCassiere);
+  document.querySelectorAll(".mode-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.mode === mode);
+  });
+  closeCashTool();
+}
+
+function updateCurrencyLabels(expanded){
+  document.querySelectorAll("#currency-code option").forEach(option => {
+    option.textContent = expanded ? option.dataset.full : option.dataset.short;
+  });
+}
+
+document.addEventListener("keydown", event => {
+  if(event.key === "Escape") closeCashTool();
+});
+
+// Anche scrivendo in un campo (es. passando da un widget all'altro con la tastiera) si evidenzia il suo strumento.
+document.addEventListener("focusin", event => {
+  const tool = event.target.closest?.(".cash-tool");
+  if(tool && isPhoneView()) setActiveCashTool(tool);
+});
+
+// Se la vista diventa quella del telefono con un popup aperto, lo si chiude.
+phoneViewQuery.addEventListener?.("change", event => {
+  if(event.matches) closeCashTool();
+});
+
+function formatCurrency(value){
+  return `€ ${value.toFixed(2).replace(".", ",")}`;
+}
+
+function parseDecimal(value){
+  return Number.parseFloat(value.replace(",", "."));
+}
+
+function calculateDiscount(){
+  const original = Number.parseFloat(document.getElementById("discount-original").value);
+  const discount = Number.parseFloat(document.getElementById("discount-percent").value);
+  document.getElementById("discount-result").textContent =
+    Number.isFinite(original) && Number.isFinite(discount) ? formatCurrency(original * (1 - discount / 100)) : "€ 0,00";
+}
+
+function calculateDiscountRate(){
+  const original = Number.parseFloat(document.getElementById("rate-original").value);
+  const finalPrice = Number.parseFloat(document.getElementById("rate-final").value);
+  document.getElementById("rate-result").textContent =
+    Number.isFinite(original) && Number.isFinite(finalPrice) && original > 0
+      ? `-${Math.round((1 - finalPrice / original) * 100)}%`
+      : "0%";
+}
+
+let vatRate = 22;
+let vatSourceId = "vat-net";
+function setVatRate(rate, button){
+  vatRate = rate;
+  document.querySelectorAll(".cash-rate").forEach(item => item.classList.toggle("active", item === button));
+  ({ "vat-net": calculateVatFromNet, "vat-value": calculateVatFromValue, "vat-gross": calculateVatFromGross }[vatSourceId] || calculateVatFromNet)();
+}
+
+function formatVatValue(value){
+  return value.toFixed(2).replace(".", ",");
+}
+
+function setVatValues(sourceId, net, value, gross){
+  const values = { "vat-net": net, "vat-value": value, "vat-gross": gross };
+  Object.entries(values).forEach(([id, amount]) => {
+    if(id !== sourceId) document.getElementById(id).value = formatVatValue(amount);
+  });
+}
+
+function clearVatValues(exceptId){
+  ["vat-net", "vat-value", "vat-gross"].filter(id => id !== exceptId).forEach(id => { document.getElementById(id).value = ""; });
+}
+
+function calculateVatFromNet(){
+  vatSourceId = "vat-net";
+  const net = parseDecimal(document.getElementById("vat-net").value);
+  if(!Number.isFinite(net) || net < 0){ clearVatValues("vat-net"); return; }
+  const value = net * vatRate / 100;
+  setVatValues("vat-net", net, value, net + value);
+}
+
+function calculateVatFromValue(){
+  vatSourceId = "vat-value";
+  const value = parseDecimal(document.getElementById("vat-value").value);
+  if(!Number.isFinite(value) || value < 0){ clearVatValues("vat-value"); return; }
+  const net = value / (vatRate / 100);
+  setVatValues("vat-value", net, value, net + value);
+}
+
+function calculateVatFromGross(){
+  vatSourceId = "vat-gross";
+  const gross = parseDecimal(document.getElementById("vat-gross").value);
+  if(!Number.isFinite(gross) || gross < 0){ clearVatValues("vat-gross"); return; }
+  const net = gross / (1 + vatRate / 100);
+  setVatValues("vat-gross", net, gross - net, gross);
+}
+
+function resetVat(){
+  ["vat-net", "vat-value", "vat-gross"].forEach(id => { document.getElementById(id).value = ""; });
+  vatSourceId = "vat-net";
+}
+
+const currencySymbols = { USD:"$", GBP:"£", RUB:"₽", ILS:"₪", CNY:"¥", JPY:"¥" };
+let exchangeRates = { USD:1.08, GBP:0.85, RUB:98, ILS:4, CNY:7.8, JPY:160.5 };
+
+async function loadExchangeRates(){
+  const status = document.getElementById("currency-status");
+  try {
+    const response = await fetch("https://open.er-api.com/v6/latest/EUR");
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    if(!data?.rates) throw new Error("Risposta tassi non valida");
+    exchangeRates = data.rates;
+    status.textContent = "Tassi di cambio aggiornati.";
+    calculateCurrency();
+  } catch(error) {
+    console.error("Aggiornamento tassi di cambio fallito.", error);
+    status.textContent = "Tassi di riserva in uso: aggiornamento non disponibile.";
+    calculateCurrency();
+  }
+}
+
+function calculateCurrency(){
+  const direction = document.getElementById("currency-direction").value;
+  const amount = parseDecimal(document.getElementById("currency-amount").value);
+  const currency = document.getElementById("currency-code").value;
+  const symbol = currencySymbols[currency];
+  const rate = exchangeRates[currency];
+  document.getElementById("currency-symbol").textContent = direction === "to-eur" ? symbol : "€";
+  const result = document.getElementById("currency-result");
+  if(!Number.isFinite(amount) || amount < 0 || !Number.isFinite(rate)){
+    result.textContent = direction === "to-eur" ? "€ 0,00" : `${symbol} 0,00`;
+    return;
+  }
+  result.textContent = direction === "to-eur"
+    ? formatCurrency(amount / rate)
+    : `${symbol} ${(amount * rate).toFixed(2).replace(".", ",")} (${currency})`;
+}
+
+function generateQrCode(){
+  const container = document.getElementById("qr-preview");
+  const content = document.getElementById("qr-content").value.trim();
+  const size = Number.parseInt(document.getElementById("qr-size").value, 10);
+  container.innerHTML = "";
+  if(!content) return;
+  new QRCode(container, { text:content, width:size, height:size, colorDark:"#282522", colorLight:"#ffffff", correctLevel:QRCode.CorrectLevel.M });
+}
+
+function getQrImageUrl(){
+  const qrElement = document.querySelector("#qr-preview img, #qr-preview canvas");
+  if(!qrElement) return "";
+  return qrElement instanceof HTMLCanvasElement ? qrElement.toDataURL("image/png") : qrElement.src;
+}
+
+function downloadQrCode(){
+  const imageUrl = getQrImageUrl();
+  if(!imageUrl) return;
+  const link = document.createElement("a");
+  link.href = imageUrl;
+  link.download = "qrcode.png";
+  link.click();
+}
+
+function printQrCode(){
+  const imageUrl = getQrImageUrl();
+  if(!imageUrl) return;
+  const printWindow = window.open("", "_blank", "width=450,height=450");
+  if(!printWindow){
+    console.error("Apertura della finestra di stampa bloccata dal browser.");
+    return;
+  }
+  printWindow.document.write(`<img src="${imageUrl}" alt="QR Code" style="display:block;max-width:80%;margin:10vh auto" onload="window.print();window.close()">`);
+  printWindow.document.close();
+}
+
+function updateDymoCarouselControls(){
+  const carousel = document.getElementById("dymo-carousel");
+  if(!carousel) return;
+
+  const previous = document.getElementById("dymo-previous");
+  const next = document.getElementById("dymo-next");
+  if(!previous || !next) return;
+  const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+
+  previous.disabled = carousel.scrollLeft <= 1;
+  next.disabled = carousel.scrollLeft >= maxScrollLeft - 1;
+}
+
+/* Posizioni di partenza delle colonne del carosello (nel carosello dei cartelli
+   due widget condividono la stessa colonna). */
+function getCarouselColumnStarts(carousel){
+  const carouselLeft = carousel.getBoundingClientRect().left;
+  const starts = [];
+  Array.from(carousel.children).forEach(item => {
+    if(item.offsetParent === null) return;
+    const left = Math.round(item.getBoundingClientRect().left - carouselLeft + carousel.scrollLeft);
+    if(!starts.some(start => Math.abs(start - left) <= 2)) starts.push(left);
+  });
+  return starts.sort((a, b) => a - b);
+}
+
+/* Sposta il carosello di un gruppo di colonne intere, così ogni widget resta
+   inquadrato per bene: in vista cellulare si avanza di un solo widget, su
+   schermi larghi di tutte le colonne visibili. Se si tocca di nuovo la
+   freccia mentre l'animazione è in corso, si riparte dalla destinazione
+   precedente e non dalla posizione intermedia. */
+function scrollCarouselByStep(carousel, direction){
+  const starts = getCarouselColumnStarts(carousel);
+  if(!starts.length) return;
+
+  const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+  const columnStep = starts.length > 1 ? starts[1] - starts[0] : carousel.clientWidth;
+  const visibleColumns = Math.max(1, Math.floor((carousel.clientWidth + 2) / columnStep));
+
+  const pending = carousel._carouselTarget;
+  const fromLeft = pending && Date.now() - pending.time < 700 ? pending.left : carousel.scrollLeft;
+
+  let currentIndex = 0;
+  starts.forEach((start, index) => {
+    if(Math.abs(start - fromLeft) < Math.abs(starts[currentIndex] - fromLeft)) currentIndex = index;
+  });
+
+  const targetIndex = Math.min(starts.length - 1, Math.max(0, currentIndex + direction * visibleColumns));
+  const targetLeft = Math.min(maxScrollLeft, Math.max(0, starts[targetIndex]));
+  carousel._carouselTarget = { left: targetLeft, time: Date.now() };
+  carousel.scrollTo({ left: targetLeft, behavior:"smooth" });
+}
+
+function scrollDymoCarousel(direction){
+  const carousel = document.getElementById("dymo-carousel");
+  if(!carousel) return;
+  scrollCarouselByStep(carousel, direction);
+}
+
+function updateCartelliCarouselControls(){
+  const carousel = document.getElementById("cartelli-carousel");
+  if(!carousel) return;
+
+  const previous = document.getElementById("cartelli-previous");
+  const next = document.getElementById("cartelli-next");
+  if(!previous || !next) return;
+  const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+
+  previous.disabled = carousel.scrollLeft <= 1;
+  next.disabled = carousel.scrollLeft >= maxScrollLeft - 1;
+}
+
+function scrollCartelliCarousel(direction){
+  const carousel = document.getElementById("cartelli-carousel");
+  if(!carousel) return;
+  scrollCarouselByStep(carousel, direction);
+}
+
+function updatePrintsCarouselControls(){
+  const carousel = document.getElementById("prints-carousel");
+  if(!carousel) return;
+
+  const previous = document.getElementById("prints-previous");
+  const next = document.getElementById("prints-next");
+  if(!previous || !next) return;
+  const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+
+  previous.disabled = carousel.scrollLeft <= 1;
+  next.disabled = carousel.scrollLeft >= maxScrollLeft - 1;
+}
+
+function scrollPrintsCarousel(direction){
+  const carousel = document.getElementById("prints-carousel");
+  if(!carousel) return;
+  scrollCarouselByStep(carousel, direction);
+}
+
+function updateCartelliniCarouselControls(){
+  const carousel = document.getElementById("cartellini-carousel");
+  if(!carousel) return;
+
+  const previous = document.getElementById("cartellini-previous");
+  const next = document.getElementById("cartellini-next");
+  if(!previous || !next) return;
+  const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+
+  previous.disabled = carousel.scrollLeft <= 1;
+  next.disabled = carousel.scrollLeft >= maxScrollLeft - 1;
+}
+
+function scrollCartelliniCarousel(direction){
+  const carousel = document.getElementById("cartellini-carousel");
+  if(!carousel) return;
+  scrollCarouselByStep(carousel, direction);
+}
+
+function toggleSidebarSection(sectionId){
+  const section = document.querySelector(`[data-sidebar-section="${sectionId}"]`);
+  if(!section) return;
+
+  const toggle = section.querySelector(".section-toggle");
+  const label = section.querySelector(".label");
+  const stateElement = toggle || label;
+  const isExpanded = stateElement.getAttribute("aria-expanded") === "true";
+  stateElement.setAttribute("aria-expanded", String(!isExpanded));
+  if(toggle){
+    toggle.setAttribute("aria-label", `${isExpanded ? "Espandi" : "Comprimi"} ${section.querySelector(".label span").textContent}`);
+  }
+  section.classList.toggle("is-collapsed", isExpanded);
+
+  const collapsedSections = [...document.querySelectorAll(".sidebar-section.is-collapsed")]
+    .map(item => item.dataset.sidebarSection);
+  localStorage.setItem("collapsed_sidebar_sections", JSON.stringify(collapsedSections));
+}
+
+// Il clic sul titolo di una sezione (non solo sulla freccia) la apre o la chiude.
+function enableSidebarLabelToggle(){
+  document.querySelectorAll('.sidebar-section:not([data-sidebar-section="credits"]) > .label').forEach(label => {
+    const sectionId = label.parentElement.dataset.sidebarSection;
+    label.addEventListener("click", event => {
+      if(event.target.closest(".section-toggle")) return;
+      toggleSidebarSection(sectionId);
+    });
+  });
+}
+
+function restoreSidebarSections(){
+  const savedSections = localStorage.getItem("collapsed_sidebar_sections");
+  const defaultCollapsedSections = ["custom-logos", "tools", "credits"];
+  let collapsedSections = [];
+  try {
+    collapsedSections = JSON.parse(savedSections || JSON.stringify(defaultCollapsedSections));
+  } catch(error) {
+    console.error("Ripristino stato menu laterale fallito.", error);
+  }
+
+  if(!Array.isArray(collapsedSections)) return;
+  collapsedSections.forEach(sectionId => {
+    const section = document.querySelector(`[data-sidebar-section="${sectionId}"]`);
+    const toggle = section?.querySelector(".section-toggle");
+    const label = section?.querySelector(".label");
+    const stateElement = toggle || label;
+    if(!section || !stateElement) return;
+    section.classList.add("is-collapsed");
+    stateElement.setAttribute("aria-expanded", "false");
+    if(toggle){
+      toggle.setAttribute("aria-label", `Espandi ${section.querySelector(".label span").textContent}`);
+    }
+  });
+}
+
+// Menu di sistema (MENU // IMPOSTAZIONI), come nella dashboard Luxury: viste MENU, CONTATTI & CREDITS e NEGOZI
+// (PROFILO UTENTE); si chiude con Esc, con un clic fuori o di nuovo dal pulsante.
+const systemMenu = document.getElementById("system-menu");
+const systemMenuButton = document.getElementById("system-menu-toggle");
+
+function showSystemMenuView(view){
+  const titles = { home:"MENU", contacts:"CONTATTI & CREDITS", stores:"NEGOZI" };
+  if(!titles[view]) throw new Error(`Vista del menu di sistema non riconosciuta: ${view}`);
+  systemMenu.querySelectorAll("[data-system-view]").forEach(panel => {
+    panel.hidden = panel.dataset.systemView !== view;
+  });
+  document.getElementById("system-menu-title").textContent = titles[view];
+  const focusTarget = view === "home"
+    ? systemMenu.querySelector('[data-system-menu-item="profile"]')
+    : systemMenu.querySelector(`[data-system-view="${view}"] [data-system-menu-back]`);
+  focusTarget?.focus({ preventScroll:true });
+}
+
+function setSystemMenuOpen(open){
+  systemMenu.hidden = !open;
+  systemMenuButton.setAttribute("aria-expanded", String(open));
+  if(open) showSystemMenuView("home");
+}
+
+function toggleSystemMenu(){
+  setSystemMenuOpen(systemMenu.hidden);
+}
+
+function openSystemMenuView(view){
+  showSystemMenuView(view);
+}
+
+// PROFILO UTENTE: il negozio di questa dashboard è attivo; gli altri si aprono se sono già nella struttura,
+// altrimenti restano IN ARRIVO (punto-vendita.js).
+function renderStoreChoices(){
+  const current = document.documentElement.dataset.negozio;
+  document.getElementById("system-store-current").textContent = PuntoVendita.NEGOZI[current].sigla;
+  const list = document.getElementById("system-store-list");
+  list.replaceChildren(...Object.entries(PuntoVendita.NEGOZI).map(([id, store]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "system-store-choice";
+    const name = document.createElement("span");
+    name.textContent = store.nome;
+    const status = document.createElement("span");
+    button.append(name, status);
+    if(id === current){
+      button.classList.add("is-active");
+      button.setAttribute("aria-pressed", "true");
+      button.disabled = true;
+      status.className = "system-store-status";
+      status.textContent = `${store.sigla} · ATTIVO`;
+    } else if(store.pronto){
+      button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => PuntoVendita.scegli(id));
+      status.setAttribute("aria-hidden", "true");
+      status.textContent = "›";
+    } else {
+      button.disabled = true;
+      status.className = "system-menu-badge";
+      status.textContent = "IN ARRIVO";
+    }
+    return button;
+  }));
+}
+
+systemMenu.addEventListener("keydown", event => {
+  if(event.key === "Escape"){
+    event.preventDefault();
+    setSystemMenuOpen(false);
+    systemMenuButton.focus({ preventScroll:true });
+  }
+});
+document.addEventListener("pointerdown", event => {
+  if(!systemMenu.hidden && !systemMenu.contains(event.target) && !systemMenuButton.contains(event.target)){
+    setSystemMenuOpen(false);
+  }
+});
+renderStoreChoices();
+
+(function init(){
+  // Il negozio è quello della cartella della dashboard (data-negozio): TEBE o OPHILYA.
+  if(document.documentElement.dataset.negozio === "ophilya"){ changeStore("ophilya"); }
+  else { updateLinks(); }
+  restoreSidebarSections();
+  enableSidebarLabelToggle();
+  setLayoutMode("creator");
+  window.addEventListener("scroll", () => {
+    document.body.classList.toggle("is-scrolled", window.scrollY > 80);
+  }, {passive:true});
+
+  const dymoCarousel = document.getElementById("dymo-carousel");
+  dymoCarousel?.addEventListener("scroll", updateDymoCarouselControls, { passive:true });
+  const cartelliCarousel = document.getElementById("cartelli-carousel");
+  cartelliCarousel?.addEventListener("scroll", updateCartelliCarouselControls, { passive:true });
+  window.addEventListener("resize", updateDymoCarouselControls);
+  window.addEventListener("resize", updateCartelliCarouselControls);
+  const printsCarousel = document.getElementById("prints-carousel");
+  printsCarousel?.addEventListener("scroll", updatePrintsCarouselControls, { passive:true });
+  window.addEventListener("resize", updatePrintsCarouselControls);
+  updateDymoCarouselControls();
+  updateCartelliCarouselControls();
+  updatePrintsCarouselControls();
+  const cartelliniCarousel = document.getElementById("cartellini-carousel");
+  cartelliniCarousel?.addEventListener("scroll", updateCartelliniCarouselControls, { passive:true });
+  window.addEventListener("resize", updateCartelliniCarouselControls);
+  updateCartelliniCarouselControls();
+  generateQrCode();
+  loadExchangeRates();
+})();
+</script>
+</body>
+</html>

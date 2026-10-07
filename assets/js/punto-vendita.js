@@ -10,14 +10,15 @@
      PuntoVendita.ricorda(negozio)       salva la scelta di oggi senza cambiare pagina
      PuntoVendita.dashboard(negozio)     indirizzo della dashboard del negozio
      PuntoVendita.splash()               indirizzo della splash page
+     PuntoVendita.apriSplash()           apre la splash page per scegliere di nuovo (index.html?scegli)
    "pronto" dice se il negozio è già nella struttura: quelli non pronti compaiono come IN ARRIVO. */
 (() => {
   const CHIAVE = 'storecraft_punto_vendita';
   const RADICE = new URL('../../', document.currentScript.src);
   const NEGOZI = Object.freeze({
     luxury: Object.freeze({ nome: 'LUXURY OUTLET', sigla: 'LXRY', pronto: true }),
-    tebe: Object.freeze({ nome: 'TEBE', sigla: 'TEBE', pronto: false }),
-    ophilya: Object.freeze({ nome: 'OPHILYA', sigla: 'OPHILYA', pronto: false })
+    tebe: Object.freeze({ nome: 'TEBE', sigla: 'TEBE', pronto: true }),
+    ophilya: Object.freeze({ nome: 'OPHILYA', sigla: 'OPHILYA', pronto: true })
   });
 
   // Giorno locale, non UTC: la scelta scade a mezzanotte del negozio.
@@ -60,6 +61,8 @@
     scegli,
     ricorda,
     dashboard,
-    splash: () => new URL('index.html', RADICE).href
+    splash: () => new URL('index.html', RADICE).href,
+    // Voce HOME del menu di sistema: torna alla splash page e la mostra anche se oggi un negozio è già scelto.
+    apriSplash: () => { location.href = new URL('index.html?scegli', RADICE).href; }
   });
 })();
