@@ -1,4 +1,5 @@
-/* Stampa da iPhone e iPad (Safari e Chrome, stesso motore WebKit).
+/* Stampa da iPhone e iPad (Safari e Chrome, stesso motore WebKit). Il tasto di stampa crea un PDF a misura
+   reale (in fondo al file); quanto segue vale per chi usa comunque la stampa del browser.
    iOS non rispetta i margini 0 di @page: lascia un suo margine (Safari ci scrive indirizzo, data e numero di
    pagina) e rimpicciolisce il foglio solo per farlo entrare in larghezza. In altezza gli ultimi mm del foglio
    finiscono su una seconda pagina bianca. Solo su iOS e solo in stampa, la pagina resta larga quanto il foglio
@@ -55,12 +56,29 @@
     root.setProperty('--stampa-ios-zoom', zoom.toFixed(3));
   }
 
-  // Il foglio può cambiare (es. Magazzino con 1 CARTELLO): si rimisura prima di ogni stampa.
-  const print = window.print.bind(window);
-  window.print = () => {
-    measure();
-    print();
-  };
+  // Il foglio può cambiare (es. Magazzino con 1 CARTELLO): si rimisura prima di ogni stampa del browser.
   window.addEventListener('beforeprint', measure);
   measure();
+
+  // Il tasto di stampa delle pagine non usa la stampa del browser: crea un PDF A4 con il foglio a misura reale,
+  // senza margini né didascalia, e lo consegna con il menu Condividi (ListaStampa.sheetPdf e offerPdf in
+  // lista-stampa.js, caricato qui con la stessa versione). La riduzione sopra resta per chi stampa dal menu del
+  // browser.
+  const version = (document.currentScript && new URL(document.currentScript.src).search) || '';
+  function loadListaStampa() {
+    if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
+    return new Promise((resolve, reject) => {
+      const tag = document.createElement('script');
+      tag.src = `assets/js/lista-stampa.js${version}`;
+      tag.onload = () => resolve(window.ListaStampa);
+      tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
+      document.head.appendChild(tag);
+    });
+  }
+  window.print = () => {
+    if (document.querySelector('.lista-pdf-overlay')) return;
+    loadListaStampa()
+      .then(lista => lista.offerPdf(lista.sheetPdf(sheet), `${document.title}.pdf`))
+      .catch(error => console.error('Preparazione del PDF di stampa non riuscita.', error));
+  };
 })();

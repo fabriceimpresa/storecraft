@@ -96,7 +96,7 @@
 
   // Fotografa il foglio così come verrà stampato: senza ombra né zoom della vista telefono,
   // con i cartellini esclusi nascosti come in stampa.
-  async function addSheet(sheet) {
+  async function captureSheet(sheet) {
     const html2canvas = await loadHtml2canvas();
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await Promise.all([...sheet.querySelectorAll('img')].map(img => img.complete ? null : new Promise(done => {
@@ -115,7 +115,7 @@
           const style = doc.createElement('style');
           style.textContent = `
             .cartellino.disabled { visibility: hidden !important; }
-            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; }
+            .print-sheet, .a4-sheet, #printable-grid, .sheet-wrap { zoom: 1 !important; box-shadow: none !important; flex-shrink: 0 !important; }
             .cursore, .tool-buttons, .app-modal { display: none !important; }
             .phone-current-card { outline: none !important; }
             img[data-lista-colore] { filter: none !important; }`;
@@ -128,6 +128,11 @@
     } finally {
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
     }
+    return canvas;
+  }
+
+  async function addSheet(sheet) {
+    const canvas = await captureSheet(sheet);
     const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
     const thumbCanvas = document.createElement('canvas');
     thumbCanvas.width = THUMB_WIDTH;
@@ -148,8 +153,28 @@
     return countPages();
   }
 
+  // PDF di un solo foglio a misura reale (stampa da iPhone e iPad, assets/js/stampa-ios.js): A4 verticale, o
+  // orizzontale per i cartellini, con il foglio grande quanto in stampa (mm → punti), centrato in larghezza;
+  // sulla carta verticale sta in alto come nella stampa da computer, su quella orizzontale al centro.
+  // Le misure vengono dalla foto (px CSS × CAPTURE_SCALE), dove il foglio ha la sua grandezza di stampa anche
+  // quando a schermo è rimpicciolito o schiacciato da una finestra stretta.
+  async function sheetPdf(sheet) {
+    const canvas = await captureSheet(sheet);
+    const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
+    const toMm = px => px / CAPTURE_SCALE * 25.4 / 96;
+    return buildPdf([{
+      orientation: sheet.classList.contains('a4-landscape') ? 'landscape' : 'portrait',
+      width: canvas.width,
+      height: canvas.height,
+      jpeg,
+      mmWidth: toMm(canvas.width),
+      mmHeight: toMm(canvas.height)
+    }]);
+  }
+
   // lista.pdf: A4 (595,28 × 841,89 punti), verticale o orizzontale come il foglio,
   // immagine centrata e adattata alla pagina mantenendo le proporzioni.
+  // Con mmWidth / mmHeight (sheetPdf) l'immagine è invece a misura reale.
   async function buildPdf(pages) {
     const encoder = new TextEncoder();
     const chunks = [];
@@ -173,11 +198,13 @@
       const page = pages[index];
       const pageId = pageIds[index];
       const [pageWidth, pageHeight] = page.orientation === 'landscape' ? [841.89, 595.28] : [595.28, 841.89];
+      const realSize = page.mmWidth && page.mmHeight;
       const fit = Math.min(pageWidth / page.width, pageHeight / page.height);
-      const drawWidth = page.width * fit;
-      const drawHeight = page.height * fit;
+      const drawWidth = realSize ? page.mmWidth * 72 / 25.4 : page.width * fit;
+      const drawHeight = realSize ? page.mmHeight * 72 / 25.4 : page.height * fit;
       const x = (pageWidth - drawWidth) / 2;
-      const y = (pageHeight - drawHeight) / 2;
+      // In PDF l'asse y parte dal basso: in alto vuol dire pageHeight - drawHeight.
+      const y = realSize && page.orientation === 'portrait' ? pageHeight - drawHeight : (pageHeight - drawHeight) / 2;
       const content = `q ${drawWidth.toFixed(2)} 0 0 ${drawHeight.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
       const jpeg = new Uint8Array(await page.jpeg.arrayBuffer());
 
@@ -202,5 +229,93 @@
     return new Blob(chunks, { type: 'application/pdf' });
   }
 
-  window.ListaStampa = { addSheet, getPages, deletePage, clearPages, countPages, buildPdf };
+  // iPhone e iPad (Safari e Chrome): la stampa del browser aggiunge margini, rimpicciolisce il foglio e in Safari
+  // scrive indirizzo e data; i PDF creati qui sono invece a misura, e si consegnano con il menu Condividi di iOS.
+  const isIos = () => /iP(hone|ad|od)/.test(navigator.userAgent)
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  // Riquadro di consegna del PDF: mostra la preparazione e poi il pulsante SALVA O STAMPA PDF, che apre Condividi
+  // (Salva su File, Stampa…) o, dove Condividi non accetta file, apre il PDF in una nuova scheda.
+  // Il pulsante serve perché iOS apre Condividi solo dopo un tocco, non alla fine di un'attesa.
+  // pdfPromise: Promise<Blob>; fileName: nome del file proposto.
+  function offerPdf(pdfPromise, fileName) {
+    injectOfferStyle();
+    const overlay = document.createElement('div');
+    overlay.className = 'lista-pdf-overlay';
+    const box = document.createElement('div');
+    box.className = 'lista-pdf-box';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-label', 'PDF di stampa');
+    const title = document.createElement('div');
+    title.className = 'lista-pdf-title';
+    title.textContent = 'PDF DI STAMPA';
+    const text = document.createElement('p');
+    text.className = 'lista-pdf-text';
+    text.setAttribute('role', 'status');
+    text.textContent = 'Preparazione del PDF a misura reale…';
+    const share = document.createElement('button');
+    share.type = 'button';
+    share.className = 'lista-pdf-share';
+    share.textContent = 'SALVA O STAMPA PDF';
+    share.disabled = true;
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'lista-pdf-close';
+    close.textContent = 'Chiudi';
+    box.append(title, text, share, close);
+    overlay.append(box);
+    document.body.append(overlay);
+
+    let url = '';
+    const dismiss = () => {
+      overlay.remove();
+      if (url) setTimeout(() => URL.revokeObjectURL(url), 60000);
+    };
+    close.addEventListener('click', dismiss);
+
+    pdfPromise.then(pdf => {
+      const file = new File([pdf], fileName, { type: 'application/pdf' });
+      url = URL.createObjectURL(file);
+      text.textContent = `${fileName} è pronto: un foglio A4 a misura reale, senza margini aggiunti.`;
+      share.disabled = false;
+      share.focus();
+      share.addEventListener('click', async () => {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file], title: fileName });
+            dismiss();
+          } catch (error) {
+            if (error && error.name !== 'AbortError') window.open(url, '_blank');
+          }
+        } else {
+          window.open(url, '_blank');
+          dismiss();
+        }
+      });
+    }).catch(error => {
+      console.error('Preparazione del PDF non riuscita.', error);
+      text.textContent = 'Non è stato possibile preparare il PDF.';
+    });
+  }
+
+  function injectOfferStyle() {
+    if (document.getElementById('lista-pdf-style')) return;
+    const style = document.createElement('style');
+    style.id = 'lista-pdf-style';
+    style.textContent = `
+      .lista-pdf-overlay { position: fixed; inset: 0; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(10, 9, 8, .78); backdrop-filter: blur(3px); }
+      .lista-pdf-box { width: min(360px, 100%); padding: 20px 18px 16px; border: 1px solid #d4a373; border-radius: 12px; background: #1e1d1a; color: #f4f1ea; box-shadow: 0 12px 32px rgba(0, 0, 0, .5); font-family: Arial, sans-serif; text-align: center; }
+      .lista-pdf-title { margin-bottom: 10px; color: #d4a373; font: 600 0.8rem/1.2 Arial, sans-serif; letter-spacing: .14em; }
+      .lista-pdf-text { margin: 0 0 16px; font-size: 0.95rem; line-height: 1.45; }
+      .lista-pdf-share, .lista-pdf-close { display: block; width: 100%; min-height: 48px; border-radius: 8px; font: 700 0.9rem/1.1 Arial, sans-serif; letter-spacing: .06em; cursor: pointer; }
+      .lista-pdf-share { border: 0; background: #96382b; color: #fff; }
+      .lista-pdf-share:disabled { opacity: .45; cursor: default; }
+      .lista-pdf-close { margin-top: 8px; border: 1.5px solid #d4a373; background: transparent; color: #d4a373; }
+      .lista-pdf-share:focus-visible, .lista-pdf-close:focus-visible { outline: 2px solid #e5ba73; outline-offset: 2px; }
+      @media print { .lista-pdf-overlay { display: none !important; } }`;
+    document.head.append(style);
+  }
+
+  window.ListaStampa = { addSheet, sheetPdf, getPages, deletePage, clearPages, countPages, buildPdf, isIos, offerPdf };
 })();
