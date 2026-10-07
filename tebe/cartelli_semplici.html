@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="tebe">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-16">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <title>Cartello Semplice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f6f1;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      color: #282522;
+    }
+
+    .sidebar {
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    .controls {
+      background: #fffdfa;
+      padding: 1rem;
+      border: 1px solid #e3dacb;
+      border-radius: 8px;
+    }
+
+    .controls h2 {
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #b49a62;
+      border-bottom: 1px solid #e3dacb;
+      padding-bottom: 0.6rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1.5px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* Spazi regolari nel pannello: 0,35rem tra etichetta e campo, 0,8rem tra un campo e l'etichetta
+       successiva, tra i gruppi, sotto il titolo e prima del tasto di stampa */
+    .form-group { margin-bottom: 0.8rem; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: #665e54;
+      margin-bottom: 0.35rem;
+    }
+
+    /* Titoli dei gruppi: come le altre etichette dei campi, nell'oro dei pulsanti sotto il pannello */
+    .form-group .section-label { color: #b49a62; }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      background: #f8f6f1;
+      color: #282522;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .select-control {
+      position: relative;
+      border: 1px solid #e3dacb;
+      border-radius: 4px;
+      background: #f8f6f1;
+      overflow: hidden;
+      margin-bottom: 0.8rem;
+    }
+
+    .select-control:focus-within {
+      border-color: #b49a62;
+      box-shadow: 0 0 4px rgba(180, 154, 98, 0.35);
+    }
+
+    .select-control select {
+      appearance: none;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      padding-right: 2rem;
+    }
+
+    .select-control select:focus {
+      border: none;
+      box-shadow: none;
+    }
+
+    .select-control::after {
+      content: '▼';
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid #e3dacb;
+      background: #f3ede0;
+      color: #b49a62;
+      font-size: 0.6rem;
+      pointer-events: none;
+    }
+
+    .btn-print {
+      width: 100%;
+      margin-top: 0;
+      padding: 10px;
+      border: 1px solid #96382b;
+      border-radius: 4px;
+      background: #96382b;
+      color: #fffdfa;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-print:hover { background: #7a2d22; }
+
+    .app-close-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #b49a62;
+      color: #fffdfa;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-decoration: none;
+      z-index: 1000;
+    }
+
+    .floating-nav-box {
+      position: fixed;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.8rem 1rem;
+      border: 1px solid #b49a62;
+      border-radius: 8px;
+      background: #fffdfa;
+      z-index: 1000;
+    }
+
+    .floating-nav-title {
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+      color: #8a6a35;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    .floating-nav-btn {
+      color: #282522;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .print-sheet {
+      width: 210mm;
+      height: 297mm;
+      padding-top: 14.56mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(40, 34, 28, 0.18);
+    }
+
+    .card {
+      width: 210mm;
+      height: 118.35mm;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 0.34mm solid #9d9490;
+      background: #fff;
+    }
+
+    #cardBottom {
+      border-bottom: none;
+      transform: rotate(180deg);
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5mm;
+      transform: translateY(-3mm);
+    }
+
+    .card-title {
+      width: 180mm;
+      max-width: 180mm;
+      color: #cc9e25;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 76.23pt;
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .card-price {
+      color: #000;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 105.8pt;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      white-space: nowrap;
+    }
+
+    .card-logo {
+      width: 45mm;
+      height: auto;
+      margin-top: 1mm;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        background: #fff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .sidebar, .app-close-btn, .floating-nav-box {
+        display: none !important;
+      }
+
+      .print-sheet {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        padding-top: 14.56mm !important;
+        margin: 0 auto !important;
+        box-shadow: none;
+        page-break-after: avoid !important;
+        overflow: hidden !important;
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 14px;
+        overflow-x: hidden;
+        padding: 20px 20px 84px;
+      }
+      .sidebar { width: 100%; max-width: 560px; order: 1; }
+      .app-close-btn { right: 18px; }
+      .print-sheet { zoom: 1; margin: 0 auto; order: 3; }
+      /* Su schermi stretti il pulsante Made in Italy si stacca dal pannello
+         e resta sopra il foglio, incolonnato con il tasto di chiusura. */
+      body .tema-italia-btn {
+        position: relative;
+        z-index: 5;
+        order: 2;
+        align-self: flex-end;
+        margin: 0 -2px -48px auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        top: 8px;
+        transform: none;
+      }
+      body .tema-italia-btn:hover,
+      body .tema-italia-btn.is-active {
+        transform: scale(1.06);
+      }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      body {
+        align-items: center;
+        flex-direction: column;
+        gap: 12px;
+        overflow-x: hidden;
+        padding: 12px 12px 24px;
+      }
+
+      .sidebar {
+        width: 100%;
+        max-width: 560px;
+      }
+
+      .controls { width: 100%; }
+      .form-group input, .form-group select { font-size: 16px; }
+      .mode-switch button, .row-selector button { min-height: 44px; }
+      .print-sheet { zoom: 0.75; margin: 0 auto; }
+      body .tema-italia-btn { margin-right: -4px; }
+      .app-close-btn { top: 10px; right: 4px; width: 44px; height: 44px; }
+      .floating-nav-box { display: none; }
+    }
+
+    @media screen and (max-width: 680px) and (pointer: coarse) {
+      .print-sheet { zoom: 0.64; }
+    }
+
+    @media screen and (max-width: 530px) and (pointer: coarse) {
+      .print-sheet { zoom: 0.53; }
+    }
+
+    @media screen and (max-width: 420px) and (pointer: coarse) {
+      .print-sheet { zoom: 0.40; }
+    }
+    @media screen and (max-width: 360px) and (pointer: coarse) {
+      .print-sheet { zoom: 0.34; }
+    }
+
+    @media screen and (max-width: 760px) and (pointer: coarse) {
+      .controls { padding: 12px 12px 12px; }
+      .controls h1, .controls h2 {
+        font-size: 0.95rem;
+        padding-bottom: 12px;
+        margin-bottom: 0.55rem;
+      }
+      /* Pannello piu' compatto: su cellulare pannello e foglio devono
+         stare in poco piu' di una schermata. */
+      .form-group, .select-control { margin-bottom: 0.55rem; }
+      .form-group label, .section-label {
+        font-size: 0.68rem;
+        margin-bottom: 0.18rem;
+      }
+      .form-group input, .form-group select, .preset-select select {
+        padding: 6px 8px;
+      }
+      .mode-switch button, .row-selector button, .card-selector button {
+        min-height: 36px;
+        padding: 6px;
+        font-size: 0.64rem;
+      }
+      .btn-print { margin-top: 0; padding: 9px; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-16">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-16">
+</head>
+<body>
+  <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <a href="index.html?store=tebe" class="floating-nav-btn">← Torna al Menu Principale</a>
+  </div>
+
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Cartello Semplice</h2>
+
+      <div class="form-group">
+        <label class="section-label">Promozione</label>
+        <div class="select-control">
+          <select id="descPreset" onchange="applyDescPreset()">
+            <option value="" selected>-- Seleziona un testo --</option>
+            <option value="tutto">Tutto</option>
+            <option value="Sconto alla Cassa">Sconto alla Cassa</option>
+            <option value="Special Deal">Special Deal</option>
+            <option value="Final Price">Final Price</option>
+            <option value="Summer Sale">Summer Sale</option>
+            <option value="Spring Sale">Spring Sale</option>
+            <option value="Winter Sale">Winter Sale</option>
+            <option value="Black Friday">Black Friday</option>
+            <option value="Made in Italy">Made in Italy</option>
+            <option value="Genuine Leather">Genuine Leather</option>
+            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
+            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
+            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+          </select>
+        </div>
+        <label>Testo Libero</label>
+        <input type="text" id="descFree" value="tutto" placeholder="-- Testo Libero --" oninput="updateCards()">
+      </div>
+
+      <div class="form-group">
+        <label class="section-label">Fasce Prezzo</label>
+        <div class="select-control">
+          <select id="pricePreset" onchange="applyPricePreset()">
+            <option value="" selected>-- Seleziona Fascia Prezzo --</option>
+            <option value="10,00">€ 10,00</option>
+            <option value="19,90">€ 19,90</option>
+            <option value="29,90">€ 29,90</option>
+            <option value="39,90">€ 39,90</option>
+            <option value="49,90">€ 49,90</option>
+            <option value="59,90">€ 59,90</option>
+            <option value="69,90">€ 69,90</option>
+            <option value="79,90">€ 79,90</option>
+            <option value="89,90">€ 89,90</option>
+            <option value="99,00">€ 99,00</option>
+          </select>
+        </div>
+        <label>Prezzo Libero</label>
+        <input type="text" id="priceFree" value="10,00" placeholder="es. 24,90" oninput="updateCards()">
+      </div>
+
+      <button class="btn-print" onclick="window.print()">Stampa Cartello (A4)</button>
+    </div>
+  </div>
+
+  <div class="print-sheet" id="printSheet">
+    <div class="card" id="cardTop">
+      <div class="card-content">
+        <div class="card-title" id="titleTop">tutto</div>
+        <div class="card-price" id="priceTop">€ 10,00</div>
+        <img class="card-logo" src="../assets/img/tebe/footer_tebe.png" alt="TEBE">
+      </div>
+    </div>
+    <div class="card" id="cardBottom">
+      <div class="card-content">
+        <div class="card-title" id="titleBottom">tutto</div>
+        <div class="card-price" id="priceBottom">€ 10,00</div>
+        <img class="card-logo" src="../assets/img/tebe/footer_tebe.png" alt="TEBE">
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/tema-italia.js?v=20261007-16"></script>
+  <script>
+    function formatPrice(value) {
+      const raw = value.trim().replace(/[€\s]/g, '');
+      if (!raw) return '€ 0,00';
+      return '€ ' + raw;
+    }
+
+    function applyDescPreset() {
+      document.getElementById('descFree').value = document.getElementById('descPreset').value;
+      updateCards();
+    }
+
+    function applyPricePreset() {
+      document.getElementById('priceFree').value = document.getElementById('pricePreset').value;
+      updateCards();
+    }
+
+    function getTitleFontSize(title) {
+      const maxWidth = 180 * 96 / 25.4;
+      const normalizedTitle = title.toLowerCase();
+      const longPresetTitles = new Set([
+        'vera pelle • genuine leather',
+        'made in italy • genuine leather',
+        'fino ad esaurimento scorte'
+      ]);
+      const baseFontSize = normalizedTitle === 'tutto'
+        ? 76.23 * 96 / 72
+        : longPresetTitles.has(normalizedTitle)
+          ? 26 * 96 / 72
+          : 45 * 96 / 72;
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      context.font = `${baseFontSize}px Arial`;
+      const textWidth = context.measureText(title).width;
+      return textWidth > maxWidth ? Math.max(38 * 96 / 72, baseFontSize * maxWidth / textWidth) : baseFontSize;
+    }
+
+    function updateCards() {
+      const title = document.getElementById('descFree').value.trim() || 'Descrizione Articolo';
+      const price = formatPrice(document.getElementById('priceFree').value);
+      const titleFontSize = `${getTitleFontSize(title)}px`;
+      ['titleTop', 'titleBottom'].forEach((id) => {
+        const titleElement = document.getElementById(id);
+        titleElement.textContent = title;
+        titleElement.style.fontSize = titleFontSize;
+      });
+      document.getElementById('priceTop').textContent = price;
+      document.getElementById('priceBottom').textContent = price;
+    }
+
+    updateCards();
+    // L'Arial arriva da assets/fonts: a caricamento finito si rimisura il testo (getTitleFontSize usa measureText).
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateCards);
+  </script>
+  <script src="../assets/js/cursore.js?v=20261007-16"></script>
+  <script>
+    // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: '#cardTop',
+      obstacles: '#cardTop .card-title, #cardTop .card-price, #cardTop .card-logo',
+      rules: [
+        { controls: '#descPreset, #descFree', target: '#titleTop' },
+        { controls: '#pricePreset, #priceFree', target: '#priceTop' }
+      ]
+    });
+  </script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-16"></script>
+</body>
+</html>

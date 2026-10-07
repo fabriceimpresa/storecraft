@@ -7,7 +7,7 @@
   <!-- Splash page: scelta del punto vendita alla prima apertura della giornata (punto-vendita.js).
        Se oggi è già stato scelto un negozio si va subito alla sua dashboard, tranne quando si arriva dalla voce HOME
        del menu di sistema (index.html?scegli), che chiede di scegliere di nuovo. -->
-  <script src="assets/js/punto-vendita.js?v=20261007-15"></script>
+  <script src="assets/js/punto-vendita.js?v=20261007-16"></script>
   <script>
     if (PuntoVendita.sceltoOggi() && !new URLSearchParams(location.search).has('scegli')) {
       location.replace(PuntoVendita.dashboard(PuntoVendita.sceltoOggi()));

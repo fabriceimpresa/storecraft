@@ -1,5 +1,5 @@
 /*
- * Pulsanti "Gestisci lista di stampa" e "Aggiungi a lista stampa" (più "Dove montare la stampa?" se SHOW_GUIDE) per le pagine
+ * Pulsanti "Gestisci lista di stampa" e "Aggiungi a lista stampa" (più "Dove montare la stampa?" nei negozi che la usano) per le pagine
  * cartelli e cartellini (l'Anteprima di Stampa resta disponibile come StrumentiStampa.openPrintPreview).
  * Uso: <script src="assets/js/strumenti-stampa.js" data-panel="…" data-sheet="…"></script> in fondo al body.
  *   data-panel: elemento dopo il quale inserire i pulsanti (predefinito ".sidebar > .controls")
@@ -11,12 +11,40 @@
   const panelSelector = script?.dataset.panel || '.sidebar > .controls';
   const sheetSelector = script?.dataset.sheet || '.print-sheet';
 
-  // Foto guida per capire dove montare la stampa, per pagina: { src, caption }, con le foto in assets/foto/.
+  // Guida "Dove montare la stampa?" del negozio della pagina (data-negozio): Luxury Outlet non la usa, quindi il
+  // pulsante non compare; TEBE e OPHILYA sì, con le foto in assets/foto/<negozio>/ (per pagina: { src, caption }).
   // Finché l'elenco di una pagina è vuoto il popup mostra dei riquadri segnaposto "Foto in arrivo".
-  const GUIDE_PHOTOS = {};
-  // Guida "Dove montare la stampa?": non serve a Luxury Outlet, quindi il pulsante non compare.
-  // Il codice resta per TEBE / OPHILYA, che la attiveranno nella futura struttura multi-negozio.
-  const SHOW_GUIDE = false;
+  // Cartelli in morsa sulla rastrelliera: stessa foto, con sopra il cartello della pagina.
+  const NEGOZIO = document.documentElement.dataset.negozio;
+  const GUIDE = {
+    luxury: { show: false, photos: {} },
+    tebe: {
+      show: true,
+      photos: {
+        'cartelli_semplici.html': ['morsasemplice.jpg'],
+        'cartelli_sale.html': ['morsasale.jpg'],
+        'cartelli_brand.html': ['morsabrand.jpg'],
+        'cartellopercentuale.html': ['morsapercentuale.jpg'],
+        'cartelli_multiarticolo.html': ['morsamultiarticolo.jpg'],
+        'albero.html': ['albero.jpg'],
+        'cornici10x15.html': ['cornice10x15.jpg'],
+        'paletto.html': ['paletto.jpg'],
+        'paletto18x12.html': ['paletto.jpg']
+      }
+    },
+    ophilya: {
+      show: true,
+      photos: {
+        'paletto-ophilya.html': ['palettoophilya.jpg'],
+        'paletto18x12-ophilya.html': ['palettoophilya.jpg']
+      }
+    }
+  }[NEGOZIO] || { show: false, photos: {} };
+  const SHOW_GUIDE = GUIDE.show;
+  const GUIDE_PHOTOS = Object.fromEntries(Object.entries(GUIDE.photos).map(([page, files]) =>
+    [page, files.map(file => ({ src: new URL(`../foto/${NEGOZIO}/${file}`, script.src).href }))]));
+  // Finestra della lista di stampa: una per negozio (Luxury conserva il nome di prima).
+  const LIST_WINDOW = NEGOZIO === 'luxury' ? 'storecraft-lista-stampa' : `${NEGOZIO}-lista-stampa`;
 
   const panel = document.querySelector(panelSelector);
   if (!panel) return;
@@ -150,7 +178,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('lista-stampa.js?v=20261007-15', script.src).href;
+      tag.src = new URL('lista-stampa.js?v=20261007-16', script.src).href;
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -176,7 +204,7 @@
   }
 
   function openPrintList() {
-    window.open('lista-stampa.html', 'storecraft-lista-stampa');
+    window.open('lista-stampa.html', LIST_WINDOW);
   }
 
   // Avviso in basso al centro, che sparisce da solo

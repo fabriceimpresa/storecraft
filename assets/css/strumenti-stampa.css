@@ -1,5 +1,53 @@
 /* Pulsanti quadrati oro sotto il pannello delle pagine cartelli e cartellini:
-   guida al montaggio ("?") e lista di stampa, nei colori scuri di StoreCraft. Vedi assets/js/strumenti-stampa.js */
+   guida al montaggio ("?") e lista di stampa. Vedi assets/js/strumenti-stampa.js
+   Colori del negozio della pagina (data-negozio): Luxury Outlet nei colori scuri di StoreCraft, TEBE e OPHILYA nei
+   colori chiari di TEBE (fondo crema, oro #b49a62). */
+:root {
+  --tool-btn-bg: #d4a373;
+  --tool-btn-color: #121110;
+  --tool-btn-shadow: rgba(0, 0, 0, 0.5);
+  --tool-btn-shadow-hover: rgba(0, 0, 0, 0.6);
+  --tool-float-border: #d4a373;
+  --tool-float-bg: #1e1d1a;
+  --tool-float-color: #e5ba73;
+  --tool-tip-shadow: rgba(0, 0, 0, 0.5);
+  --tool-toast-shadow: rgba(0, 0, 0, 0.6);
+  --tool-modal-backdrop: rgba(0, 0, 0, 0.75);
+  --tool-modal-bg: #1e1d1a;
+  --tool-modal-border: #2e2b27;
+  --tool-modal-shadow: rgba(0, 0, 0, 0.7);
+  --tool-modal-accent: #d4a373;
+  --tool-modal-close-color: #1e1d1a;
+  --tool-modal-body: #121110;
+  --tool-guide-text: #8c857b;
+  --tool-guide-caption: #f4f1ea;
+  --tool-guide-stripe-1: #181715;
+  --tool-guide-stripe-2: #1e1d1a;
+}
+:root[data-negozio="tebe"],
+:root[data-negozio="ophilya"] {
+  --tool-btn-bg: #b49a62;
+  --tool-btn-color: #fff;
+  --tool-btn-shadow: rgba(40, 34, 28, 0.15);
+  --tool-btn-shadow-hover: rgba(40, 34, 28, 0.25);
+  --tool-float-border: #b49a62;
+  --tool-float-bg: #fffdfa;
+  --tool-float-color: #8a6a35;
+  --tool-tip-shadow: rgba(40, 34, 28, 0.18);
+  --tool-toast-shadow: rgba(40, 34, 28, 0.2);
+  --tool-modal-backdrop: rgba(40, 34, 28, 0.55);
+  --tool-modal-bg: #fffdfa;
+  --tool-modal-border: #e3dacb;
+  --tool-modal-shadow: rgba(40, 34, 28, 0.3);
+  --tool-modal-accent: #b49a62;
+  --tool-modal-close-color: #fffdfa;
+  --tool-modal-body: #eee8dd;
+  --tool-guide-text: #665e54;
+  --tool-guide-caption: #282522;
+  --tool-guide-stripe-1: #f8f6f1;
+  --tool-guide-stripe-2: #f3ede0;
+}
+
 .tool-buttons {
   display: flex;
   justify-content: flex-start;
@@ -17,10 +65,10 @@
   padding: 0;
   border: none;
   border-radius: 8px;
-  background: #d4a373;
-  color: #121110;
+  background: var(--tool-btn-bg);
+  color: var(--tool-btn-color);
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 6px var(--tool-btn-shadow);
   transition: filter 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -28,7 +76,7 @@
 .tool-btn:hover {
   filter: brightness(1.12);
   transform: translateY(-2px);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: 0 3px 0 var(--tool-btn-shadow-hover);
 }
 
 .tool-btn svg { width: 21px; height: 21px; display: block; }
@@ -40,12 +88,12 @@
   top: calc(100% + 8px);
   left: 0;
   padding: 5px 8px;
-  /* come il riquadro flottante "Torna al Menu Principale": fondo scuro, bordo e scritta oro */
-  border: 1px solid #d4a373;
+  /* come il riquadro flottante "Torna al Menu Principale": fondo, bordo e scritta del negozio */
+  border: 1px solid var(--tool-float-border);
   border-radius: 6px;
-  background: #1e1d1a;
-  color: #e5ba73;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  background: var(--tool-float-bg);
+  color: var(--tool-float-color);
+  box-shadow: 0 4px 12px var(--tool-tip-shadow);
   font: 600 11px/1.2 Arial, Helvetica, sans-serif;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -73,7 +121,7 @@
 .app-modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--tool-modal-backdrop);
 }
 
 .app-modal-dialog {
@@ -82,10 +130,10 @@
   flex-direction: column;
   max-width: min(1000px, 100%);
   max-height: 100%;
-  background: #1e1d1a;
-  border: 1px solid #2e2b27;
+  background: var(--tool-modal-bg);
+  border: 1px solid var(--tool-modal-border);
   border-radius: 10px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 20px 60px var(--tool-modal-shadow);
   overflow: hidden;
   font-family: system-ui, -apple-system, sans-serif;
 }
@@ -96,12 +144,12 @@
   justify-content: space-between;
   gap: 16px;
   padding: 12px 16px;
-  border-bottom: 1px solid #2e2b27;
+  border-bottom: 1px solid var(--tool-modal-border);
 }
 
 .app-modal-header h3 {
   margin: 0;
-  color: #d4a373;
+  color: var(--tool-modal-accent);
   font-size: 0.9rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -112,8 +160,8 @@
   height: 32px;
   border: none;
   border-radius: 50%;
-  background: #d4a373;
-  color: #1e1d1a;
+  background: var(--tool-modal-accent);
+  color: var(--tool-modal-close-color);
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
@@ -122,7 +170,7 @@
 .app-modal-body {
   padding: 18px;
   overflow: auto;
-  background: #121110;
+  background: var(--tool-modal-body);
 }
 
 /* Anteprima: copia del foglio rimpicciolita per stare nel popup */
@@ -132,14 +180,14 @@
 .preview-frame .cartellino.disabled { visibility: hidden; }
 
 /* Guida al montaggio */
-.guide-text { margin: 0 0 14px; font-size: 0.85rem; color: #8c857b; }
+.guide-text { margin: 0 0 14px; font-size: 0.85rem; color: var(--tool-guide-text); }
 .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
 /* Una sola foto: il riquadro si stringe sulla foto, che sta intera nella finestra */
 .guide-grid:has(> .guide-item:only-child) { grid-template-columns: auto; justify-content: center; }
-.guide-item { margin: 0; background: #1e1d1a; border: 1px solid #2e2b27; border-radius: 8px; overflow: hidden; }
+.guide-item { margin: 0; background: var(--tool-modal-bg); border: 1px solid var(--tool-modal-border); border-radius: 8px; overflow: hidden; }
 .guide-item img { width: 100%; display: block; }
 .guide-item:only-child img { width: auto; max-width: 100%; max-height: calc(100vh - 230px); }
-.guide-item figcaption { padding: 8px 10px; font-size: 0.78rem; color: #f4f1ea; }
+.guide-item figcaption { padding: 8px 10px; font-size: 0.78rem; color: var(--tool-guide-caption); }
 .guide-placeholder {
   aspect-ratio: 4 / 3;
   display: flex;
@@ -147,11 +195,11 @@
   justify-content: center;
   padding: 12px;
   text-align: center;
-  color: #d4a373;
+  color: var(--tool-modal-accent);
   font-size: 0.8rem;
   letter-spacing: 1px;
   text-transform: uppercase;
-  background: repeating-linear-gradient(45deg, #181715, #181715 10px, #1e1d1a 10px, #1e1d1a 20px);
+  background: repeating-linear-gradient(45deg, var(--tool-guide-stripe-1), var(--tool-guide-stripe-1) 10px, var(--tool-guide-stripe-2) 10px, var(--tool-guide-stripe-2) 20px);
 }
 
 /* Avviso della lista di stampa, in basso al centro (strumenti-stampa.js) */
@@ -161,11 +209,11 @@
   bottom: 24px;
   z-index: 2100;
   padding: 9px 14px;
-  border: 1px solid #d4a373;
+  border: 1px solid var(--tool-float-border);
   border-radius: 8px;
-  background: #1e1d1a;
-  color: #e5ba73;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  background: var(--tool-float-bg);
+  color: var(--tool-float-color);
+  box-shadow: 0 8px 24px var(--tool-toast-shadow);
   font: 600 12px/1.3 Arial, Helvetica, sans-serif;
   opacity: 0;
   transform: translate(-50%, 8px);

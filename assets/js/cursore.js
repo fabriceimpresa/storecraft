@@ -28,8 +28,11 @@
 (function () {
   const GAP = 96 / 25.4;      // 1 mm tra la punta e l'elemento (sopra)
   const SIDE_GAP = GAP + 10;  // di lato più spazio libero (le pagine possono cambiarlo con sideGap)
-  const LONG = 40;            // lato lungo del triangolo (in TEBE 36)
-  const SHORT = 27;           // altezza del triangolo (in TEBE 24)
+  // Misure del triangolo del negozio della pagina, da cursore.css (--cursore-lungo, --cursore-corto):
+  // Luxury Outlet 40 × 27 px, TEBE e OPHILYA 36 × 24 px.
+  function size(name, fallback) {
+    return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || fallback;
+  }
   const CLEAR = 3;            // distanza minima dagli altri elementi
 
   function resolveOne(value, arg) {
@@ -146,6 +149,8 @@
 
     // t: riquadro delle righe (per la posizione sopra); g: inchiostro dei caratteri (per centrare di lato)
     function candidates(t, g, aboveGap = GAP) {
+      const LONG = size('--cursore-lungo', 40);   // lato lungo del triangolo
+      const SHORT = size('--cursore-corto', 27);  // altezza del triangolo
       const cx = (t.left + t.right) / 2;
       const cy = (g.top + g.bottom) / 2;
       return {

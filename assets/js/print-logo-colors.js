@@ -39,36 +39,42 @@
     return new Promise((resolve, reject) => {
       const sourceImage = new Image();
       sourceImage.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = sourceImage.naturalWidth;
-        canvas.height = sourceImage.naturalHeight;
-        const context = canvas.getContext('2d');
-        if (!context) {
-          reject(new Error('Canvas non disponibile.'));
-          return;
-        }
-        context.drawImage(sourceImage, 0, 0);
-        const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
-        for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
-          if (pixels.data[pixel + 3] > 0) {
-            pixels.data[pixel] = red;
-            pixels.data[pixel + 1] = green;
-            pixels.data[pixel + 2] = blue;
+        // Come in TEBE: un errore del canvas (es. immagine non leggibile) rifiuta la Promise invece di restare sospeso.
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = sourceImage.naturalWidth;
+          canvas.height = sourceImage.naturalHeight;
+          const context = canvas.getContext('2d');
+          if (!context) {
+            reject(new Error('Canvas non disponibile.'));
+            return;
           }
+          context.drawImage(sourceImage, 0, 0);
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+          for (let pixel = 0; pixel < pixels.data.length; pixel += 4) {
+            if (pixels.data[pixel + 3] > 0) {
+              pixels.data[pixel] = red;
+              pixels.data[pixel + 1] = green;
+              pixels.data[pixel + 2] = blue;
+            }
+          }
+          context.putImageData(pixels, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        } catch (error) {
+          reject(error);
         }
-        context.putImageData(pixels, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
       };
       sourceImage.onerror = () => reject(new Error('Logo personalizzato non disponibile.'));
       sourceImage.src = sourceDataUrl;
     });
   }
 
+  // L'oro è quello del negozio: Luxury Outlet #b48b37, TEBE e OPHILYA #cc9e25 (come la variante gold dei loghi ufficiali).
   const COLOR_RGB = {
     white: [255, 255, 255],
     black: [0, 0, 0],
     red: [224, 0, 0],
-    gold: [180, 139, 55]
+    gold: NEGOZIO === 'luxury' ? [180, 139, 55] : [204, 158, 37]
   };
 
   function getGeneratedLogoFileName(logoFileName) {

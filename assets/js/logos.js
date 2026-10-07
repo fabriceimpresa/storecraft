@@ -41,7 +41,11 @@ function appendBrandOption(selectEl, fileName, displayName, isPriority) {
   const option = document.createElement('option');
   option.value = fileName;
   option.textContent = displayName;
-  if (isPriority) {
+  if (isPriority && document.documentElement.dataset.negozio !== 'luxury') {
+    // TEBE e OPHILYA: i brand della casa in maiuscolo con ⭐, come nel progetto TEBE
+    option.textContent = `⭐ ${displayName.toUpperCase()}`;
+    option.className = 'priority-brand-option';
+  } else if (isPriority) {
     // brand prioritari: la stella ★ dei loghi personalizzati, ma gialla (.brand-star, colore in pannello.css)
     const star = document.createElement('span');
     star.className = 'brand-star';
