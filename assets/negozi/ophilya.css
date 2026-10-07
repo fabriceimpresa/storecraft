@@ -88,4 +88,11 @@
   --interface-sidebar: #f3ede0;
   --interface-border: #e3dacb;
   --interface-dropdown-shadow: rgba(40, 34, 28, 0.14);
+
+  /* Pulsante Made in Italy (madeinitaly.css): bordo oro chiaro, 36 px come la ✕, ombra leggera */
+  --madeinitaly-background: #fff;
+  --madeinitaly-border: rgba(180, 154, 98, 0.7);
+  --madeinitaly-dimensione: 36px;
+  --madeinitaly-ombra: rgba(40, 34, 28, 0.14);
+  --madeinitaly-ombra-attivo: rgba(40, 34, 28, 0.22);
 }

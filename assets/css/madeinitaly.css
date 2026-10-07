@@ -1,33 +1,71 @@
+/* Pulsante Made in Italy, comune a tutti i negozi (vedi assets/js/madeinitaly.js): cerchio bianco con la bandiera,
+   fisso in alto a destra, centrato sotto il pulsante ✕. Colori, grandezza e ombra del negozio della pagina, nella sua
+   scheda (assets/negozi/<negozio>.css: --madeinitaly-*); qui i valori di riserva (Luxury Outlet). */
+:root {
+  --madeinitaly-background: #fff;
+  --madeinitaly-border: #d4a373;
+  --madeinitaly-dimensione: 44px;
+  --madeinitaly-ombra: rgba(0, 0, 0, .5);
+  --madeinitaly-ombra-attivo: rgba(0, 0, 0, .7);
+}
+
 .made-in-italy-btn {
   position: fixed;
   top: 4.5rem;
-  right: 1.25rem;
-  width: 44px;
-  height: 44px;
+  /* centrato sotto la ✕ (36 px a 1,5rem dal bordo) */
+  right: calc(1.5rem + 18px - var(--madeinitaly-dimensione) / 2);
+  width: var(--madeinitaly-dimensione);
+  height: var(--madeinitaly-dimensione);
   padding: 7px;
-  background: var(--madeinitaly-background, #fff);
-  border: 1px solid var(--madeinitaly-border, #d4a373);
+  background: var(--madeinitaly-background);
+  border: 1px solid var(--madeinitaly-border);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+  box-shadow: 0 4px 12px var(--madeinitaly-ombra);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   transition: transform .2s, box-shadow .2s;
 }
-.made-in-italy-btn img { width: 100%; height: 100%; object-fit: contain; }
+.made-in-italy-btn img { display: block; width: 100%; height: 100%; object-fit: contain; }
+/* acceso: aria-pressed (pulsanti delle pagine Luxury) o .is-active (modo automatico e pagine TEBE / OPHILYA) */
 .made-in-italy-btn:hover,
-.made-in-italy-btn[aria-pressed="true"] {
+.made-in-italy-btn[aria-pressed="true"],
+.made-in-italy-btn.is-active {
   transform: scale(1.1);
-  box-shadow: 0 5px 16px rgba(0, 0, 0, .7);
+  box-shadow: 0 5px 16px var(--madeinitaly-ombra-attivo);
 }
 .made-in-italy-btn:focus-visible {
-  outline: 2px solid var(--madeinitaly-border, #d4a373);
+  outline: 2px solid var(--madeinitaly-border);
   outline-offset: 3px;
 }
 .made-in-italy-btn-lower { top: calc(50% + 1rem); }
 .made-in-italy-btn--banco { width: 40px; height: 40px; padding: 6px; }
+
+/* Modo automatico (madeinitaly.js con data-automatico, pagine di TEBE e OPHILYA): bandierine ai lati dei cartelli,
+   visibili solo con il tema acceso. Valgono solo nelle pagine che usano il modo automatico. */
+:root[data-made-in-italy="automatico"] .card { position: relative; }
+:root[data-made-in-italy="automatico"] .frame-box { position: absolute; }
+
+.tema-italia-flag {
+  position: absolute;
+  top: 50%;
+  width: 7mm;
+  height: 4.7mm;
+  display: none;
+  object-fit: cover;
+  border: 0.15mm solid rgba(40, 34, 28, 0.18);
+  box-shadow: 0 1mm 2mm rgba(40, 34, 28, 0.12);
+  pointer-events: none;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.tema-italia-flag.is-visible { display: block; }
+.tema-italia-flag-left { left: 19mm; }
+.tema-italia-flag-right { right: 19mm; }
+#cardBottom .tema-italia-flag { transform: translateY(-50%) rotate(180deg); }
+
 @media print {
   .made-in-italy-btn { display: none !important; }
 }

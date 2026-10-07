@@ -2,14 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-03"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-03">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-03">
+  <script src="../assets/js/negozi.js?v=20261008-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Paletto</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-03">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-04">
   <style>
     /* Bodoni del sito: dichiarato come nei Cartellini (senza font-display: swap) */
     @font-face {
@@ -175,7 +175,7 @@
       transform: translateX(-50%);
     }
 
-    /* tema-italia.css ruota di 180° le bandierine di #cardBottom (nei cartelli bifacciali la metà inferiore è
+    /* madeinitaly.css ruota di 180° le bandierine di #cardBottom (nei cartelli bifacciali la metà inferiore è
        capovolta); nei Paletti i due cartelli sono indipendenti e dritti, quindi la bandierina resta dritta */
     #cardBottom .card-content .paletto-made-in-italy-flag {
       transform: translateX(-50%);
@@ -453,7 +453,7 @@
       .print-sheet { zoom: 1; margin: 0 auto; order: 3; }
       /* Su schermi stretti il pulsante Made in Italy si stacca dal pannello
          e resta sopra il foglio, incolonnato con il tasto di chiusura. */
-      body .tema-italia-btn {
+      body .made-in-italy-btn {
         position: relative;
         z-index: 5;
         order: 2;
@@ -465,8 +465,8 @@
         top: 8px;
         transform: none;
       }
-      body .tema-italia-btn:hover,
-      body .tema-italia-btn.is-active {
+      body .made-in-italy-btn:hover,
+      body .made-in-italy-btn.is-active {
         transform: scale(1.06);
       }
     }
@@ -485,7 +485,7 @@
       .form-group input, .form-group select { font-size: 16px; }
       .mode-switch button { min-height: 44px; }
       .print-sheet { zoom: 0.75; margin: 0 auto; }
-      body .tema-italia-btn { margin-right: -4px; }
+      body .made-in-italy-btn { margin-right: -4px; }
       .app-close-btn { top: 10px; right: 4px; width: 44px; height: 44px; }
       .floating-nav-box { display: none; }
     }
@@ -521,11 +521,11 @@
       .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-03">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-03">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-03">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-03">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-03"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-04">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-04"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'indice">✕</a>
@@ -718,7 +718,7 @@
     <div class="cut-line" aria-hidden="true"></div>
   </main>
 
-  <script src="../assets/js/tema-italia.js?v=20261008-03"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261008-04" data-automatico></script>
   <script>
     const cardStates = {
       top: {
@@ -775,7 +775,7 @@
     }
 
     function setMode(mode) {
-      const isTemaItaliaActive = document.querySelector('.tema-italia-btn.is-active');
+      const isTemaItaliaActive = document.querySelector('.made-in-italy-btn.is-active');
       if (
         mode !== 'standard' &&
         isTemaItaliaActive &&
@@ -961,7 +961,7 @@
     updateCards();
     renderCard('bottom');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-03"></script>
+  <script src="../assets/js/cursore.js?v=20261008-04"></script>
   <script>
     // Cursore: sopra il cartello scelto (superiore/inferiore) e sugli elementi legati al campo in uso.
     const activePalettoCard = () => document.getElementById(activeCard === 'bottom' ? 'cardBottom' : 'cardTop');
@@ -994,6 +994,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-03"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-04"></script>
 </body>
 </html>

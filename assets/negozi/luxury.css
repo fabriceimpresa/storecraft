@@ -77,4 +77,11 @@
   --pannello-linea: rgba(212, 163, 115, 0.28);
   --pannello-stampa-testo: #f4f1ea;
   --pannello-schema: dark;
+
+  /* Pulsante Made in Italy (madeinitaly.css): bordo oro, 44 px */
+  --madeinitaly-background: #fff;
+  --madeinitaly-border: #d4a373;
+  --madeinitaly-dimensione: 44px;
+  --madeinitaly-ombra: rgba(0, 0, 0, .5);
+  --madeinitaly-ombra-attivo: rgba(0, 0, 0, .7);
 }
