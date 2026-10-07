@@ -1,0 +1,843 @@
+/*
+ * Dashboard dei negozi (luxury/index.html, tebe/index.html, ophilya/index.html), comune a tutti: il modello è la
+ * dashboard di Luxury Outlet. Contenuti del negozio in assets/negozi/<negozio>-dashboard.js, costruzione della pagina
+ * in assets/js/dashboard.js, Utilità Cassa in assets/js/cassa.js; tema e aspetto con theme.css / theme.js.
+ */
+:root {
+  --bg: #121110;
+  --sidebar: #181715;
+  --card: #1e1d1a;
+  --border: #2e2b27;
+  --accent: #d4a373;
+  --accent-hover: #e5ba73;
+  --text: #f4f1ea;
+  --text-muted: #8c857b;
+  --gold: #e5ba73;
+  --gold-border: #d4a373;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+/* Barra superiore mobile */
+.mobile-top-bar { display: contents; }
+.mobile-brand { display: none; }
+.mobile-nav-toggle { display: none; }
+.mobile-brand-footer { display: none; }
+
+aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 34px 23px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 1000; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.sidebar-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px 56px;
+  width: 100%;
+}
+
+.brand { width: 100%; position: relative; font-family: 'Cinzel', serif; font-size: 17px; line-height: 1.15; letter-spacing: .16em; font-weight: 600; color: var(--accent); text-align: center; white-space: nowrap; background: transparent; border: none; cursor: pointer; }
+.brand:hover, .brand:focus-visible { animation: brand-hover 0.6s ease-in-out; outline: none; }
+
+.mobile-close-btn {
+  display: none;
+  position: absolute;
+  right: -10px;
+  top: -16px;
+  width: 28px;
+  height: 28px;
+  background-color: var(--accent);
+  color: #000000;
+  border: none;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.mobile-close-btn:hover {
+  background-color: var(--accent-hover);
+  transform: scale(1.1);
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@keyframes brand-hover {
+  0%, 100% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-3px) scale(1.05); }
+  70% { transform: translateY(0) scale(0.98); }
+}
+
+/* Menu laterale: struttura del menu di TEBE, colori di StoreCraft.
+   Il clic sul titolo di una sezione (non solo sulla freccia) la apre o la chiude. */
+.sidebar-section .label {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 9px 10px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  color: #fff;
+  cursor: pointer;
+  transition: color .18s ease;
+}
+:root[data-interface-look="standard"] .sidebar-section .label { font-size: 10px; }
+.sidebar-section + .sidebar-section .label { margin-top: 28px; }
+/* Area illuminata sotto il titolo, con 12 px sopra come le voci, così la spaziatura non cambia. */
+.sidebar-section .label::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: -12px;
+  bottom: -2px;
+  transition: background .18s ease, box-shadow .18s ease;
+}
+.sidebar-section .label:hover { color: var(--text); }
+.sidebar-section .label:hover::before { background: rgba(212, 163, 115, 0.08); box-shadow: inset 2px 0 var(--accent); }
+.section-toggle {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  padding: 2px 4px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .18s ease;
+}
+.section-toggle[aria-expanded="false"] { transform: rotate(-90deg); }
+
+.sidebar-section nav { display: grid; gap: 3px; }
+.sidebar-section.is-collapsed nav { display: none; }
+.nav-btn {
+  display: block;
+  padding: 12px 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .18s ease, box-shadow .18s ease, color .18s ease;
+}
+.nav-btn:hover, .nav-btn.active { background: rgba(212, 163, 115, 0.08); box-shadow: inset 2px 0 var(--accent); color: var(--text); }
+/* Gruppi di voci dentro una sezione (in CREA CARTELLI: cartelli e promo stagionali). */
+.nav-group { display: grid; gap: 3px; }
+.nav-group[hidden] { display: none; }
+/* Sottosezione PROMO STAGIONALI dentro CREA CARTELLI, chiusa all'apertura: aprendola si chiudono le voci
+   dei cartelli e sotto compaiono le promo (togglePromoSubsection). */
+.nav-subtoggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s ease, box-shadow .18s ease, color .18s ease;
+}
+.nav-subtoggle:hover { background: rgba(212, 163, 115, 0.08); box-shadow: inset 2px 0 var(--accent); color: var(--text); }
+.nav-subtoggle-arrow { color: var(--accent); font-size: 14px; line-height: 1; padding: 0 4px; transition: transform .18s ease; }
+.nav-subtoggle[aria-expanded="false"] .nav-subtoggle-arrow { transform: rotate(-90deg); }
+.nav-star { color: var(--gold); }
+/* Voci delle promo stagionali in oro come il titolo PROMO STAGIONALI. */
+#promoItems .nav-btn { color: var(--accent); }
+#promoItems .nav-btn:hover, #promoItems .nav-btn.active { color: var(--gold); }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 34px 8px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.storecraft-mark {
+  width: 158px;
+  height: 76px;
+  margin: 12px auto 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.storecraft-mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 76px;
+  object-fit: contain;
+  opacity: .78;
+  filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%);
+}
+
+.signature-caption {
+  display: block;
+  font-size: 8px;
+  line-height: 1.2;
+  letter-spacing: .20em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Il menu di sistema si apre verso l'alto sopra il richiamo in fondo alla barra laterale. */
+.sidebar-credits {
+  width: 100%;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+/* Come in TEBE: sugli schermi molto larghi il contenuto si ferma a 1450 px (margini compresi) e resta al centro,
+   invece di allargare le schede all'infinito; la barra di scorrimento resta sul bordo destro della finestra. */
+main > * { max-width: calc(1450px - 6rem); margin-left: auto; margin-right: auto; }
+header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
+.home-mark { position: fixed; top: 1rem; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+
+/* Selettore CASSIERE / CREATOR: un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro */
+.mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 3px; padding: 3px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
+.mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
+.mode-btn:hover { color: var(--accent); }
+.mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
+
+#generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
+body.cassiere-mode #tools { margin-bottom: 3rem; }
+.layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
+body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
+.home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
+.home-mark-icon { font-size: 1.2rem; line-height: 1; }
+header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
+header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
+
+.section-title { font-family: 'Cinzel', serif; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 0.8rem; }
+.promo-lightning {
+  color: var(--gold);
+  font-family: Georgia, serif;
+  font-size: 1.1em;
+  font-weight: 400;
+  text-shadow: 0 0 6px rgba(229, 186, 115, 0.35);
+  line-height: 1;
+}
+
+/* Stessa distanza tra titolo e schede in tutte le sezioni (0,4rem, come la griglia Cartellini di prima); nel padding, perché un margine si fonderebbe con quello del titolo */
+.section-title + .carousel-wrapper { padding-top: 0.4rem; }
+.section-title + .carousel-wrapper .carousel-arrow { top: calc(50% + 0.2rem); }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
+
+.card, .carousel-card { --card-pad: 20px; }
+
+/* Anteprima nel riquadro 16:9 come le card-thumb di TEBE: l'immagine resta intera, senza tagli né deformazioni.
+   I lati vuoti restano scuri (nelle promo con la sfumatura dorata scura) nel tema scuro. */
+.preview { position: relative; aspect-ratio: 16 / 9; margin: 0 var(--card-pad); background: #0a0908; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+/* Pagine con il menu su misura (Promo Multibrand, Xmas Ball): etichetta MENU SPECIALE in basso a destra
+   nell'anteprima, con lo stile del .gold-badge della prima versione di StoreCraft (oro lucido, scritta nera) */
+.card-badge { position: absolute; bottom: 11px; right: 10px; z-index: 1; padding: 2px 7px; border-radius: 4px; background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #000; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
+
+/* Schede del corpo centrale: stessi elementi delle card di TEBE (numero e tipo in alto,
+   anteprima, titolo e pulsante + delle specifiche), con gli angoli arrotondati di StoreCraft. */
+.card-top { display: flex; justify-content: space-between; gap: 10px; padding: 16px var(--card-pad) 12px; font-size: 10px; letter-spacing: .16em; color: var(--accent); }
+.card-type { text-align: right; }
+
+.card-body { position: relative; padding: 14px var(--card-pad) 18px; }
+.card-body h3 { font-family: 'Cinzel', serif; font-size: 0.95rem; padding-right: 36px; }
+
+/* Pulsante + delle specifiche: un + oro senza contorno, diverso dal resto della scheda (che apre la pagina); passandoci sopra compare dietro un cerchio oro pieno.
+   Un clic apre le specifiche di tutte le schede e il + ruota in ×; un altro clic le richiude. */
+.spec-toggle { position: absolute; top: 12px; right: var(--card-pad); width: 24px; height: 24px; border: 0; border-radius: 50%; color: var(--accent); cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, transform .3s ease; }
+.spec-toggle::before, .spec-toggle::after { content: ""; position: absolute; top: 50%; left: 50%; width: 11px; height: 1.6px; background: currentColor; border-radius: 1px; transform: translate(-50%, -50%); }
+.spec-toggle::after { transform: translate(-50%, -50%) rotate(90deg); }
+.spec-toggle:hover, .spec-toggle:focus-visible { background: var(--accent); color: #121110; outline: none; }
+.desc-open .spec-toggle { transform: rotate(45deg); }
+/* Etichetta del pulsante + (Mostra / Nascondi specifiche) sopra il pulsante, nello stile della .tool-tip
+   di strumenti-stampa.css (fondo scuro, bordo oro), con la scritta bianca nel carattere del pulsante HOME, più piccola e sottile. */
+.spec-tip { position: absolute; bottom: calc(100% - 8px); right: var(--card-pad); padding: 4px 7px; border: 1px solid #d4a373; border-radius: 5px; background: #1e1d1a; color: var(--text); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.58rem; font-weight: 400; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; opacity: 0; transform: translateY(3px); transition: opacity .15s ease, transform .15s ease; pointer-events: none; z-index: 10; }
+.spec-toggle:hover + .spec-tip, .spec-toggle:focus-visible + .spec-tip { opacity: 1; transform: translateY(0); }
+
+.card:has(.card-desc) .card-body, .carousel-card:has(.card-desc) .card-body { transition: padding-bottom .3s ease; }
+.desc-open .card-body { padding-bottom: 0.55rem; }
+/* Le schede di una fila si allungano tutte come la più alta (anche quando le specifiche vanno su tre righe),
+   con il contenuto in alto e lo spazio in più in fondo. */
+.carousel-card:has(.card-desc) { justify-content: flex-start; }
+.card-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
+.card-desc > div { overflow: hidden; min-height: 0; }
+/* Specifiche: i componenti del cartello divisi da | grigio come il testo, come nella versione originale. Vanno a capo
+   come un testo normale (anche dentro un componente, e il | può stare a inizio o a fine riga).
+   Almeno due righe, così le schede aperte sono uguali. */
+.card-desc p { min-height: 3.2em; margin: 0 var(--card-pad) 18px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; letter-spacing: .01em; }
+.card-desc .spec-list { display: block; }
+/* Il separatore | sta in fondo alla specifica precedente (non all'inizio della successiva): andando a capo la riga
+   nuova comincia sempre con una parola, mai con uno spazio vuoto o con la barretta. */
+.card-desc .spec:not(:last-child)::after { content: "|"; margin: 0 0.2em 0 0.45em; color: var(--text-muted); }
+.desc-open .card-desc { grid-template-rows: 1fr; }
+
+/* STILI ESCLUSIVI WIDGET / CARD DORATA CON COLORE LOGO STORE CRAFT (#d4a373 / #e5ba73) */
+.gold-bf-card {
+  border: 1px solid var(--gold-border) !important;
+  background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%) !important;
+  box-shadow: 0 0 15px rgba(212, 163, 115, 0.25);
+  position: relative;
+}
+
+.gold-bf-card:hover {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 25px rgba(229, 186, 115, 0.45) !important;
+  transform: translateY(-4px);
+}
+
+.gold-bf-card h3 {
+  color: var(--gold) !important;
+  text-shadow: 0 0 8px rgba(212, 163, 115, 0.35);
+}
+
+#prints-promo-carousel .card-body h3 {
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(212, 163, 115, 0.35);
+}
+
+#prints-promo-carousel .carousel-card {
+  border-color: var(--gold-border);
+  background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%);
+  box-shadow: 0 0 15px rgba(212, 163, 115, 0.25);
+}
+
+#prints-promo-carousel .carousel-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 0 25px rgba(229, 186, 115, 0.45);
+}
+
+#prints-promo-carousel .compact-title {
+  white-space: nowrap;
+  font-size: 0.9rem;
+  letter-spacing: 0.2px;
+}
+
+
+/* CAROSELLI CON FRECCE FLOATING */
+#generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section { margin-bottom: 3rem; }
+
+.carousel-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+.carousel-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+.carousel-card .preview-icon {
+  font-size: 3.2rem;
+  color: var(--accent);
+}
+.print-pdf-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin-top: 0.9rem;
+  text-decoration: none;
+  font-size: 0.75rem;
+  padding: 0.55rem 0.5rem;
+}
+
+
+/* WIDGET ED ESPANSIONE ANIMATA */
+.widget { 
+  background: var(--card); 
+  border: 1px solid var(--border); 
+  border-radius: 8px; 
+  padding: 1.5rem; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: space-between; 
+  position: relative;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.widget-compact {
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.widget:not(.expanded):hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+
+.widget h3 { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+.widget-compact h3 { margin-bottom: 0.8rem; }
+
+/* Utilità Cassa (assets/js/cassa.js), come in TEBE: lo strumento scelto si apre in un popup al centro della pagina,
+   sopra un velo; si chiude con la ✕, con Esc o toccando il velo. Sul telefono gli strumenti restano pronti nella
+   pagina (vedi la vista telefono in fondo). */
+#tools.is-focused::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: rgba(10, 9, 8, 0.6);
+  backdrop-filter: blur(2px);
+}
+:root[data-interface-theme="light"] #tools.is-focused::before { background: rgba(40, 37, 34, 0.28); }
+
+.widget.expanded {
+  position: fixed;
+  z-index: 1501;
+  top: 50%;
+  left: 50%;
+  width: min(620px, calc(100vw - 40px));
+  max-height: calc(100vh - 56px);
+  overflow: auto;
+  padding: 2.5rem;
+  background: var(--card);
+  border-color: var(--accent);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.6);
+  transform: translate(-50%, -50%);
+  cursor: default;
+}
+#widget-sconto.expanded,
+#widget-aliquota.expanded,
+#widget-valuta.expanded { width: min(520px, calc(100vw - 40px)); }
+.widget.expanded h3 { padding-right: 40px; }
+
+/* ✕ del popup, in alto a destra (nascosta finché lo strumento non è aperto) */
+.widget-header-controls { display: none; }
+.widget.expanded .widget-header-controls {
+  display: block;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--accent);
+  color: #000000;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: var(--accent-hover);
+  transform: scale(1.1);
+}
+
+.tool-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+.input-group { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #0a0908; }
+.input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; flex-shrink: 0; }
+.input-suffix { padding: 0.6rem 0.7rem; background: #181715; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border-left: 1px solid var(--border); font-weight: 700; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.5px; white-space: nowrap; }
+.tool-input { width: 100%; padding: 0.6rem 0.7rem; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
+.tool-input-select { width: 100%; padding: 0.6rem 0.7rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
+.tool-input-select:focus, .tool-input:focus { border-color: var(--accent); }
+
+.tool-btn { 
+  padding: 0.65rem 0.8rem; 
+  background: var(--accent); 
+  color: #000000; 
+  font-weight: 700; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  font-size: 0.8rem; 
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tool-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.tool-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+.tool-btn-secondary:hover {
+  background: rgba(212, 163, 115, 0.1);
+  color: var(--accent-hover);
+}
+
+.tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
+.tool-status { margin-top: 0.6rem; color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+
+/* STILI WIDGET IVA */
+.rate-grid-widget {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.rate-btn-widget {
+  background: #0a0908;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 0.4rem 0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.rate-btn-widget:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.rate-btn-widget.active {
+  background: rgba(212, 163, 115, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.qr-preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+.qr-preview-wrapper {
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+#qrcode img, #qrcode canvas {
+  display: block;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 1000px) {
+  #tools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media screen and (max-width: 1300px) and (pointer: fine) {
+  #tools { grid-template-columns: minmax(0, 1fr); }
+}
+/* Finestra stretta: il contenuto usa tutta la larghezza. */
+@media screen and (max-width: 720px) {
+  aside { display: none; }
+  main { padding: 32px 20px; min-width: 0; }
+  #tools { grid-template-columns: 1fr; }
+  .home-mark { left: auto; right: 18px; }
+}
+@media screen and (max-width: 720px) and (pointer: fine) {
+  .mobile-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 16px;
+    left: 20px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: #181715;
+    color: var(--accent);
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 900;
+  }
+  main { padding-top: 76px; }
+  aside {
+    display: flex;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(278px, 82vw);
+    box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+    transform: translateX(0);
+  }
+  body.sidebar-collapsed aside { transform: translateX(-100%); }
+  .mobile-close-btn { display: flex; }
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0,0,0,0.65);
+    opacity: 1;
+    visibility: visible;
+  }
+  body.sidebar-collapsed .sidebar-overlay {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+/* Solo telefoni: stessa condizione usata dal JavaScript. */
+@media screen and (max-width: 720px) and (pointer: coarse) {
+  body {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+
+
+  .mobile-top-bar {
+    display: flex;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 64px;
+    background: #0a0908;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.6rem;
+    z-index: 900;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+  }
+
+  .mobile-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: static;
+    width: 34px;
+    height: 34px;
+    background: #181715;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    color: var(--accent);
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .mobile-brand {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--accent);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+    padding: 0 0.2rem;
+  }
+
+  .mobile-top-bar .mode-switcher {
+    position: static;
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+
+  .mobile-top-bar .mode-btn {
+    padding: 0.3rem 0.45rem;
+    font-size: 0.62rem;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  aside {
+    display: flex;
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: min(278px, 82vw);
+    padding: 16px 14px 18px;
+    box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+    transform: translateX(0);
+    z-index: 1000;
+  }
+
+  body.sidebar-collapsed aside {
+    transform: translateX(-100%);
+  }
+
+  .mobile-close-btn {
+    display: flex;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 64px 0 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
+    z-index: 999;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0.3s;
+    visibility: visible;
+  }
+
+  body.sidebar-collapsed .sidebar-overlay {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  main {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: calc(100vh - 64px);
+    padding: 24px 16px 0;
+    overflow: visible;
+    flex: none;
+  }
+  header { text-align: center; }
+  .sidebar-header { padding-bottom: 29px; }
+  .mobile-close-btn { top: 0; right: 0; }
+  .mobile-brand-footer {
+    display: block;
+    margin-top: 20px;
+    padding-bottom: 26px;
+    text-align: center;
+    font: 400 19px 'Cinzel', serif;
+    letter-spacing: .16em;
+    color: var(--accent);
+  }
+  #system-menu-toggle {
+    min-height: 48px;
+    padding: 11px 10px;
+    border: 1px solid var(--interface-accent);
+    border-radius: 6px;
+    background: var(--interface-accent);
+    color: #121110;
+    font: 600 12px/1.2 var(--interface-font);
+    letter-spacing: .14em;
+    box-shadow: 0 3px 10px var(--interface-shadow);
+  }
+  #system-menu-toggle:hover,
+  #system-menu-toggle:focus-visible,
+  #system-menu-toggle[aria-expanded="true"] {
+    border-color: var(--interface-accent);
+    background: var(--interface-accent);
+    box-shadow: 0 6px 16px var(--interface-shadow);
+    transform: translateY(-1px);
+  }
+  #system-menu-toggle:focus-visible {
+    outline: 2px solid var(--interface-accent-bright);
+    outline-offset: 3px;
+  }
+  body.cassiere-mode #tools-title { display: none; }
+  .widget { cursor: default; scroll-margin-top: 80px; }
+  .widget:hover { transform: none; }
+  .widget.mobile-active { border-color: var(--accent); }
+  .widget-header-controls { display: none !important; }
+  .tool-input, .tool-input-select { font-size: 16px; }
+
+  .home-mark {
+    left: auto;
+    right: 0.8rem;
+    top: 3.8rem;
+  }
+}
+@media screen and (max-width: 360px) and (pointer: coarse) {
+  .mobile-top-bar { padding: 0 8px; }
+  .mobile-brand { font-size: 0.76rem; letter-spacing: 0.5px; }
+  .mobile-nav-toggle { width: 32px; height: 34px; }
+  .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
+}
+
+/* ===== Parti della dashboard unica (dashboard.js) ===== */
+
+/* Intestazione: in Luxury titolo e sottotitolo; in TEBE e OPHILYA, al loro posto, l'interruttore tra i due negozi,
+   con l'aspetto del selettore CASSIERE / CREATOR (stessi colori in tutti i temi) */
+.mode-switcher.store-switch { position: static; display: inline-flex; z-index: auto; }
+.store-switch .mode-btn { letter-spacing: 0.16em; }
+
+/* Sotto il divisorio: logo del negozio (bianco su fondo scuro, nero su fondo chiaro) e indirizzo */
+.store-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 2rem; }
+.store-logo { display: block; width: 100%; max-width: var(--store-logo-larghezza, 205px); height: auto; filter: brightness(0) invert(1); }
+:root[data-interface-theme="light"] .store-logo { filter: brightness(0); }
+.store-identity { text-align: right; padding-bottom: 3px; }
+.store-identity strong { display: block; font-size: 12px; font-weight: 400; letter-spacing: .2em; color: var(--accent); }
+.store-identity span { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .16em; color: var(--text-muted); }
+
+/* Miniature a due immagini (come in TEBE): al passaggio del mouse si alternano con una dissolvenza */
+.preview.slideshow .preview-image { position: absolute; inset: 0; opacity: 0; }
+.preview.slideshow .preview-image:first-child { opacity: 1; }
+.carousel-card:hover .preview.slideshow .preview-image { animation-duration: 4.2s; animation-iteration-count: infinite; }
+.carousel-card:hover .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
+.carousel-card:hover .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
+@keyframes thumbnail-fade-first { 0%, 42.86% { opacity: 1; } 50%, 92.86% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes thumbnail-fade-second { 0%, 42.86% { opacity: 0; } 50%, 92.86% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Schede e voci non ancora disponibili per il negozio (Coming Soon): visibili ma spente */
+.carousel-card.is-soon { position: relative; pointer-events: none; cursor: default; }
+.carousel-card.is-soon > * { visibility: hidden; }
+.carousel-card.is-soon::after {
+  content: "Coming Soon";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.nav-btn.is-soon { opacity: .45; cursor: default; pointer-events: none; }
+
+/* Utilità Cassa che il negozio mostra solo in modalità CASSIERE (es. OPHILYA) */
+body.cassa-solo-cassiere:not(.cassiere-mode) #tools-title,
+body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
+
+@media (max-width: 720px) {
+  .store-hero { display: block; }
+  .store-identity { text-align: left; margin-top: 24px; }
+}
+@media screen and (max-width: 720px) and (pointer: coarse) {
+  /* sul telefono non c'è il passaggio del mouse: le miniature a due immagini si alternano da sole */
+  .preview.slideshow .preview-image { animation-duration: 4.2s; animation-iteration-count: infinite; }
+  .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
+  .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
+  .store-logo { max-width: 185px; margin: 0 auto; }
+}

@@ -1,6 +1,10 @@
 (() => {
-  const STORAGE_KEY = 'storecraft_interface_theme';
-  const LOOK_STORAGE_KEY = 'storecraft_interface_look';
+  // Tema e aspetto scelti si ricordano per negozio (Luxury Outlet conserva le chiavi di prima): così ogni negozio parte
+  // dai suoi valori iniziali finché l'utente non sceglie.
+  const NEGOZIO = document.documentElement.dataset.negozio;
+  const SUFFISSO = NEGOZIO && NEGOZIO !== 'luxury' ? `_${NEGOZIO}` : '';
+  const STORAGE_KEY = `storecraft_interface_theme${SUFFISSO}`;
+  const LOOK_STORAGE_KEY = `storecraft_interface_look${SUFFISSO}`;
   const THEMES = Object.freeze(['dark', 'light']);
   const LOOKS = Object.freeze(['standard', 'minimal']);
   const root = document.documentElement;

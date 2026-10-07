@@ -30,7 +30,7 @@ function Avviso($testo, $icona = 'Information') {
 
 # Negozi disponibili: le schede in assets/negozi/ (<negozio>.js), con il nome scritto nella scheda.
 $cartellaSchede = Join-Path $root 'assets\negozi'
-$negozi = @(Get-ChildItem -LiteralPath $cartellaSchede -Filter '*.js' | Where-Object { $_.Name -ne 'installati.js' } | Sort-Object Name | ForEach-Object {
+$negozi = @(Get-ChildItem -LiteralPath $cartellaSchede -Filter '*.js' | Where-Object { $_.Name -ne 'installati.js' -and $_.BaseName -notlike '*-dashboard' } | Sort-Object Name | ForEach-Object {
   $testo = [IO.File]::ReadAllText($_.FullName, $utf8)
   $nome = if ($testo -match "nome:\s*'([^']+)'") { $Matches[1] } else { $_.BaseName.ToUpper() }
   [pscustomobject]@{ Id = $_.BaseName; Nome = $nome }
@@ -167,7 +167,7 @@ try {
     $arrivo = Join-Path $destinazione "assets\$($_.Name)"
     if ($_.Name -eq 'negozi') {
       foreach ($id in $scelti) {
-        Get-ChildItem -LiteralPath $_.FullName -File | Where-Object { $_.BaseName -eq $id } | ForEach-Object { Copia $_.FullName (Join-Path $arrivo $_.Name) }
+        Get-ChildItem -LiteralPath $_.FullName -File | Where-Object { $_.BaseName -eq $id -or $_.BaseName -eq "$id-dashboard" } | ForEach-Object { Copia $_.FullName (Join-Path $arrivo $_.Name) }
       }
       $elenco = ($scelti | ForEach-Object { "'$_'" }) -join ', '
       $testo = "/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).`r`n" +
