@@ -2,10 +2,11 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-01"></script>
+  <script src="../assets/js/negozi.js?v=20261008-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-01">
-  <title>Lista di Stampa · TEBE · OPHILYA</title>
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
+  <title>Lista di Stampa · TEBE</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -182,25 +183,6 @@
 
     .status { min-height: 1.2em; color: #8a6a35; font: 600 0.72rem Arial, Helvetica, sans-serif; text-align: center; }
 
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      z-index: 1000;
-      display: flex;
-      width: 36px;
-      height: 36px;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: 50%;
-      background: #b49a62;
-      color: #fffdfa;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     .print-frame { position: fixed; width: 0; height: 0; border: 0; visibility: hidden; }
   </style>
 </head>
@@ -231,7 +213,7 @@
     <button type="button" class="action-btn btn-gold" id="clearBtn" onclick="clearList()">Svuota Lista</button>
   </aside>
 
-  <script src="../assets/js/lista-stampa.js?v=20261008-01"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261008-02"></script>
   <script>
     // Pagina che gestisce la lista di stampa (assets/js/lista-stampa.js): miniature, pagina scelta in grande,
     // stampa di tutta la lista come lista.pdf, eliminazione di una pagina e svuotamento della lista.

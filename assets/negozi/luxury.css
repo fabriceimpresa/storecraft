@@ -36,4 +36,22 @@
   --lista-pdf-focus: #e5ba73;
   --lista-pdf-backdrop: rgba(10, 9, 8, .78);
   --lista-pdf-shadow: rgba(0, 0, 0, .5);
+
+  /* Pulsante ✕ in alto a destra (chiudi-pagina.css) */
+  --chiudi-sfondo: #d4a373;
+  --chiudi-colore: #000;
+  --chiudi-sfondo-hover: #e5ba73;
+  --chiudi-ombra: rgba(0, 0, 0, 0.5);
+  --chiudi-focus: #e5ba73;
+
+  /* Riquadro Torna al Menu Principale (torna-al-menu.css) */
+  --torna-sfondo: #181a1d;
+  --torna-bordo: #d4a373;
+  --torna-ombra: rgba(0, 0, 0, 0.6);
+  --torna-titolo: #e5ba73;
+  --torna-linea: rgba(212, 163, 115, 0.3);
+  --torna-testo: #ffffff;
+  --torna-testo-hover: #e5ba73;
+  --torna-testo-dimensione: 0.74rem;
+  --torna-testo-peso: normal;
 }

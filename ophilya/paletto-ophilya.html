@@ -2,9 +2,11 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-01"></script>
+  <script src="../assets/js/negozi.js?v=20261008-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-01">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Paletto · OPHILYA</title>
   <style>
@@ -216,54 +218,6 @@
 
     .btn-print:hover {
       background: #7a2d22;
-    }
-
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      z-index: 1000;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: #b49a62;
-      color: #fffdfa;
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .floating-nav-box {
-      position: fixed;
-      right: 1.5rem;
-      bottom: 1.5rem;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      padding: 0.8rem 1rem;
-      border: 1px solid #b49a62;
-      border-radius: 8px;
-      background: #fffdfa;
-    }
-
-    .floating-nav-title {
-      padding-bottom: 3px;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
-      color: #8a6a35;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-    }
-
-    .floating-nav-btn {
-      color: #282522;
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-decoration: none;
     }
 
     .print-sheet {
@@ -705,15 +659,15 @@
       .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-01">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-01">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-01">
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
 </head>
 <body>
   <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna all'indice">✕</a>
 
   <div class="floating-nav-box">
-    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <div class="floating-nav-title">OPHILYA</div>
     <a href="index.html?store=ophilya" class="floating-nav-btn">← Torna al Menu Principale</a>
   </div>
 
@@ -900,7 +854,7 @@
     <div class="cut-line" aria-hidden="true"></div>
   </main>
 
-  <script src="../assets/js/tema-italia.js?v=20261008-01"></script>
+  <script src="../assets/js/tema-italia.js?v=20261008-02"></script>
   <script>
     const cardStates = {
       top: {
@@ -1143,7 +1097,7 @@
     updateCards();
     renderCard('bottom');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-01"></script>
+  <script src="../assets/js/cursore.js?v=20261008-02"></script>
   <script>
     // Cursore: sopra il cartello scelto (superiore/inferiore) e sugli elementi legati al campo in uso.
     const activePalettoCard = () => document.getElementById(activeCard === 'bottom' ? 'cardBottom' : 'cardTop');
@@ -1176,6 +1130,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-01"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-02"></script>
 </body>
 </html>

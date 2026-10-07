@@ -1,3 +1,13 @@
+/* Pulsante fisso ✕ in alto a destra, comune a tutte le pagine che lo hanno (le pagine non ne tengono una copia).
+   Colori del negozio della pagina, nella sua scheda (assets/negozi/<negozio>.css: --chiudi-*); qui i valori di riserva. */
+:root {
+  --chiudi-sfondo: #d4a373;
+  --chiudi-colore: #000;
+  --chiudi-sfondo-hover: #e5ba73;
+  --chiudi-ombra: rgba(0, 0, 0, 0.5);
+  --chiudi-focus: #e5ba73;
+}
+
 .app-close-btn {
   position: fixed;
   top: 1.5rem;
@@ -13,22 +23,22 @@
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: #d4a373;
-  color: #000;
+  background: var(--chiudi-sfondo);
+  color: var(--chiudi-colore);
   font: bold 1.2rem/1 Arial, Helvetica, sans-serif;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px var(--chiudi-ombra);
   transition: transform 0.2s, background-color 0.2s;
 }
 
 .app-close-btn:hover {
-  background: #e5ba73;
+  background: var(--chiudi-sfondo-hover);
   transform: scale(1.1);
 }
 
 .app-close-btn:focus-visible {
-  outline: 2px solid #e5ba73;
+  outline: 2px solid var(--chiudi-focus);
   outline-offset: 3px;
 }
 

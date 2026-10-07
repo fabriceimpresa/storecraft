@@ -2,16 +2,18 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-01"></script>
+  <script src="../assets/js/negozi.js?v=20261008-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-01">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini TEBE</title>
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-01"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-01"></script>
-  <script src="../assets/js/logos.js?v=20261008-01"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-01"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261008-02"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261008-02"></script>
+  <script src="../assets/js/logos.js?v=20261008-02"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261008-02"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -421,58 +423,6 @@
     .sheet-wrap { position: relative; flex-shrink: 0; }
 
     /* NAVIGAZIONE */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: var(--gold);
-      color: #fffdfa;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 1000;
-      text-decoration: none;
-    }
-
-    .floating-nav-box {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--card);
-      border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      box-shadow: 0 8px 24px rgba(50,43,36,.12);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      z-index: 1000;
-    }
-
-    .floating-nav-title {
-      font-size: 0.65rem;
-      color: #c99c43;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(180, 139, 55, 0.3);
-      padding-bottom: 3px;
-    }
-
-    .floating-nav-btn {
-      color: var(--text);
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
 
     /* Pulsante flottante del tema Sale, sotto la ✕ come quello Made in Italy */
     .sale-theme-btn {
@@ -593,15 +543,15 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.27; } }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-01">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-01">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
   <button type="button" class="sale-theme-btn" id="saleThemeBtn" title="Tema Sale" aria-pressed="false" onclick="toggleSaleTheme()">Sale</button>
 
   <div class="floating-nav-box">
-    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <div class="floating-nav-title">TEBE</div>
     <a href="index.html?store=tebe" class="floating-nav-btn">← Torna al Menu Principale</a>
   </div>
 
@@ -1175,7 +1125,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-01"></script>
+  <script src="../assets/js/cursore.js?v=20261008-02"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -1204,6 +1154,6 @@
     });
     cursore.point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-01" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-02" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

@@ -1,7 +1,9 @@
 /*
  * Riquadro fisso "Torna al Menu Principale" in basso a destra, uguale in tutte le pagine (regola unica: le pagine
- * non ne tengono una copia). Cambia solo il testo del titolo in alcune tavole: STORE // CRAFT di solito,
- * XMAS // CRAFT in Xmas Ball, BLACK FRIDAY // CRAFT in Black Friday, BLACK FRIDAY // LIPS in Black Friday Lips.
+ * non ne tengono una copia). Colori e testo del negozio della pagina nella sua scheda (assets/negozi/<negozio>.css:
+ * --torna-*); qui i valori di riserva. Cambia solo il testo del titolo: in Luxury Outlet STORE // CRAFT di solito,
+ * XMAS // CRAFT in Xmas Ball, BLACK FRIDAY // CRAFT in Black Friday, BLACK FRIDAY // LIPS in Black Friday Lips;
+ * nelle pagine di TEBE e OPHILYA il nome del negozio.
  * Markup:
  *   <div class="floating-nav-box">
  *     <div class="floating-nav-title">STORE // CRAFT</div>
@@ -9,15 +11,27 @@
  *   </div>
  */
 
+:root {
+  --torna-sfondo: #181a1d;
+  --torna-bordo: #d4a373;
+  --torna-ombra: rgba(0, 0, 0, 0.6);
+  --torna-titolo: #e5ba73;
+  --torna-linea: rgba(212, 163, 115, 0.3);
+  --torna-testo: #ffffff;
+  --torna-testo-hover: #e5ba73;
+  --torna-testo-dimensione: 0.74rem;
+  --torna-testo-peso: normal;
+}
+
 .floating-nav-box {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  background: #181a1d;
-  border: 1px solid #d4a373;
+  background: var(--torna-sfondo);
+  border: 1px solid var(--torna-bordo);
   border-radius: 8px;
   padding: 0.8rem 1rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px var(--torna-ombra);
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -29,11 +43,11 @@
 
 .floating-nav-title {
   font-size: 0.65rem;
-  color: #e5ba73;
+  color: var(--torna-titolo);
   text-transform: uppercase;
   letter-spacing: 1.2px;
   font-weight: 700;
-  border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+  border-bottom: 1px solid var(--torna-linea);
   padding-bottom: 3px;
 }
 
@@ -41,15 +55,15 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #ffffff;
+  color: var(--torna-testo);
   text-decoration: none;
-  font-size: 0.74rem;
-  font-weight: normal;
+  font-size: var(--torna-testo-dimensione);
+  font-weight: var(--torna-testo-peso);
   transition: all 0.2s;
 }
 
 .floating-nav-btn:hover {
-  color: #e5ba73;
+  color: var(--torna-testo-hover);
   transform: translateX(-2px);
 }
 

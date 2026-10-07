@@ -2,9 +2,10 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-01"></script>
+  <script src="../assets/js/negozi.js?v=20261008-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visualizzatore PDF · TEBE · OPHILYA</title>
+  <title>Visualizzatore PDF · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -85,28 +86,6 @@
     }
 
     .viewer-btn:hover { background: var(--accent-hover); color: #fffdfa; transform: translateY(-1px); }
-    .app-close-btn {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border: none;
-      border-radius: 50%;
-      background: var(--accent);
-      color: var(--bg);
-      box-shadow: 0 4px 12px rgba(50,43,36,.18);
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-decoration: none;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .app-close-btn:hover { background: var(--accent-hover); color:#fffdfa; transform: scale(1.1); }
 
     .pdf-stage {
       flex: 1;
@@ -150,10 +129,10 @@
 </head>
 <body>
   <header class="viewer-header">
-    <div class="brand">TEBE · OPHILYA</div>
+    <div class="brand">OPHILYA</div>
     <div class="document-title" id="document-title">Visualizzatore PDF</div>
     <div class="viewer-actions">
-      <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
+      <a href="index.html?store=ophilya" class="app-close-btn app-close-btn--pdf" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
     </div>
   </header>
 

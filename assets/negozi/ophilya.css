@@ -36,4 +36,22 @@
   --lista-pdf-focus: #8a6a35;
   --lista-pdf-backdrop: rgba(40, 34, 28, .55);
   --lista-pdf-shadow: rgba(40, 34, 28, .3);
+
+  /* Pulsante ✕ in alto a destra (chiudi-pagina.css): oro TEBE con la ✕ avorio */
+  --chiudi-sfondo: #b49a62;
+  --chiudi-colore: #fffdfa;
+  --chiudi-sfondo-hover: #8a6a35;
+  --chiudi-ombra: rgba(40, 34, 28, 0.25);
+  --chiudi-focus: #8a6a35;
+
+  /* Riquadro Torna al Menu Principale (torna-al-menu.css): fondo avorio, testo scuro più grande come in TEBE */
+  --torna-sfondo: #fffdfa;
+  --torna-bordo: #b49a62;
+  --torna-ombra: rgba(40, 34, 28, 0.12);
+  --torna-titolo: #8a6a35;
+  --torna-linea: rgba(180, 154, 98, 0.3);
+  --torna-testo: #282522;
+  --torna-testo-hover: #8a6a35;
+  --torna-testo-dimensione: 0.82rem;
+  --torna-testo-peso: 600;
 }

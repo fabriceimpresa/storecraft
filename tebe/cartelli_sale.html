@@ -2,9 +2,11 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-01"></script>
+  <script src="../assets/js/negozi.js?v=20261008-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-01">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-02">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello SALE</title>
   <style>
@@ -419,73 +421,6 @@
     }
 
     /* NAVIGAZIONE UI */
-    .app-close-btn {
-      position: fixed;
-      top: 1.5rem;
-      right: 1.5rem;
-      width: 36px;
-      height: 36px;
-      background-color: #b49a62;
-      color: #fffdfa;
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      transition: transform 0.2s, background-color 0.2s;
-      z-index: 1000;
-      text-decoration: none;
-    }
-
-    .app-close-btn:hover {
-      background-color: #8a6a35;
-      transform: scale(1.1);
-    }
-
-    .floating-nav-box {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: #fffdfa;
-      border: 1px solid #b49a62;
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      z-index: 1000;
-    }
-
-    .floating-nav-title {
-      font-size: 0.65rem;
-      color: #8a6a35;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      font-weight: 700;
-      border-bottom: 1px solid rgba(212, 163, 115, 0.3);
-      padding-bottom: 3px;
-    }
-
-    .floating-nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #282522;
-      text-decoration: none;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .floating-nav-btn:hover {
-      color: #8a6a35;
-      transform: translateX(-2px);
-    }
 
     @page {
       size: A4 portrait;
@@ -604,9 +539,9 @@
       .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-01">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-01">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-01">
+  <link rel="stylesheet" href="../assets/css/tema-italia.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-02">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-02">
 </head>
 <body>
 
@@ -614,7 +549,7 @@
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
 
   <div class="floating-nav-box">
-    <div class="floating-nav-title">TEBE · OPHILYA</div>
+    <div class="floating-nav-title">TEBE</div>
     <a href="index.html?store=tebe" class="floating-nav-btn">
       ← Torna al Menu Principale
     </a>
@@ -715,7 +650,7 @@
     </div>
   </div>
 
-  <script src="../assets/js/tema-italia.js?v=20261008-01"></script>
+  <script src="../assets/js/tema-italia.js?v=20261008-02"></script>
   <script>
     function formatDiscount(value) {
       const numeric = value.toString().replace(/[^0-9]/g, '').trim();
@@ -813,7 +748,7 @@
 
     switchMode('doppia');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-01"></script>
+  <script src="../assets/js/cursore.js?v=20261008-02"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -830,6 +765,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-01"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-02"></script>
 </body>
 </html>
