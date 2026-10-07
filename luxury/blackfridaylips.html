@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Black Friday Lips</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-15">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     @font-face {
       font-family: 'Franklin Gothic';
-      src: url('assets/fonts/Franklin Gothic.ttf') format('truetype');
+      src: url('../assets/fonts/Franklin Gothic.ttf') format('truetype');
       font-style: normal;
       font-weight: 700;
       font-display: block;
@@ -34,7 +34,7 @@
       position: relative;
     }
 
-    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
     /* FOGLIO A4 */
     .print-sheet {
@@ -61,7 +61,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: url('assets/img/halftone.png') !important;
+      background-image: url('../assets/img/luxury/halftone.png') !important;
       background-repeat: repeat !important;
       background-size: 800px auto !important;
       z-index: 1;
@@ -198,13 +198,13 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script defer src="assets/js/responsive.js?v=20261007-14"></script>
-  <script defer src="assets/js/stampa-ios.js?v=20261007-14"></script>
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script defer src="../assets/js/responsive.js?v=20261007-15"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261007-15"></script>
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="cartelli">
 
@@ -264,7 +264,7 @@
         <div class="price-value" id="priceDisplay1">20,00</div>
       </div>
       <div class="lips-wrapper">
-        <img src="assets/img/lips.png" alt="Black Friday Lips">
+        <img src="../assets/img/luxury/lips.png" alt="Black Friday Lips">
       </div>
     </div>
 
@@ -278,12 +278,12 @@
         <div class="price-value" id="priceDisplay2">20,00</div>
       </div>
       <div class="lips-wrapper">
-        <img src="assets/img/lips.png" alt="Black Friday Lips">
+        <img src="../assets/img/luxury/lips.png" alt="Black Friday Lips">
       </div>
     </div>
   </div>
 
-  <script src="assets/js/selettore-cartello.js?v=20261007-14"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261007-15"></script>
 
   <script>
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
@@ -413,7 +413,7 @@
       renderCards();
     };
   </script>
-  <script src="assets/js/cursore.js?v=20261007-14"></script>
+  <script src="../assets/js/cursore.js?v=20261007-15"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -430,7 +430,7 @@
       ]
     });
   </script>
-  <script src="assets/js/copia-cartello.js?v=20261007-14"></script>
-  <script src="assets/js/strumenti-stampa.js?v=20261007-14"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261007-15"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-15"></script>
 </body>
 </html>

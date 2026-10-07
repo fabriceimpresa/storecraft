@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-15">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-15">
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     /* Font locali da assets/fonts (stessa convenzione delle altre pagine: 'Nevis Project') */
     @font-face {
       font-family: 'Nevis Project';
-      src: url('assets/fonts/Nevis Bold.ttf') format('truetype');
+      src: url('../assets/fonts/Nevis Bold.ttf') format('truetype');
       font-weight: 700;
       font-style: normal;
     }
 
     @font-face {
       font-family: 'Bodoni Std';
-      src: url('assets/fonts/BodoniStd-BoldItalic.otf') format('opentype');
+      src: url('../assets/fonts/BodoniStd-BoldItalic.otf') format('opentype');
       font-weight: bold;
       font-style: italic;
     }
@@ -60,7 +60,7 @@
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #d4a373; margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
     /* I due riquadri (Modifica Pagina, con le Fasce Prezzo che valgono per tutta la pagina, e Modifica
-       Colonna) seguono il pannello standard (assets/css/pannello.css): qui solo ciò che è proprio di
+       Colonna) seguono il pannello standard (../assets/css/pannello.css): qui solo ciò che è proprio di
        questa pagina. Come negli altri cartellini un riquadro che comincia con un selettore ha 1rem sopra
        il selettore e l'ultimo elemento non aggiunge spazio sotto. */
     .editor-title + .panel-block > .form-group:first-child { margin-top: 1rem; }
@@ -176,16 +176,16 @@
       .sheet-wrap { margin: 0; }
     }
 
-    /* Vista telefono: quella comune di cartellini e Prezzi Vetrina (assets/css/responsive.css e responsive.js). */
+    /* Vista telefono: quella comune di cartellini e Prezzi Vetrina (../assets/css/responsive.css e responsive.js). */
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script defer src="assets/js/responsive.js?v=20261007-14"></script>
-  <script defer src="assets/js/stampa-ios.js?v=20261007-14"></script>
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script defer src="../assets/js/responsive.js?v=20261007-15"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261007-15"></script>
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="prezzi">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -259,7 +259,7 @@
     </div>
   </main>
 
-  <script src="assets/js/fasce-prezzo.js?v=20261007-14"></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261007-15"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -457,7 +457,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="assets/js/cursore.js?v=20261007-14"></script>
+  <script src="../assets/js/cursore.js?v=20261007-15"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -483,6 +483,6 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261007-14" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-15" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

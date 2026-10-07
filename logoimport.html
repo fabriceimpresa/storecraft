@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMPORT LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-15">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -251,9 +251,11 @@
   .modal-btn-overwrite { background: #dc3545; color: #fff; }
   .modal-btn-overwrite:hover { background: #c82333; }
 </style>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-15">
+  <script src="assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-15">
+  <link rel="stylesheet" href="assets/css/admin-negozio.css?v=20261007-15">
+  <script src="assets/js/admin-negozio.js?v=20261007-15"></script>
 </head>
 <body data-layout="loghi">
 
@@ -273,7 +275,9 @@
 
   <div class="container">
     <h1>IMPORT LOGHI NEL PROGETTO</h1>
-    <p class="subtitle">Pagina ad uso interno: aggiunge nuovi loghi ufficiali ad assets/logos, genera le 4 versioni colorate e aggiorna logos.js</p>
+    <p class="subtitle">Pagina ad uso interno: aggiunge nuovi loghi ufficiali di <span data-admin-nome-negozio></span> ad assets/logos/<span data-admin-cartella-negozio></span>, genera le 4 versioni colorate (oro del negozio) e aggiorna l'elenco assets/logos/<span data-admin-cartella-negozio></span>/elenco.js</p>
+
+    <div data-admin-negozio></div>
 
     <div class="folder-bar">
       <span class="folder-status" id="folderStatus">Cartella progetto non collegata.</span>
@@ -292,12 +296,12 @@
   </div>
 
 <script>
-  const PROJECT_FOLDER_NAMES = { logos: 'logos', printlogos: 'printlogos', assets: 'assets' };
+  // Colori delle 4 varianti; l'oro è quello del negozio scelto (admin-negozio.js).
   const COLORS = {
     white: [255, 255, 255],
     black: [0, 0, 0],
     red: [224, 0, 0],
-    gold: [180, 139, 55]
+    get gold() { return AdminNegozio.oro(); }
   };
 
   let projectDirHandle = null;
@@ -320,11 +324,8 @@
     }
     try {
       projectDirHandle = await window.showDirectoryPicker();
-      // Verifica/crea sottocartelle assets/logos e assets/img/printlogos
-      const assetsDir = await projectDirHandle.getDirectoryHandle('assets', { create: true });
-      logosDirHandle = await assetsDir.getDirectoryHandle('logos', { create: true });
-      const imgDir = await assetsDir.getDirectoryHandle('img', { create: true });
-      printlogosDirHandle = await imgDir.getDirectoryHandle('printlogos', { create: true });
+      // Verifica/crea le sottocartelle del negozio: assets/logos/<negozio> e assets/img/<negozio>/printlogos
+      await openStoreFolders();
 
       const perm = await projectDirHandle.requestPermission({ mode: 'readwrite' });
       if (perm !== 'granted') {
@@ -340,6 +341,33 @@
       folderStatus.className = 'folder-status err';
     }
   }
+
+  async function openStoreFolders() {
+    ({ logos: logosDirHandle, printlogos: printlogosDirHandle } = await AdminNegozio.cartelle(projectDirHandle));
+  }
+
+  // Cambio di negozio: non durante un salvataggio; la coda si svuota, così i loghi preparati per un negozio non
+  // finiscono in un altro, e la cartella progetto collegata passa alle cartelle del nuovo negozio.
+  AdminNegozio.prima(() => {
+    if (queue.some(item => item.status === 'saving')) {
+      alert('Attendi la fine del salvataggio prima di cambiare negozio.');
+      return false;
+    }
+    const pending = queue.filter(item => item.status !== 'saved').length;
+    return !pending || confirm(`Cambiando negozio la coda (${pending} loghi non salvati) si svuota. Continuare?`);
+  });
+  AdminNegozio.alCambio(async () => {
+    queue = [];
+    renderQueue();
+    if (!projectDirHandle) return;
+    try {
+      await openStoreFolders();
+    } catch (err) {
+      console.error(err);
+      folderStatus.textContent = '❌ ' + (err.message || 'Impossibile aprire le cartelle del negozio.');
+      folderStatus.className = 'folder-status err';
+    }
+  });
 
   function onDropZoneClick() {
     if (!logosDirHandle) {
@@ -507,16 +535,14 @@
   }
 
   async function updateLogosJs(fileName) {
-    // logos.js vive in assets/js/logos.js rispetto alla cartella progetto
-    const assetsDir = await projectDirHandle.getDirectoryHandle('assets', { create: true });
-    const jsDir = await assetsDir.getDirectoryHandle('js', { create: true });
+    // L'elenco dei loghi ufficiali del negozio vive in assets/logos/<negozio>/elenco.js, accanto ai loghi
     let text = '';
     try {
-      const fileHandle = await jsDir.getFileHandle('logos.js');
+      const fileHandle = await logosDirHandle.getFileHandle('elenco.js');
       const file = await fileHandle.getFile();
       text = await file.text();
     } catch (err) {
-      text = 'const LOGO_FILES = [\n];\n';
+      text = AdminNegozio.elencoVuoto();   // primo logo del negozio: elenco completo, con PRIORITY_BRANDS
     }
 
     const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
@@ -547,7 +573,7 @@
       newText = (text ? text + '\n' : '') + newBlock + '\n';
     }
 
-    const fileHandle = await jsDir.getFileHandle('logos.js', { create: true });
+    const fileHandle = await logosDirHandle.getFileHandle('elenco.js', { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(newText);
     await writable.close();
@@ -605,7 +631,7 @@
         await writeFile(printlogosDirHandle, colorKey + finalName, blob);
       }
 
-      // Aggiorna assets/js/logos.js
+      // Aggiorna l'elenco del negozio (assets/logos/<negozio>/elenco.js)
       await updateLogosJs(fileName);
 
       setItemStatus(id, 'saved');

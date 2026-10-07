@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Promo Last Chance</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-15">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261007-14">
-  <script src="assets/js/logos.js?v=20261007-14"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261007-14">
-  <script src="assets/js/madeinitaly.js?v=20261007-14"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-15">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261007-15"></script>
+  <script src="../assets/js/logos.js?v=20261007-15"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261007-15">
+  <script src="../assets/js/madeinitaly.js?v=20261007-15"></script>
   <style>
     @font-face {
       font-family: 'Bodoni Project';
-      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      src: url('../assets/fonts/BodoniStd.otf') format('opentype');
       font-style: normal;
       font-weight: 400;
       font-display: block;
@@ -26,7 +28,7 @@
 
     @font-face {
       font-family: 'Bodoni Project';
-      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      src: url('../assets/fonts/BodoniStd-Italic.otf') format('opentype');
       font-style: italic;
       font-weight: 400;
       font-display: block;
@@ -34,7 +36,7 @@
 
     @font-face {
       font-family: 'Nevis Project';
-      src: url('assets/fonts/Nevis Bold.ttf') format('truetype');
+      src: url('../assets/fonts/Nevis Bold.ttf') format('truetype');
       font-style: normal;
       font-weight: 700;
       font-display: block;
@@ -42,7 +44,7 @@
 
     @font-face {
       font-family: 'Space Invaders Project';
-      src: url('assets/fonts/space_invaders.ttf') format('truetype');
+      src: url('../assets/fonts/space_invaders.ttf') format('truetype');
       font-style: normal;
       font-weight: 400;
       font-display: block;
@@ -62,7 +64,7 @@
       position: relative;
     }
 
-    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
     /* Brand stagionali prioritari evidenziati nel menu Brand */
     .form-group select option.priority-brand-option {
@@ -109,7 +111,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background-image: url('assets/img/tema_xmas_stars.png');
+      background-image: url('../assets/img/luxury/tema_xmas_stars.png');
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
@@ -407,35 +409,35 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script defer src="assets/js/responsive.js?v=20261007-14"></script>
-  <script defer src="assets/js/stampa-ios.js?v=20261007-14"></script>
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script defer src="../assets/js/responsive.js?v=20261007-15"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261007-15"></script>
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="cartelli">
 
   <!-- Pulsanti e Riquadri Navigazione UI -->
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
   <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
-    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+    <img src="../assets/img/luxury/madeinitaly.png" alt="Made in Italy">
   </button>
   <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
-    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+    <img src="../assets/img/luxury/madeinitaly.png" alt="Made in Italy">
   </button>
   <a class="black-friday-btn" href="blackfridaylips.html" aria-label="Apri Black Friday Lips" title="Apri Black Friday Lips">
-    <img src="assets/img/tema_blackfriday_icon.png" alt="Black Friday">
+    <img src="../assets/img/luxury/tema_blackfriday_icon.png" alt="Black Friday">
   </a>
   <a class="black-friday-btn black-friday-btn-lower" href="blackfridaylips.html" aria-label="Apri Black Friday Lips per il cartello inferiore" title="Apri Black Friday Lips">
-    <img src="assets/img/tema_blackfriday_icon.png" alt="Black Friday">
+    <img src="../assets/img/luxury/tema_blackfriday_icon.png" alt="Black Friday">
   </a>
   <button class="xmas-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva il tema natalizio del cartello superiore" aria-pressed="false" onclick="toggleXmas(1)">
-    <img src="assets/img/tema_xmas_icon.png" alt="Natale">
+    <img src="../assets/img/luxury/tema_xmas_icon.png" alt="Natale">
   </button>
   <button class="xmas-btn xmas-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva il tema natalizio del cartello inferiore" aria-pressed="false" onclick="toggleXmas(2)">
-    <img src="assets/img/tema_xmas_icon.png" alt="Natale">
+    <img src="../assets/img/luxury/tema_xmas_icon.png" alt="Natale">
   </button>
 
   <div class="floating-nav-box">
@@ -527,7 +529,7 @@
       <div class="header-row">
         <div class="header-text" id="headLeft1">SUMMER<br>SALE</div>
         <div class="center-header-box">
-          <img id="lastChanceImg1" class="last-chance-graphic" src="assets/img/LASTCHANCE_BACK.png" alt="Last Chance">
+          <img id="lastChanceImg1" class="last-chance-graphic" src="../assets/img/luxury/LASTCHANCE_BACK.png" alt="Last Chance">
           <div id="brandContainer1" class="brand-logo-container"></div>
         </div>
         <div class="header-text" id="headRight1">SHOP<br>NOW</div>
@@ -553,7 +555,7 @@
       <div class="header-row">
         <div class="header-text" id="headLeft2">SUMMER<br>SALE</div>
         <div class="center-header-box">
-          <img id="lastChanceImg2" class="last-chance-graphic" src="assets/img/LASTCHANCE_BACK.png" alt="Last Chance">
+          <img id="lastChanceImg2" class="last-chance-graphic" src="../assets/img/luxury/LASTCHANCE_BACK.png" alt="Last Chance">
           <div id="brandContainer2" class="brand-logo-container"></div>
         </div>
         <div class="header-text" id="headRight2">SHOP<br>NOW</div>
@@ -572,12 +574,11 @@
     </div>
   </div>
 
-  <script src="assets/js/testi-pronti.js?v=20261007-14"></script>
-  <script src="assets/js/selettore-cartello.js?v=20261007-14"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261007-15"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261007-15"></script>
   <script>
-    const LOGO_PATH = "assets/logos/";
+    const LOGO_PATH = "../assets/logos/luxury/";
     const DEFAULT_LOGO = "LUXURY_GOLD.png";   // logo che compare con + AGGIUNGI BRAND finché non si sceglie un brand
-    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
 
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
     function createCardState() {
@@ -611,7 +612,7 @@
 
     function readCustomLogos() {
       try {
-        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        const logos = LoghiPersonalizzati.elenco();
         return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
       } catch (error) {
         console.error('Lettura dei loghi personalizzati fallita.', error);
@@ -871,11 +872,11 @@
       document.getElementById('card' + cardIndex).classList.toggle('xmas-active', xmasActive[cardIndex]);
 
       if (xmasActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'left'));
-        headRight.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'right'));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'left'));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'right'));
       } else if (madeInItalyClaimsActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'left'));
-        headRight.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'right'));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'left'));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'right'));
       } else {
         setClaimText(headLeft, state.left);
         setClaimText(headRight, state.right);
@@ -894,9 +895,10 @@
       renderCard(2);
     }
 
-    window.onload = loadLocalLogos;
+    // I menu si riempiono quando la lista dei loghi personalizzati del negozio è pronta (loghi-personalizzati.js).
+    window.onload = () => LoghiPersonalizzati.pronto.then(loadLocalLogos);
   </script>
-  <script src="assets/js/cursore.js?v=20261007-14"></script>
+  <script src="../assets/js/cursore.js?v=20261007-15"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -935,7 +937,7 @@
       });
     });
   </script>
-  <script src="assets/js/copia-cartello.js?v=20261007-14"></script>
-  <script src="assets/js/strumenti-stampa.js?v=20261007-14"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261007-15"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-15"></script>
 </body>
 </html>

@@ -1,16 +1,7 @@
 (() => {
-  const STORAGE_KEY = 'custom_brand_logos';
-
+  // Loghi personalizzati del negozio della pagina (loghi-personalizzati.js).
   function readCustomLogos() {
-    try {
-      const logos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      return Array.isArray(logos)
-        ? logos.filter(logo => logo && logo.name && logo.data)
-        : [];
-    } catch (error) {
-      console.error('Lettura dei loghi personalizzati fallita.', error);
-      return [];
-    }
+    return LoghiPersonalizzati.elenco().filter(logo => logo && logo.name && logo.data);
   }
 
   function addOption(select, value, text) {
@@ -64,19 +55,25 @@
     customPlaceholder.value = '';
     customPlaceholder.textContent = '-- Seleziona Logo Personalizzato --';
     customSelect.append(customPlaceholder);
-    const logos = readCustomLogos();
-    if (placeholder.dataset.sortCustom === 'true') {
-      logos.sort((first, second) => first.name.localeCompare(second.name, 'it', { sensitivity: 'base' }));
-    }
     const customValue = placeholder.dataset.customValue || 'data';
     if (!['data', 'id'].includes(customValue)) {
       throw new Error(`Valore personalizzato non supportato per il menu loghi: ${customValue}`);
     }
-    logos
-      .filter(logo => customValue !== 'id' || logo.id)
-      .forEach(logo => {
-        addOption(customSelect, logo[customValue], `★ ${logo.name}`);
-      });
+    // I loghi personalizzati arrivano quando la lista del negozio è pronta; la scelta già fatta resta.
+    LoghiPersonalizzati.pronto.then(() => {
+      const logos = readCustomLogos();
+      if (placeholder.dataset.sortCustom === 'true') {
+        logos.sort((first, second) => first.name.localeCompare(second.name, 'it', { sensitivity: 'base' }));
+      }
+      const selected = customSelect.value;
+      customSelect.replaceChildren(customPlaceholder);
+      logos
+        .filter(logo => customValue !== 'id' || logo.id)
+        .forEach(logo => {
+          addOption(customSelect, logo[customValue], `★ ${logo.name}`);
+        });
+      customSelect.value = selected;
+    });
 
     brandSelect.addEventListener('change', () => {
       const handler = window[brandChangeName];

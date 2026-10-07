@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-15">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -220,9 +220,11 @@
   .modal-btn-confirm { background: #dc3545; color: #fff; }
   .modal-btn-confirm:hover { background: #c82333; }
 </style>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-15">
+  <script src="assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-15">
+  <link rel="stylesheet" href="assets/css/admin-negozio.css?v=20261007-15">
+  <script src="assets/js/admin-negozio.js?v=20261007-15"></script>
 </head>
 <body data-layout="loghi">
 
@@ -241,7 +243,9 @@
 
   <div class="container">
     <h1>GESTIONE LOGHI UFFICIALI</h1>
-    <p class="subtitle">Pagina ad uso interno: elimina loghi da assets/logos, dalle 4 varianti colorate in assets/img/printlogos e dall'elenco assets/js/logos.js</p>
+    <p class="subtitle">Pagina ad uso interno: elimina loghi ufficiali di <span data-admin-nome-negozio></span> da assets/logos/<span data-admin-cartella-negozio></span>, dalle 4 varianti colorate in assets/img/<span data-admin-cartella-negozio></span>/printlogos e dall'elenco assets/logos/<span data-admin-cartella-negozio></span>/elenco.js</p>
+
+    <div data-admin-negozio></div>
 
     <div class="folder-bar">
       <span class="folder-status" id="folderStatus">Cartella progetto non collegata.</span>
@@ -263,7 +267,6 @@
   let projectDirHandle = null;
   let logosDirHandle = null;
   let printlogosDirHandle = null;
-  let jsDirHandle = null;
   let logoEntries = []; // { name, previewUrl, status }
   let pendingDelete = null; // { resolve }
 
@@ -280,11 +283,7 @@
     }
     try {
       projectDirHandle = await window.showDirectoryPicker();
-      const assetsDir = await projectDirHandle.getDirectoryHandle('assets', { create: true });
-      logosDirHandle = await assetsDir.getDirectoryHandle('logos', { create: true });
-      const imgDir = await assetsDir.getDirectoryHandle('img', { create: true });
-      printlogosDirHandle = await imgDir.getDirectoryHandle('printlogos', { create: true });
-      jsDirHandle = await assetsDir.getDirectoryHandle('js', { create: true });
+      await openStoreFolders();
 
       const perm = await projectDirHandle.requestPermission({ mode: 'readwrite' });
       if (perm !== 'granted') {
@@ -302,10 +301,35 @@
     }
   }
 
+  async function openStoreFolders() {
+    ({ logos: logosDirHandle, printlogos: printlogosDirHandle } = await AdminNegozio.cartelle(projectDirHandle));
+  }
+
+  // Cambio di negozio (admin-negozio.js): non durante una cancellazione; con la cartella progetto collegata
+  // si mostra l'elenco dei loghi del nuovo negozio.
+  AdminNegozio.prima(() => {
+    if (logoEntries.some(entry => entry.status === 'deleting')) {
+      alert('Attendi la fine della cancellazione prima di cambiare negozio.');
+      return false;
+    }
+    return true;
+  });
+  AdminNegozio.alCambio(async () => {
+    if (!projectDirHandle) return;
+    try {
+      await openStoreFolders();
+      await loadLogoList();
+    } catch (err) {
+      console.error(err);
+      folderStatus.textContent = '❌ ' + (err.message || 'Impossibile aprire le cartelle del negozio.');
+      folderStatus.className = 'folder-status err';
+    }
+  });
+
   async function readLogosJsEntries() {
     let text = '';
     try {
-      const fileHandle = await jsDirHandle.getFileHandle('logos.js');
+      const fileHandle = await logosDirHandle.getFileHandle('elenco.js');
       const file = await fileHandle.getFile();
       text = await file.text();
     } catch (err) {
@@ -414,11 +438,11 @@
   async function updateLogosJsRemove(fileName) {
     let text = '';
     try {
-      const fileHandle = await jsDirHandle.getFileHandle('logos.js');
+      const fileHandle = await logosDirHandle.getFileHandle('elenco.js');
       const file = await fileHandle.getFile();
       text = await file.text();
     } catch (err) {
-      text = 'const LOGO_FILES = [\n];\n';
+      text = AdminNegozio.elencoVuoto();
     }
 
     const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
@@ -444,7 +468,7 @@
       newText = (text ? text + '\n' : '') + newBlock + '\n';
     }
 
-    const fileHandle = await jsDirHandle.getFileHandle('logos.js', { create: true });
+    const fileHandle = await logosDirHandle.getFileHandle('elenco.js', { create: true });
     const writable = await fileHandle.createWritable();
     await writable.write(newText);
     await writable.close();
@@ -461,15 +485,15 @@
     renderList();
 
     try {
-      // File originale in assets/logos
+      // File originale in assets/logos/<negozio>
       await removeFileIfExists(logosDirHandle, fileName);
 
-      // 4 varianti colorate in assets/img/printlogos
+      // 4 varianti colorate in assets/img/<negozio>/printlogos
       for (const colorKey of ['white', 'black', 'red', 'gold']) {
         await removeFileIfExists(printlogosDirHandle, colorKey + fileName);
       }
 
-      // Aggiorna assets/js/logos.js rimuovendo la voce
+      // Aggiorna l'elenco del negozio (assets/logos/<negozio>/elenco.js) rimuovendo la voce
       await updateLogosJsRemove(fileName);
 
       // Rimuove la voce dalla lista in memoria

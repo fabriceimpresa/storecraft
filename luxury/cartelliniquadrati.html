@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadrati</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-15">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-15">
 
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="assets/js/logos.js?v=20261007-14"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261007-14"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261007-15"></script>
+  <script src="../assets/js/logos.js?v=20261007-15"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261007-15"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
       font-family: 'Bodoni Std';
-      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      src: url('../assets/fonts/BodoniStd.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
     }
@@ -56,7 +58,7 @@
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #d4a373; margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
-    /* Il riquadro "Modifica Cartellino" segue il pannello standard (assets/css/pannello.css), diviso nei quattro
+    /* Il riquadro "Modifica Cartellino" segue il pannello standard (../assets/css/pannello.css), diviso nei quattro
        blocchi; qui solo ciò che è proprio dei cartellini (come in Cartellini Vetrina e Promo). */
     .editor-title + .panel-block > .mode-switch:first-child { margin-top: 1rem; }
     .editor-section > .panel-block:last-child > :last-child { margin-bottom: 0; }
@@ -358,14 +360,14 @@
     }
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <script defer src="assets/js/testi-pronti.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script defer src="assets/js/responsive.js?v=20261007-14"></script>
-  <script defer src="assets/js/stampa-ios.js?v=20261007-14"></script>
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <script defer src="../assets/js/testi-pronti.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script defer src="../assets/js/responsive.js?v=20261007-15"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261007-15"></script>
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="cartellini">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -458,7 +460,7 @@
     </div>
   </main>
 
-  <script src="assets/js/menu-brand-cartellini.js?v=20261007-14"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261007-15"></script>
   <script>
     function cleanBrandName(fileName) {
       return fileName.replace(/\.[^.]+$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -583,13 +585,13 @@
         const logo = document.createElement('img');
         logo.alt = 'Luxury Outlet';
         logo.onerror = () => console.error('Caricamento del logo Luxury Outlet fallito.', logo.src);
-        logo.src = 'assets/img/printlogos/goldLXRY_BRAND.png';
+        logo.src = '../assets/img/luxury/printlogos/goldLXRY_BRAND.png';
         footer.appendChild(logo);
 
         const header = createElement('div', 'card-header-logo');
         const saleLogo = document.createElement('img');
         // Segnaposto: va rifatta nello stile Luxury Outlet (per ora è ancora quella di TEBE)
-        saleLogo.src = 'assets/img/sale.png';
+        saleLogo.src = '../assets/img/luxury/sale.png';
         saleLogo.alt = 'SALE';
         saleLogo.onerror = () => { saleLogo.style.display = 'none'; };
         header.appendChild(saleLogo);
@@ -858,7 +860,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="assets/js/cursore.js?v=20261007-14"></script>
+  <script src="../assets/js/cursore.js?v=20261007-15"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -885,6 +887,6 @@
     });
     cursore.point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="assets/js/strumenti-stampa.js?v=20261007-14" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-15" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

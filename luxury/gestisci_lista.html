@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GESTISCI LISTA PERSONALE</title>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -77,6 +77,10 @@
     .saved-list-header h2 {
       font-size: 1.3rem;
       color: #e5ba73;
+    }
+    /* Negozio della lista, accanto al titolo (scritto da loghi-personalizzati.js) */
+    .saved-list-header h2 .list-store {
+      white-space: nowrap;
     }
 
     .sort-actions {
@@ -308,9 +312,10 @@
     }
     .modal-btn-import-custom:hover { background: #4d7544; }
   </style>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="loghi">
 
@@ -339,7 +344,7 @@
     <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
     <div class="saved-list">
       <div class="saved-list-header">
-        <h2>La tua Lista Personale</h2>
+        <h2>La tua Lista Personale<span class="list-store" data-nome-negozio></span></h2>
         <div class="sort-actions">
           <button type="button" class="btn-sort" id="sortAlphabetical" onclick="setLogoSortOrder('alphabetical')">A-Z</button>
           <button type="button" class="btn-sort active" id="sortChronological" onclick="setLogoSortOrder('chronological')">Data creazione</button>
@@ -354,10 +359,25 @@
     let logoSortOrder = 'chronological';
     let pendingConfirmResolve = null;
 
+    // La lista è quella del negozio della pagina (loghi-personalizzati.js); se il salvataggio non riesce lo si dice
+    // e la lista resta com'era.
+    async function saveLogoList(logos) {
+      try {
+        await LoghiPersonalizzati.salva(logos);
+        return true;
+      } catch (error) {
+        console.error('Salvataggio dei loghi personalizzati fallito.', error);
+        alert('Salvataggio dei loghi personalizzati non riuscito: ' + (error && error.message ? error.message : error));
+        return false;
+      }
+    }
+
+    // Il backup porta il nome del negozio, così importandolo in un altro negozio la pagina lo dice.
     function exportCustomLogos() {
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const logos = LoghiPersonalizzati.elenco();
       const backup = {
         version: 1,
+        negozio: LoghiPersonalizzati.negozio,
         exportedAt: new Date().toISOString(),
         logos
       };
@@ -366,7 +386,7 @@
       const link = document.createElement('a');
 
       link.href = downloadUrl;
-      link.download = 'storecraft-loghi-personalizzati.json';
+      link.download = `storecraft-loghi-personalizzati-${LoghiPersonalizzati.negozio}.json`;
       link.click();
       URL.revokeObjectURL(downloadUrl);
     }
@@ -388,7 +408,8 @@
 
         if (mode === 'import') {
           addButton('Annulla', 'modal-btn-backup', () => closeConfirmModal(false));
-          addButton('Importa Lista', 'modal-btn-import-custom', () => closeConfirmModal(true));
+          addButton('Unisci', 'modal-btn-import-custom', () => closeConfirmModal('unisci'));
+          addButton('Sostituisci Lista', 'modal-btn-confirm', () => closeConfirmModal('sostituisci'));
         } else if (mode === 'delete-single') {
           addButton('Annulla', 'modal-btn-cancel', () => closeConfirmModal(false));
           addButton('Cancella logo', 'modal-btn-confirm', () => closeConfirmModal(true));
@@ -412,19 +433,20 @@
     }
 
     async function clearCustomLogos() {
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const logos = LoghiPersonalizzati.elenco();
       if (logos.length === 0) {
         alert('Non ci sono loghi personalizzati da rimuovere.');
         return;
       }
 
       const confirmed = await showConfirmModal('Vuoi rimuovere tutti i loghi personalizzati salvati? Esporta prima un backup per poterli ripristinare.');
-      if (confirmed) {
-        localStorage.removeItem('custom_brand_logos');
+      if (confirmed && await saveLogoList([])) {
         renderSavedLogos();
       }
     }
 
+    // Importazione di un backup: Unisci aggiunge i loghi del backup che non sono già nella lista (stesso id),
+    // Sostituisci Lista mette il backup al posto di tutta la lista. Un backup di un altro negozio va confermato.
     function importCustomLogos(file) {
       if (!file) return;
 
@@ -444,14 +466,32 @@
           return;
         }
 
-        const confirmed = await showConfirmModal('L importazione sostituira tutti i Loghi personalizzati attualmente salvati. Continuare?', 'import');
-        if (!confirmed) {
+        const negozio = LoghiPersonalizzati.nomeNegozio(LoghiPersonalizzati.negozio);
+        const altroNegozio = backup.negozio && backup.negozio !== LoghiPersonalizzati.negozio
+          ? `Attenzione: questo backup è del negozio ${LoghiPersonalizzati.nomeNegozio(backup.negozio)} e lo stai importando nella lista di ${negozio}. `
+          : '';
+        const choice = await showConfirmModal(
+          `${altroNegozio}Unisci aggiunge i ${backup.logos.length} loghi del backup che non sono già nella lista di ${negozio}; Sostituisci Lista cancella la lista attuale e la sostituisce con il backup.`,
+          'import'
+        );
+        if (!choice) {
           return;
         }
 
-        localStorage.setItem('custom_brand_logos', JSON.stringify(backup.logos));
+        let logos = backup.logos;
+        let added = logos.length;
+        if (choice === 'unisci') {
+          const current = LoghiPersonalizzati.elenco();
+          const ids = new Set(current.map(logo => logo.id));
+          const nuovi = backup.logos.filter(logo => !ids.has(logo.id));
+          added = nuovi.length;
+          logos = current.concat(nuovi);
+        }
+        if (!await saveLogoList(logos)) return;
         renderSavedLogos();
-        alert('Loghi personalizzati importati con successo.');
+        alert(choice === 'unisci'
+          ? `Loghi personalizzati uniti: ${added} aggiunti.`
+          : 'Loghi personalizzati importati con successo.');
       };
       reader.readAsText(file);
     }
@@ -476,7 +516,7 @@
 
     function renderSavedLogos() {
       const container = document.getElementById('customLogosContainer');
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const logos = LoghiPersonalizzati.elenco();
       const sortedLogos = logos.map((item, index) => ({ item, index }));
 
       if (logoSortOrder === 'alphabetical') {
@@ -588,8 +628,8 @@
       return pointerY > bounds.top + bounds.height / 2;
     }
 
-    function reorderCustomLogos(fromIndex, targetIndex, insertAfter) {
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+    async function reorderCustomLogos(fromIndex, targetIndex, insertAfter) {
+      const logos = LoghiPersonalizzati.elenco();
       if (fromIndex < 0 || fromIndex >= logos.length || targetIndex < 0 || targetIndex >= logos.length) return;
 
       const [movedLogo] = logos.splice(fromIndex, 1);
@@ -597,7 +637,7 @@
       if (insertAfter) insertIndex += 1;
 
       logos.splice(insertIndex, 0, movedLogo);
-      localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
+      if (!await saveLogoList(logos)) return;
       // Il drag-and-drop riordina l'ordine reale (data creazione): se l'utente
       // trascina mentre è in vista alfabetica, passiamo automaticamente a
       // "Data creazione" così l'ordine manuale appena impostato resta visibile.
@@ -605,13 +645,13 @@
       renderSavedLogos();
     }
 
-    function moveCustomLogoToEnd(fromIndex) {
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+    async function moveCustomLogoToEnd(fromIndex) {
+      const logos = LoghiPersonalizzati.elenco();
       if (fromIndex < 0 || fromIndex >= logos.length) return;
 
       const [movedLogo] = logos.splice(fromIndex, 1);
       logos.push(movedLogo);
-      localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
+      if (!await saveLogoList(logos)) return;
       logoSortOrder = 'chronological';
       renderSavedLogos();
     }
@@ -621,30 +661,30 @@
       renderSavedLogos();
     }
 
-    function updateLogoName(index) {
+    async function updateLogoName(index) {
       const newName = document.getElementById(`editName_${index}`).value.trim();
       if (!newName) {
         alert("Il nome non può essere vuoto!");
         return;
       }
 
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-      logos[index].name = newName.toUpperCase();
-      localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
-      renderSavedLogos();
+      const logos = LoghiPersonalizzati.elenco();
+      logos[index] = { ...logos[index], name: newName.toUpperCase() };
+      if (await saveLogoList(logos)) renderSavedLogos();
     }
 
     async function deleteLogo(index) {
       const confirmed = await showConfirmModal("Sei sicuro di voler eliminare questo logo personalizzato?", 'delete-single');
       if (confirmed) {
-        const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+        const logos = LoghiPersonalizzati.elenco();
         logos.splice(index, 1);
-        localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
-        renderSavedLogos();
+        if (await saveLogoList(logos)) renderSavedLogos();
       }
     }
 
-    window.onload = renderSavedLogos;
+    // La lista si mostra quando è pronta e si aggiorna se cambia in un'altra scheda.
+    window.onload = () => LoghiPersonalizzati.pronto.then(renderSavedLogos);
+    window.addEventListener('loghipersonalizzati', renderSavedLogos);
   </script>
 </body>
 </html>

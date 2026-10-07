@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartelli Magazzino // STORE CRAFT</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-15">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-15">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261007-14"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261007-14"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261007-15"></script>
+  <script src="../assets/js/logos.js?v=20261007-15"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261007-15"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,7 +33,7 @@
       position: relative;
     }
 
-    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
     /* Brand stagionali prioritari evidenziati nel menu Brand */
     .form-group select option.priority-brand-option {
@@ -238,13 +240,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script defer src="assets/js/responsive.js?v=20261007-14"></script>
-  <script defer src="assets/js/stampa-ios.js?v=20261007-14"></script>
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script defer src="../assets/js/responsive.js?v=20261007-15"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261007-15"></script>
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="cartelli">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna all'index">✕</a>
@@ -374,13 +376,12 @@
 
 
 
-  <script src="assets/js/second-brand-toggle.js?v=20261007-14"></script>
-  <script src="assets/js/selettore-cartello.js?v=20261007-14"></script>
+  <script src="../assets/js/second-brand-toggle.js?v=20261007-15"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261007-15"></script>
 
 
 
   <script>
-    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
     const MAX_TEXT_LINES = 4;
 
     const SVG_ARROWS = {
@@ -422,7 +423,7 @@
 
     function readCustomLogos() {
       try {
-        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        const logos = LoghiPersonalizzati.elenco();
         return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
       } catch (error) {
         console.error('Lettura dei loghi personalizzati fallita.', error);
@@ -658,12 +659,12 @@
     }
 
     window.onload = () => {
-      loadLocalLogos();
+      LoghiPersonalizzati.pronto.then(loadLocalLogos);   // menu pronti con la lista dei loghi personalizzati
       // il testo si misura con il carattere vero: appena è caricato si ricontrolla che entri
       document.fonts.ready.then(renderCards);
     };
   </script>
-  <script src="assets/js/cursore.js?v=20261007-14"></script>
+  <script src="../assets/js/cursore.js?v=20261007-15"></script>
 
 
 
@@ -697,7 +698,7 @@
       ]
     });
   </script>
-  <script src="assets/js/copia-cartello.js?v=20261007-14"></script>
-  <script src="assets/js/strumenti-stampa.js?v=20261007-14" data-sheet="#a4Sheet"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261007-15"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-15" data-sheet="#a4Sheet"></script>
 </body>
 </html>

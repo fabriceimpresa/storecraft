@@ -1,0 +1,48 @@
+/* Selettore del negozio delle pagine di amministrazione dei loghi ufficiali (admin-negozio.js),
+   nei colori delle pagine logoimport e logogestione. */
+.admin-negozio {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 12px 15px;
+  background: #26292e;
+  border: 1px solid #4a4237;
+  border-radius: 6px;
+}
+
+.admin-negozio-label {
+  margin-right: 6px;
+  color: #d4a373;
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+}
+
+.admin-negozio button {
+  padding: 8px 14px;
+  border: 1px solid #d4a373;
+  border-radius: 4px;
+  background: transparent;
+  color: #d4a373;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.admin-negozio button:hover {
+  border-color: #e5ba73;
+  color: #e5ba73;
+}
+
+.admin-negozio button[aria-pressed="true"] {
+  background: #d4a373;
+  color: #181a1d;
+}
+
+.admin-negozio button:focus-visible {
+  outline: 2px solid #e5ba73;
+  outline-offset: 2px;
+}

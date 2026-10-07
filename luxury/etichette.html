@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +7,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="assets/js/logos.js?v=20261007-14"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261007-15"></script>
+  <script src="../assets/js/logos.js?v=20261007-15"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="assets/js/dymo-direct.js?v=20261007-14"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261007-15"></script>
 
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     :root {
       --bg: #121110;
@@ -421,11 +423,11 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="dymo">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -441,42 +443,42 @@
         <div class="template-card" id="card-tpl-outlet" onclick="setTemplate('outlet')">
           <span class="tpl-name">1. Outlet Doppio Prezzo</span>
           <div class="tpl-preview-box">
-            <img src="assets/thumbnail/doppioprezzo.png?v=20261005-01" alt="Miniatura Doppio Prezzo">
+            <img src="../assets/thumbnail/luxury/doppioprezzo.png?v=20261005-01" alt="Miniatura Doppio Prezzo">
           </div>
         </div>
 
         <div class="template-card" id="card-tpl-final" onclick="setTemplate('final')">
           <span class="tpl-name">2. Final | Outlet Price</span>
           <div class="tpl-preview-box">
-            <img src="assets/thumbnail/finalprice.png?v=20261005-01" alt="Miniatura Final Price">
+            <img src="../assets/thumbnail/luxury/finalprice.png?v=20261005-01" alt="Miniatura Final Price">
           </div>
         </div>
 
         <div class="template-card" id="card-tpl-promo" onclick="setTemplate('promo')">
           <span class="tpl-name">3. Last Chance</span>
           <div class="tpl-preview-box">
-            <img src="assets/thumbnail/lastchance.png" alt="Miniatura Last Chance">
+            <img src="../assets/thumbnail/luxury/lastchance.png" alt="Miniatura Last Chance">
           </div>
         </div>
 
         <div class="template-card" id="card-tpl-luxury" onclick="setTemplate('luxury')">
           <span class="tpl-name">4. Luxury Label</span>
           <div class="tpl-preview-box">
-            <img src="assets/thumbnail/outlet.png" alt="Miniatura Luxury Label">
+            <img src="../assets/thumbnail/luxury/outlet.png" alt="Miniatura Luxury Label">
           </div>
         </div>
 
         <div class="template-card" id="card-tpl-promo50" onclick="setTemplate('promo50')">
           <span class="tpl-name">5. Promo 50+50</span>
           <div class="tpl-preview-box">
-            <img src="assets/thumbnail/promo50.png" alt="Miniatura Promo 50+50">
+            <img src="../assets/thumbnail/luxury/promo50.png" alt="Miniatura Promo 50+50">
           </div>
         </div>
 
         <div class="template-card active" id="card-tpl-tagliedoppiacifra" onclick="setTemplate('tagliedoppiacifra')">
           <span class="tpl-name">6. Taglie | Doppia Cifra</span>
           <div class="tpl-preview-box">
-            <img src="assets/thumbnail/tagliedoppiacifra.png" alt="Miniatura Taglie Doppia Cifra">
+            <img src="../assets/thumbnail/luxury/tagliedoppiacifra.png" alt="Miniatura Taglie Doppia Cifra">
           </div>
         </div>
 
@@ -584,7 +586,7 @@
   </main>
 
   <script>
-    const LOGO_PATH = "assets/logos/";
+    const LOGO_PATH = "../assets/logos/luxury/";
     const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
     const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '54', '56', '58', '60'];
     const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
@@ -648,7 +650,7 @@
         render: () => `
           <div class="tpl-promo">
             <div class="left-logo-box">
-              <img src="assets/img/lclogobn.png" alt="Last Chance Logo">
+              <img src="../assets/img/luxury/lclogobn.png" alt="Last Chance Logo">
             </div>
             <div class="price-box">
               <span class="price-label">Euro</span>
@@ -662,7 +664,7 @@
         render: () => `
           <div class="tpl-luxury">
             <div class="left-logo-box">
-              <img src="assets/img/LUXURYOUTLET_BACK.png" alt="Luxury Outlet Logo">
+              <img src="../assets/img/luxury/LUXURYOUTLET_BACK.png" alt="Luxury Outlet Logo">
             </div>
             <div class="price-box">
               <span class="price-label">Euro</span>
@@ -805,7 +807,7 @@
     function init() {
       initSizeSelects();
       loadBrandSelect();
-      loadCustomLogosSelect();
+      LoghiPersonalizzati.pronto.then(loadCustomLogosSelect);   // menu pronto con la lista dei loghi personalizzati
       checkDymoPresence();
 
       // PARSING PARAMETRI URL PER SELEZIONE AUTOMATICA TEMPLATE
@@ -874,7 +876,7 @@
 
     function loadCustomLogosSelect() {
       const select = document.getElementById('customLogoSelect');
-      const customLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || localStorage.getItem('customLogos') || '[]');
+      const customLogos = LoghiPersonalizzati.elenco();
 
       select.innerHTML = '<option value="">-- Nessun Logo Personalizzato --</option>';
 
@@ -961,7 +963,7 @@
           if (textElement) textElement.style.display = 'none';
         } else {
           // SE L'UTENTE NON HA SELEZIONATO ALCUN BRAND:
-          // Mostra di default a schermo il file assets/logos/LXRY_BRAND.png
+          // Mostra di default a schermo il file assets/logos/luxury/LXRY_BRAND.png
           imgElement.src = getLogoSource('LXRY_BRAND.png');
           imgElement.style.display = 'block';
           if (textElement) textElement.style.display = 'none';

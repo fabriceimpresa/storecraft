@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CREATORE LOGHI PERSONALIZZATI</title>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -148,6 +148,10 @@
       font-size: 1rem;
       color: #e5ba73;
     }
+    /* Negozio della lista, accanto al titolo (scritto da loghi-personalizzati.js) */
+    .saved-list-header h2 .list-store {
+      white-space: nowrap;
+    }
 
     .sort-actions {
       display: flex;
@@ -246,9 +250,10 @@
     .btn-delete:hover { background: #c82333; }
 
   </style>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="loghi">
 
@@ -287,7 +292,7 @@
     <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
     <div class="saved-list">
       <div class="saved-list-header">
-        <h2>La tua Lista Personale <a href="gestisci_lista.html" class="btn-sort btn-manage"><span style="font-size:2em; line-height:1;">⚙</span></a></h2>
+        <h2>La tua Lista Personale<span class="list-store" data-nome-negozio></span> <a href="gestisci_lista.html" class="btn-sort btn-manage"><span style="font-size:2em; line-height:1;">⚙</span></a></h2>
         <div class="sort-actions">
           <button type="button" class="btn-sort" id="sortAlphabetical" onclick="setLogoSortOrder('alphabetical')">A-Z</button>
           <button type="button" class="btn-sort active" id="sortChronological" onclick="setLogoSortOrder('chronological')">Data creazione</button>
@@ -386,21 +391,34 @@
       document.getElementById('btnSave').style.display = 'block';
     }
 
-    function saveCustomLogo() {
+    // La lista dei loghi personalizzati è quella del negozio (loghi-personalizzati.js); se il salvataggio non riesce
+    // lo si dice e la lista resta com'era.
+    async function saveLogoList(logos) {
+      try {
+        await LoghiPersonalizzati.salva(logos);
+        return true;
+      } catch (error) {
+        console.error('Salvataggio dei loghi personalizzati fallito.', error);
+        alert('Salvataggio dei loghi personalizzati non riuscito: ' + (error && error.message ? error.message : error));
+        return false;
+      }
+    }
+
+    async function saveCustomLogo() {
       const nameInput = document.getElementById('brandNameInput').value.trim();
       if (!nameInput) {
         alert("Inserisci un nome per il brand prima di salvare!");
         return;
       }
 
-      const existingLogos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const existingLogos = LoghiPersonalizzati.elenco();
       existingLogos.push({
         id: 'custom_' + Date.now(),
         name: nameInput.toUpperCase(),
         data: processedBase64
       });
 
-      localStorage.setItem('custom_brand_logos', JSON.stringify(existingLogos));
+      if (!await saveLogoList(existingLogos)) return;
       
       document.getElementById('brandNameInput').value = '';
       document.getElementById('previewArea').style.display = 'none';
@@ -423,7 +441,7 @@
 
     function renderSavedLogos() {
       const container = document.getElementById('customLogosContainer');
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+      const logos = LoghiPersonalizzati.elenco();
       const sortedLogos = logos.map((item, index) => ({ item, index }));
 
       if (logoSortOrder === 'alphabetical') {
@@ -459,29 +477,29 @@
       renderSavedLogos();
     }
 
-    function updateLogoName(index) {
+    async function updateLogoName(index) {
       const newName = document.getElementById(`editName_${index}`).value.trim();
       if (!newName) {
         alert("Il nome non può essere vuoto!");
         return;
       }
 
-      const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
-      logos[index].name = newName.toUpperCase();
-      localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
-      renderSavedLogos();
+      const logos = LoghiPersonalizzati.elenco();
+      logos[index] = { ...logos[index], name: newName.toUpperCase() };
+      if (await saveLogoList(logos)) renderSavedLogos();
     }
 
-    function deleteLogo(index) {
+    async function deleteLogo(index) {
       if (confirm("Sei sicuro di voler eliminare questo logo personalizzato?")) {
-        const logos = JSON.parse(localStorage.getItem('custom_brand_logos') || '[]');
+        const logos = LoghiPersonalizzati.elenco();
         logos.splice(index, 1);
-        localStorage.setItem('custom_brand_logos', JSON.stringify(logos));
-        renderSavedLogos();
+        if (await saveLogoList(logos)) renderSavedLogos();
       }
     }
 
-    window.onload = renderSavedLogos;
+    // La lista si mostra quando è pronta e si aggiorna se cambia in un'altra scheda.
+    window.onload = () => LoghiPersonalizzati.pronto.then(renderSavedLogos);
+    window.addEventListener('loghipersonalizzati', renderSavedLogos);
   </script>
 </body>
 </html>

@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartello Outlet Multi</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261007-15">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/strumenti-stampa.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/cursore.css?v=20261007-14">
-  <script src="assets/js/logos.js?v=20261007-14"></script>
-  <script src="assets/js/print-logo-colors.js?v=20261007-14"></script>
-  <script src="assets/js/print-white-logos.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261007-14">
-  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261007-14">
-  <script src="assets/js/madeinitaly.js?v=20261007-14"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261007-15">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261007-15"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261007-15"></script>
+  <script src="../assets/js/logos.js?v=20261007-15"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261007-15"></script>
+  <script src="../assets/js/print-white-logos.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261007-15">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261007-15">
+  <script src="../assets/js/madeinitaly.js?v=20261007-15"></script>
   <style>
     @font-face {
       font-family: 'Bodoni Project';
-      src: url('assets/fonts/BodoniStd.otf') format('opentype');
+      src: url('../assets/fonts/BodoniStd.otf') format('opentype');
       font-style: normal;
       font-weight: 400;
       font-display: block;
@@ -27,7 +29,7 @@
 
     @font-face {
       font-family: 'Bodoni Project';
-      src: url('assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      src: url('../assets/fonts/BodoniStd-Italic.otf') format('opentype');
       font-style: italic;
       font-weight: 400;
       font-display: block;
@@ -35,7 +37,7 @@
 
     @font-face {
       font-family: 'Nevis Project';
-      src: url('assets/fonts/Nevis Bold.ttf') format('truetype');
+      src: url('../assets/fonts/Nevis Bold.ttf') format('truetype');
       font-style: normal;
       font-weight: 700;
       font-display: block;
@@ -43,7 +45,7 @@
 
     @font-face {
       font-family: 'Space Invaders Project';
-      src: url('assets/fonts/space_invaders.ttf') format('truetype');
+      src: url('../assets/fonts/space_invaders.ttf') format('truetype');
       font-style: normal;
       font-weight: 400;
       font-display: block;
@@ -63,7 +65,7 @@
       position: relative;
     }
 
-    /* Il pannello segue il pannello standard (assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
 
     /* Brand stagionali prioritari evidenziati nel menu Brand */
     .form-group select option.priority-brand-option {
@@ -104,14 +106,14 @@
 
     /* TEMA BLACK FRIDAY SU CARTELLO (A TUTTO SCHERMO) */
     .card.bf-active {
-      background-image: url('assets/img/halftone.png');
+      background-image: url('../assets/img/luxury/halftone.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
 
     .card.xmas-active {
-      background-image: url('assets/img/tema_xmas_stars.png');
+      background-image: url('../assets/img/luxury/tema_xmas_stars.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -544,13 +546,13 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261007-14">
-  <script defer src="assets/js/menu-cascata.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261007-14">
-  <script defer src="assets/js/responsive.js?v=20261007-14"></script>
-  <script defer src="assets/js/stampa-ios.js?v=20261007-14"></script>
-  <script src="assets/js/theme.js?v=20261007-14"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261007-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261007-15">
+  <script defer src="../assets/js/menu-cascata.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261007-15">
+  <script defer src="../assets/js/responsive.js?v=20261007-15"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261007-15"></script>
+  <script src="../assets/js/theme.js?v=20261007-15"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261007-15">
 </head>
 <body data-layout="cartelli">
   <!-- Pulsanti e Riquadri Navigazione UI -->
@@ -558,26 +560,26 @@
 
   <!-- MADE IN ITALY BUTTONS -->
   <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
-    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+    <img src="../assets/img/luxury/madeinitaly.png" alt="Made in Italy">
   </button>
   <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
-    <img src="assets/img/madeinitaly.png" alt="Made in Italy">
+    <img src="../assets/img/luxury/madeinitaly.png" alt="Made in Italy">
   </button>
 
   <!-- BLACK FRIDAY BUTTONS -->
   <button class="black-friday-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Black Friday del cartello superiore" aria-pressed="false" onclick="toggleBlackFriday(1)">
-    <img src="assets/img/tema_blackfriday_icon.png" alt="Black Friday">
+    <img src="../assets/img/luxury/tema_blackfriday_icon.png" alt="Black Friday">
   </button>
   <button class="black-friday-btn black-friday-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Black Friday del cartello inferiore" aria-pressed="false" onclick="toggleBlackFriday(2)">
-    <img src="assets/img/tema_blackfriday_icon.png" alt="Black Friday">
+    <img src="../assets/img/luxury/tema_blackfriday_icon.png" alt="Black Friday">
   </button>
 
   <!-- XMAS BUTTONS -->
   <button class="xmas-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva il tema natalizio del cartello superiore" aria-pressed="false" onclick="toggleXmas(1)">
-    <img src="assets/img/tema_xmas_icon.png" alt="Natale">
+    <img src="../assets/img/luxury/tema_xmas_icon.png" alt="Natale">
   </button>
   <button class="xmas-btn xmas-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva il tema natalizio del cartello inferiore" aria-pressed="false" onclick="toggleXmas(2)">
-    <img src="assets/img/tema_xmas_icon.png" alt="Natale">
+    <img src="../assets/img/luxury/tema_xmas_icon.png" alt="Natale">
   </button>
 
   <div class="floating-nav-box">
@@ -750,7 +752,7 @@
         </div>
       </div>
 
-      <div class="card-footer"><img id="footerLogo1" class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet"></div>
+      <div class="card-footer"><img id="footerLogo1" class="luxuryLogo" src="../assets/img/luxury/footer.png" alt="Luxury Outlet"></div>
     </div>
 
     <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
@@ -801,20 +803,19 @@
         </div>
       </div>
 
-      <div class="card-footer"><img id="footerLogo2" class="luxuryLogo" src="assets/img/footer.png" alt="Luxury Outlet"></div>
+      <div class="card-footer"><img id="footerLogo2" class="luxuryLogo" src="../assets/img/luxury/footer.png" alt="Luxury Outlet"></div>
     </div>
   </div>
 
-  <script src="assets/js/testi-pronti.js?v=20261007-14"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261007-15"></script>
 
-  <script src="assets/js/second-brand-toggle.js?v=20261007-14"></script>
-  <script src="assets/js/selettore-cartello.js?v=20261007-14"></script>
-  <script src="assets/js/selettore-modalita-prezzo.js?v=20261007-14"></script>
-  <script src="assets/js/selettore-numero-articoli.js?v=20261007-14"></script>
+  <script src="../assets/js/second-brand-toggle.js?v=20261007-15"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261007-15"></script>
+  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261007-15"></script>
+  <script src="../assets/js/selettore-numero-articoli.js?v=20261007-15"></script>
 
   <script>
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
-    const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
 
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
     // views: gli articoli di ogni vista (2 o 3 ARTICOLI), ognuna con i suoi valori; items(state) dà quelli della vista scelta.
@@ -873,7 +874,7 @@
 
     function readCustomLogos() {
       try {
-        const logos = JSON.parse(localStorage.getItem(CUSTOM_LOGOS_STORAGE_KEY) || '[]');
+        const logos = LoghiPersonalizzati.elenco();
         return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
       } catch (error) {
         console.error('Lettura dei loghi personalizzati fallita.', error);
@@ -1205,19 +1206,19 @@
       card.classList.toggle('bf-active', blackFridayActive[cardIndex]);
       card.classList.toggle('xmas-active', xmasActive[cardIndex] && !blackFridayActive[cardIndex]);
       redBox.style.setProperty('background-color', blackFridayActive[cardIndex] ? '#e89106' : '#e00000', 'important');
-      footerLogo.src = blackFridayActive[cardIndex] ? 'assets/img/footer_orange.png'
-        : xmasActive[cardIndex] ? 'assets/img/footer_xmas.png'
-        : 'assets/img/footer.png';
+      footerLogo.src = blackFridayActive[cardIndex] ? '../assets/img/luxury/footer_orange.png'
+        : xmasActive[cardIndex] ? '../assets/img/luxury/footer_xmas.png'
+        : '../assets/img/luxury/footer.png';
 
       if (blackFridayActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('assets/img/tema_blackfriday.png', 'Black Friday', 'left', true));
-        headRight.replaceChildren(createClaimImage('assets/img/tema_blackfriday.png', 'Black Friday', 'right', true));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_blackfriday.png', 'Black Friday', 'left', true));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_blackfriday.png', 'Black Friday', 'right', true));
       } else if (xmasActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'left', false));
-        headRight.replaceChildren(createClaimImage('assets/img/tema_xmas.png', 'Natale', 'right', false));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'left', false));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'right', false));
       } else if (madeInItalyClaimsActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'left', false));
-        headRight.replaceChildren(createClaimImage('assets/img/madeinitaly.png', 'Made in Italy', 'right', false));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'left', false));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'right', false));
       } else {
         setClaimText(headLeft, state.left);
         setClaimText(headRight, state.right);
@@ -1237,9 +1238,10 @@
       renderCard(2);
     }
 
-    window.onload = loadLocalLogos;
+    // I menu si riempiono quando la lista dei loghi personalizzati del negozio è pronta (loghi-personalizzati.js).
+    window.onload = () => LoghiPersonalizzati.pronto.then(loadLocalLogos);
   </script>
-  <script src="assets/js/cursore.js?v=20261007-14"></script>
+  <script src="../assets/js/cursore.js?v=20261007-15"></script>
 
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
@@ -1280,7 +1282,7 @@
       ]
     });
   </script>
-  <script src="assets/js/copia-cartello.js?v=20261007-14"></script>
-  <script src="assets/js/strumenti-stampa.js?v=20261007-14"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261007-15"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261007-15"></script>
 </body>
 </html>

@@ -113,7 +113,7 @@
   }
 
   function prepareAllLogos() {
-    // Il logo .luxuryLogo (assets/img/footer.png) è già colorato in rosso nel file
+    // Il logo .luxuryLogo (assets/img/luxury/footer.png) è già colorato in rosso nel file
     // sorgente, quindi non necessita più di conversione via canvas per la stampa.
     return Promise.all(
       Array.from(document.querySelectorAll('[id^="cardLogo"]'), logoImage => prepareLogo(logoImage, [255, 255, 255]))

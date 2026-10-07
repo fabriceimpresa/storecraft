@@ -3,34 +3,34 @@
  * colorata "in memoria", eliminando la dipendenza dai filtri CSS che Safari
  * (e talvolta Chrome) non applicano correttamente in fase di stampa.
  *
- * - Loghi ufficiali (assets/logos/NOME.png): esiste un file gemello
- *   pre-colorato in assets/img/printlogos/<colore><NOME>.png (es. "white",
+ * - Loghi ufficiali (assets/logos/<negozio>/NOME.png): esiste un file gemello
+ *   pre-colorato in assets/img/<negozio>/printlogos/<colore><NOME>.png (es. "white",
  *   "black", "red", "gold"), generato una tantum per ogni brand.
- * - Loghi personalizzati (salvati come base64 in localStorage): non esistono
+ * - Loghi personalizzati (data URL, loghi-personalizzati.js): non esistono
  *   su disco, quindi vengono ricolorati al volo via canvas la prima volta che
  *   servono e la versione risultante viene tenuta in cache in memoria.
  */
 (() => {
-  const PRINT_LOGOS_PATH = 'assets/img/printlogos/';
+  // Cartelle del negozio della pagina (<html data-negozio="…">), ricavate dalla posizione di questo file.
+  const NEGOZIO = document.documentElement.dataset.negozio;
+  const PRINT_LOGOS_PATH = new URL(`../img/${NEGOZIO}/printlogos/`, document.currentScript.src).href;
+  const LOGOS_PATH = new URL(`../logos/${NEGOZIO}/`, document.currentScript.src).href;
   const LOGO_ASSET_VERSION = '20261005-4';
-  const CUSTOM_LOGOS_STORAGE_KEY = 'custom_brand_logos';
   let customLogoCache = new Map(); // chiave: `${sourceData}|${colorKey}`
 
   function getOfficialPrintLogoPath(logoFileName, color) {
     return `${PRINT_LOGOS_PATH}${color}${getGeneratedLogoFileName(logoFileName)}?v=${LOGO_ASSET_VERSION}`;
   }
 
-  // Se un logo personalizzato viene rinominato/eliminato in un'altra scheda
-  // (es. genera_loghi.html), invalidiamo la cache in memoria: eviterà di
+  // Se un logo personalizzato viene rinominato/eliminato (in questa o in un'altra
+  // scheda, es. genera_loghi.html), invalidiamo la cache in memoria: eviterà di
   // riutilizzare per errore una versione colorata "orfana" del vecchio logo.
-  window.addEventListener('storage', event => {
-    if (event.key === CUSTOM_LOGOS_STORAGE_KEY) {
-      customLogoCache = new Map();
-    }
+  // L'evento lo manda loghi-personalizzati.js.
+  window.addEventListener('loghipersonalizzati', () => {
+    customLogoCache = new Map();
   });
 
-  // Permette anche l'invalidazione esplicita nella stessa scheda (lo storage
-  // event non scatta sulla scheda che ha effettuato la modifica).
+  // Permette anche l'invalidazione esplicita.
   function invalidateCustomLogoCache() {
     customLogoCache = new Map();
   }
@@ -97,7 +97,7 @@
 
   /**
    * Restituisce l'URL/base64 pronto all'uso per il colore richiesto.
-   * - Se `source` è un percorso che punta a assets/logos/ e il colore è uno
+   * - Se `source` è un percorso che punta a assets/logos/<negozio>/ e il colore è uno
    *   dei 4 nomi predefiniti, restituisce subito (sincrono) il percorso del
    *   file pre-colorato gemello.
    * - In tutti gli altri casi (colore esadecimale arbitrario, oppure logo
@@ -109,7 +109,7 @@
       return Promise.resolve(source);
     }
 
-    const officialMatch = source.match(/assets\/logos\/([^/?#]+)(?:[?#].*)?$/);
+    const officialMatch = source.match(/assets\/logos\/[^/?#]+\/([^/?#]+)(?:[?#].*)?$/);
     if (officialMatch && COLOR_RGB[color]) {
       return Promise.resolve(getOfficialPrintLogoPath(officialMatch[1], color));
     }
@@ -138,7 +138,7 @@
   function getBrandLogoSrc(customValue, officialFileName, defaultFileName, color) {
     const fileName = officialFileName || defaultFileName;
     const source = customValue || (fileName
-      ? (typeof getLogoSource === 'function' ? getLogoSource(fileName) : 'assets/logos/' + fileName)
+      ? (typeof getLogoSource === 'function' ? getLogoSource(fileName) : LOGOS_PATH + fileName)
       : '');
     return resolvePrintLogoSource(source, color);
   }
@@ -173,8 +173,8 @@
    *
    * @param {string} imgId - id dell'elemento <img>.
    * @param {string} customValue - data URL del logo personalizzato (o vuoto).
-   * @param {string} officialFileName - nome file in assets/logos/ (o vuoto).
-   * @param {string} defaultFileName - nome file di fallback in assets/logos/.
+   * @param {string} officialFileName - nome file in assets/logos/<negozio>/ (o vuoto).
+   * @param {string} defaultFileName - nome file di fallback in assets/logos/<negozio>/.
    * @param {'white'|'black'|'red'|'gold'} color - colore richiesto dalla pagina.
    */
   function setBrandLogoSrc(imgId, customValue, officialFileName, defaultFileName, color) {

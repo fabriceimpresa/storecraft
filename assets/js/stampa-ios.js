@@ -14,12 +14,13 @@
   const sheet = document.querySelector('#printSheet, #a4Sheet, #printable-grid');
   if (!sheet) return;
 
-  const version = (document.currentScript && new URL(document.currentScript.src).search) || '';
+  // lista-stampa.js sta accanto a questo file, con la stessa versione (le pagine sono nelle cartelle dei negozi).
+  const listaStampaSrc = new URL(`lista-stampa.js${new URL(document.currentScript.src).search}`, document.currentScript.src).href;
   function loadListaStampa() {
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = `assets/js/lista-stampa.js${version}`;
+      tag.src = listaStampaSrc;
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
