@@ -859,6 +859,15 @@
   background: var(--interface-surface);
 }
 .system-store-choice:disabled { cursor: default; }
+/* Negozio che si può aprire: come le voci del menu di sistema, al passaggio del mouse fondo, oro e linea a sinistra */
+.system-store-choice:not(:disabled) { cursor: pointer; transition: background .16s ease, color .16s ease; }
+.system-store-choice:not(:disabled):hover,
+.system-store-choice:not(:disabled):focus-visible {
+  background: var(--interface-surface);
+  color: var(--interface-accent);
+  box-shadow: inset 2px 0 var(--interface-accent);
+  outline: none;
+}
 .system-store-status {
   flex: 0 0 auto;
   padding: 4px 6px;
