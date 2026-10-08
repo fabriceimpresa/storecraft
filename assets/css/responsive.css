@@ -97,6 +97,8 @@
   }
   body[data-layout="cartelli"] .form-group input,
   body[data-layout="cartelli"] .form-group select { font-size: 16px; }
+  /* il simbolo fisso del campo (€ davanti al prezzo, % dopo lo sconto) nello stesso carattere e grande come le cifre, sulla stessa linea */
+  body[data-layout="cartelli"] .input-affix .affix { font-family: Arial, Helvetica, sans-serif; font-size: 16px; }
   /* I tre temi del cartello in modifica, in basso a destra dell'anteprima, dove il cartello non ha contenuti. */
   body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .phone-theme-toolbar {
     display: block;
@@ -219,6 +221,15 @@
   }
   body[data-layout="cartelli"] .sidebar .mode-switch button br { display: none; }
   body[data-layout="cartelli"] .sidebar .mode-switch button .phone-line-space { display: inline; }
+  /* Con tre o più pulsanti (es. STANDARD / DOPPIO ARTICOLO / BRAND / PERCENTUALE delle Cornici di TEBE) la scritta
+     su una riga non entra: può andare a capo, un poco più piccola, e i pulsanti si stringono quanto serve. */
+  body[data-layout="cartelli"] .sidebar .mode-switch:has(> button:nth-of-type(3)) button {
+    min-width: 0;
+    padding: 6px 4px;
+    font-size: clamp(0.6rem, 2.7vw, 0.7rem);
+    line-height: 1.15;
+    white-space: normal;
+  }
   /* Pulsanti a due stati (+ AGGIUNGI 2° BRAND…): forma da app, più alti e con la scritta leggibile. Colori invariati. */
   body[data-layout="cartelli"] .sidebar .btn-toggle {
     min-height: 48px;
@@ -384,6 +395,7 @@
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) .editor-section { margin-bottom: 0.8rem; }
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) .form-group input,
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) .form-group select { font-size: 16px; }
+  body:is([data-layout="cartellini"], [data-layout="prezzi"]) .input-affix .affix { font-family: Arial, Helvetica, sans-serif; font-size: 16px; }
   /* Come nei cartelli: titoli dei campi un poco più grandi, selettori a pulsanti su una riga alti 44 px. */
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) aside .form-group label {
     font-size: 0.78rem;

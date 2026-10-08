@@ -2,17 +2,17 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-66"></script>
+  <script src="../assets/js/negozi.js?v=20261008-69"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-66"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-66">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-66">
+  <script src="../assets/js/theme.js?v=20261008-69"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-69">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-69">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-66">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-69">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-66">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-66"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-69">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261008-69"></script>
 
   <style>
     /* Font locali da assets/fonts */
@@ -202,48 +202,15 @@
       .sheet-wrap { margin: 0; }
     }
 
-    @media screen and (max-width: 760px) and (pointer: coarse) {
-      body {
-        height: auto;
-        min-height: 100vh;
-        flex-direction: column;
-        overflow-x: hidden;
-        padding-bottom: 24px;
-      }
-
-      aside {
-        width: 100%;
-        max-height: none;
-        overflow: visible;
-        padding: 16px 12px;
-      }
-
-      main {
-        width: 100%;
-        min-height: 0;
-        padding: 12px;
-        overflow: auto;
-        align-items: flex-start;
-        justify-content: center;
-      }
-
-      .sheet-wrap { zoom: 0.8; margin: 12px auto 0; }
-      .app-close-btn { top: 10px; right: 10px; width: 44px; height: 44px; }
-      .floating-nav-box { display: none; }
-      .btn-print, .tab-item { min-height: 44px; }
-    }
-
-    @media screen and (max-width: 600px) and (pointer: coarse) { .sheet-wrap { zoom: 0.62; } }
-    @media screen and (max-width: 430px) and (pointer: coarse) { .sheet-wrap { zoom: 0.45; } }
-    @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.38; } }
-
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-66">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-66">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-66">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-66"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-69">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-69">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-69">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-69"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-69">
+  <script defer src="../assets/js/responsive.js?v=20261008-69"></script>
 </head>
-<body>
+<body data-layout="prezzi">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
 
   <div class="floating-nav-box">
@@ -304,8 +271,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/fasce-prezzo.js?v=20261008-66"></script>
-  <script src="../assets/js/testi-pronti.js?v=20261008-66"></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261008-69"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-69"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -488,7 +455,7 @@
 
     init();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-66"></script>
+  <script src="../assets/js/cursore.js?v=20261008-69"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -511,7 +478,7 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-66" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-66"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-69" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261008-69"></script>
 </body>
 </html>

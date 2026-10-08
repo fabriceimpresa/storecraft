@@ -2,17 +2,17 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-66"></script>
+  <script src="../assets/js/negozi.js?v=20261008-69"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-66"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-66">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-66">
+  <script src="../assets/js/theme.js?v=20261008-69"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-69">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-69">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-66">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-69">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Albero Accessori · TEBE</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-66">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-66"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-69">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261008-69"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -211,90 +211,21 @@
       }
     }
 
-    @media screen and (max-width: 760px) and (pointer: coarse) {
-      body {
-        align-items: center;
-        flex-direction: column;
-        gap: 14px;
-        overflow-x: hidden;
-        padding: 20px 20px 84px;
-      }
-      .sidebar { flex: 0 0 auto; width: 100%; max-width: 560px; }
-      .preview-area {
-        flex: 0 1 auto;
-        width: 100%;
-        justify-content: center;
-        overflow: visible;
-      }
-      .print-sheet { zoom: 1; }
-    }
-
     @media (max-width: 760px) {
       body { padding: 12px; }
       .sidebar { flex-basis: 300px; }
       .preview-area { padding-bottom: 12px; }
     }
 
-    @media screen and (max-width: 760px) and (pointer: coarse) {
-      body {
-        align-items: center;
-        flex-direction: column;
-        gap: 12px;
-        overflow-x: hidden;
-        padding: 12px 12px 24px;
-      }
-      .sidebar { flex: 0 0 auto; width: 100%; max-width: 560px; }
-      .preview-area {
-        flex: 0 1 auto;
-        width: 100%;
-        justify-content: center;
-        overflow: visible;
-        padding-bottom: 12px;
-      }
-      .form-group input, .preset-select select { font-size: 16px; }
-      .card-selector button { min-height: 44px; }
-      .print-sheet { zoom: 0.75; }
-      .app-close-btn { top: 10px; right: 4px; width: 44px; height: 44px; }
-      .floating-nav-box { display: none; }
-    }
-
-    @media screen and (max-width: 680px) and (pointer: coarse) { .print-sheet { zoom: 0.64; } }
-    @media screen and (max-width: 530px) and (pointer: coarse) { .print-sheet { zoom: 0.53; } }
-    @media screen and (max-width: 420px) and (pointer: coarse) { .print-sheet { zoom: 0.40; } }
-    @media screen and (max-width: 360px) and (pointer: coarse) { .print-sheet { zoom: 0.34; } }
-
-    @media screen and (max-width: 760px) and (pointer: coarse) {
-      .controls { padding: 12px 12px 12px; }
-      .controls h1, .controls h2 {
-        font-size: 0.95rem;
-        padding-bottom: 12px;
-        margin-bottom: 0.55rem;
-      }
-      /* Pannello piu' compatto: su cellulare pannello e foglio devono
-         stare in poco piu' di una schermata. */
-      .form-group, .card-selector, .preset-select { margin-bottom: 0.55rem; }
-      .form-group label, .section-label {
-        font-size: 0.68rem;
-        margin-bottom: 0.18rem;
-      }
-      .form-group input, .form-group select, .preset-select select {
-        padding: 6px 8px;
-      }
-      .mode-switch button, .row-selector button, .card-selector button {
-        min-height: 36px;
-        padding: 6px;
-        font-size: 0.64rem;
-      }
-      .btn-print { margin-top: 0; padding: 9px; }
-      .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 0.7rem; }
-    }
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-66">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-66">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-66">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-66"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-69">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-69">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-69">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-69"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-69">
+  <script defer src="../assets/js/responsive.js?v=20261008-69"></script>
 </head>
-<body>
+<body data-layout="cartelli">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna al menu principale">✕</a>
 
   <div class="floating-nav-box">
@@ -347,7 +278,7 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-66"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-69"></script>
   <script>
     const signs = [
       { description: 'Foulard', price: '10,00' },
@@ -383,7 +314,7 @@
       document.getElementById('priceInput').value = signs[index].price;
     }
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-66"></script>
+  <script src="../assets/js/cursore.js?v=20261008-69"></script>
   <script>
     // Cursore: sopra il cartellino scelto con i pulsanti 1-2, sopra o di lato a testo e prezzo quando si usano i campi.
     const activeTreeSign = () => document.querySelectorAll('.tree-sign')[activeSign];
@@ -400,7 +331,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-66"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-66"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-69"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261008-69"></script>
 </body>
 </html>

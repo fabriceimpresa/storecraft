@@ -2,12 +2,12 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-66"></script>
+  <script src="../assets/js/negozi.js?v=20261008-69"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-66"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-66">
+  <script src="../assets/js/theme.js?v=20261008-69"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-69">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-66">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-69">
   <title>Lista di Stampa · OPHILYA</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -186,6 +186,138 @@
     .status { min-height: 1.2em; color: var(--interface-accent-bright); font: 600 0.72rem Arial, Helvetica, sans-serif; text-align: center; }
 
     .print-frame { position: fixed; width: 0; height: 0; border: 0; visibility: hidden; }
+    /* Vista verticale per telefono (stessa soglia degli editor) e finestre desktop strette (fino a 1000 px, dove le tre
+       colonne fisse schiaccerebbero la pagina): in alto barra con titolo, numero di pagine e ✕; al centro la pagina
+       scelta; sotto le miniature in un carosello orizzontale; in fondo i comandi fissi, con la stampa a tutta larghezza.
+       Solo disposizione: struttura e logica restano quelle della pagina. I tablet conservano le tre colonne. */
+    @media screen and (max-width: 760px) and (pointer: coarse), screen and (max-width: 1000px) and (pointer: fine) {
+      body {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: 56px minmax(0, 1fr) auto auto;
+        grid-template-areas:
+          "title count"
+          "viewer viewer"
+          "thumbs thumbs"
+          "actions actions";
+        gap: 0;
+        height: 100vh;
+        height: 100dvh;
+        padding: 0;
+      }
+      .thumbs-panel { display: contents; }
+      .panel-title {
+        grid-area: title;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0 12px 0 16px;
+        border-bottom: 1px solid var(--interface-border, #2e2b27);
+        background: var(--interface-sidebar, #181715);
+        font-size: 1rem;
+        text-align: left;
+      }
+      .page-count {
+        grid-area: count;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        margin: 0;
+        /* spazio a destra per la ✕ */
+        padding: 0 64px 0 8px;
+        border-bottom: 1px solid var(--interface-border, #2e2b27);
+        background: var(--interface-sidebar, #181715);
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+      .app-close-btn { top: 10px; right: 10px; width: 36px; height: 36px; }
+      .viewer {
+        grid-area: viewer;
+        min-height: 0;
+        padding: 12px;
+        border: 0;
+        border-radius: 0;
+      }
+      .viewer img {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        max-height: none;
+        object-fit: contain;
+        background: transparent;
+        box-shadow: none;
+        filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
+      }
+      .viewer-caption { font-size: 0.8rem; text-align: center; }
+      .thumbs {
+        grid-area: thumbs;
+        flex-direction: row;
+        gap: 8px;
+        padding: 10px 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-top: 1px solid var(--interface-border, #2e2b27);
+        background: var(--interface-sidebar, #181715);
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+      }
+      .thumbs::-webkit-scrollbar { display: none; }
+      .thumbs:empty { display: none; }
+      .thumb {
+        flex: 0 0 76px;
+        gap: 4px;
+        padding: 5px;
+        scroll-snap-align: start;
+        background: var(--interface-control, #121110);
+        border-color: var(--interface-border, #2e2b27);
+        color: var(--interface-text, #f4f1ea);
+      }
+      .thumb.active { background: var(--interface-surface, #1e1d1a); border-color: var(--interface-accent, #d4a373); }
+      .thumb-label { font-size: 0.7rem; }
+      .thumb-title { display: none; }
+      .actions-panel {
+        grid-area: actions;
+        width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 10px;
+        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        border: 0;
+        border-top: 1px solid var(--interface-border, #2e2b27);
+        border-radius: 0;
+        background: var(--interface-sidebar, #181715);
+        box-shadow: 0 -6px 14px rgba(0, 0, 0, 0.28);
+      }
+      .actions-spacer { display: none; }
+      .delete-chooser {
+        order: 0;
+        flex: 1 1 100%;
+        border-color: var(--interface-border, #2e2b27);
+        border-radius: 10px;
+        background: var(--interface-control, #121110);
+      }
+      body .delete-chooser .btn-plain { background: transparent !important; }
+      .delete-chooser select { min-height: 44px; font-size: 16px; }
+      .chooser-buttons .action-btn { min-height: 44px; font-size: 0.8rem; }
+      #deleteBtn { order: 1; flex: 1 1 0; }
+      /* Svuota Lista con il contorno oro, come ANTEPRIMA nei cartelli (anche nel tema chiaro, che riempie i pulsanti oro). */
+      body #clearBtn {
+        order: 2;
+        flex: 1 1 0;
+        border: 1.5px solid var(--interface-accent, #d4a373) !important;
+        background: transparent !important;
+        color: var(--interface-accent, #d4a373) !important;
+      }
+      .status { order: 3; flex: 1 1 100%; }
+      .status:empty { display: none; }
+      #printBtn { order: 4; flex: 1 1 100%; font-size: 0.85rem; }
+      .action-btn { min-height: 44px; border-radius: 8px; -webkit-tap-highlight-color: transparent; }
+      .action-btn:not(:disabled):active { transform: scale(.97); }
+      .action-btn:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
+    }
+
   </style>
 </head>
 <body>
@@ -215,7 +347,7 @@
     <button type="button" class="action-btn btn-gold" id="clearBtn" onclick="clearList()">Svuota Lista</button>
   </aside>
 
-  <script src="../assets/js/lista-stampa.js?v=20261008-66"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261008-69"></script>
   <script>
     // Pagina che gestisce la lista di stampa (assets/js/lista-stampa.js): miniature, pagina scelta in grande,
     // stampa di tutta la lista come lista.pdf, eliminazione di una pagina e svuotamento della lista.
@@ -297,6 +429,12 @@
     // (alcune versioni di Safari) apre il PDF in una nuova scheda, da cui si stampa.
     async function printList() {
       if (!pages.length) return;
+      // Su iPhone e iPad lista.pdf non passa dalla stampa del browser (margini e riduzione di iOS):
+      // si consegna con il menu Condividi (ListaStampa.offerPdf). Sul computer resta la stampa qui sotto.
+      if (ListaStampa.isIos()) {
+        ListaStampa.offerPdf(ListaStampa.buildPdf(pages), 'lista.pdf');
+        return;
+      }
       setStatus('Preparazione di lista.pdf…');
       try {
         const pdf = await ListaStampa.buildPdf(pages);

@@ -44,9 +44,11 @@
 .made-in-italy-btn--banco { width: 40px; height: 40px; padding: 6px; }
 
 /* Modo automatico (madeinitaly.js con data-automatico, pagine di TEBE e OPHILYA): bandierine ai lati dei cartelli,
-   visibili solo con il tema acceso. Valgono solo nelle pagine che usano il modo automatico. */
-:root[data-made-in-italy="automatico"] .card { position: relative; }
-:root[data-made-in-italy="automatico"] .frame-box { position: absolute; }
+   visibili solo con il tema acceso. Valgono solo nelle pagine che usano il modo automatico, con la stessa forza
+   delle regole del progetto TEBE (:where non conta), così le regole delle pagine restano più forti: es. nei Paletti
+   .print-sheet .card { position: absolute } tiene i due cartelli al loro posto sul foglio. */
+:where(:root[data-made-in-italy="automatico"]) .card { position: relative; }
+:where(:root[data-made-in-italy="automatico"]) .frame-box { position: absolute; }
 
 .tema-italia-flag {
   position: absolute;

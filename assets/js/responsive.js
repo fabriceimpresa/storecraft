@@ -107,8 +107,11 @@
     const sheet = document.querySelector('#printSheet, .print-sheet, .a4-sheet');
     if (!sheet) return;
 
-    // Cartello n del foglio: #cardN nella maggior parte delle pagine, #cartelloBoxN nel Magazzino.
-    const cardElement = index => document.getElementById(`card${index}`) || document.getElementById(`cartelloBox${index}`);
+    // Cartello n del foglio: #cardN nella maggior parte delle pagine, #cartelloBoxN nel Magazzino; nelle pagine di TEBE e
+    // OPHILYA #cardTop / #cardBottom o, nell'Albero, i due .tree-sign.
+    const cardElement = index => document.getElementById(`card${index}`) || document.getElementById(`cartelloBox${index}`)
+      || document.getElementById(index === '2' ? 'cardBottom' : 'cardTop')
+      || sheet.querySelectorAll('.tree-sign')[Number(index) - 1] || null;
 
     // Anteprima: un riquadro fermo (pulsanti dei temi, intestazione) e dentro un riquadro che scorre sul foglio.
     const preview = document.createElement('div');
@@ -118,6 +121,10 @@
     frame.className = 'phone-preview-frame';
     preview.append(frame);
     frame.append(sheet);
+    // Foglio dentro un contenitore (Albero: <main class="preview-area">): sul telefono l'anteprima va accanto al
+    // pannello e il contenitore, vuoto, si nasconde; su desktop e tablet tutto torna com'era.
+    const host = preview.parentElement === document.body ? null : preview.parentElement;
+    const hostAnchor = host && anchorBefore(preview, 'Posizione desktop dell\'anteprima');
 
     // Pulsanti dei temi (Made in Italy, Black Friday, Natale): sul telefono in basso a destra dell'anteprima,
     // solo quelli del cartello in modifica.
@@ -165,10 +172,13 @@
     );
     full.bind(actions.button, createPreviewHead(preview, () => full.set(false)));
 
-    // Cartello in modifica, letto dal selettore comune CARTELLO SUPERIORE / INFERIORE (senza selettore: il primo).
+    // Cartello in modifica, letto dal selettore comune CARTELLO SUPERIORE / INFERIORE (senza selettore: il primo); nelle
+    // pagine di TEBE e OPHILYA dal loro selettore (Paletti: #selectBottom attivo; Albero: secondo pulsante 1 / 2).
     function currentCard() {
       const lower = document.getElementById('selectCard2');
-      return lower && lower.getAttribute('aria-pressed') === 'true' ? '2' : '1';
+      if (lower) return lower.getAttribute('aria-pressed') === 'true' ? '2' : '1';
+      if (document.getElementById('selectBottom')?.classList.contains('active')) return '2';
+      return document.querySelector('.card-selector button:nth-of-type(2)')?.getAttribute('aria-pressed') === 'true' ? '2' : '1';
     }
 
     // Misure del foglio in px CSS, senza lo zoom: valgono per A4 e per il mezzo A4 (Magazzino con 1 CARTELLO).
@@ -193,6 +203,14 @@
         return index === '2' ? [middle, 1] : [0, middle];
       }
       if (visible.length === 1) return [0, Math.min(1, visible[0].bottom + Math.max(0, visible[0].top))];
+      // Cornici di TEBE (senza cartelli superiore e inferiore): tutte le cornici del foglio, con sotto lo stesso
+      // margine che c'è sopra
+      const frames = [...sheet.querySelectorAll('.frame-box')].map(box => box.getBoundingClientRect()).filter(rect => rect.height);
+      if (frames.length) {
+        const top = Math.min(...frames.map(rect => rect.top)) - sheetRect.top;
+        const bottom = Math.max(...frames.map(rect => rect.bottom)) - sheetRect.top;
+        return [0, Math.min(1, (bottom + Math.max(0, top)) / sheetRect.height)];
+      }
       return [0, 0.5];
     }
 
@@ -215,10 +233,13 @@
         groups.forEach(group => { group.hidden = true; });
         return;
       }
-      const zoom = Math.min(1, Math.max(1, frame.clientWidth - padX) / size.width);
-      sheet.style.zoom = String(zoom);
       const index = currentCard();
       const [start, end] = cardSlot(index);
+      // a tutta larghezza, ma alta al massimo il 45% dello schermo, così sotto resta spazio per il pannello (es. la
+      // Cornice 21 x 27 di TEBE, alta quasi quanto il foglio, si rimpicciolisce e sta al centro)
+      const zoom = Math.min(1, Math.max(1, frame.clientWidth - padX) / size.width,
+        (window.innerHeight * 0.45 - padY) / Math.max(1, (end - start) * size.height));
+      sheet.style.zoom = String(zoom);
       const height = size.height * zoom;
       frame.style.height = `${Math.round((end - start) * height + padY)}px`;
       frame.scrollTo({ top: start * height, behavior: smooth ? 'smooth' : 'auto' });
@@ -227,6 +248,11 @@
 
     function update() {
       if (!phone.matches) full.set(false);
+      if (host) {
+        if (phone.matches) host.before(preview);
+        else hostAnchor.after(preview);
+        host.style.display = phone.matches ? 'none' : '';
+      }
       positions.forEach(({ button, anchor, index }) => {
         if (phone.matches) groups.get(index).append(button);
         else anchor.after(button);
@@ -240,8 +266,10 @@
     // Cambio di cartello (aria-pressed del selettore) o di numero di cartelli (classi sul foglio e sui cartelli).
     const panel = document.querySelector('.sidebar');
     if (panel) {
-      new MutationObserver(() => { if (phone.matches) fitPreview(true); })
-        .observe(panel, { subtree: true, attributes: true, attributeFilter: ['aria-pressed'] });
+      // (nei Paletti di TEBE e OPHILYA il selettore cambia solo la classe active)
+      const isSelector = mutation => mutation.attributeName === 'aria-pressed' || mutation.target.closest?.('.card-mode-switch');
+      new MutationObserver(mutations => { if (phone.matches && mutations.some(isSelector)) fitPreview(true); })
+        .observe(panel, { subtree: true, attributes: true, attributeFilter: ['aria-pressed', 'class'] });
     }
     const layoutObserver = new MutationObserver(() => { if (phone.matches) fitPreview(false); });
     // Sul foglio non si osserva style: è lì che si scrive lo zoom.
