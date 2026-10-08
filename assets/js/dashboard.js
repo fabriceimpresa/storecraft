@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.50 2026';
+  const VERSIONE = 'V 1.51 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -138,8 +138,8 @@
         el('div', { class: 'system-menu-items' },
           voce('settings', '⚙', 'IMPOSTAZIONI', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('settings')),
           voce('profile', '♙', 'PROFILO UTENTE', el('span', { class: 'system-store-current', text: scheda.sigla }), () => openSystemMenuView('stores')),
-          voce('store', '▦', 'STORE', el('span', { class: 'system-menu-badge', text: 'COMING SOON' }), null),
-          voce('contacts', 'ⓘ', 'CONTATTI & CREDITS', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('contacts')),
+          voce('store', '◈', 'STORE', el('span', { class: 'system-menu-badge', text: 'COMING SOON' }), null),
+          voce('contacts', '✉', 'CONTATTI & CREDITS', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('contacts')),
           // HOME: torna alla scelta del punto vendita (solo con più di un negozio installato)
           PuntoVendita.unico() ? null : voce('home', '⌂', 'HOME', el('span', { 'aria-hidden': 'true', text: '›' }), () => PuntoVendita.apriSplash()))),
       el('div', { class: 'system-menu-view', 'data-system-view': 'settings', hidden: true },

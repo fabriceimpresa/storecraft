@@ -107,10 +107,10 @@
     & :is(.system-menu-item, .system-menu-back) { font-size: .62rem; }
     & .system-menu-badge { font-size: .48rem; }
     & .system-store-current { font-size: .52rem; }
-    & .system-setting-label { font-size: .64rem; }
-    & .theme-choice { font-size: .56rem; }
+    & .system-setting-label { font-size: .62rem; }
+    & .theme-choice { font-size: .62rem; }
     & .system-credits { font-size: .64rem; }
-    & .system-store-choice { font-size: .6rem; }
+    & .system-store-choice { font-size: .62rem; }
     & .system-store-status { font-size: .44rem; }
   }
 
@@ -920,3 +920,22 @@
   border-color: var(--interface-border);
   color: var(--interface-muted);
 }
+
+/* Menu di sistema: tutte le voci uguali, nel possibile. Stessa grandezza delle scritte in tutte le viste (voci, negozi,
+   TEMA / ASPETTO e le loro scelte: .68rem, nell'aspetto COMPATTO .62rem), lettere un poco meno spaziate (le voci lunghe, come
+   PROFILO UTENTE con la sigla del negozio, vanno comunque a capo: non devono uscire dal menu), voce spenta solo grigia (senza trasparenza) e simboli tutti della stessa larghezza
+   (i caratteri li disegnano di larghezze diverse: ⌂ è più stretto, ♙ più largo). */
+.system-menu-item,
+.system-store-choice,
+.system-setting-label,
+.theme-choice { letter-spacing: .05em; }
+.system-store-choice,
+.system-setting-label,
+.theme-choice { font-size: .68rem; }
+.system-menu-item:disabled { opacity: 1; }
+.system-menu-icon { --icona-scala: 1; transform: scale(var(--icona-scala)); }
+[data-system-menu-item="settings"] .system-menu-icon { --icona-scala: 1.08; }
+[data-system-menu-item="profile"] .system-menu-icon { --icona-scala: .92; }
+[data-system-menu-item="store"] .system-menu-icon { --icona-scala: 1.08; }
+[data-system-menu-item="contacts"] .system-menu-icon { --icona-scala: .9; }
+[data-system-menu-item="home"] .system-menu-icon { --icona-scala: 1.45; }
