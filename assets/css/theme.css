@@ -923,8 +923,8 @@
 
 /* Menu di sistema: tutte le voci uguali, nel possibile. Stessa grandezza delle scritte in tutte le viste (voci, negozi,
    TEMA / ASPETTO e le loro scelte: .68rem, nell'aspetto COMPATTO .62rem), lettere un poco meno spaziate (le voci lunghe, come
-   PROFILO UTENTE con la sigla del negozio, vanno comunque a capo: non devono uscire dal menu), voce spenta solo grigia (senza trasparenza) e simboli tutti della stessa larghezza
-   (i caratteri li disegnano di larghezze diverse: ⌂ è più stretto, ♙ più largo). */
+   PROFILO UTENTE con la sigla del negozio, vanno comunque a capo: non devono uscire dal menu), voce spenta solo grigia (senza trasparenza) e simboli tutti della stessa larghezza,
+   centrati sulla loro scritta (i caratteri li disegnano di larghezze diverse: ⌂ è più stretto, ♙ più largo). */
 .system-menu-item,
 .system-store-choice,
 .system-setting-label,
@@ -933,9 +933,11 @@
 .system-setting-label,
 .theme-choice { font-size: .68rem; }
 .system-menu-item:disabled { opacity: 1; }
-.system-menu-icon { flex-basis: 20px; font-size: 1.05rem; --icona-scala: 1; transform: scale(var(--icona-scala)); }
+.system-menu-icon { flex-basis: 20px; font-size: 1.05rem; --icona-scala: 1; --icona-y: 0px; transform: translateY(var(--icona-y)) scale(var(--icona-scala)); }
+/* simbolo un poco staccato dalla sua scritta, per leggere meglio */
+.system-menu-item-label { gap: 9px; }
 [data-system-menu-item="settings"] .system-menu-icon { --icona-scala: 1.08; }
 [data-system-menu-item="profile"] .system-menu-icon { --icona-scala: .92; }
-[data-system-menu-item="store"] .system-menu-icon { --icona-scala: 1.08; }
+[data-system-menu-item="store"] .system-menu-icon { --icona-scala: 1.08; --icona-y: -1px; }
 [data-system-menu-item="contacts"] .system-menu-icon { --icona-scala: .9; }
-[data-system-menu-item="home"] .system-menu-icon { --icona-scala: 1.45; }
+[data-system-menu-item="home"] .system-menu-icon { --icona-scala: 1.45; --icona-y: -2px; }
