@@ -1,3 +1,8 @@
+/* Selettore pronto DOPPIA CIFRA / DESCRIZIONE ARTICOLO, costruito con il selettore comune (selettore.js, da
+   includere prima). La pagina dichiara <div data-selettore-modalita-prezzo></div> (id dei pulsanti in
+   data-double-button-id / data-description-button-id, predefiniti doublePriceBtn / descriptionBtn; funzione in
+   data-on-change, predefinita setDescriptionMode, chiamata con false o true anche sulla voce già scelta) e conserva
+   la propria setDescriptionMode. DESCRIZIONE ARTICOLO va su due righe (sul telefono su una). */
 (() => {
   const selectors = new Map();
 
@@ -9,36 +14,23 @@
       throw new Error('Gli id del selettore modalità prezzo sono già utilizzati.');
     }
 
-    const selector = document.createElement('div');
-    selector.className = 'mode-switch';
-    selector.setAttribute('role', 'group');
-    selector.setAttribute('aria-label', 'Seleziona la modalità prezzo del cartello');
-
-    const doubleButton = document.createElement('button');
-    doubleButton.type = 'button';
-    doubleButton.id = doubleButtonId;
-    doubleButton.className = 'active';
-    doubleButton.setAttribute('aria-pressed', 'true');
-    doubleButton.textContent = 'DOPPIA CIFRA';
-
-    const descriptionButton = document.createElement('button');
-    descriptionButton.type = 'button';
-    descriptionButton.id = descriptionButtonId;
-    descriptionButton.setAttribute('aria-pressed', 'false');
-    descriptionButton.textContent = 'DESCRIZIONE ARTICOLO';
-
-    [[doubleButton, false], [descriptionButton, true]].forEach(([button, withDescription]) => {
-      button.addEventListener('click', () => {
+    const selector = Selettore.crea({
+      ariaLabel: 'Seleziona la modalità prezzo del cartello',
+      ripeti: true,
+      voci: [
+        { valore: 'doppia', testo: 'DOPPIA CIFRA', id: doubleButtonId, attiva: true },
+        { valore: 'descrizione', testo: 'DESCRIZIONE\nARTICOLO', id: descriptionButtonId }
+      ],
+      quandoCambia: value => {
         const handler = window[changeHandlerName];
         if (typeof handler !== 'function') {
           throw new Error(`Funzione non disponibile per il selettore modalità prezzo: ${changeHandlerName}`);
         }
-        handler(withDescription);
-      });
+        handler(value === 'descrizione');
+      }
     });
 
-    selector.append(doubleButton, descriptionButton);
-    selectors.set(placeholder.id || doubleButtonId, { doubleButton, descriptionButton });
+    selectors.set(placeholder.id || doubleButtonId, selector);
     placeholder.replaceWith(selector);
   });
 
@@ -46,11 +38,7 @@
     setDescription(enabled) {
       const selector = selectors.values().next().value;
       if (!selector) throw new Error('Nessun selettore modalità prezzo è stato registrato.');
-      const withDescription = Boolean(enabled);
-      selector.doubleButton.classList.toggle('active', !withDescription);
-      selector.doubleButton.setAttribute('aria-pressed', String(!withDescription));
-      selector.descriptionButton.classList.toggle('active', withDescription);
-      selector.descriptionButton.setAttribute('aria-pressed', String(withDescription));
+      Selettore.attiva(selector, enabled ? 'descrizione' : 'doppia');
     }
   });
 })();

@@ -2,17 +2,17 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Albero Accessori · OPHILYA</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,71 +31,7 @@
 
 
 
-    .section-label {
-      margin-bottom: 0.35rem;
-      color: var(--pannello-oro-chiaro);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .card-selector {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 0.8rem;
-      padding: 4px;
-      border: 1px solid var(--pannello-bordo);
-      border-radius: 6px;
-      background: var(--pannello-riquadro);
-    }
-
-    .card-selector button {
-      flex: 1;
-      padding: 9px 8px;
-      border: 0;
-      border-radius: 4px;
-      background: transparent;
-      color: var(--pannello-selettore-testo);
-      font: 600 0.78rem Arial, Helvetica, sans-serif;
-      cursor: pointer;
-    }
-
-    .card-selector button.active {
-      background: var(--pannello-selettore-attivo);
-      color: var(--pannello-selettore-attivo-testo);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
-
-    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
-       (i margini si sommano a quello del titolo: vale il maggiore) */
-    .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 1rem; }
-
-    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
-
-
-
-
-    /* Titoli dei menu a discesa: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-
-    /* Menu a discesa con la casella del triangolo a destra, come nelle altre pagine */
-
-
-    .preset-select select {
-      width: 100%;
-      padding: 0.45rem 2rem 0.45rem 0.45rem;
-      border: none;
-      background: transparent;
-      color: var(--pannello-testo);
-      font: 0.82rem Arial, Helvetica, sans-serif;
-      appearance: none;
-    }
-
-    .preset-select select:focus { outline: none; }
-
-
-
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css): blocchi, selettori, menu e campi comuni. */
 
     .preview-area {
       flex: 0 0 210mm;
@@ -220,12 +156,12 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartelli">
   <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna al menu principale">✕</a>
@@ -239,28 +175,36 @@
     <section class="controls" aria-labelledby="pageTitle">
       <h1 id="pageTitle">Albero Accessori</h1>
 
-      <div class="card-selector" role="group" aria-label="Cartello in modifica">
-        <button type="button" class="active" aria-pressed="true" onclick="selectSign(0)">1</button>
-        <button type="button" aria-pressed="false" onclick="selectSign(1)">2</button>
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div id="cardSelector" data-selettore-cartello></div>
       </div>
 
-      <div class="form-group">
-        <label class="section-label" for="descPreset">Testi Pronti</label>
-        <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Articoli,Promozioni">
-            <option value="">-- Seleziona un testo --</option>
-          </select>
+      <!-- Blocco 2 omesso: il cartellino non ha brand né claim -->
+
+      <!-- Blocco 3: campi del cartellino scelto (testo e prezzo) -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="descPreset">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="descPreset" class="ready-text-complete" onchange="applyDescPreset()" data-testi-pronti="Promozioni,Articoli">
+              <option value="" class="ready-text-placeholder">-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <label for="descriptionInput">Testo Libero</label>
+          <input id="descriptionInput" type="text" value="Foulard" maxlength="37" placeholder="-- Testo Libero --" oninput="updateActiveSign()">
         </div>
-        <label for="descriptionInput">Testo Libero</label>
-        <input id="descriptionInput" type="text" value="Foulard" maxlength="80" oninput="updateActiveSign()">
+
+        <div class="form-group">
+          <label for="priceInput">Prezzo</label>
+          <input data-prezzo id="priceInput" type="text" inputmode="decimal" value="10,00" placeholder="10,00" maxlength="20" oninput="updateActiveSign()">
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="priceInput">Prezzo</label>
-        <input data-prezzo id="priceInput" type="text" inputmode="decimal" value="10,00" maxlength="20" oninput="updateActiveSign()">
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button class="btn-print" id="printBtn" type="button" onclick="window.print()">STAMPA CARTELLI</button>
       </div>
-
-      <button class="btn-print" type="button" onclick="window.print()">Stampa Foglio A4</button>
     </section>
   </aside>
 
@@ -280,7 +224,9 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261009-04"></script>
   <script>
     const signs = [
       { description: 'Foulard', price: '10,00' },
@@ -306,17 +252,18 @@
     function selectSign(index) {
       updateActiveSign();
       activeSign = index;
-      document.querySelectorAll('.card-selector button').forEach((button, buttonIndex) => {
-        const isActive = buttonIndex === index;
-        button.classList.toggle('active', isActive);
-        button.setAttribute('aria-pressed', String(isActive));
-      });
+      SelettoreCartello.setActive('selectCard' + (index + 1));
       document.getElementById('descriptionInput').value = signs[index].description;
       document.getElementById('descPreset').value = '';
       document.getElementById('priceInput').value = signs[index].price;
     }
+
+    // Selettore comune CARTELLO SUPERIORE / INFERIORE (selettore-cartello.js): 1 = cartellino in alto, 2 = in basso.
+    function selectCard(cardIndex) {
+      selectSign(cardIndex - 1);
+    }
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: sopra il cartellino scelto con i pulsanti 1-2, sopra o di lato a testo e prezzo quando si usano i campi.
     const activeTreeSign = () => document.querySelectorAll('.tree-sign')[activeSign];
@@ -327,13 +274,13 @@
       scope: activeTreeSign,
       obstacles: () => activeTreeSign()?.querySelectorAll('.sign-description, .sign-price, .sign-logo') || [],
       rules: [
-        { controls: '.card-selector', target: activeTreeSign, placement: 'above' },
+        { controls: '#selectCard1, #selectCard2', target: activeTreeSign, placement: 'above' },
         { controls: '#descPreset, #descriptionInput', target: () => document.getElementById(`descriptionPreview${activeSign}`) },
         { controls: '#priceInput', target: () => document.getElementById(`pricePreview${activeSign}`) }
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

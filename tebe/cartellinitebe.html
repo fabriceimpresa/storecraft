@@ -2,22 +2,22 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini TEBE</title>
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-70"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-70"></script>
-  <script src="../assets/js/logos.js?v=20261008-70"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261009-04"></script>
+  <script src="../assets/js/logos.js?v=20261009-04"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -46,7 +46,7 @@
     body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: auto; }
 
     /* --- SIDEBAR --- */
-    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    aside { width: 360px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
     .brand-title { font-family: 'Cinzel', serif; font-size: 1.05rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; text-align: center; font-weight: 600; text-transform: uppercase; }
 
     .tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
@@ -59,43 +59,15 @@
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
-    /* Spazi regolari nel pannello (come le pagine Crea Cartelli): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, sotto il selettore e prima del tasto di stampa */
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-    .form-control { width: 100%; padding: 0.45rem; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.82rem; outline: none; }
-    .form-control:focus { border-color: var(--gold); }
-
-    /* MENU A DISCESA CON FRECCIA */
-
-
-    .preset-select select.form-control {
-      appearance: none;
-      -webkit-appearance: none;
-      padding-right: 2rem;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      cursor: pointer;
-    }
-
-
-    /* Evidenzia i brand della casa TEBE (PRIORITY_BRANDS) in cima al menu brand */
-    select option.priority-brand-option {
-      background-color: #2e2b27;
-      color: #e5ba73;
-      font-weight: bold;
-    }
-
-
-
-
-    /* Tasto di stampa dentro il riquadro di modifica, come nei cartelli */
-    .editor-section .btn-print { margin: 0; }
-    /* Riquadro che comincia con un selettore: un poco di spazio in più sopra il selettore; l'ultimo elemento
-       del riquadro non aggiunge spazio sotto */
-    .editor-title + .mode-switch { margin-top: 1rem; }
-    .editor-section > :last-child { margin-bottom: 0; }
+    /* Il riquadro "Modifica Cartellino" segue il pannello standard (../assets/css/pannello.css), diviso nei quattro
+       blocchi, come i Quadrati di Luxury; qui solo ciò che è proprio dei cartellini. */
+    .editor-title + .panel-block > .mode-switch:first-child { margin-top: 1rem; }
+    .editor-section > .panel-block:last-child > :last-child { margin-bottom: 0; }
+    .editor-section .panel-block + .panel-block { margin-top: 0; }
+    .editor-section .panel-block > .mode-switch:last-child { margin-bottom: 1rem; }
+    #editorPanel { padding-bottom: 1.25rem; }
+    .editor-section .btn-print { margin-top: 0.35rem; }
+    .form-row .form-group label { white-space: nowrap; }
 
     /* --- PREVIEW MAIN --- */
     main { flex: 1; min-width: 0; padding: 1.5rem; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--border); -webkit-overflow-scrolling: touch; }
@@ -366,12 +338,12 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartellini">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -390,77 +362,54 @@
     <div class="editor-section" id="editorPanel">
       <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
 
-      <div class="mode-switch">
-        <button type="button" id="modeDescrizione" onclick="setCardMode('desc')">DESCRIZIONE</button>
-        <button type="button" id="modeDoppioPrezzo" onclick="setCardMode('double')">DOPPIO<br>PREZZO</button>
-        <button type="button" id="modeBrand" onclick="setCardMode('brand')">BRAND</button>
-      </div>
-
-      <div id="group-brand">
-        <div class="form-group">
-          <label class="section-label" for="brandSelect">BRAND</label>
-          <div class="preset-select">
-            <select id="brandSelect" class="form-control" onchange="updateBrandSelection()">
-              <option value="">-- Seleziona Brand --</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="customBrandSelect">Loghi personalizzati</label>
-          <div class="preset-select">
-            <select id="customBrandSelect" class="form-control" onchange="updateCustomBrandSelection()">
-              <option value="">-- Seleziona Logo Personalizzato --</option>
-            </select>
-          </div>
+      <!-- Blocco 1: selettore della modalità (selettore comune selettore.js) -->
+      <div class="panel-block">
+        <div data-selettore id="cardModeSelector" data-on-change="setCardMode" aria-label="Modalità del cartellino">
+          <button value="desc" id="modeDescrizione">DESCRIZIONE</button>
+          <button value="double" id="modeDoppioPrezzo">DOPPIO<br>PREZZO</button>
+          <button value="brand" id="modeBrand">BRAND</button>
         </div>
       </div>
 
-      <div id="group-desc">
-        <div class="form-group">
-          <label class="section-label" for="descPreset">Testi Pronti</label>
+      <!-- Blocco 2: brand (ufficiali e personalizzati), solo in modalità Brand; menu comuni di menu-brand-cartellini.js -->
+      <div class="panel-block" id="group-brand" hidden>
+        <div class="form-group" data-menu-brand-cartellini data-brand-change="updateBrandSelection" data-custom-change="updateCustomBrandSelection" data-custom-value="id" data-sort-custom="true"></div>
+      </div>
+
+      <!-- Blocco 3: campi del cartellino, secondo la modalità, e Prezzo Finale -->
+      <div class="panel-block">
+        <div class="form-group" id="group-desc">
+          <label class="section-label" for="descPreset">TESTI PRONTI</label>
           <div class="preset-select">
-            <select id="descPreset" class="form-control" onchange="applyDescPreset()" data-testi-pronti="Articoli,Promozioni">
-              <option value="">-- Seleziona un testo --</option>
+            <select id="descPreset" class="ready-text-complete" onchange="applyDescPreset()" data-testi-pronti="Articoli,Promozioni">
+              <option value="" class="ready-text-placeholder">-- Seleziona Testo Pronto --</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-group">
           <label for="inp-desc">Testo Libero</label>
-          <input type="text" id="inp-desc" class="form-control" placeholder="es. Giubbino" oninput="updateCurrentCard()">
+          <input type="text" id="inp-desc" placeholder="-- Testo Libero --" oninput="updateCurrentCard()">
         </div>
-      </div>
 
-      <div id="group-double">
-        <div class="form-group">
-          <label for="inp-orig">Prezzo Originario</label>
-          <div class="currency-input-group">
-            <span class="currency-prefix">€</span>
-            <input data-prezzo type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
+        <div class="form-row" id="group-double">
+          <div class="form-group">
+            <label for="inp-orig">Prezzo Originario</label>
+            <input data-prezzo type="text" id="inp-orig" placeholder="396,00" oninput="updateCurrentCard()">
+          </div>
+          <div class="form-group">
+            <label for="discountValue">Sconto</label>
+            <input data-percentuale type="number" id="discountValue" value="50" min="1" max="99" placeholder="50" oninput="updateCurrentCard()">
           </div>
         </div>
+
         <div class="form-group">
-          <label class="section-label" for="discountValue">Percentuale Sconto</label>
-          <div class="percent-input-wrapper">
-            <input data-percentuale type="number" id="discountValue" class="form-control" value="50" min="1" max="99" oninput="updateCurrentCard()">
-            <div class="percent-stepper">
-              <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
-              <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
-            </div>
-          </div>
+          <label for="inp-final">Prezzo Finale</label>
+          <input data-prezzo type="text" id="inp-final" placeholder="198,00" oninput="updateCurrentCard()">
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="inp-final">Prezzo Finale</label>
-        <div class="currency-input-group">
-          <span class="currency-prefix">€</span>
-          <input data-prezzo type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
-        </div>
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" onclick="printCards()">STAMPA FOGLIO A4</button>
       </div>
-
-      <button class="btn-print" onclick="printCards()">Stampa Foglio A4</button>
     </div>
 
   </aside>
@@ -471,7 +420,9 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261009-04"></script>
   <script>
 
     function cleanBrandName(fileName) {
@@ -533,9 +484,8 @@
     let brandOpeningCardId = null;
     const BRAND_ANIMATION_MS = 450;
 
+    // I menu BRAND e Loghi Personalizzati li crea e li riempie menu-brand-cartellini.js.
     function init() {
-      loadBrandSelect();
-      LoghiPersonalizzati.pronto.then(loadCustomBrandSelect);
       renderTabs();
       renderGrid();
       loadEditorData();
@@ -647,27 +597,6 @@
       if (window.cursore) {
         cursore.point(active ? { target: inCurrentCard('.card-header-logo img') } : { target: currentCardView, placement: 'above' });
       }
-    }
-
-    function loadBrandSelect() {
-      const select = document.getElementById('brandSelect');
-      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-      [...priorityFiles, ...remainingFiles].forEach(fileName => {
-        appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
-      });
-    }
-
-    function loadCustomBrandSelect() {
-      const select = document.getElementById('customBrandSelect');
-      readCustomLogos()
-        .slice()
-        .sort((first, second) => first.name.localeCompare(second.name, 'it', { sensitivity: 'base' }))
-        .forEach(logo => {
-          const option = document.createElement('option');
-          option.value = logo.id;
-          option.textContent = `★ ${logo.name}`;
-          select.appendChild(option);
-        });
     }
 
     function updateBrandSelection() {
@@ -834,12 +763,10 @@
     function syncMode() {
       const mode = cardsData[currentCardIdx].mode;
       const isDesc = mode === 'desc';
-      document.getElementById('modeDescrizione').classList.toggle('active', isDesc);
-      document.getElementById('modeDoppioPrezzo').classList.toggle('active', mode === 'double');
-      document.getElementById('modeBrand').classList.toggle('active', mode === 'brand');
-      document.getElementById('group-desc').style.display = isDesc ? 'block' : 'none';
-      document.getElementById('group-double').style.display = isDesc ? 'none' : 'block';
-      document.getElementById('group-brand').style.display = mode === 'brand' ? 'block' : 'none';
+      Selettore.attiva('cardModeSelector', mode);
+      document.getElementById('group-desc').hidden = !isDesc;
+      document.getElementById('group-double').hidden = isDesc;
+      document.getElementById('group-brand').hidden = mode !== 'brand';
 
       const finalPriceInput = document.getElementById('inp-final');
       if (isDesc) {
@@ -876,17 +803,6 @@
       }
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const min = Number.parseInt(input.min, 10) || 1;
-      const max = Number.parseInt(input.max, 10) || 99;
-      let val = Number.parseInt(input.value, 10);
-      if (Number.isNaN(val)) val = min;
-      val = Math.min(max, Math.max(min, val + delta));
-      input.value = val;
-      updateCurrentCard();
-    }
-
     function toggleCardEnabled(index, enabled) {
       cardsData[index].enabled = enabled;
       renderGrid();
@@ -915,7 +831,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -944,7 +860,7 @@
     });
     cursore.point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cornice 21 X 27 · TEBE</title>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-70"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-70"></script>
-  <script src="../assets/js/logos.js?v=20261008-70"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-70"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261009-04"></script>
+  <script src="../assets/js/logos.js?v=20261009-04"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Castoro&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,71 +37,9 @@
 
 
 
-    .section-label {
-      color: var(--pannello-oro-chiaro);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 0.35rem;
-    }
-
-    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
-       (i margini si sommano a quello del titolo: vale il maggiore) */
-    .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 1rem; }
-
-    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
-
-
-
-
-
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
-       pulsanti sotto il pannello */
-
-
-    .form-group textarea {
-      resize: vertical;
-      height: 54px;
-      display: block;
-    }
-
-
-
-    .preset-select select {
-      appearance: none;
-      padding-right: 2rem;
-      border: none;
-      background: transparent;
-      width: 100%;
-      padding: 0.45rem;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-
-    .percent-stepper {
-      flex: 0 0 1.6rem;
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid var(--pannello-bordo);
-    }
-
-    .percent-stepper button {
-      flex: 1;
-      border: none;
-      border-bottom: 1px solid var(--pannello-bordo);
-      background: var(--pannello-riquadro);
-      color: var(--pannello-oro);
-      cursor: pointer;
-      font-size: 0.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .percent-stepper button:last-child { border-bottom: none; }
-    .percent-stepper button:hover { background: var(--pannello-riquadro-hover); color: var(--pannello-oro-chiaro); }
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css): blocchi, selettori, menu e campi comuni.
+       Qui solo ciò che è proprio della pagina: le etichette della riga dei prezzi su una riga sola (come Outlet). */
+    .form-row .form-group label { white-space: nowrap; }
 
 
 
@@ -361,13 +299,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartelli">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -381,68 +319,32 @@
     <div class="controls">
       <h2>Cornice 21 X 27</h2>
 
-      <div class="mode-switch" role="group" aria-label="Modalità cartello">
-        <button type="button" class="active" id="modeDescription" aria-pressed="true" onclick="switchContentMode('description')">STANDARD</button>
-        <button type="button" id="modeBrand" aria-pressed="false" onclick="switchContentMode('brand')">BRAND</button>
-        <button type="button" id="modePercent" aria-pressed="false" onclick="switchContentMode('percent')">PERCENTUALE<br>SCONTO</button>
-      </div>
-
-      <!-- CAMPI MODALITA' PERCENTUALE SCONTO -->
-      <div id="percentFieldsGroup" style="display: none;">
-        <div class="mode-switch" aria-label="Modalità %">
-          <button type="button" class="active" id="percentExtraStandardBtn" onclick="setPercentExtra('standard')">STANDARD</button>
-          <button type="button" id="percentExtraDescBtn" onclick="setPercentExtra('descrizione')">DESCRIZIONE</button>
-          <button type="button" id="percentExtraBrandBtn" onclick="setPercentExtra('brand')">BRAND</button>
+      <!-- Blocco 1: selettori (selettore comune selettore.js; gli id restano quelli usati da cursore e Made in Italy) -->
+      <div class="panel-block">
+        <div data-selettore id="contentModeSelector" data-on-change="switchContentMode" aria-label="Seleziona la modalità della cornice">
+          <button value="description" id="modeDescription" class="active">STANDARD</button>
+          <button value="brand" id="modeBrand">BRAND</button>
+          <button value="percent" id="modePercent">PERCENTUALE<br>SCONTO</button>
         </div>
 
-        <div class="form-group">
-          <label class="section-label" for="percentValue">Percentuale Sconto</label>
-          <div class="percent-input-wrapper">
-            <input data-percentuale type="number" id="percentValue" min="1" max="99" oninput="updatePercentData()">
-            <div class="percent-stepper">
-              <button type="button" aria-label="Aumenta percentuale" onclick="stepPercent(1)">▲</button>
-              <button type="button" aria-label="Diminuisci percentuale" onclick="stepPercent(-1)">▼</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group" id="percentDescGroup">
-          <label class="section-label" for="percentDescPreset">Promozione</label>
-          <div class="preset-select">
-            <select id="percentDescPreset" onchange="applyPercentDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
-              <option value="">-- Seleziona un testo --</option>
-              <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
-            </select>
-          </div>
-          <label for="percentDescValue">Testo Libero</label>
-          <input type="text" id="percentDescValue" oninput="updatePercentData()">
+        <!-- solo con PERCENTUALE SCONTO: cosa c'è sopra la percentuale -->
+        <div data-selettore id="percentExtraSelector" data-on-change="setPercentExtra" aria-label="Seleziona cosa mostrare sopra la percentuale" hidden>
+          <button value="standard" id="percentExtraStandardBtn" class="active">STANDARD</button>
+          <button value="descrizione" id="percentExtraDescBtn">DESCRIZIONE</button>
+          <button value="brand" id="percentExtraBrandBtn">BRAND</button>
         </div>
       </div>
 
-      <div class="form-group" id="descriptionFieldsGroup">
-        <label class="section-label" for="descPreset">Testo Pronto</label>
-        <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Materiali,Articoli" data-testi-senza-gruppi data-testi-maiuscolo>
-            <option value="" selected>-- Seleziona un Testo o Articolo --</option>
-          </select>
-        </div>
-        <label for="descFree">Testo Libero</label>
-        <textarea id="descFree" maxlength="120" oninput="updateDescription()" placeholder="Inserisci la descrizione su una o due righe">LANA &amp;
-CACHEMIRE</textarea>
-      </div>
-
-      <div id="brandFieldsGroup" style="display: none;">
+      <!-- Blocco 2: brand (ufficiali e personalizzati), con BRAND o PERCENTUALE SCONTO con BRAND -->
+      <div class="panel-block" id="brandFieldsGroup" hidden>
         <div class="form-group">
           <label class="section-label" for="brandSelect">BRAND</label>
           <div class="preset-select">
             <select id="brandSelect" onchange="updateBrandSelection()">
-              <option value="">-- Seleziona Brand --</option>
+              <option value="" class="brand-placeholder">-- Seleziona Brand --</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label for="customBrandSelect">Loghi personalizzati</label>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
           <div class="preset-select">
             <select id="customBrandSelect" onchange="updateCustomBrandSelection()">
               <option value="">-- Seleziona Logo Personalizzato --</option>
@@ -451,30 +353,61 @@ CACHEMIRE</textarea>
         </div>
       </div>
 
-      <div id="priceFieldsGroup">
-      <div class="form-group">
-        <label for="oldPrice">Prezzo Originario</label>
-        <input data-prezzo type="text" id="oldPrice" value="99,90" placeholder="es. 99,90" oninput="updatePrices()">
-      </div>
+      <!-- Blocco 3: campi della cornice, secondo la modalità -->
+      <div class="panel-block">
+        <!-- PERCENTUALE SCONTO -->
+        <div id="percentFieldsGroup" hidden>
+          <div class="form-group" id="percentDescGroup">
+            <label class="section-label" for="percentDescPreset">Promozioni</label>
+            <div class="preset-select">
+              <select id="percentDescPreset" onchange="applyPercentDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
+                <option value="">-- Seleziona Promozione --</option>
+                <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
+              </select>
+            </div>
+            <label for="percentDescValue">Testo Libero</label>
+            <input type="text" id="percentDescValue" placeholder="-- Testo Libero --" oninput="updatePercentData()">
+          </div>
 
-      <div class="form-group">
-        <label class="section-label" for="discountValue">Percentuale Sconto</label>
-        <div class="percent-input-wrapper">
-          <input data-percentuale type="number" id="discountValue" value="30" min="1" max="99" oninput="updatePrices()">
-          <div class="percent-stepper">
-            <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
-            <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
+          <div class="form-group">
+            <label for="percentValue">Sconto</label>
+            <input data-percentuale type="number" id="percentValue" min="1" max="99" placeholder="50" oninput="updatePercentData()">
+          </div>
+        </div>
+
+        <div class="form-group" id="descriptionFieldsGroup">
+          <label class="section-label" for="descPreset">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Materiali,Articoli" data-testi-senza-gruppi data-testi-maiuscolo>
+              <option value="" selected>-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <!-- TEXT AREA: fino a 2 righe, controllate da updateDescription -->
+          <label for="descFree">Testo Libero</label>
+          <textarea id="descFree" rows="2" style="--righe: 2" maxlength="120" oninput="updateDescription()" placeholder="-- Testo Libero --">LANA &amp;
+CACHEMIRE</textarea>
+        </div>
+
+        <div class="form-row" id="priceFieldsGroup">
+          <div class="form-group">
+            <label for="oldPrice">Prezzo Originario</label>
+            <input data-prezzo type="text" id="oldPrice" value="99,90" placeholder="99,90" oninput="updatePrices()">
+          </div>
+          <div class="form-group">
+            <label for="discountValue">Sconto</label>
+            <input data-percentuale type="number" id="discountValue" value="30" min="1" max="99" placeholder="30" oninput="updatePrices()">
+          </div>
+          <div class="form-group">
+            <label for="newPrice">Prezzo Finale</label>
+            <input data-prezzo type="text" id="newPrice" value="69,90" placeholder="69,90" oninput="updatePrices()">
           </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="newPrice">Prezzo Finale</label>
-        <input data-prezzo type="text" id="newPrice" value="69,90" placeholder="es. 69,90" oninput="updatePrices()">
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" id="printBtn" onclick="printCard()">STAMPA CORNICE</button>
       </div>
-      </div>
-
-      <button class="btn-print" type="button" onclick="printCard()">Stampa Cartello (A4)</button>
     </div>
   </div>
 
@@ -486,7 +419,8 @@ CACHEMIRE</textarea>
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
   <script>
     const cardState = {
       mode: 'description',
@@ -525,23 +459,20 @@ CACHEMIRE</textarea>
     // Pannello allineato allo stato: modalità, gruppi di campi visibili e valori.
     function syncPanel() {
       const { mode, percent } = cardState;
-      [['modeDescription', 'description'], ['modeBrand', 'brand'], ['modePercent', 'percent']].forEach(([id, value]) => {
-        document.getElementById(id).classList.toggle('active', mode === value);
-        document.getElementById(id).setAttribute('aria-pressed', String(mode === value));
-      });
-      document.getElementById('descriptionFieldsGroup').style.display = mode === 'description' ? 'block' : 'none';
-      document.getElementById('brandFieldsGroup').style.display = usesBrandLogo() ? 'block' : 'none';
-      document.getElementById('percentFieldsGroup').style.display = mode === 'percent' ? 'block' : 'none';
-      document.getElementById('priceFieldsGroup').style.display = mode === 'percent' ? 'none' : 'block';
+      Selettore.attiva('contentModeSelector', mode);
+      document.getElementById('descriptionFieldsGroup').hidden = mode !== 'description';
+      document.getElementById('brandFieldsGroup').hidden = !usesBrandLogo();
+      document.getElementById('percentFieldsGroup').hidden = mode !== 'percent';
+      document.getElementById('percentExtraSelector').hidden = mode !== 'percent';
+      document.getElementById('priceFieldsGroup').hidden = mode === 'percent';
 
-      document.getElementById('percentExtraStandardBtn').classList.toggle('active', percent.extra === 'standard');
-      document.getElementById('percentExtraDescBtn').classList.toggle('active', percent.extra === 'descrizione');
-      document.getElementById('percentExtraBrandBtn').classList.toggle('active', percent.extra === 'brand');
-      document.getElementById('percentDescGroup').style.display = percent.extra === 'descrizione' ? 'block' : 'none';
+      Selettore.attiva('percentExtraSelector', percent.extra);
+      document.getElementById('percentDescGroup').hidden = percent.extra !== 'descrizione';
       document.getElementById('percentValue').value = percent.discount;
       document.getElementById('percentDescValue').value = percent.desc;
       const percentPreset = document.getElementById('percentDescPreset');
-      percentPreset.value = [...percentPreset.options].some(option => option.value === percent.desc) ? percent.desc : '';
+      // il menu sta sulla voce di partenza: il testo della percentuale è nel Testo Libero
+      percentPreset.value = '';
 
       document.getElementById('brandSelect').value = cardState.brand.officialFile;
       document.getElementById('customBrandSelect').value = cardState.brand.customLogoId;
@@ -562,13 +493,6 @@ CACHEMIRE</textarea>
 
     function applyPercentDescPreset() {
       document.getElementById('percentDescValue').value = document.getElementById('percentDescPreset').value;
-      updatePercentData();
-    }
-
-    function stepPercent(delta) {
-      const input = document.getElementById('percentValue');
-      const value = Number.parseInt(input.value, 10) || 50;
-      input.value = Math.min(99, Math.max(1, value + delta));
       updatePercentData();
     }
 
@@ -676,15 +600,6 @@ CACHEMIRE</textarea>
       renderCard();
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const minimum = Number(input.min);
-      const maximum = Number(input.max);
-      const current = Number.parseInt(input.value, 10) || minimum;
-      input.value = Math.min(maximum, Math.max(minimum, current + delta));
-      updatePrices();
-    }
-
     function waitForCardImages() {
       return Promise.all(Array.from(document.querySelectorAll('.frame-brand-logo, .pct-logo'), image => {
         if (image.complete) {
@@ -718,19 +633,31 @@ CACHEMIRE</textarea>
         && cardState.description.trim() !== ''
         && cardState.description.split(/\r?\n/).length === 1;
       box.classList.toggle('one-line-desc', isOneLine);
-      const title = cardState.mode === 'description'
-        ? cardState.description === 'MADE\nIN ITALY'
-          ? '<div class="desc-title made-in-italy-title"><img class="made-in-italy-flag" src="../assets/img/tebe/madeinitaly.png" alt="Bandiera italiana">MADE<br>IN ITALY</div>'
-          : `<div class="desc-title">${escapeHtml(cardState.description)}</div>`
-        : '<div class="frame-brand-logo-box"><img class="frame-brand-logo" alt="Logo brand"></div>';
-      content.innerHTML = `
-        ${title}
-        <div class="price-row-frame">
-          <span class="price-old-frame">€ ${escapeHtml(cardState.oldPrice)}</span>
-          <span class="price-percent-frame">-${escapeHtml(cardState.discount)}%</span>
-        </div>
-        <div class="price-final-frame">€ ${escapeHtml(cardState.newPrice)}</div>
-      `;
+      // Contenuto costruito con nodi DOM: il testo dell'utente va con textContent (a capo con white-space: pre-line).
+      const node = (tag, className, text) => {
+        const element = document.createElement(tag);
+        element.className = className;
+        if (text !== undefined) element.textContent = text;
+        return element;
+      };
+      let title;
+      if (cardState.mode !== 'description') {
+        title = node('div', 'frame-brand-logo-box');
+        const logo = node('img', 'frame-brand-logo');
+        logo.alt = 'Logo brand';
+        title.append(logo);
+      } else if (cardState.description === 'MADE\nIN ITALY') {
+        title = node('div', 'desc-title made-in-italy-title');
+        const flag = node('img', 'made-in-italy-flag');
+        flag.src = '../assets/img/tebe/madeinitaly.png';
+        flag.alt = 'Bandiera italiana';
+        title.append(flag, 'MADE', document.createElement('br'), 'IN ITALY');
+      } else {
+        title = node('div', 'desc-title', cardState.description);
+      }
+      const priceRow = node('div', 'price-row-frame');
+      priceRow.append(node('span', 'price-old-frame', `€ ${cardState.oldPrice}`), node('span', 'price-percent-frame', `-${cardState.discount}%`));
+      content.replaceChildren(title, priceRow, node('div', 'price-final-frame', `€ ${cardState.newPrice}`));
 
       if (cardState.mode === 'brand') loadBrandImage(content.querySelector('.frame-brand-logo'));
       if (isOneLine) fitOneLineDesc(content);
@@ -829,16 +756,6 @@ CACHEMIRE</textarea>
       renderCard();
     };
 
-    function escapeHtml(value) {
-      return String(value).replace(/[&<>"']/g, character => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      })[character]);
-    }
-
     function printCard() {
       const prepareLogo = usesBrandLogo()
         ? getBrandLogoSource().then(source => {
@@ -864,8 +781,8 @@ CACHEMIRE</textarea>
     // Il carattere Castoro arriva da Google Fonts: a caricamento finito si rimisura il testo.
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => renderCard());
   </script>
-  <script src="../assets/js/madeinitaly.js?v=20261008-70" data-automatico></script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261009-04" data-automatico></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: indica sulla cornice l'elemento legato al campo in uso.
     const cursore = Cursore.create({
@@ -878,10 +795,10 @@ CACHEMIRE</textarea>
         { controls: '#modeDescription, #modeBrand, #modePercent', target: '#frameBox', placement: 'above' },
         { controls: '#descPreset, #descFree', target: '#frameContent .desc-title' },
         { controls: '#brandSelect, #customBrandSelect, #percentExtraBrandBtn', target: '#frameContent .frame-brand-logo' },
-        { controls: '#percentExtraStandardBtn, #percentValue, button[onclick^="stepPercent"]', target: '#frameContent .pct-row' },
+        { controls: '#percentExtraStandardBtn, #percentValue, #percentValue ~ .percent-stepper', target: '#frameContent .pct-row' },
         { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: '#frameContent .pct-desc' },
         { controls: '#oldPrice', target: '#frameContent .price-old-frame' },
-        { controls: '#discountValue, button[onclick^="stepDiscount"]', target: '#frameContent .price-percent-frame' },
+        { controls: '#discountValue, #discountValue ~ .percent-stepper', target: '#frameContent .price-percent-frame' },
         { controls: '#newPrice', target: '#frameContent .price-final-frame' }
       ]
     });
@@ -895,7 +812,7 @@ CACHEMIRE</textarea>
       else cursore.point({ target: '#frameBox', placement: 'above' });
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

@@ -11,7 +11,8 @@
      <option value="">-- Seleziona … --</option>        voce di partenza (facoltativa)
      <option data-voce-propria value="…">…</option>     voci proprie della pagina (es. "Sconto alla Cassa")
    Nelle liste una voce { testo, stella: true } è in evidenza con ⭐ (classe priority-brand-option, come i brand della
-   casa TEBE). La scelta già fatta (attributo selected o valore impostato) resta. */
+   casa TEBE). All'apertura il menu sta sulla voce con l'attributo selected (o su data-scelta-iniziale), altrimenti
+   sulla voce di partenza: il testo sul cartello sta nel Testo Libero, non nel menu. */
 (() => {
   const stella = testo => Object.freeze({ testo, stella: true });
   const categorie = Object.freeze({
@@ -103,8 +104,10 @@
       throw new Error(`Categoria di testi pronti non riconosciuta: ${unknownCategory}`);
     }
 
-    // voce scelta: quella già impostata, oppure quella iniziale dichiarata dalla pagina (data-scelta-iniziale)
-    const selectedValue = select.value || select.dataset.sceltaIniziale || '';
+    // voce scelta: quella dichiarata dalla pagina (attributo selected o data-scelta-iniziale), di solito la voce
+    // di partenza; non quella che il browser rimette ricaricando la pagina (autocomplete="off" lo evita del tutto)
+    select.autocomplete = 'off';
+    const selectedValue = select.querySelector('option[selected]')?.value || select.dataset.sceltaIniziale || '';
     // restano la voce di partenza (valore vuoto) e le voci proprie della pagina
     const kept = Array.from(select.options)
       .filter(option => option.value === '' || option.hasAttribute('data-voce-propria'))

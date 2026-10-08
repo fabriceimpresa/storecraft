@@ -2,17 +2,17 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello Multi Articolo</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
   <style>
     * { 
       box-sizing: border-box; 
@@ -32,75 +32,9 @@
       position: relative;
     }
 
-    /* Contenitore Pannelli di Sinistra */
-
-    /* Pannelli di Controllo */
-
-
-    .section-label {
-      color: var(--pannello-oro-chiaro);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 0.35rem;
-    }
-
-    /* SELETTORI MODALITA' E RIGHE */
-    .mode-switch,
-    .row-selector {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: var(--pannello-riquadro);
-      border: 1px solid var(--pannello-bordo);
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-    }
-
-    .mode-switch button,
-    .row-selector button {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      padding: 9px 8px;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--pannello-selettore-testo);
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-weight: normal;
-    }
-
-    .mode-switch button.active,
-    .row-selector button.active {
-      background: var(--pannello-selettore-attivo);
-      color: var(--pannello-selettore-attivo-testo);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-
-    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
-       (i margini si sommano a quello del titolo: vale il maggiore) */
-    .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 1rem; }
-
-    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
-
-
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
-       pulsanti sotto il pannello */
-
-
-
-
-
-
-
-
-    /* PULSANTE STAMPA */
-
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css): blocchi, selettori, menu e campi comuni.
+       Qui solo ciò che è proprio della pagina: nella riga dei prezzi le etichette su una riga sola (come Outlet). */
+    .form-row .form-group label { white-space: nowrap; }
 
     /* FOGLIO STAMPA A4 */
     .print-sheet {
@@ -358,12 +292,12 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartelli">
 
@@ -379,50 +313,52 @@
     <div class="controls">
       <h2>Cartello Multi Articolo</h2>
 
-      <div class="mode-switch">
-        <button type="button" id="btnNum2" onclick="setNumArticles(2)">2 Articoli</button>
-        <button type="button" id="btnNum3" class="active" onclick="setNumArticles(3)">3 Articoli</button>
-        <button type="button" id="btnNum4" onclick="setNumArticles(4)">4 Articoli</button>
+      <!-- Eccezione voluta: le due metà del foglio sono fronte e retro dello stesso cartello in morsa (la metà
+           inferiore è capovolta), quindi niente CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO né
+           2 / 1 CARTELLI; il cartello non ha brand né claim (blocco 2 omesso). -->
+
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div data-selettore-numero-articoli data-counts="2,3,4" data-on-change="setNumArticles" data-button2-id="btnNum2" data-button3-id="btnNum3" data-button4-id="btnNum4"></div>
       </div>
 
-      <div class="row-selector" id="rowSelectorContainer">
-        <!-- Generati dinamicamente via JS -->
-      </div>
+      <!-- Blocco 3: campi del cartello (articolo scelto con ARTICOLO 1 / 2 / …) -->
+      <div class="panel-block">
+        <!-- selettore comune (selettore.js): una voce per articolo, scritte da renderRowSelector -->
+        <div data-selettore id="rowSelectorContainer" data-on-change="selectRow" aria-label="Seleziona l'articolo da modificare"></div>
 
-      <!-- Form per la riga attiva -->
-      <div class="form-group">
-        <label class="section-label" for="descPreset">Articoli</label>
-        <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Articoli" data-testi-senza-gruppi>
-            <option value="">-- Seleziona un articolo --</option>
-          </select>
+        <div class="form-group">
+          <label class="section-label" for="descPreset">Articoli</label>
+          <div class="preset-select">
+            <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Articoli" data-testi-senza-gruppi>
+              <option value="">-- Seleziona un articolo --</option>
+            </select>
+          </div>
+          <!-- 25 caratteri: quanti ne entrano nella colonna della descrizione -->
+          <label for="descFree">Testo Libero</label>
+          <input type="text" id="descFree" value="" maxlength="25" placeholder="-- Testo Libero --" oninput="onInputDesc()">
         </div>
-        <label for="descFree">Testo Libero</label>
-        <input type="text" id="descFree" value="" maxlength="25" placeholder="-- Testo Libero (Max 25 ch) --" oninput="onInputDesc()">
-      </div>
 
-      <div class="form-group">
-        <label>Prezzo Originario</label>
-        <input data-prezzo type="text" id="oldPrice" value="" placeholder="es. 49,90" oninput="onInputOldPrice()">
-      </div>
-
-      <div class="form-group">
-        <label class="section-label" for="discountValue">Percentuale Sconto</label>
-        <div class="percent-input-wrapper">
-          <input data-percentuale type="number" id="discountValue" value="20" min="1" max="99" oninput="onInputDiscount()">
-          <div class="percent-stepper">
-            <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
-            <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="oldPrice">Prezzo Originario</label>
+            <input data-prezzo type="text" id="oldPrice" value="" placeholder="49,90" oninput="onInputOldPrice()">
+          </div>
+          <div class="form-group">
+            <label for="discountValue">Sconto</label>
+            <input data-percentuale type="number" id="discountValue" value="20" min="1" max="99" placeholder="20" oninput="onInputDiscount()">
+          </div>
+          <div class="form-group">
+            <label for="newPrice">Prezzo Finale</label>
+            <input data-prezzo type="text" id="newPrice" value="" placeholder="39,90" oninput="onInputNewPrice()">
           </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Prezzo Finale</label>
-        <input data-prezzo type="text" id="newPrice" value="" placeholder="es. 39,90" oninput="onInputNewPrice()">
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLO</button>
       </div>
-
-      <button class="btn-print" onclick="window.print()">Stampa Cartello (A4)</button>
     </div>
   </div>
 
@@ -451,7 +387,9 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore-numero-articoli.js?v=20261009-04"></script>
   <script>
     let articles = [
       { desc: 'Top', oldPrice: '49,90', discount: '20', newPrice: '39,90' },
@@ -465,9 +403,7 @@
 
     function setNumArticles(n) {
       numArticles = n;
-      document.getElementById('btnNum2').classList.toggle('active', n === 2);
-      document.getElementById('btnNum3').classList.toggle('active', n === 3);
-      document.getElementById('btnNum4').classList.toggle('active', n === 4);
+      SelettoreNumeroArticoli.setActive(n);
 
       if (activeRowIndex >= numArticles) {
         activeRowIndex = numArticles - 1;
@@ -478,21 +414,14 @@
     }
 
     function renderRowSelector() {
-      const container = document.getElementById('rowSelectorContainer');
-      container.innerHTML = '';
-      for (let i = 0; i < numArticles; i++) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.textContent = `Riga ${i + 1}`;
-        if (i === activeRowIndex) btn.classList.add('active');
-        btn.onclick = () => selectRow(i);
-        container.appendChild(btn);
-      }
+      Selettore.voci('rowSelectorContainer',
+        Array.from({ length: numArticles }, (_, i) => ({ valore: i, testo: `ARTICOLO ${i + 1}` })));
+      Selettore.attiva('rowSelectorContainer', activeRowIndex);
     }
 
+    // Clic su ARTICOLO N: il valore della voce è l'indice dell'articolo.
     function selectRow(index) {
-      activeRowIndex = index;
-      renderRowSelector();
+      activeRowIndex = Number(index);
       loadActiveRowIntoForm();
     }
 
@@ -534,17 +463,6 @@
       updateCards();
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const min = Number.parseInt(input.min, 10) || 1;
-      const max = Number.parseInt(input.max, 10) || 99;
-      let val = Number.parseInt(input.value, 10);
-      if (Number.isNaN(val)) val = min;
-      val = Math.min(max, Math.max(min, val + delta));
-      input.value = val;
-      onInputDiscount();
-    }
-
     function onInputNewPrice() {
       articles[activeRowIndex].newPrice = document.getElementById('newPrice').value;
       updateCards();
@@ -554,72 +472,64 @@
       document.getElementById('cardTop').className = `card rows-${numArticles}`;
       document.getElementById('cardBottom').className = `card rows-${numArticles}`;
 
-      let html = '';
-
-      if (numArticles === 2) {
-        // Layout Eccezione per 2 Articoli (Articolo 1 a sinistra, Articolo 2 a destra)
-        const art0 = articles[0]; // Sinistra
-        const art1 = articles[1]; // Destra
-        
-        const oldP0 = art0.oldPrice ? `€ ${art0.oldPrice}` : '';
-        const disc0 = art0.discount ? `-${art0.discount}%` : '';
-        const newP0 = art0.newPrice ? `€ ${art0.newPrice}` : '';
-
-        const oldP1 = art1.oldPrice ? `€ ${art1.oldPrice}` : '';
-        const disc1 = art1.discount ? `-${art1.discount}%` : '';
-        const newP1 = art1.newPrice ? `€ ${art1.newPrice}` : '';
-
-        html = `
-          <div class="dual-items-container">
-            <div class="item-column">
-              <div class="item-title">${art0.desc || ''}</div>
-              <div class="price-row-old">
-                <span class="price-original">${oldP0}</span>
-                <span class="discount-tag">${disc0}</span>
-              </div>
-              <div class="price-final">${newP0}</div>
-            </div>
-            <div class="vertical-divider"></div>
-            <div class="item-column">
-              <div class="item-title">${art1.desc || ''}</div>
-              <div class="price-row-old">
-                <span class="price-original">${oldP1}</span>
-                <span class="discount-tag">${disc1}</span>
-              </div>
-              <div class="price-final">${newP1}</div>
-            </div>
-          </div>
-        `;
-      } else {
-        // Layout Standard per 3 o 4 Articoli (Tabella)
-        html = `<table class="items-table rows-${numArticles}"><tbody>`;
-        for (let i = 0; i < numArticles; i++) {
-          const art = articles[i];
-          const oldP = art.oldPrice ? `€ ${art.oldPrice}` : '';
-          const disc = art.discount ? `-${art.discount}%` : '';
-          const newP = art.newPrice ? `€ ${art.newPrice}` : '';
-
-          html += `
-            <tr>
-              <td class="col-desc">${art.desc || ''}</td>
-              <td class="col-old-price">${oldP}</td>
-              <td class="col-discount">${disc}</td>
-              <td class="col-new-price">${newP}</td>
-            </tr>
-          `;
-        }
-        html += '</tbody></table>';
-      }
-
-      document.getElementById('itemsContainerTop').innerHTML = html;
-      document.getElementById('itemsContainerBottom').innerHTML = html;
+      document.getElementById('itemsContainerTop').replaceChildren(buildItems());
+      document.getElementById('itemsContainerBottom').replaceChildren(buildItems());
     }
 
-    renderRowSelector();
-    loadActiveRowIntoForm();
-    updateCards();
+    // Articoli del cartello costruiti con nodi DOM: il testo dell'utente va con textContent.
+    function node(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text) element.textContent = text;
+      return element;
+    }
+
+    function articleTexts(art) {
+      return {
+        desc: art.desc || '',
+        oldP: art.oldPrice ? `€ ${art.oldPrice}` : '',
+        disc: art.discount ? `-${art.discount}%` : '',
+        newP: art.newPrice ? `€ ${art.newPrice}` : ''
+      };
+    }
+
+    function buildItems() {
+      if (numArticles === 2) {
+        // 2 articoli: due colonne affiancate (articolo 1 a sinistra, articolo 2 a destra)
+        const column = art => {
+          const t = articleTexts(art);
+          const oldRow = node('div', 'price-row-old');
+          oldRow.append(node('span', 'price-original', t.oldP), node('span', 'discount-tag', t.disc));
+          const col = node('div', 'item-column');
+          col.append(node('div', 'item-title', t.desc), oldRow, node('div', 'price-final', t.newP));
+          return col;
+        };
+        const container = node('div', 'dual-items-container');
+        container.append(column(articles[0]), node('div', 'vertical-divider'), column(articles[1]));
+        return container;
+      }
+
+      // 3 o 4 articoli: tabella
+      const table = node('table', `items-table rows-${numArticles}`);
+      const body = node('tbody');
+      articles.slice(0, numArticles).forEach(art => {
+        const t = articleTexts(art);
+        const row = node('tr');
+        row.append(
+          node('td', 'col-desc', t.desc),
+          node('td', 'col-old-price', t.oldP),
+          node('td', 'col-discount', t.disc),
+          node('td', 'col-new-price', t.newP)
+        );
+        body.append(row);
+      });
+      table.append(body);
+      return table;
+    }
+
+    setNumArticles(3);   // si parte con 3 articoli (il selettore comune parte dal primo valore)
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'articolo (riga) in modifica e i suoi valori.
     // Con 2 articoli ogni articolo è una colonna, con 3-4 una riga della tabella.
@@ -639,12 +549,12 @@
         { controls: '#rowSelectorContainer', target: inArticle('.item-title', '.col-desc'), placement: 'side' },
         { controls: '#descPreset, #descFree', target: inArticle('.item-title', '.col-desc') },
         { controls: '#oldPrice', target: inArticle('.price-original', '.col-old-price') },
-        { controls: '#discountValue, button[onclick^="stepDiscount"]', target: inArticle('.discount-tag', '.col-discount') },
+        { controls: '#discountValue, .percent-stepper', target: inArticle('.discount-tag', '.col-discount') },
         { controls: '#newPrice', target: inArticle('.price-final', '.col-new-price') }
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

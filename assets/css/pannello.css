@@ -4,7 +4,7 @@
  * di riserva, i colori scuri di Luxury Outlet. Nelle pagine Luxury il tema chiaro li cambia con theme.css.
  * Struttura e misure sono quelle del pannello standard di TEBE (vedi AGENTS.md):
  * - campi, menu e tasto di stampa con i caratteri predefiniti dei controlli (Arial), campi e menu alti 31,4 px;
- * - pulsanti dei selettori come nel paletto di TEBE: system-ui in grassetto leggero (600), interlinea 1,2;
+ * - pulsanti dei selettori come in Cartello Sale del progetto TEBE: system-ui a peso normale con lettere distanziate (0,08em), interlinea 1,2;
  * - 0,35rem tra etichetta e campo; dentro i blocchi del pannello 0,65rem tra un campo e l'etichetta successiva
  *   e 0,5rem dopo un selettore (un poco meno che in TEBE: sul telefono 0,45rem); 0,8rem sotto il titolo; 1,6rem tra i blocchi;
  * - i selettori a pulsanti (.mode-switch) non hanno un titolo sopra: il nome sta in aria-label;
@@ -130,6 +130,7 @@
 /* Due campi affiancati (es. Claim Sinistro / Claim Destro) */
 .form-row { display: flex; gap: 6px; }
 .form-row > .form-group { flex: 1; min-width: 0; }
+.form-row[hidden] { display: none; }
 
 .form-group input,
 .form-group select {
@@ -149,7 +150,7 @@
 .form-group textarea {
   display: block;
   width: 100%;
-  height: calc(4 * 1.4em + 0.9rem + 2px);
+  height: calc(var(--righe, 4) * 1.4em + 0.9rem + 2px);   /* righe che il cartello accetta: style="--righe: 2" sul campo */
   padding: 0.45rem;
   border: 1px solid var(--pannello-bordo);
   border-radius: 4px;
@@ -364,9 +365,11 @@
   border-radius: 4px;
   background: transparent;
   color: var(--pannello-selettore-testo);
+  /* come il selettore di Cartello Sale del progetto TEBE: peso normale e lettere distanziate, più arioso */
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 0.68rem;
-  font-weight: 600;
+  font-weight: 400;
+  letter-spacing: 0.08em;
   line-height: 1.2;
   text-align: center;
   text-transform: uppercase;

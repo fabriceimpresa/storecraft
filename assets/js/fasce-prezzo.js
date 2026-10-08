@@ -49,6 +49,7 @@
     select.replaceChildren(...options);
     select.classList.add('grouped-select');
     select.value = '';
+    select.autocomplete = 'off';   // ricaricando la pagina il browser non rimette l'ultima fascia scelta
   }
 
   function createField(placeholder) {

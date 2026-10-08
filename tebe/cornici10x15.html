@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cornice 10 X 15 · TEBE</title>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-70"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-70"></script>
-  <script src="../assets/js/logos.js?v=20261008-70"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-70"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261009-04"></script>
+  <script src="../assets/js/logos.js?v=20261009-04"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Castoro&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,110 +37,9 @@
 
 
 
-    .section-label {
-      color: var(--pannello-oro-chiaro);
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 0.35rem;
-    }
-
-    .mode-switch,
-    .row-selector {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: var(--pannello-riquadro);
-      border: 1px solid var(--pannello-bordo);
-      border-radius: 6px;
-      margin-bottom: 0.8rem;
-    }
-
-    .mode-switch button,
-    .row-selector button {
-      flex: 1;
-      border: 0;
-      background: transparent;
-      padding: 9px 8px;
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--pannello-selettore-testo);
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      line-height: 1.2;
-      text-align: center;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .mode-switch button.active,
-    .row-selector button.active {
-      background: var(--pannello-selettore-attivo);
-      color: var(--pannello-selettore-attivo-testo);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
-
-    .cartello-mode-switch button {
-      padding: 9px 3px;
-      font-size: 0.58rem;
-      letter-spacing: 0.04em;
-    }
-
-    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
-       (i margini si sommano a quello del titolo: vale il maggiore) */
-    .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 1rem; }
-
-    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
-
-
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
-       pulsanti sotto il pannello */
-
-
-    .form-group textarea {
-      resize: vertical;
-      height: 60px;
-      display: block;
-    }
-
-
-
-    .preset-select select {
-      appearance: none;
-      padding-right: 2rem;
-      border: none;
-      background: transparent;
-      width: 100%;
-      padding: 0.45rem;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-
-    .percent-stepper {
-      flex: 0 0 1.6rem;
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid var(--pannello-bordo);
-    }
-
-    .percent-stepper button {
-      flex: 1;
-      border: none;
-      border-bottom: 1px solid var(--pannello-bordo);
-      background: var(--pannello-riquadro);
-      color: var(--pannello-oro);
-      cursor: pointer;
-      font-size: 0.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .percent-stepper button:last-child { border-bottom: none; }
-    .percent-stepper button:hover { background: var(--pannello-riquadro-hover); color: var(--pannello-oro-chiaro); }
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css): blocchi, selettori, menu e campi comuni.
+       Qui solo ciò che è proprio della pagina: le etichette della riga dei prezzi su una riga sola (come Outlet). */
+    .form-row .form-group label { white-space: nowrap; }
 
 
     /* FOGLIO STAMPA A4 STANDARD */
@@ -470,13 +369,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartelli">
 
@@ -491,64 +390,38 @@
     <div class="controls">
       <h2>Cornice 10 X 15</h2>
 
-      <!-- SELETTORE CORNICE ATTIVA -->
-      <div class="mode-switch" aria-label="Cornice in Modifica">
-        <button type="button" class="active" id="btnLeft" onclick="switchActiveFrame('left')">CORNICE<br>SINISTRA</button>
-        <button type="button" id="btnRight" onclick="switchActiveFrame('right')">CORNICE<br>DESTRA</button>
-      </div>
-
-      <!-- SELETTORE MODALITÀ CARTELLO -->
-      <div class="mode-switch cartello-mode-switch" aria-label="Modalità cartello">
-        <button type="button" class="active" id="standardModeBtn" onclick="setFrameMode('standard')">STANDARD</button>
-        <button type="button" id="extraArticleModeBtn" onclick="setFrameMode('extra')">DOPPIO<br>ARTICOLO</button>
-        <button type="button" id="brandModeBtn" onclick="setFrameMode('brand')">BRAND</button>
-        <button type="button" id="percentModeBtn" onclick="setFrameMode('percent')">PERCENTUALE<br>SCONTO</button>
-      </div>
-
-      <!-- CAMPI MODALITA' PERCENTUALE SCONTO -->
-      <div id="percentFieldsGroup" style="display: none;">
-        <div class="mode-switch" aria-label="Modalità %">
-          <button type="button" class="active" id="percentExtraStandardBtn" onclick="setPercentExtra('standard')">STANDARD</button>
-          <button type="button" id="percentExtraDescBtn" onclick="setPercentExtra('descrizione')">DESCRIZIONE</button>
-          <button type="button" id="percentExtraBrandBtn" onclick="setPercentExtra('brand')">BRAND</button>
+      <!-- Blocco 1: selettori (selettore comune selettore.js; gli id restano quelli usati da cursore e Made in Italy) -->
+      <div class="panel-block">
+        <div data-selettore id="frameSelector" data-on-change="switchActiveFrame" aria-label="Seleziona la cornice da modificare">
+          <button value="left" id="btnLeft" class="active">CORNICE<br>SINISTRA</button>
+          <button value="right" id="btnRight">CORNICE<br>DESTRA</button>
         </div>
 
-        <div class="form-group">
-          <label class="section-label" for="percentValue">Percentuale Sconto</label>
-          <div class="percent-input-wrapper">
-            <input data-percentuale type="number" id="percentValue" min="1" max="99" oninput="updatePercentData()">
-            <div class="percent-stepper">
-              <button type="button" aria-label="Aumenta percentuale" onclick="stepPercent(1)">▲</button>
-              <button type="button" aria-label="Diminuisci percentuale" onclick="stepPercent(-1)">▼</button>
-            </div>
-          </div>
+        <div data-selettore id="frameModeSelector" data-on-change="setFrameMode" aria-label="Seleziona la modalità della cornice">
+          <button value="standard" id="standardModeBtn" class="active">STANDARD</button>
+          <button value="extra" id="extraArticleModeBtn">DOPPIO<br>ARTICOLO</button>
+          <button value="brand" id="brandModeBtn">BRAND</button>
+          <button value="percent" id="percentModeBtn">PERCENTUALE<br>SCONTO</button>
         </div>
 
-        <div class="form-group" id="percentDescGroup">
-          <label class="section-label" for="percentDescPreset">Promozione</label>
-          <div class="preset-select">
-            <select id="percentDescPreset" onchange="applyPercentDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
-              <option value="">-- Seleziona un testo --</option>
-              <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
-            </select>
-          </div>
-          <label for="percentDescValue">Testo Libero</label>
-          <input type="text" id="percentDescValue" oninput="updatePercentData()">
+        <!-- solo con PERCENTUALE SCONTO: cosa c'è sopra la percentuale -->
+        <div data-selettore id="percentExtraSelector" data-on-change="setPercentExtra" aria-label="Seleziona cosa mostrare sopra la percentuale" hidden>
+          <button value="standard" id="percentExtraStandardBtn" class="active">STANDARD</button>
+          <button value="descrizione" id="percentExtraDescBtn">DESCRIZIONE</button>
+          <button value="brand" id="percentExtraBrandBtn">BRAND</button>
         </div>
       </div>
 
-      <div id="brandFieldsGroup" style="display: none;">
+      <!-- Blocco 2: brand (ufficiali e personalizzati), con BRAND o PERCENTUALE SCONTO con BRAND -->
+      <div class="panel-block" id="brandFieldsGroup" hidden>
         <div class="form-group">
           <label class="section-label" for="brandSelect">BRAND</label>
           <div class="preset-select">
             <select id="brandSelect" onchange="updateBrandSelection()">
-              <option value="">-- Seleziona Brand --</option>
+              <option value="" class="brand-placeholder">-- Seleziona Brand --</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label for="customBrandSelect">Loghi personalizzati</label>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
           <div class="preset-select">
             <select id="customBrandSelect" onchange="updateCustomBrandSelection()">
               <option value="">-- Seleziona Logo Personalizzato --</option>
@@ -557,50 +430,66 @@
         </div>
       </div>
 
-      <!-- SELETTORE RIGA ATTIVA (attivo solo se 2 articoli sono attivi) -->
-      <div id="rowSelectorWrapper" style="display: none;">
-        <div class="row-selector" aria-label="Seleziona Articolo" id="rowSelectorContainer">
-          <button type="button" class="active" id="btnRow0" onclick="selectActiveRow(0)">Articolo 1</button>
-          <button type="button" id="btnRow1" onclick="selectActiveRow(1)">Articolo 2</button>
+      <!-- Blocco 3: campi della cornice, secondo la modalità -->
+      <div class="panel-block">
+        <!-- PERCENTUALE SCONTO -->
+        <div id="percentFieldsGroup" hidden>
+          <div class="form-group" id="percentDescGroup">
+            <label class="section-label" for="percentDescPreset">Promozioni</label>
+            <div class="preset-select">
+              <select id="percentDescPreset" onchange="applyPercentDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
+                <option value="">-- Seleziona Promozione --</option>
+                <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
+              </select>
+            </div>
+            <label for="percentDescValue">Testo Libero</label>
+            <input type="text" id="percentDescValue" placeholder="-- Testo Libero --" oninput="updatePercentData()">
+          </div>
+
+          <div class="form-group">
+            <label for="percentValue">Sconto</label>
+            <input data-percentuale type="number" id="percentValue" min="1" max="99" placeholder="50" oninput="updatePercentData()">
+          </div>
         </div>
-      </div>
 
-      <!-- CAMPI INPUT -->
-      <div class="form-group" id="descriptionFieldsGroup">
-        <label class="section-label" id="descLabel" for="descPreset">Testo Pronto</label>
-        <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Materiali,Articoli" data-testi-senza-gruppi data-testi-maiuscolo>
-            <option value="" selected>-- Seleziona un Testo o Articolo --</option>
-          </select>
+        <!-- DOPPIO ARTICOLO: articolo in modifica -->
+        <div data-selettore id="rowSelectorContainer" data-on-change="selectActiveRow" aria-label="Seleziona l'articolo da modificare" hidden>
+          <button value="0" id="btnRow0" class="active">ARTICOLO 1</button>
+          <button value="1" id="btnRow1">ARTICOLO 2</button>
         </div>
-        <label for="descFree">Testo Libero</label>
-        <textarea id="descFree" placeholder="Testo descrittivo..." oninput="updateData()"></textarea>
-      </div>
 
-      <div id="priceFieldsGroup">
-      <div class="form-group">
-        <label>Prezzo Originario</label>
-        <input data-prezzo type="text" id="oldPrice" placeholder="es. 34,90" oninput="updateData()">
-      </div>
+        <div class="form-group" id="descriptionFieldsGroup">
+          <label class="section-label" id="descLabel" for="descPreset">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Materiali,Articoli" data-testi-senza-gruppi data-testi-maiuscolo>
+              <option value="" selected>-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <!-- TEXT AREA: fino a 4 righe (3 con DOPPIO ARTICOLO), controllate da updateData -->
+          <label for="descFree">Testo Libero</label>
+          <textarea id="descFree" rows="4" placeholder="-- Testo Libero --" oninput="updateData()"></textarea>
+        </div>
 
-      <div class="form-group">
-        <label class="section-label" for="discountValue">Percentuale Sconto</label>
-        <div class="percent-input-wrapper">
-          <input data-percentuale type="number" id="discountValue" min="1" max="99" oninput="updateData()">
-          <div class="percent-stepper">
-            <button type="button" onclick="stepDiscount(1)">▲</button>
-            <button type="button" onclick="stepDiscount(-1)">▼</button>
+        <div class="form-row" id="priceFieldsGroup">
+          <div class="form-group">
+            <label for="oldPrice">Prezzo Originario</label>
+            <input data-prezzo type="text" id="oldPrice" placeholder="34,90" oninput="updateData()">
+          </div>
+          <div class="form-group">
+            <label for="discountValue">Sconto</label>
+            <input data-percentuale type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="updateData()">
+          </div>
+          <div class="form-group">
+            <label for="newPrice">Prezzo Finale</label>
+            <input data-prezzo type="text" id="newPrice" placeholder="17,90" oninput="updateData()">
           </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Prezzo Finale</label>
-        <input data-prezzo type="text" id="newPrice" placeholder="es. 17,90" oninput="updateData()">
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" id="printBtn" onclick="printFrames()">STAMPA CORNICI</button>
       </div>
-      </div>
-
-      <button class="btn-print" onclick="printFrames()">Stampa Cartello (A4)</button>
     </div>
   </div>
 
@@ -617,8 +506,9 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
-  <script src="../assets/js/madeinitaly.js?v=20261008-70" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261009-04" data-automatico></script>
   <script>
     // Stato indipendente per ciascuna cornice (Lana Merinos impostata su due righe)
     const framesState = {
@@ -652,8 +542,7 @@
 
     function switchActiveFrame(side) {
       currentActiveFrame = side;
-      document.getElementById('btnLeft').classList.toggle('active', side === 'left');
-      document.getElementById('btnRight').classList.toggle('active', side === 'right');
+      Selettore.attiva('frameSelector', side);
       syncSidebarWithState();
       if (typeof window.refreshTemaItaliaButton === 'function') window.refreshTemaItaliaButton();
     }
@@ -712,64 +601,36 @@
       updatePercentData();
     }
 
-    function stepPercent(delta) {
-      const input = document.getElementById('percentValue');
-      let val = parseInt(input.value, 10) || 50;
-      val = Math.min(99, Math.max(1, val + delta));
-      input.value = val;
-      updatePercentData();
-    }
-
     function limitDescriptionLines(value, maxLines = 3) {
       return value.split(/\r?\n/).slice(0, maxLines).join('\n');
     }
 
     function selectActiveRow(rowIndex) {
-      framesState[currentActiveFrame].activeRow = rowIndex;
+      framesState[currentActiveFrame].activeRow = Number(rowIndex);
       syncSidebarWithState();
     }
 
     function syncSidebarWithState() {
       const state = framesState[currentActiveFrame];
-      const standardModeBtn = document.getElementById('standardModeBtn');
-      const extraArticleModeBtn = document.getElementById('extraArticleModeBtn');
-      const brandModeBtn = document.getElementById('brandModeBtn');
-      const percentModeBtn = document.getElementById('percentModeBtn');
-      const rowWrapper = document.getElementById('rowSelectorWrapper');
-      const descriptionFields = document.getElementById('descriptionFieldsGroup');
-      const brandFields = document.getElementById('brandFieldsGroup');
-      const priceFields = document.getElementById('priceFieldsGroup');
-      const percentFields = document.getElementById('percentFieldsGroup');
-
-      standardModeBtn.classList.toggle('active', !state.brandActive && !state.twoArticlesActive && !state.percentActive);
-      extraArticleModeBtn.classList.toggle('active', state.twoArticlesActive);
-      brandModeBtn.classList.toggle('active', state.brandActive);
-      percentModeBtn.classList.toggle('active', state.percentActive);
-      rowWrapper.style.display = state.twoArticlesActive ? 'block' : 'none';
-      descriptionFields.style.display = state.brandActive || state.percentActive ? 'none' : 'block';
-      priceFields.style.display = state.percentActive ? 'none' : 'block';
-      percentFields.style.display = state.percentActive ? 'block' : 'none';
-      brandFields.style.display = usesBrandLogo(state) ? 'block' : 'none';
+      const mode = state.percentActive ? 'percent' : state.brandActive ? 'brand' : state.twoArticlesActive ? 'extra' : 'standard';
+      Selettore.attiva('frameModeSelector', mode);
+      document.getElementById('rowSelectorContainer').hidden = !state.twoArticlesActive;
+      document.getElementById('descriptionFieldsGroup').hidden = state.brandActive || state.percentActive;
+      document.getElementById('priceFieldsGroup').hidden = state.percentActive;
+      document.getElementById('percentFieldsGroup').hidden = !state.percentActive;
+      document.getElementById('percentExtraSelector').hidden = !state.percentActive;
+      document.getElementById('brandFieldsGroup').hidden = !usesBrandLogo(state);
 
       const percentExtra = state.percent.extra;
-      document.getElementById('percentExtraStandardBtn').classList.toggle('active', percentExtra === 'standard');
-      document.getElementById('percentExtraDescBtn').classList.toggle('active', percentExtra === 'descrizione');
-      document.getElementById('percentExtraBrandBtn').classList.toggle('active', percentExtra === 'brand');
-      document.getElementById('percentDescGroup').style.display = percentExtra === 'descrizione' ? 'block' : 'none';
+      Selettore.attiva('percentExtraSelector', percentExtra);
+      document.getElementById('percentDescGroup').hidden = percentExtra !== 'descrizione';
       document.getElementById('percentValue').value = state.percent.discount;
       document.getElementById('percentDescValue').value = state.percent.desc;
       const percentPreset = document.getElementById('percentDescPreset');
-      percentPreset.value = [...percentPreset.options].some(option => option.value === state.percent.desc)
-        ? state.percent.desc
-        : '';
+      // il menu sta sulla voce di partenza: il testo della percentuale è nel Testo Libero
+      percentPreset.value = '';
 
-      if (state.twoArticlesActive) {
-        document.getElementById('btnRow0').classList.toggle('active', state.activeRow === 0);
-        document.getElementById('btnRow1').classList.toggle('active', state.activeRow === 1);
-        document.getElementById('descLabel').textContent = `Testo Pronto Articolo ${state.activeRow + 1}`;
-      } else if (!state.brandActive) {
-        document.getElementById('descLabel').textContent = 'Testo Pronto';
-      }
+      if (state.twoArticlesActive) Selettore.attiva('rowSelectorContainer', state.activeRow);
 
       document.getElementById('brandSelect').value = state.brand.officialFile;
       document.getElementById('customBrandSelect').value = state.brand.customLogoId;
@@ -882,14 +743,6 @@
       updateData();
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      let val = parseInt(input.value, 10) || 50;
-      val = Math.min(99, Math.max(1, val + delta));
-      input.value = val;
-      updateData();
-    }
-
     function updateData() {
       const state = framesState[currentActiveFrame];
       const art = state.articles[state.activeRow];
@@ -924,9 +777,33 @@
       const state = framesState[side];
       const box = document.getElementById(`frame${side.charAt(0).toUpperCase() + side.slice(1)}`);
       const container = document.getElementById(`inner${side.charAt(0).toUpperCase() + side.slice(1)}`);
-      const renderDescription = article => article.desc === 'MADE\nIN ITALY'
-        ? '<div class="desc-title made-in-italy-title"><img class="made-in-italy-flag" src="../assets/img/tebe/madeinitaly.png" alt="Bandiera italiana">MADE<br>IN ITALY</div>'
-        : `<div class="desc-title">${article.desc || ''}</div>`;
+      // Contenuto costruito con nodi DOM: il testo dell'utente va con textContent (a capo con white-space: pre-line).
+      const node = (tag, className, text) => {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        if (text !== undefined) element.textContent = text;
+        return element;
+      };
+      const image = (className, src, alt) => {
+        const img = node('img', className);
+        img.src = src;
+        img.alt = alt;
+        return img;
+      };
+      const renderDescription = article => {
+        if (article.desc !== 'MADE\nIN ITALY') return node('div', 'desc-title', article.desc || '');
+        const title = node('div', 'desc-title made-in-italy-title');
+        title.append(image('made-in-italy-flag', '../assets/img/tebe/madeinitaly.png', 'Bandiera italiana'),
+          'MADE', document.createElement('br'), 'IN ITALY');
+        return title;
+      };
+      const articleContent = (article, titleElement) => {
+        const content = node('div', 'frame-content');
+        const row = node('div', 'price-row-frame');
+        row.append(node('span', 'price-old-frame', `€ ${article.oldPrice}`), node('span', 'price-percent-frame', `-${article.discount}%`));
+        content.append(titleElement, row, node('div', 'price-final-frame', `€ ${article.newPrice}`));
+        return content;
+      };
 
       box.classList.toggle('percent-mode', state.percentActive);
       if (!state.percentActive) box.classList.remove('percent-standard', 'percent-brand');
@@ -948,21 +825,20 @@
         } else {
           box.style.removeProperty('--standard-desc-font-size');
         }
-        const titleContent = state.brandActive
-          ? '<div class="frame-brand-logo-box"><img class="frame-brand-logo" alt="Logo brand"></div>'
-          : renderDescription(art);
-        container.innerHTML = `
-          <img src="../assets/img/tebe/decoup.png" alt="Decoro Superiore" class="deco-img">
-          <div class="frame-content">
-            ${titleContent}
-            <div class="price-row-frame">
-              <span class="price-old-frame">€ ${art.oldPrice}</span>
-              <span class="price-percent-frame">-${art.discount}%</span>
-            </div>
-            <div class="price-final-frame">€ ${art.newPrice}</div>
-          </div>
-          <img src="../assets/img/tebe/decodown.png" alt="Decoro Inferiore" class="deco-img">
-        `;
+        let titleContent;
+        if (state.brandActive) {
+          titleContent = node('div', 'frame-brand-logo-box');
+          const logo = node('img', 'frame-brand-logo');
+          logo.alt = 'Logo brand';
+          titleContent.append(logo);
+        } else {
+          titleContent = renderDescription(art);
+        }
+        container.replaceChildren(
+          image('deco-img', '../assets/img/tebe/decoup.png', 'Decoro Superiore'),
+          articleContent(art, titleContent),
+          image('deco-img', '../assets/img/tebe/decodown.png', 'Decoro Inferiore')
+        );
         if (state.brandActive) {
           loadBrandImage(container.querySelector('.frame-brand-logo'), state.brand);
         }
@@ -975,25 +851,11 @@
         box.style.removeProperty('--standard-desc-font-size');
         const art1 = state.articles[0];
         const art2 = state.articles[1];
-        container.innerHTML = `
-          <div class="frame-content">
-            ${renderDescription(art1)}
-            <div class="price-row-frame">
-              <span class="price-old-frame">€ ${art1.oldPrice}</span>
-              <span class="price-percent-frame">-${art1.discount}%</span>
-            </div>
-            <div class="price-final-frame">€ ${art1.newPrice}</div>
-          </div>
-          <div class="golden-divider"></div>
-          <div class="frame-content">
-            ${renderDescription(art2)}
-            <div class="price-row-frame">
-              <span class="price-old-frame">€ ${art2.oldPrice}</span>
-              <span class="price-percent-frame">-${art2.discount}%</span>
-            </div>
-            <div class="price-final-frame">€ ${art2.newPrice}</div>
-          </div>
-        `;
+        container.replaceChildren(
+          articleContent(art1, renderDescription(art1)),
+          node('div', 'golden-divider'),
+          articleContent(art2, renderDescription(art2))
+        );
       }
     }
 
@@ -1128,7 +990,7 @@
     syncSidebarWithState();
     updateAll();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: sopra la cornice scelta (sinistra/destra) e sugli elementi della cornice legati al campo in uso.
     const activeFrameBox = () => document.getElementById(currentActiveFrame === 'left' ? 'frameLeft' : 'frameRight');
@@ -1148,12 +1010,12 @@
       rules: [
         { controls: '#btnLeft, #btnRight, #standardModeBtn, #extraArticleModeBtn, #brandModeBtn, #percentModeBtn', target: activeFrameBox, placement: 'above' },
         { controls: '#brandSelect, #customBrandSelect, #percentExtraBrandBtn', target: inFrame('.frame-brand-logo') },
-        { controls: '#percentExtraStandardBtn, #percentValue, button[onclick^="stepPercent"]', target: inFrame('.pct-row') },
+        { controls: '#percentExtraStandardBtn, #percentValue, #percentValue ~ .percent-stepper', target: inFrame('.pct-row') },
         { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: inFrame('.pct-desc') },
         { controls: '#rowSelectorContainer', target: activeFrameArticle },
         { controls: '#descPreset, #descFree', target: inFrameArticle('.desc-title') },
         { controls: '#oldPrice', target: inFrameArticle('.price-old-frame') },
-        { controls: '#discountValue, button[onclick^="stepDiscount"]', target: inFrameArticle('.price-percent-frame') },
+        { controls: '#discountValue, #discountValue ~ .percent-stepper', target: inFrameArticle('.price-percent-frame') },
         { controls: '#newPrice', target: inFrameArticle('.price-final-frame') }
       ]
     });
@@ -1167,7 +1029,7 @@
       else cursore.point({ target: activeFrameBox, placement: 'above' });
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

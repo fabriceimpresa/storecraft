@@ -2,21 +2,21 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello Percentuale</title>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-70"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-70"></script>
-  <script src="../assets/js/logos.js?v=20261008-70"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261009-04"></script>
+  <script src="../assets/js/logos.js?v=20261009-04"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -32,35 +32,7 @@
       position: relative;
     }
 
-    /* Contenitore Pannelli di Sinistra */
-
-    /* Pannelli di Controllo */
-
-
-    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
-       (i margini si sommano a quello del titolo: vale il maggiore) */
-    .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 1rem; }
-
-    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettore e prima del tasto di stampa */
-
-
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
-       pulsanti sotto il pannello */
-
-
-
-
-
-
-
-
-    /* SELETTORE MODALITA' (stile identico al toggle usato in cartelli_sale.html / index.html) */
-
-
-
-    /* PULSANTE STAMPA */
-
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css): blocchi, selettori, menu e campi comuni. */
 
     /* FOGLIO STAMPA */
     .print-sheet {
@@ -255,13 +227,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartelli">
 
@@ -279,24 +251,30 @@
     <div class="controls">
       <h2>Cartello Percentuale</h2>
 
-      <div class="mode-switch">
-        <button type="button" class="active" id="modeStandard" onclick="switchMode('standard')">STANDARD</button>
-        <button type="button" id="modeDescrizione" onclick="switchMode('descrizione')">DESCRIZIONE<br>ARTICOLO</button>
-        <button type="button" id="modeBrand" onclick="switchMode('brand')">AGGIUNGI<br>BRAND</button>
+      <!-- Eccezione voluta: le due metà del foglio sono fronte e retro dello stesso cartello in morsa (la metà
+           inferiore è capovolta), quindi niente CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO né
+           2 / 1 CARTELLI; niente claim. Descrizione e brand si escludono: il cartello ne mostra uno solo. -->
+
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <!-- selettore comune (selettore.js); id modeDescrizione e switchMode li usa anche il Made in Italy automatico -->
+        <div data-selettore id="modeSelector" data-on-change="switchMode" aria-label="Seleziona la modalità del cartello">
+          <button value="standard" id="modeStandard" class="active">STANDARD</button>
+          <button value="descrizione" id="modeDescrizione">DESCRIZIONE<br>ARTICOLO</button>
+          <button value="brand" id="modeBrand">AGGIUNGI<br>BRAND</button>
+        </div>
       </div>
 
-      <div id="brandFieldsGroup" style="display: none;">
+      <!-- Blocco 2: brand (ufficiali e personalizzati), solo con AGGIUNGI BRAND -->
+      <div class="panel-block" id="brandFieldsGroup" hidden>
         <div class="form-group">
           <label class="section-label" for="brandSelect">BRAND</label>
           <div class="preset-select">
             <select id="brandSelect" onchange="updateBrand()">
-              <option value="">-- Seleziona Brand --</option>
+              <option value="" class="brand-placeholder">-- Seleziona Brand --</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-group" id="customBrandGroup">
-          <label for="customBrandSelect">Loghi personalizzati</label>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
           <div class="preset-select">
             <select id="customBrandSelect" onchange="updateCustomBrand()">
               <option value="">-- Seleziona Logo Personalizzato --</option>
@@ -305,30 +283,30 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="section-label" for="discountValue">Percentuale Sconto</label>
-        <div class="percent-input-wrapper">
-          <input data-percentuale type="number" id="discountValue" value="50" min="1" max="99" oninput="updateCard()">
-          <div class="percent-stepper">
-            <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
-            <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
+      <!-- Blocco 3: campi del cartello (descrizione, solo con DESCRIZIONE ARTICOLO, e sconto) -->
+      <div class="panel-block">
+        <div class="form-group" id="descGroup" hidden>
+          <label class="section-label" for="descPreset">Promozioni</label>
+          <div class="preset-select">
+            <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
+              <option value="">-- Seleziona Promozione --</option>
+              <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
+            </select>
           </div>
+          <label for="descValue">Testo Libero</label>
+          <input type="text" id="descValue" value="Sconto alla Cassa" maxlength="37" placeholder="-- Testo Libero --" oninput="updateCard()">
+        </div>
+
+        <div class="form-group">
+          <label for="discountValue">Sconto</label>
+          <input data-percentuale type="number" id="discountValue" value="50" min="1" max="99" placeholder="50" oninput="updateCard()">
         </div>
       </div>
 
-      <div class="form-group" id="descGroup" style="display: none;">
-        <label class="section-label" for="descPreset">Promozione</label>
-        <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
-            <option value="">-- Seleziona un testo --</option>
-            <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
-          </select>
-        </div>
-        <label for="descValue">Testo Libero</label>
-        <input type="text" id="descValue" value="Sconto alla Cassa" oninput="updateCard()">
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" id="printBtn" onclick="printCards()">STAMPA CARTELLO</button>
       </div>
-
-      <button class="btn-print" onclick="printCards()">Stampa Cartello (A4)</button>
     </div>
   </div>
 
@@ -369,8 +347,9 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
-  <script src="../assets/js/madeinitaly.js?v=20261008-70" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261009-04" data-automatico></script>
   <script>
     let isDescriptionActive = false;
     let brandSectionActive = false;
@@ -380,17 +359,6 @@
       // (il segno "-" è già rappresentato dal rettangolo grafico "FINO AL").
       const numeric = value.toString().replace(/[^0-9]/g, '').trim();
       return (numeric || '50') + '%';
-    }
-
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const min = parseInt(input.min, 10);
-      const max = parseInt(input.max, 10);
-      let val = parseInt(input.value, 10);
-      if (isNaN(val)) val = min;
-      val = Math.min(max, Math.max(min, val + delta));
-      input.value = val;
-      updateCard();
     }
 
     function updateCard() {
@@ -435,11 +403,9 @@
       isDescriptionActive = mode === 'descrizione';
       brandSectionActive = mode === 'brand';
 
-      document.getElementById('modeStandard').classList.toggle('active', mode === 'standard');
-      document.getElementById('modeDescrizione').classList.toggle('active', isDescriptionActive);
-      document.getElementById('modeBrand').classList.toggle('active', brandSectionActive);
-      document.getElementById('descGroup').style.display = isDescriptionActive ? 'block' : 'none';
-      document.getElementById('brandFieldsGroup').style.display = brandSectionActive ? 'block' : 'none';
+      Selettore.attiva('modeSelector', mode);
+      document.getElementById('descGroup').hidden = !isDescriptionActive;
+      document.getElementById('brandFieldsGroup').hidden = !brandSectionActive;
 
       if (!brandSectionActive) {
         updateLogoElements('', '');
@@ -585,7 +551,7 @@
     loadBrandSelect();
     LoghiPersonalizzati.pronto.then(loadCustomBrandSelect);
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -594,13 +560,13 @@
       scope: '#cardTop',
       obstacles: '#cardTop .card-desc, #cardTop .card-brand-logo, #cardTop .fino-al-label, #cardTop .percent-text, #cardTop .card-logo',
       rules: [
-        { controls: '#modeStandard, #discountValue, button[onclick^="stepDiscount"]', target: '#percentDispTop' },
+        { controls: '#modeStandard, #discountValue, .percent-stepper', target: '#percentDispTop' },
         { controls: '#modeDescrizione, #descPreset, #descValue', target: '#descDisp' },
         { controls: '#modeBrand, #brandSelect, #customBrandSelect', target: '#brandLogoTop' }
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

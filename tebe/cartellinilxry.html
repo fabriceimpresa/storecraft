@@ -2,22 +2,22 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini LXRY</title>
     <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-70"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-70"></script>
-  <script src="../assets/js/logos.js?v=20261008-70"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261009-04"></script>
+  <script src="../assets/js/logos.js?v=20261009-04"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -58,7 +58,7 @@
     body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: auto; }
 
     /* --- SIDEBAR --- */
-    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    aside { width: 360px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
     .brand-title { font-family: 'Cinzel', serif; font-size: 1.05rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; text-align: center; font-weight: 600; text-transform: uppercase; }
 
     .tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
@@ -71,43 +71,26 @@
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
-    /* Spazi regolari nel pannello (come le pagine Crea Cartelli): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, sotto il selettore e prima del tasto di stampa */
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-    .form-control { width: 100%; padding: 0.45rem; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.82rem; outline: none; }
-    .form-control:focus { border-color: var(--gold); }
+    /* Il riquadro "Modifica Cartellino" segue il pannello standard (../assets/css/pannello.css), diviso nei quattro
+       blocchi, come Cartellini Vetrina di Luxury; qui solo ciò che è proprio dei cartellini. Il riquadro che comincia
+       con un selettore ha 1rem sopra il selettore, e l'ultimo elemento (il tasto di stampa) non aggiunge spazio sotto. */
+    .editor-title + .panel-block > .mode-switch:first-child { margin-top: 1rem; }
+    .editor-section > .panel-block:last-child > :last-child { margin-bottom: 0; }
+    /* Nei cartellini i blocchi non hanno lo spazio in più dei cartelli: tra un blocco e l'altro c'è lo stesso spazio
+       che c'è tra i campi (0,65rem), così il menu resta compatto e semplice. */
+    .editor-section .panel-block + .panel-block { margin-top: 0; }
+    /* sotto il selettore MODALITÀ PROMO / DOPPIO PREZZO lo stesso spazio che c'è sopra (1rem) */
+    .editor-section .panel-block > .mode-switch:last-child { margin-bottom: 1rem; }
+    /* sotto il tasto di stampa lo stesso spazio che si vede in alto tra il bordo del riquadro e le lettere del titolo (20 px) */
+    #editorPanel { padding-bottom: 1.25rem; }
+    /* il tasto di stampa un poco più staccato dai campi (0,65rem + 0,35rem = 1rem) */
+    .editor-section .btn-print { margin-top: 0.35rem; }
 
-    /* MENU A DISCESA CON FRECCIA */
-
-
-    .preset-select select.form-control {
-      appearance: none;
-      -webkit-appearance: none;
-      padding-right: 2rem;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      cursor: pointer;
-    }
-
-
-    /* Evidenzia i brand della casa TEBE (PRIORITY_BRANDS) in cima al menu brand */
-    select option.priority-brand-option {
-      background-color: #2e2b27;
-      color: #e5ba73;
-      font-weight: bold;
-    }
-    
-
-
-
-    /* Tasto di stampa dentro il riquadro di modifica, come nei cartelli */
-    .editor-section .btn-print { margin: 0; }
-    /* Riquadro che comincia con un selettore: un poco di spazio in più sopra il selettore; l'ultimo elemento
-       del riquadro non aggiunge spazio sotto */
-    .editor-title + .mode-switch { margin-top: 1rem; }
-    .editor-section > :last-child { margin-bottom: 0; }
+    /* Riga dei prezzi (Prezzo Originario, Sconto, Prezzo Finale): etichette su una riga sola, così i tre campi stanno
+       alla stessa altezza; Sconto (due cifre) un poco più stretto e Prezzo Originario un poco più largo. */
+    .form-row .form-group label { white-space: nowrap; }
+    #origGroup { flex: 1.15; }
+    #discountGroup { flex: 0.85; }
 
     /* --- PREVIEW MAIN --- */
     main { flex: 1; min-width: 0; padding: 1.5rem; overflow: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--border); -webkit-overflow-scrolling: touch; }
@@ -233,12 +216,12 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartellini">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -256,82 +239,60 @@
     <div class="editor-section" id="editorPanel">
       <div class="editor-title" id="editor-header">Modifica Cartellino #1</div>
 
-      <div class="mode-switch">
-        <button type="button" id="modePromo" onclick="setCardMode(true)">MODALITÀ<br>PROMO</button>
-        <button type="button" id="modeDoppioPrezzo" class="active" onclick="setCardMode(false)">DOPPIO<br>PREZZO</button>
-      </div>
-
-      <div class="form-group">
-        <label class="section-label" for="brandSelect">BRAND</label>
-        <div class="preset-select">
-          <select id="brandSelect" class="form-control" onchange="updateBrandSelection()">
-            <option value="">-- Seleziona Brand --</option>
-          </select>
+      <!-- Blocco 1: selettori e pulsanti (selettore comune selettore.js) -->
+      <div class="panel-block">
+        <div data-selettore id="cardModeSelector" data-on-change="onCardModeChange" aria-label="Modalità del cartellino">
+          <button value="promo" id="modePromo">MODALITÀ<br>PROMO</button>
+          <button value="doppio" id="modeDoppioPrezzo" class="active">DOPPIO<br>PREZZO</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="customBrandSelect">Loghi personalizzati</label>
-        <div class="preset-select">
-          <select id="customBrandSelect" class="form-control" onchange="updateCustomBrandSelection()">
-            <option value="">-- Seleziona Logo Personalizzato --</option>
-          </select>
-        </div>
+      <!-- Blocco 2: brand (ufficiali e personalizzati), menu comuni di menu-brand-cartellini.js -->
+      <div class="panel-block">
+        <div class="form-group" data-menu-brand-cartellini data-brand-change="updateBrandSelection" data-custom-change="updateCustomBrandSelection" data-custom-value="id" data-sort-custom="true"></div>
       </div>
 
-      <div class="form-group">
-        <label class="section-label" for="descPreset">Articoli</label>
-        <div class="preset-select">
-          <select id="descPreset" class="form-control" onchange="applyDescPreset()" data-testi-pronti="Articoli" data-testi-senza-gruppi>
-            <option value="">-- Seleziona un articolo --</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="inp-desc">Testo Libero</label>
-        <input type="text" id="inp-desc" class="form-control" placeholder="es. Giubbino" oninput="updateCurrentCard()">
-      </div>
-
-      <div id="group-discount">
+      <!-- Blocco 3: campi del cartellino (descrizione e prezzi, secondo la modalità) -->
+      <div class="panel-block">
         <div class="form-group">
-          <label>Prezzo Originario</label>
-          <div class="currency-input-group">
-            <span class="currency-prefix">€</span>
-            <input data-prezzo type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="section-label" for="discountValue">Percentuale Sconto</label>
-          <div class="percent-input-wrapper">
-            <input data-percentuale type="number" id="discountValue" class="form-control" value="50" min="1" max="99" oninput="updateCurrentCard()">
-            <div class="percent-stepper">
-              <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
-              <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="group-preset" style="display: none;">
-        <div class="form-group">
-          <label class="section-label" for="inp-preset">Promozione</label>
+          <label class="section-label" for="descPreset">Articoli</label>
           <div class="preset-select">
-            <select id="inp-preset" class="form-control" onchange="updateCurrentCard()" data-testi-pronti="Promozioni Cartellini" data-testi-senza-gruppi>
+            <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Articoli" data-testi-senza-gruppi>
+              <option value="">-- Seleziona un articolo --</option>
+            </select>
+          </div>
+          <label for="inp-desc">Testo Libero</label>
+          <input type="text" id="inp-desc" placeholder="-- Testo Libero --" oninput="updateCurrentCard()">
+        </div>
+
+        <div class="form-group" id="presetGroup" hidden>
+          <label class="section-label" for="inp-preset">Promozioni</label>
+          <div class="preset-select">
+            <select id="inp-preset" onchange="updateCurrentCard()" data-testi-pronti="Promozioni Cartellini" data-testi-senza-gruppi>
             </select>
           </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Prezzo Finale</label>
-        <div class="currency-input-group">
-          <span class="currency-prefix">€</span>
-          <input data-prezzo type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
+        <div class="form-row">
+          <div class="form-group" id="origGroup">
+            <label for="inp-orig">Prezzo Originario</label>
+            <input data-prezzo type="text" id="inp-orig" placeholder="396,00" oninput="updateCurrentCard()">
+          </div>
+          <div class="form-group" id="discountGroup">
+            <label for="discountValue">Sconto</label>
+            <input data-percentuale type="number" id="discountValue" value="50" min="1" max="99" placeholder="50" oninput="updateCurrentCard()">
+          </div>
+          <div class="form-group">
+            <label for="inp-final">Prezzo Finale</label>
+            <input data-prezzo type="text" id="inp-final" placeholder="198,00" oninput="updateCurrentCard()">
+          </div>
         </div>
       </div>
 
-      <button class="btn-print" onclick="printCards()">Stampa Foglio A4</button>
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" onclick="printCards()">STAMPA FOGLIO A4</button>
+      </div>
     </div>
 
   </aside>
@@ -342,7 +303,9 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261009-04"></script>
   <script>
 
     function cleanBrandName(fileName) {
@@ -388,9 +351,8 @@
 
     let currentCardIdx = 0;
 
+    // I menu BRAND e Loghi Personalizzati li crea e li riempie menu-brand-cartellini.js.
     function init() {
-      loadBrandSelect();
-      LoghiPersonalizzati.pronto.then(loadCustomBrandSelect);
       renderTabs();
       renderGrid();
       loadEditorData();
@@ -427,54 +389,48 @@
         el.className = `cartellino ${!card.enabled ? 'disabled' : ''}`;
         el.id = `card-view-${card.id}`;
 
-        let subRowContent = '';
+        // Cartellino costruito con nodi DOM: il testo dell'utente va con textContent.
+        const node = (tag, className, text) => {
+          const element = document.createElement(tag);
+          if (className) element.className = className;
+          if (text !== undefined) element.textContent = text;
+          return element;
+        };
+        const withCurrency = (className, value) => {
+          const element = node('div', className);
+          element.append(node('span', 'currency', '€'), ` ${value}`);
+          return element;
+        };
+
+        const detailsRow = node('div', 'price-details-row');
         if (card.usePreset) {
-          subRowContent = `<div class="preset-label">${card.presetText}</div>`;
+          detailsRow.append(node('div', 'preset-label', card.presetText));
         } else {
-          subRowContent = `
-            <div class="orig-discount">
-              ${card.priceOrig ? `<span class="strike"><span class="currency">€</span> ${card.priceOrig}</span>` : ''}
-              ${card.sconto ? `<span class="badge-sconto">-${card.sconto}%</span>` : ''}
-            </div>
-          `;
+          const origDiscount = node('div', 'orig-discount');
+          if (card.priceOrig) {
+            const strike = node('span', 'strike');
+            strike.append(node('span', 'currency', '€'), ` ${card.priceOrig}`);
+            origDiscount.append(strike);
+          }
+          if (card.sconto) origDiscount.append(node('span', 'badge-sconto', `-${card.sconto}%`));
+          detailsRow.append(origDiscount);
         }
 
-        el.innerHTML = `
-          <div class="brand-box"></div>
-          <div class="card-body-center">
-            <div class="desc-box">${card.desc}</div>
-            <div class="price-details-row">${subRowContent}</div>
-            <div class="final-price"><span class="currency">€</span> ${card.priceFinal}</div>
-          </div>
-          <div class="card-footer-logo">
-            <img src="../assets/img/tebe/footer_tebe.png" onerror="this.style.display='none'" alt="TEBE">
-          </div>
-        `;
+        const center = node('div', 'card-body-center');
+        center.append(node('div', 'desc-box', card.desc), detailsRow, withCurrency('final-price', card.priceFinal));
+
+        const footer = node('div', 'card-footer-logo');
+        const footerLogo = node('img');
+        footerLogo.src = '../assets/img/tebe/footer_tebe.png';
+        footerLogo.alt = 'TEBE';
+        footerLogo.onerror = () => { footerLogo.style.display = 'none'; };
+        footer.append(footerLogo);
+
+        el.append(node('div', 'brand-box'), center, footer);
 
         grid.appendChild(el);
         loadBrandImage(el.querySelector('.brand-box'), card.brand);
       });
-    }
-
-    function loadBrandSelect() {
-      const select = document.getElementById('brandSelect');
-      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-      [...priorityFiles, ...remainingFiles].forEach(fileName => {
-        appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
-      });
-    }
-
-    function loadCustomBrandSelect() {
-      const select = document.getElementById('customBrandSelect');
-      readCustomLogos()
-        .slice()
-        .sort((first, second) => first.name.localeCompare(second.name, 'it', { sensitivity: 'base' }))
-        .forEach(logo => {
-          const option = document.createElement('option');
-          option.value = logo.id;
-          option.textContent = `★ ${logo.name}`;
-          select.appendChild(option);
-        });
     }
 
     function updateBrandSelection() {
@@ -566,13 +522,18 @@
       toggleMode();
     }
 
+    // Clic sul selettore comune MODALITÀ PROMO / DOPPIO PREZZO (selettore.js).
+    function onCardModeChange(value) {
+      setCardMode(value === 'promo');
+    }
+
     // Mostra i campi della modalità del cartellino corrente (Promo o Doppio Prezzo).
     function toggleMode() {
       const usePreset = cardsData[currentCardIdx].usePreset;
-      document.getElementById('modePromo').classList.toggle('active', usePreset);
-      document.getElementById('modeDoppioPrezzo').classList.toggle('active', !usePreset);
-      document.getElementById('group-discount').style.display = usePreset ? 'none' : 'block';
-      document.getElementById('group-preset').style.display = usePreset ? 'block' : 'none';
+      Selettore.attiva('cardModeSelector', usePreset ? 'promo' : 'doppio');
+      document.getElementById('origGroup').hidden = usePreset;
+      document.getElementById('discountGroup').hidden = usePreset;
+      document.getElementById('presetGroup').hidden = !usePreset;
 
       if (usePreset) {
         const presetSelect = document.getElementById('inp-preset');
@@ -621,17 +582,6 @@
       }
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const min = Number.parseInt(input.min, 10) || 1;
-      const max = Number.parseInt(input.max, 10) || 99;
-      let val = Number.parseInt(input.value, 10);
-      if (Number.isNaN(val)) val = min;
-      val = Math.min(max, Math.max(min, val + delta));
-      input.value = val;
-      updateCurrentCard();
-    }
-
     function toggleCardEnabled(index, enabled) {
       cardsData[index].enabled = enabled;
       renderGrid();
@@ -666,7 +616,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -693,7 +643,7 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

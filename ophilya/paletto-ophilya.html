@@ -2,17 +2,17 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Paletto · OPHILYA</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
   <style>
     /* Bodoni del sito: dichiarato come nei Cartellini (senza font-display: swap) */
     @font-face {
@@ -50,42 +50,10 @@
 
 
 
-    /* Pannello che comincia con un selettore: un poco di spazio in più sopra il selettore
-       (i margini si sommano a quello del titolo: vale il maggiore) */
-    .controls h1 + .mode-switch, .controls h1 + .card-selector { margin-top: 1rem; }
-
-    /* Spazi regolari nel pannello (come Cartelli Semplici): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, tra i gruppi, sotto titolo e selettori e prima del tasto di stampa */
-
-    .section-label {
-      margin-bottom: 0.35rem;
-      color: var(--pannello-oro-chiaro);
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-
-
-
-    .mode-switch.card-mode-switch button {
-      padding: 9px 3px;
-      font-size: 0.58rem;
-      letter-spacing: 0.02em;
-    }
-
-
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei
-       pulsanti sotto il pannello */
-
-
-
-
-
-
-
-
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css): blocchi, selettori, menu e campi comuni.
+       Qui solo ciò che è proprio della pagina: le etichette della riga dei prezzi su una riga sola (come Outlet) e,
+       più sotto, i due gruppi Articolo sinistro / destro del DOPPIO ARTICOLO. */
+    .form-row .form-group label { white-space: nowrap; }
 
     .print-sheet {
       position: relative;
@@ -355,18 +323,8 @@
       transform: translateX(-50%);
     }
 
-    .article-mode-switch {
-      margin: 0 0 0.8rem;
-    }
-
-    .article-mode-switch button {
-      padding-right: 4px;
-      padding-left: 4px;
-      white-space: nowrap;
-    }
-
     .article-fields {
-      padding-top: 0.8rem;
+      padding-top: 0.65rem;
       border-top: 1px solid var(--pannello-bordo);
     }
 
@@ -377,10 +335,6 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-    }
-
-    .article-fields .form-group {
-      margin-bottom: 0.8rem;
     }
 
     .article-fields [data-article-fields="double"] {
@@ -452,13 +406,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="cartelli">
   <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna all'indice">✕</a>
@@ -472,124 +426,141 @@
     <div class="controls">
       <h1>Paletto</h1>
 
-      <div class="mode-switch card-mode-switch" aria-label="Seleziona il cartello da modificare">
-        <button type="button" class="active" id="selectTop" onclick="selectCard('top')">CARTELLO<br>SUPERIORE</button>
-        <button type="button" id="selectBottom" onclick="selectCard('bottom')">CARTELLO<br>INFERIORE</button>
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <!-- selettore pronto comune; id selectTop / selectBottom usati anche da vista telefono e cursore -->
+        <div id="cardSelector" data-selettore-cartello data-first-button-id="selectTop" data-second-button-id="selectBottom" data-on-change="selectCardIndex"></div>
+
+        <!-- selettore comune (selettore.js): modalità del cartello -->
+        <div data-selettore id="modeSelector" data-on-change="setMode" aria-label="Seleziona la modalità del cartello">
+          <button value="standard" id="standardMode" class="active">STANDARD</button>
+          <button value="double" id="doublePriceMode">DOPPIO<br>PREZZO</button>
+          <button value="doubleArticle" id="doubleArticleMode">DOPPIO<br>ARTICOLO</button>
+        </div>
       </div>
 
-      <div class="mode-switch" aria-label="Seleziona la modalità del cartello">
-        <button type="button" class="active" id="standardMode" onclick="setMode('standard')">STANDARD</button>
-        <button type="button" id="doublePriceMode" onclick="setMode('double')">DOPPIO<br>PREZZO</button>
-        <button type="button" id="doubleArticleMode" onclick="setMode('doubleArticle')">DOPPIO<br>ARTICOLO</button>
-      </div>
+      <!-- Blocco 2 omesso: il cartello non ha brand né claim -->
 
-      <div id="standardFields">
-        <div class="form-group">
-          <label class="section-label" for="descriptionPreset">Promozione</label>
-          <div class="preset-select">
-            <select id="descriptionPreset" onchange="applyDescriptionPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
-              <option value="">-- Seleziona un testo --</option>
-            </select>
+      <!-- Blocco 3: campi del cartello, secondo la modalità -->
+      <div class="panel-block">
+        <div id="standardFields">
+          <div class="form-group">
+            <label class="section-label" for="descriptionPreset">Promozioni</label>
+            <div class="preset-select">
+              <select id="descriptionPreset" onchange="applyDescriptionPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
+                <option value="">-- Seleziona Promozione --</option>
+              </select>
+            </div>
+            <label for="description">Testo Libero</label>
+            <input id="description" type="text" value="Vera Pelle • Genuine Leather" placeholder="-- Testo Libero --" oninput="updateDescription()">
           </div>
-          <label for="description">Testo Libero</label>
-          <input id="description" type="text" value="Vera Pelle • Genuine Leather" placeholder="-- Testo Libero --" oninput="updateDescription()">
+
+          <div class="form-group">
+            <label for="price">Prezzo</label>
+            <input data-prezzo id="price" type="text" value="29,90" placeholder="29,90" inputmode="decimal" oninput="updateCards()">
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="price">Prezzo</label>
-          <input data-prezzo id="price" type="text" value="29,90" inputmode="decimal" oninput="updateCards()">
-        </div>
-      </div>
-
-      <div id="doublePriceFields" hidden>
-        <div class="form-group">
-          <label for="oldPrice">Prezzo Originario</label>
-          <input data-prezzo id="oldPrice" type="text" value="59,80" inputmode="decimal" oninput="updateCards()">
-        </div>
-        <div class="form-group">
-          <label class="section-label" for="discount">Percentuale Sconto</label>
-          <input data-percentuale id="discount" type="number" value="50" min="1" max="99" oninput="updateCards()">
-        </div>
-        <div class="form-group">
-          <label for="finalPrice">Prezzo Finale</label>
-          <input data-prezzo id="finalPrice" type="text" value="29,90" inputmode="decimal" oninput="updateCards()">
-        </div>
-      </div>
-
-      <div id="doubleArticleFields" hidden>
-        <div class="mode-switch article-mode-switch" aria-label="Seleziona la modalità degli articoli">
-          <button type="button" class="active" id="articleStandardMode" onclick="setArticlePriceMode('standard')">DESCRIZIONE</button>
-          <button type="button" id="articleDoublePriceMode" onclick="setArticlePriceMode('double')">DOPPIO PREZZO</button>
-        </div>
-        <div class="article-fields">
-          <h2>Articolo sinistro</h2>
-          <div data-article-fields="standard">
+        <div id="doublePriceFields" hidden>
+          <div class="form-row">
             <div class="form-group">
-              <label class="section-label" for="firstDescriptionPreset">Promozione</label>
-              <div class="preset-select">
-                <select id="firstDescriptionPreset" onchange="applyArticleDescriptionPreset('first')">
-                  <option value="">-- Seleziona un testo --</option>
-                </select>
+              <label for="oldPrice">Prezzo Originario</label>
+              <input data-prezzo id="oldPrice" type="text" value="59,80" placeholder="59,80" inputmode="decimal" oninput="updateCards()">
+            </div>
+            <div class="form-group">
+              <label for="discount">Sconto</label>
+              <input data-percentuale id="discount" type="number" value="50" min="1" max="99" placeholder="50" oninput="updateCards()">
+            </div>
+            <div class="form-group">
+              <label for="finalPrice">Prezzo Finale</label>
+              <input data-prezzo id="finalPrice" type="text" value="29,90" placeholder="29,90" inputmode="decimal" oninput="updateCards()">
+            </div>
+          </div>
+        </div>
+
+        <div id="doubleArticleFields" hidden>
+          <!-- selettore comune (selettore.js): prezzi dei due articoli -->
+          <div data-selettore id="articleModeSelector" data-on-change="setArticlePriceMode" aria-label="Seleziona la modalità degli articoli">
+            <button value="standard" id="articleStandardMode" class="active">DESCRIZIONE</button>
+            <button value="double" id="articleDoublePriceMode">DOPPIO PREZZO</button>
+          </div>
+          <div class="article-fields">
+            <h2>Articolo sinistro</h2>
+            <div data-article-fields="standard">
+              <div class="form-group">
+                <label class="section-label" for="firstDescriptionPreset">Promozioni</label>
+                <div class="preset-select">
+                  <select id="firstDescriptionPreset" onchange="applyArticleDescriptionPreset('first')">
+                    <option value="">-- Seleziona Promozione --</option>
+                  </select>
+                </div>
+                <label for="firstDescription">Testo Libero</label>
+                <input id="firstDescription" type="text" placeholder="-- Testo Libero --" oninput="updateArticleDescription('first')">
               </div>
-              <label for="firstDescription">Testo Libero</label>
-              <input id="firstDescription" type="text" placeholder="-- Testo Libero --" oninput="updateArticleDescription('first')">
-            </div>
-            <div class="form-group">
-              <label for="firstPrice">Prezzo</label>
-              <input data-prezzo id="firstPrice" type="text" inputmode="decimal" oninput="updateCards()">
-            </div>
-          </div>
-          <div data-article-fields="double">
-            <div class="form-group">
-              <label for="firstOldPrice">Prezzo Originario</label>
-              <input data-prezzo id="firstOldPrice" type="text" inputmode="decimal" oninput="updateCards()">
-            </div>
-            <div class="form-group">
-              <label class="section-label" for="firstDiscount">Percentuale Sconto</label>
-              <input data-percentuale id="firstDiscount" type="number" min="1" max="99" oninput="updateCards()">
-            </div>
-            <div class="form-group">
-              <label for="firstFinalPrice">Prezzo Finale</label>
-              <input data-prezzo id="firstFinalPrice" type="text" inputmode="decimal" oninput="updateCards()">
-            </div>
-          </div>
-        </div>
-        <div class="article-fields">
-          <h2>Articolo destro</h2>
-          <div data-article-fields="standard">
-            <div class="form-group">
-              <label class="section-label" for="secondDescriptionPreset">Promozione</label>
-              <div class="preset-select">
-                <select id="secondDescriptionPreset" onchange="applyArticleDescriptionPreset('second')">
-                  <option value="">-- Seleziona un testo --</option>
-                </select>
+              <div class="form-group">
+                <label for="firstPrice">Prezzo</label>
+                <input data-prezzo id="firstPrice" type="text" inputmode="decimal" oninput="updateCards()">
               </div>
-              <label for="secondDescription">Testo Libero</label>
-              <input id="secondDescription" type="text" placeholder="-- Testo Libero --" oninput="updateArticleDescription('second')">
             </div>
-            <div class="form-group">
-              <label for="secondPrice">Prezzo</label>
-              <input data-prezzo id="secondPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            <div data-article-fields="double">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="firstOldPrice">Prezzo Originario</label>
+                  <input data-prezzo id="firstOldPrice" type="text" inputmode="decimal" oninput="updateCards()">
+                </div>
+                <div class="form-group">
+                  <label for="firstDiscount">Sconto</label>
+                  <input data-percentuale id="firstDiscount" type="number" min="1" max="99" oninput="updateCards()">
+                </div>
+                <div class="form-group">
+                  <label for="firstFinalPrice">Prezzo Finale</label>
+                  <input data-prezzo id="firstFinalPrice" type="text" inputmode="decimal" oninput="updateCards()">
+                </div>
+              </div>
             </div>
           </div>
-          <div data-article-fields="double">
-            <div class="form-group">
-              <label for="secondOldPrice">Prezzo Originario</label>
-              <input data-prezzo id="secondOldPrice" type="text" inputmode="decimal" oninput="updateCards()">
+          <div class="article-fields">
+            <h2>Articolo destro</h2>
+            <div data-article-fields="standard">
+              <div class="form-group">
+                <label class="section-label" for="secondDescriptionPreset">Promozioni</label>
+                <div class="preset-select">
+                  <select id="secondDescriptionPreset" onchange="applyArticleDescriptionPreset('second')">
+                    <option value="">-- Seleziona Promozione --</option>
+                  </select>
+                </div>
+                <label for="secondDescription">Testo Libero</label>
+                <input id="secondDescription" type="text" placeholder="-- Testo Libero --" oninput="updateArticleDescription('second')">
+              </div>
+              <div class="form-group">
+                <label for="secondPrice">Prezzo</label>
+                <input data-prezzo id="secondPrice" type="text" inputmode="decimal" oninput="updateCards()">
+              </div>
             </div>
-            <div class="form-group">
-              <label class="section-label" for="secondDiscount">Percentuale Sconto</label>
-              <input data-percentuale id="secondDiscount" type="number" min="1" max="99" oninput="updateCards()">
-            </div>
-            <div class="form-group">
-              <label for="secondFinalPrice">Prezzo Finale</label>
-              <input data-prezzo id="secondFinalPrice" type="text" inputmode="decimal" oninput="updateCards()">
+            <div data-article-fields="double">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="secondOldPrice">Prezzo Originario</label>
+                  <input data-prezzo id="secondOldPrice" type="text" inputmode="decimal" oninput="updateCards()">
+                </div>
+                <div class="form-group">
+                  <label for="secondDiscount">Sconto</label>
+                  <input data-percentuale id="secondDiscount" type="number" min="1" max="99" oninput="updateCards()">
+                </div>
+                <div class="form-group">
+                  <label for="secondFinalPrice">Prezzo Finale</label>
+                  <input data-prezzo id="secondFinalPrice" type="text" inputmode="decimal" oninput="updateCards()">
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <button class="btn-print" type="button" onclick="window.print()">Stampa Cartelli (A4)</button>
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button class="btn-print" id="printBtn" type="button" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
     </div>
   </aside>
 
@@ -641,24 +612,26 @@
     <div class="cut-line" aria-hidden="true"></div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
-  <script src="../assets/js/madeinitaly.js?v=20261008-70" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261009-04"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261009-04" data-automatico></script>
   <script>
     const cardStates = {
       top: {
         mode: 'standard', description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '29,90',
         oldPrice: '59,80', discount: '50', finalPrice: '29,90', articlePriceMode: 'standard',
         articles: {
-          first: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '12,00', oldPrice: '24,00', discount: '50', finalPrice: '12,00' },
-          second: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '15,00', oldPrice: '30,00', discount: '50', finalPrice: '15,00' }
+          first: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '12,00', oldPrice: '24,00', discount: '50', finalPrice: '12,00' },
+          second: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '15,00', oldPrice: '30,00', discount: '50', finalPrice: '15,00' }
         }
       },
       bottom: {
         mode: 'standard', description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '29,90',
         oldPrice: '59,80', discount: '50', finalPrice: '29,90', articlePriceMode: 'standard',
         articles: {
-          first: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '12,00', oldPrice: '24,00', discount: '50', finalPrice: '12,00' },
-          second: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: 'Vera Pelle • Genuine Leather', price: '15,00', oldPrice: '30,00', discount: '50', finalPrice: '15,00' }
+          first: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '12,00', oldPrice: '24,00', discount: '50', finalPrice: '12,00' },
+          second: { description: 'Vera Pelle • Genuine Leather', descriptionPreset: '', price: '15,00', oldPrice: '30,00', discount: '50', finalPrice: '15,00' }
         }
       }
     };
@@ -693,9 +666,13 @@
 
     function selectCard(card) {
       activeCard = card;
-      document.getElementById('selectTop').classList.toggle('active', card === 'top');
-      document.getElementById('selectBottom').classList.toggle('active', card === 'bottom');
+      SelettoreCartello.setActive(card === 'bottom' ? 'selectBottom' : 'selectTop');
       syncControls();
+    }
+
+    // Selettore pronto CARTELLO SUPERIORE / INFERIORE (selettore-cartello.js): 1 = superiore, 2 = inferiore.
+    function selectCardIndex(cardIndex) {
+      selectCard(cardIndex === 2 ? 'bottom' : 'top');
     }
 
     function setMode(mode) {
@@ -710,9 +687,7 @@
 
       const state = cardStates[activeCard];
       state.mode = mode;
-      document.getElementById('standardMode').classList.toggle('active', mode === 'standard');
-      document.getElementById('doublePriceMode').classList.toggle('active', mode === 'double');
-      document.getElementById('doubleArticleMode').classList.toggle('active', mode === 'doubleArticle');
+      Selettore.attiva('modeSelector', mode);
       document.getElementById('standardFields').hidden = mode !== 'standard';
       document.getElementById('doublePriceFields').hidden = mode !== 'double';
       document.getElementById('doubleArticleFields').hidden = mode !== 'doubleArticle';
@@ -722,8 +697,7 @@
     function setArticlePriceMode(mode) {
       const state = cardStates[activeCard];
       state.articlePriceMode = mode;
-      document.getElementById('articleStandardMode').classList.toggle('active', mode === 'standard');
-      document.getElementById('articleDoublePriceMode').classList.toggle('active', mode === 'double');
+      Selettore.attiva('articleModeSelector', mode);
       document.getElementById('doubleArticleFields').classList.toggle('is-double-price', mode === 'double');
       renderCard(activeCard);
     }
@@ -757,14 +731,11 @@
       document.getElementById('oldPrice').value = state.oldPrice;
       document.getElementById('discount').value = state.discount;
       document.getElementById('finalPrice').value = state.finalPrice;
-      document.getElementById('standardMode').classList.toggle('active', state.mode === 'standard');
-      document.getElementById('doublePriceMode').classList.toggle('active', state.mode === 'double');
-      document.getElementById('doubleArticleMode').classList.toggle('active', state.mode === 'doubleArticle');
+      Selettore.attiva('modeSelector', state.mode);
       document.getElementById('standardFields').hidden = state.mode !== 'standard';
       document.getElementById('doublePriceFields').hidden = state.mode !== 'double';
       document.getElementById('doubleArticleFields').hidden = state.mode !== 'doubleArticle';
-      document.getElementById('articleStandardMode').classList.toggle('active', state.articlePriceMode === 'standard');
-      document.getElementById('articleDoublePriceMode').classList.toggle('active', state.articlePriceMode === 'double');
+      Selettore.attiva('articleModeSelector', state.articlePriceMode);
       document.getElementById('doubleArticleFields').classList.toggle('is-double-price', state.articlePriceMode === 'double');
       for (const articleKey of ['first', 'second']) {
         const articleState = state.articles[articleKey];
@@ -874,8 +845,7 @@
       activeCard = state.activeCard === 'bottom' ? 'bottom' : 'top';
       document.getElementById('cardTop').classList.remove('is-made-in-italy');
       document.getElementById('cardBottom').classList.remove('is-made-in-italy');
-      document.getElementById('selectTop').classList.toggle('active', activeCard === 'top');
-      document.getElementById('selectBottom').classList.toggle('active', activeCard === 'bottom');
+      SelettoreCartello.setActive(activeCard === 'bottom' ? 'selectBottom' : 'selectTop');
       renderCard('top');
       renderCard('bottom');
       syncControls();
@@ -885,7 +855,7 @@
     updateCards();
     renderCard('bottom');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: sopra il cartello scelto (superiore/inferiore) e sugli elementi legati al campo in uso.
     const activePalettoCard = () => document.getElementById(activeCard === 'bottom' ? 'cardBottom' : 'cardTop');
@@ -918,7 +888,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>

@@ -217,6 +217,7 @@
     min-height: 44px;
     padding: 6px 8px;
     font-size: clamp(0.66rem, 3vw, 0.78rem);
+    letter-spacing: 0.02em;   /* su una riga la spaziatura del desktop (0,08em) farebbe uscire DESCRIZIONE ARTICOLO */
     white-space: nowrap;
   }
   body[data-layout="cartelli"] .sidebar .mode-switch button br { display: none; }
@@ -406,6 +407,7 @@
     min-height: 44px;
     padding: 6px 8px;
     font-size: clamp(0.66rem, 3vw, 0.78rem);
+    letter-spacing: 0.02em;   /* come nei cartelli: su una riga la spaziatura del desktop non entrerebbe */
     white-space: nowrap;
   }
   body:is([data-layout="cartellini"], [data-layout="prezzi"]) aside .mode-switch button br { display: none; }

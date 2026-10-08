@@ -2,17 +2,17 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-70"></script>
+  <script src="../assets/js/negozi.js?v=20261009-04"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-70">
+  <script src="../assets/js/theme.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-70">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-70">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-04"></script>
 
   <style>
     /* Font locali da assets/fonts */
@@ -48,7 +48,7 @@
     body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: auto; }
 
     /* --- SIDEBAR --- */
-    aside { width: 340px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+    aside { width: 360px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 1.5rem 1rem 8rem; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
     .brand-title { font-family: 'Cinzel', serif; font-size: 1.05rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; text-align: center; font-weight: 600; text-transform: uppercase; }
 
     .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; margin-bottom: 1.2rem; }
@@ -61,37 +61,14 @@
     .editor-section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1.2rem; }
     .editor-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.8rem; font-weight: 700; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 
-    /* Spazi regolari nel pannello (come le pagine Crea Cartelli): 0,35rem tra etichetta e campo, 0,8rem tra
-       un campo e l'etichetta successiva, sotto il selettore e prima del tasto di stampa */
-    /* Titoli dei menu a discesa e dei campi con frecce: come le altre etichette, nell'oro dei pulsanti sotto il pannello */
-    .form-control { width: 100%; padding: 0.45rem; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-size: 0.82rem; outline: none; }
-    .form-control:focus { border-color: var(--gold); }
-
-    /* MENU A DISCESA CON FRECCIA */
-
-
-    .preset-select select.form-control {
-      appearance: none;
-      -webkit-appearance: none;
-      padding-right: 2rem;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-      box-shadow: none;
-      cursor: pointer;
-    }
-
-
-
-
-
-    /* Tasto di stampa dentro il riquadro di modifica, come nei cartelli */
-    .editor-section .btn-print { margin: 0; }
-    /* Riquadro che comincia con un selettore: un poco di spazio in più sopra il selettore; l'ultimo elemento
-       del riquadro non aggiunge spazio sotto */
-    .editor-title + .mode-switch { margin-top: 1rem; }
-    .editor-section > :last-child,
-    .editor-section > :last-child > :last-child { margin-bottom: 0; }
+    /* I due riquadri (Modifica Pagina, con le Fasce Prezzo che valgono per tutta la pagina, e Modifica
+       Colonna) seguono il pannello standard (../assets/css/pannello.css), come Prezzi Vetrina di Luxury:
+       qui solo ciò che è proprio di questa pagina. L'ultimo elemento di un riquadro non aggiunge spazio sotto. */
+    .editor-title + .panel-block > .form-group:first-child { margin-top: 1rem; }
+    .editor-section > .panel-block:last-child > :last-child { margin-bottom: 0; }
+    .editor-section .panel-block + .panel-block { margin-top: 0; }
+    #editorPanel { padding-bottom: 1.25rem; }
+    .editor-section .btn-print { margin-top: 0.35rem; }
 
 
     /* --- PREVIEW MAIN --- */
@@ -203,12 +180,12 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-70">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-70">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-70"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261008-70">
-  <script defer src="../assets/js/responsive.js?v=20261008-70"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
+  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
 </head>
 <body data-layout="prezzi">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -224,11 +201,10 @@
     <div class="editor-section">
       <div class="editor-title">Modifica Pagina</div>
 
-      <div class="form-group">
-        <label class="section-label" for="pricePreset">Fasce Prezzo</label>
-        <div class="preset-select">
-          <select id="pricePreset" class="form-control" onchange="applyPricePreset()" data-fasce-prezzo>
-          </select>
+      <!-- Riquadro a parte perché vale per tutta la pagina, non per la colonna in modifica -->
+      <div class="panel-block">
+        <div class="form-group">
+          <div data-fasce-prezzo data-select-id="pricePreset" data-on-change="applyPricePreset"></div>
         </div>
       </div>
     </div>
@@ -238,29 +214,29 @@
     <div class="editor-section" id="editorPanel">
       <div class="editor-title" id="editor-header">Modifica Colonna 1</div>
 
-      <div class="form-group">
-        <label for="inp-price">Prezzo</label>
-        <div class="currency-input-group">
-          <span class="currency-prefix">€</span>
-          <input data-prezzo type="text" id="inp-price" class="form-control" placeholder="30,00" inputmode="decimal" oninput="updateCurrentColumn()">
+      <!-- Blocco 3: campi della colonna (niente Blocco 1/2: non ci sono selettori né brand in questa pagina) -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label for="inp-price">Prezzo</label>
+          <input data-prezzo type="text" id="inp-price" placeholder="30,00" inputmode="decimal" oninput="updateCurrentColumn()">
+        </div>
+
+        <div class="form-group">
+          <label class="section-label" for="descriptionPreset">Promozioni</label>
+          <div class="preset-select">
+            <select id="descriptionPreset" onchange="applyDescriptionPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
+              <option value="">-- Seleziona Promozione --</option>
+            </select>
+          </div>
+          <label for="inp-desc">Testo Libero</label>
+          <input type="text" id="inp-desc" placeholder="-- Testo Libero --" oninput="updateCurrentColumn()">
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="section-label" for="descriptionPreset">Promozione</label>
-        <div class="preset-select">
-          <select id="descriptionPreset" class="form-control" onchange="applyDescriptionPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
-            <option value="">-- Seleziona un testo --</option>
-          </select>
-        </div>
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <button type="button" class="btn-print" onclick="printCards()">STAMPA FOGLIO A4</button>
       </div>
-
-      <div class="form-group">
-        <label for="inp-desc">Testo Libero</label>
-        <input type="text" id="inp-desc" class="form-control" placeholder="-- Testo Libero --" oninput="updateCurrentColumn()">
-      </div>
-
-      <button class="btn-print" onclick="printCards()">Stampa Foglio A4</button>
     </div>
 
   </aside>
@@ -271,8 +247,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/fasce-prezzo.js?v=20261008-70"></script>
-  <script src="../assets/js/testi-pronti.js?v=20261008-70"></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261009-04"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -455,7 +431,7 @@
 
     init();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-70"></script>
+  <script src="../assets/js/cursore.js?v=20261009-04"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -478,7 +454,7 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-70" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261008-70"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
 </body>
 </html>
