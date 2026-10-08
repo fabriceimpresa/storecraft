@@ -79,7 +79,19 @@
   --pannello-stampa-testo: #fffdfa;
   --pannello-schema: light;
 
-  /* Elenchi dei menu a cascata (menu-cascata.css e pannello.css), che usano i colori dell'interfaccia */
+
+  /* Pulsante Made in Italy (madeinitaly.css): bordo oro chiaro, 36 px come la ✕, ombra leggera */
+  --madeinitaly-background: #fff;
+  --madeinitaly-border: rgba(180, 154, 98, 0.7);
+  --madeinitaly-dimensione: 36px;
+  --madeinitaly-ombra: rgba(40, 34, 28, 0.14);
+  --madeinitaly-ombra-attivo: rgba(40, 34, 28, 0.22);
+}
+
+/* Elenchi dei menu a cascata (menu-cascata.css e pannello.css) nelle pagine senza tema dell'interfaccia (le pagine degli
+   strumenti): colori chiari del negozio. Dove c'è il tema (la dashboard, data-interface-theme) decidono theme.css e il
+   tema scelto, anche il menu di sistema. */
+:root[data-negozio="tebe"]:not([data-interface-theme]) {
   --interface-control: #fffdfa;
   --interface-text: #282522;
   --interface-accent: #b49a62;
@@ -88,11 +100,4 @@
   --interface-sidebar: #f3ede0;
   --interface-border: #e3dacb;
   --interface-dropdown-shadow: rgba(40, 34, 28, 0.14);
-
-  /* Pulsante Made in Italy (madeinitaly.css): bordo oro chiaro, 36 px come la ✕, ombra leggera */
-  --madeinitaly-background: #fff;
-  --madeinitaly-border: rgba(180, 154, 98, 0.7);
-  --madeinitaly-dimensione: 36px;
-  --madeinitaly-ombra: rgba(40, 34, 28, 0.14);
-  --madeinitaly-ombra-attivo: rgba(40, 34, 28, 0.22);
 }
