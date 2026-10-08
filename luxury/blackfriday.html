@@ -35,13 +35,9 @@
       font-display: block;
     }
 
-    @font-face {
-      font-family: 'Franklin Gothic';
-      src: url('../assets/fonts/Franklin Gothic.ttf') format('truetype');
-      font-style: normal;
-      font-weight: 700;
-      font-display: block;
-    }
+    /* Le scritte BLACK e FRIDAY non usano un carattere: sono tracciati ricavati da assets/fonts/Franklin Gothic.ttf
+       (218 unità, stirati a 1000 di larghezza come il vecchio <text textLength="1000">). Su iPhone il testo SVG
+       stirato con textLength usciva alto il doppio e tagliato, a schermo e nel PDF; i tracciati sono uguali ovunque. */
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -302,7 +298,9 @@
       overflow: hidden;
       flex-shrink: 0;
       padding-right: 2mm;
-      transform: translateY(-1%);   /* cifre al centro del rettangolo nero (prima 10%, che le spingeva in basso) */
+      /* Cifre (senza la coda della virgola) al centro del rettangolo nero: con line-height 1 il Bodoni le lascia
+         0,12em sopra il centro. In em, così resta giusto anche quando adjustPriceFontSize rimpicciolisce il prezzo. */
+      transform: translateY(0.12em);
     }
 
     /* NAVIGAZIONE UI */
@@ -460,9 +458,9 @@
     <!-- CARTELLO 1 -->
     <div class="card" id="card1">
       <div class="bf-block">
-        <!-- SCRITTA BLACK VETTORIALE -->
-        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
-          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#000000">BLACK</text>
+        <!-- SCRITTA BLACK VETTORIALE (tracciato dal Franklin Gothic, vedi nota nello stile) -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none" role="img" aria-label="BLACK">
+          <path transform="matrix(0.139043 0 0 -0.106445 0 182)" fill="#000000" d="M127 1561H858Q1156 1561 1305 1462Q1454 1363 1454 1161Q1454 908 1155 813Q1329 770 1413 673.5Q1497 577 1497 416Q1497 202 1347 101Q1197 0 889 0H127ZM766 944Q830 944 877.5 952Q925 960 955.5 979.5Q986 999 1001 1031.5Q1016 1064 1016 1112Q1016 1158 1001 1189Q986 1220 954.5 1239Q923 1258 875.5 1266Q828 1274 764 1274H563V944ZM801 297Q919 297 975.5 336.5Q1032 376 1032 467Q1032 645 805 645H563V297ZM1706 1561H2150V336H2791V0H1706ZM3635 623 3480 1122 3318 623ZM3281 1561H3766L4286 0H3824L3731 295H3213L3115 0H2757ZM5669 492Q5610 229 5448 96Q5286 -37 5022 -37Q4848 -37 4711.5 17.5Q4575 72 4480.5 175.5Q4386 279 4336 428Q4286 577 4286 766Q4286 939 4333 1079.5Q4380 1220 4477 1337Q4579 1461 4717 1525Q4855 1589 5024 1589Q5147 1589 5250.5 1551Q5354 1513 5434.5 1441Q5515 1369 5569 1264Q5623 1159 5646 1026L5237 995Q5217 1132 5164.5 1194.5Q5112 1257 5009 1257Q4871 1257 4808 1138.5Q4745 1020 4745 776Q4745 279 5034 279Q5149 279 5227.5 350Q5306 421 5335 557ZM5818 1561H6258V936L6725 1561H7143L6766 1059L7250 0H6760L6469 666L6258 389V0H5818Z"/>
         </svg>
 
         <!-- RETTANGOLO NERO CENTRALE -->
@@ -480,9 +478,9 @@
           <div class="price-display" id="priceDisplay1">€ 49,90</div>
         </div>
 
-        <!-- SCRITTA FRIDAY VETTORIALE -->
-        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
-          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#e89006">FRIDAY</text>
+        <!-- SCRITTA FRIDAY VETTORIALE (tracciato dal Franklin Gothic, vedi nota nello stile) -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none" role="img" aria-label="FRIDAY">
+          <path transform="matrix(0.126614 0 0 -0.106445 0 182)" fill="#e89006" d="M123 1561H1311V1233H563V940H1053V618H563V0H123ZM1378 1561H2175Q2454 1561 2598 1448.5Q2742 1336 2742 1128Q2742 979 2666 875Q2590 771 2445 723L2728 0H2236L2017 641H1822V0H1378ZM2074 948Q2177 948 2227 985.5Q2277 1023 2277 1112Q2277 1187 2225.5 1226.5Q2174 1266 2074 1266H1822V948ZM2967 1561H3408V0H2967ZM3682 1561H4208Q4299 1561 4380.5 1555.5Q4462 1550 4535.5 1534Q4609 1518 4675 1490.5Q4741 1463 4802 1419Q4954 1310 5025.5 1153Q5097 996 5097 782Q5097 580 5022.5 418.5Q4948 257 4804 147Q4745 102 4682.5 73.5Q4620 45 4551 28.5Q4482 12 4406 6Q4330 0 4245 0H3682ZM4251 307Q4437 307 4534.5 432Q4632 557 4632 797Q4632 1268 4280 1268H4122V307ZM5967 623 5812 1122 5650 623ZM5613 1561H6098L6618 0H6156L6063 295H5545L5447 0H5089ZM7014 657 6450 1561H6962L7278 1036L7585 1561H7986L7452 698V0H7014Z"/>
         </svg>
       </div>
     </div>
@@ -493,9 +491,9 @@
     <!-- CARTELLO 2 -->
     <div class="card" id="card2">
       <div class="bf-block">
-        <!-- SCRITTA BLACK VETTORIALE -->
-        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
-          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#000000">BLACK</text>
+        <!-- SCRITTA BLACK VETTORIALE (tracciato dal Franklin Gothic, vedi nota nello stile) -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none" role="img" aria-label="BLACK">
+          <path transform="matrix(0.139043 0 0 -0.106445 0 182)" fill="#000000" d="M127 1561H858Q1156 1561 1305 1462Q1454 1363 1454 1161Q1454 908 1155 813Q1329 770 1413 673.5Q1497 577 1497 416Q1497 202 1347 101Q1197 0 889 0H127ZM766 944Q830 944 877.5 952Q925 960 955.5 979.5Q986 999 1001 1031.5Q1016 1064 1016 1112Q1016 1158 1001 1189Q986 1220 954.5 1239Q923 1258 875.5 1266Q828 1274 764 1274H563V944ZM801 297Q919 297 975.5 336.5Q1032 376 1032 467Q1032 645 805 645H563V297ZM1706 1561H2150V336H2791V0H1706ZM3635 623 3480 1122 3318 623ZM3281 1561H3766L4286 0H3824L3731 295H3213L3115 0H2757ZM5669 492Q5610 229 5448 96Q5286 -37 5022 -37Q4848 -37 4711.5 17.5Q4575 72 4480.5 175.5Q4386 279 4336 428Q4286 577 4286 766Q4286 939 4333 1079.5Q4380 1220 4477 1337Q4579 1461 4717 1525Q4855 1589 5024 1589Q5147 1589 5250.5 1551Q5354 1513 5434.5 1441Q5515 1369 5569 1264Q5623 1159 5646 1026L5237 995Q5217 1132 5164.5 1194.5Q5112 1257 5009 1257Q4871 1257 4808 1138.5Q4745 1020 4745 776Q4745 279 5034 279Q5149 279 5227.5 350Q5306 421 5335 557ZM5818 1561H6258V936L6725 1561H7143L6766 1059L7250 0H6760L6469 666L6258 389V0H5818Z"/>
         </svg>
 
         <!-- RETTANGOLO NERO CENTRALE -->
@@ -513,9 +511,9 @@
           <div class="price-display" id="priceDisplay2">€ 49,90</div>
         </div>
 
-        <!-- SCRITTA FRIDAY VETTORIALE -->
-        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none">
-          <text x="0" y="182" font-family="'Franklin Gothic', 'Arial Black', Impact, sans-serif" font-weight="900" font-size="218" textLength="1000" lengthAdjust="spacingAndGlyphs" fill="#e89006">FRIDAY</text>
+        <!-- SCRITTA FRIDAY VETTORIALE (tracciato dal Franklin Gothic, vedi nota nello stile) -->
+        <svg class="bf-svg-row" viewBox="-15 0 1030 210" preserveAspectRatio="none" role="img" aria-label="FRIDAY">
+          <path transform="matrix(0.126614 0 0 -0.106445 0 182)" fill="#e89006" d="M123 1561H1311V1233H563V940H1053V618H563V0H123ZM1378 1561H2175Q2454 1561 2598 1448.5Q2742 1336 2742 1128Q2742 979 2666 875Q2590 771 2445 723L2728 0H2236L2017 641H1822V0H1378ZM2074 948Q2177 948 2227 985.5Q2277 1023 2277 1112Q2277 1187 2225.5 1226.5Q2174 1266 2074 1266H1822V948ZM2967 1561H3408V0H2967ZM3682 1561H4208Q4299 1561 4380.5 1555.5Q4462 1550 4535.5 1534Q4609 1518 4675 1490.5Q4741 1463 4802 1419Q4954 1310 5025.5 1153Q5097 996 5097 782Q5097 580 5022.5 418.5Q4948 257 4804 147Q4745 102 4682.5 73.5Q4620 45 4551 28.5Q4482 12 4406 6Q4330 0 4245 0H3682ZM4251 307Q4437 307 4534.5 432Q4632 557 4632 797Q4632 1268 4280 1268H4122V307ZM5967 623 5812 1122 5650 623ZM5613 1561H6098L6618 0H6156L6063 295H5545L5447 0H5089ZM7014 657 6450 1561H6962L7278 1036L7585 1561H7986L7452 698V0H7014Z"/>
         </svg>
       </div>
     </div>
