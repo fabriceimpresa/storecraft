@@ -851,6 +851,8 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     outline-offset: 3px;
   }
   body.cassiere-mode #tools-title { display: none; }
+  /* vista CASSIERE: widget in colonna staccati come su desktop (24 px invece di 12) */
+  body.cassiere-mode #tools { row-gap: 24px; }
   .widget { cursor: default; scroll-margin-top: 80px; }
   .widget:hover { transform: none; }
   .widget.mobile-active { border-color: var(--accent); }

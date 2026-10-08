@@ -251,16 +251,22 @@
   }
 
   // ----- Apertura e chiusura -----
-  function evidenzia(strumento) {
+  // Sul telefono lo strumento appena scelto (toccandolo o scrivendo in un suo campo) si porta subito sotto la barra in
+  // alto (scroll-margin-top in dashboard.css), così si vede che è quello in uso; scrivendo nello stesso non si muove.
+  // Lo scorrimento parte poco dopo: entrando in un campo il browser (e su iPhone la tastiera che si apre) fa prima il
+  // suo scorrimento, che altrimenti interromperebbe questo
+  function evidenzia(strumento, { porta = true } = {}) {
+    const nuovo = strumento && !strumento.classList.contains('mobile-active');
     contenitore.querySelectorAll('.widget.mobile-active').forEach(w => { if (w !== strumento) w.classList.remove('mobile-active'); });
     strumento?.classList.add('mobile-active');
+    if (nuovo && porta) setTimeout(() => strumento.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
   }
 
   function apri(id, { scorri = false } = {}) {
     const strumento = $(id);
     if (!strumento) return;
     if (telefono.matches) {
-      evidenzia(strumento);
+      evidenzia(strumento, { porta: !scorri });
       if (scorri) {
         strumento.scrollIntoView({ behavior: 'smooth', block: 'start' });
         setTimeout(() => strumento.querySelector('input, select, button:not(.close-btn)')?.focus({ preventScroll: true }), 450);
