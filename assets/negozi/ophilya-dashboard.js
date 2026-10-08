@@ -1,8 +1,12 @@
 /* Contenuto della dashboard di OPHILYA (vedi assets/js/dashboard.js). Immagini e PDF nella cartella assets/.
    Le pagine di TEBE non ancora pronte per OPHILYA restano in Coming Soon; le Utilità Cassa solo in CASSIERE. */
 Dashboard.contenuto({
-  // al posto del titolo, l'interruttore tra TEBE e OPHILYA (se installati tutti e due)
-  intestazione: { interruttore: ['tebe', 'ophilya'], titolo: 'Visual Merchandising & Cassa' },
+  intestazione: {
+    titolo: 'Visual Merchandising & Cassa',
+    sottotitolo: 'Crea la grafica promozionale e calcola i prezzi in tempo reale.',
+    // in più, accanto al selettore CASSIERE / CREATOR, l'interruttore tra TEBE e OPHILYA (se installati tutti e due)
+    interruttore: ['tebe', 'ophilya']
+  },
   logo: { src: 'img/ophilya/ophilyablack.png', larghezza: 205, alt: 'OPHILYA' },
   identita: ['VIA DEL CORSO 268', 'LEATHER GOODS · MADE IN ITALY'],
   qr: 'https://www.instagram.com/tebe_269/',

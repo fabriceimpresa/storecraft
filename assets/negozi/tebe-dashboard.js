@@ -1,7 +1,11 @@
 /* Contenuto della dashboard di TEBE (vedi assets/js/dashboard.js). Immagini e PDF nella cartella assets/. */
 Dashboard.contenuto({
-  // al posto del titolo, l'interruttore tra TEBE e OPHILYA (se installati tutti e due)
-  intestazione: { interruttore: ['tebe', 'ophilya'], titolo: 'Visual Merchandising & Cassa' },
+  intestazione: {
+    titolo: 'Visual Merchandising & Cassa',
+    sottotitolo: 'Crea la grafica promozionale e calcola i prezzi in tempo reale.',
+    // in più, accanto al selettore CASSIERE / CREATOR, l'interruttore tra TEBE e OPHILYA (se installati tutti e due)
+    interruttore: ['tebe', 'ophilya']
+  },
   logo: { src: 'img/tebe/tebeblack.png', larghezza: 205, alt: 'TEBE' },
   identita: ['VIA DEL CORSO 269', 'MODA DONNA · BRANDS · LINEA 269'],
   qr: 'https://www.instagram.com/tebe_269/',

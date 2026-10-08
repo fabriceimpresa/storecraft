@@ -789,9 +789,15 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 
 /* ===== Parti della dashboard unica (dashboard.js) ===== */
 
-/* Intestazione: in Luxury titolo e sottotitolo; in TEBE e OPHILYA, al loro posto, l'interruttore tra i due negozi,
-   con l'aspetto del selettore CASSIERE / CREATOR (stessi colori in tutti i temi) */
-.mode-switcher.store-switch { position: static; display: inline-flex; z-index: auto; }
+/* Intestazione: titolo e sottotitolo in tutti i negozi; in TEBE e OPHILYA in più l'interruttore tra i due negozi, con
+   l'aspetto del selettore CASSIERE / CREATOR (stessi colori in tutti i temi), fisso in alto a destra alla sua sinistra
+   e largo uguale, staccato di 14 px (--larghezza-selettore: larghezza del più largo dei due, scritta da dashboard.js); i
+   pulsanti si dividono a metà lo spazio. Sul telefono l'interruttore sta sotto il titolo */
+body:has(.store-switch) .mode-switcher { width: var(--larghezza-selettore, auto); }
+body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content: center; }
+.mode-switcher.store-switch { right: calc(2rem + var(--larghezza-selettore, 196px) + 14px); }
+/* titolo e sottotitolo non passano sotto i due selettori: nelle finestre strette vanno a capo prima */
+#main-content > header:has(.store-switch) :is(h1, p) { padding-right: calc(var(--larghezza-selettori, 380px) - 1rem); }
 .store-switch .mode-btn { letter-spacing: 0.16em; }
 
 /* Sotto il divisorio: logo del negozio (bianco su fondo scuro, nero su fondo chiaro) e indirizzo */
@@ -846,4 +852,8 @@ body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
   .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
   .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
   .store-logo { max-width: 185px; margin: 0 auto; }
+  .mode-switcher.store-switch { position: static; display: inline-flex; margin-top: 16px; z-index: auto; }
+  #main-content > header:has(.store-switch) :is(h1, p) { padding-right: 0; }
+  body:has(.store-switch) .mode-switcher { width: auto; }
+  body:has(.store-switch) .mode-switcher .mode-btn { flex: 0 1 auto; }
 }

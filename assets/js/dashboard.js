@@ -7,7 +7,7 @@
    La pagina chiama Dashboard.disegna() in fondo al <body>, prima che theme.js prepari il menu di sistema.
 
    Contenuto del negozio:
-     intestazione   { titolo, sottotitolo }  oppure  { interruttore: ['tebe', 'ophilya'] } (negozi tra cui passare,
+     intestazione   { titolo, sottotitolo, interruttore: ['tebe', 'ophilya'] } (interruttore facoltativo: negozi tra cui passare,
                     mostrati solo se installati almeno due)
      logo           { src (nella cartella assets/), larghezza, alt }: sotto il divisorio, bianco su fondo scuro e nero
                     su fondo chiaro
@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.62 2026';
+  const VERSIONE = 'V 1.63 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -220,20 +220,20 @@
           onclick: () => scrollCarousel(s.carosello, 1) })));
   }
 
-  // Intestazione: titolo e sottotitolo, oppure l'interruttore tra i negozi indicati (se ne sono installati almeno due)
+  // Intestazione: titolo e sottotitolo e, se il negozio lo indica (e ne sono installati almeno due), l'interruttore tra i
+  // negozi, in alto a destra accanto al selettore CASSIERE / CREATOR (posizione in dashboard.css)
   function intestazione() {
     const header = el('header', {},
       el('button', { class: 'home-mark', type: 'button', 'aria-label': "Torna all'inizio della home", onclick: () => returnToHomeTop() },
         el('span', { class: 'home-mark-icon', 'aria-hidden': 'true', text: '⌂' }), el('span', { text: 'HOME' })));
+    header.append(el('h1', { text: dati.intestazione.titolo || 'Visual Merchandising & Cassa' }));
+    if (dati.intestazione.sottotitolo) header.append(el('p', { text: dati.intestazione.sottotitolo }));
     const interruttore = (dati.intestazione.interruttore || []).filter(id => PuntoVendita.NEGOZI[id]);
     if (interruttore.length >= 2) {
       header.append(el('div', { class: 'mode-switcher store-switch', role: 'group', 'aria-label': 'Negozio' },
         interruttore.map(id => el('button', { class: `mode-btn${id === negozio ? ' active' : ''}`, type: 'button',
           'aria-pressed': String(id === negozio), text: PuntoVendita.NEGOZI[id].nome,
           onclick: id === negozio ? null : () => PuntoVendita.scegli(id) }))));
-    } else {
-      header.append(el('h1', { text: dati.intestazione.titolo || 'Visual Merchandising & Cassa' }));
-      if (dati.intestazione.sottotitolo) header.append(el('p', { text: dati.intestazione.sottotitolo }));
     }
     return header;
   }
@@ -284,6 +284,25 @@
         strumenti,
         el('div', { class: 'mobile-brand-footer', text: 'STORE // CRAFT' })));
     Cassa.crea(strumenti, { qr: dati.qr || '' });
+    // l'interruttore dei negozi sta a sinistra del selettore CASSIERE / CREATOR, largo uguale (la larghezza del più largo
+    // dei due, --larghezza-selettore, che cambia con l'aspetto), e titolo e sottotitolo lasciano libero lo spazio dei due
+    // selettori (--larghezza-selettori); variabili usate da dashboard.css
+    const selettore = corpo.querySelector('.mobile-top-bar .mode-switcher');
+    const negozi = corpo.querySelector('.store-switch');
+    if (negozi) {
+      const radice = document.documentElement.style;
+      const misura = () => {
+        radice.removeProperty('--larghezza-selettore');
+        const larghezza = Math.ceil(Math.max(selettore.offsetWidth, negozi.offsetWidth));
+        radice.setProperty('--larghezza-selettore', `${larghezza}px`);
+        radice.setProperty('--larghezza-selettori', `${2 * larghezza + 14}px`);
+      };
+      misura();
+      document.fonts?.ready.then(misura);
+      window.addEventListener('resize', misura);
+      new MutationObserver(misura).observe(document.documentElement,
+        { attributes: true, attributeFilter: ['data-interface-look', 'data-interface-theme'] });
+    }
   }
 
   // Favicon del negozio, se c'è
