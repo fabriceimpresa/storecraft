@@ -2,14 +2,15 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-21"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-21">
+  <script src="../assets/js/negozi.js?v=20261008-22"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-22">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-21">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello Multi Articolo</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-21">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-22">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261008-22"></script>
   <style>
     * { 
       box-sizing: border-box; 
@@ -95,72 +96,6 @@
 
 
 
-
-    /* CAMPO PERCENTUALE CON FRECCE */
-    .percent-input-wrapper {
-      display: flex;
-      align-items: stretch;
-      border: 1px solid var(--pannello-bordo);
-      border-radius: 4px;
-      background-color: var(--pannello-campo);
-      overflow: hidden;
-    }
-
-    .percent-input-wrapper:focus-within {
-      border-color: var(--pannello-oro);
-      box-shadow: 0 0 4px var(--pannello-alone);
-    }
-
-    .percent-input-wrapper input#discountValue {
-      flex: 1 1 auto;
-      width: auto;
-      text-align: left;
-      border: none;
-      background: transparent;
-      padding: 0.45rem 0 0.45rem 0.45rem;
-      -moz-appearance: textfield;
-    }
-
-    .percent-input-wrapper input#discountValue:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    .percent-input-wrapper input#discountValue::-webkit-outer-spin-button,
-    .percent-input-wrapper input#discountValue::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .percent-input-wrapper .percent-stepper {
-      flex: 0 0 1.6rem;
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid var(--pannello-bordo);
-      overflow: hidden;
-    }
-
-    .percent-input-wrapper .percent-stepper button {
-      flex: 1;
-      border: none;
-      border-bottom: 1px solid var(--pannello-bordo);
-      background: var(--pannello-riquadro);
-      color: var(--pannello-oro);
-      cursor: pointer;
-      font-size: 0.6rem;
-      line-height: 1;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .percent-input-wrapper .percent-stepper button:last-child { border-bottom: none; }
-
-    .percent-input-wrapper .percent-stepper button:hover {
-      background: var(--pannello-riquadro-hover);
-      color: var(--pannello-oro-chiaro);
-    }
 
     /* PULSANTE STAMPA */
 
@@ -475,10 +410,10 @@
       .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-21">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-21"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-22">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-22"></script>
 </head>
 <body>
 
@@ -518,13 +453,13 @@
 
       <div class="form-group">
         <label>Prezzo Originario</label>
-        <input type="text" id="oldPrice" value="" placeholder="es. 49,90" oninput="onInputOldPrice()">
+        <input data-prezzo type="text" id="oldPrice" value="" placeholder="es. 49,90" oninput="onInputOldPrice()">
       </div>
 
       <div class="form-group">
         <label class="section-label" for="discountValue">Percentuale Sconto</label>
         <div class="percent-input-wrapper">
-          <input type="number" id="discountValue" value="20" min="1" max="99" oninput="onInputDiscount()">
+          <input data-percentuale type="number" id="discountValue" value="20" min="1" max="99" oninput="onInputDiscount()">
           <div class="percent-stepper">
             <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
             <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
@@ -534,7 +469,7 @@
 
       <div class="form-group">
         <label>Prezzo Finale</label>
-        <input type="text" id="newPrice" value="" placeholder="es. 39,90" oninput="onInputNewPrice()">
+        <input data-prezzo type="text" id="newPrice" value="" placeholder="es. 39,90" oninput="onInputNewPrice()">
       </div>
 
       <button class="btn-print" onclick="window.print()">Stampa Cartello (A4)</button>
@@ -566,7 +501,7 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-21"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-22"></script>
   <script>
     let articles = [
       { desc: 'Top', oldPrice: '49,90', discount: '20', newPrice: '39,90' },
@@ -734,7 +669,7 @@
     loadActiveRowIntoForm();
     updateCards();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-21"></script>
+  <script src="../assets/js/cursore.js?v=20261008-22"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'articolo (riga) in modifica e i suoi valori.
     // Con 2 articoli ogni articolo è una colonna, con 3-4 una riga della tabella.
@@ -759,6 +694,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-21"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-22"></script>
 </body>
 </html>

@@ -2,14 +2,15 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-21"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-21">
+  <script src="../assets/js/negozi.js?v=20261008-22"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-22">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-21">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-21">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-22">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261008-22"></script>
 
   <style>
     /* Font locali da assets/fonts */
@@ -81,27 +82,6 @@
 
 
 
-
-    .currency-input-group {
-      position: relative;
-    }
-
-    .currency-input-group .currency-prefix {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text);
-      font-weight: normal;
-      font-size: 0.82rem;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .currency-input-group input {
-      padding-left: 26px;
-      line-height: 1.2;
-    }
 
     /* Tasto di stampa dentro il riquadro di modifica, come nei cartelli */
     .editor-section .btn-print { margin: 0; }
@@ -256,10 +236,10 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.38; } }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-21">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-21"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-22">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-22"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -293,7 +273,7 @@
         <label for="inp-price">Prezzo</label>
         <div class="currency-input-group">
           <span class="currency-prefix">€</span>
-          <input type="text" id="inp-price" class="form-control" placeholder="30,00" inputmode="decimal" oninput="updateCurrentColumn()">
+          <input data-prezzo type="text" id="inp-price" class="form-control" placeholder="30,00" inputmode="decimal" oninput="updateCurrentColumn()">
         </div>
       </div>
 
@@ -322,8 +302,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/fasce-prezzo.js?v=20261008-21"></script>
-  <script src="../assets/js/testi-pronti.js?v=20261008-21"></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261008-22"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-22"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -506,7 +486,7 @@
 
     init();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-21"></script>
+  <script src="../assets/js/cursore.js?v=20261008-22"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -529,6 +509,6 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-21" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-22" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

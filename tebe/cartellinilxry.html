@@ -2,19 +2,20 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-21"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-21">
+  <script src="../assets/js/negozi.js?v=20261008-22"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-22">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-21">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-22">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini LXRY</title>
     <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-21"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-21"></script>
-  <script src="../assets/js/logos.js?v=20261008-21"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-21"></script>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-21">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261008-22"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261008-22"></script>
+  <script src="../assets/js/logos.js?v=20261008-22"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261008-22"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-22">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261008-22"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -88,67 +89,6 @@
       cursor: pointer;
     }
 
-
-    /* CAMPO PERCENTUALE CON FRECCE */
-    .percent-input-wrapper {
-      display: flex;
-      align-items: stretch;
-      border: 1px solid var(--pannello-bordo);
-      border-radius: 4px;
-      background-color: var(--card);
-      overflow: hidden;
-    }
-
-    .percent-input-wrapper:focus-within {
-      border-color: var(--pannello-oro);
-      box-shadow: 0 0 4px var(--pannello-alone);
-    }
-
-    .percent-input-wrapper input#discountValue {
-      flex: 1 1 auto;
-      width: auto;
-      min-width: 0;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-      -moz-appearance: textfield;
-    }
-
-    .percent-input-wrapper input#discountValue::-webkit-outer-spin-button,
-    .percent-input-wrapper input#discountValue::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .percent-input-wrapper .percent-stepper {
-      flex: 0 0 1.6rem;
-      display: flex;
-      flex-direction: column;
-      border-left: 1px solid var(--pannello-bordo);
-      overflow: hidden;
-    }
-
-    .percent-input-wrapper .percent-stepper button {
-      flex: 1;
-      border: none;
-      border-bottom: 1px solid var(--pannello-bordo);
-      background: var(--pannello-riquadro);
-      color: var(--pannello-oro);
-      cursor: pointer;
-      font-size: 0.6rem;
-      line-height: 1;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .percent-input-wrapper .percent-stepper button:last-child { border-bottom: none; }
-
-    .percent-input-wrapper .percent-stepper button:hover {
-      background: var(--pannello-riquadro-hover);
-      color: var(--pannello-oro-chiaro);
-    }
 
     /* Evidenzia i brand della casa TEBE (PRIORITY_BRANDS) in cima al menu brand */
     select option.priority-brand-option {
@@ -229,27 +169,6 @@
     .orig-discount .strike { text-decoration: line-through; }
     .orig-discount .badge-sconto { color: var(--gold); font-size: 13pt; font-weight: bold; font-style: normal; }
     .currency { font-family: inherit; font-weight: inherit; }
-    .currency-input-group {
-      position: relative;
-    }
-
-    .currency-input-group .currency-prefix {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text);
-      font-weight: normal;
-      font-size: 0.82rem;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .currency-input-group input {
-      padding-left: 26px;
-      line-height: 1.2;
-    }
-
     /* Dicitura Oro */
     .preset-label { font-family: 'Bodoni Std', serif; font-size: 13.5pt; font-weight: bold; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
 
@@ -350,10 +269,10 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.27; } }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-21">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-21">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-21"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-22">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-22">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-22"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -413,13 +332,13 @@
           <label>Prezzo Originario</label>
           <div class="currency-input-group">
             <span class="currency-prefix">€</span>
-            <input type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
+            <input data-prezzo type="text" id="inp-orig" class="form-control" placeholder="396,00" oninput="updateCurrentCard()">
           </div>
         </div>
         <div class="form-group">
           <label class="section-label" for="discountValue">Percentuale Sconto</label>
           <div class="percent-input-wrapper">
-            <input type="number" id="discountValue" class="form-control" value="50" min="1" max="99" oninput="updateCurrentCard()">
+            <input data-percentuale type="number" id="discountValue" class="form-control" value="50" min="1" max="99" oninput="updateCurrentCard()">
             <div class="percent-stepper">
               <button type="button" aria-label="Aumenta percentuale" onclick="stepDiscount(1)">▲</button>
               <button type="button" aria-label="Diminuisci percentuale" onclick="stepDiscount(-1)">▼</button>
@@ -442,7 +361,7 @@
         <label>Prezzo Finale</label>
         <div class="currency-input-group">
           <span class="currency-prefix">€</span>
-          <input type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
+          <input data-prezzo type="text" id="inp-final" class="form-control" placeholder="198,00" oninput="updateCurrentCard()">
         </div>
       </div>
 
@@ -457,7 +376,7 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-21"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-22"></script>
   <script>
 
     function cleanBrandName(fileName) {
@@ -781,7 +700,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-21"></script>
+  <script src="../assets/js/cursore.js?v=20261008-22"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -808,6 +727,6 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-21" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-22" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>
