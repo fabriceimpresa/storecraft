@@ -933,7 +933,7 @@
 .system-setting-label,
 .theme-choice { font-size: .68rem; }
 .system-menu-item:disabled { opacity: 1; }
-.system-menu-icon { --icona-scala: 1; transform: scale(var(--icona-scala)); }
+.system-menu-icon { flex-basis: 20px; font-size: 1.05rem; --icona-scala: 1; transform: scale(var(--icona-scala)); }
 [data-system-menu-item="settings"] .system-menu-icon { --icona-scala: 1.08; }
 [data-system-menu-item="profile"] .system-menu-icon { --icona-scala: .92; }
 [data-system-menu-item="store"] .system-menu-icon { --icona-scala: 1.08; }
