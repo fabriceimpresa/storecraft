@@ -1,8 +1,8 @@
 /* Contenuto della dashboard di TEBE (vedi assets/js/dashboard.js). Immagini e PDF nella cartella assets/. */
 Dashboard.contenuto({
   intestazione: {
-    titolo: 'Visual Merchandising & Cassa',
-    sottotitolo: 'Crea la grafica promozionale e calcola i prezzi in tempo reale.',
+    titolo: 'Visual Merchandising Studio',
+    sottotitolo: 'Crea la tua grafica promozionale in tempo reale',
     // in più, accanto al selettore CASSIERE / CREATOR, l'interruttore tra TEBE e OPHILYA (se installati tutti e due)
     interruttore: ['tebe', 'ophilya']
   },

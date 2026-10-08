@@ -1,8 +1,8 @@
 /* Contenuto della dashboard di Luxury Outlet (vedi assets/js/dashboard.js). Immagini e PDF nella cartella assets/. */
 Dashboard.contenuto({
   intestazione: {
-    titolo: 'Visual Merchandising & Cassa',
-    sottotitolo: 'Crea la grafica promozionale e calcola i prezzi in tempo reale.'
+    titolo: 'Visual Merchandising Studio',
+    sottotitolo: 'Crea la tua grafica promozionale in tempo reale'
   },
   logo: { src: 'img/luxury/logo-dashboard.png', larghezza: 205, alt: 'LUXURY OUTLET' },
   identita: ['VIA DEL CORSO 15', 'OUTLET MULTI BRAND · LINEA LXRY'],

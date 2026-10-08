@@ -120,6 +120,12 @@
     font-weight: 400;
   }
 
+  /* sottotitolo sotto il titolo: un poco più piccolo e con le lettere appena spaziate, più leggero da leggere */
+  :root[data-interface-look="minimal"] body:not([data-layout]) #main-content > header p {
+    font-size: 12.5px;
+    letter-spacing: .05em;
+  }
+
   :root[data-interface-look="minimal"] body:not([data-layout]) #main-content .section-title {
     margin-bottom: 1.1rem;
   }
@@ -518,6 +524,52 @@
     color: #282522 !important;
     border-color: transparent !important;
     box-shadow: none !important;
+  }
+
+  /* Pulsante HOME che torna in cima alla dashboard: avorio con bordo oro, al passaggio del mouse oro con scritta bianca */
+  :root[data-interface-theme="light"] body:not([data-layout]) .home-mark {
+    background: var(--interface-surface);
+    border-color: var(--interface-accent);
+    color: var(--interface-text);
+    box-shadow: 0 4px 12px var(--interface-shadow);
+  }
+
+  :root[data-interface-theme="light"] body:not([data-layout]) .home-mark:hover {
+    background: var(--interface-accent);
+    border-color: var(--interface-accent-bright);
+    color: #fffdfa;
+    box-shadow: 0 4px 14px var(--interface-shadow);
+  }
+
+  /* Etichetta MENU SPECIALE sulle schede: in tema chiaro oro più morbido, ombra leggera e scritta grigio scuro caldo */
+  :root[data-interface-theme="light"] body:not([data-layout]) .card-badge {
+    background: linear-gradient(135deg, #c9a35f, #f6ebd3, #c9a35f, #e2c68e);
+    color: #3d372f;
+    box-shadow: 0 2px 6px var(--interface-shadow);
+  }
+
+  /* nel look COMPATTO il pulsante HOME è come quello di TEBE: squadrato, Arial 10 px con lettere spaziate, 7 x 11 px di spazio interno, casetta più grande della scritta (14 px) */
+  :root[data-interface-look="minimal"] body:not([data-layout]) .home-mark {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: .14em;
+    border-radius: 0;
+    gap: 6px;
+    padding: 7px 11px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) .home-mark-icon {
+    font-size: 14px;
+    line-height: 11px;
+  }
+
+  /* nel look COMPATTO l'etichetta usa Arial come gli altri testi piccoli */
+  :root[data-interface-look="minimal"] body:not([data-layout]) .card-badge {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
   }
 
   :root[data-interface-look="minimal"] body:not([data-layout]) .mode-switcher {

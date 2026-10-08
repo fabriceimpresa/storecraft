@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.63 2026';
+  const VERSIONE = 'V 1.64 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -226,7 +226,7 @@
     const header = el('header', {},
       el('button', { class: 'home-mark', type: 'button', 'aria-label': "Torna all'inizio della home", onclick: () => returnToHomeTop() },
         el('span', { class: 'home-mark-icon', 'aria-hidden': 'true', text: '⌂' }), el('span', { text: 'HOME' })));
-    header.append(el('h1', { text: dati.intestazione.titolo || 'Visual Merchandising & Cassa' }));
+    header.append(el('h1', { text: dati.intestazione.titolo || 'Visual Merchandising Studio' }));
     if (dati.intestazione.sottotitolo) header.append(el('p', { text: dati.intestazione.sottotitolo }));
     const interruttore = (dati.intestazione.interruttore || []).filter(id => PuntoVendita.NEGOZI[id]);
     if (interruttore.length >= 2) {
@@ -296,6 +296,30 @@
         const larghezza = Math.ceil(Math.max(selettore.offsetWidth, negozi.offsetWidth));
         radice.setProperty('--larghezza-selettore', `${larghezza}px`);
         radice.setProperty('--larghezza-selettori', `${2 * larghezza + 14}px`);
+        radice.setProperty('--altezza-selettore', `${Math.ceil(selettore.offsetHeight)}px`);
+        adattaTitolo();
+      };
+      // titolo e sottotitolo restano su una riga (dashboard.css, da desktop e tablet). Se a sinistra dei due selettori
+      // affiancati il titolo dovrebbe scendere sotto il 90% della sua grandezza, i selettori si mettono uno sotto l'altro
+      // (classe .selettori-in-colonna sul body); se lo spazio ancora non basta, il carattere si rimpicciolisce quanto serve
+      const testi = () => [...corpo.querySelectorAll('#main-content > header :is(h1, p)')];
+      const scala = testo => {
+        const stile = getComputedStyle(testo);
+        if (stile.whiteSpace !== 'nowrap') return 1;
+        const spazio = testo.clientWidth - parseFloat(stile.paddingLeft) - parseFloat(stile.paddingRight);
+        const intervallo = document.createRange();
+        intervallo.selectNodeContents(testo);
+        const larghezza = intervallo.getBoundingClientRect().width;
+        return larghezza > spazio && spazio > 0 ? spazio / larghezza : 1;
+      };
+      const adattaTitolo = () => {
+        testi().forEach(testo => { testo.style.fontSize = ''; });
+        document.body.classList.remove('selettori-in-colonna');
+        if (Math.min(...testi().map(scala)) < 0.9) document.body.classList.add('selettori-in-colonna');
+        testi().forEach(testo => {
+          const fattore = scala(testo);
+          if (fattore < 1) testo.style.fontSize = `${parseFloat(getComputedStyle(testo).fontSize) * fattore}px`;
+        });
       };
       misura();
       document.fonts?.ready.then(misura);

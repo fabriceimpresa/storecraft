@@ -210,11 +210,15 @@ header { position: relative; border-bottom: 1px solid var(--border); padding-bot
 /* Sul desktop il divisorio sotto l'intestazione cade sempre all'altezza della voce CREA CARTELLI del menu laterale
    (24 px sopra + 94 px di intestazione = 118 px), con il titolo, l'interruttore o l'aspetto che sia */
 @media screen and (min-width: 721px) { #main-content > header { min-height: 94px; } }
-.home-mark { position: fixed; top: 1rem; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+/* Sotto il divisorio lo stesso spazio che c'è sopra, tra il sottotitolo e il divisorio (circa 35 px in STANDARD): nel look COMPATTO
+   il sottotitolo in Arial è più piccolo e lascia sopra 5 px in più, quindi anche sotto si aggiungono 5 px */
+@media screen and (min-width: 721px) { :root[data-interface-look="minimal"] #main-content > header { margin-bottom: calc(2rem + 5px); } }
+.home-mark { position: fixed; top: 24px; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
 
-/* Selettore CASSIERE / CREATOR: un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro */
-.mode-switcher { position: fixed; top: 24px; right: 2rem; display: flex; gap: 3px; padding: 3px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
-.mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
+/* Selettore CASSIERE / CREATOR (e TEBE / OPHILYA): un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro.
+   In STANDARD stesse misure del look COMPATTO (riquadro 4 px, pulsanti alti 29 px): cambiano solo forma e carattere */
+.mode-switcher { position: fixed; top: 24px; right: 2rem; display: flex; gap: 4px; padding: 4px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
+.mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; height: 29px; padding: 0 13px; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
 .mode-btn:hover { color: var(--accent); }
 .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
 
@@ -466,6 +470,15 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 .tool-input { width: 100%; padding: 0.6rem 0.7rem; background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
 .tool-input-select { width: 100%; padding: 0.6rem 0.7rem; background: #0a0908; border: 1px solid var(--border); color: #fff; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; outline: none; }
 .tool-input-select:focus, .tool-input:focus { border-color: var(--accent); }
+/* Utilità Cassa: campi, menu, simboli e pulsanti sempre su una riga sola; il testo che non entra finisce con i puntini */
+:is(.tool-input, .tool-input-select, .input-prefix, .input-suffix, .tool-btn, .rate-btn-widget) { white-space: nowrap; }
+.tool-input-select { overflow: hidden; text-overflow: ellipsis; }
+/* la freccia del menu resta sempre visibile a destra, sopra il testo troppo lungo */
+.tool-input-select { position: relative; padding-right: 2.1rem; }
+.tool-input-select::picker-icon { position: absolute; top: 0; bottom: 0; right: 0; display: flex; align-items: center; padding: 0 0.7rem 0 0.5rem; background: inherit; }
+.tool-input-select selectedcontent { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.input-group .tool-input { flex: 1 1 auto; min-width: 0; }
+.input-group :is(.input-prefix, .input-suffix, .tool-input-select) { flex: 0 0 auto; }
 
 .tool-btn { 
   padding: 0.65rem 0.8rem; 
@@ -678,6 +691,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   }
 
   .mobile-top-bar .mode-btn {
+    height: auto;
     padding: 0.3rem 0.45rem;
     font-size: 0.62rem;
     border-radius: 3px;
@@ -796,15 +810,29 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 body:has(.store-switch) .mode-switcher { width: var(--larghezza-selettore, auto); }
 body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content: center; }
 .mode-switcher.store-switch { right: calc(2rem + var(--larghezza-selettore, 196px) + 14px); }
-/* titolo e sottotitolo non passano sotto i due selettori: nelle finestre strette vanno a capo prima */
-#main-content > header:has(.store-switch) :is(h1, p) { padding-right: calc(var(--larghezza-selettori, 380px) - 1rem); }
-.store-switch .mode-btn { letter-spacing: 0.16em; }
+/* titolo e sottotitolo non passano sotto i due selettori */
+#main-content > header:has(.store-switch) :is(h1, p) { padding-right: calc(var(--larghezza-selettori, 380px) - 1rem + 24px); }
+/* titolo e sottotitolo sempre su una riga: se lo spazio non basta dashboard.js rimpicciolisce il carattere */
+@media screen and (min-width: 721px) {
+  #main-content > header:has(.store-switch) :is(h1, p) { white-space: nowrap; }
+  /* finestre strette: l'interruttore dei negozi scende sotto CASSIERE / CREATOR (6 px sotto), il titolo ha lo spazio di un solo selettore */
+  body.selettori-in-colonna .mode-switcher.store-switch { right: 2rem; top: calc(24px + var(--altezza-selettore, 39px) + 6px); }
+  body.selettori-in-colonna #main-content > header:has(.store-switch) :is(h1, p) { padding-right: calc(var(--larghezza-selettore, 185px) - 1rem + 24px); }
+}
+/* Titolo VISUAL MERCHANDISING STUDIO in oro (il sottotitolo resta com'è): TEBE e OPHILYA in tutti e due i temi, Luxury nel tema chiaro */
+:root[data-negozio="tebe"] #main-content > header h1,
+:root[data-negozio="ophilya"] #main-content > header h1,
+:root[data-negozio="luxury"][data-interface-theme="light"] #main-content > header h1 { color: var(--interface-accent, var(--accent)); }
 
 /* Sotto il divisorio: logo del negozio (bianco su fondo scuro, nero su fondo chiaro) e indirizzo */
 .store-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 2.75rem; }
 /* nel tema scuro bianco un poco spento (opacità 85%), meno acceso sul fondo scuro */
 .store-logo { display: block; width: 100%; max-width: var(--store-logo-larghezza, 205px); height: auto; filter: brightness(0) invert(1); opacity: .85; }
 :root[data-interface-theme="light"] .store-logo { filter: brightness(0); opacity: 1; }
+/* Luxury, tema chiaro: logo taupe scuro (#544e44 circa) invece del nero, meno duro sul fondo avorio */
+:root[data-negozio="luxury"][data-interface-theme="light"] .store-logo { filter: brightness(0) invert(28%) sepia(50%) saturate(110%); }
+/* Luxury: logo un poco più piccolo (90%) nello stesso spazio, così l'area sotto il divisorio resta uguale agli altri negozi */
+:root[data-negozio="luxury"] .store-logo { transform: scale(.9); transform-origin: left center; }
 .store-identity { text-align: right; padding-bottom: 3px; }
 .store-identity strong { display: block; font-size: 12px; font-weight: 400; letter-spacing: .2em; color: var(--accent); }
 .store-identity span { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .16em; color: var(--text-muted); }
@@ -852,6 +880,7 @@ body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
   .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
   .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
   .store-logo { max-width: 185px; margin: 0 auto; }
+  :root[data-negozio="luxury"] .store-logo { transform-origin: center; }
   .mode-switcher.store-switch { position: static; display: inline-flex; margin-top: 16px; z-index: auto; }
   #main-content > header:has(.store-switch) :is(h1, p) { padding-right: 0; }
   body:has(.store-switch) .mode-switcher { width: auto; }
