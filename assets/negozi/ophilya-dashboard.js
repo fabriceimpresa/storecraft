@@ -11,7 +11,6 @@ Dashboard.contenuto({
   identita: ['VIA DEL CORSO 268', 'LEATHER GOODS · MADE IN ITALY'],
   qr: 'https://www.instagram.com/tebe_269/',
   cassa: 'solo-cassiere',
-  icona: 'img/ophilya/favicon.ico?v=20260930c',
   etichette: 'etichetteophilya.html',
   sezioni: [
     {

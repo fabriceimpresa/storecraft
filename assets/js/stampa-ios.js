@@ -11,7 +11,10 @@
   const ios = /iP(hone|ad|od)/.test(navigator.userAgent)
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (!ios) return;
-  const sheet = document.querySelector('#printSheet, #a4Sheet, #printable-grid');
+  // Il foglio della pagina, cercato in quest'ordine; .print-sheet per le pagine senza id sul foglio
+  // (Albero e Paletti di TEBE e OPHILYA).
+  const sheet = ['#printSheet', '#a4Sheet', '#printable-grid', '.print-sheet']
+    .map(selector => document.querySelector(selector)).find(Boolean);
   if (!sheet) return;
 
   // lista-stampa.js sta accanto a questo file, con la stessa versione (le pagine sono nelle cartelle dei negozi).

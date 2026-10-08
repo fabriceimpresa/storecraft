@@ -10,7 +10,6 @@ Dashboard.contenuto({
   identita: ['VIA DEL CORSO 269', 'MODA DONNA · BRANDS · LINEA 269'],
   qr: 'https://www.instagram.com/tebe_269/',
   cassa: 'sempre',
-  icona: 'img/tebe/favicon.ico?v=20260930c',
   etichette: 'etichette.html',
   sezioni: [
     {

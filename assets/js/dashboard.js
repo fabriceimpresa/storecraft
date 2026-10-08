@@ -14,7 +14,6 @@
      identita       [riga principale, riga sotto] accanto al logo (es. indirizzo e descrizione)
      qr             collegamento iniziale del Generatore QR
      cassa          'sempre' oppure 'solo-cassiere' (Utilità Cassa solo in modalità CASSIERE)
-     icona          favicon del negozio (nella cartella assets/), facoltativa
      etichette      pagina delle etichette DYMO per la voce del menu laterale
      sezioni        [{ id, carosello, titolo, tipo, schede, voceMenu, stella }]
                     tipo: 'cartelli' (due righe; menu CREA CARTELLI), 'promo' (schede dorate; sottosezione PROMO
@@ -25,7 +24,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.67 2026';
+  const VERSIONE = 'V 1.68 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -335,14 +334,8 @@
     }
   }
 
-  // Favicon del negozio, se c'è
-  function icona() {
-    if (!dati?.icona) return;
-    document.head.append(el('link', { rel: 'icon', href: risorsa(dati.icona), sizes: 'any' }));
-  }
-
   window.Dashboard = Object.freeze({
-    contenuto(contenuto) { dati = contenuto; icona(); },
+    contenuto(contenuto) { dati = contenuto; },
     disegna
   });
 

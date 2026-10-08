@@ -48,4 +48,11 @@
   });
 
   scrivi(`<script src="${new URL(`installati.js${versione}`, cartella).href}"><\/script>`);
+
+  // Icona di STORE // CRAFT (S in Cinzel, oro scuro, su fondo bianco), la stessa in tutte le pagine di tutti i negozi:
+  // nella scheda del browser (32 o 512 px) e, su iPhone e iPad, sulla schermata Home.
+  const immagini = new URL('../img/', script.src);
+  scrivi(`<link rel="icon" type="image/png" sizes="32x32" href="${new URL(`favicon-32.png${versione}`, immagini).href}">`);
+  scrivi(`<link rel="icon" type="image/png" sizes="512x512" href="${new URL(`favicon.png${versione}`, immagini).href}">`);
+  scrivi(`<link rel="apple-touch-icon" href="${new URL(`apple-touch-icon.png${versione}`, immagini).href}">`);
 })();
