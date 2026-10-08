@@ -671,7 +671,9 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     box-shadow: 4px 0 25px rgba(0,0,0,0.8);
     transform: translateX(0);
   }
-  body.sidebar-collapsed aside { transform: translateX(-100%); }
+  /* chiuso, fuori dallo schermo, il menu non deve lasciare la sua ombra sul bordo sinistro: sparisce mentre esce */
+  aside { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease; }
+  body.sidebar-collapsed aside { transform: translateX(-100%); box-shadow: none; }
   .mobile-close-btn { display: flex; }
   .sidebar-overlay {
     display: block;
@@ -754,14 +756,15 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   .mobile-top-bar .mode-switcher {
     position: static;
     display: flex;
-    gap: 2px;
-    padding: 2px;
+    gap: 3px;
+    padding: 3px;
     flex-shrink: 0;
   }
 
+  /* pulsanti alti 30 px come nel COMPATTO, non schiacciati (la barra è alta 64 px) */
   .mobile-top-bar .mode-btn {
-    height: auto;
-    padding: 0.3rem 0.45rem;
+    height: 30px;
+    padding: 0 0.45rem;
     font-size: 0.62rem;
     border-radius: 3px;
     letter-spacing: 0.3px;
@@ -780,8 +783,11 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     z-index: 1000;
   }
 
+  /* chiuso, fuori dallo schermo, il menu non deve lasciare la sua ombra sul bordo sinistro: sparisce mentre esce */
+  aside { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease; }
   body.sidebar-collapsed aside {
     transform: translateX(-100%);
+    box-shadow: none;
   }
 
   .mobile-close-btn {
@@ -870,6 +876,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   .mobile-brand { font-size: 0.76rem; letter-spacing: 0.5px; }
   .mobile-nav-toggle { width: 32px; height: 34px; }
   .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
+  body .mobile-top-bar { --pulsante-barra: 54px; }
 }
 
 /* ===== Parti della dashboard unica (dashboard.js) ===== */
@@ -950,16 +957,26 @@ body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
   .preview.slideshow .preview-image { animation-duration: 4.2s; animation-iteration-count: infinite; }
   .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
   .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
-  /* sul telefono niente titolo, sottotitolo e divisorio: la pagina parte dal logo del negozio, con sotto, centrate,
-     la riga dell'indirizzo e quella descrittiva */
+  /* sul telefono niente titolo, sottotitolo e divisorio, e niente righe dell'indirizzo e descrittiva: la pagina parte dal
+     logo del negozio e sotto cominciano subito le sezioni */
   #main-content > header { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }
   #main-content > header :is(h1, p) { display: none; }
+  .store-identity { display: none; }
+  /* logo (largo al massimo 160 px) al centro tra la barra in alto e il titolo della prima sezione: circa 29 px sopra e
+     sotto, fino alle lettere del titolo (nello STANDARD il titolo in Cinzel ha più aria nella riga, quindi il margine
+     sotto è più piccolo) */
+  #main-content { padding-top: 29px; }
+  #main-content > .store-hero { margin-bottom: 24px; }
+  :root[data-interface-look="minimal"] #main-content > .store-hero { margin-bottom: 28px; }
   /* TEBE e OPHILYA: nella barra in alto l'interruttore dei negozi (spostato da dashboard.js) al posto di STORE // CRAFT,
      come nella dashboard originale di TEBE */
   .mobile-top-bar:has(.store-switch) .mobile-brand { display: none; }
-  .mobile-top-bar { gap: 8px; }
-  .store-identity { text-align: center; }
-  .store-logo { max-width: 185px; margin: 0 auto; }
+  .mobile-top-bar { gap: 8px; --pulsante-barra: 70px; }
+  /* l'interruttore subito a destra di ☰, CASSIERE / CREATOR in fondo a destra; i due selettori grandi uguale, con tutti
+     i pulsanti della stessa larghezza fissa (scritta centrata), qualunque sia la parola (COMPATTO in theme.css) */
+  .mobile-top-bar .store-switch { margin-right: auto; }
+  body .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { flex: 0 0 var(--pulsante-barra); width: var(--pulsante-barra); padding: 0 !important; justify-content: center; }
+  .store-logo { max-width: 160px; margin: 0 auto; }
   :root[data-negozio="luxury"] .store-logo { transform-origin: center; }
   .mode-switcher.store-switch { position: static; display: inline-flex; margin-top: 0; z-index: auto; }
   #main-content > header:has(.store-switch) :is(h1, p) { padding-right: 0; }

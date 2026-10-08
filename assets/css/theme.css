@@ -666,27 +666,19 @@
   }
 
   /* telefono, barra in alto: con l'interruttore dei negozi (TEBE e OPHILYA) i due selettori devono entrare accanto a ☰,
-     con le misure della barra della dashboard originale di TEBE (interruttore 9 px, CASSIERE / CREATOR 8 px) */
+     con le scritte della barra della dashboard originale di TEBE (8 px) e pulsanti larghi uguale, 58 px (52 sotto i 360 px;
+     larghezza fissa in dashboard.css) */
   @media (max-width: 720px) and (pointer: coarse) {
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar { --pulsante-barra: 58px; }
     :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn {
-      padding: 8px 6px;
+      height: 30px;
       font-size: 8px;
       letter-spacing: .06em;
     }
-    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar .store-switch .mode-btn {
-      padding: 8px;
-      font-size: 9px;
-    }
   }
   @media (max-width: 360px) and (pointer: coarse) {
-    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn {
-      padding: 7px 4px;
-      font-size: 7px;
-    }
-    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar .store-switch .mode-btn {
-      padding: 7px 6px;
-      font-size: 8px;
-    }
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar { --pulsante-barra: 52px; }
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { font-size: 7px; }
   }
 
   :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn:hover,
