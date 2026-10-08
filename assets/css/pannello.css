@@ -513,6 +513,7 @@
   align-items: center;
   color: var(--pannello-oro);
   font-size: 0.82rem;
+  font-weight: var(--pannello-simbolo-peso, 400);
   pointer-events: none;
 }
 

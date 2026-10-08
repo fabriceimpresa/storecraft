@@ -78,6 +78,8 @@
   --pannello-linea: rgba(180, 154, 98, 0.28);
   --pannello-stampa-testo: #fffdfa;
   --pannello-schema: light;
+  /* simboli € e % dei campi un poco più marcati: l'oro chiaro sul fondo avorio si vede poco */
+  --pannello-simbolo-peso: 600;
 
 
   /* Pulsante Made in Italy (madeinitaly.css): bordo oro chiaro, 36 px come la ✕, ombra leggera */
