@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>STORE // CRAFT · Area operatore</title>
+  <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
+       e splash page e mai inclusa nelle copie per i clienti. Raccoglie l'importazione e la gestione dei loghi ufficiali
+       (logoimport.html, logogestione.html) e la preparazione di una copia per un cliente, fatta qui con la File System
+       Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #121110;
+      --frame: #8f6a1f;          /* oro scuro della cornice, come nella splash page */
+      --frame-soft: rgba(143, 106, 31, 0.35);
+      --gold: #b48b37;
+      --gold-light: #e5ba73;
+      --accent: #d4a373;
+      --text: #f4f1ea;
+      --text-muted: #8c857b;
+      --card: #1a1917;
+      --ok: #6fbf73;
+      --err: #e06666;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      padding: 40px 16px;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at top, rgba(180, 139, 55, 0.07) 0%, rgba(18, 17, 16, 0) 60%),
+        var(--bg);
+    }
+
+    /* Cornice doppia della splash page */
+    .frame {
+      position: relative;
+      width: min(880px, 100%);
+      padding: 48px 44px 44px;
+      border: 1px solid var(--frame);
+    }
+
+    .frame::before {
+      content: '';
+      position: absolute;
+      inset: 7px;
+      border: 1px solid var(--frame-soft);
+      pointer-events: none;
+    }
+
+    .brand {
+      display: block;
+      width: 150px;
+      height: auto;
+      margin: 0 auto;
+      filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%);
+      opacity: 0.9;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 30px auto 8px;
+      max-width: 520px;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .title::before,
+    .title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--frame-soft);
+    }
+
+    .intro {
+      margin: 0 auto 30px;
+      max-width: 560px;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    /* I tre strumenti */
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .tool {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 22px 20px;
+      border: 1px solid var(--frame-soft);
+      background: var(--card);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .tool:hover,
+    .tool:focus-visible,
+    .tool[aria-expanded="true"] {
+      border-color: var(--gold);
+      background: #1f1d1a;
+      outline: none;
+    }
+
+    .tool-name {
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 0.86rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .tool-desc {
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      line-height: 1.55;
+    }
+
+    .tool-go {
+      margin-top: auto;
+      color: var(--accent);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    /* Prepara copia: tre passi */
+    .copy {
+      margin-top: 22px;
+      padding: 26px 24px 24px;
+      border: 1px solid var(--frame-soft);
+      background: var(--card);
+    }
+
+    .copy[hidden] { display: none; }
+
+    .copy-title {
+      margin: 0 0 6px;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .copy-note {
+      margin: 0 0 20px;
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      line-height: 1.55;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 14px;
+      padding: 16px 0;
+      border-top: 1px solid rgba(143, 106, 31, 0.2);
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      line-height: 26px;
+      text-align: center;
+    }
+
+    .step-label {
+      margin: 3px 0 10px;
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .step[aria-disabled="true"] { opacity: 0.4; }
+
+    .btn {
+      padding: 9px 16px;
+      border: 1px solid var(--accent);
+      border-radius: 0;
+      background: var(--accent);
+      color: #121110;
+      font: 600 0.72rem 'Plus Jakarta Sans', Arial, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn:hover:not(:disabled) { background: var(--gold-light); border-color: var(--gold-light); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+
+    .status {
+      margin-top: 8px;
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      line-height: 1.5;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--err); }
+
+    .stores {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .stores label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+    }
+
+    .stores input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+    .footer {
+      color: #6f6a62;
+      font-size: 0.66rem;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    @media (max-width: 760px) {
+      .frame { padding: 38px 20px 28px; }
+      .tools { grid-template-columns: 1fr; }
+      .title { font-size: 0.64rem; letter-spacing: 0.2em; }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame">
+    <img class="brand" src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
+    <h1 class="title">Area operatore</h1>
+    <p class="intro">Strumenti riservati al titolare di STORE // CRAFT, per Chrome o Edge sul computer.
+      Questa pagina non è collegata da dashboard e splash page e non entra nelle copie per i clienti.</p>
+
+    <div class="tools">
+      <a class="tool" href="logoimport.html">
+        <span class="tool-name">Importa loghi ufficiali</span>
+        <span class="tool-desc">Aggiunge i PNG dei brand ufficiali di un negozio, genera le quattro varianti di colore e aggiorna il suo elenco.</span>
+        <span class="tool-go">Apri →</span>
+      </a>
+      <a class="tool" href="logogestione.html">
+        <span class="tool-name">Gestisci loghi ufficiali</span>
+        <span class="tool-desc">Mostra i loghi ufficiali di un negozio e toglie quelli che non servono più, con le loro varianti.</span>
+        <span class="tool-go">Apri →</span>
+      </a>
+      <button class="tool" type="button" id="copyToggle" aria-expanded="false" aria-controls="copyPanel">
+        <span class="tool-name">Prepara copia per un cliente</span>
+        <span class="tool-desc">Copia STORE // CRAFT in una cartella con i soli negozi scelti, pronta da provare o da pubblicare per il cliente.</span>
+        <span class="tool-go">Prepara →</span>
+      </button>
+    </div>
+
+    <section class="copy" id="copyPanel" hidden aria-labelledby="copyTitle">
+      <h2 class="copy-title" id="copyTitle">Prepara copia per un cliente</h2>
+      <p class="copy-note">Come Prepara copia.bat: la copia contiene la splash page della radice (non gli strumenti di
+        questa area, il piano di lavoro e le pagine di prova _*), le cartelle dei negozi scelti, i file comuni (assets/css, js, fonts), nelle
+        cartelle di assets divise per negozio i file comuni e le sottocartelle dei soli negozi scelti, le loro schede e
+        l'elenco installati.js scritto con i negozi scelti. Restano fuori Git, la documentazione e i .bat. Il progetto
+        non viene modificato.</p>
+
+      <div class="step">
+        <span class="step-num">1</span>
+        <div>
+          <p class="step-label">Collega la cartella del progetto STORE // CRAFT</p>
+          <button class="btn" type="button" id="pickSource">Scegli cartella progetto</button>
+          <p class="status" id="sourceStatus" role="status">Nessuna cartella collegata.</p>
+        </div>
+      </div>
+
+      <div class="step" id="stepStores" aria-disabled="true">
+        <span class="step-num">2</span>
+        <div>
+          <p class="step-label" id="storesLabel">Quali negozi vuoi nella copia?</p>
+          <fieldset class="stores" id="stores" aria-labelledby="storesLabel" disabled></fieldset>
+        </div>
+      </div>
+
+      <div class="step" id="stepCopy" aria-disabled="true">
+        <span class="step-num">3</span>
+        <div>
+          <p class="step-label">Scegli la cartella di destinazione e prepara la copia</p>
+          <button class="btn" type="button" id="pickTarget" disabled>Scegli cartella e prepara</button>
+          <p class="status" id="copyStatus" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 STORE // CRAFT · Developed by Fabrizio Notte</footer>
+
+  <script>
+    // ----- Pannello Prepara copia -----
+    const copyToggle = document.getElementById('copyToggle');
+    const copyPanel = document.getElementById('copyPanel');
+    copyToggle.addEventListener('click', () => {
+      const aperto = copyPanel.hidden;
+      copyPanel.hidden = !aperto;
+      copyToggle.setAttribute('aria-expanded', String(aperto));
+      if (aperto) copyPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    const $ = id => document.getElementById(id);
+    const supportata = typeof window.showDirectoryPicker === 'function';
+    let sorgente = null;     // cartella del progetto (lettura)
+    let negozi = [];         // [{ id, nome }] dalle schede in assets/negozi/
+    let inCorso = false;
+
+    function stato(elemento, testo, tipo = '') {
+      elemento.textContent = testo;
+      elemento.className = `status ${tipo}`.trim();
+    }
+
+    if (!supportata) {
+      $('pickSource').disabled = true;
+      stato($('sourceStatus'), 'Serve Chrome o Edge sul computer: questo browser non può leggere e scrivere cartelle. In alternativa usa Prepara copia.bat.', 'err');
+    }
+
+    async function cartella(dir, nome) {
+      try { return await dir.getDirectoryHandle(nome); } catch { return null; }
+    }
+
+    async function testo(dir, nome) {
+      return (await (await dir.getFileHandle(nome)).getFile()).text();
+    }
+
+    // 1. Cartella del progetto: deve contenere index.html e assets/negozi/installati.js
+    $('pickSource').addEventListener('click', async () => {
+      if (inCorso) return;
+      let scelta;
+      try {
+        scelta = await window.showDirectoryPicker({ id: 'storecraft-progetto', mode: 'read' });
+      } catch (errore) {
+        if (errore.name !== 'AbortError') stato($('sourceStatus'), `Cartella non collegata: ${errore.message}`, 'err');
+        return;
+      }
+      try {
+        const assets = await cartella(scelta, 'assets');
+        const schede = assets && await cartella(assets, 'negozi');
+        if (!schede) throw new Error('non è la cartella del progetto STORE // CRAFT (manca assets/negozi).');
+        await scelta.getFileHandle('index.html');
+        // Negozi: le schede <negozio>.js (non installati.js né <negozio>-dashboard.js), con il nome scritto nella scheda,
+        // nell'ordine dell'elenco installati.js del progetto
+        const trovati = [];
+        for await (const [nome, voce] of schede.entries()) {
+          if (voce.kind !== 'file' || !nome.endsWith('.js') || nome === 'installati.js' || nome.endsWith('-dashboard.js')) continue;
+          const id = nome.slice(0, -3);
+          const contenuto = await (await voce.getFile()).text();
+          trovati.push({ id, nome: contenuto.match(/nome:\s*'([^']+)'/)?.[1] || id.toUpperCase() });
+        }
+        if (!trovati.length) throw new Error('non trovo le schede dei negozi in assets/negozi.');
+        const ordine = [...(await testo(schede, 'installati.js')).matchAll(/'([a-z0-9_-]+)'/g)].map(m => m[1]);
+        const posto = id => (ordine.includes(id) ? ordine.indexOf(id) : 999);
+        negozi = trovati.sort((a, b) => posto(a.id) - posto(b.id) || a.id.localeCompare(b.id));
+        sorgente = scelta;
+        stato($('sourceStatus'), `Collegata: ${scelta.name} (${negozi.length} negozi).`, 'ok');
+        mostraNegozi();
+      } catch (errore) {
+        sorgente = null;
+        stato($('sourceStatus'), `La cartella scelta non va bene: ${errore.message}`, 'err');
+        mostraNegozi();
+      }
+    });
+
+    // 2. Caselle dei negozi
+    function mostraNegozi() {
+      const campo = $('stores');
+      campo.replaceChildren();
+      negozi.forEach(({ id, nome }) => {
+        const etichetta = document.createElement('label');
+        const casella = document.createElement('input');
+        casella.type = 'checkbox';
+        casella.value = id;
+        casella.addEventListener('change', aggiornaPassi);
+        etichetta.append(casella, document.createTextNode(nome));
+        campo.append(etichetta);
+      });
+      aggiornaPassi();
+    }
+
+    function scelti() {
+      return [...document.querySelectorAll('#stores input:checked')].map(casella => casella.value);
+    }
+
+    function aggiornaPassi() {
+      const pronto = Boolean(sorgente) && !inCorso;
+      $('stores').disabled = !pronto;
+      $('stepStores').setAttribute('aria-disabled', String(!pronto));
+      const puoCopiare = pronto && scelti().length > 0;
+      $('pickTarget').disabled = !puoCopiare;
+      $('stepCopy').setAttribute('aria-disabled', String(!puoCopiare && !inCorso));
+      $('pickSource').disabled = !supportata || inCorso;
+    }
+
+    // ----- Copia -----
+    let copiati = 0;
+
+    async function copiaFile(voce, dir, nome) {
+      const file = await voce.getFile();
+      const scrittura = await (await dir.getFileHandle(nome, { create: true })).createWritable();
+      await scrittura.write(file);
+      await scrittura.close();
+      copiati += 1;
+      if (copiati % 20 === 0) stato($('copyStatus'), `Copia in corso… ${copiati} file.`);
+    }
+
+    // Copia un file o una cartella; le cartelle si uniscono a quelle già presenti (come Esplora file)
+    async function copia(voce, dir, nome) {
+      if (voce.kind === 'file') return copiaFile(voce, dir, nome);
+      const arrivo = await dir.getDirectoryHandle(nome, { create: true });
+      for await (const [figlio, sotto] of voce.entries()) await copia(sotto, arrivo, figlio);
+    }
+
+    function testoInstallati(ids) {
+      const oggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      return '/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).\r\n' +
+        '   Con un solo negozio la splash page apre subito la sua dashboard e i menu mostrano solo quel negozio.\r\n' +
+        `   Scritto dalla pagina operatore il ${oggi}. */\r\n` +
+        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}]);\r\n`;
+    }
+
+    async function preparaCopia(destinazione, ids) {
+      const tutti = negozi.map(negozio => negozio.id);
+      // Radice: la splash page; non gli strumenti dell'operatore, il piano di lavoro e le pagine di prova (_*)
+      const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'Storecraft Aggiornamento.html'];
+      for await (const [nome, voce] of sorgente.entries()) {
+        if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
+        await copiaFile(voce, destinazione, nome);
+      }
+      // Cartelle delle pagine dei negozi scelti
+      for (const id of ids) {
+        const pagine = await cartella(sorgente, id);
+        if (pagine) await copia(pagine, destinazione, id);
+      }
+      // assets: file comuni interi; nelle cartelle divise per negozio i file comuni e le sottocartelle dei soli negozi scelti
+      const assets = await cartella(sorgente, 'assets');
+      const assetsArrivo = await destinazione.getDirectoryHandle('assets', { create: true });
+      for await (const [nome, voce] of assets.entries()) {
+        if (voce.kind === 'file') { await copiaFile(voce, assetsArrivo, nome); continue; }
+        if (nome === 'negozi') {
+          const arrivo = await assetsArrivo.getDirectoryHandle('negozi', { create: true });
+          for await (const [file, scheda] of voce.entries()) {
+            const base = file.replace(/\.[^.]+$/, '');
+            if (scheda.kind === 'file' && ids.some(id => base === id || base === `${id}-dashboard`)) await copiaFile(scheda, arrivo, file);
+          }
+          const scrittura = await (await arrivo.getFileHandle('installati.js', { create: true })).createWritable();
+          await scrittura.write(testoInstallati(ids));
+          await scrittura.close();
+          continue;
+        }
+        const figli = [];
+        for await (const voceFiglia of voce.entries()) figli.push(voceFiglia);
+        const divisa = figli.some(([figlio, sotto]) => sotto.kind === 'directory' && tutti.includes(figlio));
+        if (!divisa) { await copia(voce, assetsArrivo, nome); continue; }
+        const arrivo = await assetsArrivo.getDirectoryHandle(nome, { create: true });
+        for (const [figlio, sotto] of figli) {
+          if (sotto.kind === 'directory' && tutti.includes(figlio) && !ids.includes(figlio)) continue;
+          await copia(sotto, arrivo, figlio);
+        }
+      }
+    }
+
+    // 3. Cartella di destinazione e copia
+    $('pickTarget').addEventListener('click', async () => {
+      const ids = scelti();
+      if (!sorgente || !ids.length || inCorso) return;
+      const nomi = negozi.filter(negozio => ids.includes(negozio.id)).map(negozio => negozio.nome).join(', ');
+      let destinazione;
+      try {
+        destinazione = await window.showDirectoryPicker({ id: 'storecraft-copia', mode: 'readwrite' });
+      } catch (errore) {
+        if (errore.name !== 'AbortError') stato($('copyStatus'), `Cartella non scelta: ${errore.message}`, 'err');
+        return;
+      }
+      // La copia non può stare dentro il progetto (si copierebbe dentro sé stessa)
+      if (await sorgente.isSameEntry(destinazione) || await sorgente.resolve(destinazione)) {
+        stato($('copyStatus'), 'La copia non può stare dentro il progetto STORE // CRAFT: scegli un\'altra cartella (es. sul Desktop o in Documenti).', 'err');
+        return;
+      }
+      // Cartella non vuota: conferma prima di scriverci dentro
+      for await (const _ of destinazione.keys()) {
+        if (!confirm(`La cartella "${destinazione.name}" non è vuota.\n\nI file con lo stesso nome verranno sostituiti; gli altri file restano. Per una copia pulita conviene una cartella vuota.\n\nVuoi continuare?`)) return;
+        break;
+      }
+      inCorso = true;
+      copiati = 0;
+      aggiornaPassi();
+      stato($('copyStatus'), `Preparo la copia con: ${nomi}…`);
+      try {
+        await preparaCopia(destinazione, ids);
+        stato($('copyStatus'), `Copia pronta: ${nomi} (${copiati} file) nella cartella "${destinazione.name}". Per provarla o pubblicarla, la pagina d'ingresso è index.html.`, 'ok');
+      } catch (errore) {
+        console.error(errore);
+        stato($('copyStatus'), `La copia non è riuscita (${copiati} file copiati): ${errore.message}`, 'err');
+      } finally {
+        inCorso = false;
+        aggiornaPassi();
+      }
+    });
+  </script>
+</body>
+</html>

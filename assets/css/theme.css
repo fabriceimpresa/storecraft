@@ -585,6 +585,23 @@
     box-shadow: none !important;
   }
 
+  /* Chiaro + STANDARD, da desktop e tablet: scritte dei selettori CASSIERE / CREATOR e TEBE / OPHILYA un poco più
+     piccole e, sulla voce scelta, un nero morbido (quella non scelta in un taupe leggero); spazio ai lati più largo, così i selettori restano grandi
+     come nel COMPATTO */
+  @media screen and (min-width: 721px) {
+    :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn {
+      font-size: 0.65rem;
+      padding-left: 15px;
+      padding-right: 15px;
+      color: #958c80 !important;   /* voce non scelta: taupe più leggero */
+    }
+
+    :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn:hover,
+    :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn.active {
+      color: #433d36 !important;   /* nero morbido, non troppo contrastato */
+    }
+  }
+
   /* Pulsante HOME che torna in cima alla dashboard: avorio con bordo oro, al passaggio del mouse oro con scritta bianca */
   :root[data-interface-theme="light"] body:not([data-layout]) .home-mark {
     background: var(--interface-surface);

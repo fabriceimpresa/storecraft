@@ -191,6 +191,18 @@ aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--
   color: var(--text-muted);
   white-space: nowrap;
 }
+/* Menu laterale senza scorrimento (dashboard.js, controllaSpazioMenu): se il contenuto non entra (es. CREA CARTELLI
+   aperta) logo e scritta spariscono, senza animazione come il resto del menu, e ricompaiono quando torna lo spazio */
+#sidebar-menu.firma-nascosta .sidebar-bottom { padding-top: 12px; }
+#sidebar-menu.firma-nascosta :is(.storecraft-mark, .signature-caption) { display: none; }
+/* scomparsa: copia di logo e scritta che si rimpicciolisce verso il centro (dashboard.js); niente effetto sul menu */
+#sidebar-menu .firma-risucchio { position: absolute; z-index: 2; pointer-events: none; transform-origin: center center; }
+#sidebar-menu.firma-nascosta .firma-risucchio .storecraft-mark { display: flex; }
+#sidebar-menu.firma-nascosta .firma-risucchio .signature-caption { display: block; }
+/* Se ancora non entra, le voci del menu si avvicinano quanto serve (--menu-stretto, da 0 a 7 px calcolato da dashboard.js):
+   spazio sopra e sotto le voci da 12 a 5 px, tra i titoli delle sezioni da 28 a 14 px */
+#sidebar-menu :is(.nav-btn, .nav-subtoggle) { padding-top: calc(12px - var(--menu-stretto, 0px)); padding-bottom: calc(12px - var(--menu-stretto, 0px)); }
+#sidebar-menu .sidebar-section + .sidebar-section .label { margin-top: calc(28px - 2 * var(--menu-stretto, 0px)); }
 
 /* Il menu di sistema si apre verso l'alto sopra il richiamo in fondo alla barra laterale. */
 .sidebar-credits {
@@ -224,6 +236,20 @@ header { position: relative; border-bottom: 1px solid var(--border); padding-bot
 
 #generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
 body.cassiere-mode #tools { margin-bottom: 3rem; }
+/* Vista CASSIERE: si vedono solo le Utilità Cassa (le altre sezioni si nascondono) e la riga con logo e indirizzo
+   del negozio sta sotto i widget (dashboard.js, setLayoutMode); su desktop e tablet in fondo alla pagina, con il bordo
+   più basso allineato al fondo di MENU // IMPOSTAZIONI (--hero-fondo, calcolato da dashboard.js) */
+body.cassiere-mode #main-content > div[id]:not(#tools):not(#tools-title) { display: none; }
+@media screen and (min-width: 721px) {
+  body.cassiere-mode #main-content { display: flex; flex-direction: column; }
+  body.cassiere-mode #main-content > * { width: 100%; flex-shrink: 0; }
+  body.cassiere-mode #main-content > .store-hero { margin-top: auto; padding-top: 1rem; margin-bottom: var(--hero-fondo, 0px); }
+  body.cassiere-mode #tools { margin-bottom: 2rem; row-gap: 24px; }
+  /* sotto il titolo UTILITÀ CASSA la stessa distanza che c'è sopra, tra il divisorio e il titolo (misurata sulle lettere):
+     33,5 px nello STANDARD, 36,5 px nel COMPATTO; tra le due righe di widget 24 px invece di 12 */
+  body.cassiere-mode #tools-title { margin-bottom: calc(0.8rem + 7.5px) !important; }
+  :root[data-interface-look="minimal"] body.cassiere-mode #tools-title { margin-bottom: calc(1.1rem + 10.5px) !important; }
+}
 .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
 body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
 .home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
@@ -494,6 +520,12 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 #tools .iva-campi { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
 #tools .iva-campi > * { margin-bottom: 0 !important; }
 :root:not([data-interface-look="minimal"]) #tools .iva-campi { gap: 18px; }
+/* tema chiaro + COMPATTO: elementi dei widget un poco più distanziati (fondo chiaro e caratteri sottili sembrano più fitti) */
+:root[data-interface-theme="light"][data-interface-look="minimal"] #tools .tool-row { gap: 10px; margin-bottom: 17px; }
+:root[data-interface-theme="light"][data-interface-look="minimal"] #tools .rate-grid-widget { gap: 7px; }
+:root[data-interface-theme="light"][data-interface-look="minimal"] #tools .iva-campi { gap: 17px; }
+:root[data-interface-theme="light"][data-interface-look="minimal"] #tools .qr-preview-container { margin-bottom: 17px; }
+:root[data-interface-theme="light"][data-interface-look="minimal"] #tools .tool-result { margin-top: 21px; }
 .input-group { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #0a0908; }
 .input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; flex-shrink: 0; }
 .input-suffix { padding: 0.6rem 0.7rem; background: #181715; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border-left: 1px solid var(--border); font-weight: 700; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.5px; white-space: nowrap; }

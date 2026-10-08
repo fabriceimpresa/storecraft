@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.65 2026';
+  const VERSIONE = 'V 1.66 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -106,6 +106,12 @@
       ['widget-iva', 'Calcola IVA'], ['widget-qrcode', 'Generatore QR']
     ].map(([id, nome]) => el('a', { class: 'nav-btn', href: `#${id}`, text: nome,
       onclick: event => { event.preventDefault(); apriStrumento(id); } }))));
+    // Lista di stampa del negozio: si apre nella sua finestra dedicata, come dal pulsante sotto i pannelli
+    // (strumenti-stampa.js; nome della finestra nella scheda del negozio, listaStampa)
+    const finestraLista = Negozi.corrente()?.listaStampa || `${document.documentElement.dataset.negozio}-lista-stampa`;
+    gruppi.push(gruppoMenu('lista', 'LISTA STAMPA',
+      el('a', { href: 'lista-stampa.html', class: 'nav-btn', text: 'Gestisci Lista di Stampa',
+        onclick: event => { event.preventDefault(); window.open('lista-stampa.html', finestraLista); } })));
     return gruppi;
   }
 
@@ -469,27 +475,65 @@
     Cassa.apri(id, { scorri: true });
   }
 
+  // Vista CASSIERE su desktop e tablet: la riga con logo e indirizzo sta in fondo alla pagina, con il bordo più basso
+  // alla stessa altezza del fondo del pulsante MENU // IMPOSTAZIONI (margine sotto la riga in --hero-fondo, dashboard.css)
+  function allineaRigaNegozio() {
+    const mainElem = document.getElementById('main-content');
+    const riga = mainElem?.querySelector(':scope > .store-hero');
+    const pulsante = document.getElementById('system-menu-toggle')?.getBoundingClientRect();
+    if (!riga || !document.body.classList.contains('cassiere-mode') || !pulsante?.height || pulsante.bottom > window.innerHeight) {
+      mainElem?.style.removeProperty('--hero-fondo');
+      return;
+    }
+    const fondoPulsante = window.innerHeight - pulsante.bottom;
+    const spazioMain = parseFloat(getComputedStyle(mainElem).paddingBottom);
+    // dal fondo della riga al suo elemento più basso (logo o indirizzo, anche se rimpicciolito con transform)
+    const fondoRiga = riga.getBoundingClientRect().bottom;
+    const piuBasso = Math.max(...[...riga.children].map(figlio => figlio.getBoundingClientRect().bottom));
+    mainElem.style.setProperty('--hero-fondo', `${fondoPulsante - spazioMain - (fondoRiga - piuBasso)}px`);
+  }
+
   function setLayoutMode(mode) {
     const mainElem = document.getElementById('main-content');
     const firstSection = mainElem.querySelector(':scope > div[id]:not(#tools)');
     const toolsSec = document.getElementById('tools');
     const toolsTitle = document.getElementById('tools-title');
+    const riga = mainElem.querySelector(':scope > .store-hero');
+    const header = mainElem.querySelector(':scope > header');
     const cassiere = mode === 'cassiere';
+    const cambia = document.body.classList.contains('cassiere-mode') !== cassiere;
     document.body.classList.toggle('cassiere-mode', cassiere);
     document.querySelectorAll('.mode-btn[data-mode]').forEach(button => button.classList.toggle('active', button.dataset.mode === mode));
     if (cassiere) {
+      // si vedono solo le Utilità Cassa (le altre sezioni le nasconde dashboard.css); la riga del negozio va sotto i widget
       if (firstSection) {
         mainElem.insertBefore(toolsTitle, firstSection);
         mainElem.insertBefore(toolsSec, firstSection);
+        if (riga) mainElem.insertBefore(riga, firstSection);
       }
     } else {
+      if (riga && header) header.after(riga);
       mainElem.append(toolsTitle, toolsSec, document.querySelector('.mobile-brand-footer'));
+    }
+    allineaRigaNegozio();
+    // comparsa dolce come nella splash page, un poco più veloce (0,75 s, ease-out): i contenuti salgono leggermente dal basso (16 px), la riga
+    // del negozio scende leggermente dall'alto (16 px), 0,16 s dopo
+    if (cambia && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const comparsa = da => [{ opacity: 0, transform: `translateY(${da}px)` }, { opacity: 1, transform: 'none' }];
+      [...mainElem.children].filter(e => e !== riga && e !== header && getComputedStyle(e).display !== 'none')
+        .forEach(e => e.animate(comparsa(16), { duration: 750, easing: 'ease-out', fill: 'backwards' }));
+      riga?.animate(comparsa(-16), { duration: 750, delay: 160, easing: 'ease-out', fill: 'backwards' });
     }
     Cassa.chiudi();
     if (phoneViewQuery.matches) window.scrollTo({ top: 0, behavior: 'smooth' });
     else mainElem.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(updateCarouselArrows, 100);
   }
+
+  // la riga del negozio della vista CASSIERE resta allineata al pulsante MENU // IMPOSTAZIONI
+  window.addEventListener('resize', allineaRigaNegozio);
+  new MutationObserver(allineaRigaNegozio).observe(document.documentElement,
+    { attributes: true, attributeFilter: ['data-interface-look'] });
 
   phoneViewQuery.addEventListener('change', () => toggleMobileSidebar(false));
   narrowViewQuery.addEventListener('change', () => toggleMobileSidebar(false));
@@ -519,5 +563,82 @@
     window.addEventListener('pageshow', event => {
       if (event.persisted) initializeSidebarSections();
     });
+    controllaSpazioMenu();
   });
+
+  // Il menu laterale non deve mai scorrere: se aprendo una sezione lunga (es. CREA CARTELLI) il contenuto non entra,
+  // prima spariscono il logo STORE // CRAFT e la scritta CRAFTED WITH STORECRAFT (classe firma-nascosta), poi, se serve
+  // ancora, le voci si avvicinano quanto basta (--menu-stretto, fino a 7 px); regole in dashboard.css. Senza animazioni,
+  // come il resto del menu: si misura dallo stato pieno e si sceglie il primo che entra.
+  function controllaSpazioMenu() {
+    const menu = document.getElementById('sidebar-menu');
+    if (!menu?.querySelector('.sidebar-bottom')) return;
+    const applica = (nascosta, stretto) => {
+      menu.classList.toggle('firma-nascosta', nascosta);
+      if (stretto) menu.style.setProperty('--menu-stretto', `${stretto}px`);
+      else menu.style.removeProperty('--menu-stretto');
+    };
+    const troppo = () => menu.scrollHeight - menu.clientHeight > 1;
+    // Scomparsa di logo e scritta: il menu passa subito alla forma nuova; una copia di logo e scritta, dove si vedevano
+    // un attimo prima, si rimpicciolisce verso il centro (0,22 s) e poi si toglie. L'animazione non sposta niente nel
+    // menu. La posizione si ricorda a ogni stato stabile, perché quando parte il controllo la sezione è già aperta e
+    // logo e scritta sono già spinti in basso.
+    let posizioni = null;   // { parti, riquadri } relativi al menu, con logo e scritta visibili
+    const ricordaPosizioni = () => {
+      const parti = [...menu.querySelectorAll('.sidebar-bottom :is(.storecraft-mark, .signature-caption)')];
+      const base = menu.getBoundingClientRect();
+      posizioni = { parti, riquadri: parti.map(parte => {
+        const r = parte.getBoundingClientRect();
+        return { left: r.left - base.left - menu.clientLeft + menu.scrollLeft, top: r.top - base.top - menu.clientTop + menu.scrollTop,
+          width: r.width, height: r.height };
+      }) };
+    };
+    const risucchia = () => {
+      if (!posizioni || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const { parti, riquadri } = posizioni;
+      if (!riquadri.some(r => r.height)) return;
+      const alto = Math.min(...riquadri.map(r => r.top));
+      const sinistra = Math.min(...riquadri.map(r => r.left));
+      const copia = el('div', { class: 'firma-risucchio', 'aria-hidden': 'true' });
+      copia.style.cssText = `left:${sinistra}px;top:${alto}px;width:${Math.max(...riquadri.map(r => r.left + r.width)) - sinistra}px;` +
+        `height:${Math.max(...riquadri.map(r => r.top + r.height)) - alto}px`;
+      parti.forEach((parte, i) => {
+        const doppio = parte.cloneNode(true);
+        doppio.style.cssText = `position:absolute;margin:0;left:${riquadri[i].left - sinistra}px;top:${riquadri[i].top - alto}px;` +
+          `width:${riquadri[i].width}px;height:${riquadri[i].height}px`;
+        copia.append(doppio);
+      });
+      menu.append(copia);
+      copia.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(0)', opacity: 0 }],
+        { duration: 220, easing: 'ease-in', fill: 'forwards' }).finished.then(() => copia.remove(), () => copia.remove());
+    };
+    const controlla = () => {
+      const eraVisibile = !menu.classList.contains('firma-nascosta');
+      controllaStato();
+      if (!menu.classList.contains('firma-nascosta')) ricordaPosizioni();
+      else if (eraVisibile) risucchia();
+    };
+    const controllaStato = () => {
+      applica(false, 0);
+      // con MENU // IMPOSTAZIONI aperto (aprendolo le sezioni si chiudono) il menu resta nella forma piena: niente salti
+      if (!document.getElementById('system-menu')?.hidden) return;
+      if (!troppo()) return;
+      applica(true, 0);
+      // voci più vicine di 1 px alla volta finché tutto entra (al massimo 7)
+      for (let px = 1; px <= 7 && troppo(); px++) applica(true, px);
+    };
+    // si controlla quando cambia qualcosa dentro il menu (sezioni aperte o chiuse, PROMO STAGIONALI, apertura e chiusura
+    // del menu di sistema, ma non le sue viste interne),
+    // non per le classi messe da questo controllo sul menu stesso
+    const sistema = document.getElementById('system-menu');
+    new MutationObserver(registro => {
+      if (registro.some(voce => voce.target !== menu && (voce.target === sistema || !sistema?.contains(voce.target)))) controlla();
+    })
+      .observe(menu, { subtree: true, attributes: true, attributeFilter: ['class', 'hidden', 'aria-expanded'] });
+    new MutationObserver(controlla).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-interface-look'] });
+    let attesa = 0;
+    window.addEventListener('resize', () => { clearTimeout(attesa); attesa = setTimeout(controlla, 150); });
+    controlla();
+  }
 })();
