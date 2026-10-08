@@ -128,6 +128,57 @@
     return rules.join('\n');
   }
 
+  // html2canvas fotografa un SVG trasformandolo in un'immagine a parte, che non vede i caratteri caricati
+  // dalla pagina (@font-face) ma solo quelli installati nel dispositivo: le scritte <text> dentro un SVG
+  // (es. BLACK e FRIDAY di blackfriday) uscirebbero nel carattere di riserva, su iPhone e iPad sempre.
+  // Per ogni carattere della pagina usato da un <text> del foglio si prepara la regola @font-face con il file
+  // incorporato (data URL), da mettere dentro gli SVG della copia fotografata. I file letti restano in memoria.
+  const fontDataUrls = new Map();
+  const cleanFamily = name => name.trim().replace(/^['"]|['"]$/g, '').toLowerCase();
+
+  async function fontDataUrl(url) {
+    if (!fontDataUrls.has(url)) {
+      fontDataUrls.set(url, fetch(url)
+        .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.blob(); })
+        .then(blob => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        }))
+        .catch(error => { console.warn('Carattere non incorporato nella foto:', url, error); return null; }));
+    }
+    return fontDataUrls.get(url);
+  }
+
+  async function svgFontRules(sheet) {
+    const used = new Set();
+    sheet.querySelectorAll('svg text, svg tspan').forEach(text => {
+      [text.getAttribute('font-family') || '', getComputedStyle(text).fontFamily]
+        .join(',').split(',').forEach(name => { if (name.trim()) used.add(cleanFamily(name)); });
+    });
+    if (!used.size) return '';
+    const rules = [];
+    for (const styleSheet of document.styleSheets) {
+      let list;
+      try { list = styleSheet.cssRules; } catch (error) { continue; }
+      const base = styleSheet.href || document.baseURI;
+      for (const rule of list) {
+        if (!(rule instanceof CSSFontFaceRule)) continue;
+        const family = rule.style.getPropertyValue('font-family');
+        if (!used.has(cleanFamily(family))) continue;
+        const match = rule.style.getPropertyValue('src').match(/url\(\s*(['"]?)(.*?)\1\s*\)/);
+        if (!match) continue;
+        const data = await fontDataUrl(new URL(match[2], base).href);
+        if (!data) continue;
+        rules.push(`@font-face { font-family: ${family}; src: url("${data}");`
+          + ` font-style: ${rule.style.getPropertyValue('font-style') || 'normal'};`
+          + ` font-weight: ${rule.style.getPropertyValue('font-weight') || 'normal'}; }`);
+      }
+    }
+    return rules.join('\n');
+  }
+
   // La copia fotografata (per la lista e per il PDF di iOS) usa le regole di stampa della pagina, così il foglio è
   // impaginato esattamente come nella stampa da computer (alcune pagine in stampa allargano i cartelli o li spostano
   // di qualche mm rispetto allo schermo), e il foglio non può essere schiacciato, così la foto ha la sua grandezza di
@@ -140,6 +191,7 @@
       img.addEventListener('error', done, { once: true });
     })));
     const colored = colorFilteredImages(sheet);
+    const svgFonts = await step('caratteri delle scritte SVG', () => svgFontRules(sheet));
     let canvas;
     try {
       canvas = await step('foto del foglio', () => html2canvas(sheet, {
@@ -161,6 +213,12 @@
           doc.head.appendChild(style);
           doc.querySelectorAll('img[data-lista-colore]').forEach(img => {
             img.src = colored[Number(img.dataset.listaColore)];
+          });
+          if (svgFonts) doc.querySelectorAll('svg').forEach(svg => {
+            if (!svg.querySelector('text')) return;
+            const fonts = doc.createElementNS('http://www.w3.org/2000/svg', 'style');
+            fonts.textContent = svgFonts;
+            svg.insertBefore(fonts, svg.firstChild);
           });
         }
       }));
