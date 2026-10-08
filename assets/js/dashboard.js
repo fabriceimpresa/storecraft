@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.55 2026';
+  const VERSIONE = 'V 1.56 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -238,34 +238,11 @@
     return header;
   }
 
-  // Lettere del logo più sottili (logo.sottile, in px): filtro SVG che erode di poco i bordi dei tratti
-  function filtroSottile(raggio) {
-    const ns = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('width', '0');
-    svg.setAttribute('height', '0');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.style.position = 'absolute';
-    const filtro = document.createElementNS(ns, 'filter');
-    filtro.id = 'logo-sottile';
-    const erosione = document.createElementNS(ns, 'feMorphology');
-    erosione.setAttribute('operator', 'erode');
-    erosione.setAttribute('radius', String(raggio));
-    filtro.append(erosione);
-    svg.append(filtro);
-    return svg;
-  }
-
   function logoNegozio() {
     if (!dati.logo) return null;
-    const stile = [
-      dati.logo.larghezza ? `--store-logo-larghezza: ${dati.logo.larghezza}px` : '',
-      dati.logo.sottile ? '--store-logo-sottile: url(#logo-sottile)' : ''
-    ].filter(Boolean).join('; ');
     return el('div', { class: 'store-hero' },
-      dati.logo.sottile ? filtroSottile(dati.logo.sottile) : null,
       el('img', { class: 'store-logo', src: risorsa(dati.logo.src), alt: dati.logo.alt || Negozi.corrente().nome,
-        style: stile || false }),
+        style: dati.logo.larghezza ? `--store-logo-larghezza: ${dati.logo.larghezza}px` : false }),
       dati.identita ? el('div', { class: 'store-identity' },
         el('strong', { text: dati.identita[0] }), dati.identita[1] ? el('span', { text: dati.identita[1] }) : null) : null);
   }
