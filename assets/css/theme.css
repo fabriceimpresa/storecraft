@@ -665,6 +665,30 @@
     transition: background .18s ease, color .18s ease;
   }
 
+  /* telefono, barra in alto: con l'interruttore dei negozi (TEBE e OPHILYA) i due selettori devono entrare accanto a ☰,
+     con le misure della barra della dashboard originale di TEBE (interruttore 9 px, CASSIERE / CREATOR 8 px) */
+  @media (max-width: 720px) and (pointer: coarse) {
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn {
+      padding: 8px 6px;
+      font-size: 8px;
+      letter-spacing: .06em;
+    }
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar .store-switch .mode-btn {
+      padding: 8px;
+      font-size: 9px;
+    }
+  }
+  @media (max-width: 360px) and (pointer: coarse) {
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn {
+      padding: 7px 4px;
+      font-size: 7px;
+    }
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar .store-switch .mode-btn {
+      padding: 7px 6px;
+      font-size: 8px;
+    }
+  }
+
   :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn:hover,
   :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn.active {
     background: #fffdfa !important;

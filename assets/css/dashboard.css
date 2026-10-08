@@ -951,10 +951,13 @@ body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
   .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
   .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
   /* sul telefono niente titolo, sottotitolo e divisorio: la pagina parte dal logo del negozio, con sotto, centrate,
-     la riga dell'indirizzo e quella descrittiva (in TEBE e OPHILYA sopra il logo resta solo l'interruttore dei negozi) */
+     la riga dell'indirizzo e quella descrittiva */
   #main-content > header { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }
   #main-content > header :is(h1, p) { display: none; }
-  #main-content > header:has(.store-switch) { margin-bottom: 24px; }
+  /* TEBE e OPHILYA: nella barra in alto l'interruttore dei negozi (spostato da dashboard.js) al posto di STORE // CRAFT,
+     come nella dashboard originale di TEBE */
+  .mobile-top-bar:has(.store-switch) .mobile-brand { display: none; }
+  .mobile-top-bar { gap: 8px; }
   .store-identity { text-align: center; }
   .store-logo { max-width: 185px; margin: 0 auto; }
   :root[data-negozio="luxury"] .store-logo { transform-origin: center; }

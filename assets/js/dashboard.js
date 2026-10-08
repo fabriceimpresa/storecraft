@@ -24,7 +24,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.70 2026';
+  const VERSIONE = 'V 1.71 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -326,7 +326,17 @@
           if (fattore < 1) testo.style.fontSize = `${parseFloat(getComputedStyle(testo).fontSize) * fattore}px`;
         });
       };
-      misura();
+      // sul telefono, come nella dashboard originale di TEBE, l'interruttore sta nella barra in alto al posto della scritta
+      // STORE // CRAFT (nascosta da dashboard.css), tra ☰ e CASSIERE / CREATOR; tornando a desktop o tablet torna
+      // nell'intestazione
+      const testata = corpo.querySelector('#main-content > header');
+      const posto = () => {
+        if (phoneViewQuery.matches) selettore.before(negozi);
+        else testata.append(negozi);
+        misura();
+      };
+      phoneViewQuery.addEventListener('change', posto);
+      posto();
       document.fonts?.ready.then(misura);
       window.addEventListener('resize', misura);
       new MutationObserver(misura).observe(document.documentElement,
