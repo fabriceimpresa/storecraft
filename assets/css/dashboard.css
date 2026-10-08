@@ -795,7 +795,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 .store-switch .mode-btn { letter-spacing: 0.16em; }
 
 /* Sotto il divisorio: logo del negozio (bianco su fondo scuro, nero su fondo chiaro) e indirizzo */
-.store-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 2rem; }
+.store-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 2.75rem; }
 /* nel tema scuro bianco un poco spento (opacità 85%), meno acceso sul fondo scuro */
 .store-logo { display: block; width: 100%; max-width: var(--store-logo-larghezza, 205px); height: auto; filter: brightness(0) invert(1); opacity: .85; }
 :root[data-interface-theme="light"] .store-logo { filter: brightness(0); opacity: 1; }
