@@ -200,7 +200,9 @@ aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--
   border-top: 1px solid var(--border);
 }
 
-main { flex: 1; padding: 2rem 3rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
+/* in alto 24 px: titolo (o interruttore dei negozi) e selettore CASSIERE / CREATOR centrati sulla stessa linea del
+   marchio STORE // CRAFT del menu laterale */
+main { flex: 1; padding: 24px 3rem 2rem; overflow-y: auto; position: relative; scroll-behavior: smooth; }
 /* Come in TEBE: sugli schermi molto larghi il contenuto si ferma a 1450 px (margini compresi) e resta al centro,
    invece di allargare le schede all'infinito; la barra di scorrimento resta sul bordo destro della finestra. */
 main > * { max-width: calc(1450px - 6rem); margin-left: auto; margin-right: auto; }
@@ -208,7 +210,7 @@ header { position: relative; border-bottom: 1px solid var(--border); padding-bot
 .home-mark { position: fixed; top: 1rem; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
 
 /* Selettore CASSIERE / CREATOR: un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro */
-.mode-switcher { position: fixed; top: 1rem; right: 2rem; display: flex; gap: 3px; padding: 3px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
+.mode-switcher { position: fixed; top: 24px; right: 2rem; display: flex; gap: 3px; padding: 3px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
 .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.4rem 0.9rem; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
 .mode-btn:hover { color: var(--accent); }
 .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
