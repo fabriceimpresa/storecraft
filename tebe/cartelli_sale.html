@@ -2,14 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-06"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-06">
+  <script src="../assets/js/negozi.js?v=20261008-07"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-07">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-07">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-07">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello SALE</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-07">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -401,11 +401,11 @@
       .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-06">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-06">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-07">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-07">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-07">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-07">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-07"></script>
 </head>
 <body>
 
@@ -460,18 +460,7 @@
       <div class="form-group price-range-select" id="priceRangeGroup">
         <label class="section-label" for="priceRange">Fasce Prezzo</label>
         <div class="price-range-control">
-          <select id="priceRange" onchange="applyPriceRange()">
-            <option value="">-- Seleziona Fascia Prezzo --</option>
-            <option value="10,00">€ 10,00</option>
-            <option value="19,90">€ 19,90</option>
-            <option value="29,90">€ 29,90</option>
-            <option value="39,90">€ 39,90</option>
-            <option value="49,90">€ 49,90</option>
-            <option value="59,90">€ 59,90</option>
-            <option value="69,90">€ 69,90</option>
-            <option value="79,90">€ 79,90</option>
-            <option value="89,90">€ 89,90</option>
-            <option value="99,00">€ 99,00</option>
+          <select id="priceRange" onchange="applyPriceRange()" data-fasce-prezzo>
           </select>
         </div>
       </div>
@@ -504,8 +493,9 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
-  <script src="../assets/js/madeinitaly.js?v=20261008-06" data-automatico></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261008-07"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-07"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261008-07" data-automatico></script>
   <script>
     function formatDiscount(value) {
       const numeric = value.toString().replace(/[^0-9]/g, '').trim();
@@ -603,7 +593,7 @@
 
     switchMode('doppia');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-06"></script>
+  <script src="../assets/js/cursore.js?v=20261008-07"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -620,6 +610,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-06"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-07"></script>
 </body>
 </html>

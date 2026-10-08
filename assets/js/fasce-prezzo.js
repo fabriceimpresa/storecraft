@@ -1,3 +1,9 @@
+/* Fasce Prezzo, un solo menu per tutte le pagine di tutti i negozi: voce di partenza "-- Fascia Prezzo --" e due
+   gruppi, Prezzi tondi e Prezzi ,90. Le voci si scrivono solo qui. Due modi:
+   - <div data-fasce-prezzo data-select-id="pricePreset" data-on-change="applyPricePreset"></div>: il modulo crea
+     etichetta e menu al posto del segnaposto (Prezzi Vetrina di Luxury);
+   - <select data-fasce-prezzo ...></select> già nella pagina, con il suo id e il suo onchange: il modulo lo riempie
+     (pagine di TEBE). Va caricato dopo il menu e prima dello script della pagina. */
 (() => {
   const fasce = Object.freeze({
     'Prezzi tondi': Object.freeze([
@@ -24,7 +30,32 @@
     ])
   });
 
+  function fill(select) {
+    const initialOption = document.createElement('option');
+    initialOption.value = '';
+    initialOption.textContent = '-- Fascia Prezzo --';
+    const options = [initialOption];
+    Object.entries(fasce).forEach(([name, prices]) => {
+      const group = document.createElement('optgroup');
+      group.label = name;
+      prices.forEach(price => {
+        const option = document.createElement('option');
+        option.value = price;
+        option.textContent = `€ ${price}`;
+        group.append(option);
+      });
+      options.push(group);
+    });
+    select.replaceChildren(...options);
+    select.classList.add('grouped-select');
+    select.value = '';
+  }
+
   function createField(placeholder) {
+    if (placeholder instanceof HTMLSelectElement) {
+      fill(placeholder);
+      return;
+    }
     const selectId = placeholder.dataset.selectId || 'pricePreset';
     if (document.getElementById(selectId)) {
       throw new Error(`L'id ${selectId} del menu Fasce Prezzo è già utilizzato.`);
