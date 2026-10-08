@@ -4,7 +4,7 @@ Dashboard.contenuto({
     titolo: 'Visual Merchandising & Cassa',
     sottotitolo: 'Crea la grafica promozionale e calcola i prezzi in tempo reale.'
   },
-  logo: { src: 'img/luxury/printlogos/blackLXRY_BRAND.png', larghezza: 205, alt: 'LUXURY OUTLET' },
+  logo: { src: 'img/luxury/logo-dashboard.png', larghezza: 205, alt: 'LUXURY OUTLET' },
   identita: ['VIA DEL CORSO 15', 'OUTLET MULTI BRAND · LINEA LXRY'],
   qr: 'https://instagram.com/luxuryoutletroma',
   cassa: 'sempre',
