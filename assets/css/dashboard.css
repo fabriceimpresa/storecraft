@@ -793,9 +793,10 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 
 /* Sotto il divisorio: logo del negozio (bianco su fondo scuro, nero su fondo chiaro) e indirizzo */
 .store-hero { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; margin-bottom: 2rem; }
-/* nel tema scuro bianco un poco spento (opacità 85%), meno acceso sul fondo scuro */
-.store-logo { display: block; width: 100%; max-width: var(--store-logo-larghezza, 205px); height: auto; filter: brightness(0) invert(1); opacity: .85; }
-:root[data-interface-theme="light"] .store-logo { filter: brightness(0); opacity: 1; }
+/* nel tema scuro bianco un poco spento (opacità 85%), meno acceso sul fondo scuro; --store-logo-sottile (dashboard.js)
+   assottiglia le lettere quando il negozio lo chiede (logo.sottile) */
+.store-logo { display: block; width: 100%; max-width: var(--store-logo-larghezza, 205px); height: auto; filter: var(--store-logo-sottile,) brightness(0) invert(1); opacity: .85; }
+:root[data-interface-theme="light"] .store-logo { filter: var(--store-logo-sottile,) brightness(0); opacity: 1; }
 .store-identity { text-align: right; padding-bottom: 3px; }
 .store-identity strong { display: block; font-size: 12px; font-weight: 400; letter-spacing: .2em; color: var(--accent); }
 .store-identity span { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .16em; color: var(--text-muted); }
