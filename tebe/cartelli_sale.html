@@ -2,14 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-05">
+  <script src="../assets/js/negozi.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-06">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello SALE</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-06">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -401,11 +401,11 @@
       .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-05">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-05"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
 </head>
 <body>
 
@@ -449,18 +449,8 @@
       <div class="form-group" id="descGroup" style="display: none;">
         <label class="section-label" for="descPreset">Promozione</label>
         <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()">
+          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
             <option value="">-- Seleziona un testo --</option>
-            <option value="Special Deal">Special Deal</option>
-            <option value="Final Price">Final Price</option>
-            <option value="Summer Sale">Summer Sale</option>
-            <option value="Spring Sale">Spring Sale</option>
-            <option value="Winter Sale">Winter Sale</option>
-            <option value="Black Friday">Black Friday</option>
-            <option value="Made in Italy">Made in Italy</option>
-            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
           </select>
         </div>
         <label for="descFree">Testo Libero</label>
@@ -514,7 +504,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/madeinitaly.js?v=20261008-05" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261008-06" data-automatico></script>
   <script>
     function formatDiscount(value) {
       const numeric = value.toString().replace(/[^0-9]/g, '').trim();
@@ -612,7 +603,7 @@
 
     switchMode('doppia');
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-05"></script>
+  <script src="../assets/js/cursore.js?v=20261008-06"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -629,6 +620,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-05"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-06"></script>
 </body>
 </html>

@@ -2,14 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-05">
+  <script src="../assets/js/negozi.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-06">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello Multi Articolo</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-06">
   <style>
     * { 
       box-sizing: border-box; 
@@ -475,10 +475,10 @@
       .controls h2 + .mode-switch, .controls h2 + .card-selector { margin-top: 0.7rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-05">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-05"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
 </head>
 <body>
 
@@ -508,32 +508,8 @@
       <div class="form-group">
         <label class="section-label" for="descPreset">Articoli</label>
         <div class="preset-select">
-          <select id="descPreset" onchange="applyDescPreset()">
+          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Articoli" data-testi-senza-gruppi>
             <option value="">-- Seleziona un articolo --</option>
-            <option value="Abito">Abito</option>
-            <option value="Bermuda">Bermuda</option>
-            <option value="Blusa">Blusa</option>
-            <option value="Borsa">Borsa</option>
-            <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
-            <option value="Camicia">Camicia</option>
-            <option value="Cappello">Cappello</option>
-            <option value="Cappotto">Cappotto</option>
-            <option value="Cardigan">Cardigan</option>
-            <option value="Cintura">Cintura</option>
-            <option value="Coprispalle">Coprispalle</option>
-            <option value="Foulard">Foulard</option>
-            <option value="Giacca">Giacca</option>
-            <option value="Gilet">Gilet</option>
-            <option value="Gonna">Gonna</option>
-            <option value="Jeans">Jeans</option>
-            <option value="Maglia">Maglia</option>
-            <option value="Occhiali">Occhiali</option>
-            <option value="Pantaloncino">Pantaloncino</option>
-            <option value="Pantalone">Pantalone</option>
-            <option value="Shorts">Shorts</option>
-            <option value="T-Shirt">T-Shirt</option>
-            <option value="Top">Top</option>
-            <option value="Tutina">Tutina</option>
           </select>
         </div>
         <label for="descFree">Testo Libero</label>
@@ -590,6 +566,7 @@
     </div>
   </div>
 
+  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
   <script>
     let articles = [
       { desc: 'Top', oldPrice: '49,90', discount: '20', newPrice: '39,90' },
@@ -757,7 +734,7 @@
     loadActiveRowIntoForm();
     updateCards();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-05"></script>
+  <script src="../assets/js/cursore.js?v=20261008-06"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'articolo (riga) in modifica e i suoi valori.
     // Con 2 articoli ogni articolo è una colonna, con 3-4 una riga della tabella.
@@ -782,6 +759,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-05"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-06"></script>
 </body>
 </html>

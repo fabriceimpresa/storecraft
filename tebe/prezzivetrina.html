@@ -2,14 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-05">
+  <script src="../assets/js/negozi.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-06">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-06">
 
   <style>
     /* Font locali da assets/fonts */
@@ -256,10 +256,10 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.38; } }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-05">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-05"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -323,18 +323,8 @@
       <div class="form-group">
         <label class="section-label" for="descriptionPreset">Promozione</label>
         <div class="preset-select">
-          <select id="descriptionPreset" class="form-control" onchange="applyDescriptionPreset()">
+          <select id="descriptionPreset" class="form-control" onchange="applyDescriptionPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
             <option value="">-- Seleziona un testo --</option>
-            <option value="Special Deal">Special Deal</option>
-            <option value="Final Price">Final Price</option>
-            <option value="Summer Sale">Summer Sale</option>
-            <option value="Spring Sale">Spring Sale</option>
-            <option value="Winter Sale">Winter Sale</option>
-            <option value="Black Friday">Black Friday</option>
-            <option value="Made in Italy">Made in Italy</option>
-            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
           </select>
         </div>
       </div>
@@ -355,6 +345,7 @@
     </div>
   </main>
 
+  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -537,7 +528,7 @@
 
     init();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-05"></script>
+  <script src="../assets/js/cursore.js?v=20261008-06"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -560,6 +551,6 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-05" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-06" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

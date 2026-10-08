@@ -2,22 +2,22 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-05">
+  <script src="../assets/js/negozi.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
   <title>Etichette DYMO · TEBE</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-05"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-05"></script>
-  <script src="../assets/js/logos.js?v=20261008-05"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261008-06"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261008-06"></script>
+  <script src="../assets/js/logos.js?v=20261008-06"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261008-05"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261008-06"></script>
 
   <style>
     @font-face {
@@ -524,8 +524,8 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-05">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-05"></script>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -626,17 +626,7 @@
 
       <div class="form-group" id="groupPromo" style="display:none;">
         <label for="promoSelect">Promo</label>
-        <select id="promoSelect" class="form-control" onchange="updateLabel()">
-          <option value="BLACK FRIDAY" class="priority-brand-option">⭐ BLACK FRIDAY</option>
-          <option value="SPRING SALE" class="priority-brand-option">⭐ SPRING SALE</option>
-          <option value="SUMMER SALE" class="priority-brand-option">⭐ SUMMER SALE</option>
-          <option value="WINTER SALE" class="priority-brand-option">⭐ WINTER SALE</option>
-          <option value="FINAL PRICE">FINAL PRICE</option>
-          <option value="GENUINE LEATHER">GENUINE LEATHER</option>
-          <option value="OUTLET PRICE">OUTLET PRICE</option>
-          <option value="SALE" selected>SALE</option>
-          <option value="SPECIAL DEAL">SPECIAL DEAL</option>
-          <option value="VERA PELLE">VERA PELLE</option>
+        <select id="promoSelect" class="form-control" onchange="updateLabel()" data-testi-pronti="Etichette DYMO" data-testi-senza-gruppi data-scelta-iniziale="SALE">
         </select>
       </div>
 
@@ -656,18 +646,8 @@
       <!-- TAGLIE: testi gia' pronti che riempiono il testo descrittivo (solo BLACK FRIDAY ha lo sfondo nero) -->
       <div class="form-group" id="groupSizePreset" style="display:none;">
         <label for="sizePresetSelect">Testo preimpostato</label>
-        <select id="sizePresetSelect" class="form-control" onchange="applySizePreset(this)">
+        <select id="sizePresetSelect" class="form-control" onchange="applySizePreset(this)" data-testi-pronti="Etichette DYMO" data-testi-senza-gruppi>
           <option value="">-- Scegli un testo --</option>
-          <option value="BLACK FRIDAY" class="priority-brand-option">⭐ BLACK FRIDAY</option>
-          <option value="FINAL PRICE">FINAL PRICE</option>
-          <option value="GENUINE LEATHER">GENUINE LEATHER</option>
-          <option value="OUTLET PRICE">OUTLET PRICE</option>
-          <option value="SALE">SALE</option>
-          <option value="SPECIAL DEAL">SPECIAL DEAL</option>
-          <option value="SPRING SALE">SPRING SALE</option>
-          <option value="SUMMER SALE">SUMMER SALE</option>
-          <option value="VERA PELLE">VERA PELLE</option>
-          <option value="WINTER SALE">WINTER SALE</option>
         </select>
       </div>
 
@@ -724,6 +704,7 @@
     </div>
   </main>
 
+  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/logos/tebe/Tebe.png";
     const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
@@ -1805,7 +1786,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-05"></script>
+  <script src="../assets/js/cursore.js?v=20261008-06"></script>
   <script>
     // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
     // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.

@@ -2,19 +2,19 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-05">
+  <script src="../assets/js/negozi.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-06">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini TEBE</title>
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-05"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-05"></script>
-  <script src="../assets/js/logos.js?v=20261008-05"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-05">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261008-06"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261008-06"></script>
+  <script src="../assets/js/logos.js?v=20261008-06"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-06">
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -481,10 +481,10 @@
     @media screen and (max-width: 360px) and (pointer: coarse) { .sheet-wrap { zoom: 0.27; } }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-05">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-05"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -533,46 +533,8 @@
         <div class="form-group">
           <label class="section-label" for="descPreset">Testi Pronti</label>
           <div class="preset-select">
-            <select id="descPreset" class="form-control" onchange="applyDescPreset()">
+            <select id="descPreset" class="form-control" onchange="applyDescPreset()" data-testi-pronti="Articoli,Promozioni">
               <option value="">-- Seleziona un testo --</option>
-              <optgroup label="Articoli">
-                <option value="Abito">Abito</option>
-                <option value="Bermuda">Bermuda</option>
-                <option value="Blusa">Blusa</option>
-                <option value="Borsa">Borsa</option>
-                <option value="Borsa Vera Pelle">Borsa Vera Pelle</option>
-                <option value="Camicia">Camicia</option>
-                <option value="Cappello">Cappello</option>
-                <option value="Cappotto">Cappotto</option>
-                <option value="Cardigan">Cardigan</option>
-                <option value="Cintura">Cintura</option>
-                <option value="Coprispalle">Coprispalle</option>
-                <option value="Foulard">Foulard</option>
-                <option value="Giacca">Giacca</option>
-                <option value="Gilet">Gilet</option>
-                <option value="Gonna">Gonna</option>
-                <option value="Jeans">Jeans</option>
-                <option value="Maglia">Maglia</option>
-                <option value="Occhiali">Occhiali</option>
-                <option value="Pantaloncino">Pantaloncino</option>
-                <option value="Pantalone">Pantalone</option>
-                <option value="Shorts">Shorts</option>
-                <option value="T-Shirt">T-Shirt</option>
-                <option value="Top">Top</option>
-                <option value="Tutina">Tutina</option>
-              </optgroup>
-              <optgroup label="Promozioni">
-                <option value="Special Deal">Special Deal</option>
-                <option value="Final Price">Final Price</option>
-                <option value="Summer Sale">Summer Sale</option>
-                <option value="Spring Sale">Spring Sale</option>
-                <option value="Winter Sale">Winter Sale</option>
-                <option value="Black Friday">Black Friday</option>
-                <option value="Made in Italy">Made in Italy</option>
-                <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-                <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-                <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
-              </optgroup>
             </select>
           </div>
         </div>
@@ -622,6 +584,7 @@
     </div>
   </main>
 
+  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
   <script>
 
     function cleanBrandName(fileName) {
@@ -1065,7 +1028,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-05"></script>
+  <script src="../assets/js/cursore.js?v=20261008-06"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -1094,6 +1057,6 @@
     });
     cursore.point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-05" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-06" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

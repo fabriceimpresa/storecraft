@@ -2,14 +2,14 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-05"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-05">
+  <script src="../assets/js/negozi.js?v=20261008-06"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261008-06">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-06">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartello Semplice</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-05">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261008-06">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -274,11 +274,11 @@
       .btn-print { margin-top: 0; padding: 9px; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-05">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-05">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-05"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-06">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-06">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-06"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -295,21 +295,11 @@
       <div class="form-group">
         <label class="section-label">Promozione</label>
         <div class="select-control">
-          <select id="descPreset" onchange="applyDescPreset()">
+          <select id="descPreset" onchange="applyDescPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
             <option value="" selected>-- Seleziona un testo --</option>
-            <option value="tutto">Tutto</option>
-            <option value="Sconto alla Cassa">Sconto alla Cassa</option>
-            <option value="Special Deal">Special Deal</option>
-            <option value="Final Price">Final Price</option>
-            <option value="Summer Sale">Summer Sale</option>
-            <option value="Spring Sale">Spring Sale</option>
-            <option value="Winter Sale">Winter Sale</option>
-            <option value="Black Friday">Black Friday</option>
-            <option value="Made in Italy">Made in Italy</option>
-            <option value="Genuine Leather">Genuine Leather</option>
-            <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-            <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-            <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            <option data-voce-propria value="tutto">Tutto</option>
+            <option data-voce-propria value="Sconto alla Cassa">Sconto alla Cassa</option>
+            <option data-voce-propria value="Genuine Leather">Genuine Leather</option>
           </select>
         </div>
         <label>Testo Libero</label>
@@ -358,7 +348,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/madeinitaly.js?v=20261008-05" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-06"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261008-06" data-automatico></script>
   <script>
     function formatPrice(value) {
       const raw = value.trim().replace(/[€\s]/g, '');
@@ -413,7 +404,7 @@
     // L'Arial arriva da assets/fonts: a caricamento finito si rimisura il testo (getTitleFontSize usa measureText).
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateCards);
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-05"></script>
+  <script src="../assets/js/cursore.js?v=20261008-06"></script>
   <script>
     // Cursore: indica sulla metà superiore del cartello l'elemento legato al campo in uso.
     Cursore.create({
@@ -427,6 +418,6 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261008-05"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261008-06"></script>
 </body>
 </html>
