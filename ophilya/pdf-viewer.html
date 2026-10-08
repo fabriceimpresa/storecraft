@@ -2,20 +2,22 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-26"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-26">
+  <script src="../assets/js/negozi.js?v=20261008-37"></script>
+  <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
+  <script src="../assets/js/theme.js?v=20261008-37"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-37">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizzatore PDF · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f8f6f1;
-      --card: #fffdfa;
-      --border: #e3dacb;
-      --accent: #b49a62;
-      --accent-hover: #8a6a35;
-      --text: #282522;
-      --muted: #665e54;
+      --bg: var(--interface-page);
+      --card: var(--interface-surface);
+      --border: var(--interface-border);
+      --accent: var(--interface-accent);
+      --accent-hover: var(--interface-accent-bright);
+      --text: var(--interface-text);
+      --muted: var(--interface-muted);
     }
 
     * { box-sizing: border-box; }

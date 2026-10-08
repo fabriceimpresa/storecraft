@@ -148,13 +148,7 @@
     border-radius: 0;
   }
 
-  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .widget:not(.expanded) {
-    min-height: 224px;
-    padding: 22px;
-  }
-
   :root[data-interface-look="minimal"] body:not([data-layout]) #tools .widget h3 {
-    margin-bottom: 22px;
     color: var(--interface-text);
     font-family: var(--interface-display-font) !important;
     font-size: 18px;
@@ -163,9 +157,9 @@
     text-transform: none;
   }
 
-  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .tool-row {
-    gap: 8px;
-    margin-bottom: 14px;
+  /* nel tema scuro i titoli dei widget restano oro come nello STANDARD (nel chiaro sono scuri, come in TEBE) */
+  :root[data-interface-theme="dark"][data-interface-look="minimal"] body:not([data-layout]) #tools .widget h3 {
+    color: var(--interface-accent);
   }
 
   :root[data-interface-look="minimal"] body:not([data-layout]) #tools :is(.input-group, .tool-input-select, .rate-btn-widget) {
@@ -207,6 +201,66 @@
   }
 
   :root[data-interface-look="minimal"] body:not([data-layout]) #tools .rate-btn-widget {
+    font-size: 12px;
+  }
+
+  /* Utilità Cassa nel look COMPATTO come nel progetto TEBE (la spaziatura dei widget è comune a tutti gli aspetti, in
+     dashboard.css): campi alti 36 px in Arial, QR senza ombra, valuta bordata d'oro */
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .tool-input {
+    padding: 10px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools :is(.input-prefix, .input-suffix) {
+    padding: 0 10px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .input-suffix {
+    letter-spacing: .06em;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .tool-input-select {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .tool-btn {
+    font-size: 10px !important;
+    font-weight: 700;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .tool-btn:hover {
+    transform: none;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .tool-status {
+    font-size: 10px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .rate-btn-widget {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .qr-preview-wrapper {
+    border: 1px solid var(--interface-border);
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* menu della valuta stretto e bordato d'oro, con la sola sigla (USD) nel widget e il nome intero nel popup (cassa.js) */
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools #val-currency {
+    flex: 0 0 96px;
+    width: 96px;
+    max-width: none !important;
+    padding: 10px 1.9rem 10px 6px;
+    border: 1px solid var(--interface-accent) !important;
+    font-size: 10px;
+  }
+
+  :root[data-interface-look="minimal"] body:not([data-layout]) #tools .widget.expanded #val-currency {
+    flex-basis: 185px;
+    width: 185px;
     font-size: 12px;
   }
 
@@ -281,6 +335,11 @@
 
   :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) :is(.card-body h3, #tools .widget h3) {
     color: #665e54 !important;
+  }
+
+  /* titoli dei widget delle Utilità Cassa un poco più piccoli nel tema chiaro (0,82rem invece di 0,9rem) */
+  :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) #tools .widget h3 {
+    font-size: 0.82rem;
   }
 
   /* Numero e tipo in testa alle schede: oro dei cartelli, più deciso sul fondo chiaro */
@@ -661,6 +720,18 @@
   :root[data-interface-theme="light"] body :is(
     .app-close-btn:hover, .tool-btn:hover, .app-modal-close:hover
   ) { background-color: var(--interface-accent-bright) !important; }
+
+  /* Utilità Cassa: i pulsanti secondari (Azzera IVA, Stampa QR) restano a contorno anche nel tema chiaro, come nel tema scuro */
+  :root[data-interface-theme="light"] body #tools .tool-btn-secondary {
+    background-color: transparent !important;
+    color: var(--interface-accent) !important;
+    border: 1px solid var(--interface-accent);
+  }
+
+  :root[data-interface-theme="light"] body #tools .tool-btn-secondary:hover {
+    background-color: var(--interface-accent) !important;
+    color: #fffdfa !important;
+  }
 
   :root[data-interface-theme="light"] body :is(
     .nav-btn:hover, .nav-btn.active, .sidebar-section .label:hover,

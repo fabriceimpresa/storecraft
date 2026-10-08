@@ -244,7 +244,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 /* Stessa distanza tra titolo e schede in tutte le sezioni (0,4rem, come la griglia Cartellini di prima); nel padding, perché un margine si fonderebbe con quello del titolo */
 .section-title + .carousel-wrapper { padding-top: 0.4rem; }
 .section-title + .carousel-wrapper .carousel-arrow { top: calc(50% + 0.2rem); }
-.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding-top: 0.4rem; margin-bottom: 3rem; }
+.tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; padding-top: 0.4rem; margin-bottom: 3rem; }
 
 .card, .carousel-card { --card-pad: 20px; }
 
@@ -377,10 +377,10 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   background: var(--card); 
   border: 1px solid var(--border); 
   border-radius: 8px; 
-  padding: 1.5rem; 
+  padding: 22px;
   display: flex; 
   flex-direction: column; 
-  justify-content: space-between; 
+  justify-content: flex-start;
   position: relative;
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -392,12 +392,15 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   flex-direction: column;
 }
 
+/* Utilità Cassa: widget alti almeno 224 px, con gli elementi in alto a distanze fisse (spaziatura del progetto TEBE) */
+#tools .widget:not(.expanded) { min-height: 224px; }
+
 .widget:not(.expanded):hover {
   border-color: var(--accent);
   transform: translateY(-3px);
 }
 
-.widget h3 { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+.widget h3 { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 22px; display: flex; align-items: center; gap: 0.5rem; }
 .widget-compact h3 { margin-bottom: 0.8rem; }
 
 /* Utilità Cassa (assets/js/cassa.js), come in TEBE: lo strumento scelto si apre in un popup al centro della pagina,
@@ -456,14 +459,41 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   align-items: center;
   justify-content: center;
   transition: transform 0.2s, background-color 0.2s;
+  position: relative;
+  font-size: 0; /* la ✕ del markup resta per i lettori di schermo; quella visibile è disegnata sotto */
 }
+/* ✕ disegnata con due tratti, sempre al centro del cerchio qualunque sia il carattere dell'aspetto */
+.close-btn::before,
+.close-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.close-btn::after { transform: translate(-50%, -50%) rotate(-45deg); }
 
 .close-btn:hover {
   background-color: var(--accent-hover);
   transform: scale(1.1);
 }
 
-.tool-row { display: flex; gap: 0.8rem; margin-bottom: 0.8rem; }
+.tool-row { display: flex; gap: 8px; margin-bottom: 14px; }
+/* aspetto STANDARD: campi un poco più distanziati tra loro (caratteri più grandi del COMPATTO) */
+:root:not([data-interface-look="minimal"]) #tools .tool-row { gap: 12px; margin-bottom: 18px; }
+:root:not([data-interface-look="minimal"]) #tools .rate-grid-widget { gap: 8px; margin-bottom: 18px; }
+:root:not([data-interface-look="minimal"]) #tools .qr-preview-container { margin: 8px 0 26px; } /* STANDARD: 26 px sopra (18 del menu + 8) e sotto */
+/* Calcola IVA: tasti dell'aliquota, campi e Azzera IVA distribuiti con spazi uguali sull'altezza del widget, così
+   Azzera IVA sta in fondo, alla stessa altezza di Scarica / Stampa QR del widget vicino (l'ultima riga dei widget non ha
+   spazio sotto). Lo spazio minimo tra gli elementi è quello delle righe dei campi: 14 px, 18 px nello STANDARD */
+#tools .widget > .tool-row:last-child { margin-bottom: 0 !important; }
+#tools .iva-campi { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
+#tools .iva-campi > * { margin-bottom: 0 !important; }
+:root:not([data-interface-look="minimal"]) #tools .iva-campi { gap: 18px; }
 .input-group { display: flex; width: 100%; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #0a0908; }
 .input-prefix { padding: 0.6rem 0.7rem; background: #181715; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; border-right: 1px solid var(--border); font-weight: bold; display: flex; align-items: center; flex-shrink: 0; }
 .input-suffix { padding: 0.6rem 0.7rem; background: #181715; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; border-left: 1px solid var(--border); font-weight: 700; display: flex; align-items: center; flex-shrink: 0; letter-spacing: 0.5px; white-space: nowrap; }
@@ -504,22 +534,22 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   color: var(--accent-hover);
 }
 
-.tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); margin-top: 1.2rem; font-weight: bold; text-align: center; }
-.tool-status { margin-top: 0.6rem; color: var(--text-muted); font-size: 0.75rem; text-align: center; }
+.tool-result { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; color: var(--accent); min-height: 29px; margin-top: 18px; font-weight: bold; text-align: center; }
+.tool-status { min-height: 18px; margin-top: 6px; color: var(--text-muted); font-size: 0.75rem; text-align: center; }
 
 /* STILI WIDGET IVA */
 .rate-grid-widget {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.4rem;
-  margin-bottom: 0.8rem;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 
 .rate-btn-widget {
   background: #0a0908;
   border: 1px solid var(--border);
   color: var(--text-muted);
-  padding: 0.4rem 0;
+  padding: 8px 0;
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -544,8 +574,15 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1rem 0;
+  min-height: 116px;
+  margin: 0 0 14px; /* sopra c'è già lo spazio sotto il menu (14 px): il QR ha lo stesso spazio sopra e sotto */
 }
+/* pulsanti Scarica / Stampa QR subito sotto il QR, 8 px tra i due (prevale sullo stile scritto nel markup di cassa.js) */
+.qr-preview-container + .tool-row { gap: 8px !important; margin-top: 0 !important; }
+/* Anteprima del QR nel widget della dashboard: sempre 80 px, qualunque Dimensione sia scelta; la misura vera si vede
+   solo usando lo strumento (popup aperto, o sul telefono il widget in uso). Il QR scaricato o stampato resta della misura scelta */
+#tools .widget:not(.expanded):not(.mobile-active) .qr-preview-wrapper :is(img, canvas) { width: 80px !important; height: 80px !important; }
+#tools .widget:not(.expanded):not(.mobile-active) .qr-preview-container { min-height: 0; }
 
 .qr-preview-wrapper {
   background: #ffffff;

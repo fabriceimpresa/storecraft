@@ -90,16 +90,111 @@
   --madeinitaly-ombra-attivo: rgba(40, 34, 28, 0.22);
 }
 
-/* Elenchi dei menu a cascata (menu-cascata.css e pannello.css) nelle pagine senza tema dell'interfaccia (le pagine degli
-   strumenti): colori chiari del negozio. Dove c'è il tema (la dashboard, data-interface-theme) decidono theme.css e il
-   tema scelto, anche il menu di sistema. */
-:root[data-negozio="ophilya"]:not([data-interface-theme]) {
+/* Tema SCURO delle pagine degli strumenti (scelto nella dashboard, letto da theme.js): i colori scuri di STORE // CRAFT,
+   come in Luxury Outlet. Restano del negozio cursore, misure e pesi delle scritte. */
+:root[data-negozio="ophilya"][data-interface-theme="dark"] {
+  --tool-btn-bg: #d4a373;
+  --tool-btn-color: #121110;
+  --tool-btn-shadow: rgba(0, 0, 0, 0.5);
+  --tool-btn-shadow-hover: rgba(0, 0, 0, 0.6);
+  --tool-float-border: #d4a373;
+  --tool-float-bg: #1e1d1a;
+  --tool-float-color: #e5ba73;
+  --tool-tip-shadow: rgba(0, 0, 0, 0.5);
+  --tool-toast-shadow: rgba(0, 0, 0, 0.6);
+  --tool-modal-backdrop: rgba(0, 0, 0, 0.75);
+  --tool-modal-bg: #1e1d1a;
+  --tool-modal-border: #2e2b27;
+  --tool-modal-shadow: rgba(0, 0, 0, 0.7);
+  --tool-modal-accent: #d4a373;
+  --tool-modal-close-color: #1e1d1a;
+  --tool-modal-body: #121110;
+  --tool-guide-text: #8c857b;
+  --tool-guide-caption: #f4f1ea;
+  --tool-guide-stripe-1: #181715;
+  --tool-guide-stripe-2: #1e1d1a;
+
+  --lista-pdf-bg: #1e1d1a;
+  --lista-pdf-text: #f4f1ea;
+  --lista-pdf-accent: #d4a373;
+  --lista-pdf-muted: #8c857b;
+  --lista-pdf-focus: #e5ba73;
+  --lista-pdf-backdrop: rgba(10, 9, 8, .78);
+  --lista-pdf-shadow: rgba(0, 0, 0, .5);
+
+  --chiudi-sfondo: #d4a373;
+  --chiudi-colore: #000;
+  --chiudi-sfondo-hover: #e5ba73;
+  --chiudi-ombra: rgba(0, 0, 0, 0.5);
+  --chiudi-focus: #e5ba73;
+
+  --torna-sfondo: #181a1d;
+  --torna-bordo: #d4a373;
+  --torna-ombra: rgba(0, 0, 0, 0.6);
+  --torna-titolo: #e5ba73;
+  --torna-linea: rgba(212, 163, 115, 0.3);
+  --torna-testo: #ffffff;
+  --torna-testo-hover: #e5ba73;
+
+  --pannello-sfondo: #1e1d1a;
+  --pannello-testo: #f4f1ea;
+  --pannello-bordo: #2e2b27;
+  --pannello-titolo: #d4a373;
+  --pannello-etichetta: #a39a8d;
+  --pannello-oro: #d4a373;
+  --pannello-oro-chiaro: #e5ba73;
+  --pannello-alone: rgba(212, 163, 115, 0.35);
+  --pannello-campo: #0a0908;
+  --pannello-segnaposto: #5f5a53;
+  --pannello-riquadro: #181715;
+  --pannello-riquadro-hover: #2e2b27;
+  --pannello-selettore: #0a0908;
+  --pannello-selettore-testo: #8c857b;
+  --pannello-selettore-hover: #f4f1ea;
+  --pannello-selettore-attivo: #d4a373;
+  --pannello-selettore-attivo-testo: #121110;
+  --pannello-ombra: rgba(0, 0, 0, 0.5);
+  --pannello-linea: rgba(212, 163, 115, 0.28);
+  --pannello-stampa-testo: #f4f1ea;
+  --pannello-schema: dark;
+  --pannello-simbolo-peso: 400;
+
+  --madeinitaly-border: #d4a373;
+  --madeinitaly-ombra: rgba(0, 0, 0, .5);
+  --madeinitaly-ombra-attivo: rgba(0, 0, 0, .7);
+}
+
+/* Colori dell'interfaccia delle pagine degli strumenti (fondo della pagina, elenchi dei menu a cascata di
+   menu-cascata.css e pannello.css; --interface-sunken: fondi crema più scuri delle pagine, es. pannello dei cartellini): chiari, o scuri con il tema SCURO. Specificità zero (:where): nella dashboard,
+   che carica theme.css, decidono theme.css e il tema scelto, anche il menu di sistema. */
+:where(:root[data-negozio="ophilya"]) {
+  --interface-page: #f8f6f1;
+  --interface-surface: #fffdfa;
   --interface-control: #fffdfa;
   --interface-text: #282522;
+  --interface-muted: #665e54;
   --interface-accent: #b49a62;
   --interface-accent-bright: #8a6a35;
   --interface-option-hover: #f3ede0;
   --interface-sidebar: #f3ede0;
+  --interface-sunken: #eee8dd;
   --interface-border: #e3dacb;
+  --interface-shadow: rgba(40, 34, 28, 0.12);
   --interface-dropdown-shadow: rgba(40, 34, 28, 0.14);
+}
+
+:where(:root[data-negozio="ophilya"][data-interface-theme="dark"]) {
+  --interface-page: #121110;
+  --interface-surface: #1e1d1a;
+  --interface-control: #0a0908;
+  --interface-text: #f4f1ea;
+  --interface-muted: #8c857b;
+  --interface-accent: #d4a373;
+  --interface-accent-bright: #e5ba73;
+  --interface-option-hover: #2e2b27;
+  --interface-sidebar: #181715;
+  --interface-sunken: #181715;
+  --interface-border: #2e2b27;
+  --interface-shadow: rgba(0, 0, 0, .22);
+  --interface-dropdown-shadow: rgba(0, 0, 0, .6);
 }

@@ -67,12 +67,12 @@
             <span class="input-prefix" id="val-curr-symbol">$</span>
             <input type="text" id="val-amount" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Importo">
             <select id="val-currency" class="tool-input-select" style="max-width: 140px; border-left: 1px solid var(--border);">
-              <option value="USD">USD ($) USA</option>
-              <option value="GBP">GBP (£) GBR</option>
-              <option value="RUB">RUB (₽) RUS</option>
-              <option value="ILS">ILS (₪) ISR</option>
-              <option value="CNY">CNY (¥) CHN</option>
-              <option value="JPY">JPY (¥) JPN</option>
+              <option value="USD" data-breve="USD">USD ($) USA</option>
+              <option value="GBP" data-breve="GBP">GBP (£) GBR</option>
+              <option value="RUB" data-breve="RUB">RUB (₽) RUS</option>
+              <option value="ILS" data-breve="ILS">ILS (₪) ISR</option>
+              <option value="CNY" data-breve="CNY">CNY (¥) CHN</option>
+              <option value="JPY" data-breve="JPY">JPY (¥) JPN</option>
             </select>
           </div>
         </div>
@@ -84,16 +84,18 @@
       <div class="widget" id="widget-iva">
         ${chiudi}
         <h3>Calcola IVA</h3>
-        <div class="rate-grid-widget">
-          <button class="rate-btn-widget" type="button" data-aliquota="4">4%</button>
-          <button class="rate-btn-widget" type="button" data-aliquota="5">5%</button>
-          <button class="rate-btn-widget" type="button" data-aliquota="10">10%</button>
-          <button class="rate-btn-widget active" type="button" data-aliquota="22">22%</button>
+        <div class="iva-campi">
+          <div class="rate-grid-widget">
+            <button class="rate-btn-widget" type="button" data-aliquota="4">4%</button>
+            <button class="rate-btn-widget" type="button" data-aliquota="5">5%</button>
+            <button class="rate-btn-widget" type="button" data-aliquota="10">10%</button>
+            <button class="rate-btn-widget active" type="button" data-aliquota="22">22%</button>
+          </div>
+          <div class="tool-row"><div class="input-group"><span class="input-prefix">€</span><input type="text" id="iva-net" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Imponibile"><span class="input-suffix">SENZA IVA</span></div></div>
+          <div class="tool-row"><div class="input-group"><span class="input-prefix">€</span><input type="text" id="iva-vat" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Importo IVA"><span class="input-suffix">IVA</span></div></div>
+          <div class="tool-row"><div class="input-group"><span class="input-prefix">€</span><input type="text" id="iva-gross" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Totale"><span class="input-suffix">CON IVA</span></div></div>
+          <button class="tool-btn-secondary tool-btn" type="button" style="width:100%;" data-cassa="azzera-iva">Azzera IVA</button>
         </div>
-        <div class="tool-row"><div class="input-group"><span class="input-prefix">€</span><input type="text" id="iva-net" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Imponibile"><span class="input-suffix">SENZA IVA</span></div></div>
-        <div class="tool-row"><div class="input-group"><span class="input-prefix">€</span><input type="text" id="iva-vat" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Importo IVA"><span class="input-suffix">IVA</span></div></div>
-        <div class="tool-row"><div class="input-group"><span class="input-prefix">€</span><input type="text" id="iva-gross" class="tool-input" inputmode="decimal" autocomplete="off" placeholder="Totale"><span class="input-suffix">CON IVA</span></div></div>
-        <button class="tool-btn-secondary tool-btn" type="button" style="width:100%; font-size: 0.75rem;" data-cassa="azzera-iva">Azzera IVA</button>
       </div>
 
       <div class="widget" id="widget-qrcode">
@@ -237,6 +239,17 @@
     finestra.document.close();
   }
 
+  // Menu della valuta: nel look COMPATTO, come in TEBE, nel widget solo la sigla (USD) e nel popup il nome intero
+  function etichetteValuta() {
+    const menu = $('val-currency');
+    if (!menu) return;
+    const breve = document.documentElement.dataset.interfaceLook === 'minimal' && !menu.closest('.widget.expanded');
+    menu.querySelectorAll('option').forEach(opzione => {
+      opzione.dataset.intero ??= opzione.textContent;
+      opzione.textContent = breve ? opzione.dataset.breve : opzione.dataset.intero;
+    });
+  }
+
   // ----- Apertura e chiusura -----
   function evidenzia(strumento) {
     contenitore.querySelectorAll('.widget.mobile-active').forEach(w => { if (w !== strumento) w.classList.remove('mobile-active'); });
@@ -257,6 +270,7 @@
     contenitore.querySelectorAll('.widget.expanded').forEach(w => w.classList.remove('expanded'));
     contenitore.classList.add('is-focused');
     strumento.classList.add('expanded');
+    etichetteValuta();
     if (scorri) setTimeout(() => strumento.querySelector('input, select, button:not(.close-btn)')?.focus({ preventScroll: true }), 300);
   }
 
@@ -265,6 +279,7 @@
     contenitore.classList.remove('is-focused');
     contenitore.querySelectorAll('.widget.expanded').forEach(w => w.classList.remove('expanded'));
     contenitore.querySelectorAll('.widget.mobile-active').forEach(w => w.classList.remove('mobile-active'));
+    etichetteValuta();
   }
 
   function crea(elemento, { qr = '' } = {}) {
@@ -304,6 +319,10 @@
     // Passando alla vista telefono con un popup aperto, lo si chiude
     telefono.addEventListener('change', chiudi);
 
+    // cambiando aspetto (IMPOSTAZIONI) si rifanno le etichette della valuta
+    new MutationObserver(etichetteValuta).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-interface-look'] });
+    etichetteValuta();
     generaQr();
     caricaTassi();
   }

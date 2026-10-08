@@ -2,10 +2,12 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-26"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-26">
+  <script src="../assets/js/negozi.js?v=20261008-37"></script>
+  <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
+  <script src="../assets/js/theme.js?v=20261008-37"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-37">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-26">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-37">
   <title>Lista di Stampa · OPHILYA</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,8 +19,8 @@
       /* a destra spazio per la ✕ fissa, che altrimenti coprirebbe Stampa Lista */
       padding: 20px 76px 20px 20px;
       overflow: hidden;
-      background: #f8f6f1;
-      color: #282522;
+      background: var(--interface-page);
+      color: var(--interface-text);
       font-family: system-ui, -apple-system, sans-serif;
     }
 
@@ -29,9 +31,9 @@
       display: flex;
       flex-direction: column;
       padding: 1rem;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--interface-border);
       border-radius: 8px;
-      background: #fffdfa;
+      background: var(--interface-surface);
     }
 
     .thumbs-panel { width: 250px; }
@@ -40,8 +42,8 @@
     .panel-title {
       margin-bottom: 0.8rem;
       padding-bottom: 0.6rem;
-      border-bottom: 1px solid #e3dacb;
-      color: #b49a62;
+      border-bottom: 1px solid var(--interface-border);
+      color: var(--interface-accent);
       font: 400 1.1rem Arial, Helvetica, sans-serif;
       letter-spacing: 1.5px;
       text-align: center;
@@ -50,7 +52,7 @@
 
     .page-count {
       margin: -0.4rem 0 0.8rem;
-      color: #665e54;
+      color: var(--interface-muted);
       font-size: 0.72rem;
       text-align: center;
     }
@@ -69,33 +71,33 @@
       flex-direction: column;
       gap: 6px;
       padding: 8px;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--interface-border);
       border-radius: 6px;
-      background: #f8f6f1;
-      color: #282522;
+      background: var(--interface-page);
+      color: var(--interface-text);
       font: 400 0.72rem Arial, Helvetica, sans-serif;
       text-align: left;
       cursor: pointer;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .thumb:hover { border-color: #b49a62; }
+    .thumb:hover { border-color: var(--interface-accent); }
 
     .thumb.active {
-      border-color: #b49a62;
-      background: #fffdfa;
-      box-shadow: 0 0 0 1px #b49a62;
+      border-color: var(--interface-accent);
+      background: var(--interface-surface);
+      box-shadow: 0 0 0 1px var(--interface-accent);
     }
 
     .thumb-label { display: flex; gap: 6px; align-items: baseline; }
-    .thumb-number { color: #8a6a35; font-weight: 700; }
-    .thumb-title { overflow: hidden; color: #665e54; text-overflow: ellipsis; white-space: nowrap; }
+    .thumb-number { color: var(--interface-accent-bright); font-weight: 700; }
+    .thumb-title { overflow: hidden; color: var(--interface-muted); text-overflow: ellipsis; white-space: nowrap; }
 
     .thumb img {
       display: block;
       width: 100%;
       height: auto;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--interface-border);
       background: #fff;
     }
 
@@ -108,9 +110,9 @@
       justify-content: center;
       gap: 10px;
       padding: 1rem;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--interface-border);
       border-radius: 8px;
-      background: #eee8dd;
+      background: var(--interface-sunken);
     }
 
     .viewer img {
@@ -121,11 +123,11 @@
       box-shadow: 0 20px 60px rgba(40, 34, 28, 0.18);
     }
 
-    .viewer-caption { color: #665e54; font: 400 0.78rem Arial, Helvetica, sans-serif; }
+    .viewer-caption { color: var(--interface-muted); font: 400 0.78rem Arial, Helvetica, sans-serif; }
 
     .empty {
       max-width: 340px;
-      color: #665e54;
+      color: var(--interface-muted);
       font: 400 0.9rem/1.5 Arial, Helvetica, sans-serif;
       text-align: center;
     }
@@ -147,7 +149,7 @@
     .action-btn:disabled { opacity: 0.45; cursor: default; }
     .btn-print { background: #96382b; }
     .btn-print:not(:disabled):hover { background: #7a2d22; }
-    .btn-gold { background: #b49a62; }
+    .btn-gold { background: var(--interface-accent); }
     .btn-gold:not(:disabled):hover { filter: brightness(1.1); }
 
     .actions-spacer { flex: 1; }
@@ -158,30 +160,30 @@
       flex-direction: column;
       gap: 0.35rem;
       padding: 0.8rem;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--interface-border);
       border-radius: 6px;
-      background: #f8f6f1;
+      background: var(--interface-page);
     }
 
     .delete-chooser[hidden] { display: none; }
 
-    .delete-chooser label { color: #b49a62; font-size: 0.72rem; }
+    .delete-chooser label { color: var(--interface-accent); font-size: 0.72rem; }
 
     .delete-chooser select {
       width: 100%;
       padding: 0.45rem;
-      border: 1px solid #e3dacb;
+      border: 1px solid var(--interface-border);
       border-radius: 4px;
-      background: #fffdfa;
-      color: #282522;
+      background: var(--interface-surface);
+      color: var(--interface-text);
       font: 400 0.82rem Arial, Helvetica, sans-serif;
     }
 
     .chooser-buttons { display: flex; gap: 6px; margin-top: 0.45rem; }
     .chooser-buttons .action-btn { padding: 8px; font-size: 0.7rem; }
-    .btn-plain { background: #fffdfa; color: #8a6a35; border: 1px solid #b49a62; }
+    .btn-plain { background: var(--interface-surface); color: var(--interface-accent-bright); border: 1px solid var(--interface-accent); }
 
-    .status { min-height: 1.2em; color: #8a6a35; font: 600 0.72rem Arial, Helvetica, sans-serif; text-align: center; }
+    .status { min-height: 1.2em; color: var(--interface-accent-bright); font: 600 0.72rem Arial, Helvetica, sans-serif; text-align: center; }
 
     .print-frame { position: fixed; width: 0; height: 0; border: 0; visibility: hidden; }
   </style>
@@ -213,7 +215,7 @@
     <button type="button" class="action-btn btn-gold" id="clearBtn" onclick="clearList()">Svuota Lista</button>
   </aside>
 
-  <script src="../assets/js/lista-stampa.js?v=20261008-26"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261008-37"></script>
   <script>
     // Pagina che gestisce la lista di stampa (assets/js/lista-stampa.js): miniature, pagina scelta in grande,
     // stampa di tutta la lista come lista.pdf, eliminazione di una pagina e svuotamento della lista.

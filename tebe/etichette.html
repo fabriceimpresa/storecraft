@@ -2,22 +2,24 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261008-26"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-26">
+  <script src="../assets/js/negozi.js?v=20261008-37"></script>
+  <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
+  <script src="../assets/js/theme.js?v=20261008-37"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261008-37">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-26">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261008-37">
   <title>Etichette DYMO · TEBE</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-26">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-26">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261008-37">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261008-37">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261008-26"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261008-26"></script>
-  <script src="../assets/js/logos.js?v=20261008-26"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261008-37"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261008-37"></script>
+  <script src="../assets/js/logos.js?v=20261008-37"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261008-26"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261008-37"></script>
 
   <style>
     @font-face {
@@ -26,17 +28,19 @@
     }
 
     :root {
-      --bg: #f8f6f1;
-      --sidebar: #eee8dd;
-      --card: #fffdfa;
-      --border: #e3dacb;
-      --accent: #b49a62;
-      --accent-hover: #8a6a35;
-      --text: #282522;
-      --text-muted: #665e54;
+      --bg: var(--interface-page);
+      --sidebar: var(--interface-sunken);
+      --card: var(--interface-surface);
+      --border: var(--interface-border);
+      --accent: var(--interface-accent);
+      --accent-hover: var(--interface-accent-bright);
+      --text: var(--interface-text);
+      --text-muted: var(--interface-muted);
       --success: #2a9d8f;
       --error: #c0533b;
     }
+    /* tema SCURO: loghi personalizzati in oro chiaro (nel tema chiaro resta il marrone di TEBE) */
+    :root[data-interface-theme="dark"] :is(.form-control.custom-select, select option.priority-brand-option) { color: var(--interface-accent-bright); }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
@@ -71,9 +75,9 @@
     .template-card .tpl-name { font-size: 0.75rem; font-weight: 600; color: var(--text); text-align: center; }
     
     /* Selettore a pulsanti, come nelle pagine dei cartelli. */
-    .mode-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 6px; background: #f3ede0; }
-    .mode-switch button { flex: 1; padding: 9px 8px; border: 0; border-radius: 4px; background: transparent; color: #8a7f6e; font-family: system-ui, -apple-system, sans-serif; font-size: 0.68rem; font-weight: 600; line-height: 1.2; text-align: center; cursor: pointer; transition: all 0.2s ease; }
-    .mode-switch button.active { background: #fffdfa; color: #282522; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+    .mode-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--border); border-radius: 6px; background: var(--pannello-selettore); }
+    .mode-switch button { flex: 1; padding: 9px 8px; border: 0; border-radius: 4px; background: transparent; color: var(--pannello-selettore-testo); font-family: system-ui, -apple-system, sans-serif; font-size: 0.68rem; font-weight: 600; line-height: 1.2; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+    .mode-switch button.active { background: var(--pannello-selettore-attivo); color: var(--pannello-selettore-attivo-testo); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
 
     .tpl-preview-box {
       width: 100%;
@@ -145,7 +149,7 @@
       background-image:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 7'%3E%3Cpath d='M0 0h10L5 7z' fill='%23b49a62'/%3E%3C/svg%3E"),
         linear-gradient(var(--border), var(--border)),
-        linear-gradient(#f3ede0, #f3ede0);
+        linear-gradient(var(--interface-sidebar), var(--interface-sidebar));
       background-repeat: no-repeat;
       background-position: right 0.55rem center, right 1.6rem top, right top;
       background-size: 0.5rem 0.35rem, 1px 100%, 1.6rem 100%;
@@ -524,8 +528,8 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-26">
-  <script defer src="../assets/js/menu-cascata.js?v=20261008-26"></script>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261008-37">
+  <script defer src="../assets/js/menu-cascata.js?v=20261008-37"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -704,7 +708,7 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261008-26"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261008-37"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/logos/tebe/Tebe.png";
     const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
@@ -1786,7 +1790,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261008-26"></script>
+  <script src="../assets/js/cursore.js?v=20261008-37"></script>
   <script>
     // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
     // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.
