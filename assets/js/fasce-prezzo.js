@@ -1,4 +1,4 @@
-/* Fasce Prezzo, un solo menu per tutte le pagine di tutti i negozi: voce di partenza "-- Fascia Prezzo --" e due
+/* Fasce Prezzo, un solo menu per tutte le pagine di tutti i negozi: voce di partenza "-- Seleziona Fascia Prezzo --" e due
    gruppi, Prezzi tondi e Prezzi ,90. Le voci si scrivono solo qui. Due modi:
    - <div data-fasce-prezzo data-select-id="pricePreset" data-on-change="applyPricePreset"></div>: il modulo crea
      etichetta e menu al posto del segnaposto (Prezzi Vetrina di Luxury);
@@ -33,7 +33,7 @@
   function fill(select) {
     const initialOption = document.createElement('option');
     initialOption.value = '';
-    initialOption.textContent = '-- Fascia Prezzo --';
+    initialOption.textContent = '-- Seleziona Fascia Prezzo --';
     const options = [initialOption];
     Object.entries(fasce).forEach(([name, prices]) => {
       const group = document.createElement('optgroup');
@@ -71,7 +71,7 @@
     select.className = 'grouped-select';
     const initialOption = document.createElement('option');
     initialOption.value = '';
-    initialOption.textContent = '-- Fascia Prezzo --';
+    initialOption.textContent = '-- Seleziona Fascia Prezzo --';
     select.append(initialOption);
 
     Object.entries(fasce).forEach(([name, prices]) => {
