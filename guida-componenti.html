@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261009-29"></script>
+  <script src="assets/js/negozi.js?v=20261009-30"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida dei componenti</title>
@@ -165,7 +165,7 @@
     <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
     <tr><td>Pulsantiera</td><td><code>strumenti-stampa.js</code> in fondo (<code>data-panel</code>, <code>data-sheet</code> nei cartellini)</td><td>pulsanti tondi sotto il pannello, colori <code>--tool-*</code> del negozio</td><td>Gestisci lista di stampa · Aggiungi a lista stampa · "Dove montare la stampa?" (solo TEBE / OPHILYA, foto in <code>assets/foto/</code>)</td></tr>
     <tr><td>Lista di stampa</td><td><code>lista-stampa.js</code> + <code>lista-stampa.html</code> del negozio</td><td>una lista per negozio (IndexedDB) · <code>lista.pdf</code> A4 a misura reale</td><td>foto del foglio con html2canvas usando le regole <code>@media print</code> della pagina; foglio verticale in alto, cartellini orizzontali a 4 mm dall'alto</td></tr>
-    <tr><td>Stampa da iPhone e iPad</td><td><code>stampa-ios.js</code> (defer)</td><td>riquadro SALVA O STAMPA PDF, colori <code>--lista-pdf-*</code></td><td>niente stampa del browser su iOS: PDF A4 a misura esatta da stampare al 100%; foto identica a quella del computer (verificato su 32 pagine)</td></tr>
+    <tr><td>Stampa da iPhone e iPad</td><td><code>stampa-ios.js</code> (defer)</td><td>riquadro CONDIVIDI O STAMPA .PDF, colori <code>--lista-pdf-*</code></td><td>niente stampa del browser su iOS: PDF A4 a misura esatta da stampare al 100%; foto identica a quella del computer (verificato su 32 pagine)</td></tr>
   </table>
 
   <!-- ================================================================ -->

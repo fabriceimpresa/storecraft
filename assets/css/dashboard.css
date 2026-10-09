@@ -24,6 +24,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta San
 .mobile-brand { display: none; }
 .mobile-nav-toggle { display: none; }
 .mobile-brand-footer { display: none; }
+.system-fab { display: none; }
+.voce-guida { display: none; }
 
 aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 34px 23px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 1000; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 
@@ -793,26 +795,110 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     letter-spacing: 0.3px;
   }
 
+  /* il menu parte dal bordo alto dello schermo e copre anche la barra in alto (mentre è aperto la barra non serve):
+     più spazio per le voci */
   aside {
     display: flex;
     position: fixed;
-    top: 64px;
+    top: 0;
     left: 0;
     bottom: 0;
     width: min(278px, 82vw);
-    padding: 16px 14px 0;
+    padding: max(16px, env(safe-area-inset-top)) 14px 18px;
     box-shadow: 3px 0 10px rgba(0,0,0,0.7);
     transform: translateX(0);
     z-index: 1000;
   }
-  /* MENU // IMPOSTAZIONI sempre raggiungibile: se anche senza logo e con le voci avvicinate il menu non entra
-     (dashboard.js, controllaSpazioMenu), scorrono solo le voci e il fondo del menu resta fermo in basso, sul fondo del menu */
-  #sidebar-menu .sidebar-bottom {
-    position: sticky;
-    bottom: 0;
-    z-index: 1;
-    padding-bottom: 18px;
-    background: inherit;
+  /* MENU // IMPOSTAZIONI sul telefono non sta nel menu laterale: lo sostituisce il pulsante tondo IMPOSTAZIONI (.system-fab) */
+  #sidebar-menu .sidebar-credits { display: none; }
+  /* Rotella delle sezioni con almeno 4 voci (classe ruota, dashboard.js): riquadro alto 5 voci (voci alte 44 px) che scorre
+     da solo con lo scatto al centro; sopra e sotto mezzo riquadro vuoto, così anche la prima e l'ultima voce arrivano al
+     centro; i bordi sfumano. La voce al centro è ingrandita di un terzo e oro, le altre più piccole e più tenui (--vicino);
+     sopra la prima voce la voce guida (— Trova il tuo cartello —), solo decorativa */
+  #sidebar-menu .sidebar-section.ruota:not(.is-collapsed) > nav {
+    display: block;
+    max-height: 220px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    padding: 44px 0 88px;   /* sopra la voce guida (44 px) e mezzo riquadro, sotto mezzo riquadro */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32%, #000 68%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 32%, #000 68%, transparent 100%);
+  }
+  #sidebar-menu .sidebar-section.ruota > nav::-webkit-scrollbar { display: none; }
+  #sidebar-menu .sidebar-section.ruota > nav .nav-group { gap: 0; }
+  #sidebar-menu .sidebar-section.ruota > nav :is(.nav-btn, .nav-subtoggle) {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding-top: 0;
+    padding-bottom: 0;
+    scroll-snap-align: center;
+    /* ingrandita resta larga quanto il menu (la freccia di Promo Stagionali non esce) */
+    width: calc(100% / (.85 + .5 * var(--vicino, 1)));
+    transform: scale(calc(.85 + .5 * var(--vicino, 1)));
+    transform-origin: left center;
+    opacity: calc(.45 + .55 * var(--vicino, 1));
+  }
+  #sidebar-menu .sidebar-section.ruota > nav .voce-guida {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 10px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: .06em;
+    white-space: nowrap;
+    pointer-events: none;
+    transform: scale(calc(.85 + .5 * var(--vicino, 1)));
+    transform-origin: left center;
+    opacity: calc(.45 + .55 * var(--vicino, 1));
+  }
+  #sidebar-menu .sidebar-section.ruota > nav .is-centro { color: var(--accent); }
+  :root[data-interface-theme="light"] body #sidebar-menu .sidebar-section.ruota > nav .is-centro { color: var(--interface-accent) !important; }
+  /* Pulsante IMPOSTAZIONI: tondo, tutto oro con un riflesso leggero, in tutti e due i
+     temi, fisso in basso a sinistra, sempre presente; ingranaggio pieno in bronzo scuro. Aperto, l'oro si scurisce */
+  .system-fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 16px;
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--fab-alza, 0px));
+    z-index: 1100;
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    border: 1px solid #b88d4c;
+    border-radius: 50%;
+    /* l'oro dei pulsanti della dashboard (#d4a373) con un riflesso leggero */
+    background: linear-gradient(135deg, #cc9b66 0%, #e6c595 48%, #d4a373 62%, #ddb07a 100%);
+    color: #4a3510;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .45);
+    cursor: pointer;
+    transition: filter .18s ease, transform .18s ease;
+  }
+  .system-fab svg { transition: transform .3s ease; }
+  .system-fab[aria-expanded="true"] { filter: brightness(.88); }
+  .system-fab[aria-expanded="true"] svg { transform: rotate(60deg); }
+  .system-fab:active { transform: scale(.95); }
+  .system-fab:focus-visible { outline: 2px solid #8f6a1f; outline-offset: 3px; }
+  :root[data-interface-theme="light"] .system-fab { box-shadow: 0 2px 5px rgba(80, 60, 20, .3), inset 0 1px 0 rgba(255, 255, 255, .5); }
+  /* il menu di sistema compare sopra il pulsante, come unito a lui: il bordo basso del menu passa per il centro del
+     pulsante, che ne copre l'angolo in basso a sinistra; sotto le voci lo spazio per il pulsante */
+  body > .system-menu {
+    position: fixed;
+    left: 16px;
+    right: auto;
+    bottom: calc(max(16px, env(safe-area-inset-bottom)) + 27px + var(--fab-alza, 0px));
+    z-index: 1099;
+    width: min(300px, calc(100vw - 32px));
+    max-height: calc(100dvh - 64px - 16px - max(16px, env(safe-area-inset-bottom)) - 26px);
+    padding-bottom: 42px;
+    transform-origin: bottom left;
   }
 
   /* chiuso, fuori dallo schermo, il menu non deve lasciare la sua ombra sul bordo sinistro: sparisce mentre esce */
@@ -829,7 +915,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   .sidebar-overlay {
     display: block;
     position: fixed;
-    inset: 64px 0 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.65);
     backdrop-filter: blur(3px);
     z-index: 999;
@@ -865,6 +951,8 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     align-items: center;
     gap: 36px;
     margin-top: 28px;
+    /* la pagina finisce con i pulsanti e poco spazio sotto; il pulsante IMPOSTAZIONI, arrivati in fondo, sale sopra di
+       loro (--fab-alza, dashboard.js) */
     padding: 0 0 max(16px, env(safe-area-inset-bottom));
   }
   /* logo e scritta stanno al centro tra l'ultimo blocco e i pulsanti (misurati sul disegno, non sui riquadri)
@@ -1135,10 +1223,11 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
      come nella dashboard originale di TEBE */
   .mobile-top-bar:has(.store-switch) .mobile-brand { display: none; }
   .mobile-top-bar { gap: 8px; --pulsante-barra: 70px; }
-  /* l'interruttore subito a destra di ☰, CASSIERE / CREATOR in fondo a destra; i due selettori grandi uguale, con tutti
-     i pulsanti della stessa larghezza fissa (scritta centrata), qualunque sia la parola (COMPATTO in theme.css) */
-  .mobile-top-bar .store-switch { margin-right: auto; }
-  body .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { flex: 0 0 var(--pulsante-barra); width: var(--pulsante-barra); padding: 0 !important; justify-content: center; }
+  /* l'interruttore subito a destra di ☰, CASSIERE / CREATOR in fondo a destra: i due selettori si dividono a metà lo
+     spazio rimasto nella barra e tutti i pulsanti sono larghi uguale (scritta centrata), così le scritte sono più grandi
+     e si leggono meglio (COMPATTO in theme.css) */
+  body .mobile-top-bar:has(.store-switch) .mode-switcher { flex: 1 1 0; min-width: 0; }
+  body .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; min-width: 0; width: auto; height: 34px; padding: 0 !important; justify-content: center; font-size: 0.72rem; }
   .store-logo { max-width: 160px; margin: 0 auto; }
   :root[data-negozio="luxury"] .store-logo { transform-origin: center; }
   .mode-switcher.store-switch { position: static; display: inline-flex; margin-top: 0; z-index: auto; }

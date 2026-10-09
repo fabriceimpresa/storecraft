@@ -14,7 +14,8 @@
   const DEFAULT_THEME = THEMES.includes(INIZIALI.tema) ? INIZIALI.tema : 'dark';
   const DEFAULT_LOOK = LOOKS.includes(INIZIALI.aspetto) ? INIZIALI.aspetto : 'standard';
   let systemMenu;
-  let systemMenuButton;
+  // pulsanti che aprono il menu di sistema: MENU // IMPOSTAZIONI nel menu laterale e, sul telefono, il pulsante tondo fisso
+  let systemMenuButtons = [];
   let systemMenuTitle;
 
   function readTheme() {
@@ -116,9 +117,9 @@
   applyLook(readLook());
 
   function setSystemMenuOpen(open) {
-    if (!systemMenu || !systemMenuButton) return;
+    if (!systemMenu || !systemMenuButtons.length) return;
     systemMenu.hidden = !open;
-    systemMenuButton.setAttribute('aria-expanded', String(open));
+    systemMenuButtons.forEach(button => button.setAttribute('aria-expanded', String(open)));
     if (open) {
       collapseSidebarSections();
       showSystemMenuView('home');
@@ -173,15 +174,16 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     systemMenu = document.getElementById('system-menu');
-    systemMenuButton = document.getElementById('system-menu-toggle');
+    systemMenuButtons = [...document.querySelectorAll('[aria-controls="system-menu"]')];
     systemMenuTitle = document.getElementById('system-menu-title');
-    if (!systemMenu || !systemMenuButton || !systemMenuTitle) return;
+    if (!systemMenu || !systemMenuButtons.length || !systemMenuTitle) return;
 
     systemMenu.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
         event.preventDefault();
         setSystemMenuOpen(false);
-        systemMenuButton.focus({ preventScroll: true });
+        // torna al pulsante visibile (sul telefono quello tondo)
+        systemMenuButtons.find(button => button.offsetParent)?.focus({ preventScroll: true });
       }
     });
     document.querySelectorAll('[data-interface-theme-choice]').forEach(button => {
@@ -198,7 +200,7 @@
     applyLook(root.dataset.interfaceLook || DEFAULT_LOOK);
     document.addEventListener('pointerdown', event => {
       if (!systemMenu.hidden && !systemMenu.contains(event.target) &&
-          !systemMenuButton.contains(event.target)) {
+          !systemMenuButtons.some(button => button.contains(event.target))) {
         setSystemMenuOpen(false);
       }
     });

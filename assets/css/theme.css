@@ -99,7 +99,7 @@
 
   /* COMPATTO: Fraunces e Arial sembrano più grandi dei font STANDARD a parità di misura,
      quindi nel menu laterale e nel menu di sistema le scritte sono un poco più piccole */
-  :root[data-interface-look="minimal"] body:not([data-layout]) #sidebar-menu {
+  :root[data-interface-look="minimal"] body:not([data-layout]) :is(#sidebar-menu, body > .system-menu) {
     @media not screen and (max-width: 720px) and (pointer: coarse) {
       & #system-menu-toggle { font-size: 10px; }
     }
@@ -678,20 +678,19 @@
     transition: background .18s ease, color .18s ease;
   }
 
-  /* telefono, barra in alto: con l'interruttore dei negozi (TEBE e OPHILYA) i due selettori devono entrare accanto a ☰,
-     con le scritte della barra della dashboard originale di TEBE (8 px) e pulsanti larghi uguale, 58 px (52 sotto i 360 px;
-     larghezza fissa in dashboard.css) */
+  /* telefono, barra in alto: con l'interruttore dei negozi (TEBE e OPHILYA) i due selettori occupano lo spazio accanto a
+     ☰ (dashboard.css), con le scritte più grandi di quelle della dashboard originale di TEBE: 10 px (9 sotto i 360 px) */
   @media (max-width: 720px) and (pointer: coarse) {
     :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar { --pulsante-barra: 58px; }
     :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn {
-      height: 30px;
-      font-size: 8px;
-      letter-spacing: .06em;
+      height: 34px;
+      font-size: 10px;
+      letter-spacing: .08em;
     }
   }
   @media (max-width: 360px) and (pointer: coarse) {
     :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar { --pulsante-barra: 52px; }
-    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { font-size: 7px; }
+    :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { font-size: 9px; }
   }
 
   :root[data-interface-theme="light"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn:hover,

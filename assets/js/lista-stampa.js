@@ -75,11 +75,90 @@
 
   // html2canvas non applica il filtro CSS "filter": i loghi colorati con un filtro (es. le tinte di
   // promo_multibrand) uscirebbero neri. Ogni immagine filtrata del foglio viene ridisegnata su un canvas
-  // con lo stesso filtro; nella copia fotografata si usa quell'immagine già colorata, senza filtro.
+  // con lo stesso filtro (applicato dal browser o, dove non lo sa fare come su iPhone e iPad, calcolato a mano); nella copia fotografata si usa quell'immagine già colorata, senza filtro.
   // Restituisce le immagini colorate, segnate sull'originale con data-lista-colore (copiato nella copia).
+  // Ripiego per i browser che non applicano il filtro sul canvas (Safari su iPhone e iPad): lo stesso filtro calcolato a
+  // mano sui pixel, con le formule delle funzioni filtro CSS (Filter Effects, nello spazio sRGB come i browser; dopo
+  // ogni funzione i valori restano tra 0 e 1). Restituisce la funzione che colora un pixel, o null se il filtro contiene
+  // funzioni che non sa calcolare (es. blur, drop-shadow): allora l'immagine resta com'è.
+  function filtroCalcolato(filter) {
+    const passi = [];
+    const valore = testo => {
+      const numero = parseFloat(testo);
+      return testo.trim().endsWith('%') ? numero / 100 : numero;
+    };
+    const angolo = testo => {
+      const numero = parseFloat(testo);
+      if (testo.endsWith('turn')) return numero * 2 * Math.PI;
+      if (testo.endsWith('grad')) return numero * Math.PI / 200;
+      if (testo.endsWith('rad')) return numero;
+      return numero * Math.PI / 180;
+    };
+    const matrice = m => rgb => [0, 1, 2].map(i => m[i * 3] * rgb[0] + m[i * 3 + 1] * rgb[1] + m[i * 3 + 2] * rgb[2]);
+    const saturazione = s => matrice([
+      0.213 + 0.787 * s, 0.715 - 0.715 * s, 0.072 - 0.072 * s,
+      0.213 - 0.213 * s, 0.715 + 0.285 * s, 0.072 - 0.072 * s,
+      0.213 - 0.213 * s, 0.715 - 0.715 * s, 0.072 + 0.928 * s]);
+    for (const [, nome, argomento] of filter.matchAll(/([a-z-]+)\(([^)]*)\)/g)) {
+      const a = argomento.trim() === '' ? 1 : valore(argomento);
+      if (nome === 'brightness') passi.push(rgb => rgb.map(v => v * a));
+      else if (nome === 'contrast') passi.push(rgb => rgb.map(v => v * a + 0.5 - 0.5 * a));
+      else if (nome === 'invert') passi.push(rgb => rgb.map(v => a + v * (1 - 2 * a)));
+      else if (nome === 'saturate') passi.push(saturazione(a));
+      else if (nome === 'grayscale') passi.push(saturazione(1 - Math.min(a, 1)));
+      else if (nome === 'sepia') {
+        const k = 1 - Math.min(a, 1);
+        passi.push(matrice([
+          0.393 + 0.607 * k, 0.769 - 0.769 * k, 0.189 - 0.189 * k,
+          0.349 - 0.349 * k, 0.686 + 0.314 * k, 0.168 - 0.168 * k,
+          0.272 - 0.272 * k, 0.534 - 0.534 * k, 0.131 + 0.869 * k]));
+      } else if (nome === 'hue-rotate') {
+        const t = angolo(argomento.trim());
+        const c = Math.cos(t), s = Math.sin(t);
+        passi.push(matrice([
+          0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928,
+          0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283,
+          0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072]));
+      } else if (nome === 'opacity') passi.push(null);   // agisce sulla trasparenza: vedi sotto
+      else return null;
+    }
+    const opacita = [...filter.matchAll(/opacity\(([^)]*)\)/g)].reduce((totale, [, x]) => totale * Math.min(valore(x), 1), 1);
+    const colore = passi.filter(Boolean);
+    return pixel => {
+      let rgb = [pixel[0] / 255, pixel[1] / 255, pixel[2] / 255];
+      for (const passo of colore) rgb = passo(rgb).map(v => Math.min(1, Math.max(0, v)));
+      return [...rgb.map(v => Math.round(v * 255)), Math.round(pixel[3] * opacita)];
+    };
+  }
+
+  // disegna l'immagine sul canvas già colorata: con il filtro del browser se lo sa applicare, altrimenti calcolandolo
+  function disegnaFiltrata(ctx, img, filter, filtroBrowser) {
+    if (filtroBrowser) {
+      ctx.filter = filter;
+      ctx.drawImage(img, 0, 0);
+      return true;
+    }
+    const colora = filtroCalcolato(filter);
+    if (!colora) return false;
+    ctx.drawImage(img, 0, 0);
+    const immagine = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const dati = immagine.data;
+    // i pixel uguali (es. tutto il logo dopo brightness(0)) si calcolano una volta sola
+    const giaFatti = new Map();
+    for (let i = 0; i < dati.length; i += 4) {
+      if (!dati[i + 3]) continue;
+      const chiave = (dati[i] << 24 | dati[i + 1] << 16 | dati[i + 2] << 8 | dati[i + 3]) >>> 0;
+      let nuovo = giaFatti.get(chiave);
+      if (!nuovo) giaFatti.set(chiave, nuovo = colora([dati[i], dati[i + 1], dati[i + 2], dati[i + 3]]));
+      dati[i] = nuovo[0]; dati[i + 1] = nuovo[1]; dati[i + 2] = nuovo[2]; dati[i + 3] = nuovo[3];
+    }
+    ctx.putImageData(immagine, 0, 0);
+    return true;
+  }
+
   function colorFilteredImages(sheet) {
     const colored = [];
-    if (!canvasFilterSupported()) return colored;
+    const filtroBrowser = canvasFilterSupported();
     sheet.querySelectorAll('img').forEach(img => {
       const filter = getComputedStyle(img).filter;
       if (!filter || filter === 'none' || !img.naturalWidth) return;
@@ -87,9 +166,8 @@
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
       const ctx = canvas.getContext('2d');
-      ctx.filter = filter;
-      ctx.drawImage(img, 0, 0);
       try {
+        if (!disegnaFiltrata(ctx, img, filter, filtroBrowser)) return;
         img.dataset.listaColore = String(colored.length);
         colored.push(canvas.toDataURL('image/png'));
       } catch (error) {
@@ -382,7 +460,7 @@
   const isIos = () => /iP(hone|ad|od)/.test(navigator.userAgent)
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  // Riquadro di consegna del PDF: mostra la preparazione e poi il pulsante SALVA O STAMPA PDF, che apre Condividi
+  // Riquadro di consegna del PDF: mostra la preparazione e poi il pulsante CONDIVIDI O STAMPA .PDF, che apre Condividi
   // (Salva su File, Stampa…) o, dove Condividi non accetta file, apre il PDF in una nuova scheda.
   // Il pulsante serve perché iOS apre Condividi solo dopo un tocco, non alla fine di un'attesa.
   // pdfPromise: Promise<Blob>; fileName: nome del file proposto; fallback (facoltativo): { label, run }, pulsante
@@ -406,7 +484,7 @@
     const share = document.createElement('button');
     share.type = 'button';
     share.className = 'lista-pdf-share';
-    share.textContent = 'SALVA O STAMPA PDF';
+    share.textContent = 'CONDIVIDI O STAMPA .PDF';
     share.disabled = true;
     const close = document.createElement('button');
     close.type = 'button';

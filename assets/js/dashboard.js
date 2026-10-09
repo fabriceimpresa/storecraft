@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.80 2026';
+  const VERSIONE = 'V 1.81 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -209,6 +209,55 @@
     finestra.showModal();
   }
 
+  // ----- Pulsante IMPOSTAZIONI del telefono: tondo e oro, fisso in basso a sinistra, sempre presente, con l'ingranaggio; apre
+  // il menu di sistema, che sul telefono compare sopra il pulsante, come unito a lui (al posto di MENU // IMPOSTAZIONI
+  // in fondo al menu laterale). Su desktop e tablet non si vede. -----
+  function pulsanteImpostazioni() {
+    const pulsante = el('button', { class: 'system-fab', type: 'button', 'aria-label': 'Impostazioni', 'aria-controls': 'system-menu',
+      'aria-expanded': 'false', onclick: () => {
+        if (narrowViewQuery.matches) toggleMobileSidebar(false);
+        toggleSystemMenu();
+      } });
+    // ingranaggio pieno, in bronzo scuro sul pulsante oro (disegno fisso, nessun testo dell'utente)
+    pulsante.innerHTML = '<svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="'
+      + 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96'
+      + 'c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.47.47 0 0 0-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96'
+      + 'a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61'
+      + 'l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54'
+      + 'c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z'
+      + 'M12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg>';
+    return pulsante;
+  }
+
+  // Arrivati in fondo alla pagina sul telefono il pulsante IMPOSTAZIONI sale quanto basta per restare 12 px sopra i
+  // pulsanti del fondo pagina, invece di coprirli (--fab-alza su <html>, usato da dashboard.css)
+  function alzaPulsanteImpostazioni() {
+    const radice = document.documentElement;
+    const pulsante = document.querySelector('.system-fab');
+    const azioni = document.querySelector('.mobile-footer-actions');
+    if (!phoneViewQuery.matches || !pulsante || !azioni?.offsetParent) {
+      radice.style.removeProperty('--fab-alza');
+      return;
+    }
+    const alzato = parseFloat(radice.style.getPropertyValue('--fab-alza')) || 0;
+    const fondoNormale = pulsante.getBoundingClientRect().bottom + alzato;
+    const alza = Math.max(0, fondoNormale - (azioni.getBoundingClientRect().top - 12));
+    if (alza) radice.style.setProperty('--fab-alza', `${Math.round(alza)}px`);
+    else radice.style.removeProperty('--fab-alza');
+  }
+
+  // Il menu di sistema sta nel menu laterale su desktop e tablet; sul telefono accanto al pulsante IMPOSTAZIONI, fuori dal
+  // menu laterale (che si sposta con transform e non lascerebbe il menu fisso sullo schermo). Cambiando vista si chiude.
+  function postoMenuSistema() {
+    const sistema = document.getElementById('system-menu');
+    const pulsante = document.querySelector('.system-fab');
+    const fondo = document.querySelector('#sidebar-menu > .sidebar-bottom');
+    if (!sistema || !pulsante || !fondo) return;
+    if (!sistema.hidden) toggleSystemMenu();
+    if (phoneViewQuery.matches) pulsante.before(sistema);
+    else fondo.before(sistema);
+  }
+
   // ----- Schede -----
   function collegamento(scheda) {
     // il PDF (nella cartella assets/) arriva al visualizzatore con il percorso dalla radice del sito
@@ -334,8 +383,14 @@
         dati.sezioni.map(sezione),
         el('div', { class: 'section-title', id: 'tools-title', text: 'Utilità Cassa' }),
         strumenti,
-        piedePagina()));
+        piedePagina()),
+      pulsanteImpostazioni());
     Cassa.crea(strumenti, { qr: dati.qr || '' });
+    postoMenuSistema();
+    phoneViewQuery.addEventListener('change', postoMenuSistema);
+    window.addEventListener('scroll', alzaPulsanteImpostazioni, { passive: true });
+    window.addEventListener('resize', alzaPulsanteImpostazioni);
+    phoneViewQuery.addEventListener('change', alzaPulsanteImpostazioni);
     // l'interruttore dei negozi sta a sinistra del selettore CASSIERE / CREATOR, largo uguale (la larghezza del più largo
     // dei due, --larghezza-selettore, che cambia con l'aspetto), e titolo e sottotitolo lasciano libero lo spazio dei due
     // selettori (--larghezza-selettori); variabili usate da dashboard.css
@@ -478,6 +533,7 @@
     toggle.setAttribute('aria-expanded', String(!isExpanded));
     toggle.setAttribute('aria-label', `${isExpanded ? 'Espandi' : 'Comprimi'} ${title}`);
     section.classList.toggle('is-collapsed', isExpanded);
+    if (!isExpanded && section.classList.contains('ruota')) giraRuota(nav);
     if (!anima) return;
     const segno = isExpanded ? 'chiusura' : 'apertura';
     const altezza = isExpanded ? altezzaPrima : nav.offsetHeight;
@@ -485,7 +541,11 @@
     const chiuso = { height: '0px', opacity: 0 };
     section.dataset[segno] = '';
     nav.style.overflow = 'hidden';
-    const fine = () => { delete section.dataset[segno]; nav.style.overflow = ''; };
+    const fine = () => {
+      delete section.dataset[segno];
+      nav.style.overflow = '';
+      if (!isExpanded && section.classList.contains('ruota')) aggiornaRuota(nav);
+    };
     nav.animate(isExpanded ? [aperto, chiuso] : [chiuso, aperto], { duration: 260, easing: 'ease' })
       .finished.then(fine, fine);
   }
@@ -523,6 +583,51 @@
     buttonElem.setAttribute('aria-expanded', String(isOpen));
     document.getElementById('cartelliItems').hidden = isOpen;
     document.getElementById('promoItems').hidden = !isOpen;
+    const nav = buttonElem.closest('.ruota > nav');
+    const guida = nav?.querySelector('.voce-guida');
+    if (guida) guida.textContent = isOpen ? '— Trova la tua promo —' : '— Trova il tuo cartello —';
+    if (nav) giraRuota(nav);
+  }
+
+  // Rotella del telefono: nelle sezioni con almeno 4 voci (classe ruota) le voci scorrono in un riquadro con lo scatto al
+  // centro; la voce al centro è ingrandita e oro, le altre più piccole e sfumate secondo la distanza (--vicino, da 0 a 1;
+  // regole nel blocco telefono di dashboard.css). Su desktop e tablet il riquadro non c'è e --vicino non conta.
+  const VOCI_RUOTA = ':is(.nav-btn, .nav-subtoggle)';
+  // sopra la prima voce una voce guida, solo decorativa (non si sceglie), sfumata come le altre: fa capire che le voci
+  // scorrono anche quando la rotella è all'inizio
+  const GUIDE_RUOTA = { cartelli: 'Trova il tuo cartello', cartellini: 'Trova il tuo cartellino', stampe: 'Trova la tua stampa',
+    cassa: 'Trova lo strumento' };
+  function aggiornaRuota(nav) {
+    if (!phoneViewQuery.matches) return;
+    const riquadro = nav.getBoundingClientRect();
+    if (!riquadro.height) return;
+    const centro = riquadro.top + riquadro.height / 2;
+    nav.querySelectorAll(':is(.nav-btn, .nav-subtoggle, .voce-guida)').forEach(voce => {
+      if (!voce.offsetParent) return;
+      const r = voce.getBoundingClientRect();
+      const distanza = Math.abs(r.top + r.height / 2 - centro) / (riquadro.height / 2);
+      voce.style.setProperty('--vicino', Math.max(0, 1 - distanza).toFixed(3));
+      voce.classList.toggle('is-centro', distanza < r.height / riquadro.height);
+    });
+  }
+  // riporta la rotella alla prima voce (al centro) e la ridisegna appena la sezione è aperta
+  function giraRuota(nav) {
+    nav.scrollTop = 0;
+    requestAnimationFrame(() => aggiornaRuota(nav));
+  }
+  function attivaRuote() {
+    document.querySelectorAll('.sidebar-section').forEach(section => {
+      const nav = section.querySelector(':scope > nav');
+      if (!nav || nav.querySelectorAll(VOCI_RUOTA).length < 4) return;
+      section.classList.add('ruota');
+      nav.prepend(el('span', { class: 'voce-guida', 'aria-hidden': 'true',
+        text: `— ${GUIDE_RUOTA[section.dataset.sidebarSection] || 'Scorri le voci'} —` }));
+      let attesa = 0;
+      nav.addEventListener('scroll', () => {
+        cancelAnimationFrame(attesa);
+        attesa = requestAnimationFrame(() => aggiornaRuota(nav));
+      }, { passive: true });
+    });
   }
 
   // Pulsante + delle schede: apre e chiude insieme le specifiche di tutte le schede, senza aprire la pagina.
@@ -664,6 +769,7 @@
     if (!dati) return;
     initializeSidebarSections();
     enableSidebarLabelToggle();
+    attivaRuote();
     enableCardDescriptions();
     Caroselli.init();
 
@@ -747,8 +853,13 @@
     };
     const misuraStato = () => {
       applica(false, 0);
-      // con MENU // IMPOSTAZIONI aperto (aprendolo le sezioni si chiudono) il menu resta nella forma piena: niente salti
-      if (!document.getElementById('system-menu')?.hidden) return;
+      // con MENU // IMPOSTAZIONI aperto dentro il menu laterale (aprendolo le sezioni si chiudono) il menu resta nella forma
+      // piena: niente salti
+      const sistema = document.getElementById('system-menu');
+      if (sistema && !sistema.hidden && menu.contains(sistema)) return;
+      // logo e scritta spariscono solo se lo spazio manca per una sezione aperta: con tutte le sezioni chiuse restano
+      // (in una finestra molto bassa il menu scorre)
+      if (!menu.querySelector('.sidebar-section:not(.is-collapsed)')) return;
       if (!troppo()) return;
       applica(true, 0);
       // voci più vicine di 1 px alla volta finché tutto entra (al massimo 7)
