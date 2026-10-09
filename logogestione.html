@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261009-37"></script>
+<script src="assets/js/negozi.js?v=20261009-38"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-37">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-38">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261009-37">
-  <script src="assets/js/operatore-sezione.js?v=20261009-37"></script>
-  <script src="assets/js/admin-negozio.js?v=20261009-37"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261009-38">
+  <script src="assets/js/operatore-sezione.js?v=20261009-38"></script>
+  <script src="assets/js/admin-negozio.js?v=20261009-38"></script>
 </head>
 <body>
 
@@ -34,7 +34,7 @@
     <div data-admin-negozio></div>
 
     <div class="folder-bar">
-      <span class="folder-status" id="folderStatus">cartella del progetto non collegata</span>
+      <span class="folder-status" id="folderStatus">cartella del progetto non collegata: scegli la cartella STORECRAFT (con index.html e assets)</span>
       <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
     </div>
 
@@ -68,20 +68,19 @@
       return;
     }
     try {
-      projectDirHandle = await window.showDirectoryPicker();
+      // cartella del progetto STORECRAFT (controllata), poi le sottocartelle del negozio: assets/logos/<negozio> e
+      // assets/img/<negozio>/printlogos
+      projectDirHandle = await AdminNegozio.scegliProgetto();
       await openStoreFolders();
-
-      const perm = await projectDirHandle.requestPermission({ mode: 'readwrite' });
-      if (perm !== 'granted') {
-        throw new Error('Permesso di scrittura negato.');
-      }
 
       folderStatus.textContent = 'cartella del progetto collegata: ' + projectDirHandle.name;
       folderStatus.className = 'folder-status ok';
 
       await loadLogoList();
     } catch (err) {
+      if (err.name === 'AbortError') return;   // finestra chiusa senza scegliere
       console.error(err);
+      projectDirHandle = null;
       folderStatus.textContent = 'errore: ' + (err.message || 'impossibile collegare la cartella');
       folderStatus.className = 'folder-status err';
     }
@@ -121,7 +120,7 @@
     } catch (err) {
       return [];
     }
-    const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
+    const match = text.match(/^const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/m);   // a inizio riga: non il commento in cima a elenco.js
     if (!match) return [];
     return match[1]
       .split(',')
@@ -133,7 +132,7 @@
   async function loadLogoList() {
     const emptyMsg = document.getElementById('emptyMsg');
     const container = document.getElementById('logoList');
-    container.innerHTML = '<p class="empty-msg">Caricamento elenco loghi...</p>';
+    container.innerHTML = '<p class="empty-msg">caricamento elenco dei loghi…</p>';
 
     const entries = await readLogosJsEntries();
     logoEntries = [];
@@ -231,7 +230,7 @@
       text = AdminNegozio.elencoVuoto();
     }
 
-    const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
+    const match = text.match(/^const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/m);   // a inizio riga: non il commento in cima a elenco.js
     let entries = [];
     if (match) {
       entries = match[1]

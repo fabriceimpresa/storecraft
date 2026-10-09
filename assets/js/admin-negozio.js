@@ -8,6 +8,7 @@
      <span data-admin-cartella-negozio>    riceve la cartella del negozio scelto (luxury, tebe, ophilya)
      AdminNegozio.negozio                  negozio scelto
      AdminNegozio.oro()                    oro del negozio per la variante "gold" dei loghi (RGB)
+     AdminNegozio.scegliProgetto()         Promise: cartella del progetto scelta e controllata (index.html e assets/negozi)
      AdminNegozio.cartelle(progetto)       Promise { logos, printlogos }: cartelle del negozio nella cartella progetto
      AdminNegozio.elencoVuoto()            testo di partenza di assets/logos/<negozio>/elenco.js, se non esiste
      AdminNegozio.alCambio(funzione)       chiamata quando si sceglie un altro negozio (prima di cambiare si può
@@ -69,6 +70,20 @@
     });
   }
 
+  // Scelta della cartella del progetto STORE // CRAFT (quella con index.html e assets, es. DesktopSTORECRAFT), in lettura e
+  // scrittura, con il controllo che sia davvero il progetto: scegliendo un'altra cartella non si crea niente al suo interno.
+  // La finestra si apre dove si era scelta la volta prima (stesso id della copia per un cliente).
+  async function scegliProgetto() {
+    const cartella = await window.showDirectoryPicker({ id: 'storecraft-progetto', mode: 'readwrite' });
+    try {
+      await cartella.getFileHandle('index.html');
+      await (await cartella.getDirectoryHandle('assets')).getDirectoryHandle('negozi');
+    } catch (error) {
+      throw new Error(`"${cartella.name}" non è la cartella del progetto: scegli la cartella STORECRAFT, quella che contiene index.html e assets`);
+    }
+    return cartella;
+  }
+
   async function cartelle(progetto) {
     const assets = await progetto.getDirectoryHandle('assets', { create: true });
     const logos = await (await assets.getDirectoryHandle('logos', { create: true })).getDirectoryHandle(negozio, { create: true });
@@ -105,6 +120,7 @@ const PRIORITY_BRANDS = [];
     nome: () => NEGOZI[negozio].nome,
     oro: () => NEGOZI[negozio].oro.slice(),
     cartelle,
+    scegliProgetto,
     elencoVuoto,
     alCambio: funzione => ascoltatori.push(funzione),
     prima: funzione => { conferma = funzione; }

@@ -165,6 +165,9 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .upload-box input { display: none; }
 .upload-box strong { font-weight: 400; color: var(--op-oro-chiaro); }
 .upload-nota { margin-top: 4px; color: var(--op-tenue); font-size: 11.5px; }
+/* promemoria ben visibile sopra la zona di caricamento (logoimport): riquadro oro con l'etichetta in evidenza */
+.avviso-file { margin-bottom: 12px; padding: 10px 12px; border: 1px solid var(--op-oro); border-radius: 4px; background: rgba(212, 163, 115, .08); color: var(--op-testo); font-size: 12px; line-height: 1.6; }
+.avviso-file span { margin-right: 6px; color: var(--op-oro-chiaro); font-weight: 400; letter-spacing: .06em; }
 
 /* Ricerca e conteggio (logogestione) */
 .search-bar { margin-bottom: 12px; }
@@ -213,6 +216,9 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 }
 .queue-item-preview img,
 .logo-item-preview img { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+/* anteprima del logo in bianco: i loghi neri sul fondo scuro non si vedrebbero (solo a schermo, i file non cambiano) */
+.queue-item-preview img,
+.logo-item-preview img { filter: brightness(0) invert(1); }
 .queue-item-name { flex-grow: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px; }
 .queue-item-name label { color: var(--op-tenue); font-size: 10.5px; letter-spacing: .08em; text-transform: lowercase; }
 .logo-item-name { flex-grow: 1; color: var(--op-testo); font-size: 12.5px; letter-spacing: .04em; }

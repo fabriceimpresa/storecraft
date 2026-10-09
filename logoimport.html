@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261009-37"></script>
+<script src="assets/js/negozi.js?v=20261009-38"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMPORT LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-37">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-38">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261009-37">
-  <script src="assets/js/operatore-sezione.js?v=20261009-37"></script>
-  <script src="assets/js/admin-negozio.js?v=20261009-37"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261009-38">
+  <script src="assets/js/operatore-sezione.js?v=20261009-38"></script>
+  <script src="assets/js/admin-negozio.js?v=20261009-38"></script>
 </head>
 <body>
 
@@ -35,13 +35,15 @@
     <div data-admin-negozio></div>
 
     <div class="folder-bar">
-      <span class="folder-status" id="folderStatus">cartella del progetto non collegata</span>
+      <span class="folder-status" id="folderStatus">cartella del progetto non collegata: scegli la cartella STORECRAFT (con index.html e assets)</span>
       <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
     </div>
 
+    <!-- promemoria ben visibile: la pagina non elabora le immagini (per togliere lo sfondo c'è Genera Loghi) -->
+    <p class="avviso-file"><span>[ solo png pronti ]</span> carica loghi già lavorati e con lo sfondo trasparente: il file viene salvato così com'è, senza togliere lo sfondo né ritagliare i bordi</p>
+
     <div class="upload-box disabled" id="dropZone" onclick="onDropZoneClick()">
-      <strong>trascina qui i png trasparenti dei loghi, o clicca per sceglierli</strong>
-      <p class="upload-nota">immagini già trasparenti: nessuna elaborazione automatica dei bordi</p>
+      <strong>trascina qui i png dei loghi, o clicca per sceglierli</strong>
       <input type="file" id="fileInput" accept="image/png" multiple onchange="handleFiles(this.files); this.value=''">
     </div>
 
@@ -78,20 +80,18 @@
       return;
     }
     try {
-      projectDirHandle = await window.showDirectoryPicker();
-      // Verifica/crea le sottocartelle del negozio: assets/logos/<negozio> e assets/img/<negozio>/printlogos
+      // cartella del progetto STORECRAFT (controllata), poi le sottocartelle del negozio: assets/logos/<negozio> e
+      // assets/img/<negozio>/printlogos
+      projectDirHandle = await AdminNegozio.scegliProgetto();
       await openStoreFolders();
-
-      const perm = await projectDirHandle.requestPermission({ mode: 'readwrite' });
-      if (perm !== 'granted') {
-        throw new Error('Permesso di scrittura negato.');
-      }
 
       folderStatus.textContent = 'cartella del progetto collegata: ' + projectDirHandle.name;
       folderStatus.className = 'folder-status ok';
       dropZone.classList.remove('disabled');
     } catch (err) {
+      if (err.name === 'AbortError') return;   // finestra chiusa senza scegliere
       console.error(err);
+      projectDirHandle = null;
       folderStatus.textContent = 'errore: ' + (err.message || 'impossibile collegare la cartella');
       folderStatus.className = 'folder-status err';
     }
@@ -300,7 +300,7 @@
       text = AdminNegozio.elencoVuoto();   // primo logo del negozio: elenco completo, con PRIORITY_BRANDS
     }
 
-    const match = text.match(/const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/);
+    const match = text.match(/^const\s+LOGO_FILES\s*=\s*\[([\s\S]*?)\]\s*;/m);   // a inizio riga: non il commento in cima a elenco.js
     let entries = [];
     if (match) {
       entries = match[1]
