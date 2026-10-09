@@ -22,7 +22,7 @@
       ripeti: true,
       voci: counts.map((count, index) => ({
         valore: count,
-        testo: `${count} ARTICOLI`,
+        testo: count === 1 ? '1 ARTICOLO' : `${count} ARTICOLI`,
         id: placeholder.dataset[`button${count}Id`] || `itemCount${count}Btn`,
         attiva: index === 0
       })),

@@ -2,23 +2,24 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-04"></script>
+  <script src="../assets/js/negozi.js?v=20261009-25"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartello Outlet Multi</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-25">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
-  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261009-04"></script>
-  <script src="../assets/js/logos.js?v=20261009-04"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
-  <script src="../assets/js/print-white-logos.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261009-04">
-  <script src="../assets/js/madeinitaly.js?v=20261009-04"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-25">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-25">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-25"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261009-25"></script>
+  <script src="../assets/js/logos.js?v=20261009-25"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-25"></script>
+  <script src="../assets/js/print-white-logos.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261009-25">
+  <script src="../assets/js/madeinitaly.js?v=20261009-25"></script>
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -549,13 +550,13 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
-  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
-  <script src="../assets/js/theme.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-25">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-25">
+  <script defer src="../assets/js/responsive.js?v=20261009-25"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-25"></script>
+  <script src="../assets/js/theme.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-25">
 </head>
 <body data-layout="cartelli">
   <!-- Pulsanti e Riquadri Navigazione UI -->
@@ -645,10 +646,11 @@
 
       <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
       <div class="panel-block">
-        <div class="mode-switch" id="itemSelector" aria-label="Seleziona l'articolo da modificare">
-          <button type="button" class="active" id="selectItem0" onclick="selectItem(0)">ARTICOLO 1</button>
-          <button type="button" id="selectItem1" onclick="selectItem(1)">ARTICOLO 2</button>
-          <button type="button" id="selectItem2" onclick="selectItem(2)">ARTICOLO 3</button>
+        <!-- selettore comune (selettore.js) -->
+        <div data-selettore id="itemSelector" data-on-change="selectItem" aria-label="Seleziona l'articolo da modificare">
+          <button value="0" id="selectItem0" class="active">ARTICOLO 1</button>
+          <button value="1" id="selectItem1">ARTICOLO 2</button>
+          <button value="2" id="selectItem2">ARTICOLO 3</button>
         </div>
 
         <div class="form-group" id="descGroup" hidden>
@@ -667,25 +669,21 @@
             <label for="priceOld">Prezzo Originario</label>
             <div class="input-affix">
               <span class="affix">€</span>
-              <input type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)" onblur="onPriceBlur('old', this)">
+              <input data-prezzo type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)">
             </div>
           </div>
           <div class="form-group">
             <label for="discount">Sconto</label>
             <div class="input-affix">
-              <input type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
+              <input data-percentuale type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
               <span class="affix">%</span>
-              <div class="stepper" id="discountStepper">
-                <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
-                <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
-              </div>
             </div>
           </div>
           <div class="form-group">
             <label for="priceNew">Prezzo Finale</label>
             <div class="input-affix">
               <span class="affix">€</span>
-              <input type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)" onblur="onPriceBlur('price', this)">
+              <input data-prezzo type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)">
             </div>
           </div>
         </div>
@@ -810,13 +808,13 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261009-04"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-25"></script>
 
-  <script src="../assets/js/second-brand-toggle.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore-numero-articoli.js?v=20261009-04"></script>
+  <script src="../assets/js/second-brand-toggle.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore-numero-articoli.js?v=20261009-25"></script>
 
   <script>
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
@@ -967,37 +965,13 @@
       onItemFieldInput('disc', digits ? `-${digits}%` : '');
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discount');
-      const current = parseInt(input.value, 10);
-      input.value = Math.min(99, Math.max(1, (Number.isNaN(current) ? 0 : current) + delta));
-      onDiscountInput();
-      input.focus();
-    }
 
-    // Prezzi: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
-    // (395 → 395,00; 39,9 → 39,90).
-    function formatPriceValue(value) {
-      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
-      if (!/\d/.test(cleaned)) return '';
-      const [whole, ...rest] = cleaned.split(',');
-      const decimals = rest.join('').replace(/\D/g, '');
-      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
-    }
 
     function onPriceInput(field, input) {
       input.value = input.value.replace(/[^\d,.]/g, '');
       onItemFieldInput(field, input.value);
     }
 
-    function onPriceBlur(field, input) {
-      input.value = formatPriceValue(input.value);
-      onItemFieldInput(field, input.value);
-    }
-
-    function setActive(activeId, ids) {
-      ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
-    }
 
     // Riporta nel pannello i valori del cartello e dell'articolo scelti.
     function syncPanel() {
@@ -1028,7 +1002,7 @@
       document.getElementById('descGroup').hidden = !state.withDesc;
 
       document.getElementById('selectItem2').hidden = state.itemCount < 3;
-      setActive('selectItem' + currentItem, ['selectItem0', 'selectItem1', 'selectItem2']);
+      Selettore.attiva('itemSelector', currentItem);
 
       document.getElementById('linkCards').checked = linkedCards;
       document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
@@ -1041,8 +1015,9 @@
       syncPanel();
     }
 
+    // Clic su ARTICOLO 1 / 2 / 3 (selettore comune): il valore della voce è l'indice dell'articolo.
     function selectItem(itemIndex) {
-      currentItem = itemIndex;
+      currentItem = Number(itemIndex);
       syncPanel();
     }
 
@@ -1245,7 +1220,7 @@
     // I menu si riempiono quando la lista dei loghi personalizzati del negozio è pronta (loghi-personalizzati.js).
     window.onload = () => LoghiPersonalizzati.pronto.then(loadLocalLogos);
   </script>
-  <script src="../assets/js/cursore.js?v=20261009-04"></script>
+  <script src="../assets/js/cursore.js?v=20261009-25"></script>
 
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
@@ -1281,12 +1256,12 @@
         { controls: '#selectItem0, #selectItem1, #selectItem2', target: () => itemPart('pNewDisp')().closest('.item-column'), placement: 'above' },
         { controls: '#presetDesc, #desc', target: itemPart('title') },
         { controls: '#priceOld', target: itemPart('pOldDisp') },
-        { controls: '#discount, #discountStepper', target: itemPart('discDisp') },
+        { controls: '#discount, #discount ~ .percent-stepper', target: itemPart('discDisp') },
         { controls: '#priceNew', target: itemPart('pNewDisp') }
       ]
     });
   </script>
-  <script src="../assets/js/copia-cartello.js?v=20261009-04"></script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261009-25"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-25"></script>
 </body>
 </html>

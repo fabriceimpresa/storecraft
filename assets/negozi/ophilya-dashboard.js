@@ -2,9 +2,9 @@
    Le pagine di TEBE non ancora pronte per OPHILYA restano in Coming Soon; le Utilità Cassa solo in CASSIERE. */
 Dashboard.contenuto({
   intestazione: {
-    titolo: 'Visual Merchandising Studio',
-    sottotitolo: 'Crea la tua grafica promozionale in tempo reale',
-    // in più, accanto al selettore CASSIERE / CREATOR, l'interruttore tra TEBE e OPHILYA (se installati tutti e due)
+    // come nella dashboard originale di TEBE: niente titolo né sottotitolo, in alto a sinistra l'interruttore tra TEBE e
+    // OPHILYA (se installati tutti e due) e a destra il selettore CASSIERE / CREATOR
+    titolo: false,
     interruttore: ['tebe', 'ophilya']
   },
   logo: { src: 'img/ophilya/ophilyablack.png', larghezza: 205, alt: 'OPHILYA' },
@@ -15,6 +15,7 @@ Dashboard.contenuto({
   sezioni: [
     {
       id: 'generators-section', carosello: 'generators-carousel', titolo: 'Crea Cartelli', tipo: 'cartelli',
+      righe: 1,   // per ora una sola riga: le pagine pronte sono tre
       schede: [
         { titolo: 'Albero Accessori', link: 'albero-ophilya.html', tipo: 'RASTRELLIERA', miniature: ['thumbnail/ophilya/alberoophilyathumb.png?v=20261002', 'thumbnail/ophilya/alberoophilyathumb2.png'], alt: 'Albero Accessori OPHILYA' },
         { titolo: 'Paletto 15x10', link: 'paletto-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 15x10 OPHILYA' },

@@ -2,23 +2,24 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-04"></script>
+  <script src="../assets/js/negozi.js?v=20261009-25"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadrati</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-25">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-25">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-25">
 
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261009-04"></script>
-  <script src="../assets/js/logos.js?v=20261009-04"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-25"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261009-25"></script>
+  <script src="../assets/js/logos.js?v=20261009-25"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-25"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-25">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -361,14 +362,14 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
-  <script defer src="../assets/js/testi-pronti.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
-  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
-  <script src="../assets/js/theme.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-25">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-25"></script>
+  <script defer src="../assets/js/testi-pronti.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-25">
+  <script defer src="../assets/js/responsive.js?v=20261009-25"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-25"></script>
+  <script src="../assets/js/theme.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-25">
 </head>
 <body data-layout="cartellini">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -389,10 +390,11 @@
 
       <!-- Blocco 1: selettore della modalità -->
       <div class="panel-block">
-        <div class="mode-switch" aria-label="Modalità del cartellino">
-          <button type="button" id="modeDescrizione" onclick="setCardMode('desc')">DESCRIZIONE</button>
-          <button type="button" id="modeDoppioPrezzo" onclick="setCardMode('double')">DOPPIO<br>PREZZO</button>
-          <button type="button" id="modeBrand" onclick="setCardMode('brand')">BRAND</button>
+        <!-- selettore comune (selettore.js) -->
+        <div data-selettore id="cardModeSelector" data-on-change="setCardMode" aria-label="Modalità del cartellino">
+          <button value="desc" id="modeDescrizione">DESCRIZIONE</button>
+          <button value="double" id="modeDoppioPrezzo">DOPPIO<br>PREZZO</button>
+          <button value="brand" id="modeBrand">BRAND</button>
         </div>
       </div>
 
@@ -422,18 +424,14 @@
               <label for="inp-orig">Prezzo Originario</label>
               <div class="input-affix">
                 <span class="affix">€</span>
-                <input type="text" id="inp-orig" inputmode="decimal" placeholder="396,00" oninput="updateCurrentCard()">
+                <input data-prezzo type="text" id="inp-orig" inputmode="decimal" placeholder="396,00" oninput="updateCurrentCard()">
               </div>
             </div>
             <div class="form-group">
               <label for="discountValue">Sconto</label>
               <div class="input-affix">
-                <input type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="updateCurrentCard()">
+                <input data-percentuale type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="updateCurrentCard()">
                 <span class="affix">%</span>
-                <div class="stepper">
-                  <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
-                  <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
-                </div>
               </div>
             </div>
           </div>
@@ -443,7 +441,7 @@
           <label for="inp-final">Prezzo Finale</label>
           <div class="input-affix">
             <span class="affix">€</span>
-            <input type="text" id="inp-final" inputmode="decimal" placeholder="198,00" oninput="updateCurrentCard()">
+            <input data-prezzo type="text" id="inp-final" inputmode="decimal" placeholder="198,00" oninput="updateCurrentCard()">
           </div>
         </div>
       </div>
@@ -461,7 +459,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/menu-brand-cartellini.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-25"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261009-25"></script>
   <script>
     function cleanBrandName(fileName) {
       return fileName.replace(/\.[^.]+$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -783,9 +782,7 @@
     function syncMode() {
       const mode = cardsData[currentCardIdx].mode;
       const isDesc = mode === 'desc';
-      document.getElementById('modeDescrizione').classList.toggle('active', isDesc);
-      document.getElementById('modeDoppioPrezzo').classList.toggle('active', mode === 'double');
-      document.getElementById('modeBrand').classList.toggle('active', mode === 'brand');
+      Selettore.attiva('cardModeSelector', mode);
       document.getElementById('group-desc').style.display = isDesc ? 'block' : 'none';
       document.getElementById('group-double').style.display = isDesc ? 'none' : 'block';
       document.getElementById('group-brand').hidden = mode !== 'brand';
@@ -825,16 +822,6 @@
       }
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const min = Number.parseInt(input.min, 10) || 1;
-      const max = Number.parseInt(input.max, 10) || 99;
-      let val = Number.parseInt(input.value, 10);
-      if (Number.isNaN(val)) val = min;
-      val = Math.min(max, Math.max(min, val + delta));
-      input.value = val;
-      updateCurrentCard();
-    }
 
     function toggleCardEnabled(index, enabled) {
       cardsData[index].enabled = enabled;
@@ -861,7 +848,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261009-04"></script>
+  <script src="../assets/js/cursore.js?v=20261009-25"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -888,6 +875,6 @@
     });
     cursore.point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-25" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

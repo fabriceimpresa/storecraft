@@ -157,9 +157,10 @@
     text-transform: none;
   }
 
-  /* nel tema scuro i titoli dei widget restano oro come nello STANDARD (nel chiaro sono scuri, come in TEBE) */
+  /* nel tema scuro i titoli dei widget sono bianchi (il bianco caldo dei testi della dashboard), come nello STANDARD;
+     nel chiaro sono taupe #665e54, come nello STANDARD (regola più sotto) */
   :root[data-interface-theme="dark"][data-interface-look="minimal"] body:not([data-layout]) #tools .widget h3 {
-    color: var(--interface-accent);
+    color: var(--text);
   }
 
   :root[data-interface-look="minimal"] body:not([data-layout]) #tools :is(.input-group, .tool-input-select, .rate-btn-widget) {
@@ -333,12 +334,24 @@
     .viewer-caption, .guide-text, .empty-msg, .card-desc, .muted, .text-muted
   ) { color: var(--interface-muted) !important; }
 
-  :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) :is(.card-body h3, #tools .widget h3) {
+  /* tema chiaro, STANDARD e COMPATTO: titoli delle schede e dei widget delle Utilità Cassa nel taupe #665e54 */
+  :root[data-interface-theme="light"] body:not([data-layout]) :is(.card-body h3, #tools .widget h3) {
     color: #665e54 !important;
   }
 
   /* titoli dei widget delle Utilità Cassa un poco più piccoli nel tema chiaro (0,82rem invece di 0,9rem) */
   :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) #tools .widget h3 {
+    font-size: 0.82rem;
+  }
+
+  /* Scuro + STANDARD: titoli delle schede in Cinzel un poco meno pesanti (600 invece del grassetto 700) e titoli dei
+     widget delle Utilità Cassa bianchi (il bianco caldo dei testi della dashboard) e un poco più piccoli, come nel chiaro */
+  :root[data-interface-theme="dark"][data-interface-look="standard"] body:not([data-layout]) .card-body h3 {
+    font-weight: 600;
+  }
+
+  :root[data-interface-theme="dark"][data-interface-look="standard"] body:not([data-layout]) #tools .widget h3 {
+    color: var(--text);
     font-size: 0.82rem;
   }
 
@@ -572,9 +585,16 @@
     border-color: rgba(60, 52, 44, .14) !important;
   }
 
+  /* Tema chiaro, STANDARD e COMPATTO: CASSIERE / CREATOR e TEBE / OPHILYA con i colori del selettore della dashboard
+     originale di TEBE: voce non scelta nel taupe chiaro #887d70, voce scelta (e al passaggio del mouse) #282522 */
   :root[data-interface-theme="light"] body:not([data-layout]) .mode-switcher .mode-btn {
-    color: #665e54 !important;
+    color: #887d70 !important;
     box-shadow: none !important;
+  }
+
+  /* STANDARD, chiaro e scuro: il carattere della dashboard un poco più leggero (600 invece del grassetto 700) */
+  :root[data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn {
+    font-weight: 600;
   }
 
   :root[data-interface-theme="light"] body:not([data-layout]) .mode-switcher .mode-btn:hover,
@@ -585,20 +605,13 @@
     box-shadow: none !important;
   }
 
-  /* Chiaro + STANDARD, da desktop e tablet: scritte dei selettori CASSIERE / CREATOR e TEBE / OPHILYA un poco più
-     piccole e, sulla voce scelta, un nero morbido (quella non scelta in un taupe leggero); spazio ai lati più largo, così i selettori restano grandi
-     come nel COMPATTO */
+  /* STANDARD, chiaro e scuro, da desktop e tablet: scritte dei selettori CASSIERE / CREATOR e TEBE / OPHILYA un poco
+     più piccole (0,65rem) e spazio ai lati più largo, così i selettori restano grandi come nel COMPATTO */
   @media screen and (min-width: 721px) {
-    :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn {
+    :root[data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn {
       font-size: 0.65rem;
       padding-left: 15px;
       padding-right: 15px;
-      color: #958c80 !important;   /* voce non scelta: taupe più leggero */
-    }
-
-    :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn:hover,
-    :root[data-interface-theme="light"][data-interface-look="standard"] body:not([data-layout]) .mode-switcher .mode-btn.active {
-      color: #433d36 !important;   /* nero morbido, non troppo contrastato */
     }
   }
 

@@ -2,22 +2,22 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-04"></script>
+  <script src="../assets/js/negozi.js?v=20261009-25"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartelli Magazzino // STORE CRAFT</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-25">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-25">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261009-04"></script>
-  <script src="../assets/js/logos.js?v=20261009-04"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-25"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261009-25"></script>
+  <script src="../assets/js/logos.js?v=20261009-25"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-25"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-25">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -241,13 +241,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
-  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
-  <script src="../assets/js/theme.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-25">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-25">
+  <script defer src="../assets/js/responsive.js?v=20261009-25"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-25"></script>
+  <script src="../assets/js/theme.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-25">
 </head>
 <body data-layout="cartelli">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna all'index">✕</a>
@@ -304,12 +304,13 @@
           <input type="range" id="textSize" min="46" max="76" value="61" oninput="onFieldInput('fontSize', Number(this.value))">
         </div>
 
-        <div class="mode-switch arrow-switch" id="arrowSwitch" aria-label="Direzione Freccia">
-          <button type="button" data-arrow="right" aria-label="Freccia a destra" onclick="setArrow('right')">➔</button>
-          <button type="button" data-arrow="down" aria-label="Freccia in giù" onclick="setArrow('down')">⬇</button>
-          <button type="button" data-arrow="left" aria-label="Freccia a sinistra" onclick="setArrow('left')">⬅</button>
-          <button type="button" data-arrow="up" aria-label="Freccia in su" onclick="setArrow('up')">⬆</button>
-          <button type="button" data-arrow="none" onclick="setArrow('none')">NESSUNA</button>
+        <!-- selettore comune (selettore.js); data-arrow resta per la grandezza delle frecce (stile della pagina) -->
+        <div data-selettore class="arrow-switch" id="arrowSwitch" data-on-change="setArrow" aria-label="Direzione Freccia">
+          <button value="right" data-arrow="right" aria-label="Freccia a destra" class="active">➔</button>
+          <button value="down" data-arrow="down" aria-label="Freccia in giù">⬇</button>
+          <button value="left" data-arrow="left" aria-label="Freccia a sinistra">⬅</button>
+          <button value="up" data-arrow="up" aria-label="Freccia in su">⬆</button>
+          <button value="none" data-arrow="none">NESSUNA</button>
         </div>
       </div>
 
@@ -377,9 +378,9 @@
 
 
 
-  <script src="../assets/js/second-brand-toggle.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261009-04"></script>
+  <script src="../assets/js/second-brand-toggle.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261009-25"></script>
 
 
 
@@ -521,9 +522,7 @@
       document.getElementById('labelText').value = state.text;
       // la barra mostra la misura sul cartello (con 4 righe può essere quella imposta dal limitatore)
       document.getElementById('textSize').value = state.shownSize ?? state.fontSize;
-      document.querySelectorAll('#arrowSwitch button').forEach(button => {
-        button.classList.toggle('active', button.dataset.arrow === state.arrow);
-      });
+      Selettore.attiva('arrowSwitch', state.arrow);
 
       SelettoreCartello.setActive('selectCard' + currentCard);
       SecondBrandToggle.setState('secondBrandBtn', state.twoBrands);
@@ -666,7 +665,7 @@
       document.fonts.ready.then(renderCards);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261009-04"></script>
+  <script src="../assets/js/cursore.js?v=20261009-25"></script>
 
 
 
@@ -700,7 +699,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/copia-cartello.js?v=20261009-04"></script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-sheet="#a4Sheet"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261009-25"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-25" data-sheet="#a4Sheet"></script>
 </body>
 </html>

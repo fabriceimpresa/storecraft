@@ -8,14 +8,15 @@
 
    Contenuto del negozio:
      intestazione   { titolo, sottotitolo, interruttore: ['tebe', 'ophilya'] } (interruttore facoltativo: negozi tra cui passare,
-                    mostrati solo se installati almeno due)
+                    mostrati solo se installati almeno due; titolo: false toglie titolo e sottotitolo e mette l'interruttore
+                    in alto a sinistra, come nella dashboard originale di TEBE)
      logo           { src (nella cartella assets/), larghezza, alt }: sotto il divisorio, bianco su fondo scuro e nero
                     su fondo chiaro
      identita       [riga principale, riga sotto] accanto al logo (es. indirizzo e descrizione)
      qr             collegamento iniziale del Generatore QR
      cassa          'sempre' oppure 'solo-cassiere' (Utilità Cassa solo in modalità CASSIERE)
      etichette      pagina delle etichette DYMO per la voce del menu laterale
-     sezioni        [{ id, carosello, titolo, tipo, schede, voceMenu, stella }]
+     sezioni        [{ id, carosello, titolo, tipo, schede, voceMenu, stella, righe }] (righe: 1 mette i cartelli su una riga sola)
                     tipo: 'cartelli' (due righe; menu CREA CARTELLI), 'promo' (schede dorate; sottosezione PROMO
                     STAGIONALI), 'cartellini' (menu CARTELLINI), 'etichette' (schede DYMO), 'stampe' (PDF con Apri &
                     Stampa; menu STAMPE PRONTE con la voce voceMenu)
@@ -24,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.77 2026';
+  const VERSIONE = 'V 1.78 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -213,7 +214,7 @@
   }
 
   function sezione(s) {
-    const classiCarosello = `carousel-container${s.tipo === 'cartelli' ? ' two-rows' : ''}${s.tipo === 'etichette' ? ' dymo' : ''}`;
+    const classiCarosello = `carousel-container${s.tipo === 'cartelli' && s.righe !== 1 ? ' two-rows' : ''}${s.tipo === 'etichette' ? ' dymo' : ''}`;
     return el('div', { id: s.id },
       el('div', { class: 'section-title' }, s.titolo,
         s.stella ? [' ', el('span', { class: 'promo-lightning', 'aria-hidden': 'true', text: '✦' })] : []),
@@ -231,8 +232,14 @@
     const header = el('header', {},
       el('button', { class: 'home-mark', type: 'button', 'aria-label': "Torna all'inizio della home", onclick: () => returnToHomeTop() },
         el('span', { class: 'home-mark-icon', 'aria-hidden': 'true', text: '⌂' }), el('span', { text: 'HOME' })));
-    header.append(el('h1', { text: dati.intestazione.titolo || 'Visual Merchandising Studio' }));
-    if (dati.intestazione.sottotitolo) header.append(el('p', { text: dati.intestazione.sottotitolo }));
+    // titolo: false (TEBE e OPHILYA, come nella loro dashboard originale): niente titolo né sottotitolo, al loro posto
+    // l'interruttore dei negozi in alto a sinistra (classe .solo-selettori, regole in dashboard.css)
+    if (dati.intestazione.titolo === false) {
+      header.classList.add('solo-selettori');
+    } else {
+      header.append(el('h1', { text: dati.intestazione.titolo || 'Visual Merchandising Studio' }));
+      if (dati.intestazione.sottotitolo) header.append(el('p', { text: dati.intestazione.sottotitolo }));
+    }
     const interruttore = (dati.intestazione.interruttore || []).filter(id => PuntoVendita.NEGOZI[id]);
     if (interruttore.length >= 2) {
       header.append(el('div', { class: 'mode-switcher store-switch', role: 'group', 'aria-label': 'Negozio' },
@@ -329,10 +336,53 @@
       // sul telefono, come nella dashboard originale di TEBE, l'interruttore sta nella barra in alto al posto della scritta
       // STORE // CRAFT (nascosta da dashboard.css), tra ☰ e CASSIERE / CREATOR; tornando a desktop o tablet torna
       // nell'intestazione
+      // Nell'intestazione senza titolo (.solo-selettori, TEBE e OPHILYA) anche CASSIERE / CREATOR sta nell'intestazione,
+      // a destra, allineato al bordo destro del contenuto come nella dashboard originale di TEBE, e indirizzo e
+      // descrizione salgono al centro tra i due selettori (sul telefono tornano nella riga del logo, dove sono nascosti)
       const testata = corpo.querySelector('#main-content > header');
+      const barra = corpo.querySelector('.mobile-top-bar');
+      const rigaLogo = corpo.querySelector('#main-content > .store-hero');
+      const identita = rigaLogo?.querySelector('.store-identity');
+      // Al centro dell'intestazione indirizzo e descrizione si alternano ogni 2 minuti con la scritta Visual Merchandising
+      // Studio, con un effetto di scorrimento verso l'alto (stile in dashboard.css, .testata-centro)
+      const centro = testata.classList.contains('solo-selettori') && identita
+        ? el('div', { class: 'testata-centro', 'aria-live': 'off' },
+          el('div', { class: 'testata-titolo is-sotto', text: 'Visual Merchandising Studio' }))
+        : null;
+      if (centro) {
+        let attiva = identita;
+        identita.classList.add('is-visibile');
+        setInterval(() => {
+          const prossima = attiva === identita ? centro.querySelector('.testata-titolo') : identita;
+          attiva.classList.replace('is-visibile', 'is-sopra');
+          prossima.classList.remove('is-sotto');
+          prossima.classList.add('is-visibile');
+          const uscita = attiva;
+          // finito lo scorrimento, la scritta uscita torna sotto senza animazione, pronta per il giro dopo
+          setTimeout(() => {
+            uscita.classList.add('senza-animazione');
+            uscita.classList.replace('is-sopra', 'is-sotto');
+            uscita.offsetHeight;
+            uscita.classList.remove('senza-animazione');
+          }, 900);
+          attiva = prossima;
+        }, 2 * 60 * 1000);
+      }
       const posto = () => {
-        if (phoneViewQuery.matches) selettore.before(negozi);
-        else testata.append(negozi);
+        if (phoneViewQuery.matches) {
+          barra.append(selettore);
+          selettore.before(negozi);
+          if (identita) rigaLogo.append(identita);
+        } else {
+          testata.append(negozi);
+          if (testata.classList.contains('solo-selettori')) {
+            if (centro) {
+              centro.prepend(identita);
+              testata.append(centro);
+            }
+            testata.append(selettore);
+          }
+        }
         misura();
       };
       phoneViewQuery.addEventListener('change', posto);

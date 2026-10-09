@@ -897,6 +897,38 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   body.selettori-in-colonna .mode-switcher.store-switch { right: 2rem; top: calc(24px + var(--altezza-selettore, 39px) + 6px); }
   body.selettori-in-colonna #main-content > header:has(.store-switch) :is(h1, p) { padding-right: calc(var(--larghezza-selettore, 185px) - 1rem + 24px); }
 }
+/* Intestazione senza titolo (TEBE e OPHILYA, come nella loro dashboard originale; titolo: false nella scheda della
+   dashboard): da desktop e tablet l'interruttore dei negozi sta in alto a sinistra, al posto del titolo, e CASSIERE /
+   CREATOR a destra, sulla stessa riga dell'intestazione (24 px dall'alto), allineato al bordo destro del contenuto
+   (dashboard.js li mette nell'intestazione); scorrono con la pagina come nella dashboard originale di TEBE (sul telefono
+   restano nella barra in alto).
+   Indirizzo e descrizione stanno nell'intestazione, al centro tra i due selettori e centrati tra loro (dashboard.js li
+   sposta lì da desktop e tablet). Niente divisorio: sotto c'è solo il logo, con il bordo superiore alla stessa altezza
+   di CREA CARTELLI del menu laterale. */
+@media screen and (min-width: 721px) {
+  #main-content > header.solo-selettori,
+  :root[data-interface-look="minimal"] #main-content > header.solo-selettori { min-height: 0; padding-bottom: 36px; margin-bottom: 16px; border-bottom: 0; }
+  #main-content > header.solo-selettori { display: flex; justify-content: space-between; align-items: center; }
+  #main-content > header.solo-selettori .mode-switcher { position: static; display: inline-flex; }
+  #main-content > header.solo-selettori .store-identity { text-align: center; padding-bottom: 0; }  /* Al centro si alternano ogni 2 minuti (dashboard.js) indirizzo e descrizione e la scritta Visual Merchandising Studio:
+     la scritta in uscita sale e sparisce, quella nuova entra dal basso */
+  #main-content > header.solo-selettori .testata-centro { display: grid; align-items: center; justify-items: center; height: 40px; overflow: hidden; }
+  .testata-centro > * { grid-area: 1 / 1; transition: transform .8s cubic-bezier(.22, .61, .36, 1), opacity .8s ease; }
+  .testata-centro > .is-visibile { transform: translateY(0); opacity: 1; }
+  .testata-centro > .is-sotto { transform: translateY(100%); opacity: 0; }
+  .testata-centro > .is-sopra { transform: translateY(-100%); opacity: 0; }
+  .testata-centro > .senza-animazione { transition: none; }
+  /* come il titolo della pagina operatore: Cinzel 500 in maiuscolo, lettere molto spaziate, tra due linee sottili oro */
+  .testata-titolo { display: flex; align-items: center; gap: 16px; font-family: 'Cinzel', serif; font-size: 15px; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: var(--interface-accent, var(--accent)); white-space: nowrap; }
+  .testata-titolo::before,
+  .testata-titolo::after { content: ''; width: 36px; height: 1px; background: currentColor; opacity: .45; }
+  .testata-titolo::after { margin-left: -.32em; }   /* la spaziatura dopo l'ultima lettera non allontana la linea destra */
+}
+.testata-centro { display: none; }   /* sul telefono indirizzo e descrizione stanno nella riga del logo, nascosti */
+@media (prefers-reduced-motion: reduce) {
+  .testata-centro > * { transform: none !important; transition: opacity .6s ease; }
+}
+
 /* Titolo VISUAL MERCHANDISING STUDIO in oro (il sottotitolo resta com'è): TEBE e OPHILYA in tutti e due i temi, Luxury nel tema chiaro */
 :root[data-negozio="tebe"] #main-content > header h1,
 :root[data-negozio="ophilya"] #main-content > header h1,

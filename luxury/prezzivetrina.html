@@ -2,17 +2,18 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-04"></script>
+  <script src="../assets/js/negozi.js?v=20261009-25"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-25">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-25">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-25">
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-25">
   <style>
     /* Font locali da assets/fonts (stessa convenzione delle altre pagine: 'Nevis Project') */
     @font-face {
@@ -180,13 +181,13 @@
     /* Vista telefono: quella comune di cartellini e Prezzi Vetrina (../assets/css/responsive.css e responsive.js). */
 
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
-  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
-  <script src="../assets/js/theme.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-25">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-25">
+  <script defer src="../assets/js/responsive.js?v=20261009-25"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-25"></script>
+  <script src="../assets/js/theme.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-25">
 </head>
 <body data-layout="prezzi">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -221,25 +222,15 @@
           <label for="inp-price">Prezzo</label>
           <div class="input-affix">
             <span class="affix">€</span>
-            <input type="text" id="inp-price" inputmode="decimal" placeholder="30,00" oninput="updateCurrentColumn()">
+            <input data-prezzo type="text" id="inp-price" inputmode="decimal" placeholder="30,00" oninput="updateCurrentColumn()">
           </div>
         </div>
 
         <div class="form-group">
-          <label class="section-label" for="descriptionPreset">Promozione</label>
+          <label class="section-label" for="descriptionPreset">Promozioni</label>
           <div class="preset-select">
-            <select id="descriptionPreset" onchange="applyDescriptionPreset()">
-              <option value="">-- Seleziona un testo --</option>
-              <option value="Special Deal">Special Deal</option>
-              <option value="Final Price">Final Price</option>
-              <option value="Summer Sale">Summer Sale</option>
-              <option value="Spring Sale">Spring Sale</option>
-              <option value="Winter Sale">Winter Sale</option>
-              <option value="Black Friday">Black Friday</option>
-              <option value="Made in Italy">Made in Italy</option>
-              <option value="Vera Pelle • Genuine Leather">Vera Pelle • Genuine Leather</option>
-              <option value="Made in Italy • Genuine Leather">Made in Italy • Genuine Leather</option>
-              <option value="Fino ad esaurimento scorte">Fino ad esaurimento scorte</option>
+            <select id="descriptionPreset" onchange="applyDescriptionPreset()" data-testi-pronti="Promozioni" data-testi-senza-gruppi>
+              <option value="">-- Seleziona Promozione --</option>
             </select>
           </div>
           <label for="inp-desc">Testo Libero</label>
@@ -260,7 +251,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/fasce-prezzo.js?v=20261009-04"></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261009-25"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261009-25"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -458,7 +450,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261009-04"></script>
+  <script src="../assets/js/cursore.js?v=20261009-25"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -484,6 +476,6 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-25" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

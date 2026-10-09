@@ -2,16 +2,17 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-04"></script>
+  <script src="../assets/js/negozi.js?v=20261009-25"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Black Friday Lips</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-25">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-25">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-25">
   <style>
     @font-face {
       font-family: 'Franklin Gothic';
@@ -199,13 +200,13 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
-  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
-  <script src="../assets/js/theme.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-25">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-25">
+  <script defer src="../assets/js/responsive.js?v=20261009-25"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-25"></script>
+  <script src="../assets/js/theme.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-25">
 </head>
 <body data-layout="cartelli">
 
@@ -234,7 +235,7 @@
           <label for="price">Prezzo</label>
           <div class="input-affix">
             <span class="affix">€</span>
-            <input type="text" id="price" inputmode="decimal" placeholder="20,00" oninput="onPriceInput(this)" onblur="onPriceBlur(this)">
+            <input data-prezzo type="text" id="price" inputmode="decimal" placeholder="20,00" oninput="onPriceInput(this)">
           </div>
         </div>
       </div>
@@ -284,8 +285,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/selettore.js?v=20261009-04"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-25"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261009-25"></script>
 
   <script>
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
@@ -309,25 +310,12 @@
       renderCards();
     }
 
-    // Prezzo: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
-    // (20 → 20,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
-    function formatPriceValue(value) {
-      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
-      if (!/\d/.test(cleaned)) return '';
-      const [whole, ...rest] = cleaned.split(',');
-      const decimals = rest.join('').replace(/\D/g, '');
-      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
-    }
 
     function onPriceInput(input) {
       input.value = input.value.replace(/[^\d,.]/g, '');
       onFieldInput('price', input.value);
     }
 
-    function onPriceBlur(input) {
-      input.value = formatPriceValue(input.value);
-      onFieldInput('price', input.value);
-    }
 
     function setActive(activeId, ids) {
       ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
@@ -415,7 +403,7 @@
       renderCards();
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261009-04"></script>
+  <script src="../assets/js/cursore.js?v=20261009-25"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -432,7 +420,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/copia-cartello.js?v=20261009-04"></script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261009-04"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261009-25"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-25"></script>
 </body>
 </html>

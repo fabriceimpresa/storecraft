@@ -2,23 +2,24 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-04"></script>
+  <script src="../assets/js/negozi.js?v=20261009-25"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartellini Promo</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-25">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261009-25">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261009-25">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261009-25">
 
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261009-04"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261009-04"></script>
-  <script src="../assets/js/logos.js?v=20261009-04"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261009-04"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261009-25"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261009-25"></script>
+  <script src="../assets/js/logos.js?v=20261009-25"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261009-25"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-25">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -328,14 +329,14 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261009-04"></script>
-  <script defer src="../assets/js/testi-pronti.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-04">
-  <script defer src="../assets/js/responsive.js?v=20261009-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261009-04"></script>
-  <script src="../assets/js/theme.js?v=20261009-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261009-25">
+  <script defer src="../assets/js/menu-cascata.js?v=20261009-25"></script>
+  <script defer src="../assets/js/testi-pronti.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261009-25">
+  <script defer src="../assets/js/responsive.js?v=20261009-25"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261009-25"></script>
+  <script src="../assets/js/theme.js?v=20261009-25"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261009-25">
 </head>
 <body data-layout="cartellini">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -355,9 +356,10 @@
 
       <!-- Blocco 1: selettori e pulsanti -->
       <div class="panel-block">
-        <div class="mode-switch" aria-label="Seleziona la modalità del cartellino">
-          <button type="button" id="modeOrig" class="active" onclick="setDescriptionMode(false)">PREZZO<br>ORIGINARIO</button>
-          <button type="button" id="modeDesc" onclick="setDescriptionMode(true)">DESCRIZIONE<br>ARTICOLO</button>
+        <!-- selettore comune (selettore.js) -->
+        <div data-selettore id="cardModeSelector" data-on-change="onCardModeChange" aria-label="Seleziona la modalità del cartellino">
+          <button value="orig" id="modeOrig" class="active">PREZZO<br>ORIGINARIO</button>
+          <button value="desc" id="modeDesc">DESCRIZIONE<br>ARTICOLO</button>
         </div>
         <button type="button" class="btn-toggle" id="discountBtn" aria-pressed="false" onclick="toggleDiscount()">+ AGGIUNGI SCONTISTICA</button>
       </div>
@@ -374,18 +376,14 @@
             <label for="inp-orig">Prezzo Originario</label>
             <div class="input-affix">
               <span class="affix">€</span>
-              <input type="text" id="inp-orig" inputmode="decimal" placeholder="99,00" oninput="onPriceInput(this, 'priceOrig')" onblur="onPriceBlur(this, 'priceOrig')">
+              <input data-prezzo type="text" id="inp-orig" inputmode="decimal" placeholder="99,00" oninput="onPriceInput(this, 'priceOrig')">
             </div>
           </div>
           <div class="form-group" id="discountGroup" hidden>
             <label for="discountValue">Sconto</label>
             <div class="input-affix">
-              <input type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="onDiscountInput()">
+              <input data-percentuale type="number" id="discountValue" min="1" max="99" placeholder="50" oninput="onDiscountInput()">
               <span class="affix">%</span>
-              <div class="stepper" id="discountStepper">
-                <button type="button" aria-label="Aumenta sconto" onclick="stepDiscount(1)">▲</button>
-                <button type="button" aria-label="Diminuisci sconto" onclick="stepDiscount(-1)">▼</button>
-              </div>
             </div>
           </div>
         </div>
@@ -438,7 +436,7 @@
           <label for="inp-final">Prezzo Finale</label>
           <div class="input-affix">
             <span class="affix">€</span>
-            <input type="text" id="inp-final" inputmode="decimal" placeholder="150,00" oninput="onPriceInput(this, 'priceFinal')" onblur="onPriceBlur(this, 'priceFinal')">
+            <input data-prezzo type="text" id="inp-final" inputmode="decimal" placeholder="150,00" oninput="onPriceInput(this, 'priceFinal')">
           </div>
         </div>
       </div>
@@ -456,7 +454,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/menu-brand-cartellini.js?v=20261009-04"></script>
+  <script src="../assets/js/selettore.js?v=20261009-25"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261009-25"></script>
   <script>
     const LOGO_PATH = "../assets/logos/luxury/";
 
@@ -639,13 +638,17 @@
     // PREZZO ORIGINARIO: prezzo barrato ed eventuale fascetta sconto; DESCRIZIONE ARTICOLO: il testo al loro posto.
     function syncMode() {
       const card = cardsData[currentCardIdx];
-      document.getElementById('modeOrig').classList.toggle('active', !card.withDesc);
-      document.getElementById('modeDesc').classList.toggle('active', card.withDesc);
+      Selettore.attiva('cardModeSelector', card.withDesc ? 'desc' : 'orig');
       document.getElementById('origRow').hidden = card.withDesc;
       document.getElementById('descriptionGroup').hidden = !card.withDesc;
       document.getElementById('discountBtn').hidden = card.withDesc;
       document.getElementById('discountGroup').hidden = !card.withDiscount;
       setToggle('discountBtn', card.withDiscount, 'SCONTISTICA ATTIVA', '+ AGGIUNGI SCONTISTICA');
+    }
+
+    // Clic sul selettore comune PREZZO ORIGINARIO / DESCRIZIONE ARTICOLO (selettore.js).
+    function onCardModeChange(value) {
+      setDescriptionMode(value === 'desc');
     }
 
     function setDescriptionMode(isDesc) {
@@ -717,25 +720,12 @@
       renderGrid();
     }
 
-    // Prezzi: il simbolo € sta fisso davanti al campo; uscendo dal campo il prezzo prende sempre due decimali
-    // (49 → 49,00; 39,9 → 39,90). Stessa funzione di cartelli_outlet.html.
-    function formatPriceValue(value) {
-      const cleaned = value.replace(/[^\d,.]/g, '').replace(/\./g, ',');
-      if (!/\d/.test(cleaned)) return '';
-      const [whole, ...rest] = cleaned.split(',');
-      const decimals = rest.join('').replace(/\D/g, '');
-      return `${whole || '0'},${decimals.padEnd(2, '0').slice(0, 2)}`;
-    }
 
     function onPriceInput(input, field) {
       input.value = input.value.replace(/[^\d,.]/g, '');
       onFieldInput(field, input.value);
     }
 
-    function onPriceBlur(input, field) {
-      input.value = formatPriceValue(input.value);
-      onFieldInput(field, input.value);
-    }
 
     // Sconto: un numero da 1 a 99, con il % fisso nel campo; sul cartellino diventa -50%.
     function onDiscountInput() {
@@ -743,13 +733,6 @@
       onFieldInput('sconto', digits);
     }
 
-    function stepDiscount(delta) {
-      const input = document.getElementById('discountValue');
-      const current = parseInt(input.value, 10);
-      input.value = Math.min(99, Math.max(1, (Number.isNaN(current) ? 0 : current) + delta));
-      onDiscountInput();
-      input.focus();
-    }
 
     function formatDescriptionText(value) {
       const text = (value || '').trim();
@@ -792,7 +775,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261009-04"></script>
+  <script src="../assets/js/cursore.js?v=20261009-25"></script>
   <script>
     // Cursore (come in Cartellini Vetrina): la linguetta lo porta sopra il cartellino scelto, i campi del pannello
     // sopra (o di lato) l'elemento del cartellino legato al campo in uso.
@@ -811,7 +794,7 @@
         { controls: '.tab-item', target: currentCardView, placement: 'above' },
         { controls: '#modeDesc, #descPreset, #inp-desc', target: inCurrentCard('.article-desc') },
         { controls: '#modeOrig, #inp-orig', target: inCurrentCard('.orig-price-box .strike-line') },
-        { controls: '#discountBtn, #discountValue, #discountStepper', target: inCurrentCard('.discount-rate') },
+        { controls: '#discountBtn, #discountValue, #discountValue ~ .percent-stepper', target: inCurrentCard('.discount-rate') },
         { controls: '#brandSelect, #customBrandSelect', target: inCurrentCard('.brand-box > *') },
         { controls: '#inp-sale-title', target: inCurrentCard('.sale-banner-title') },
         { controls: '#promoPreset, #inp-sale-sub', target: inCurrentCard('.sale-banner-sub') },
@@ -819,6 +802,6 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261009-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261009-25" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>
