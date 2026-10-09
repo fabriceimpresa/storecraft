@@ -1,6 +1,6 @@
 /* Scelta del negozio nelle pagine di amministrazione dei loghi ufficiali (logoimport.html e logogestione.html, nella
    radice, non collegate dalle dashboard): le pagine sono una sola per i tre negozi e agiscono sul negozio scelto qui.
-   Stile in assets/css/admin-negozio.css.
+   Stile in assets/css/operatore.css (stile terminale delle sezioni operatore).
 
    Uso:
      <div data-admin-negozio></div>        qui compare il selettore dei negozi installati (LUXURY OUTLET / TEBE / OPHILYA)

@@ -1,0 +1,255 @@
+/* Sezioni dell'area operatore (logoimport.html, logogestione.html): stile "terminale elegante" della pagina operatore.
+   Carattere a spaziatura fissa leggero (IBM Plex Mono), testo grigio chiaro, oro per titoli, comandi e linee, verde e
+   rosso tenui per gli esiti. Aperte da sole hanno la cornice oro doppia della pagina operatore; dentro la pagina
+   operatore (classe incorporata su <html>, operatore-sezione.js) perdono cornice, titolo e ✕: la cornice è quella
+   della pagina operatore. Le classi sono quelle delle pagine. */
+:root {
+  --op-bg: #121110;
+  --op-fondo: #0d0c0b;
+  --op-riquadro: #151412;
+  --op-bordo: #2a2723;
+  --op-testo: #d9d3c7;
+  --op-tenue: #8f877b;
+  --op-oro: #d4a373;
+  --op-oro-chiaro: #e5ba73;
+  --op-cornice: #8f6a1f;
+  --op-ok: #8fbf7a;
+  --op-errore: #e07a5f;
+  --op-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px;
+  background: radial-gradient(ellipse at top, rgba(180, 139, 55, .07) 0%, rgba(18, 17, 16, 0) 60%), var(--op-bg);
+  color: var(--op-testo);
+  font: 300 13px/1.65 var(--op-mono);
+}
+
+/* Cornice oro doppia della pagina operatore (solo aperta da sola) */
+.container {
+  position: relative;
+  width: min(880px, 100%);
+  padding: 40px 40px 36px;
+  border: 1px solid var(--op-cornice);
+}
+.container::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(143, 106, 31, .35);
+  pointer-events: none;
+}
+
+h1 {
+  margin-bottom: 18px;
+  color: var(--op-oro-chiaro);
+  font: 400 .82rem var(--op-mono);
+  letter-spacing: .24em;
+  text-align: center;
+  text-transform: uppercase;
+}
+h1::before { content: '> '; color: var(--op-oro); }
+
+/* descrizione: una nota da terminale */
+.subtitle {
+  margin-bottom: 22px;
+  color: var(--op-tenue);
+  font-size: 11.5px;
+}
+.subtitle::before { content: '// '; color: var(--op-oro); }
+
+/* dentro la pagina operatore: niente cornice, titolo, ✕ e sfondo propri */
+html.incorporata body { min-height: 0; padding: 0; background: transparent; }
+html.incorporata .container { width: 100%; padding: 0; border: 0; }
+html.incorporata .container::before, html.incorporata h1, html.incorporata .app-close-btn { display: none; }
+
+/* Selettore NEGOZIO (admin-negozio.js) */
+.admin-negozio {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.admin-negozio-label {
+  margin-right: 8px;
+  color: var(--op-tenue);
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  text-transform: lowercase;
+}
+.admin-negozio-label::after { content: ':'; }
+.admin-negozio button {
+  padding: 6px 11px;
+  border: 1px solid var(--op-bordo);
+  border-radius: 3px;
+  background: var(--op-riquadro);
+  color: var(--op-tenue);
+  font: 400 11px var(--op-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.admin-negozio button:hover { color: var(--op-oro-chiaro); border-color: var(--op-oro); }
+.admin-negozio button[aria-pressed="true"] { color: var(--op-oro-chiaro); border-color: var(--op-oro); background: rgba(212, 163, 115, .1); }
+.admin-negozio button[aria-pressed="true"]::before { content: '> '; }
+.admin-negozio button:focus-visible { outline: 1px solid var(--op-oro-chiaro); outline-offset: 2px; }
+
+/* Riga della cartella del progetto: una riga di terminale con il comando a destra */
+.folder-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--op-bordo);
+  border-radius: 4px;
+  background: var(--op-fondo);
+}
+.folder-status { flex-grow: 1; color: var(--op-tenue); font-size: 12px; }
+.folder-status::before { content: '$ '; color: var(--op-oro); }
+.folder-status.ok { color: var(--op-ok); }
+.folder-status.err { color: var(--op-errore); }
+
+/* Comandi: contorno oro, squadrati, maiuscoli */
+.btn-folder,
+.btn-save-row,
+.btn-delete-row,
+.modal-btn {
+  padding: 7px 12px;
+  border: 1px solid var(--op-oro);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--op-oro-chiaro);
+  font: 400 11px var(--op-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.btn-folder:hover,
+.btn-save-row:hover:not(:disabled),
+.modal-btn:hover { background: var(--op-oro); color: #121110; }
+.btn-delete-row,
+.modal-btn-overwrite,
+.modal-btn-confirm { border-color: var(--op-errore); color: var(--op-errore); }
+.btn-delete-row:hover:not(:disabled),
+.modal-btn-overwrite:hover,
+.modal-btn-confirm:hover { background: var(--op-errore); color: #121110; }
+.modal-btn-cancel { border-color: var(--op-bordo); color: var(--op-tenue); }
+.modal-btn-cancel:hover { background: var(--op-bordo); color: var(--op-testo); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Zona dove trascinare i PNG (logoimport) */
+.upload-box {
+  margin-bottom: 16px;
+  padding: 22px;
+  border: 1px dashed var(--op-bordo);
+  border-radius: 4px;
+  background: var(--op-fondo);
+  color: var(--op-testo);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.upload-box:hover, .upload-box.dragover { border-color: var(--op-oro); background: rgba(212, 163, 115, .05); }
+.upload-box.disabled { opacity: .45; cursor: not-allowed; }
+.upload-box input { display: none; }
+.upload-box strong { font-weight: 400; color: var(--op-oro-chiaro); }
+.upload-nota { margin-top: 4px; color: var(--op-tenue); font-size: 11.5px; }
+
+/* Ricerca e conteggio (logogestione) */
+.search-bar { margin-bottom: 12px; }
+.search-bar input,
+.queue-item-name input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--op-bordo);
+  border-radius: 3px;
+  background: var(--op-fondo);
+  color: var(--op-testo);
+  font: 400 12.5px var(--op-mono);
+  letter-spacing: .04em;
+}
+.search-bar input:focus,
+.queue-item-name input:focus { outline: none; border-color: var(--op-oro); }
+.queue-item-name input { text-transform: uppercase; }
+.count-info { margin-bottom: 10px; color: var(--op-tenue); font-size: 11.5px; text-align: right; }
+
+/* Righe dei loghi (coda di logoimport, elenco di logogestione) */
+.queue-list,
+.logo-list { display: flex; flex-direction: column; }
+.queue-item,
+.logo-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 10px 2px;
+  border-top: 1px solid var(--op-bordo);
+}
+.queue-item:last-child,
+.logo-item:last-child { border-bottom: 1px solid var(--op-bordo); }
+.queue-item-preview,
+.logo-item-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 90px;
+  height: 45px;
+  padding: 4px;
+  border: 1px solid var(--op-bordo);
+  border-radius: 3px;
+  background: repeating-conic-gradient(#1c1b18 0% 25%, #121110 0% 50%) 50% / 12px 12px;
+}
+.queue-item-preview img,
+.logo-item-preview img { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+.queue-item-name { flex-grow: 1; min-width: 180px; display: flex; flex-direction: column; gap: 4px; }
+.queue-item-name label { color: var(--op-tenue); font-size: 10.5px; letter-spacing: .08em; text-transform: lowercase; }
+.logo-item-name { flex-grow: 1; color: var(--op-testo); font-size: 12.5px; letter-spacing: .04em; }
+.queue-item-actions { display: flex; align-items: center; gap: 8px; }
+.row-status { min-width: 90px; color: var(--op-tenue); font-size: 11px; }
+.row-status.saved, .row-status.deleted { color: var(--op-ok); }
+.row-status.saving, .row-status.deleting { color: var(--op-oro-chiaro); }
+.row-status.error { color: var(--op-errore); }
+.empty-msg { padding: 10px 0; color: var(--op-tenue); font-size: 12px; }
+.empty-msg::before { content: '// '; color: var(--op-oro); }
+
+/* Riquadro di conferma */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .7);
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  width: 90%;
+  max-width: 440px;
+  padding: 22px 22px 18px;
+  border: 1px solid var(--op-oro);
+  border-radius: 4px;
+  background: var(--op-riquadro);
+  text-align: left;
+}
+.modal-warning-icon { margin-bottom: 8px; color: var(--op-errore); font-size: 12px; letter-spacing: .1em; }
+.modal-warning-icon::after { content: ' attenzione'; text-transform: uppercase; }
+.modal-message { margin-bottom: 18px; color: var(--op-testo); font-size: 12.5px; line-height: 1.6; }
+.modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+@media (max-width: 600px) {
+  body { padding: 20px 12px; }
+  .container { padding: 30px 18px 24px; }
+}

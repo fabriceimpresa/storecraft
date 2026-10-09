@@ -9,7 +9,7 @@
        e splash page e mai inclusa nelle copie per i clienti. Raccoglie l'importazione e la gestione dei loghi ufficiali
        (logoimport.html, logogestione.html), la guida dei componenti (guida-componenti.html) e la preparazione di una copia per un cliente, fatta qui con la File System
        Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #121110;
@@ -95,8 +95,8 @@
       background: var(--frame-soft);
     }
 
-    /* Menu degli strumenti: solo i titoli in oro, ben spaziati, divisi da linee sottili. Al passaggio del mouse (o con la
-       tastiera) un accenno da terminale: > davanti e il cursore _ che lampeggia, in carattere a spaziatura fissa */
+    /* Menu degli strumenti: solo i titoli, in grigio chiaro (oro al passaggio), ben spaziati, divisi da linee sottili. Al passaggio del mouse (o con la
+       tastiera) un accenno da terminale: > davanti e il cursore _ che lampeggia; tutto in IBM Plex Mono */
     .menu {
       display: flex;
       flex-direction: column;
@@ -114,9 +114,11 @@
       border: 0;
       border-top: 1px solid rgba(143, 106, 31, 0.22);
       background: none;
-      color: var(--gold-light);
-      font: 600 0.9rem 'Cinzel', serif;
-      letter-spacing: 0.22em;
+      /* grigio chiaro del testo della guida dei componenti (#d9d3c7); al passaggio oro */
+      color: #d9d3c7;
+      /* carattere da terminale, come dentro le sezioni operatore (guida dei componenti) */
+      font: 400 0.78rem 'IBM Plex Mono', ui-monospace, monospace;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       text-decoration: none;
       cursor: pointer;
@@ -127,7 +129,7 @@
 
     .voce::before,
     .voce::after {
-      font: 400 0.85rem 'JetBrains Mono', ui-monospace, monospace;
+      font: 400 0.78rem 'IBM Plex Mono', ui-monospace, monospace;
       color: var(--gold);
       letter-spacing: 0;
       opacity: 0;
@@ -140,8 +142,8 @@
     .voce:hover,
     .voce:focus-visible,
     .voce[aria-expanded="true"] {
-      color: #f4d7a1;
-      letter-spacing: 0.26em;
+      color: var(--gold-light);
+      letter-spacing: 0.19em;
       outline: none;
     }
 
@@ -160,106 +162,75 @@
       .voce:hover::after, .voce:focus-visible::after, .voce[aria-expanded="true"]::after { animation: none; opacity: 1; }
     }
 
-    /* Prepara copia: tre passi */
-    .copy {
-      margin-top: 22px;
-      padding: 26px 24px 24px;
-      border: 1px solid var(--frame-soft);
-      background: var(--card);
-    }
-
-    .copy[hidden] { display: none; }
-
-    .copy-title {
-      margin: 0 0 6px;
-      color: var(--gold-light);
-      font-family: 'Cinzel', serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-    }
-
-    .copy-note {
-      margin: 0 0 20px;
+    /* Viste delle sezioni (Importa loghi, Gestisci loghi, Prepara copia) dentro la cornice: cliccando una voce le altre
+       spariscono, il titolo diventa il nome della sezione (scritto come in un terminale) e la cornice si adatta alla
+       nuova altezza con un'animazione; ← area operatore riporta al menu. Stile terminale elegante (IBM Plex Mono) */
+    .indietro {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      z-index: 2;
+      padding: 0;
+      border: 0;
+      background: none;
       color: var(--text-muted);
-      font-size: 0.74rem;
-      line-height: 1.55;
+      font: 400 11.5px 'IBM Plex Mono', ui-monospace, monospace;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: color .2s;
     }
+    .indietro:hover, .indietro:focus-visible { color: var(--gold-light); outline: none; }
+    .indietro[hidden] { display: none; }
+
+    .frame { overflow: hidden; }
+    .menu[hidden] { display: none; }
+    .vista[hidden] { display: none; }
+    .vista { margin-top: 8px; }
+    .vista iframe { display: block; width: 100%; height: 320px; border: 0; background: transparent; }
+
+    /* Prepara copia: tre passi, stile terminale */
+    .copy { color: #d9d3c7; font: 300 13px/1.65 'IBM Plex Mono', ui-monospace, monospace; }
+    .copy-note { margin: 0 0 18px; color: var(--text-muted); font-size: 11.5px; line-height: 1.6; }
+    .copy-note::before { content: '// '; color: var(--accent); }
 
     .step {
       display: grid;
-      grid-template-columns: 28px 1fr;
-      gap: 14px;
-      padding: 16px 0;
-      border-top: 1px solid rgba(143, 106, 31, 0.2);
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      padding: 14px 0;
+      border-top: 1px solid #2a2723;
     }
-
-    .step-num {
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--gold);
-      border-radius: 50%;
-      color: var(--gold-light);
-      font-family: 'Cinzel', serif;
-      font-size: 0.8rem;
-      line-height: 26px;
-      text-align: center;
-    }
-
-    .step-label {
-      margin: 3px 0 10px;
-      color: var(--text);
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
-
-    .step[aria-disabled="true"] { opacity: 0.4; }
+    .step:last-child { border-bottom: 1px solid #2a2723; }
+    .step-num { color: var(--gold-light); font-size: 12px; }
+    .step-num::before { content: '['; color: var(--text-muted); }
+    .step-num::after { content: ']'; color: var(--text-muted); }
+    .step-label { margin: 0 0 10px; color: #d9d3c7; font-size: 12.5px; }
+    .step[aria-disabled="true"] { opacity: .4; }
 
     .btn {
-      padding: 9px 16px;
+      padding: 7px 12px;
       border: 1px solid var(--accent);
-      border-radius: 0;
-      background: var(--accent);
-      color: #121110;
-      font: 600 0.72rem 'Plus Jakarta Sans', Arial, sans-serif;
-      letter-spacing: 0.12em;
+      border-radius: 3px;
+      background: transparent;
+      color: var(--gold-light);
+      font: 400 11px 'IBM Plex Mono', ui-monospace, monospace;
+      letter-spacing: .1em;
       text-transform: uppercase;
       cursor: pointer;
+      transition: background .15s, color .15s;
     }
+    .btn:hover:not(:disabled) { background: var(--accent); color: #121110; }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .btn:focus-visible { outline: 1px solid var(--gold-light); outline-offset: 2px; }
 
-    .btn:hover:not(:disabled) { background: var(--gold-light); border-color: var(--gold-light); }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn:focus-visible { outline: 2px solid var(--gold-light); outline-offset: 2px; }
+    .status { margin: 8px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
+    .status:not(:empty)::before { content: '$ '; color: var(--accent); }
+    .status.ok { color: #8fbf7a; }
+    .status.err { color: #e07a5f; }
 
-    .status {
-      margin-top: 8px;
-      color: var(--text-muted);
-      font-size: 0.74rem;
-      line-height: 1.5;
-    }
-
-    .status.ok { color: var(--ok); }
-    .status.err { color: var(--err); }
-
-    .stores {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 22px;
-      margin: 0;
-      padding: 0;
-      border: 0;
-    }
-
-    .stores label {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-    }
-
-    .stores input { width: 16px; height: 16px; accent-color: var(--accent); }
+    .stores { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; border: 0; }
+    .stores label { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+    .stores input { width: 14px; height: 14px; accent-color: var(--accent); }
 
     .footer {
       color: #6f6a62;
@@ -270,45 +241,52 @@
 
     @media (max-width: 760px) {
       .frame { padding: 38px 20px 28px; }
-      .voce { padding: 18px 0; font-size: 0.74rem; letter-spacing: 0.14em; }
-      .voce:hover, .voce:focus-visible, .voce[aria-expanded="true"] { letter-spacing: 0.16em; }
+      .voce { padding: 18px 0; font-size: 0.7rem; letter-spacing: 0.1em; }
+      .voce:hover, .voce:focus-visible, .voce[aria-expanded="true"] { letter-spacing: 0.12em; }
       .title { font-size: 0.64rem; letter-spacing: 0.2em; }
+      .indietro { top: 14px; left: 16px; }
     }
   </style>
 </head>
 <body>
-  <main class="frame">
+  <main class="frame" id="cornice">
+    <button class="indietro" type="button" id="indietro" hidden>← area operatore</button>
     <img class="brand" src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
-    <h1 class="title">Area operatore</h1>
+    <h1 class="title" id="titolo">Area operatore</h1>
 
-    <nav class="menu" aria-label="Strumenti dell'operatore">
-      <a class="voce" href="logoimport.html">Importa loghi ufficiali</a>
-      <a class="voce" href="logogestione.html">Gestisci loghi ufficiali</a>
+    <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
+      <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
+      <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
       <a class="voce" href="guida-componenti.html">Guida dei componenti</a>
-      <button class="voce" type="button" id="copyToggle" aria-expanded="false" aria-controls="copyPanel">Prepara copia per un cliente</button>
+      <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
     </nav>
 
-    <section class="copy" id="copyPanel" hidden aria-labelledby="copyTitle">
-      <h2 class="copy-title" id="copyTitle">Prepara copia per un cliente</h2>
-      <p class="copy-note">Come Prepara copia.bat: la copia contiene la splash page della radice (non gli strumenti di
-        questa area, il piano di lavoro e le pagine di prova _*), le cartelle dei negozi scelti, i file comuni (assets/css, js, fonts), nelle
-        cartelle di assets divise per negozio i file comuni e le sottocartelle dei soli negozi scelti, le loro schede e
-        l'elenco installati.js scritto con i negozi scelti. Restano fuori Git, la documentazione e i .bat. Il progetto
-        non viene modificato.</p>
+    <!-- Sezioni: le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
+    <section class="vista" data-vista="importa" hidden>
+      <iframe data-src="logoimport.html?incorporata" title="Importa loghi ufficiali"></iframe>
+    </section>
+    <section class="vista" data-vista="gestione" hidden>
+      <iframe data-src="logogestione.html?incorporata" title="Gestisci loghi ufficiali"></iframe>
+    </section>
+
+    <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Prepara copia per un cliente">
+      <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
+        le schede dei negozi, con installati.js scritto per loro. Restano fuori gli strumenti di quest'area, il piano di
+        lavoro, le pagine di prova _*, Git, la documentazione e i .bat. Il progetto non viene modificato.</p>
 
       <div class="step">
         <span class="step-num">1</span>
         <div>
-          <p class="step-label">Collega la cartella del progetto STORE // CRAFT</p>
-          <button class="btn" type="button" id="pickSource">Scegli cartella progetto</button>
-          <p class="status" id="sourceStatus" role="status">Nessuna cartella collegata.</p>
+          <p class="step-label">collega la cartella del progetto STORE // CRAFT</p>
+          <button class="btn" type="button" id="pickSource">scegli cartella progetto</button>
+          <p class="status" id="sourceStatus" role="status">nessuna cartella collegata</p>
         </div>
       </div>
 
       <div class="step" id="stepStores" aria-disabled="true">
         <span class="step-num">2</span>
         <div>
-          <p class="step-label" id="storesLabel">Quali negozi vuoi nella copia?</p>
+          <p class="step-label" id="storesLabel">negozi da mettere nella copia</p>
           <fieldset class="stores" id="stores" aria-labelledby="storesLabel" disabled></fieldset>
         </div>
       </div>
@@ -316,8 +294,8 @@
       <div class="step" id="stepCopy" aria-disabled="true">
         <span class="step-num">3</span>
         <div>
-          <p class="step-label">Scegli la cartella di destinazione e prepara la copia</p>
-          <button class="btn" type="button" id="pickTarget" disabled>Scegli cartella e prepara</button>
+          <p class="step-label">scegli la cartella di destinazione e prepara la copia</p>
+          <button class="btn" type="button" id="pickTarget" disabled>scegli cartella e prepara</button>
           <p class="status" id="copyStatus" role="status" aria-live="polite"></p>
         </div>
       </div>
@@ -327,14 +305,93 @@
   <footer class="footer">© 2026 STORE // CRAFT · Developed by Fabrizio Notte</footer>
 
   <script>
-    // ----- Pannello Prepara copia -----
-    const copyToggle = document.getElementById('copyToggle');
-    const copyPanel = document.getElementById('copyPanel');
-    copyToggle.addEventListener('click', () => {
-      const aperto = copyPanel.hidden;
-      copyPanel.hidden = !aperto;
-      copyToggle.setAttribute('aria-expanded', String(aperto));
-      if (aperto) copyPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // ----- Viste delle sezioni dentro la cornice -----
+    // #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    const VISTE = { importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    const TITOLO_MENU = 'Area operatore';
+    const cornice = document.getElementById('cornice');
+    const titolo = document.getElementById('titolo');
+    const menu = document.getElementById('menu');
+    const indietro = document.getElementById('indietro');
+    const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let vistaAperta = null;
+
+    // la cornice passa dall'altezza di prima alla nuova con un'animazione (cambia passa al nuovo contenuto)
+    function adatta(cambia, durata = 450) {
+      const prima = cornice.offsetHeight;
+      cambia();
+      const dopo = cornice.offsetHeight;
+      if (piano.matches || prima === dopo) return;
+      cornice.animate([{ height: `${prima}px` }, { height: `${dopo}px` }], { duration: durata, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+    }
+
+    // il titolo si riscrive lettera per lettera, come in un terminale
+    let scrittura = 0;
+    function scrivi(testo) {
+      clearInterval(scrittura);
+      if (piano.matches) { titolo.textContent = testo; return; }
+      let n = 0;
+      titolo.textContent = '';
+      scrittura = setInterval(() => {
+        n += 1;
+        titolo.textContent = testo.slice(0, n);
+        if (n >= testo.length) clearInterval(scrittura);
+      }, 26);
+    }
+
+    // subito: senza animazioni (aprendo la pagina con #sezione nell'indirizzo)
+    async function apri(nome, subito = false) {
+      const nuova = VISTE[nome] ? nome : null;
+      if (nuova === vistaAperta) return;
+      const voci = [...menu.querySelectorAll('.voce')];
+      const anima = !subito && !piano.matches;
+      if (nuova && anima) {
+        // le voci non scelte spariscono per prime, poi quella scelta
+        // (al massimo 0,4 s: se il browser non fa scorrere le animazioni si va avanti lo stesso)
+        await Promise.race([new Promise(fatto => setTimeout(fatto, 400)),
+          Promise.all(voci.map(voce => voce.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-6px)' }],
+            { duration: 200, delay: voce.dataset.vista === nuova ? 120 : 0, easing: 'ease-in', fill: 'forwards' }).finished))]);
+      }
+      (anima ? adatta : cambia => cambia())(() => {
+        document.querySelectorAll('.vista').forEach(vista => {
+          vista.hidden = vista.dataset.vista !== nuova;
+          const riquadro = vista.querySelector('iframe[data-src]');
+          if (!vista.hidden && riquadro && !riquadro.getAttribute('src')) riquadro.src = riquadro.dataset.src;
+        });
+        menu.hidden = Boolean(nuova);
+        indietro.hidden = !nuova;
+      });
+      voci.forEach(voce => voce.getAnimations().forEach(animazione => animazione.cancel()));
+      if (!nuova && anima) {
+        voci.forEach((voce, i) => voce.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 260, delay: 60 * i, easing: 'ease-out', fill: 'backwards' }));
+      }
+      // il logo e il titolo accompagnano il cambio: il logo si riaccende appena, il titolo si riscrive
+      if (anima) document.querySelector('.brand').animate([{ opacity: .35, transform: 'scale(.94)' }, { opacity: .9, transform: 'none' }],
+        { duration: 480, easing: 'ease-out' });
+      if (anima) scrivi(nuova ? VISTE[nuova] : TITOLO_MENU);
+      else titolo.textContent = nuova ? VISTE[nuova] : TITOLO_MENU;
+      vistaAperta = nuova;
+    }
+
+    menu.addEventListener('click', evento => {
+      const voce = evento.target.closest('[data-vista]');
+      if (voce) location.hash = voce.dataset.vista;
+    });
+    indietro.addEventListener('click', () => { history.pushState(null, '', location.pathname); apri(null); });
+    window.addEventListener('hashchange', () => apri(location.hash.slice(1)));
+    if (VISTE[location.hash.slice(1)]) apri(location.hash.slice(1), true);
+
+    // le pagine dei loghi comunicano la loro altezza (operatore-sezione.js): riquadro e cornice si adattano
+    window.addEventListener('message', evento => {
+      if (evento.origin !== location.origin || !evento.data?.sezioneOperatore) return;
+      document.querySelectorAll('.vista iframe').forEach(riquadro => {
+        if (riquadro.contentWindow !== evento.source) return;
+        const altezza = `${Math.max(120, evento.data.altezza)}px`;
+        if (riquadro.style.height === altezza) return;
+        if (riquadro.closest('.vista').hidden) riquadro.style.height = altezza;
+        else adatta(() => { riquadro.style.height = altezza; }, 300);
+      });
     });
 
     const $ = id => document.getElementById(id);
@@ -350,7 +407,7 @@
 
     if (!supportata) {
       $('pickSource').disabled = true;
-      stato($('sourceStatus'), 'Serve Chrome o Edge sul computer: questo browser non può leggere e scrivere cartelle. In alternativa usa Prepara copia.bat.', 'err');
+      stato($('sourceStatus'), 'serve Chrome o Edge sul computer: questo browser non può leggere e scrivere cartelle (in alternativa Prepara copia.bat)', 'err');
     }
 
     async function cartella(dir, nome) {

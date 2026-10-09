@@ -2,269 +2,23 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261009-36"></script>
+<script src="assets/js/negozi.js?v=20261009-37"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMPORT LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-36">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #212529;
-    color: #fff;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-  }
-
-  .container {
-    width: 100%;
-    max-width: 900px;
-    background: #181a1d;
-    border: 1px solid #d4a373;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-  }
-
-  h1 {
-    font-size: 1.4rem;
-    color: #e5ba73;
-    border-bottom: 2px solid #d4a373;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-    text-align: center;
-  }
-
-  .subtitle {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #aaa;
-    margin-bottom: 20px;
-  }
-
-  .folder-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #26292e;
-    border: 1px solid #4a4237;
-    border-radius: 6px;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-
-  .folder-status {
-    flex-grow: 1;
-    font-size: 0.85rem;
-    color: #ccc;
-  }
-
-  .folder-status.ok { color: #6fbf73; }
-  .folder-status.err { color: #e06666; }
-
-  .btn-folder {
-    background: #d4a373;
-    color: #181a1d;
-    border: none;
-    padding: 8px 14px;
-    font-weight: bold;
-    font-size: 0.85rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .btn-folder:hover { background: #e5ba73; }
-
-  .upload-box {
-    border: 2px dashed #d4a373;
-    border-radius: 6px;
-    padding: 25px;
-    text-align: center;
-    background: #26292e;
-    cursor: pointer;
-    margin-bottom: 20px;
-    transition: background 0.2s, border-color 0.2s;
-  }
-  .upload-box.dragover { background: #353b45; border-color: #e5ba73; }
-  .upload-box:hover { background: #2f333a; }
-  .upload-box.disabled { opacity: 0.5; cursor: not-allowed; }
-  .upload-box input { display: none; }
-
-  .queue-list { display: flex; flex-direction: column; gap: 10px; }
-
-  .queue-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    background: #26292e;
-    padding: 10px 15px;
-    border-radius: 4px;
-    border-left: 3px solid #d4a373;
-    flex-wrap: wrap;
-  }
-
-  .queue-item-preview {
-    width: 90px;
-    height: 45px;
-    background: repeating-conic-gradient(#3a3f47 0% 25%, #26292e 0% 50%) 50% / 14px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 3px;
-    padding: 4px;
-    flex-shrink: 0;
-    border: 1px solid #4a4237;
-  }
-  .queue-item-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-  .queue-item-name {
-    flex-grow: 1;
-    min-width: 180px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .queue-item-name label { font-size: 0.7rem; color: #999; }
-
-  .queue-item-name input {
-    padding: 6px 8px;
-    background: #181a1d;
-    border: 1px solid #4a4237;
-    color: #fff;
-    border-radius: 3px;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-  }
-
-  .queue-item-actions { display: flex; gap: 8px; align-items: center; }
-
-  .btn-save-row {
-    background: #0056b3;
-    color: white;
-    border: none;
-    padding: 7px 14px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: bold;
-  }
-  .btn-save-row:hover { background: #004085; }
-  .btn-save-row:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .btn-delete-row {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 7px 14px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.8rem;
-  }
-  .btn-delete-row:hover { background: #c82333; }
-
-  .row-status {
-    font-size: 0.78rem;
-    font-weight: bold;
-    min-width: 90px;
-  }
-  .row-status.saved { color: #6fbf73; }
-  .row-status.saving { color: #e5ba73; }
-  .row-status.error { color: #e06666; }
-
-  .empty-msg { font-size: 0.8rem; color: #888; padding: 10px 0; }
-
-
-  /* MODAL DI CONFERMA CONFLITTO NOME */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.65);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.active { display: flex; }
-
-  .modal-box {
-    position: relative;
-    width: 90%;
-    max-width: 420px;
-    background: #181a1d;
-    border: 1px solid #d4a373;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
-    padding: 30px 24px 20px;
-    text-align: center;
-  }
-
-  .modal-warning-icon {
-    position: absolute;
-    top: -24px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 52px;
-    height: 52px;
-    background-color: #e5ba73;
-    color: #181a1d;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 1.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.7);
-    border: 2px solid #181a1d;
-  }
-
-  .modal-message {
-    color: #fff;
-    font-size: 0.95rem;
-    margin-top: 10px;
-    margin-bottom: 22px;
-    line-height: 1.4;
-  }
-
-  .modal-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-  }
-
-  .modal-btn {
-    border: none;
-    border-radius: 4px;
-    padding: 9px 18px;
-    font-weight: bold;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-  .modal-btn-cancel { background: #3a3f47; color: #fff; }
-  .modal-btn-cancel:hover { background: #4a505a; }
-  .modal-btn-rename { background: #0056b3; color: #fff; }
-  .modal-btn-rename:hover { background: #004085; }
-  .modal-btn-overwrite { background: #dc3545; color: #fff; }
-  .modal-btn-overwrite:hover { background: #c82333; }
-</style>
-  <link rel="stylesheet" href="assets/css/responsive.css?v=20261009-36">
-  <script src="assets/js/theme.js?v=20261009-36"></script>
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261009-36">
-  <link rel="stylesheet" href="assets/css/admin-negozio.css?v=20261009-36">
-  <script src="assets/js/admin-negozio.js?v=20261009-36"></script>
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-37">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261009-37">
+  <script src="assets/js/operatore-sezione.js?v=20261009-37"></script>
+  <script src="assets/js/admin-negozio.js?v=20261009-37"></script>
 </head>
-<body data-layout="loghi">
+<body>
 
   <a href="operatore.html" class="app-close-btn" title="Torna all'area operatore" aria-label="Chiudi e torna all'area operatore">✕</a>
 
   <div class="modal-overlay" id="conflictModal">
     <div class="modal-box">
-      <div class="modal-warning-icon">⚠</div>
+      <div class="modal-warning-icon">!</div>
       <p class="modal-message" id="conflictModalMessage"></p>
       <div class="modal-actions">
         <button type="button" class="modal-btn modal-btn-cancel" onclick="resolveConflict('cancel')">Annulla</button>
@@ -275,24 +29,24 @@
   </div>
 
   <div class="container">
-    <h1>IMPORT LOGHI NEL PROGETTO</h1>
-    <p class="subtitle">Pagina ad uso interno: aggiunge nuovi loghi ufficiali di <span data-admin-nome-negozio></span> ad assets/logos/<span data-admin-cartella-negozio></span>, genera le 4 versioni colorate (oro del negozio) e aggiorna l'elenco assets/logos/<span data-admin-cartella-negozio></span>/elenco.js</p>
+    <h1>Importa loghi ufficiali</h1>
+    <p class="subtitle">aggiunge loghi ufficiali di <span data-admin-nome-negozio></span> in assets/logos/<span data-admin-cartella-negozio></span>/, genera le 4 varianti colorate (oro del negozio) e aggiorna elenco.js</p>
 
     <div data-admin-negozio></div>
 
     <div class="folder-bar">
-      <span class="folder-status" id="folderStatus">Cartella progetto non collegata.</span>
-      <button type="button" class="btn-folder" onclick="connectProjectFolder()">📁 Collega cartella progetto</button>
+      <span class="folder-status" id="folderStatus">cartella del progetto non collegata</span>
+      <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
     </div>
 
     <div class="upload-box disabled" id="dropZone" onclick="onDropZoneClick()">
-      📂 <strong>Clicca o Trascina qui i PNG trasparenti dei loghi</strong>
-      <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">(Carica direttamente immagini già trasparenti, senza elaborazione automatica dei bordi)</p>
+      <strong>trascina qui i png trasparenti dei loghi, o clicca per sceglierli</strong>
+      <p class="upload-nota">immagini già trasparenti: nessuna elaborazione automatica dei bordi</p>
       <input type="file" id="fileInput" accept="image/png" multiple onchange="handleFiles(this.files); this.value=''">
     </div>
 
     <div class="queue-list" id="queueList">
-      <p class="empty-msg" id="emptyMsg">Nessun logo in coda. Collega la cartella del progetto e trascina un PNG per iniziare.</p>
+      <p class="empty-msg" id="emptyMsg">nessun logo in coda: collega la cartella del progetto e trascina un png</p>
     </div>
   </div>
 
@@ -333,12 +87,12 @@
         throw new Error('Permesso di scrittura negato.');
       }
 
-      folderStatus.textContent = '✅ Cartella progetto collegata: ' + projectDirHandle.name;
+      folderStatus.textContent = 'cartella del progetto collegata: ' + projectDirHandle.name;
       folderStatus.className = 'folder-status ok';
       dropZone.classList.remove('disabled');
     } catch (err) {
       console.error(err);
-      folderStatus.textContent = '❌ ' + (err.message || 'Impossibile collegare la cartella.');
+      folderStatus.textContent = 'errore: ' + (err.message || 'impossibile collegare la cartella');
       folderStatus.className = 'folder-status err';
     }
   }
@@ -365,7 +119,7 @@
       await openStoreFolders();
     } catch (err) {
       console.error(err);
-      folderStatus.textContent = '❌ ' + (err.message || 'Impossibile aprire le cartelle del negozio.');
+      folderStatus.textContent = 'errore: ' + (err.message || 'impossibile aprire le cartelle del negozio');
       folderStatus.className = 'folder-status err';
     }
   });
@@ -447,10 +201,10 @@
           <input type="text" value="${escapeHtml(item.fileName)}" oninput="updateItemName('${item.id}', this.value)">
         </div>
         <span class="row-status ${item.status === 'saved' ? 'saved' : item.status === 'saving' ? 'saving' : item.status === 'error' ? 'error' : ''}">
-          ${item.status === 'saved' ? '✅ Salvato' : item.status === 'saving' ? '⏳ Salvataggio...' : item.status === 'error' ? '❌ Errore' : ''}
+          ${item.status === 'saved' ? '[ ok ] salvato' : item.status === 'saving' ? 'salvataggio…' : item.status === 'error' ? '[ errore ]' : ''}
         </span>
         <div class="queue-item-actions">
-          <button type="button" class="btn-save-row" ${item.status === 'saving' ? 'disabled' : ''} onclick="saveItem('${item.id}')">💾 Salva</button>
+          <button type="button" class="btn-save-row" ${item.status === 'saving' ? 'disabled' : ''} onclick="saveItem('${item.id}')">salva</button>
           <button type="button" class="btn-delete-row" onclick="deleteItem('${item.id}')">Elimina</button>
         </div>
       </div>
