@@ -648,9 +648,10 @@
     padding: 7px 11px;
   }
 
+  /* casetta più piccola (11 px), alta come lo spazio della scritta del pulsante, così il pulsante resta alto 27 px come in TEBE */
   :root[data-interface-look="minimal"] body:not([data-layout]) .home-mark-icon {
-    font-size: 14px;
-    line-height: 11px;
+    width: 11px;
+    height: 11px;
   }
 
   /* nel look COMPATTO l'etichetta usa Arial come gli altri testi piccoli */

@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.84 2026';
+  const VERSIONE = 'V 1.85 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -209,6 +209,15 @@
     finestra.showModal();
   }
 
+  // Casetta del pulsante HOME: la forma del simbolo ⌂ disegnata a tratto, così sta sempre al centro della scritta (il
+  // carattere ⌂ ogni carattere tipografico lo mette a un'altezza diversa)
+  function casetta() {
+    const icona = el('span', { class: 'home-mark-icon', 'aria-hidden': 'true' });
+    icona.innerHTML = '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round">'
+      + '<path d="M1.5 6.5 7 1.5l5.5 5v6h-11z"/></svg>';
+    return icona;
+  }
+
   // ----- Pulsante IMPOSTAZIONI del telefono: tondo e oro, fisso in basso a sinistra, sempre presente, con l'ingranaggio; apre
   // il menu di sistema, che sul telefono compare sopra il pulsante, come unito a lui (al posto di MENU // IMPOSTAZIONI
   // in fondo al menu laterale). Su desktop e tablet non si vede. -----
@@ -320,7 +329,7 @@
   function intestazione() {
     const header = el('header', {},
       el('button', { class: 'home-mark', type: 'button', 'aria-label': "Torna all'inizio della home", onclick: () => returnToHomeTop() },
-        el('span', { class: 'home-mark-icon', 'aria-hidden': 'true', text: '⌂' }), el('span', { text: 'HOME' })));
+        casetta(), el('span', { text: 'HOME' })));
     // titolo: false (TEBE e OPHILYA, come nella loro dashboard originale): niente titolo né sottotitolo, al loro posto
     // l'interruttore dei negozi in alto a sinistra (classe .solo-selettori, regole in dashboard.css)
     if (dati.intestazione.titolo === false) {
