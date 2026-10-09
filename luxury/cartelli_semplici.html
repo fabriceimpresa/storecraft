@@ -189,9 +189,10 @@
     }
 
     .claim-flag {
-      width: 21mm;
-      max-height: 13mm;
-      object-fit: contain;
+      width: auto;
+      height: auto;
+      max-width: 21mm;
+      max-height: 13mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
     }
 
     .claim-flag-left { transform: translateX(-3mm); }
@@ -199,9 +200,10 @@
 
     /* LOGHI BLACK FRIDAY INGRANDITI DEL 10% */
     .claim-flag-bf {
-      width: 23.1mm;
-      max-height: 14.3mm;
-      object-fit: contain;
+      width: auto;
+      height: auto;
+      max-width: 23.1mm;
+      max-height: 14.3mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
     }
 
     .claim-flag-bf.claim-flag-left { transform: translateX(-3mm) scale(1.1); }

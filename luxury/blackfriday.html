@@ -298,9 +298,11 @@
       overflow: hidden;
       flex-shrink: 0;
       padding-right: 2mm;
-      /* Cifre (senza la coda della virgola) al centro del rettangolo nero: con line-height 1 il Bodoni le lascia
-         0,12em sopra il centro. In em, così resta giusto anche quando adjustPriceFontSize rimpicciolisce il prezzo. */
-      transform: translateY(0.12em);
+      /* Cifre (senza la coda della virgola) al centro del rettangolo nero. Lo spostamento lo calcola centraCifrePrezzo
+         dalle misure del Bodoni sul dispositivo (Mac e Windows le leggono in modo diverso, uno spostamento fisso andava
+         bene solo sul Mac); 0,12em è il valore di riserva. In em, così resta giusto anche quando adjustPriceFontSize
+         rimpicciolisce il prezzo. */
+      transform: translateY(var(--centra-cifre, 0.12em));
     }
 
     /* NAVIGAZIONE UI */
@@ -750,6 +752,27 @@
       }
 
       priceEl.style.fontSize = fontSize;
+    }
+
+    /* Centra in altezza le cifre del prezzo nel rettangolo nero. Con line-height 1 la riga del prezzo è centrata nel
+       rettangolo, ma dove cade la linea di base dipende dalle misure verticali del carattere, che Mac e Windows
+       leggono in modo diverso: si misurano qui, sul dispositivo, la linea di base e l'altezza delle cifre del Bodoni
+       (canvas, in proporzione al corpo) e si scrive lo spostamento in em nella variabile --centra-cifre. */
+    function centraCifrePrezzo() {
+      const SIZE = 100;
+      const context = document.createElement('canvas').getContext('2d');
+      context.font = `${SIZE}px 'Bodoni Project'`;
+      const metrics = context.measureText('0123456789');
+      if (!metrics.fontBoundingBoxAscent) return;   // browser senza queste misure: resta il valore di riserva
+      const halfLeading = (SIZE - (metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)) / 2;
+      const baseline = halfLeading + metrics.fontBoundingBoxAscent;
+      const inkCenter = baseline - (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
+      document.documentElement.style.setProperty('--centra-cifre', `${((SIZE / 2 - inkCenter) / SIZE).toFixed(4)}em`);
+    }
+    if (document.fonts && document.fonts.load) {
+      document.fonts.load(`100px 'Bodoni Project'`, '0123456789').then(centraCifrePrezzo).catch(error => {
+        console.error('Misura del carattere del prezzo non riuscita.', error);
+      });
     }
 
     /* SCALATURA DINAMICA FONT DELLA DESCRIZIONE (più piccola con la scontistica) */

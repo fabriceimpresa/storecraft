@@ -167,9 +167,10 @@
     }
 
     .claim-flag {
-      width: 15mm;
-      max-height: 9mm;
-      object-fit: contain;
+      width: auto;
+      height: auto;
+      max-width: 15mm;
+      max-height: 9mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
     }
 
     .claim-flag-left { transform: translateX(-2mm); }

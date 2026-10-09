@@ -164,9 +164,10 @@
     }
 
     .claim-flag {
-      width: 21mm;
-      max-height: 13mm;
-      object-fit: contain;
+      width: auto;
+      height: auto;
+      max-width: 21mm;
+      max-height: 13mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
     }
 
     .claim-flag-left { transform: translateX(-3mm); }
@@ -182,10 +183,14 @@
       flex-shrink: 0;
     }
 
+    /* Grafica nelle sue proporzioni senza object-fit: html2canvas (lista di stampa e PDF da iPhone) non lo applica
+       e allungherebbe l'immagine fino a riempire il riquadro. Con larghezza e altezza automatiche e i due limiti
+       la grafica ha la stessa misura di prima (alta 48 mm, larga quanto le proporzioni). */
     .last-chance-graphic {
-      width: 100%;
+      width: auto;
+      height: auto;
+      max-width: 100%;
       max-height: 48mm;
-      object-fit: contain;
       transform: scale(1.33);
     }
 
