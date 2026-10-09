@@ -324,6 +324,8 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
    di strumenti-stampa.css (fondo scuro, bordo oro), con la scritta bianca nel carattere del pulsante HOME, più piccola e sottile. */
 .spec-tip { position: absolute; bottom: calc(100% - 8px); right: var(--card-pad); padding: 4px 7px; border: 1px solid #d4a373; border-radius: 5px; background: #1e1d1a; color: var(--text); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.58rem; font-weight: 400; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; opacity: 0; transform: translateY(3px); transition: opacity .15s ease, transform .15s ease; pointer-events: none; z-index: 10; }
 .spec-toggle:hover + .spec-tip, .spec-toggle:focus-visible + .spec-tip { opacity: 1; transform: translateY(0); }
+/* tema chiaro: avorio con il bordo oro e la scritta scura, come il fumetto dei pulsanti della lista di stampa nel tema chiaro */
+:root[data-interface-theme="light"] .spec-tip { background: var(--interface-surface); border-color: var(--interface-accent); color: var(--interface-text); box-shadow: 0 2px 4px var(--interface-shadow); }
 
 .card:has(.card-desc) .card-body, .carousel-card:has(.card-desc) .card-body { transition: padding-bottom .3s ease; }
 .desc-open .card-body { padding-bottom: 0.55rem; }
@@ -922,7 +924,24 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     width: min(300px, calc(100vw - 32px));
     max-height: calc(100dvh - 64px - 16px - max(10px, env(safe-area-inset-bottom)) - 26px);
     padding-bottom: 42px;
-    transform-origin: bottom left;
+    /* si srotola dal pulsante IMPOSTAZIONI: cresce dal centro del pulsante verso l'alto e verso destra */
+    transform-origin: 27px 100%;
+    animation: menu-dal-pulsante .3s cubic-bezier(.2, .8, .2, 1);
+  }
+   menu-dal-pulsante {
+    from { opacity: 0; transform: scale(.8, .45); }
+    60% { opacity: 1; }
+    to { opacity: 1; transform: none; }
+  }
+  /* ☰ toccato per aprire il menu di sinistra: si riempie d'oro e si abbassa un attimo (dashboard.js, classe si-apre) */
+  .mobile-nav-toggle.si-apre { animation: tasto-menu-apre .32s ease-out; }
+   tasto-menu-apre {
+    0% { transform: scale(1); }
+    35% { transform: scale(.84); background: var(--accent); border-color: var(--accent); color: #121110; }
+    100% { transform: scale(1); }
+  }
+   (prefers-reduced-motion: reduce) {
+    body > .system-menu, .mobile-nav-toggle.si-apre { animation: none; }
   }
   /* largo quanto lo schermo (16 px ai lati), con le scritte e le voci più grandi, e sotto la pagina velata: mentre si
      usa il menu la pagina non serve. Grandezze con !important perché valgano anche sul COMPATTO di theme.css */
@@ -985,17 +1004,20 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   header { text-align: center; }
   /* STORE // CRAFT al centro tra il bordo sinistro del menu e la ✕: l'intestazione parte dal bordo (oltre i 14 px di
      margine del menu) e lascia a destra lo spazio della ✕ (28 px) */
-  .sidebar-header { margin-left: -14px; width: calc(100% + 14px); padding: 0 28px 29px 0; box-sizing: border-box; }
-  /* la ✕ al centro della riga della scritta STORE // CRAFT (sotto la scritta 29 px di spazio; ✕ alta 28 px) */
-  .mobile-close-btn { top: calc(50% - 14.5px - 14px); right: 0; }
+  .sidebar-header { margin-left: -14px; width: calc(100% + 14px); padding: 0 28px 39px 0; box-sizing: border-box; }   /* sotto il titolo 39 px prima delle sezioni */
+  /* la spaziatura delle lettere lascia uno spazio vuoto anche dopo l'ultima lettera: lo stesso spazio a sinistra tiene
+     al centro le lettere, non il loro riquadro (in tutti e due gli aspetti, con qualunque carattere) */
+  #sidebar-menu .brand { box-sizing: border-box; display: flex; justify-content: center; padding-left: .16em; padding-right: 0; }
+  /* la ✕ al centro della riga della scritta STORE // CRAFT (sotto la scritta 39 px di spazio; ✕ alta 28 px) */
+  .mobile-close-btn { top: calc(50% - 19.5px - 14px); right: 0; }
   /* Fondo pagina: STORE // CRAFT in Cinzel e sotto tre pulsanti rettangolari a contorno oro (CREDITS, CONTATTI, torna
      in cima), sullo stesso fondo della pagina; sotto i pulsanti poco spazio (dashboard.js, piedePagina) */
   .mobile-brand-footer {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 36px;
-    margin-top: 28px;
+    gap: 48px;
+    margin-top: 40px;
     /* la pagina finisce con i pulsanti e poco spazio sotto; il pulsante IMPOSTAZIONI, arrivati in fondo, sale sopra di
        loro (--fab-alza, dashboard.js) */
     padding: 0 0 max(16px, env(safe-area-inset-bottom));

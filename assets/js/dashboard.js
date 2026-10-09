@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.85 2026';
+  const VERSIONE = 'V 1.86 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -142,10 +142,11 @@
       el('div', { class: 'system-menu-heading system-menu-title', id: 'system-menu-title', text: 'MENU' }),
       el('div', { class: 'system-menu-view', 'data-system-view': 'home' },
         el('div', { class: 'system-menu-items' },
-          voce('settings', '⚙', 'IMPOSTAZIONI', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('settings')),
+          // ︎ dopo il simbolo: iPhone lo mostra come carattere (oro, come gli altri) e non come emoji colorata
+          voce('settings', '⚙︎', 'IMPOSTAZIONI', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('settings')),
           voce('profile', '♙', 'PROFILO UTENTE', el('span', { class: 'system-store-current', text: scheda.sigla }), () => openSystemMenuView('stores')),
           voce('store', '◈', 'STORE', el('span', { class: 'system-menu-badge', text: 'COMING SOON' }), null),
-          voce('contacts', '✉', 'CONTATTI & CREDITS', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('contacts')),
+          voce('contacts', '✉︎', 'CONTATTI & CREDITS', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('contacts')),
           // HOME: torna alla scelta del punto vendita (solo con più di un negozio installato)
           PuntoVendita.unico() ? null : voce('home', '⌂', 'HOME', el('span', { 'aria-hidden': 'true', text: '›' }), () => PuntoVendita.apriSplash()))),
       el('div', { class: 'system-menu-view', 'data-system-view': 'settings', hidden: true },
@@ -371,7 +372,7 @@
       el('div', { class: 'sidebar-overlay', onclick: () => toggleMobileSidebar() }),
       el('div', { class: 'mobile-top-bar' },
         el('button', { class: 'mobile-nav-toggle', type: 'button', 'aria-label': 'Apri menu', 'aria-controls': 'sidebar-menu',
-          'aria-expanded': 'false', onclick: () => toggleMobileSidebar(), text: '☰' }),
+          'aria-expanded': 'false', onclick: () => premiTastoMenu(), text: '☰' }),
         el('button', { class: 'mobile-brand', type: 'button', onclick: () => returnToHomeTop(), text: 'STORE // CRAFT' }),
         modalita()),
       el('aside', { id: 'sidebar-menu' },
@@ -509,6 +510,22 @@
 
   function updateCarouselArrows() {
     Caroselli.refresh();
+  }
+
+  // ☰ toccato: sul telefono dà prima un segno al tocco (si riempie d'oro e si abbassa un attimo, classe si-apre in
+  // dashboard.css) e il menu, che parte dal bordo alto e coprirebbe subito ☰, si apre 0,15 s dopo
+  function premiTastoMenu() {
+    const toggle = document.querySelector('.mobile-nav-toggle');
+    const apre = document.body.classList.contains('sidebar-collapsed');
+    if (!apre || !phoneViewQuery.matches || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      toggleMobileSidebar();
+      return;
+    }
+    toggle.classList.remove('si-apre');
+    void toggle.offsetWidth;
+    toggle.classList.add('si-apre');
+    toggle.addEventListener('animationend', () => toggle.classList.remove('si-apre'), { once: true });
+    setTimeout(() => toggleMobileSidebar(true), 150);
   }
 
   function toggleMobileSidebar(forceOpen) {

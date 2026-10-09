@@ -934,6 +934,7 @@
 .system-menu-item-label { display: flex; min-width: 0; align-items: center; gap: 7px; }
 .system-menu-label-text { min-width: 0; line-height: 1.3; }
 .system-menu-icon {
+  font-variant-emoji: text;   /* simboli come caratteri, non emoji colorate (iPhone) */
   display: inline-flex;
   flex: 0 0 18px;
   align-items: center;
