@@ -47,14 +47,14 @@
   font-size: 31px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 8px 20px var(--carousel-shadow, rgba(0, 0, 0, .3));
+  box-shadow: 0 3px 8px var(--carousel-shadow, rgba(0, 0, 0, .3));
   transform: translateY(-50%);
   transition: .18s ease;
 }
 .carousel-arrow:hover:not(:disabled) {
   background: var(--carousel-color, var(--accent));
   color: var(--carousel-hover-color, #121110);
-  box-shadow: 0 10px 24px var(--carousel-shadow, rgba(0, 0, 0, .3));
+  box-shadow: 0 4px 10px var(--carousel-shadow, rgba(0, 0, 0, .3));
 }
 .carousel-arrow:focus-visible {
   outline: 2px solid var(--carousel-color, var(--accent));

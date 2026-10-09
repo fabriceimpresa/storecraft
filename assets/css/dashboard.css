@@ -58,6 +58,23 @@ aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--
   transition: transform 0.2s, background-color 0.2s;
 }
 
+/* la ✕ disegnata con due tratti, sempre al centro del cerchio (il carattere ✕ cade un poco fuori centro), come la
+   ✕ del popup delle Utilità Cassa; il nome resta in aria-label */
+.mobile-close-btn { font-size: 0; }
+.mobile-close-btn::before,
+.mobile-close-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.mobile-close-btn::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
 .mobile-close-btn:hover {
   background-color: var(--accent-hover);
   transform: scale(1.1);
@@ -118,6 +135,8 @@ aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--
 
 .sidebar-section nav { display: grid; gap: 3px; }
 .sidebar-section.is-collapsed nav { display: none; }
+/* sul telefono la sezione che si chiude resta visibile finché le voci non sono scorse via (dashboard.js, toggleSidebarSection) */
+.sidebar-section.is-collapsed[data-chiusura] nav { display: grid; }
 .nav-btn {
   display: block;
   padding: 12px 10px;
@@ -225,14 +244,14 @@ header { position: relative; border-bottom: 1px solid var(--border); padding-bot
 /* Sotto il divisorio lo stesso spazio che c'è sopra, tra il sottotitolo e il divisorio (circa 35 px in STANDARD): nel look COMPATTO
    il sottotitolo in Arial è più piccolo e lascia sopra 5 px in più, quindi anche sotto si aggiungono 5 px */
 @media screen and (min-width: 721px) { :root[data-interface-look="minimal"] #main-content > header { margin-bottom: calc(2rem + 5px); } }
-.home-mark { position: fixed; top: 24px; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.45); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+.home-mark { position: fixed; top: 24px; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
 
 /* Selettore CASSIERE / CREATOR (e TEBE / OPHILYA): un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro.
    In STANDARD stesse misure del look COMPATTO (riquadro 4 px, pulsanti alti 29 px): cambiano solo forma e carattere */
 .mode-switcher { position: fixed; top: 24px; right: 2rem; display: flex; gap: 4px; padding: 4px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
 .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; height: 29px; padding: 0 13px; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
 .mode-btn:hover { color: var(--accent); }
-.mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 10px rgba(229,186,115,0.35), 0 4px 14px rgba(0,0,0,0.4); }
+.mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 4px rgba(229,186,115,0.35), 0 2px 4px rgba(0,0,0,0.45); }
 
 #generators-section, #seasonal-promo-section, #tickets-section, #dymo-section, #prints-section, #prints-promo-section, #tools-title, #tools { transition: transform 0.25s ease, opacity 0.25s ease; }
 body.cassiere-mode #tools { margin-bottom: 3rem; }
@@ -252,7 +271,7 @@ body.cassiere-mode #main-content > div[id]:not(#tools):not(#tools-title) { displ
 }
 .layout-reorder-anim { opacity: 0.6; transform: translateY(-6px); }
 body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
-.home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 7px rgba(229,186,115,0.5), 0 4px 16px rgba(0,0,0,0.6); transform: translateY(0) scale(1.05); }
+.home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 4px rgba(229,186,115,0.5), 0 2px 5px rgba(0,0,0,0.55); transform: translateY(0) scale(1.05); }
 .home-mark-icon { font-size: 1.2rem; line-height: 1; }
 header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
 header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
@@ -280,7 +299,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 .preview-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
 /* Pagine con il menu su misura (Promo Multibrand, Xmas Ball): etichetta MENU SPECIALE in basso a destra
    nell'anteprima, con lo stile del .gold-badge della prima versione di StoreCraft (oro lucido, scritta nera) */
-.card-badge { position: absolute; bottom: 11px; right: 10px; z-index: 1; padding: 2px 7px; border-radius: 4px; background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #000; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
+.card-badge { position: absolute; bottom: 11px; right: 10px; z-index: 1; padding: 2px 7px; border-radius: 4px; background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #000; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
 
 /* Schede del corpo centrale: stessi elementi delle card di TEBE (numero e tipo in alto,
    anteprima, titolo e pulsante + delle specifiche), con gli angoli arrotondati di StoreCraft. */
@@ -299,7 +318,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 .desc-open .spec-toggle { transform: rotate(45deg); }
 /* Etichetta del pulsante + (Mostra / Nascondi specifiche) sopra il pulsante, nello stile della .tool-tip
    di strumenti-stampa.css (fondo scuro, bordo oro), con la scritta bianca nel carattere del pulsante HOME, più piccola e sottile. */
-.spec-tip { position: absolute; bottom: calc(100% - 8px); right: var(--card-pad); padding: 4px 7px; border: 1px solid #d4a373; border-radius: 5px; background: #1e1d1a; color: var(--text); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.58rem; font-weight: 400; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; opacity: 0; transform: translateY(3px); transition: opacity .15s ease, transform .15s ease; pointer-events: none; z-index: 10; }
+.spec-tip { position: absolute; bottom: calc(100% - 8px); right: var(--card-pad); padding: 4px 7px; border: 1px solid #d4a373; border-radius: 5px; background: #1e1d1a; color: var(--text); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.58rem; font-weight: 400; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; opacity: 0; transform: translateY(3px); transition: opacity .15s ease, transform .15s ease; pointer-events: none; z-index: 10; }
 .spec-toggle:hover + .spec-tip, .spec-toggle:focus-visible + .spec-tip { opacity: 1; transform: translateY(0); }
 
 .card:has(.card-desc) .card-body, .carousel-card:has(.card-desc) .card-body { transition: padding-bottom .3s ease; }
@@ -453,7 +472,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   padding: 2.5rem;
   background: var(--card);
   border-color: var(--accent);
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
   transform: translate(-50%, -50%);
   cursor: default;
 }
@@ -623,7 +642,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 #qrcode img, #qrcode canvas {
@@ -668,7 +687,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     position: fixed;
     inset: 0 auto 0 0;
     width: min(278px, 82vw);
-    box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+    box-shadow: 3px 0 10px rgba(0,0,0,0.7);
     transform: translateX(0);
   }
   /* chiuso, fuori dallo schermo, il menu non deve lasciare la sua ombra sul bordo sinistro: sparisce mentre esce */
@@ -692,6 +711,10 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
 }
 /* Solo telefoni: stessa condizione usata dal JavaScript. */
 @media screen and (max-width: 720px) and (pointer: coarse) {
+  /* niente rimbalzo di Safari su iPhone: trascinando oltre il bordo la pagina non si sposta (lo zoom con due dita resta);
+     i caroselli non passano lo scorrimento alla pagina */
+  html, body { overscroll-behavior: none; }
+  .carousel-container { overscroll-behavior-x: contain; }
   body {
     display: block;
     height: auto;
@@ -719,7 +742,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     justify-content: space-between;
     padding: 0 0.6rem;
     z-index: 900;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
   }
 
   .mobile-nav-toggle {
@@ -777,10 +800,19 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     left: 0;
     bottom: 0;
     width: min(278px, 82vw);
-    padding: 16px 14px 18px;
-    box-shadow: 4px 0 25px rgba(0,0,0,0.8);
+    padding: 16px 14px 0;
+    box-shadow: 3px 0 10px rgba(0,0,0,0.7);
     transform: translateX(0);
     z-index: 1000;
+  }
+  /* MENU // IMPOSTAZIONI sempre raggiungibile: se anche senza logo e con le voci avvicinate il menu non entra
+     (dashboard.js, controllaSpazioMenu), scorrono solo le voci e il fondo del menu resta fermo in basso, sul fondo del menu */
+  #sidebar-menu .sidebar-bottom {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    padding-bottom: 18px;
+    background: inherit;
   }
 
   /* chiuso, fuori dallo schermo, il menu non deve lasciare la sua ombra sul bordo sinistro: sparisce mentre esce */
@@ -823,16 +855,112 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   }
   header { text-align: center; }
   .sidebar-header { padding-bottom: 29px; }
-  .mobile-close-btn { top: 0; right: 0; }
+  /* la ✕ al centro della riga della scritta STORE // CRAFT (sotto la scritta 29 px di spazio; ✕ alta 28 px) */
+  .mobile-close-btn { top: calc(50% - 14.5px - 14px); right: 0; }
+  /* Fondo pagina: STORE // CRAFT in Cinzel e sotto tre pulsanti rettangolari a contorno oro (CREDITS, CONTATTI, torna
+     in cima), sullo stesso fondo della pagina; sotto i pulsanti poco spazio (dashboard.js, piedePagina) */
   .mobile-brand-footer {
-    display: block;
-    margin-top: 20px;
-    padding-bottom: 26px;
-    text-align: center;
-    font: 400 19px 'Cinzel', serif;
-    letter-spacing: .16em;
-    color: var(--accent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    margin-top: 28px;
+    padding: 0 0 max(16px, env(safe-area-inset-bottom));
   }
+  /* logo e scritta stanno al centro tra l'ultimo blocco e i pulsanti (misurati sul disegno, non sui riquadri)
+     ; il margine del blocco sopra non conta */
+  #main-content > :has(+ .mobile-brand-footer) { margin-bottom: 0 !important; }
+  /* logo STORE // CRAFT e sotto CRAFTED WITH STORECRAFT, come in fondo al menu laterale; il logo sempre oro, la scritta taupe nel tema chiaro (theme.css) */
+  .mobile-brand-footer-title { display: flex; flex-direction: column; align-items: center; }
+  /* più piccolo che nel menu laterale (110 x 53 px invece di 158 x 76) */
+  .mobile-brand-footer .storecraft-mark { width: 110px; height: 53px; margin: 0 auto 5px; }
+  /* sempre oro, anche nel tema chiaro (il filtro oro di .storecraft-mark img), un poco più acceso per vedersi bene */
+  .mobile-brand-footer .storecraft-mark img { max-height: 53px; opacity: .95; }
+  .mobile-footer-actions {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .mobile-footer-actions .footer-btn { flex: 1 1 0; }
+}
+/* Pulsanti del fondo pagina e del popup dei crediti: contorno oro come i pulsanti della lista di stampa dei cartelli,
+   rettangolari come il pulsante HOME (squadrati nel look COMPATTO) */
+.footer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 44px;
+  padding: 0 10px;
+  border: 1.5px solid var(--interface-accent, #d4a373);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--interface-accent, #d4a373);
+  font: 700 .76rem/1 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .5px;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.footer-btn:is(:hover, :active, :focus-visible) { background: var(--interface-accent, #d4a373); color: #121110; outline: none; }
+:root[data-interface-theme="light"] .footer-btn:is(:hover, :active, :focus-visible) { color: #fffdfa; }
+.footer-btn-arrow { display: flex; }
+:root[data-interface-look="minimal"] .footer-btn {
+  border-radius: 0;
+  font: 400 10px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .14em;
+}
+
+/* Popup dei crediti, nello stile della splash page: fondo della pagina, cornice oro scuro doppia, logo e titolo tra due linee */
+.credits-dialog {
+  width: min(340px, calc(100vw - 32px));
+  max-width: none;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: var(--interface-page, #121110);
+  color: var(--interface-text, #fff);
+}
+.credits-dialog::backdrop { background: rgba(0, 0, 0, .65); backdrop-filter: blur(3px); }
+.credits-frame {
+  position: relative;
+  padding: 34px 24px 26px;
+  border: 1px solid #8f6a1f;
+  text-align: center;
+}
+.credits-frame::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(143, 106, 31, .35);
+  pointer-events: none;
+}
+.credits-brand {
+  display: block;
+  width: 130px;
+  height: auto;
+  margin: 0 auto;
+  opacity: .9;
+  filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%);
+}
+.credits-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 24px 0 18px;
+  color: var(--interface-accent, #e5ba73);
+  font: 500 .78rem/1 'Cinzel', serif;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+}
+.credits-title::before, .credits-title::after { content: ''; flex: 1; height: 1px; background: rgba(143, 106, 31, .35); }
+.credits-text { margin: 0 0 8px; color: var(--interface-muted, #a8a29e); font: 400 .78rem/1.6 'Plus Jakarta Sans', sans-serif; }
+.credits-text .release-number, .credits-mail { color: var(--interface-accent, #d4a373); text-decoration: none; }
+.credits-mail { display: inline-block; margin-top: 4px; font: 400 .82rem/1.6 'Plus Jakarta Sans', sans-serif; }
+.credits-close { width: 100%; margin-top: 22px; }
+@media screen and (max-width: 720px) and (pointer: coarse) {
   #system-menu-toggle {
     min-height: 48px;
     padding: 11px 10px;
@@ -842,14 +970,14 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     color: #121110;
     font: 600 12px/1.2 var(--interface-font);
     letter-spacing: .14em;
-    box-shadow: 0 3px 10px var(--interface-shadow);
+    box-shadow: 0 2px 4px var(--interface-shadow);
   }
   #system-menu-toggle:hover,
   #system-menu-toggle:focus-visible,
   #system-menu-toggle[aria-expanded="true"] {
     border-color: var(--interface-accent);
     background: var(--interface-accent);
-    box-shadow: 0 6px 16px var(--interface-shadow);
+    box-shadow: 0 3px 6px var(--interface-shadow);
     transform: translateY(-1px);
   }
   #system-menu-toggle:focus-visible {
@@ -868,7 +996,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   .home-mark {
     left: auto;
     right: 0.8rem;
-    top: 3.8rem;
+    top: calc(64px + 12px);
   }
 }
 @media screen and (max-width: 360px) and (pointer: coarse) {
@@ -976,9 +1104,12 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 }
 .nav-btn.is-soon { opacity: .45; cursor: default; pointer-events: none; }
 
-/* Utilità Cassa che il negozio mostra solo in modalità CASSIERE (es. OPHILYA) */
-body.cassa-solo-cassiere:not(.cassiere-mode) #tools-title,
-body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
+/* Utilità Cassa che il negozio mostra solo in modalità CASSIERE (es. OPHILYA); sul telefono si vedono anche in CREATOR,
+   come negli altri negozi */
+@media not screen and (max-width: 720px) and (pointer: coarse) {
+  body.cassa-solo-cassiere:not(.cassiere-mode) #tools-title,
+  body.cassa-solo-cassiere:not(.cassiere-mode) #tools { display: none; }
+}
 
 @media (max-width: 720px) {
   .store-hero { display: block; }

@@ -2,12 +2,12 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261009-28"></script>
+  <script src="../assets/js/negozi.js?v=20261009-29"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261009-28"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-28">
+  <script src="../assets/js/theme.js?v=20261009-29"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261009-29">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-28">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261009-29">
   <title>Lista di Stampa · OPHILYA</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -231,7 +231,8 @@
         font-size: 0.8rem;
         white-space: nowrap;
       }
-      .app-close-btn { top: 10px; right: 10px; width: 36px; height: 36px; }
+      /* la ✕ da 36 px al centro della barra alta 56 px (la regola comune sotto i 1100 px la porterebbe a 44 px), con un'ombra corta che non esce dalla barra */
+      .app-close-btn:not(.app-close-btn--pdf) { top: 10px; right: 10px; width: 36px; height: 36px; font-size: 1.2rem; box-shadow: 0 1px 3px var(--chiudi-ombra); }
       .viewer {
         grid-area: viewer;
         min-height: 0;
@@ -347,7 +348,7 @@
     <button type="button" class="action-btn btn-gold" id="clearBtn" onclick="clearList()">Svuota Lista</button>
   </aside>
 
-  <script src="../assets/js/lista-stampa.js?v=20261009-28"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261009-29"></script>
   <script>
     // Pagina che gestisce la lista di stampa (assets/js/lista-stampa.js): miniature, pagina scelta in grande,
     // stampa di tutta la lista come lista.pdf, eliminazione di una pagina e svuotamento della lista.

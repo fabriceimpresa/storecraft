@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.79 2026';
+  const VERSIONE = 'V 1.80 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -169,6 +169,46 @@
         indietro()));
   }
 
+  // ----- Fondo pagina del telefono: logo STORE // CRAFT con CRAFTED WITH STORECRAFT e tre pulsanti (CREDITS, CONTATTI, torna in cima) -----
+  const EMAIL = 'fabriceimpresa@gmail.com';
+
+  function piedePagina() {
+    const nome = Negozi.corrente()?.nome;
+    const freccia = el('span', { class: 'footer-btn-arrow', 'aria-hidden': 'true' });
+    // freccia lunga che alla fine si piega e punta in alto (disegno fisso, nessun testo dell'utente)
+    freccia.innerHTML = '<svg viewBox="0 0 40 18" width="40" height="18" fill="none" stroke="currentColor" stroke-width="1.6" '
+      + 'stroke-linecap="round" stroke-linejoin="round"><path d="M2 15H33V3"/><path d="M28.5 7.5L33 3L37.5 7.5"/></svg>';
+    return el('div', { class: 'mobile-brand-footer' },
+      el('div', { class: 'mobile-brand-footer-title' },
+        el('div', { class: 'storecraft-mark' }, el('img', { src: risorsa('img/storecraftlogo.png'), alt: 'STORE // CRAFT' })),
+        el('div', { class: 'signature-caption', text: 'CRAFTED WITH STORECRAFT' })),
+      el('div', { class: 'mobile-footer-actions' },
+        el('button', { class: 'footer-btn', type: 'button', 'aria-haspopup': 'dialog', onclick: apriCrediti, text: 'CREDITS' }),
+        el('a', { class: 'footer-btn', href: `mailto:${EMAIL}?subject=${encodeURIComponent(`STORE // CRAFT${nome ? ` · ${nome}` : ''}`)}`,
+          text: 'CONTATTI' }),
+        el('button', { class: 'footer-btn', type: 'button', 'aria-label': 'Torna in cima alla pagina', onclick: () => returnToHomeTop() },
+          freccia)));
+  }
+
+  // Popup dei crediti nello stile della splash page: cornice oro doppia, logo STORE // CRAFT, titolo tra due linee;
+  // si chiude con CHIUDI, con Esc o toccando fuori dalla cornice
+  function apriCrediti() {
+    let finestra = document.getElementById('credits-dialog');
+    if (!finestra) {
+      finestra = el('dialog', { class: 'credits-dialog', id: 'credits-dialog', 'aria-labelledby': 'credits-dialog-title' },
+        el('div', { class: 'credits-frame' },
+          el('img', { class: 'credits-brand', src: risorsa('img/storecraftlogo.png'), alt: 'STORE // CRAFT' }),
+          el('h2', { class: 'credits-title', id: 'credits-dialog-title', text: 'Credits' }),
+          el('p', { class: 'credits-text' }, el('span', { class: 'release-number', text: VERSIONE }), ' · Developed by Fabrizio Notte'),
+          el('p', { class: 'credits-text', text: '© Marchi e loghi appartengono ai rispettivi proprietari' }),
+          el('a', { class: 'credits-mail', href: `mailto:${EMAIL}`, text: EMAIL }),
+          el('button', { class: 'footer-btn credits-close', type: 'button', onclick: () => finestra.close(), text: 'CHIUDI' })));
+      finestra.addEventListener('click', event => { if (event.target === finestra) finestra.close(); });
+      document.body.append(finestra);
+    }
+    finestra.showModal();
+  }
+
   // ----- Schede -----
   function collegamento(scheda) {
     // il PDF (nella cartella assets/) arriva al visualizzatore con il percorso dalla radice del sito
@@ -294,7 +334,7 @@
         dati.sezioni.map(sezione),
         el('div', { class: 'section-title', id: 'tools-title', text: 'Utilità Cassa' }),
         strumenti,
-        el('div', { class: 'mobile-brand-footer', text: 'STORE // CRAFT' })));
+        piedePagina()));
     Cassa.crea(strumenti, { qr: dati.qr || '' });
     // l'interruttore dei negozi sta a sinistra del selettore CASSIERE / CREATOR, largo uguale (la larghezza del più largo
     // dei due, --larghezza-selettore, che cambia con l'aspetto), e titolo e sottotitolo lasciano libero lo spazio dei due
@@ -417,15 +457,37 @@
   }
 
   // Apre o chiude una sezione del menu laterale; ogni caricamento della dashboard riparte da chiuso.
+  // Sul telefono si apre una sezione alla volta: aprendone una, le altre si chiudono; le voci si aprono e si chiudono
+  // scorrendo (0,26 s). La sezione che si chiude resta visibile durante l'animazione (data-chiusura, dashboard.css);
+  // controllaSpazioMenu misura comunque la forma finale.
   function toggleSidebarSection(sectionId) {
     const section = document.querySelector(`[data-sidebar-section="${sectionId}"]`);
     if (!section) return;
+    if (phoneViewQuery.matches && section.classList.contains('is-collapsed')) {
+      document.querySelectorAll('.sidebar-section:not(.is-collapsed)').forEach(aperta => {
+        if (aperta !== section) toggleSidebarSection(aperta.dataset.sidebarSection);
+      });
+    }
     const toggle = section.querySelector('.section-toggle');
     const title = section.querySelector('.label span').textContent;
     const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+    const nav = section.querySelector('nav');
+    const anima = nav && phoneViewQuery.matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (anima) nav.getAnimations().forEach(animazione => animazione.cancel());
+    const altezzaPrima = anima && isExpanded ? nav.offsetHeight : 0;
     toggle.setAttribute('aria-expanded', String(!isExpanded));
     toggle.setAttribute('aria-label', `${isExpanded ? 'Espandi' : 'Comprimi'} ${title}`);
     section.classList.toggle('is-collapsed', isExpanded);
+    if (!anima) return;
+    const segno = isExpanded ? 'chiusura' : 'apertura';
+    const altezza = isExpanded ? altezzaPrima : nav.offsetHeight;
+    const aperto = { height: `${altezza}px`, opacity: 1 };
+    const chiuso = { height: '0px', opacity: 0 };
+    section.dataset[segno] = '';
+    nav.style.overflow = 'hidden';
+    const fine = () => { delete section.dataset[segno]; nav.style.overflow = ''; };
+    nav.animate(isExpanded ? [aperto, chiuso] : [chiuso, aperto], { duration: 260, easing: 'ease' })
+      .finished.then(fine, fine);
   }
 
   // Il clic sul titolo di una sezione (non solo sulla freccia) la apre o la chiude.
@@ -671,7 +733,19 @@
       if (!menu.classList.contains('firma-nascosta')) ricordaPosizioni();
       else if (eraVisibile) risucchia();
     };
+    // durante l'animazione delle sezioni (telefono) si misura la forma finale: la sezione che si chiude come chiusa,
+    // quella che si apre come aperta
     const controllaStato = () => {
+      const inChiusura = [...menu.querySelectorAll('[data-chiusura] > nav')];
+      const inApertura = [...menu.querySelectorAll('[data-apertura] > nav')];
+      inChiusura.forEach(nav => nav.style.setProperty('display', 'none', 'important'));
+      inApertura.forEach(nav => nav.style.setProperty('height', 'auto', 'important'));
+      try { misuraStato(); } finally {
+        inChiusura.forEach(nav => nav.style.removeProperty('display'));
+        inApertura.forEach(nav => nav.style.removeProperty('height'));
+      }
+    };
+    const misuraStato = () => {
       applica(false, 0);
       // con MENU // IMPOSTAZIONI aperto (aprendolo le sezioni si chiudono) il menu resta nella forma piena: niente salti
       if (!document.getElementById('system-menu')?.hidden) return;

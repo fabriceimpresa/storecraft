@@ -294,7 +294,7 @@
 
   :root[data-interface-theme="light"] body #tools .widget:not(.expanded):hover {
     border-color: var(--interface-accent) !important;
-    box-shadow: 0 0 0 1px var(--interface-accent), 0 4px 14px rgba(173, 138, 62, .18) !important;
+    box-shadow: 0 0 0 1px var(--interface-accent), 0 2px 5px rgba(173, 138, 62, .2) !important;
   }
 
   :root[data-interface-theme="light"] body :is(
@@ -433,7 +433,7 @@
     mix-blend-mode: multiply;
   }
 
-  :root[data-interface-theme="light"] body #sidebar-menu .signature-caption {
+  :root[data-interface-theme="light"] body :is(#sidebar-menu, .mobile-brand-footer) .signature-caption {
     color: #766d62 !important;
   }
 
@@ -620,21 +620,21 @@
     background: var(--interface-surface);
     border-color: var(--interface-accent);
     color: var(--interface-text);
-    box-shadow: 0 4px 12px var(--interface-shadow);
+    box-shadow: 0 2px 4px var(--interface-shadow);
   }
 
   :root[data-interface-theme="light"] body:not([data-layout]) .home-mark:hover {
     background: var(--interface-accent);
     border-color: var(--interface-accent-bright);
     color: #fffdfa;
-    box-shadow: 0 4px 14px var(--interface-shadow);
+    box-shadow: 0 2px 5px var(--interface-shadow);
   }
 
   /* Etichetta MENU SPECIALE sulle schede: in tema chiaro oro più morbido, ombra leggera e scritta grigio scuro caldo */
   :root[data-interface-theme="light"] body:not([data-layout]) .card-badge {
     background: linear-gradient(135deg, #c9a35f, #f6ebd3, #c9a35f, #e2c68e);
     color: #3d372f;
-    box-shadow: 0 2px 6px var(--interface-shadow);
+    box-shadow: 0 1px 2px var(--interface-shadow);
   }
 
   /* nel look COMPATTO il pulsante HOME è come quello di TEBE: squadrato, Arial 10 px con lettere spaziate, 7 x 11 px di spazio interno, casetta più grande della scritta (14 px) */
@@ -793,7 +793,7 @@
   }
 
   :root[data-interface-theme="light"] body .tool-buttons .tool-btn {
-    box-shadow: 0 2px 6px var(--interface-shadow);
+    box-shadow: 0 1px 3px var(--interface-shadow);
   }
 
   @supports (appearance: base-select) {
@@ -801,7 +801,7 @@
       background: var(--interface-surface) !important;
       color: var(--interface-text) !important;
       border-color: var(--interface-border) !important;
-      box-shadow: 0 8px 24px var(--interface-dropdown-shadow) !important;
+      box-shadow: 0 4px 10px var(--interface-dropdown-shadow) !important;
     }
 
     :root[data-interface-theme="light"] body select::picker(select)::-webkit-scrollbar-track {
@@ -858,7 +858,7 @@
   border-radius: 10px;
   background: var(--interface-sidebar);
   color: var(--interface-text);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, .2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
   transform-origin: bottom left;
   animation: system-menu-open .18s ease-out;
 }
@@ -1067,7 +1067,7 @@
 .system-menu-toggle[aria-expanded="true"] {
   border-color: var(--interface-accent);
   background: var(--interface-surface);
-  box-shadow: 0 8px 20px var(--interface-shadow);
+  box-shadow: 0 3px 8px var(--interface-shadow);
   transform: translateY(-2px);
   outline: none;
 }
@@ -1081,7 +1081,7 @@
 :root[data-interface-theme="light"] body .mobile-top-bar {
   background: var(--interface-page);
   border-bottom-color: var(--interface-border);
-  box-shadow: 0 2px 10px var(--interface-shadow);
+  box-shadow: 0 1px 3px var(--interface-shadow);
 }
 
 :root[data-interface-theme="light"] body .mobile-nav-toggle {
