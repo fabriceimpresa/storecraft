@@ -7,9 +7,9 @@
   <title>STORE // CRAFT · Area operatore</title>
   <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
        e splash page e mai inclusa nelle copie per i clienti. Raccoglie l'importazione e la gestione dei loghi ufficiali
-       (logoimport.html, logogestione.html) e la preparazione di una copia per un cliente, fatta qui con la File System
+       (logoimport.html, logogestione.html), la guida dei componenti (guida-componenti.html) e la preparazione di una copia per un cliente, fatta qui con la File System
        Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #121110;
@@ -95,57 +95,69 @@
       background: var(--frame-soft);
     }
 
-    /* I tre strumenti */
-    .tools {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .tool {
+    /* Menu degli strumenti: solo i titoli in oro, ben spaziati, divisi da linee sottili. Al passaggio del mouse (o con la
+       tastiera) un accenno da terminale: > davanti e il cursore _ che lampeggia, in carattere a spaziatura fissa */
+    .menu {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding: 22px 20px;
-      border: 1px solid var(--frame-soft);
-      background: var(--card);
-      color: inherit;
-      font: inherit;
-      text-align: left;
-      text-decoration: none;
-      cursor: pointer;
-      transition: border-color 0.2s ease, background 0.2s ease;
+      max-width: 520px;
+      margin: 6px auto 0;
     }
 
-    .tool:hover,
-    .tool:focus-visible,
-    .tool[aria-expanded="true"] {
-      border-color: var(--gold);
-      background: #1f1d1a;
+    .voce {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 22px 0;
+      border: 0;
+      border-top: 1px solid rgba(143, 106, 31, 0.22);
+      background: none;
+      color: var(--gold-light);
+      font: 600 0.9rem 'Cinzel', serif;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease, letter-spacing 0.3s ease;
+    }
+
+    .voce:first-child { border-top: 0; }
+
+    .voce::before,
+    .voce::after {
+      font: 400 0.85rem 'JetBrains Mono', ui-monospace, monospace;
+      color: var(--gold);
+      letter-spacing: 0;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .voce::before { content: '>'; }
+    .voce::after { content: '_'; }
+
+    .voce:hover,
+    .voce:focus-visible,
+    .voce[aria-expanded="true"] {
+      color: #f4d7a1;
+      letter-spacing: 0.26em;
       outline: none;
     }
 
-    .tool-name {
-      color: var(--gold-light);
-      font-family: 'Cinzel', serif;
-      font-size: 0.86rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-    }
+    .voce:hover::before,
+    .voce:focus-visible::before,
+    .voce[aria-expanded="true"]::before { opacity: 1; }
 
-    .tool-desc {
-      color: var(--text-muted);
-      font-size: 0.74rem;
-      line-height: 1.55;
-    }
+    .voce:hover::after,
+    .voce:focus-visible::after,
+    .voce[aria-expanded="true"]::after { animation: cursore-terminale 1s steps(1) infinite; }
 
-    .tool-go {
-      margin-top: auto;
-      color: var(--accent);
-      font-size: 0.66rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
+    @keyframes cursore-terminale { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .voce { transition: none; }
+      .voce:hover::after, .voce:focus-visible::after, .voce[aria-expanded="true"]::after { animation: none; opacity: 1; }
     }
 
     /* Prepara copia: tre passi */
@@ -258,7 +270,8 @@
 
     @media (max-width: 760px) {
       .frame { padding: 38px 20px 28px; }
-      .tools { grid-template-columns: 1fr; }
+      .voce { padding: 18px 0; font-size: 0.74rem; letter-spacing: 0.14em; }
+      .voce:hover, .voce:focus-visible, .voce[aria-expanded="true"] { letter-spacing: 0.16em; }
       .title { font-size: 0.64rem; letter-spacing: 0.2em; }
     }
   </style>
@@ -268,23 +281,12 @@
     <img class="brand" src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
     <h1 class="title">Area operatore</h1>
 
-    <div class="tools">
-      <a class="tool" href="logoimport.html">
-        <span class="tool-name">Importa loghi ufficiali</span>
-        <span class="tool-desc">Aggiunge i loghi ufficiali di un negozio.</span>
-        <span class="tool-go">Apri →</span>
-      </a>
-      <a class="tool" href="logogestione.html">
-        <span class="tool-name">Gestisci loghi ufficiali</span>
-        <span class="tool-desc">Mostra e toglie i loghi ufficiali di un negozio.</span>
-        <span class="tool-go">Apri →</span>
-      </a>
-      <button class="tool" type="button" id="copyToggle" aria-expanded="false" aria-controls="copyPanel">
-        <span class="tool-name">Prepara copia per un cliente</span>
-        <span class="tool-desc">Copia STORE // CRAFT con i soli negozi scelti.</span>
-        <span class="tool-go">Prepara →</span>
-      </button>
-    </div>
+    <nav class="menu" aria-label="Strumenti dell'operatore">
+      <a class="voce" href="logoimport.html">Importa loghi ufficiali</a>
+      <a class="voce" href="logogestione.html">Gestisci loghi ufficiali</a>
+      <a class="voce" href="guida-componenti.html">Guida dei componenti</a>
+      <button class="voce" type="button" id="copyToggle" aria-expanded="false" aria-controls="copyPanel">Prepara copia per un cliente</button>
+    </nav>
 
     <section class="copy" id="copyPanel" hidden aria-labelledby="copyTitle">
       <h2 class="copy-title" id="copyTitle">Prepara copia per un cliente</h2>
@@ -457,7 +459,8 @@
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page; non gli strumenti dell'operatore, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'Storecraft Aggiornamento.html'];
+      const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html',
+        'Storecraft Aggiornamento.html'];
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
         await copiaFile(voce, destinazione, nome);

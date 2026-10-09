@@ -4,22 +4,26 @@
   <meta charset="UTF-8">
   <!-- Negozio del campionario dall'indirizzo (?negozio=luxury | tebe | ophilya), prima di negozi.js che ne carica i colori -->
   <script>document.documentElement.dataset.negozio = new URLSearchParams(location.search).get('negozio') || 'luxury';</script>
-  <script src="assets/js/negozi.js?v=20261009-35"></script>
-  <script src="assets/js/theme.js?v=20261009-35"></script>
+  <script src="assets/js/negozi.js?v=20261009-36"></script>
+  <script src="assets/js/theme.js?v=20261009-36"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Campionario del pannello</title>
-  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261009-35">
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261009-36">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/pannello.css?v=20261009-35">
-  <script defer src="assets/js/campi-prezzo.js?v=20261009-35"></script>
-  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261009-35">
-  <script defer src="assets/js/menu-cascata.js?v=20261009-35"></script>
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261009-36">
+  <script defer src="assets/js/campi-prezzo.js?v=20261009-36"></script>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261009-36">
+  <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-36">
+  <link rel="stylesheet" href="assets/css/torna-al-menu.css?v=20261009-36">
+  <link rel="stylesheet" href="assets/css/madeinitaly.css?v=20261009-36">
+  <link rel="stylesheet" href="assets/css/cursore.css?v=20261009-36">
+  <script defer src="assets/js/menu-cascata.js?v=20261009-36"></script>
   <script>
     // brand ufficiali del negozio del campionario
-    document.write(`<script src="assets/logos/${document.documentElement.dataset.negozio}/elenco.js?v=20261009-35"><\/script>`);
+    document.write(`<script src="assets/logos/${document.documentElement.dataset.negozio}/elenco.js?v=20261009-36"><\/script>`);
   </script>
-  <script src="assets/js/logos.js?v=20261009-35"></script>
+  <script src="assets/js/logos.js?v=20261009-36"></script>
   <style>
     /* Pagina dell'operatore (non collegata, non copiata ai clienti): campionario dal vivo dei componenti comuni del
        pannello, mostrato nella guida dei componenti (guida-componenti.html) con i colori di ogni negozio. */
@@ -27,28 +31,46 @@
     body { padding: 16px; background: var(--interface-page, #212529); font-family: Arial, sans-serif; }
     .sidebar { margin: 0 auto; }
     .form-row .form-group label { white-space: nowrap; }
+    /* Un solo pezzo (?pezzo=nome, per le schede della guida): si vede solo l'elemento con quel data-pezzo; il pannello
+       resta come cornice (fondo e colori del negozio) ma senza titolo né spazi dei blocchi, se il pezzo non è il pannello */
+    .pezzi-fuori { display: none; align-items: center; justify-content: center; gap: 14px; min-height: 70px; }
+    .pezzi-fuori > * { position: static !important; display: none; }
+    .pezzi-fuori .cursore { opacity: 1; }
+    /* dentro le schede della guida niente barre di scorrimento: l'altezza la prende il riquadro della guida */
+    html.anteprima-guida, html.anteprima-guida body { overflow: hidden; }
+    html.anteprima-guida body { padding: 10px; }
+    html.anteprima-guida .sidebar, html.anteprima-guida .sidebar .controls { width: 100%; max-width: none; }
+    html.solo-pezzo body { padding: 10px; }
+    html.solo-pezzo .sidebar, html.solo-pezzo .sidebar .controls { width: 100%; max-width: none; }
+    html.solo-pezzo .sidebar .controls { padding: 12px 14px 14px; }
+    html.solo-pezzo .panel-block { margin: 0 !important; }
+    html.solo-pezzo .controls [data-pezzo]:not(.pezzo-scelto), html.solo-pezzo .controls > h2:not(.pezzo-scelto) { display: none !important; }
+    html.solo-pezzo .panel-block:not(:has(.pezzo-scelto)) { display: none; }
+    html.solo-pezzo.pezzo-fuori .sidebar { display: none; }
+    html.solo-pezzo.pezzo-fuori .pezzi-fuori { display: flex; }
+    html.solo-pezzo.pezzo-fuori .pezzi-fuori > .pezzo-scelto { display: flex; }
+    html.solo-pezzo.pezzo-fuori .pezzi-fuori > .floating-nav-box.pezzo-scelto { display: block; }
   </style>
 </head>
 <body>
   <div class="sidebar">
     <div class="controls">
-      <h2>Campionario</h2>
+      <h2 data-titolo>Campionario</h2>
 
       <!-- Blocco 1: selettori e pulsanti -->
       <div class="panel-block">
-        <div data-selettore-cartello></div>
-        <div data-selettore-modalita-prezzo></div>
-        <div data-selettore id="esempioSelettore" aria-label="Selettore con voci della pagina">
+        <div data-pezzo="pronti"><div data-selettore-cartello></div><div data-selettore-modalita-prezzo></div></div>
+        <div data-pezzo="selettore" data-selettore id="esempioSelettore" aria-label="Selettore con voci della pagina">
           <button value="a" class="active">STANDARD</button>
           <button value="b">DOPPIO<br>PREZZO</button>
           <button value="c">BRAND</button>
         </div>
-        <div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div>
+        <div data-pezzo="toggle"><div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div></div>
       </div>
 
       <!-- Blocco 2: brand e claim -->
       <div class="panel-block">
-        <div class="form-group">
+        <div class="form-group" data-pezzo="brand">
           <label class="section-label" for="brandSelect">BRAND</label>
           <div class="preset-select">
             <select id="brandSelect"><option value="" class="brand-placeholder">-- Seleziona Brand --</option></select>
@@ -58,7 +80,7 @@
             <select id="customBrandSelect"><option value="">-- Seleziona Logo Personalizzato --</option></select>
           </div>
         </div>
-        <div class="form-row">
+        <div class="form-row" data-pezzo="riga campo etichetta">
           <div class="form-group"><label for="leftClaim">Claim Sinistro</label><input type="text" id="leftClaim" value="SALDI 2026"></div>
           <div class="form-group"><label for="rightClaim">Claim Destro</label><input type="text" id="rightClaim" value="SHOP NOW"></div>
         </div>
@@ -66,7 +88,7 @@
 
       <!-- Blocco 3: campi del cartello -->
       <div class="panel-block">
-        <div class="form-group">
+        <div class="form-group" data-pezzo="testi menu">
           <label class="section-label" for="presetDesc">TESTI PRONTI</label>
           <div class="preset-select">
             <select id="presetDesc" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli">
@@ -76,20 +98,20 @@
           <label for="desc">Testo Libero</label>
           <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" value="Outlet Price">
         </div>
-        <div class="form-group">
+        <div class="form-group" data-pezzo="fasce">
           <div data-fasce-prezzo data-select-id="pricePreset" data-on-change="nulla"></div>
         </div>
-        <div class="form-row">
+        <div class="form-row" data-pezzo="prezzi">
           <div class="form-group"><label for="priceOld">Prezzo Originario</label><input data-prezzo type="text" id="priceOld" value="395,00"></div>
           <div class="form-group"><label for="discount">Sconto</label><input data-percentuale type="number" id="discount" min="1" max="99" value="75"></div>
           <div class="form-group"><label for="priceNew">Prezzo Finale</label><input data-prezzo type="text" id="priceNew" value="99,00"></div>
         </div>
-        <div class="form-group">
+        <div class="form-group" data-pezzo="textarea">
           <label for="areaTesto">Area Testo</label>
           <textarea id="areaTesto" rows="4">PANTALONI
 GIACCHE</textarea>
         </div>
-        <div class="form-group">
+        <div class="form-group" data-pezzo="barra">
           <label for="dimensione">Dimensione Testo</label>
           <input type="range" id="dimensione" min="46" max="76" value="61">
         </div>
@@ -97,8 +119,8 @@ GIACCHE</textarea>
 
       <!-- Blocco 4: stampa -->
       <div class="panel-block">
-        <div data-copia-cartello data-checkbox-id="linkCards" data-on-change="nulla"></div>
-        <div class="form-group">
+        <div data-pezzo="copia"><div data-copia-cartello data-checkbox-id="linkCards" data-on-change="nulla"></div></div>
+        <div class="form-group" data-pezzo="impostazioni-stampa">
           <div class="preset-select">
             <select aria-label="Impostazioni di Stampa">
               <option value="double" selected>2 CARTELLI (Foglio A4)</option>
@@ -106,18 +128,26 @@ GIACCHE</textarea>
             </select>
           </div>
         </div>
-        <button type="button" class="btn-print">STAMPA CARTELLI</button>
+        <button type="button" class="btn-print" data-pezzo="stampa">STAMPA CARTELLI</button>
       </div>
     </div>
   </div>
 
-  <script src="assets/js/testi-pronti.js?v=20261009-35"></script>
-  <script src="assets/js/fasce-prezzo.js?v=20261009-35"></script>
-  <script src="assets/js/second-brand-toggle.js?v=20261009-35"></script>
-  <script src="assets/js/selettore.js?v=20261009-35"></script>
-  <script src="assets/js/selettore-cartello.js?v=20261009-35"></script>
-  <script src="assets/js/selettore-modalita-prezzo.js?v=20261009-35"></script>
-  <script src="assets/js/copia-cartello.js?v=20261009-35"></script>
+  <!-- pezzi fuori dal pannello, mostrati solo uno alla volta nelle schede della guida -->
+  <div class="pezzi-fuori">
+    <a class="app-close-btn" data-pezzo="chiudi" href="#" aria-label="Chiudi">✕</a>
+    <div class="floating-nav-box" data-pezzo="torna"><div class="floating-nav-title" data-nome-torna>STORE // CRAFT</div><a href="#" class="floating-nav-btn">← Torna al Menu Principale</a></div>
+    <button type="button" class="made-in-italy-btn" data-pezzo="madeinitaly" aria-label="Made in Italy"><img data-bandiera alt=""></button>
+    <div class="cursore is-visible" data-pezzo="cursore"></div>
+  </div>
+
+  <script src="assets/js/testi-pronti.js?v=20261009-36"></script>
+  <script src="assets/js/fasce-prezzo.js?v=20261009-36"></script>
+  <script src="assets/js/second-brand-toggle.js?v=20261009-36"></script>
+  <script src="assets/js/selettore.js?v=20261009-36"></script>
+  <script src="assets/js/selettore-cartello.js?v=20261009-36"></script>
+  <script src="assets/js/selettore-modalita-prezzo.js?v=20261009-36"></script>
+  <script src="assets/js/copia-cartello.js?v=20261009-36"></script>
   <script>
     // funzioni minime: nel campionario i controlli cambiano solo il proprio aspetto
     const nulla = () => {};
@@ -125,6 +155,26 @@ GIACCHE</textarea>
     function setDescriptionMode(conDescrizione) { SelettoreModalitaPrezzo.setDescription(conDescrizione); }
     let dueBrand = false;
     function toggleSecondBrand() { dueBrand = !dueBrand; SecondBrandToggle.setState('secondBrandBtn', dueBrand); }
+    // pezzi fuori dal pannello: nome del negozio nel riquadro Torna al Menu e bandiera del negozio
+    const negozio = document.documentElement.dataset.negozio;
+    if (negozio !== 'luxury') document.querySelector('[data-nome-torna]').textContent = Negozi.corrente()?.nome || negozio.toUpperCase();
+    document.querySelector('[data-bandiera]').src = `assets/img/${negozio}/madeinitaly.png`;
+    // un solo pezzo (?pezzo=nome): si vede solo lui; l'altezza va alla guida, che adatta il riquadro
+    const pezzo = new URLSearchParams(location.search).get('pezzo');
+    if (pezzo) {
+      const radice = document.documentElement;
+      radice.classList.add('solo-pezzo', 'anteprima-guida');
+      if (pezzo === 'pannello') radice.classList.remove('solo-pezzo');
+      if (pezzo === 'titolo') document.querySelector('[data-titolo]').classList.add('pezzo-scelto');
+      const scelto = document.querySelector(`[data-pezzo~="${pezzo}"]`);
+      if (scelto) {
+        scelto.classList.add('pezzo-scelto');
+        if (scelto.closest('.pezzi-fuori')) radice.classList.add('pezzo-fuori');
+      }
+      const manda = () => parent.postMessage({ campione: location.search, altezza: document.documentElement.scrollHeight }, '*');
+      new ResizeObserver(manda).observe(document.body);
+      addEventListener('load', manda);
+    }
     const brand = document.getElementById('brandSelect');
     const { priorityFiles, remainingFiles } = getSortedLogoFiles();
     [...priorityFiles, ...remainingFiles].forEach(file => {

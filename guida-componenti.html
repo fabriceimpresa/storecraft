@@ -2,77 +2,129 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261009-35"></script>
+  <script src="assets/js/negozi.js?v=20261009-36"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida dei componenti</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     /* Guida dei componenti e delle regole comuni (area operatore: non collegata, non copiata ai clienti).
-       Lo schema in fondo si aggiorna da solo leggendo le pagine dei negozi installati. */
+       Aspetto da sito tecnico, un poco "terminale": solo carattere a spaziatura fissa leggero (niente caratteri delle
+       pagine dei negozi), una pulsantiera con le sezioni e una sezione alla volta a schermo; le tabelle diventano schede
+       compatte (script in fondo). Lo schema delle pagine si aggiorna da solo leggendo le pagine dei negozi installati. */
     :root {
-      --bg: #121110; --card: #1b1a17; --card-2: #22201c; --border: #2e2b27; --text: #ece7dd; --muted: #a39a8d;
-      --gold: #d4a373; --gold-dark: #8f6a1f; --ok: #7fb069; --no: #4b4740; --warn: #e07a5f;
+      --bg: #0d0c0b; --pannello: #151412; --bordo: #2a2723; --testo: #d9d3c7; --tenue: #8f877b;
+      --oro: #d4a373; --oro-chiaro: #e5ba73; --ok: #8fbf7a; --no: #4b4740; --warn: #e07a5f;
+      --mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+      --nota: 11.5px;   /* note in grigio, legenda compresa: stessa grandezza */
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.55 'Plus Jakarta Sans', Arial, sans-serif; }
-    a { color: var(--gold); }
-    .pagina { max-width: 1180px; margin: 0 auto; padding: 36px 24px 80px; }
-    header.testa { text-align: center; padding: 24px 0 8px; border: 1px solid var(--gold-dark); outline: 1px solid rgba(143,106,31,.35); outline-offset: -7px; }
-    header.testa img { width: 150px; filter: brightness(0) saturate(100%) invert(56%) sepia(58%) saturate(437%) hue-rotate(359deg) brightness(88%); }
-    h1 { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 18px 0 6px; color: #e5ba73; font: 500 .82rem 'Cinzel', serif; letter-spacing: .32em; text-transform: uppercase; }
-    h1::before, h1::after { content: ''; width: 60px; height: 1px; background: rgba(229,186,115,.45); }
-    .sotto { color: var(--muted); font-size: 12.5px; margin: 0 0 18px; }
-    nav.indice { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 22px 0 6px; font-size: 12px; }
-    nav.indice a { text-decoration: none; letter-spacing: .06em; }
-    h2 { margin: 52px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--gold); font: 600 1.05rem 'Cinzel', serif; letter-spacing: .12em; text-transform: uppercase; }
-    h3 { margin: 26px 0 8px; color: #e5ba73; font-size: .95rem; letter-spacing: .04em; }
-    p, li { color: var(--text); }
-    .nota { color: var(--muted); font-size: 12.5px; }
-    code { font: 12px 'JetBrains Mono', monospace; color: #f0d9a8; background: #0a0908; border: 1px solid var(--border); border-radius: 3px; padding: 0 4px; }
-    pre { font: 12px/1.5 'JetBrains Mono', monospace; color: #f0d9a8; background: #0a0908; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; overflow-x: auto; }
-    ul.regole { padding-left: 18px; }
-    ul.regole li { margin: 6px 0; }
-    table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 12.5px; }
-    th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
-    th { color: var(--gold); font-weight: 600; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; background: var(--card); position: sticky; top: 0; }
-    td:first-child { color: #e5ba73; font-weight: 600; white-space: nowrap; }
+    body { margin: 0; background: var(--bg); color: var(--testo); font: 300 13px/1.65 var(--mono); letter-spacing: .01em; }
+    a { color: var(--oro); }
+    strong { font-weight: 500; color: #ece5d8; }
+    em { color: var(--oro-chiaro); font-style: normal; }
+    .pagina { max-width: 1120px; margin: 0 auto; padding: 18px 20px 60px; }
+    .torna { display: inline-block; margin-bottom: 14px; color: var(--tenue); font-size: 11.5px; letter-spacing: .08em; text-decoration: none; }
+    .torna:hover { color: var(--oro); }
+    header.testa { display: flex; align-items: center; gap: 18px; padding: 0 0 14px; }
+    header.testa img { width: 74px; filter: brightness(0) saturate(100%) invert(56%) sepia(58%) saturate(437%) hue-rotate(359deg) brightness(88%); opacity: .9; }
+    h1 { margin: 0; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
+    h1::before { content: '> '; color: var(--oro); }
+    @keyframes cursore { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .sotto { margin: 4px 0 0; color: var(--tenue); font-size: 11.5px; }
+    /* pulsantiera delle sezioni, ferma in alto */
+    nav.indice { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 8px 6px; margin: 6px 0 26px; padding: 20px 0;
+      border-top: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); background: var(--bg); }
+    .tasto { padding: 6px 10px; border: 1px solid var(--bordo); border-radius: 3px; background: var(--pannello); color: var(--tenue);
+      font: 400 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: color .15s, border-color .15s, background .15s; }
+    .tasto:hover, .tasto:focus-visible { color: var(--oro-chiaro); border-color: var(--oro); outline: none; }
+    .tasto[aria-selected="true"] { color: var(--oro-chiaro); border-color: var(--oro); background: rgba(212, 163, 115, .1); }
+    .tasto[aria-selected="true"]::before { content: '> '; }
+    section.sezione { display: none; }
+    section.sezione.attiva { display: block; animation: compare .25s ease-out; }
+    @keyframes compare { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    h2 { margin: 0 0 24px; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .16em; text-transform: uppercase; }
+    h2::before { content: '$ '; color: var(--oro); }
+    h3 { margin: 22px 0 8px; color: var(--oro); font: 400 12.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    p { margin: 0 0 12px; }
+    /* note in grigio: più piccole e allineate a destra, così si leggono come note */
+    .nota { margin: 14px 0 14px; color: var(--tenue); font-size: var(--nota); text-align: right; }
+    code { font: 400 11.5px var(--mono); color: #f0d9a8; background: #0a0908; border: 1px solid var(--bordo); border-radius: 3px; padding: 0 4px; }
+    pre { font: 400 11.5px/1.6 var(--mono); color: #f0d9a8; background: #0a0908; border: 1px solid var(--bordo); border-radius: 6px; padding: 12px 14px; overflow-x: auto; }
+    ul.regole { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+    ul.regole li { position: relative; padding: 10px 12px 10px 28px; background: var(--pannello); border: 1px solid var(--bordo); border-radius: 6px; }
+    ul.regole li::before { content: '›'; position: absolute; left: 12px; top: 9px; color: var(--oro); }
+    /* schede ricavate dalle tabelle */
+    .schede { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px; }
+    .scheda { padding: 12px 14px; background: var(--pannello); border: 1px solid var(--bordo); border-radius: 6px; }
+    .scheda:hover { border-color: rgba(212, 163, 115, .45); }
+    .scheda h4 { margin: 0 0 8px; color: var(--oro-chiaro); font: 500 12.5px var(--mono); letter-spacing: .04em; }
+    .scheda dl { display: grid; grid-template-columns: 70px 1fr; gap: 5px 10px; margin: 0; }
+    .scheda dt { color: var(--tenue); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; padding-top: 1px; }
+    .scheda dd { margin: 0; font-size: 12px; }
+    /* anteprima dal vivo del componente (campionario con un solo pezzo) */
+    .anteprima { margin: 2px 0 12px; border: 1px solid var(--bordo); border-radius: 4px; overflow: hidden; background: #0a0908; }
+    .anteprima iframe { display: block; width: 100%; height: 90px; border: 0; }
+    .anteprima.foto { display: flex; align-items: center; justify-content: center; width: 100%; height: 170px; padding: 8px; cursor: zoom-in; }
+    .anteprima.foto img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; }
+    .anteprima.foto:hover, .anteprima.foto:focus-visible { border-color: var(--oro); outline: none; }
+    .ingrandita { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 30px; background: rgba(0, 0, 0, .85); cursor: zoom-out; }
+    .ingrandita img { max-width: 100%; max-height: 100%; border: 1px solid var(--bordo); }
+    .scelta-negozio { display: flex; align-items: center; gap: 6px; margin-left: auto; color: var(--tenue); font-size: 11px; letter-spacing: .06em; }
+    .scelta-negozio .tasto[aria-pressed="true"] { color: var(--oro-chiaro); border-color: var(--oro); background: rgba(212, 163, 115, .1); }
+    /* tabelle rimaste (colori dei negozi, schema delle pagine) */
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 12px; }
+    th, td { text-align: left; vertical-align: top; padding: 7px 9px; border-bottom: 1px solid var(--bordo); }
+    th { color: var(--oro); font-weight: 400; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; background: var(--pannello); }
+    td:first-child { color: var(--oro-chiaro); white-space: nowrap; }
     .sw { display: inline-block; width: 11px; height: 11px; vertical-align: -1px; margin-right: 4px; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; }
-    .campioni { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
-    .campioni figure { margin: 0; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-    .campioni figcaption { padding: 8px 12px; color: var(--gold); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .campioni { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 14px; }
+    .campioni figure { margin: 0; background: var(--pannello); border: 1px solid var(--bordo); border-radius: 6px; overflow: hidden; }
+    .campioni figcaption { padding: 8px 12px; color: var(--oro); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid var(--bordo); }
     .campioni iframe { display: block; width: 100%; height: 1160px; border: 0; }
-    /* schema automatico */
-    .schema-negozio { margin: 26px 0; }
-    .schema-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
-    table.schema { font-size: 11.5px; margin: 0; }
+    /* insegne dei negozi nella sezione Pagine per negozio: discrete (bianche e tenui), quella scelta più chiara; sotto il
+       segnalino oro che segue il mouse */
+    .insegne { position: relative; display: flex; align-items: center; gap: 34px; margin: 34px 0 8px; padding-bottom: 12px; }
+    .insegna { display: flex; align-items: center; height: 46px; padding: 0; border: 0; background: none; cursor: pointer; }
+    .insegna img { display: block; height: auto; max-height: 42px; filter: brightness(0) invert(1); opacity: .35; transition: opacity .2s; }
+    .insegna:hover img, .insegna:focus-visible img, .insegna[aria-selected="true"] img { opacity: .9; }
+    .insegna:focus-visible { outline: none; }
+    .segnalino { position: absolute; bottom: -1px; left: 0; width: 0; height: 2px; background: var(--oro); transition: left .3s ease, width .3s ease; }
+    .schema-negozio { margin: 18px 0; }
+    .schema-negozio > h3 { display: none; }
+    .schema-scroll { overflow-x: auto; border: 1px solid var(--bordo); border-radius: 6px; }
+    table.schema { font-size: 11px; margin: 0; }
     table.schema th { white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px 6px; height: 150px; text-align: left; }
     table.schema th.pg { writing-mode: horizontal-tb; transform: none; height: auto; vertical-align: bottom; }
     table.schema td { text-align: center; padding: 6px 4px; }
     table.schema td:first-child { text-align: left; white-space: nowrap; }
-    .si { color: var(--ok); font-weight: 700; }
+    .si { color: var(--ok); }
     .no { color: var(--no); }
-    .warn { color: var(--warn); font-weight: 700; }
-    .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--border); border-radius: 3px; color: var(--muted); font-size: 10px; font-weight: 400; letter-spacing: .06em; }
-    .legenda { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0; font-size: 12px; color: var(--muted); }
-    #stato { color: var(--muted); font-size: 12px; }
+    .warn { color: var(--warn); }
+    .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--bordo); border-radius: 3px; color: var(--tenue); font-size: 10px; letter-spacing: .06em; }
+    .legenda { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 18px; margin: 14px 0 0; font-size: var(--nota); color: var(--tenue); }
+    #stato { display: block; margin-top: 14px; color: var(--tenue); font-size: var(--nota); text-align: right; }
+    /* segnale "live update" nel titolo dello schema: scritta verde minuscola .live update e cursore che lampeggia */
+    .live { margin-left: 14px; color: var(--ok); font-size: 11px; letter-spacing: .06em; text-transform: none; vertical-align: 1px; }
+    .live::after { content: '_'; margin-left: 2px; animation: cursore 1s steps(1) infinite; }
+    @media (prefers-reduced-motion: reduce) { .live::after { animation: none; } section.sezione.attiva { animation: none; } }
+    @media (max-width: 600px) { .scheda dl { grid-template-columns: 1fr; gap: 2px; } .scheda dt { padding-top: 6px; } }
   </style>
 </head>
 <body>
 <div class="pagina">
+  <a class="torna" href="operatore.html">← Area operatore</a>
   <header class="testa">
     <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
     <h1>Guida dei componenti</h1>
-    <p class="sotto">Componenti e regole comuni con cui sono costruite tutte le pagine dei negozi · riferimento per le nuove pagine</p>
   </header>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Campionario dal vivo</a>
     <a href="#pannello">Pannello e blocchi</a><a href="#campi">Campi e menu</a><a href="#selettori">Selettori e pulsanti</a>
     <a href="#stampa">Stampa e lista</a><a href="#foglio">Foglio e cursore</a><a href="#telefono">Telefono e iPhone</a>
-    <a href="#dashboard">Dashboard</a><a href="#negozi">Negozi e colori</a><a href="#schema">Schema delle pagine</a>
+    <a href="#dashboard">Dashboard</a><a href="#dashboard-telefono">Dashboard sul telefono</a><a href="#negozi">Negozi e colori</a><a href="#schema">Schema delle pagine</a>
   </nav>
 
   <!-- ================================================================ -->
@@ -140,11 +192,11 @@
     <tr><td>Menu a cascata</td><td><code>&lt;div class="preset-select"&gt;&lt;select&gt;</code> + <code>menu-cascata.css/js</code></td><td>come il campo · riquadro della freccia ▼ largo 1,6rem in <code>--pannello-riquadro</code> · elenco largo quanto il campo, maniglia di scorrimento oro squadrata alta 36 px</td><td>parte dalla voce <code>-- Seleziona … --</code>; il browser non rimette l'ultima scelta (<code>autocomplete="off"</code>)</td></tr>
     <tr><td>Testi pronti</td><td><code>&lt;select data-testi-pronti="Promozioni,Articoli"&gt;</code> + <code>testi-pronti.js</code></td><td>gruppi in corsivo allineati a destra; <code>data-testi-senza-gruppi</code> senza titoli dei gruppi; <code>data-testi-maiuscolo</code></td><td>liste: Promozioni, Articoli, Materiali, Promozioni Cartellini, Etichette DYMO; voci della pagina con <code>data-voce-propria</code>; scelta → Testo Libero</td></tr>
     <tr><td>Fasce Prezzo</td><td><code>&lt;div data-fasce-prezzo data-select-id data-on-change&gt;</code> + <code>fasce-prezzo.js</code></td><td>etichetta e menu creati dal modulo · gruppi Prezzi tondi / Prezzi ,90</td><td>la funzione della pagina mette il prezzo dove serve</td></tr>
-    <tr><td>Campo prezzo</td><td><code>&lt;input data-prezzo&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>simbolo € fisso davanti in <code>--pannello-oro</code> (semigrassetto in TEBE / OPHILYA)</td><td>solo cifre, virgola e punto; uscendo sempre due decimali (35 → 35,00) e nuovo evento <code>input</code></td></tr>
+    <tr><td>Campo prezzo</td><td><code>&lt;input data-prezzo&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>simbolo € fisso davanti in <code>--pannello-oro</code> (semigrassetto in TEBE)</td><td>solo cifre, virgola e punto; uscendo sempre due decimali (35 → 35,00) e nuovo evento <code>input</code></td></tr>
     <tr><td>Campo sconto</td><td><code>&lt;input data-percentuale type="number" min="1" max="99"&gt;</code></td><td>% fisso dopo · frecce ▲▼ in una colonna larga 1,6rem</td><td>numeri da 1 a 99; le frecce sono del modulo (nessuna funzione nella pagina)</td></tr>
     <tr><td>TEXT AREA</td><td><code>&lt;textarea rows="4"&gt;</code> (altre righe: <code>style="--righe: 2"</code>)</td><td>come il campo · interlinea 1,4 · alta quanto le righe · senza maniglia</td><td>il numero massimo di righe lo controlla la pagina (es. Magazzino, Cornici)</td></tr>
     <tr><td>Barra</td><td><code>&lt;input type="range"&gt;</code></td><td>alta 31,4 px · linea 6 px · maniglia tonda 16 px <code>--pannello-oro</code>, al passaggio <code>--pannello-oro-chiaro</code></td><td>es. Dimensione Testo del Magazzino</td></tr>
-    <tr><td>Menu BRAND</td><td><code>&lt;select&gt;</code> riempito con <code>appendBrandOption</code> (<code>logos.js</code> + <code>assets/logos/&lt;negozio&gt;/elenco.js</code>); cartellini: <code>data-menu-brand-cartellini</code></td><td>voce di partenza <code>-- Seleziona Brand --</code> (<code>brand-placeholder</code>) · brand prioritari con ★ gialla (Luxury) o ⭐ e maiuscolo (TEBE / OPHILYA)</td><td>Loghi Personalizzati dalla lista del negozio (<code>LoghiPersonalizzati</code>, IndexedDB); scegliere l'uno azzera l'altro</td></tr>
+    <tr><td>Menu BRAND</td><td><code>&lt;select&gt;</code> riempito con <code>appendBrandOption</code> (<code>logos.js</code> + <code>assets/logos/&lt;negozio&gt;/elenco.js</code>); cartellini: <code>data-menu-brand-cartellini</code></td><td>voce di partenza <code>-- Seleziona Brand --</code> (<code>brand-placeholder</code>) · brand prioritari con ★ gialla (Luxury) o ⭐ e maiuscolo (TEBE)</td><td>Loghi Personalizzati dalla lista del negozio (<code>LoghiPersonalizzati</code>, IndexedDB); scegliere l'uno azzera l'altro</td></tr>
   </table>
 
   <!-- ================================================================ -->
@@ -163,8 +215,9 @@
   <h2 id="stampa">Stampa e lista di stampa</h2>
   <table>
     <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
-    <tr><td>Pulsantiera</td><td><code>strumenti-stampa.js</code> in fondo (<code>data-panel</code>, <code>data-sheet</code> nei cartellini)</td><td>pulsanti tondi sotto il pannello, colori <code>--tool-*</code> del negozio</td><td>Gestisci lista di stampa · Aggiungi a lista stampa · "Dove montare la stampa?" (solo TEBE / OPHILYA, foto in <code>assets/foto/</code>)</td></tr>
+    <tr><td>Pulsantiera</td><td><code>strumenti-stampa.js</code> in fondo (<code>data-panel</code>, <code>data-sheet</code> nei cartellini)</td><td>pulsanti tondi sotto il pannello, colori <code>--tool-*</code> del negozio</td><td>Gestisci lista di stampa · Aggiungi a lista stampa · "Dove montare la stampa?" (solo TEBE, foto in <code>assets/foto/</code>)</td></tr>
     <tr><td>Lista di stampa</td><td><code>lista-stampa.js</code> + <code>lista-stampa.html</code> del negozio</td><td>una lista per negozio (IndexedDB) · <code>lista.pdf</code> A4 a misura reale</td><td>foto del foglio con html2canvas usando le regole <code>@media print</code> della pagina; foglio verticale in alto, cartellini orizzontali a 4 mm dall'alto</td></tr>
+    <tr><td>Loghi colorati con filtro</td><td><code>colorFilteredImages</code> in <code>lista-stampa.js</code></td><td>immagini del foglio con un filtro CSS (es. <code>.tint-*</code> di Promo Multibrand) ridisegnate già colorate prima della foto</td><td>Chrome / Edge applicano il filtro sul canvas; Safari su iPhone e iPad no: il filtro è calcolato a mano sui pixel (<code>filtroCalcolato</code>, differenze di pochi punti su 255); funzioni non calcolabili (blur, drop-shadow) lasciano l'immagine com'è</td></tr>
     <tr><td>Stampa da iPhone e iPad</td><td><code>stampa-ios.js</code> (defer)</td><td>riquadro CONDIVIDI O STAMPA .PDF, colori <code>--lista-pdf-*</code></td><td>niente stampa del browser su iOS: PDF A4 a misura esatta da stampare al 100%; foto identica a quella del computer (verificato su 32 pagine)</td></tr>
   </table>
 
@@ -173,10 +226,10 @@
   <table>
     <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
     <tr><td>Foglio</td><td><code>#printSheet</code>, <code>.print-sheet</code>, <code>#a4Sheet</code> o <code>#printable-grid</code></td><td>misure in mm (A4 210 × 297; cartellini 282 × 196 orizzontale)</td><td>regole <code>@page</code> e <code>@media print</code> nella pagina; colori fissi; nessuna regola del tema</td></tr>
-    <tr><td>Cursore</td><td><code>cursore.js</code> + <code>Cursore.create({ panel, watch, scope, obstacles, rules })</code></td><td>triangolo: Luxury oro <code>#b48b37</code> 40 × 27 px · TEBE / OPHILYA rosso <code>#96382b</code> 36 × 24 px</td><td>ogni campo indica il suo elemento sul foglio; più elementi = più cursori</td></tr>
+    <tr><td>Cursore</td><td><code>cursore.js</code> + <code>Cursore.create({ panel, watch, scope, obstacles, rules })</code></td><td>triangolo: Luxury oro <code>#b48b37</code> 40 × 27 px · TEBE rosso <code>#96382b</code> 36 × 24 px</td><td>ogni campo indica il suo elemento sul foglio; più elementi = più cursori</td></tr>
     <tr><td>✕ chiudi</td><td><code>&lt;a class="app-close-btn"&gt;</code> + <code>chiudi-pagina.css</code></td><td>36 px (44 sotto 1100 px), a 1,5rem dai bordi · Luxury oro con ✕ nera · TEBE oro <code>#b49a62</code> con ✕ avorio</td><td>torna alla dashboard del negozio</td></tr>
     <tr><td>Torna al Menu</td><td><code>.floating-nav-box</code> + <code>torna-al-menu.css</code></td><td>riquadro in basso a destra, Arial; titolo con il nome del negozio (Luxury STORE // CRAFT)</td><td>nascosto in stampa e sul telefono</td></tr>
-    <tr><td>Made in Italy</td><td><code>madeinitaly.js</code>: <code>MadeInItaly.toggle</code> (Luxury) o <code>data-automatico</code> (TEBE / OPHILYA)</td><td>cerchio bianco con la bandiera, sotto la ✕; Luxury 44 px bordo oro, TEBE 36 px</td><td>cambia solo testi e modalità interessati e li ripristina; esclude Natale / Black Friday</td></tr>
+    <tr><td>Made in Italy</td><td><code>madeinitaly.js</code>: <code>MadeInItaly.toggle</code> (Luxury) o <code>data-automatico</code> (TEBE)</td><td>cerchio bianco con la bandiera, sotto la ✕; Luxury 44 px bordo oro, TEBE 36 px</td><td>cambia solo testi e modalità interessati e li ripristina; esclude Natale / Black Friday</td></tr>
   </table>
 
   <!-- ================================================================ -->
@@ -192,18 +245,34 @@
   <table>
     <tr><th>Componente</th><th>Dove</th><th>Aspetto</th><th>Regole</th></tr>
     <tr><td>Dashboard unica</td><td><code>dashboard.js</code> + <code>dashboard.css</code> + contenuti in <code>assets/negozi/&lt;negozio&gt;-dashboard.js</code></td><td>menu laterale, intestazione, logo, caroselli, Utilità Cassa</td><td>le tre pagine <code>index.html</code> sono uguali, cambia solo <code>data-negozio</code></td></tr>
-    <tr><td>CASSIERE / CREATOR e TEBE / OPHILYA</td><td><code>.mode-switcher</code></td><td>scuro: riquadro nero, voce scelta oro · chiaro: fondo crema <code>#eee8dd</code>, voce scelta bianca <code>#fffdfa</code> testo <code>#282522</code>, non scelta <code>#887d70</code> · STANDARD 0,65rem peso 600 · COMPATTO Arial 10 px, lettere 0,14em</td><td>i due selettori larghi uguale</td></tr>
-    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury: titolo VISUAL MERCHANDISING STUDIO e sottotitolo, divisorio · TEBE / OPHILYA (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 2 minuti con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
-    <tr><td>Schede e caroselli</td><td><code>sezioni</code> e <code>schede</code> nei contenuti; <code>caroselli.css/js</code></td><td>4 schede per riga (2 sotto 1300 px, 1 sul telefono) · titolo Cinzel (STANDARD) o Fraunces (COMPATTO); chiaro taupe <code>#665e54</code>, scuro STANDARD peso 600</td><td>Crea Cartelli su due righe (<code>righe: 1</code> per una sola, es. OPHILYA); Coming Soon con <code>prossimamente: true</code></td></tr>
-    <tr><td>Utilità Cassa</td><td><code>cassa.js</code></td><td>widget squadrati (COMPATTO) o arrotondati (STANDARD); titoli bianchi nel tema scuro, taupe nel chiaro</td><td>su desktop si aprono in un popup; <code>cassa: 'solo-cassiere'</code> le mostra solo in CASSIERE</td></tr>
-    <tr><td>Tema e aspetto</td><td><code>theme.js</code> + <code>theme.css</code></td><td>CHIARO / SCURO e STANDARD / COMPATTO, indipendenti, ricordati per negozio</td><td>iniziali: Luxury scuro + STANDARD, TEBE / OPHILYA chiaro + COMPATTO; non cambiano mai i fogli di stampa</td></tr>
+    <tr><td>CASSIERE / CREATOR e interruttore dei negozi</td><td><code>.mode-switcher</code></td><td>scuro: riquadro nero, voce scelta oro · chiaro: fondo crema <code>#eee8dd</code>, voce scelta bianca <code>#fffdfa</code> testo <code>#282522</code>, non scelta <code>#887d70</code> · STANDARD 0,65rem peso 600 · COMPATTO Arial 10 px, lettere 0,14em</td><td>i due selettori larghi uguale</td></tr>
+    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury: titolo VISUAL MERCHANDISING STUDIO e sottotitolo, divisorio · TEBE (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 2 minuti con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
+    <tr><td>Schede e caroselli</td><td><code>sezioni</code> e <code>schede</code> nei contenuti; <code>caroselli.css/js</code></td><td>4 schede per riga (2 sotto 1300 px, 1 sul telefono) · titolo Cinzel (STANDARD) o Fraunces (COMPATTO); chiaro taupe <code>#665e54</code>, scuro STANDARD peso 600</td><td>Crea Cartelli su due righe (<code>righe: 1</code> per una sola); Coming Soon con <code>prossimamente: true</code></td></tr>
+    <tr><td>Utilità Cassa</td><td><code>cassa.js</code></td><td>widget squadrati (COMPATTO) o arrotondati (STANDARD); titoli bianchi nel tema scuro, taupe nel chiaro</td><td>su desktop si aprono in un popup; <code>cassa: 'solo-cassiere'</code> le mostra solo in CASSIERE (sul telefono anche in CREATOR)</td></tr>
+    <tr><td>Tema e aspetto</td><td><code>theme.js</code> + <code>theme.css</code></td><td>CHIARO / SCURO e STANDARD / COMPATTO, indipendenti, ricordati per negozio</td><td>iniziali: Luxury scuro + STANDARD, TEBE chiaro + COMPATTO; non cambiano mai i fogli di stampa</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="dashboard-telefono">Dashboard sul telefono</h2>
+  <p class="nota">Telefono = schermo fino a 720 px con tocco (<code>phoneViewQuery</code> in <code>dashboard.js</code>, uguale alla regola CSS). Tutto in <code>dashboard.js</code> + blocco telefono di <code>dashboard.css</code>, uguale nei tre negozi; desktop e tablet non cambiano.</p>
+  <table>
+    <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Barra in alto</td><td><code>.mobile-top-bar</code> (sticky, alta 64 px)</td><td>☰ 40 × 40 px (38 sotto 360 px), angoli 7 px, bordo oro · selettori alti 40 px come ☰ (pulsanti 34 px in TEBE, 30 in Luxury) · Luxury: STORE // CRAFT al centro · TEBE: interruttore dei negozi al posto della scritta, i due selettori a metà dello spazio, scritte 0,72rem (STANDARD) / 10 px (COMPATTO)</td><td>☰ toccato: si riempie d'oro e si abbassa (<code>si-apre</code>), il menu si apre 0,15 s dopo (<code>premiTastoMenu</code>)</td></tr>
+    <tr><td>Menu di sinistra</td><td><code>#sidebar-menu</code> (aside)</td><td>parte dal bordo alto e copre la barra · largo <code>min(278px, 82vw)</code> · STORE // CRAFT al centro tra bordo sinistro e ✕ (misurato sulle lettere), 39 px sotto · ✕ disegnata con due tratti CSS · titoli delle sezioni 12 px (STANDARD) / 11 px (COMPATTO), lettere 0,18em</td><td>una sezione alla volta, apertura e chiusura animate 0,26 s (<code>toggleSidebarSection</code>); MENU // IMPOSTAZIONI non c'è (vedi pulsante IMPOSTAZIONI); in Crea Cartelli niente sottosezione Promo Stagionali: le promo seguono i cartelli</td></tr>
+    <tr><td>Rotella</td><td>classe <code>ruota</code> sulle sezioni con almeno 4 voci (<code>attivaRuote</code>)</td><td>riquadro alto 5 voci (voci 44 px) con scatto al centro, bordi sfumati · voce al centro ingrandita di un terzo e oro (<code>.is-centro</code>, <code>--vicino</code>) · in cima la voce guida decorativa <code>.voce-guida</code> (— Trova il tuo cartello —)</td><td>sezioni con 1–3 voci senza rotella: voci toccabili direttamente, alte almeno 48 px, staccate 6 px</td></tr>
+    <tr><td>Logo del menu</td><td><code>.sidebar-bottom</code> + <code>controllaSpazioMenu</code></td><td>logo STORE // CRAFT e CRAFTED WITH STORECRAFT a circa 48 px dal fondo</td><td>sparisce solo se una sezione aperta non entra; con tutte le sezioni chiuse resta</td></tr>
+    <tr><td>Pulsante IMPOSTAZIONI</td><td><code>.system-fab</code> (<code>pulsanteImpostazioni</code>)</td><td>tondo 54 px, in basso a sinistra (10 px dal fondo, allineato a ☰), oro pieno <code>#d4a373</code> appena sfumato in tutti e due i temi, ingranaggio pieno bronzo <code>#4a3510</code> · aperto: oro più scuro, ingranaggio ruotato</td><td>sempre presente (sotto il menu di sinistra aperto); in fondo alla pagina sale 12 px sopra i pulsanti del fondo (<code>--fab-alza</code>)</td></tr>
+    <tr><td>Menu impostazioni</td><td><code>#system-menu</code> spostato nel <code>body</code> (<code>postoMenuSistema</code>)</td><td>largo quanto lo schermo (16 px ai lati), si srotola dal pulsante (0,3 s) e ne è unito (il cerchio copre l'angolo) · voci 52 px, scritte più grandi · pagina velata dietro</td><td>si chiude con il pulsante, toccando il velo o con Esc; icone come caratteri oro (<code>font-variant-emoji: text</code>, U+FE0E su ⚙ e ✉)</td></tr>
+    <tr><td>Fondo pagina</td><td><code>.mobile-brand-footer</code> (<code>piedePagina</code>)</td><td>logo STORE // CRAFT 110 × 53 px sempre oro con CRAFTED WITH STORECRAFT, 48 px sopra e sotto · tre pulsanti rettangolari a contorno oro <code>.footer-btn</code>: CREDITS, CONTATTI, freccia che torna in cima</td><td>CREDITS: popup <code>.credits-dialog</code> nello stile della splash page; CONTATTI: <code>mailto:</code> con oggetto; la pagina finisce con i pulsanti e 16 px sotto</td></tr>
+    <tr><td>Pulsante HOME</td><td><code>.home-mark</code> (casetta SVG <code>casetta</code>)</td><td>compare scorrendo, 12 px sotto la barra, a destra; casetta al centro della scritta (12 px STANDARD, 11 COMPATTO)</td><td>torna in cima alla pagina</td></tr>
+    <tr><td>Pagina</td><td><code>html, body { overscroll-behavior: none }</code></td><td>niente rimbalzo di Safari trascinando oltre il bordo (iOS 16 in su), zoom con due dita libero</td><td>ombre compatte e nette in tutta la dashboard (es. <code>0 2px 4px</code>)</td></tr>
   </table>
 
   <!-- ================================================================ -->
   <h2 id="negozi">Negozi e colori del pannello</h2>
   <p>Ogni negozio ha la sua scheda: <code>assets/negozi/&lt;negozio&gt;.js</code> (nome, oro dei loghi, brand prioritari, lista di stampa, guida, tema iniziale) e <code>&lt;negozio&gt;.css</code> (colori come variabili). I file comuni hanno solo valori di riserva. Per un negozio nuovo: scheda, cartelle di pagine e risorse, voce in <code>installati.js</code>.</p>
   <table>
-    <tr><th>Variabile</th><th>Uso</th><th>Luxury Outlet</th><th>TEBE · OPHILYA (chiaro)</th></tr>
+    <tr><th>Variabile</th><th>Uso</th><th>Luxury Outlet</th><th>TEBE (chiaro)</th></tr>
     <tr><td>--pannello-sfondo</td><td>riquadro</td><td><span class="sw" style="background:#1e1d1a"></span>#1e1d1a</td><td><span class="sw" style="background:#fffdfa"></span>#fffdfa</td></tr>
     <tr><td>--pannello-testo</td><td>testo e campi</td><td><span class="sw" style="background:#f4f1ea"></span>#f4f1ea</td><td><span class="sw" style="background:#282522"></span>#282522</td></tr>
     <tr><td>--pannello-bordo</td><td>bordi e linea del titolo</td><td><span class="sw" style="background:#2e2b27"></span>#2e2b27</td><td><span class="sw" style="background:#e3dacb"></span>#e3dacb</td></tr>
@@ -219,22 +288,195 @@
     <tr><td>--cursore-colore</td><td>cursore sul foglio</td><td><span class="sw" style="background:#b48b37"></span>#b48b37</td><td><span class="sw" style="background:#96382b"></span>#96382b</td></tr>
     <tr><td>oro dei loghi (scheda)</td><td>varianti gold dei loghi</td><td>#b48b37</td><td>#cc9e25</td></tr>
   </table>
-  <p class="nota">Nel tema scuro TEBE e OPHILYA prendono i colori scuri di Luxury (regola <code>[data-interface-theme="dark"]</code> nella loro scheda).</p>
+  <p class="nota">Nel tema scuro TEBE prendono i colori scuri di Luxury (regola <code>[data-interface-theme="dark"]</code> nella loro scheda).</p>
 
   <!-- ================================================================ -->
-  <h2 id="schema">Schema delle pagine (si aggiorna da solo)</h2>
+  <h2 id="schema">Schema delle pagine <span class="live" title="Lo schema si rifà a ogni apertura leggendo le pagine">.live update</span></h2>
   <p>A ogni apertura la guida legge le pagine di ogni negozio installato (dalle schede delle dashboard e dalle pagine di servizio) e controlla quali regole, moduli e campi comuni usano. <span id="stato">Lettura in corso…</span></p>
+  <div id="schema"></div>
   <div class="legenda">
     <span><span class="si">✓</span> usato</span><span><span class="no">·</span> non usato</span><span><span class="warn">!</span> pezzo scritto a mano da portare sui moduli comuni</span>
     <span>numero = quanti elementi (blocchi, selettori, campi)</span>
   </div>
-  <div id="schema"></div>
 </div>
 
 <script>
-  // ===== Campionario: un pannello vero per ogni negozio installato =====
+  // ===== Guida come piccolo sito: una sezione per ogni <h2>, una pulsantiera in alto, una sezione alla volta =====
+  const NEGOZI_ANTEPRIME = Negozi.installati.filter(id => id !== 'ophilya');
+  (function sezioni() {
+    const pagina = document.querySelector('.pagina');
+    const indice = document.querySelector('nav.indice');
+    indice.textContent = '';
+    indice.setAttribute('role', 'tablist');
+    // nomi brevi della pulsantiera
+    // titolo della scheda → pezzo del campionario (guida-campione.html, data-pezzo)
+    const PEZZI = { 'Pannello': 'pannello', 'Titolo': 'titolo', 'Blocchi': 'pannello', 'Etichetta': 'etichetta', 'Riga di campi': 'riga',
+      'Campo di testo': 'campo', 'Menu a cascata': 'menu', 'Testi pronti': 'testi', 'Fasce Prezzo': 'fasce', 'Campo prezzo': 'prezzi',
+      'Campo sconto': 'prezzi', 'TEXT AREA': 'textarea', 'Barra': 'barra', 'Menu BRAND': 'brand', 'Selettore': 'selettore',
+      'Selettori pronti': 'pronti', 'Pulsante a due stati': 'toggle', 'COPIA SU ALTRO CARTELLO': 'copia',
+      'Impostazioni di Stampa': 'impostazioni-stampa', 'Tasto di stampa': 'stampa', '✕ chiudi': 'chiudi', 'Torna al Menu': 'torna',
+      'Made in Italy': 'madeinitaly', 'Cursore': 'cursore' };
+    // titolo della scheda → foto in guida-immagini/
+    const IMMAGINI = { 'Foglio': 'foglio', 'Pulsantiera': 'pulsantiera', 'Dashboard unica': 'dash-dashboard',
+      'CASSIERE / CREATOR e interruttore dei negozi': 'dash-selettori', 'Intestazione': 'dash-intestazione',
+      'Schede e caroselli': 'dash-carosello', 'Utilità Cassa': 'dash-cassa', 'Tema e aspetto': 'dash-tema',
+      'Barra in alto': 'tel-barra', 'Menu di sinistra': 'tel-menu-sinistra', 'Rotella': 'tel-rotella',
+      'Logo del menu': 'tel-menu-sinistra', 'Pulsante IMPOSTAZIONI': 'tel-pulsante-impostazioni',
+      'Menu impostazioni': 'tel-menu-impostazioni', 'Fondo pagina': 'tel-fondo' };
+    // negozio delle anteprime (selettore LUXURY / TEBE accanto alla pulsantiera), ricordato in questa scheda del browser
+    let negozioAnteprime = 'luxury';
+    try { negozioAnteprime = sessionStorage.getItem('guida_negozio_anteprime') || 'luxury'; } catch (e) { /* senza memoria resta Luxury */ }
+    const NOMI_BREVI = { regole: 'Regole', pagina: 'Pagina', campionario: 'Campionario', pannello: 'Pannello', campi: 'Campi',
+      selettori: 'Selettori', stampa: 'Stampa', foglio: 'Foglio', telefono: 'Telefono', dashboard: 'Dashboard',
+      'dashboard-telefono': 'Dashboard telefono', negozi: 'Colori negozi', schema: 'Pagine per negozio' };
+    const titoli = [...pagina.querySelectorAll(':scope > h2')];
+    const voci = titoli.map(h2 => {
+      const sezione = document.createElement('section');
+      sezione.className = 'sezione';
+      sezione.id = h2.id;
+      h2.removeAttribute('id');
+      h2.before(sezione);
+      let nodo = h2;
+      while (nodo && !(nodo.nodeType === 1 && nodo !== h2 && nodo.matches('h2'))) {
+        const prossimo = nodo.nextSibling;
+        sezione.append(nodo);
+        nodo = prossimo;
+      }
+      const tasto = document.createElement('button');
+      tasto.type = 'button';
+      tasto.className = 'tasto';
+      tasto.setAttribute('role', 'tab');
+      tasto.textContent = NOMI_BREVI[sezione.id] || h2.textContent;
+      tasto.addEventListener('click', () => mostra(sezione.id, true));
+      indice.append(tasto);
+      return { sezione, tasto };
+    });
+    function mostra(id, scrivi) {
+      const scelta = voci.find(v => v.sezione.id === id) || voci[0];
+      voci.forEach(v => {
+        v.sezione.classList.toggle('attiva', v === scelta);
+        v.tasto.setAttribute('aria-selected', String(v === scelta));
+      });
+      if (scrivi) history.replaceState(null, '', `#${scelta.sezione.id}`);
+      window.scrollTo({ top: 0 });
+    }
+    mostra(location.hash.slice(1), false);
+
+    // selettore del negozio delle anteprime, in fondo alla pulsantiera
+    const scelta = document.createElement('div');
+    scelta.className = 'scelta-negozio';
+    scelta.append('anteprime:');
+    NEGOZI_ANTEPRIME.forEach(id => {
+      const tasto = document.createElement('button');
+      tasto.type = 'button';
+      tasto.className = 'tasto';
+      tasto.textContent = Negozi.scheda(id)?.sigla || id;
+      tasto.setAttribute('aria-pressed', String(id === negozioAnteprime));
+      tasto.addEventListener('click', () => {
+        negozioAnteprime = id;
+        try { sessionStorage.setItem('guida_negozio_anteprime', id); } catch (e) { /* niente memoria */ }
+        scelta.querySelectorAll('.tasto').forEach(t => t.setAttribute('aria-pressed', String(t === tasto)));
+        document.querySelectorAll('.anteprima iframe').forEach(v => {
+          v.src = `guida-campione.html?negozio=${id}&pezzo=${encodeURIComponent(v.dataset.pezzo)}`;
+        });
+      });
+      scelta.append(tasto);
+    });
+    indice.append(scelta);
+
+    // il campionario comunica la sua altezza: il riquadro dell'anteprima si adatta
+    window.addEventListener('message', evento => {
+      if (evento.origin !== location.origin || !evento.data?.campione) return;
+      document.querySelectorAll('.anteprima iframe').forEach(v => {
+        if (v.contentWindow === evento.source) v.style.height = `${Math.ceil(evento.data.altezza)}px`;
+      });
+    });
+    window.addEventListener('hashchange', () => mostra(location.hash.slice(1), false));
+    // aprendo con #sezione il browser scorrerebbe fino alla sezione: la pagina parte sempre dall'alto
+    window.addEventListener('load', () => window.scrollTo({ top: 0 }));
+
+    // Anteprima dal vivo del componente nella scheda: il campionario con il solo pezzo (?pezzo=), nei colori del negozio
+    // scelto in alto; si carica quando la sezione è a schermo (loading lazy) e prende l'altezza che il campionario comunica
+    function anteprima(pezzo) {
+      const riquadro = document.createElement('div');
+      riquadro.className = 'anteprima';
+      const vista = document.createElement('iframe');
+      vista.loading = 'lazy';
+      vista.setAttribute('scrolling', 'no');
+      vista.title = `Anteprima: ${pezzo}`;
+      vista.dataset.pezzo = pezzo;
+      vista.src = `guida-campione.html?negozio=${negozioAnteprime}&pezzo=${encodeURIComponent(pezzo)}`;
+      riquadro.append(vista);
+      return riquadro;
+    }
+
+    // Foto delle parti che non si possono disegnare dal vivo nella guida (dashboard, telefono, foglio): cartella
+    // guida-immagini/ (fotografie fatte con Chrome); un clic la apre grande
+    function foto(file, nome) {
+      const riquadro = document.createElement('button');
+      riquadro.type = 'button';
+      riquadro.className = 'anteprima foto';
+      riquadro.setAttribute('aria-label', `Ingrandisci: ${nome}`);
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.src = `guida-immagini/${file}.png`;
+      img.alt = nome;
+      riquadro.append(img);
+      riquadro.addEventListener('click', () => {
+        const velo = document.createElement('div');
+        velo.className = 'ingrandita';
+        const grande = img.cloneNode();
+        grande.loading = 'eager';
+        velo.append(grande);
+        const chiudi = () => { velo.remove(); document.removeEventListener('keydown', esc); };
+        const esc = e => { if (e.key === 'Escape') chiudi(); };
+        velo.addEventListener('click', chiudi);
+        document.addEventListener('keydown', esc);
+        document.body.append(velo);
+      });
+      return riquadro;
+    }
+
+    // Tabelle → schede: ogni riga diventa una scheda con il nome (prima colonna) e le altre colonne come voci.
+    // Restano tabelle i colori dei negozi (si confrontano in colonna) e lo schema delle pagine.
+    pagina.querySelectorAll('section.sezione:not(#negozi) table:not(.schema)').forEach(tabella => {
+      const righe = [...tabella.querySelectorAll('tr')];
+      const brevi = { 'Come si scrive': 'Modulo', 'Dove': 'Modulo' };
+      const nomi = [...righe.shift().children].map(th => brevi[th.textContent.trim()] || th.textContent.trim());
+      const schede = document.createElement('div');
+      schede.className = 'schede';
+      righe.forEach(riga => {
+        const celle = [...riga.children];
+        const scheda = document.createElement('article');
+        scheda.className = 'scheda';
+        const titolo = document.createElement('h4');
+        titolo.append(...celle[0].childNodes);
+        const elenco = document.createElement('dl');
+        celle.slice(1).forEach((cella, i) => {
+          const dt = document.createElement('dt');
+          dt.textContent = nomi[i + 1] || '';
+          const dd = document.createElement('dd');
+          dd.append(...cella.childNodes);
+          elenco.append(dt, dd);
+        });
+        const nome = titolo.textContent.trim();
+        const pezzo = PEZZI[nome];
+        if (pezzo) scheda.append(titolo, anteprima(pezzo), elenco);
+        else if (IMMAGINI[nome]) scheda.append(titolo, foto(IMMAGINI[nome], nome), elenco);
+        else scheda.append(titolo, elenco);
+        schede.append(scheda);
+      });
+      tabella.replaceWith(schede);
+    });
+  })();
+
+  // Negozi mostrati dalla guida: Luxury Outlet e TEBE bastano a rappresentare le due famiglie di caratteristiche
+  // (OPHILYA è come TEBE)
+  const NEGOZI_GUIDA = Negozi.installati.filter(id => id !== 'ophilya');
+
+  // ===== Campionario: un pannello vero per ogni negozio =====
   const campioni = document.getElementById('campioni');
-  Negozi.installati.forEach(id => {
+  NEGOZI_GUIDA.forEach(id => {
     const figura = document.createElement('figure');
     const didascalia = document.createElement('figcaption');
     didascalia.textContent = Negozi.scheda(id)?.nome || id;
@@ -308,9 +550,50 @@
   async function schema() {
     const contenitore = document.getElementById('schema');
     let totPagine = 0, totResidui = 0;
+    // insegne dei negozi sopra lo schema: una tabella alla volta, di partenza Luxury Outlet; il segnalino oro sotto le
+    // insegne segue il mouse da un'insegna all'altra e torna sotto quella scelta
+    const insegne = document.createElement('div');
+    insegne.className = 'insegne';
+    insegne.setAttribute('role', 'tablist');
+    const segnalino = document.createElement('span');
+    segnalino.className = 'segnalino';
+    const sposta = tasto => { segnalino.style.left = `${tasto.offsetLeft}px`; segnalino.style.width = `${tasto.offsetWidth}px`; };
+    const scelto = () => insegne.querySelector('[aria-selected="true"]');
+    insegne.addEventListener('mouseleave', () => scelto() && sposta(scelto()));
+    contenitore.append(insegne);
+    for (const id of Negozi.installati) {
+      const scheda = Negozi.scheda(id) || {};
+      const tasto = document.createElement('button');
+      tasto.type = 'button';
+      tasto.className = 'insegna';
+      tasto.setAttribute('role', 'tab');
+      tasto.setAttribute('aria-selected', String(id === 'luxury'));
+      tasto.dataset.negozio = id;
+      if (scheda.logoSplash) {
+        const logo = document.createElement('img');
+        logo.src = `assets/${scheda.logoSplash}`;
+        logo.alt = scheda.nome || id;
+        // larghezza della splash page ridotta, così le insegne sembrano grandi uguale
+        logo.style.width = `${Math.round((scheda.logoSplashLarghezza || 140) * .8)}px`;
+        tasto.append(logo);
+      } else tasto.textContent = scheda.nome || id;
+      tasto.addEventListener('mouseenter', () => sposta(tasto));
+      tasto.addEventListener('focus', () => sposta(tasto));
+      tasto.addEventListener('click', () => {
+        insegne.querySelectorAll('.insegna').forEach(t => t.setAttribute('aria-selected', String(t === tasto)));
+        contenitore.querySelectorAll('.schema-negozio').forEach(s => { s.hidden = s.dataset.negozio !== id; });
+        sposta(tasto);
+      });
+      insegne.append(tasto);
+    }
+    insegne.append(segnalino);
+    requestAnimationFrame(() => scelto() && sposta(scelto()));
+    document.querySelectorAll('.tasto').forEach(t => t.addEventListener('click', () => requestAnimationFrame(() => scelto() && sposta(scelto()))));
     for (const id of Negozi.installati) {
       const sezione = document.createElement('div');
       sezione.className = 'schema-negozio';
+      sezione.dataset.negozio = id;
+      sezione.hidden = id !== 'luxury';
       const titolo = document.createElement('h3');
       titolo.textContent = Negozi.scheda(id)?.nome || id;
       sezione.append(titolo);

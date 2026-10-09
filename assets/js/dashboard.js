@@ -25,7 +25,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.86 2026';
+  const VERSIONE = 'V 1.87 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -239,21 +239,41 @@
     return pulsante;
   }
 
-  // Arrivati in fondo alla pagina sul telefono il pulsante IMPOSTAZIONI sale quanto basta per restare 12 px sopra i
-  // pulsanti del fondo pagina, invece di coprirli (--fab-alza su <html>, usato da dashboard.css)
+  // Arrivati in fondo alla pagina sul telefono il pulsante IMPOSTAZIONI entra nella fascia scura dei pulsanti del fondo
+  // pagina, al primo posto: man mano che la fascia compare si rimpicciolisce (da 54 a 40 px come ☰, --fab-scala), si sposta
+  // a sinistra fino al margine di ☰ (--fab-x) e, se serve, sale con la fascia restando al centro della riga dei pulsanti
+  // (--fab-alza). Variabili su <html>, usate da dashboard.css
+  const SCALA_IN_FONDO = 40 / 54;
   function alzaPulsanteImpostazioni() {
     const radice = document.documentElement;
     const pulsante = document.querySelector('.system-fab');
     const azioni = document.querySelector('.mobile-footer-actions');
-    if (!phoneViewQuery.matches || !pulsante || !azioni?.offsetParent) {
+    const primo = azioni?.querySelector('.footer-btn');
+    if (!phoneViewQuery.matches || !pulsante || !azioni?.offsetParent || !primo) {
       radice.style.removeProperty('--fab-alza');
+      radice.style.removeProperty('--fab-scala');
+      radice.style.removeProperty('--fab-x');
       return;
     }
+    const fascia = azioni.getBoundingClientRect();
+    const riga = primo.getBoundingClientRect();
     const alzato = parseFloat(radice.style.getPropertyValue('--fab-alza')) || 0;
-    const fondoNormale = pulsante.getBoundingClientRect().bottom + alzato;
-    const alza = Math.max(0, fondoNormale - (azioni.getBoundingClientRect().top - 12));
-    if (alza) radice.style.setProperty('--fab-alza', `${Math.round(alza)}px`);
+    const r = pulsante.getBoundingClientRect();
+    const centroNormale = r.top + r.height / 2 + alzato;   // il rimpicciolimento è attorno al centro: il centro non cambia
+    const quanto = Math.min(1, Math.max(0, (window.innerHeight - fascia.top) / fascia.height));
+    // sale quanto serve; se invece la riga è un poco più in basso, scende solo quando la fascia è quasi tutta in vista
+    const scarto = centroNormale - (riga.top + riga.height / 2);
+    const alza = scarto > 0 ? scarto : scarto * quanto ** 4;
+    if (Math.abs(alza) >= .5) radice.style.setProperty('--fab-alza', `${alza.toFixed(1)}px`);
     else radice.style.removeProperty('--fab-alza');
+    if (quanto) {
+      radice.style.setProperty('--fab-scala', (1 - (1 - SCALA_IN_FONDO) * quanto).toFixed(3));
+      // rimpicciolito attorno al centro il bordo sinistro rientra di metà della differenza: lo si riporta al margine di ☰
+      radice.style.setProperty('--fab-x', `-${(pulsante.offsetWidth * (1 - SCALA_IN_FONDO) / 2 * quanto).toFixed(1)}px`);
+    } else {
+      radice.style.removeProperty('--fab-scala');
+      radice.style.removeProperty('--fab-x');
+    }
   }
 
   // Il menu di sistema sta nel menu laterale su desktop e tablet; sul telefono accanto al pulsante IMPOSTAZIONI, fuori dal

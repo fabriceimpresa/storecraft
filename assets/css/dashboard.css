@@ -903,14 +903,16 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     color: #4a3510;
     box-shadow: 0 2px 5px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .2);
     cursor: pointer;
-    transition: filter .18s ease, transform .18s ease;
+    /* in fondo alla pagina più piccolo, dentro la fascia dei pulsanti (--fab-scala, dashboard.js); toccato si abbassa */
+    transform: translateX(var(--fab-x, 0px)) scale(calc(var(--fab-scala, 1) * var(--fab-premuto, 1)));
+    transition: filter .18s ease;
   }
   .system-fab svg { transition: transform .3s ease; }
   /* con il menu di sinistra aperto il pulsante passa sotto il menu e sotto il velo (aside 1000, velo 999) */
   body:not(.sidebar-collapsed) .system-fab { z-index: 998; }
   .system-fab[aria-expanded="true"] { filter: brightness(.88); }
   .system-fab[aria-expanded="true"] svg { transform: rotate(60deg); }
-  .system-fab:active { transform: scale(.95); }
+  .system-fab:active { --fab-premuto: .95; }
   .system-fab:focus-visible { outline: 2px solid #8f6a1f; outline-offset: 3px; }
   :root[data-interface-theme="light"] .system-fab { box-shadow: 0 2px 5px rgba(80, 60, 20, .3), inset 0 1px 0 rgba(255, 255, 255, .2); }
   /* il menu di sistema compare sopra il pulsante, come unito a lui: il bordo basso del menu passa per il centro del
@@ -1018,9 +1020,9 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     align-items: center;
     gap: 48px;
     margin-top: 40px;
-    /* la pagina finisce con i pulsanti e poco spazio sotto; il pulsante IMPOSTAZIONI, arrivati in fondo, sale sopra di
-       loro (--fab-alza, dashboard.js) */
-    padding: 0 0 max(16px, env(safe-area-inset-bottom));
+    /* la pagina finisce con la fascia dei pulsanti; il pulsante IMPOSTAZIONI, arrivati in fondo, sale sopra la fascia
+       (--fab-alza, dashboard.js) */
+    padding: 0;
   }
   /* logo e scritta stanno al centro tra l'ultimo blocco e i pulsanti (misurati sul disegno, non sui riquadri)
      ; il margine del blocco sopra non conta */
@@ -1031,13 +1033,24 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   .mobile-brand-footer .storecraft-mark { width: 110px; height: 53px; margin: 0 auto 5px; }
   /* sempre oro, anche nel tema chiaro (il filtro oro di .storecraft-mark img), un poco più acceso per vedersi bene */
   .mobile-brand-footer .storecraft-mark img { max-height: 53px; opacity: .95; }
+  /* i pulsanti stanno in un piè di pagina che ha l'aspetto della barra in alto e compare solo in fondo: a tutta
+     larghezza (oltre i 16 px di margine della pagina), alto 64 px, stesso fondo, linea sottile e margini della barra,
+     pulsanti alti 40 px come ☰; il corpo della pagina si chiude con il logo e il suo spazio libero */
   .mobile-footer-actions {
     display: flex;
+    justify-content: center;
     gap: 8px;
-    width: 100%;
-    max-width: 360px;
+    box-sizing: border-box;
+    width: calc(100% + 32px);
+    margin: 0 -16px;
+    /* a sinistra il posto del pulsante IMPOSTAZIONI, che in fondo entra nella fascia (40 px, allineato a ☰) */
+    padding: 12px 0.6rem max(12px, env(safe-area-inset-bottom)) calc(0.6rem + 48px);
+    border-top: 1px solid var(--border);
+    background: #0a0908;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, .5);
   }
-  .mobile-footer-actions .footer-btn { flex: 1 1 0; }
+  :root[data-interface-theme="light"] .mobile-footer-actions { border-top-color: var(--interface-border); background: var(--interface-page); box-shadow: 0 -1px 3px var(--interface-shadow); }
+  .mobile-footer-actions .footer-btn { flex: 1 1 0; height: 40px; }
 }
 /* Pulsanti del fondo pagina e del popup dei crediti: contorno oro come i pulsanti della lista di stampa dei cartelli,
    rettangolari come il pulsante HOME (squadrati nel look COMPATTO) */

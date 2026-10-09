@@ -145,13 +145,17 @@
     const dati = immagine.data;
     // i pixel uguali (es. tutto il logo dopo brightness(0)) si calcolano una volta sola
     const giaFatti = new Map();
+    let visibili = 0;
     for (let i = 0; i < dati.length; i += 4) {
       if (!dati[i + 3]) continue;
       const chiave = (dati[i] << 24 | dati[i + 1] << 16 | dati[i + 2] << 8 | dati[i + 3]) >>> 0;
       let nuovo = giaFatti.get(chiave);
       if (!nuovo) giaFatti.set(chiave, nuovo = colora([dati[i], dati[i + 1], dati[i + 2], dati[i + 3]]));
       dati[i] = nuovo[0]; dati[i + 1] = nuovo[1]; dati[i + 2] = nuovo[2]; dati[i + 3] = nuovo[3];
+      if (nuovo[3]) visibili++;
     }
+    // sicurezza: se il calcolo non ha dato niente di visibile l'immagine resta quella originale (logo nero, ma c'è)
+    if (!visibili) return false;
     ctx.putImageData(immagine, 0, 0);
     return true;
   }
@@ -291,6 +295,28 @@
     const zoomati = [sheet, sheet.closest('.sheet-wrap')].filter(el => el && el.style.zoom);
     const zoomPrima = zoomati.map(el => el.style.zoom);
     zoomati.forEach(el => { el.style.zoom = '1'; });
+    // Loghi colorati: per il tempo della foto le immagini filtrate della pagina vera diventano quelle già colorate (senza
+    // filtro) e la foto parte solo quando sono pronte; dopo tornano le originali. Sostituirle solo nella copia non bastava:
+    // su iPhone e iPad la copia veniva fotografata prima che le immagini nuove fossero pronte e i loghi sparivano.
+    const colorate = [...sheet.querySelectorAll('img[data-lista-colore]')].map(img => ({
+      img, src: img.getAttribute('src'), srcset: img.getAttribute('srcset'), filtro: img.style.getPropertyValue('filter'),
+      priorita: img.style.getPropertyPriority('filter') }));
+    await step('loghi colorati', () => Promise.all(colorate.map(({ img }) => {
+      img.removeAttribute('srcset');
+      img.style.setProperty('filter', 'none', 'important');
+      img.src = colored[Number(img.dataset.listaColore)];
+      return (img.decode ? img.decode() : Promise.resolve()).catch(() => new Promise(done => {
+        if (img.complete) done(); else { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); }
+      }));
+    })));
+    // sicurezza: un logo colorato che non è pronto torna subito all'originale (nero, ma nella foto c'è)
+    colorate.forEach(voce => {
+      if (voce.img.complete && voce.img.naturalWidth) return;
+      if (voce.src === null) voce.img.removeAttribute('src'); else voce.img.setAttribute('src', voce.src);
+      if (voce.srcset !== null) voce.img.setAttribute('srcset', voce.srcset);
+      voce.img.style.removeProperty('filter');
+      voce.ripristinata = true;
+    });
     try {
       canvas = await step('foto del foglio', () => html2canvas(sheet, {
         scale: CAPTURE_SCALE,
@@ -323,9 +349,6 @@
             .phone-current-card { outline: none !important; }
             img[data-lista-colore] { filter: none !important; }`;
           doc.head.appendChild(style);
-          doc.querySelectorAll('img[data-lista-colore]').forEach(img => {
-            img.src = colored[Number(img.dataset.listaColore)];
-          });
           if (svgFonts) doc.querySelectorAll('svg').forEach(svg => {
             if (!svg.querySelector('text')) return;
             const fonts = doc.createElementNS('http://www.w3.org/2000/svg', 'style');
@@ -335,6 +358,12 @@
         }
       }));
     } finally {
+      colorate.forEach(({ img, src, srcset, filtro, priorita, ripristinata }) => {
+        if (ripristinata) return;
+        if (src === null) img.removeAttribute('src'); else img.setAttribute('src', src);
+        if (srcset !== null) img.setAttribute('srcset', srcset);
+        if (filtro) img.style.setProperty('filter', filtro, priorita); else img.style.removeProperty('filter');
+      });
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
       zoomati.forEach((el, i) => { el.style.zoom = zoomPrima[i]; });
     }

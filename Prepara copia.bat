@@ -151,8 +151,8 @@ try {
   $tutti = @($negozi | ForEach-Object { $_.Id })
   $assets = Join-Path $root 'assets'
 
-  # Radice: la splash page; non gli strumenti dell'operatore (operatore, logoimport, logogestione), il piano e le pagine di prova (_*)
-  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('operatore.html', 'logoimport.html', 'logogestione.html') -notcontains $_.Name } | ForEach-Object {
+  # Radice: la splash page; non gli strumenti dell'operatore (operatore, logoimport, logogestione, guide dei componenti), il piano e le pagine di prova (_*)
+  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html') -notcontains $_.Name } | ForEach-Object {
     Copia $_.FullName (Join-Path $destinazione $_.Name)
   }
 
