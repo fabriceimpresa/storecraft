@@ -683,7 +683,7 @@
   @media (max-width: 720px) and (pointer: coarse) {
     :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar { --pulsante-barra: 58px; }
     :root[data-interface-look="minimal"] body:not([data-layout]) .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn {
-      height: 34px;
+      height: 28px;
       font-size: 10px;
       letter-spacing: .08em;
     }
