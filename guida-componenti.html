@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <script src="assets/js/negozi.js?v=20261009-28"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Guida dei componenti</title>
+  <link rel="icon" href="assets/img/favicon-32.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <style>
+    /* Guida dei componenti e delle regole comuni (area operatore: non collegata, non copiata ai clienti).
+       Lo schema in fondo si aggiorna da solo leggendo le pagine dei negozi installati. */
+    :root {
+      --bg: #121110; --card: #1b1a17; --card-2: #22201c; --border: #2e2b27; --text: #ece7dd; --muted: #a39a8d;
+      --gold: #d4a373; --gold-dark: #8f6a1f; --ok: #7fb069; --no: #4b4740; --warn: #e07a5f;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.55 'Plus Jakarta Sans', Arial, sans-serif; }
+    a { color: var(--gold); }
+    .pagina { max-width: 1180px; margin: 0 auto; padding: 36px 24px 80px; }
+    header.testa { text-align: center; padding: 24px 0 8px; border: 1px solid var(--gold-dark); outline: 1px solid rgba(143,106,31,.35); outline-offset: -7px; }
+    header.testa img { width: 150px; filter: brightness(0) saturate(100%) invert(56%) sepia(58%) saturate(437%) hue-rotate(359deg) brightness(88%); }
+    h1 { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 18px 0 6px; color: #e5ba73; font: 500 .82rem 'Cinzel', serif; letter-spacing: .32em; text-transform: uppercase; }
+    h1::before, h1::after { content: ''; width: 60px; height: 1px; background: rgba(229,186,115,.45); }
+    .sotto { color: var(--muted); font-size: 12.5px; margin: 0 0 18px; }
+    nav.indice { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin: 22px 0 6px; font-size: 12px; }
+    nav.indice a { text-decoration: none; letter-spacing: .06em; }
+    h2 { margin: 52px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: var(--gold); font: 600 1.05rem 'Cinzel', serif; letter-spacing: .12em; text-transform: uppercase; }
+    h3 { margin: 26px 0 8px; color: #e5ba73; font-size: .95rem; letter-spacing: .04em; }
+    p, li { color: var(--text); }
+    .nota { color: var(--muted); font-size: 12.5px; }
+    code { font: 12px 'JetBrains Mono', monospace; color: #f0d9a8; background: #0a0908; border: 1px solid var(--border); border-radius: 3px; padding: 0 4px; }
+    pre { font: 12px/1.5 'JetBrains Mono', monospace; color: #f0d9a8; background: #0a0908; border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; overflow-x: auto; }
+    ul.regole { padding-left: 18px; }
+    ul.regole li { margin: 6px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 12.5px; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    th { color: var(--gold); font-weight: 600; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; background: var(--card); position: sticky; top: 0; }
+    td:first-child { color: #e5ba73; font-weight: 600; white-space: nowrap; }
+    .sw { display: inline-block; width: 11px; height: 11px; vertical-align: -1px; margin-right: 4px; border: 1px solid rgba(255,255,255,.25); border-radius: 2px; }
+    .campioni { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; }
+    .campioni figure { margin: 0; background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .campioni figcaption { padding: 8px 12px; color: var(--gold); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .campioni iframe { display: block; width: 100%; height: 1160px; border: 0; }
+    /* schema automatico */
+    .schema-negozio { margin: 26px 0; }
+    .schema-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+    table.schema { font-size: 11.5px; margin: 0; }
+    table.schema th { white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px 6px; height: 150px; text-align: left; }
+    table.schema th.pg { writing-mode: horizontal-tb; transform: none; height: auto; vertical-align: bottom; }
+    table.schema td { text-align: center; padding: 6px 4px; }
+    table.schema td:first-child { text-align: left; white-space: nowrap; }
+    .si { color: var(--ok); font-weight: 700; }
+    .no { color: var(--no); }
+    .warn { color: var(--warn); font-weight: 700; }
+    .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--border); border-radius: 3px; color: var(--muted); font-size: 10px; font-weight: 400; letter-spacing: .06em; }
+    .legenda { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0; font-size: 12px; color: var(--muted); }
+    #stato { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+<div class="pagina">
+  <header class="testa">
+    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
+    <h1>Guida dei componenti</h1>
+    <p class="sotto">Componenti e regole comuni con cui sono costruite tutte le pagine dei negozi · riferimento per le nuove pagine</p>
+  </header>
+
+  <nav class="indice">
+    <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Campionario dal vivo</a>
+    <a href="#pannello">Pannello e blocchi</a><a href="#campi">Campi e menu</a><a href="#selettori">Selettori e pulsanti</a>
+    <a href="#stampa">Stampa e lista</a><a href="#foglio">Foglio e cursore</a><a href="#telefono">Telefono e iPhone</a>
+    <a href="#dashboard">Dashboard</a><a href="#negozi">Negozi e colori</a><a href="#schema">Schema delle pagine</a>
+  </nav>
+
+  <!-- ================================================================ -->
+  <h2 id="regole">Regole comuni</h2>
+  <ul class="regole">
+    <li><strong>Ogni pagina si costruisce con i moduli comuni</strong> (regola generale dal 9 ottobre 2026): pannello, selettori, campi, menu e pulsanti vengono da <code>assets/css/pannello.css</code> e dai moduli di <code>assets/js/</code>. Un negozio può avere un componente suo: lo si scrive come modulo comune riutilizzabile o lo si dichiara come <em>eccezione voluta</em> con un commento nella pagina. Se un modulo non copre un caso, si allarga il modulo, non si copia il codice nella pagina.</li>
+    <li><strong>Una pagina per strumento, una per negozio</strong> (<code>luxury/</code>, <code>tebe/</code>, <code>ophilya/</code>), anche quando due pagine si assomigliano; nella radice solo la splash page e le pagine dell'operatore.</li>
+    <li><strong>Il menu di sinistra ha sempre quattro blocchi</strong>, in quest'ordine: 1 selettori e pulsanti · 2 brand e claim · 3 campi del cartello · 4 stampa. Un blocco vuoto si omette.</li>
+    <li><strong>I fogli di stampa non si toccano</strong> (misure in mm / pt, grafica, caratteri) se il lavoro non lo chiede; i colori del foglio sono fissi e non cambiano con il tema.</li>
+    <li><strong>Testo dell'utente sempre come testo</strong> (<code>textContent</code> o nodi DOM), mai con <code>innerHTML</code>.</li>
+    <li><strong>Menu a cascata sulla voce di partenza</strong> all'apertura (<code>-- Seleziona … --</code>): il valore sul cartello sta nel Testo Libero o nel campo. Eccezioni: menu dove la voce è il valore (BRAND, Stagionalità / Evento, Promozioni Cartellini) e Promozioni di Promo Multibrand.</li>
+    <li><strong>Nomi dei menu</strong>: titoli al plurale con l'iniziale maiuscola (Promozioni, Loghi Personalizzati), tranne BRAND e TESTI PRONTI tutti maiuscoli; voce di partenza al singolare (<code>-- Seleziona Logo Personalizzato --</code>); il campo sotto un menu si chiama <em>Testo Libero</em> (max 37 caratteri).</li>
+    <li><strong>Prezzi</strong> in formato italiano <code>€ 29,90</code>: il simbolo € è fisso nel campo e uscendo dal campo si hanno sempre due decimali; lo sconto è un numero da 1 a 99 con % fisso e frecce ▲▼.</li>
+    <li><strong>Immagini del foglio senza <code>object-fit</code></strong>: si dimensionano con <code>width/height: auto</code> e <code>max-width / max-height</code> (html2canvas, che fotografa il foglio per la lista e per iPhone, non applica <code>object-fit</code>).</li>
+    <li><strong>Versione dei file comuni</strong>: le pagine richiamano i file comuni con <code>?v=</code> (data + progressivo, uguale in tutte le pagine); a ogni modifica di un file comune si aggiorna dappertutto. La <strong>versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>) sale di uno a ogni commit.</li>
+    <li><strong>Lingua</strong>: testi dell'interfaccia, commenti e documentazione in italiano.</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2 id="pagina">Struttura di una pagina di cartelli</h2>
+  <p>Ordine dei file nel <code>&lt;head&gt;</code> e scheletro del <code>&lt;body&gt;</code> (percorsi dalla cartella del negozio):</p>
+<pre>&lt;html lang="it" data-negozio="tebe"&gt;                       ← negozio della pagina
+&lt;script src="../assets/js/negozi.js?v=…"&gt;                 ← sempre per primo: scheda e colori del negozio
+&lt;script src="../assets/js/theme.js?v=…"&gt;                  ← tema CHIARO / SCURO
+&lt;link chiudi-pagina.css&gt; &lt;link torna-al-menu.css&gt; &lt;link font-arial.css&gt;
+&lt;link pannello.css&gt;  &lt;script defer campi-prezzo.js&gt;
+&lt;style&gt; … solo ciò che è proprio della pagina (foglio, cartello, eccezioni) … &lt;/style&gt;
+&lt;link madeinitaly.css&gt; &lt;link strumenti-stampa.css&gt; &lt;link cursore.css&gt;
+&lt;link menu-cascata.css&gt; &lt;script defer menu-cascata.js&gt;
+&lt;link responsive.css&gt; &lt;script defer responsive.js&gt;
+
+&lt;body data-layout="cartelli"&gt;                              ← cartelli | cartellini | prezzi
+  &lt;a class="app-close-btn"&gt;✕&lt;/a&gt;  &lt;div class="floating-nav-box"&gt;…&lt;/div&gt;
+  &lt;div class="sidebar"&gt;&lt;div class="controls"&gt;&lt;h2&gt;Titolo&lt;/h2&gt;
+     &lt;!-- Blocco 1 … 4 --&gt; &lt;div class="panel-block"&gt;…&lt;/div&gt; ×4
+  &lt;/div&gt;&lt;/div&gt;
+  &lt;div class="print-sheet" id="printSheet"&gt; cartelli &lt;/div&gt;
+  &lt;script testi-pronti.js&gt; &lt;script fasce-prezzo.js&gt; &lt;script selettore.js&gt; &lt;script selettore-*.js&gt;
+  &lt;script&gt; … logica della pagina … &lt;/script&gt;
+  &lt;script cursore.js&gt; &lt;script&gt;Cursore.create({…})&lt;/script&gt;
+  &lt;script strumenti-stampa.js&gt; &lt;script defer stampa-ios.js&gt;</pre>
+  <p class="nota">I moduli che creano componenti (selettori, testi pronti, fasce) vanno caricati dopo il markup e prima dello script della pagina. I cartellini hanno il riquadro <code>#editorPanel</code> con le linguette <code>#tabs-container</code> e il foglio <code>#printable-grid</code> dentro <code>.sheet-wrap</code>.</p>
+
+  <!-- ================================================================ -->
+  <h2 id="campionario">Campionario dal vivo</h2>
+  <p>Un pannello vero, costruito solo con i moduli comuni, nei colori della scheda di ogni negozio (si può cliccare e scrivere).</p>
+  <div class="campioni" id="campioni"></div>
+
+  <!-- ================================================================ -->
+  <h2 id="pannello">Pannello e blocchi</h2>
+  <table>
+    <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Pannello</td><td><code>.sidebar &gt; .controls</code> (<code>pannello.css</code>)</td><td>largo 360 px · spazio interno 1rem 1rem 1,25rem · bordo 1 px <code>--pannello-bordo</code> · angoli 8 px · fondo <code>--pannello-sfondo</code> · testo system-ui <code>--pannello-testo</code></td><td>sotto il tasto di stampa 20 px, come sopra il titolo; sul telefono a tutta larghezza, 12 / 16 px</td></tr>
+    <tr><td>Titolo</td><td><code>&lt;h2&gt;</code> in <code>.controls</code></td><td>Cinzel 600 · 1,1rem · lettere 1,5 px · <code>--pannello-titolo</code> · linea sotto 1 px</td><td>nome della pagina (es. Cartello Semplice)</td></tr>
+    <tr><td>Blocchi</td><td><code>&lt;div class="panel-block"&gt;</code> con <code>&lt;!-- Blocco N: … --&gt;</code></td><td>tra i campi 0,65rem · tra i blocchi 1,6rem (telefono 0,45 / 1,1rem) · cartellini: tra i blocchi solo 0,65rem</td><td>1 selettori · 2 brand e claim · 3 campi · 4 stampa; <code>.panel-block[hidden]</code> nasconde un blocco intero</td></tr>
+    <tr><td>Etichetta</td><td><code>&lt;label for&gt;</code> in <code>.form-group</code></td><td>0,72rem · peso normale · <code>--pannello-etichetta</code> · 0,35rem sopra il campo</td><td>titolo di un menu: <code>class="section-label"</code>, in <code>--pannello-oro</code></td></tr>
+    <tr><td>Riga di campi</td><td><code>.form-row</code> con più <code>.form-group</code></td><td>spazio 6 px · campi larghi uguale</td><td>Prezzo Originario / Sconto / Prezzo Finale; Claim Sinistro / Destro; etichette su una riga (<code>white-space: nowrap</code> nella pagina)</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="campi">Campi e menu</h2>
+  <table>
+    <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Campo di testo</td><td><code>&lt;input type="text"&gt;</code> in <code>.form-group</code></td><td>alto 31,4 px · spazio 0,45rem · Arial 0,82rem · angoli 4 px · fondo <code>--pannello-campo</code> · bordo <code>--pannello-bordo</code>; in uso bordo <code>--pannello-oro</code> e alone</td><td>Testo Libero max 37 caratteri (da 32 il carattere sul cartello si rimpicciolisce); claim 0,74rem in maiuscolo; sul telefono 16 px</td></tr>
+    <tr><td>Menu a cascata</td><td><code>&lt;div class="preset-select"&gt;&lt;select&gt;</code> + <code>menu-cascata.css/js</code></td><td>come il campo · riquadro della freccia ▼ largo 1,6rem in <code>--pannello-riquadro</code> · elenco largo quanto il campo, maniglia di scorrimento oro squadrata alta 36 px</td><td>parte dalla voce <code>-- Seleziona … --</code>; il browser non rimette l'ultima scelta (<code>autocomplete="off"</code>)</td></tr>
+    <tr><td>Testi pronti</td><td><code>&lt;select data-testi-pronti="Promozioni,Articoli"&gt;</code> + <code>testi-pronti.js</code></td><td>gruppi in corsivo allineati a destra; <code>data-testi-senza-gruppi</code> senza titoli dei gruppi; <code>data-testi-maiuscolo</code></td><td>liste: Promozioni, Articoli, Materiali, Promozioni Cartellini, Etichette DYMO; voci della pagina con <code>data-voce-propria</code>; scelta → Testo Libero</td></tr>
+    <tr><td>Fasce Prezzo</td><td><code>&lt;div data-fasce-prezzo data-select-id data-on-change&gt;</code> + <code>fasce-prezzo.js</code></td><td>etichetta e menu creati dal modulo · gruppi Prezzi tondi / Prezzi ,90</td><td>la funzione della pagina mette il prezzo dove serve</td></tr>
+    <tr><td>Campo prezzo</td><td><code>&lt;input data-prezzo&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>simbolo € fisso davanti in <code>--pannello-oro</code> (semigrassetto in TEBE / OPHILYA)</td><td>solo cifre, virgola e punto; uscendo sempre due decimali (35 → 35,00) e nuovo evento <code>input</code></td></tr>
+    <tr><td>Campo sconto</td><td><code>&lt;input data-percentuale type="number" min="1" max="99"&gt;</code></td><td>% fisso dopo · frecce ▲▼ in una colonna larga 1,6rem</td><td>numeri da 1 a 99; le frecce sono del modulo (nessuna funzione nella pagina)</td></tr>
+    <tr><td>TEXT AREA</td><td><code>&lt;textarea rows="4"&gt;</code> (altre righe: <code>style="--righe: 2"</code>)</td><td>come il campo · interlinea 1,4 · alta quanto le righe · senza maniglia</td><td>il numero massimo di righe lo controlla la pagina (es. Magazzino, Cornici)</td></tr>
+    <tr><td>Barra</td><td><code>&lt;input type="range"&gt;</code></td><td>alta 31,4 px · linea 6 px · maniglia tonda 16 px <code>--pannello-oro</code>, al passaggio <code>--pannello-oro-chiaro</code></td><td>es. Dimensione Testo del Magazzino</td></tr>
+    <tr><td>Menu BRAND</td><td><code>&lt;select&gt;</code> riempito con <code>appendBrandOption</code> (<code>logos.js</code> + <code>assets/logos/&lt;negozio&gt;/elenco.js</code>); cartellini: <code>data-menu-brand-cartellini</code></td><td>voce di partenza <code>-- Seleziona Brand --</code> (<code>brand-placeholder</code>) · brand prioritari con ★ gialla (Luxury) o ⭐ e maiuscolo (TEBE / OPHILYA)</td><td>Loghi Personalizzati dalla lista del negozio (<code>LoghiPersonalizzati</code>, IndexedDB); scegliere l'uno azzera l'altro</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="selettori">Selettori e pulsanti</h2>
+  <table>
+    <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Selettore</td><td><code>&lt;div data-selettore id data-on-change aria-label&gt;&lt;button value class="active"&gt;…</code> + <code>selettore.js</code></td><td>riquadro <code>--pannello-selettore</code>, bordo, angoli 6 px, spazio 4 px · voci system-ui 0,68rem peso 400, lettere 0,08em, maiuscolo, spazio 9 × 8 px · scelta <code>--pannello-selettore-attivo</code> / <code>-testo</code> · non scelta <code>--pannello-selettore-testo</code></td><td><code>&lt;br&gt;</code> per andare a capo (sul telefono una riga, alta 44 px, lettere 0,02em); comandi <code>Selettore.attiva / valore / voci / nascondiVoce / disabilitaVoce</code>; la funzione riceve il valore</td></tr>
+    <tr><td>Selettori pronti</td><td><code>data-selettore-cartello</code> · <code>data-selettore-modalita-prezzo</code> · <code>data-selettore-numero-articoli data-counts="2,3"</code></td><td>come il selettore</td><td>CARTELLO SUPERIORE / INFERIORE (<code>selectCard</code>, <code>setLowerDisabled</code>) · DOPPIA CIFRA / DESCRIZIONE ARTICOLO (<code>setDescriptionMode</code>) · N ARTICOLI (<code>setItemCount</code>)</td></tr>
+    <tr><td>Pulsante a due stati</td><td><code>.btn-toggle</code>; + AGGIUNGI 2° BRAND con <code>data-second-brand-toggle</code></td><td>vuoto: bordo e scritta <code>--pannello-oro</code>, 0,68rem 700, lettere 0,08em, angoli 6 px · acceso: verde <code>#5f8a55</code>, scritta <code>#f4f1ea</code></td><td>scritta accesa diversa (2° BRAND ATTIVO, SCONTISTICA ATTIVA); sul telefono alto 48 px</td></tr>
+    <tr><td>COPIA SU ALTRO CARTELLO</td><td><code>&lt;div data-copia-cartello data-checkbox-id data-on-change&gt;</code> + <code>copia-cartello.js</code></td><td>scritta 0,72rem <code>--pannello-oro</code> · casella 14 px · linea sotto <code>--pannello-linea</code> · sul telefono interruttore 48 × 28 px, acceso <code>#5f8a55</code></td><td>prima voce del blocco 4; spuntando copia il cartello sull'altro, togliendo la spunta lo ripristina; nascosta con 1 CARTELLO</td></tr>
+    <tr><td>Impostazioni di Stampa</td><td><code>&lt;select aria-label="Impostazioni di Stampa"&gt;</code> 2 CARTELLI / 1 CARTELLO</td><td>menu a cascata senza titolo (sul telefono titolo oro)</td><td>con 1 CARTELLO il cartello inferiore è disabilitato nel selettore</td></tr>
+    <tr><td>Tasto di stampa</td><td><code>&lt;button class="btn-print"&gt;</code></td><td>rosso <code>#96382b</code>, al passaggio <code>#7a2d22</code> · 0,95rem 700 maiuscolo, lettere 0,6 px · spazio 10 px · angoli 4 px</td><td>STAMPA CARTELLI / STAMPA CARTELLO / STAMPA FOGLIO A4 / STAMPA CORNICI</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="stampa">Stampa e lista di stampa</h2>
+  <table>
+    <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Pulsantiera</td><td><code>strumenti-stampa.js</code> in fondo (<code>data-panel</code>, <code>data-sheet</code> nei cartellini)</td><td>pulsanti tondi sotto il pannello, colori <code>--tool-*</code> del negozio</td><td>Gestisci lista di stampa · Aggiungi a lista stampa · "Dove montare la stampa?" (solo TEBE / OPHILYA, foto in <code>assets/foto/</code>)</td></tr>
+    <tr><td>Lista di stampa</td><td><code>lista-stampa.js</code> + <code>lista-stampa.html</code> del negozio</td><td>una lista per negozio (IndexedDB) · <code>lista.pdf</code> A4 a misura reale</td><td>foto del foglio con html2canvas usando le regole <code>@media print</code> della pagina; foglio verticale in alto, cartellini orizzontali a 4 mm dall'alto</td></tr>
+    <tr><td>Stampa da iPhone e iPad</td><td><code>stampa-ios.js</code> (defer)</td><td>riquadro SALVA O STAMPA PDF, colori <code>--lista-pdf-*</code></td><td>niente stampa del browser su iOS: PDF A4 a misura esatta da stampare al 100%; foto identica a quella del computer (verificato su 32 pagine)</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="foglio">Foglio, cursore e pulsanti fissi</h2>
+  <table>
+    <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Foglio</td><td><code>#printSheet</code>, <code>.print-sheet</code>, <code>#a4Sheet</code> o <code>#printable-grid</code></td><td>misure in mm (A4 210 × 297; cartellini 282 × 196 orizzontale)</td><td>regole <code>@page</code> e <code>@media print</code> nella pagina; colori fissi; nessuna regola del tema</td></tr>
+    <tr><td>Cursore</td><td><code>cursore.js</code> + <code>Cursore.create({ panel, watch, scope, obstacles, rules })</code></td><td>triangolo: Luxury oro <code>#b48b37</code> 40 × 27 px · TEBE / OPHILYA rosso <code>#96382b</code> 36 × 24 px</td><td>ogni campo indica il suo elemento sul foglio; più elementi = più cursori</td></tr>
+    <tr><td>✕ chiudi</td><td><code>&lt;a class="app-close-btn"&gt;</code> + <code>chiudi-pagina.css</code></td><td>36 px (44 sotto 1100 px), a 1,5rem dai bordi · Luxury oro con ✕ nera · TEBE oro <code>#b49a62</code> con ✕ avorio</td><td>torna alla dashboard del negozio</td></tr>
+    <tr><td>Torna al Menu</td><td><code>.floating-nav-box</code> + <code>torna-al-menu.css</code></td><td>riquadro in basso a destra, Arial; titolo con il nome del negozio (Luxury STORE // CRAFT)</td><td>nascosto in stampa e sul telefono</td></tr>
+    <tr><td>Made in Italy</td><td><code>madeinitaly.js</code>: <code>MadeInItaly.toggle</code> (Luxury) o <code>data-automatico</code> (TEBE / OPHILYA)</td><td>cerchio bianco con la bandiera, sotto la ✕; Luxury 44 px bordo oro, TEBE 36 px</td><td>cambia solo testi e modalità interessati e li ripristina; esclude Natale / Black Friday</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="telefono">Telefono</h2>
+  <ul class="regole">
+    <li><strong>Vista telefono comune</strong> (<code>responsive.css/js</code>, schermo fino a 760 px con tocco): in alto l'anteprima del cartello in modifica, al centro il pannello che scorre, in fondo la barra di stampa (lista, aggiungi, ANTEPRIMA, STAMPA). La pagina la riceve dichiarando <code>data-layout</code>, il foglio, i cartelli e il pannello: nessuna copia nelle pagine.</li>
+    <li>Sul telefono: selettori su una riga alti 44 px, pulsanti a due stati 48 px, campi a 16 px (niente ingrandimento automatico di iPhone), COPIA SU ALTRO CARTELLO come interruttore.</li>
+    <li>Cartellini: anteprima del cartellino scelto ingrandito con bordo oro e lente per vedere tutta la pagina; linguette su una riga che scorre.</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2 id="dashboard">Dashboard</h2>
+  <table>
+    <tr><th>Componente</th><th>Dove</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Dashboard unica</td><td><code>dashboard.js</code> + <code>dashboard.css</code> + contenuti in <code>assets/negozi/&lt;negozio&gt;-dashboard.js</code></td><td>menu laterale, intestazione, logo, caroselli, Utilità Cassa</td><td>le tre pagine <code>index.html</code> sono uguali, cambia solo <code>data-negozio</code></td></tr>
+    <tr><td>CASSIERE / CREATOR e TEBE / OPHILYA</td><td><code>.mode-switcher</code></td><td>scuro: riquadro nero, voce scelta oro · chiaro: fondo crema <code>#eee8dd</code>, voce scelta bianca <code>#fffdfa</code> testo <code>#282522</code>, non scelta <code>#887d70</code> · STANDARD 0,65rem peso 600 · COMPATTO Arial 10 px, lettere 0,14em</td><td>i due selettori larghi uguale</td></tr>
+    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury: titolo VISUAL MERCHANDISING STUDIO e sottotitolo, divisorio · TEBE / OPHILYA (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 2 minuti con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
+    <tr><td>Schede e caroselli</td><td><code>sezioni</code> e <code>schede</code> nei contenuti; <code>caroselli.css/js</code></td><td>4 schede per riga (2 sotto 1300 px, 1 sul telefono) · titolo Cinzel (STANDARD) o Fraunces (COMPATTO); chiaro taupe <code>#665e54</code>, scuro STANDARD peso 600</td><td>Crea Cartelli su due righe (<code>righe: 1</code> per una sola, es. OPHILYA); Coming Soon con <code>prossimamente: true</code></td></tr>
+    <tr><td>Utilità Cassa</td><td><code>cassa.js</code></td><td>widget squadrati (COMPATTO) o arrotondati (STANDARD); titoli bianchi nel tema scuro, taupe nel chiaro</td><td>su desktop si aprono in un popup; <code>cassa: 'solo-cassiere'</code> le mostra solo in CASSIERE</td></tr>
+    <tr><td>Tema e aspetto</td><td><code>theme.js</code> + <code>theme.css</code></td><td>CHIARO / SCURO e STANDARD / COMPATTO, indipendenti, ricordati per negozio</td><td>iniziali: Luxury scuro + STANDARD, TEBE / OPHILYA chiaro + COMPATTO; non cambiano mai i fogli di stampa</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="negozi">Negozi e colori del pannello</h2>
+  <p>Ogni negozio ha la sua scheda: <code>assets/negozi/&lt;negozio&gt;.js</code> (nome, oro dei loghi, brand prioritari, lista di stampa, guida, tema iniziale) e <code>&lt;negozio&gt;.css</code> (colori come variabili). I file comuni hanno solo valori di riserva. Per un negozio nuovo: scheda, cartelle di pagine e risorse, voce in <code>installati.js</code>.</p>
+  <table>
+    <tr><th>Variabile</th><th>Uso</th><th>Luxury Outlet</th><th>TEBE · OPHILYA (chiaro)</th></tr>
+    <tr><td>--pannello-sfondo</td><td>riquadro</td><td><span class="sw" style="background:#1e1d1a"></span>#1e1d1a</td><td><span class="sw" style="background:#fffdfa"></span>#fffdfa</td></tr>
+    <tr><td>--pannello-testo</td><td>testo e campi</td><td><span class="sw" style="background:#f4f1ea"></span>#f4f1ea</td><td><span class="sw" style="background:#282522"></span>#282522</td></tr>
+    <tr><td>--pannello-bordo</td><td>bordi e linea del titolo</td><td><span class="sw" style="background:#2e2b27"></span>#2e2b27</td><td><span class="sw" style="background:#e3dacb"></span>#e3dacb</td></tr>
+    <tr><td>--pannello-titolo / -oro</td><td>titolo, titoli dei menu, simboli, caselle</td><td><span class="sw" style="background:#d4a373"></span>#d4a373</td><td><span class="sw" style="background:#b49a62"></span>#b49a62</td></tr>
+    <tr><td>--pannello-oro-chiaro</td><td>passaggio del mouse</td><td><span class="sw" style="background:#e5ba73"></span>#e5ba73</td><td><span class="sw" style="background:#8a6a35"></span>#8a6a35</td></tr>
+    <tr><td>--pannello-etichetta</td><td>etichette</td><td><span class="sw" style="background:#a39a8d"></span>#a39a8d</td><td><span class="sw" style="background:#665e54"></span>#665e54</td></tr>
+    <tr><td>--pannello-campo</td><td>fondo dei campi</td><td><span class="sw" style="background:#0a0908"></span>#0a0908</td><td><span class="sw" style="background:#f8f6f1"></span>#f8f6f1</td></tr>
+    <tr><td>--pannello-riquadro</td><td>freccia dei menu, frecce ▲▼</td><td><span class="sw" style="background:#181715"></span>#181715</td><td><span class="sw" style="background:#f3ede0"></span>#f3ede0</td></tr>
+    <tr><td>--pannello-selettore</td><td>fondo dei selettori</td><td><span class="sw" style="background:#0a0908"></span>#0a0908</td><td><span class="sw" style="background:#f3ede0"></span>#f3ede0</td></tr>
+    <tr><td>--pannello-selettore-testo</td><td>voce non scelta</td><td><span class="sw" style="background:#8c857b"></span>#8c857b</td><td><span class="sw" style="background:#8a7f6e"></span>#8a7f6e</td></tr>
+    <tr><td>--pannello-selettore-attivo / -testo</td><td>voce scelta</td><td><span class="sw" style="background:#d4a373"></span>#d4a373 / #121110</td><td><span class="sw" style="background:#fffdfa"></span>#fffdfa / #282522</td></tr>
+    <tr><td>--pannello-stampa-testo</td><td>scritta del tasto rosso</td><td>#f4f1ea</td><td>#fffdfa</td></tr>
+    <tr><td>--cursore-colore</td><td>cursore sul foglio</td><td><span class="sw" style="background:#b48b37"></span>#b48b37</td><td><span class="sw" style="background:#96382b"></span>#96382b</td></tr>
+    <tr><td>oro dei loghi (scheda)</td><td>varianti gold dei loghi</td><td>#b48b37</td><td>#cc9e25</td></tr>
+  </table>
+  <p class="nota">Nel tema scuro TEBE e OPHILYA prendono i colori scuri di Luxury (regola <code>[data-interface-theme="dark"]</code> nella loro scheda).</p>
+
+  <!-- ================================================================ -->
+  <h2 id="schema">Schema delle pagine (si aggiorna da solo)</h2>
+  <p>A ogni apertura la guida legge le pagine di ogni negozio installato (dalle schede delle dashboard e dalle pagine di servizio) e controlla quali regole, moduli e campi comuni usano. <span id="stato">Lettura in corso…</span></p>
+  <div class="legenda">
+    <span><span class="si">✓</span> usato</span><span><span class="no">·</span> non usato</span><span><span class="warn">!</span> pezzo scritto a mano da portare sui moduli comuni</span>
+    <span>numero = quanti elementi (blocchi, selettori, campi)</span>
+  </div>
+  <div id="schema"></div>
+</div>
+
+<script>
+  // ===== Campionario: un pannello vero per ogni negozio installato =====
+  const campioni = document.getElementById('campioni');
+  Negozi.installati.forEach(id => {
+    const figura = document.createElement('figure');
+    const didascalia = document.createElement('figcaption');
+    didascalia.textContent = Negozi.scheda(id)?.nome || id;
+    const riquadro = document.createElement('iframe');
+    riquadro.src = `guida-campione.html?negozio=${encodeURIComponent(id)}`;
+    riquadro.title = `Campionario ${didascalia.textContent}`;
+    figura.append(didascalia, riquadro);
+    campioni.append(figura);
+  });
+
+  // ===== Schema automatico =====
+  // Ogni controllo: [titolo breve, descrizione, funzione che dal testo della pagina dà true/false o un numero]
+  const conta = (testo, regex) => (testo.match(regex) || []).length;
+  const CONTROLLI = [
+    ['Pannello', 'pannello.css: pannello standard', t => /pannello\.css/.test(t)],
+    ['Blocchi', 'quanti <div class="panel-block">', t => conta(t, /class="panel-block"/g)],
+    ['Menu a cascata', 'menu-cascata.js', t => /menu-cascata\.js/.test(t)],
+    ['Selettore', 'selettore.js e quanti data-selettore', t => /assets\/js\/selettore\.js/.test(t) ? Math.max(1, conta(t, /data-selettore[\s>]/g)) : false],
+    ['Cartello sup./inf.', 'selettore-cartello.js', t => /selettore-cartello\.js/.test(t)],
+    ['Modalità prezzo', 'selettore-modalita-prezzo.js', t => /selettore-modalita-prezzo\.js/.test(t)],
+    ['N. articoli', 'selettore-numero-articoli.js', t => /selettore-numero-articoli\.js/.test(t)],
+    ['2° brand', 'second-brand-toggle.js', t => /second-brand-toggle\.js/.test(t)],
+    ['Copia cartello', 'copia-cartello.js', t => /copia-cartello\.js/.test(t)],
+    ['Campi prezzo', 'campi-prezzo.js e quanti campi data-prezzo / data-percentuale', t => /campi-prezzo\.js/.test(t) ? Math.max(1, conta(t, /data-(prezzo|percentuale)[\s>]/g)) : false],
+    ['Testi pronti', 'testi-pronti.js', t => /testi-pronti\.js/.test(t)],
+    ['Fasce prezzo', 'fasce-prezzo.js', t => /fasce-prezzo\.js/.test(t)],
+    ['Brand cartellini', 'menu-brand-cartellini.js', t => /menu-brand-cartellini\.js/.test(t)],
+    ['Brand ufficiali', 'logos.js', t => /assets\/js\/logos\.js/.test(t)],
+    ['Loghi personalizzati', 'loghi-personalizzati.js', t => /loghi-personalizzati\.js/.test(t)],
+    ['Cursore', 'cursore.js', t => /cursore\.js/.test(t)],
+    ['Pulsantiera / lista', 'strumenti-stampa.js', t => /strumenti-stampa\.js/.test(t)],
+    ['Stampa iPhone', 'stampa-ios.js', t => /stampa-ios\.js/.test(t)],
+    ['Vista telefono', 'responsive.js (data-layout)', t => /responsive\.js/.test(t) ? ((t.match(/data-layout="([^"]+)"/) || [])[1] || true) : false],
+    ['Made in Italy', 'madeinitaly.js', t => /madeinitaly\.js/.test(t) ? (/data-automatico/.test(t) ? 'auto' : true) : false],
+    ['✕ / Torna', 'chiudi-pagina.css e torna-al-menu.css', t => /chiudi-pagina\.css/.test(t) && /torna-al-menu\.css/.test(t)],
+    ['Tema', 'theme.js', t => /theme\.js/.test(t)]
+  ];
+  // Pezzi scritti a mano che dovrebbero venire dai moduli comuni
+  const RESIDUI = [
+    ['selettore a mano', t => /class="mode-switch/.test(t)],
+    ['regola prezzi copiata', t => /function formatPriceValue|onPriceBlur\(/.test(t)],
+    ['frecce sconto copiate', t => /function stepDiscount|function stepPercent/.test(t)],
+    ['menu con stile proprio', t => /select-control|price-range-control/.test(t)],
+    ['testo con innerHTML', t => /innerHTML\s*=\s*`[^`]*\$\{/.test(t)]
+  ];
+  const SERVIZIO = ['genera_loghi.html', 'gestisci_lista.html', 'lista-stampa.html', 'pdf-viewer.html'];
+
+  async function testo(url) {
+    const risposta = await fetch(url, { cache: 'no-store' });
+    if (!risposta.ok) throw new Error(`${url}: ${risposta.status}`);
+    return risposta.text();
+  }
+
+  async function pagineDelNegozio(id) {
+    const contenuto = await testo(`assets/negozi/${id}-dashboard.js`);
+    const pagine = new Set();
+    for (const m of contenuto.matchAll(/link:\s*'([^'?]+\.html)/g)) pagine.add(m[1]);
+    const etichette = contenuto.match(/etichette:\s*'([^'?]+\.html)/);
+    if (etichette) pagine.add(etichette[1]);
+    return ['index.html', ...pagine, ...SERVIZIO];
+  }
+
+  function cella(valore) {
+    const td = document.createElement('td');
+    if (valore === false || valore === 0) { td.className = 'no'; td.textContent = '·'; }
+    else if (valore === true) { td.className = 'si'; td.textContent = '✓'; }
+    else { td.className = 'si'; td.textContent = String(valore); }
+    return td;
+  }
+
+  async function schema() {
+    const contenitore = document.getElementById('schema');
+    let totPagine = 0, totResidui = 0;
+    for (const id of Negozi.installati) {
+      const sezione = document.createElement('div');
+      sezione.className = 'schema-negozio';
+      const titolo = document.createElement('h3');
+      titolo.textContent = Negozi.scheda(id)?.nome || id;
+      sezione.append(titolo);
+      const scorri = document.createElement('div');
+      scorri.className = 'schema-scroll';
+      const tabella = document.createElement('table');
+      tabella.className = 'schema';
+      const intestazione = document.createElement('tr');
+      const thPagina = document.createElement('th');
+      thPagina.className = 'pg';
+      thPagina.textContent = 'Pagina';
+      intestazione.append(thPagina);
+      [...CONTROLLI.map(c => [c[0], c[1]]), ['Da sistemare', 'pezzi scritti a mano nella pagina']].forEach(([nome, descrizione]) => {
+        const th = document.createElement('th');
+        th.textContent = nome;
+        th.title = descrizione;
+        intestazione.append(th);
+      });
+      tabella.append(intestazione);
+      let pagine = [];
+      try { pagine = await pagineDelNegozio(id); } catch (errore) { titolo.textContent += ` · scheda della dashboard non letta (${errore.message})`; }
+      for (const pagina of pagine) {
+        const riga = document.createElement('tr');
+        const tdPagina = document.createElement('td');
+        const link = document.createElement('a');
+        link.href = `${id}/${pagina}`;
+        link.textContent = pagina.replace('.html', '');
+        tdPagina.append(link);
+        const tipo = document.createElement('span');
+        tipo.className = 'tipo';
+        tipo.textContent = pagina === 'index.html' ? 'dashboard' : SERVIZIO.includes(pagina) ? 'servizio' : 'pagina';
+        tdPagina.append(tipo);
+        riga.append(tdPagina);
+        try {
+          const t = await testo(`${id}/${pagina}`);
+          CONTROLLI.forEach(([, , prova]) => riga.append(cella(prova(t))));
+          const residui = RESIDUI.filter(([, prova]) => prova(t)).map(([nome]) => nome);
+          const td = document.createElement('td');
+          if (residui.length) { td.className = 'warn'; td.textContent = '! ' + residui.join(', '); totResidui += residui.length; }
+          else { td.className = 'no'; td.textContent = '—'; }
+          riga.append(td);
+        } catch (errore) {
+          const td = document.createElement('td');
+          td.colSpan = CONTROLLI.length + 1;
+          td.className = 'warn';
+          td.textContent = 'pagina non letta: ' + errore.message;
+          riga.append(td);
+        }
+        tabella.append(riga);
+        totPagine++;
+      }
+      scorri.append(tabella);
+      sezione.append(scorri);
+      contenitore.append(sezione);
+    }
+    const ora = new Date().toLocaleString('it-IT');
+    document.getElementById('stato').textContent = `Letto il ${ora}: ${totPagine} pagine in ${Negozi.installati.length} negozi, ` +
+      (totResidui ? `${totResidui} pezzi da portare sui moduli comuni.` : 'nessun pezzo scritto a mano da sistemare.');
+  }
+  schema();
+</script>
+</body>
+</html>

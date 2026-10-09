@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <!-- Negozio del campionario dall'indirizzo (?negozio=luxury | tebe | ophilya), prima di negozi.js che ne carica i colori -->
+  <script>document.documentElement.dataset.negozio = new URLSearchParams(location.search).get('negozio') || 'luxury';</script>
+  <script src="assets/js/negozi.js?v=20261009-28"></script>
+  <script src="assets/js/theme.js?v=20261009-28"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Campionario del pannello</title>
+  <link rel="stylesheet" href="assets/css/font-arial.css?v=20261009-28">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/pannello.css?v=20261009-28">
+  <script defer src="assets/js/campi-prezzo.js?v=20261009-28"></script>
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261009-28">
+  <script defer src="assets/js/menu-cascata.js?v=20261009-28"></script>
+  <script>
+    // brand ufficiali del negozio del campionario
+    document.write(`<script src="assets/logos/${document.documentElement.dataset.negozio}/elenco.js?v=20261009-28"><\/script>`);
+  </script>
+  <script src="assets/js/logos.js?v=20261009-28"></script>
+  <style>
+    /* Pagina dell'operatore (non collegata, non copiata ai clienti): campionario dal vivo dei componenti comuni del
+       pannello, mostrato nella guida dei componenti (guida-componenti.html) con i colori di ogni negozio. */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { padding: 16px; background: var(--interface-page, #212529); font-family: Arial, sans-serif; }
+    .sidebar { margin: 0 auto; }
+    .form-row .form-group label { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Campionario</h2>
+
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div data-selettore-cartello></div>
+        <div data-selettore-modalita-prezzo></div>
+        <div data-selettore id="esempioSelettore" aria-label="Selettore con voci della pagina">
+          <button value="a" class="active">STANDARD</button>
+          <button value="b">DOPPIO<br>PREZZO</button>
+          <button value="c">BRAND</button>
+        </div>
+        <div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div>
+      </div>
+
+      <!-- Blocco 2: brand e claim -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="brandSelect">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect"><option value="" class="brand-placeholder">-- Seleziona Brand --</option></select>
+          </div>
+          <label for="customBrandSelect">Loghi Personalizzati</label>
+          <div class="preset-select">
+            <select id="customBrandSelect"><option value="">-- Seleziona Logo Personalizzato --</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="leftClaim">Claim Sinistro</label><input type="text" id="leftClaim" value="SALDI 2026"></div>
+          <div class="form-group"><label for="rightClaim">Claim Destro</label><input type="text" id="rightClaim" value="SHOP NOW"></div>
+        </div>
+      </div>
+
+      <!-- Blocco 3: campi del cartello -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="presetDesc">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="presetDesc" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli">
+              <option value="" class="ready-text-placeholder">-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <label for="desc">Testo Libero</label>
+          <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" value="Outlet Price">
+        </div>
+        <div class="form-group">
+          <div data-fasce-prezzo data-select-id="pricePreset" data-on-change="nulla"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="priceOld">Prezzo Originario</label><input data-prezzo type="text" id="priceOld" value="395,00"></div>
+          <div class="form-group"><label for="discount">Sconto</label><input data-percentuale type="number" id="discount" min="1" max="99" value="75"></div>
+          <div class="form-group"><label for="priceNew">Prezzo Finale</label><input data-prezzo type="text" id="priceNew" value="99,00"></div>
+        </div>
+        <div class="form-group">
+          <label for="areaTesto">Area Testo</label>
+          <textarea id="areaTesto" rows="4">PANTALONI
+GIACCHE</textarea>
+        </div>
+        <div class="form-group">
+          <label for="dimensione">Dimensione Testo</label>
+          <input type="range" id="dimensione" min="46" max="76" value="61">
+        </div>
+      </div>
+
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <div data-copia-cartello data-checkbox-id="linkCards" data-on-change="nulla"></div>
+        <div class="form-group">
+          <div class="preset-select">
+            <select aria-label="Impostazioni di Stampa">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" class="btn-print">STAMPA CARTELLI</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/testi-pronti.js?v=20261009-28"></script>
+  <script src="assets/js/fasce-prezzo.js?v=20261009-28"></script>
+  <script src="assets/js/second-brand-toggle.js?v=20261009-28"></script>
+  <script src="assets/js/selettore.js?v=20261009-28"></script>
+  <script src="assets/js/selettore-cartello.js?v=20261009-28"></script>
+  <script src="assets/js/selettore-modalita-prezzo.js?v=20261009-28"></script>
+  <script src="assets/js/copia-cartello.js?v=20261009-28"></script>
+  <script>
+    // funzioni minime: nel campionario i controlli cambiano solo il proprio aspetto
+    const nulla = () => {};
+    function selectCard(n) { SelettoreCartello.setActive('selectCard' + n); }
+    function setDescriptionMode(conDescrizione) { SelettoreModalitaPrezzo.setDescription(conDescrizione); }
+    let dueBrand = false;
+    function toggleSecondBrand() { dueBrand = !dueBrand; SecondBrandToggle.setState('secondBrandBtn', dueBrand); }
+    const brand = document.getElementById('brandSelect');
+    const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+    [...priorityFiles, ...remainingFiles].forEach(file => {
+      appendBrandOption(brand, file, file.replace(/\.[^.]+$/, '').replace(/([a-z])([A-Z])/g, '$1 $2'), priorityFiles.includes(file));
+    });
+  </script>
+</body>
+</html>

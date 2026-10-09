@@ -183,7 +183,21 @@
   // impaginato esattamente come nella stampa da computer (alcune pagine in stampa allargano i cartelli o li spostano
   // di qualche mm rispetto allo schermo), e il foglio non può essere schiacciato, così la foto ha la sua grandezza di
   // stampa anche quando una finestra stretta (es. iPad) lo restringe.
+  // html2canvas controlla una volta, nella pagina vera, se il browser misura bene i riquadri del testo: aggiunge al <body>
+  // un elemento di prova <boundtest> alto 123 px. Nella vista telefono il <body> è una colonna flessibile alta quanto lo
+  // schermo, che schiaccia l'elemento di prova: il controllo fallisce e html2canvas posiziona il testo con un metodo di
+  // riserva (il riquadro della riga invece di quello delle lettere), così le scritte grandi con interlinea stretta
+  // (prezzi e percentuali in Bodoni) uscivano più in basso che dal computer. L'elemento di prova non si schiaccia mai.
+  function proteggiControlloTesto() {
+    if (document.getElementById('lista-stampa-boundtest')) return;
+    const regola = document.createElement('style');
+    regola.id = 'lista-stampa-boundtest';
+    regola.textContent = 'boundtest { flex: none !important; }';
+    document.head.appendChild(regola);
+  }
+
   async function captureSheet(sheet) {
+    proteggiControlloTesto();
     const html2canvas = await step('caricamento di html2canvas', loadHtml2canvas);
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await Promise.all([...sheet.querySelectorAll('img')].map(img => img.complete ? null : new Promise(done => {
@@ -193,13 +207,33 @@
     const colored = colorFilteredImages(sheet);
     const svgFonts = await step('caratteri delle scritte SVG', () => svgFontRules(sheet));
     let canvas;
+    // Vista telefono: il foglio (o il suo contenitore) è rimpicciolito con zoom. html2canvas legge alcune misure dalla
+    // pagina vera, e con lo zoom le scritte molto grandi con interlinea stretta (prezzi, percentuali) uscivano più in
+    // basso: per il tempo della foto il foglio torna a grandezza piena, poi riprende lo zoom.
+    const zoomati = [sheet, sheet.closest('.sheet-wrap')].filter(el => el && el.style.zoom);
+    const zoomPrima = zoomati.map(el => el.style.zoom);
+    zoomati.forEach(el => { el.style.zoom = '1'; });
     try {
       canvas = await step('foto del foglio', () => html2canvas(sheet, {
         scale: CAPTURE_SCALE,
         backgroundColor: '#ffffff',
         useCORS: true,
         logging: false,
+        // La copia da fotografare sta in una finestra larga come quella di un computer anche dal telefono: in una finestra
+        // stretta varrebbero le regole del telefono e il testo del foglio si impaginerebbe diversamente (prezzi più in
+        // basso, spazi persi), quindi la stampa dal telefono non sarebbe uguale a quella dal computer.
+        windowWidth: Math.max(window.innerWidth, 1440),
+        windowHeight: Math.max(window.innerHeight, 1000),
+        // La copia parte sempre dall'inizio della pagina: su iPhone e iPad html2canvas, se non riesce a scorrere la copia
+        // dove è scorsa la pagina (vista telefono con il pannello scorso), sposta i calcoli e alcune scritte del foglio
+        // uscivano più in basso. Con scorrimento 0 la foto è uguale a quella dal computer.
+        scrollX: 0,
+        scrollY: 0,
         onclone: doc => {
+          // niente ingrandimento automatico del testo dei browser dei telefoni (iOS) nella copia
+          const testo = doc.createElement('style');
+          testo.textContent = 'html { -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }';
+          doc.head.appendChild(testo);
           const print = doc.createElement('style');
           print.textContent = printRules(doc);
           doc.head.appendChild(print);
@@ -224,6 +258,7 @@
       }));
     } finally {
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
+      zoomati.forEach((el, i) => { el.style.zoom = zoomPrima[i]; });
     }
     return canvas;
   }
