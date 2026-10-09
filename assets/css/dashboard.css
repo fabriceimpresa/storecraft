@@ -830,6 +830,10 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     mask-image: linear-gradient(to bottom, transparent 0, #000 32%, #000 68%, transparent 100%);
   }
   #sidebar-menu .sidebar-section.ruota > nav::-webkit-scrollbar { display: none; }
+  /* sul telefono niente sottosezione PROMO STAGIONALI dentro CREA CARTELLI: le promo seguono subito le voci dei
+     cartelli (in oro, come sempre), nella stessa rotella; su desktop e tablet la sottosezione resta */
+  #sidebar-menu .nav-subtoggle[aria-controls="promoItems"] { display: none !important; }
+  #sidebar-menu :is(#cartelliItems, #promoItems)[hidden] { display: grid; }
   /* sezioni con 1–3 voci (senza rotella): voci cliccabili direttamente, più spaziate e alte almeno 48 px */
   #sidebar-menu .sidebar-section:not(.ruota) > nav { gap: 6px; padding: 4px 0; }
   #sidebar-menu .sidebar-section:not(.ruota) > nav .nav-btn { display: flex; align-items: center; min-height: 48px; }
