@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261010-03"></script>
+<script src="assets/js/negozi.js?v=20261010-06"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-03">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-06">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-03">
-  <script src="assets/js/operatore-sezione.js?v=20261010-03"></script>
-  <script src="assets/js/admin-negozio.js?v=20261010-03"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-06">
+  <script src="assets/js/operatore-sezione.js?v=20261010-06"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-06"></script>
 </head>
 <body>
 
@@ -29,23 +29,40 @@
 
   <div class="container">
     <h1>Gestisci loghi ufficiali</h1>
-    <p class="subtitle">elimina loghi ufficiali di <span data-admin-nome-negozio></span> da assets/logos/<span data-admin-cartella-negozio></span>/, dalle 4 varianti colorate in printlogos e da elenco.js</p>
+    <p class="subtitle">loghi ufficiali di <span data-admin-nome-negozio></span>: eliminando un logo si tolgono il png da assets/logos/<span data-admin-cartella-negozio></span>/, le 4 varianti colorate e la riga in elenco.js</p>
 
-    <div data-admin-negozio></div>
+    <!-- tre passi, come Importa loghi: negozio, cartella del progetto, loghi -->
+    <div class="passi-op">
+      <section class="passo-op">
+        <span class="passo-num">1</span>
+        <div>
+          <p class="passo-titolo">negozio</p>
+          <div data-admin-negozio></div>
+        </div>
+      </section>
 
-    <div class="folder-bar">
-      <span class="folder-status" id="folderStatus">cartella del progetto non collegata: scegli la cartella STORECRAFT (con index.html e assets)</span>
-      <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
-    </div>
+      <section class="passo-op">
+        <span class="passo-num">2</span>
+        <div>
+          <p class="passo-titolo">cartella del progetto</p>
+          <p class="folder-status" id="folderStatus">non collegata: scegli la cartella STORECRAFT (con index.html e assets)</p>
+          <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
+        </div>
+      </section>
 
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="cerca un logo per nome…" oninput="renderList()">
-    </div>
-
-    <p class="count-info" id="countInfo"></p>
-
-    <div class="logo-list" id="logoList">
-      <p class="empty-msg" id="emptyMsg">collega la cartella del progetto per vedere l'elenco dei loghi</p>
+      <section class="passo-op">
+        <span class="passo-num">3</span>
+        <div>
+          <p class="passo-titolo">loghi del negozio</p>
+          <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="cerca un logo per nome…" oninput="renderList()">
+          </div>
+          <p class="count-info" id="countInfo"></p>
+          <div class="logo-list" id="logoList">
+            <p class="empty-msg" id="emptyMsg">collega la cartella del progetto per vedere l'elenco dei loghi</p>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 

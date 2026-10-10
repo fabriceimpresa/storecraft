@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-03"></script>
+  <script src="assets/js/negozi.js?v=20261010-06"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Struttura negozi</title>
@@ -30,7 +30,8 @@
     @keyframes cursore { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     p { margin: 0 0 12px; }
     /* segnale "live update" nel titolo: scritta verde minuscola .live update e cursore che lampeggia */
-    .live { margin-left: 14px; color: var(--ok); font-size: 11px; letter-spacing: .06em; text-transform: none; vertical-align: 1px; }
+    /* in fondo a destra della riga del titolo */
+    .live { margin-left: auto; color: var(--ok); font-size: 11px; letter-spacing: .06em; text-transform: none; vertical-align: 1px; }
     .live::after { content: '_'; margin-left: 2px; animation: cursore 1s steps(1) infinite; }
     /* riga di stato: casella nera, "stato" in verde e l'esito dell'ultima lettura in oro, in JetBrains Mono */
     .riga-stato { display: flex; align-items: baseline; gap: 14px; margin: 14px 0 0; padding: 9px 14px; background: #0a0908;
@@ -68,7 +69,8 @@
   <a class="torna" href="operatore.html">← Area operatore</a>
   <header class="testa">
     <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
-    <h1>Struttura negozi <span class="live" title="Lo schema si rifà a ogni apertura leggendo le pagine">.live update</span></h1>
+    <h1>Struttura negozi</h1>
+    <span class="live" title="Lo schema si rifà a ogni apertura leggendo le pagine">.live update</span>
   </header>
 
   <p>A ogni apertura la pagina legge le pagine di ogni negozio installato (dalle schede delle dashboard e dalle pagine di servizio) e controlla quali regole, moduli e campi comuni usano.</p>

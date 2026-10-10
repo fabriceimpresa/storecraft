@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-03"></script>
+  <script src="assets/js/negozi.js?v=20261010-06"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -28,7 +28,7 @@
     .pagina { max-width: 1120px; margin: 0 auto; padding: 18px 20px 60px; }
     .torna { display: inline-block; margin-bottom: 14px; color: var(--tenue); font-size: 11.5px; letter-spacing: .08em; text-decoration: none; }
     .torna:hover { color: var(--oro); }
-    /* intestazione: titolo a sinistra, logo STORE // CRAFT a destra */
+    /* intestazione come nella Struttura negozi: logo STORE // CRAFT e titolo a sinistra, ricerca a destra */
     header.testa { display: flex; align-items: center; gap: 22px; padding: 0 0 14px; }
     header.testa h1 { margin-right: auto; }
     /* ricerca: campo nell'intestazione, a destra, e sotto l'elenco dei risultati sopra la pagina */
@@ -143,13 +143,13 @@
 <div class="pagina">
   <a class="torna" href="operatore.html">← Area operatore</a>
   <header class="testa">
+    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
     <h1>Guida tecnica</h1>
     <!-- ricerca in tutta la guida: risultati cliccabili che aprono la sezione e portano al punto trovato -->
     <div class="cerca" role="search">
       <input id="cerca" type="search" placeholder="cerca nella guida…  ( / )" aria-label="Cerca nella guida" autocomplete="off" spellcheck="false" aria-controls="risultati" aria-expanded="false">
       <div id="risultati" class="risultati" role="listbox" aria-label="Risultati della ricerca" hidden></div>
     </div>
-    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
   </header>
 
   <nav class="indice">
@@ -360,7 +360,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-03</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-06</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>

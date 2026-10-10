@@ -65,6 +65,7 @@ h1::before { content: '> '; color: var(--op-oro); }
 .subtitle::before { content: '// '; color: var(--op-oro); }
 
 /* dentro la pagina operatore: niente cornice, titolo, ✕ e sfondo propri */
+html.incorporata, html.incorporata body { overflow: hidden; }   /* niente barre: la pagina operatore adatta riquadro e cornice */
 html.incorporata body { min-height: 0; padding: 0; background: transparent; }
 html.incorporata .container { width: 100%; padding: 0; border: 0; }
 html.incorporata .container::before, html.incorporata h1, html.incorporata .app-close-btn { display: none; }
@@ -261,3 +262,28 @@ button:disabled { opacity: .45; cursor: not-allowed; }
   body { padding: 20px 12px; }
   .container { padding: 30px 18px 24px; }
 }
+
+/* Passi numerati (Importa e Gestisci loghi, come Prepara copia della pagina operatore): [1] [2] [3] in oro a sinistra, a destra
+   il titolo del passo in grigio chiaro e i suoi comandi; linee sottili tra un passo e l'altro. Colori: grigio per i
+   testi, oro per numeri e comandi, verde e rosso solo per gli esiti */
+.passi-op { margin-top: 26px; }
+.passo-op {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 14px;
+  padding: 20px 0;
+  border-top: 1px solid var(--op-bordo);
+}
+.passo-op:last-child { border-bottom: 1px solid var(--op-bordo); }
+.passo-num { padding-top: 1px; color: var(--op-oro-chiaro); font-size: 12px; }
+.passo-num::before { content: '['; color: var(--op-tenue); }
+.passo-num::after { content: ']'; color: var(--op-tenue); }
+.passo-titolo { margin-bottom: 12px; color: var(--op-testo); font-size: 12.5px; letter-spacing: .04em; }
+.passo-nota { margin: -6px 0 12px; color: var(--op-tenue); font-size: 11.5px; }
+.passo-nota::before { content: '// '; color: var(--op-oro); }
+.passo-op .admin-negozio { margin-bottom: 0; }
+.passo-op .admin-negozio-label { display: none; }   /* il titolo del passo dice già «negozio» */
+.passo-op .folder-status { margin-bottom: 12px; color: var(--op-ok); }   /* riga di stato: verde (rossa con un errore) */
+.passo-op .folder-status.err { color: var(--op-errore); }
+.passo-op .upload-box { margin-bottom: 12px; }
+.passo-op .queue-list .empty-msg, .passo-op .logo-list .empty-msg { padding: 4px 0 0; }

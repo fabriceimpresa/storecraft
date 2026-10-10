@@ -25,9 +25,12 @@
   else osserva();
   if (!incorporata) return;
   document.documentElement.classList.add('incorporata');
+  // altezza e larghezza di tutto il contenuto (anche quello che uscirebbe dal riquadro): la pagina operatore adatta
+  // riquadro e cornice, così non compaiono barre di scorrimento
   const manda = () => {
     window.parent.postMessage({ sezioneOperatore: location.pathname.split('/').pop(),
-      altezza: Math.ceil(document.body.getBoundingClientRect().height) }, location.origin);
+      altezza: Math.ceil(Math.max(document.body.getBoundingClientRect().height, document.body.scrollHeight)),
+      larghezza: Math.ceil(document.body.scrollWidth) }, location.origin);
   };
   const avvia = () => {
     new ResizeObserver(manda).observe(document.body);

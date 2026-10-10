@@ -98,7 +98,7 @@
     }
 
     /* Menu degli strumenti: solo i titoli, in grigio chiaro (oro al passaggio), ben spaziati, divisi da linee sottili. Al passaggio del mouse (o con la
-       tastiera) un accenno da terminale: > davanti e il cursore _ che lampeggia; tutto in IBM Plex Mono */
+       tastiera) un accenno da terminale: > davanti e < dopo, come una voce scelta in un terminale; tutto in IBM Plex Mono */
     .menu {
       display: flex;
       flex-direction: column;
@@ -146,7 +146,7 @@
     }
 
     .voce::before { content: '>'; }
-    .voce::after { content: '_'; }
+    .voce::after { content: '<'; }
 
     .voce:hover,
     .voce:focus-visible,
@@ -162,13 +162,10 @@
 
     .voce:hover::after,
     .voce:focus-visible::after,
-    .voce[aria-expanded="true"]::after { animation: cursore-terminale 1s steps(1) infinite; }
-
-    @keyframes cursore-terminale { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .voce[aria-expanded="true"]::after { opacity: 1; }
 
     @media (prefers-reduced-motion: reduce) {
       .voce { transition: none; }
-      .voce:hover::after, .voce:focus-visible::after, .voce[aria-expanded="true"]::after { animation: none; opacity: 1; }
     }
 
     /* Viste delle sezioni (Importa loghi, Gestisci loghi, Prepara copia) dentro la cornice: cliccando una voce le altre
@@ -192,6 +189,7 @@
     .indietro[hidden] { display: none; }
 
     .frame { overflow: hidden; }
+    .frame.con-sezione { width: min(1120px, 100%); }
     .menu[hidden] { display: none; }
     .vista[hidden] { display: none; }
     .vista { margin-top: 8px; }
@@ -371,6 +369,9 @@
           if (!vista.hidden && riquadro && !riquadro.getAttribute('src')) riquadro.src = riquadro.dataset.src;
         });
         menu.hidden = Boolean(nuova);
+        // con una sezione aperta la cornice è più larga (spazio per le pagine dei loghi); tornando al menu riprende la sua
+        cornice.classList.toggle('con-sezione', Boolean(nuova));
+        cornice.style.width = '';
         indietro.hidden = !nuova;
       });
       voci.forEach(voce => voce.getAnimations().forEach(animazione => animazione.cancel()));
@@ -437,6 +438,9 @@
       if (evento.origin !== location.origin || !evento.data?.sezioneOperatore) return;
       document.querySelectorAll('.vista iframe').forEach(riquadro => {
         if (riquadro.contentWindow !== evento.source) return;
+        // contenuto più largo del riquadro: la cornice si allarga quanto serve (fino alla finestra) invece di mostrare barre
+        const piuLargo = (evento.data.larghezza || 0) - riquadro.clientWidth;
+        if (piuLargo > 0 && !riquadro.closest('.vista').hidden) cornice.style.width = `min(${cornice.offsetWidth + piuLargo + 8}px, 100%)`;
         const altezza = `${Math.max(120, evento.data.altezza)}px`;
         if (riquadro.style.height === altezza) return;
         if (riquadro.closest('.vista').hidden) riquadro.style.height = altezza;

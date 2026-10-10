@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261010-03"></script>
+<script src="assets/js/negozi.js?v=20261010-06"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMPORT LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-03">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-06">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-03">
-  <script src="assets/js/operatore-sezione.js?v=20261010-03"></script>
-  <script src="assets/js/admin-negozio.js?v=20261010-03"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-06">
+  <script src="assets/js/operatore-sezione.js?v=20261010-06"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-06"></script>
 </head>
 <body>
 
@@ -30,22 +30,42 @@
 
   <div class="container">
     <h1>Importa loghi ufficiali</h1>
-    <p class="subtitle" style="margin-bottom: 34px">aggiunge loghi ufficiali di <span data-admin-nome-negozio></span> in assets/logos/<span data-admin-cartella-negozio></span>/, genera le 4 varianti colorate (oro del negozio) e aggiorna elenco.js. <!-- la pagina non elabora le immagini (per togliere lo sfondo c'è Genera Loghi) --><span style="color: #fff">solo png pronti già trasparenti</span></p>
+    <p class="subtitle">loghi ufficiali di <span data-admin-nome-negozio></span>: il png in assets/logos/<span data-admin-cartella-negozio></span>/, le 4 varianti colorate (oro del negozio) e la riga in elenco.js</p>
 
-    <div data-admin-negozio></div>
+    <!-- tre passi, come Prepara copia: negozio, cartella del progetto, loghi -->
+    <div class="passi-op">
+      <section class="passo-op">
+        <span class="passo-num">1</span>
+        <div>
+          <p class="passo-titolo">negozio</p>
+          <div data-admin-negozio></div>
+        </div>
+      </section>
 
-    <div class="folder-bar">
-      <span class="folder-status" id="folderStatus">cartella del progetto non collegata: scegli la cartella STORECRAFT (con index.html e assets)</span>
-      <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
-    </div>
+      <section class="passo-op">
+        <span class="passo-num">2</span>
+        <div>
+          <p class="passo-titolo">cartella del progetto</p>
+          <p class="folder-status" id="folderStatus">non collegata: scegli la cartella STORECRAFT (con index.html e assets)</p>
+          <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
+        </div>
+      </section>
 
-    <div class="upload-box disabled" id="dropZone" role="button" tabindex="0" aria-label="Scegli i png dei loghi" onclick="onDropZoneClick()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onDropZoneClick(); }">
-      <strong>trascina qui i png dei loghi, o clicca per sceglierli</strong>
-      <input type="file" id="fileInput" accept="image/png" multiple onchange="handleFiles(this.files); this.value=''">
-    </div>
-
-    <div class="queue-list" id="queueList">
-      <p class="empty-msg" id="emptyMsg">nessun logo in coda: collega la cartella del progetto e trascina un png</p>
+      <section class="passo-op">
+        <span class="passo-num">3</span>
+        <div>
+          <p class="passo-titolo">loghi da importare</p>
+          <!-- la pagina non elabora le immagini (per togliere lo sfondo c'è Genera Loghi) -->
+          <p class="passo-nota">solo png pronti, già trasparenti</p>
+          <div class="upload-box disabled" id="dropZone" role="button" tabindex="0" aria-label="Scegli i png dei loghi" onclick="onDropZoneClick()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onDropZoneClick(); }">
+            <strong>trascina qui i png dei loghi, o clicca per sceglierli</strong>
+            <input type="file" id="fileInput" accept="image/png" multiple onchange="handleFiles(this.files); this.value=''">
+          </div>
+          <div class="queue-list" id="queueList">
+            <p class="empty-msg" id="emptyMsg">nessun logo in coda</p>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 
