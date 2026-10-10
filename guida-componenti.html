@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-44"></script>
+  <script src="assets/js/negozi.js?v=20261010-45"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.97</p>
+  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.98</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -426,7 +426,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-44</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-45</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -551,7 +551,7 @@
 
   <!-- ================================================================ -->
   <h2 id="scheda-negozio">Scheda del negozio</h2>
-  <p>Tutti i dati di un negozio stanno in <code>assets/negozi/</code>; nessun modulo comune ha nomi o valori di negozio scritti dentro. I negozi installati in una copia sono in <code>installati.js</code> (<code>Negozi.installa(['luxury', 'tebe', 'ophilya'])</code>).</p>
+  <p>Tutti i dati di un negozio stanno in <code>assets/negozi/</code>; nessun modulo comune ha nomi o valori di negozio scritti dentro. I negozi installati in una copia sono in <code>installati.js</code> (<code>Negozi.installa(['luxury', 'tebe', 'ophilya'])</code>); nella copia per un cliente con <code>{ copiaCliente: true }</code> (<code>Negozi.copiaCliente</code>), così la pagina operatore mostra solo i loghi ufficiali.</p>
   <table class="tipo">
     <tr><th>File · campo</th><th>Cosa contiene</th></tr>
     <tr><td>&lt;negozio&gt;.js · nome, sigla</td><td>nome intero (TEBE, LUXURY OUTLET) e sigla (LXRY, TEBE)</td></tr>
@@ -614,7 +614,7 @@
     <li>Area operatore › Prepara copia per un cliente (Chrome o Edge sul computer), oppure doppio clic su <code>Prepara copia.bat</code>.</li>
     <li>[1] si collega la cartella del progetto, in <strong>sola lettura</strong>: il progetto non può essere modificato; [2] si spuntano i negozi; [3] si sceglie la cartella di destinazione, meglio una cartella nuova e vuota (non dentro il progetto: la pagina rifiuta; se non è vuota chiede conferma).</li>
     <li>Durante la copia, sotto i passi, il terminale nero mostra ogni operazione: comando di partenza, file copiati con percorso e peso, cartelle dei negozi non scelti saltate, <code>installati.js</code> scritto ed esito finale.</li>
-    <li>Nella copia: splash page, cartelle dei negozi scelti, file comuni, risorse dei soli negozi scelti e <code>installati.js</code> scritto per loro. Restano fuori l'area operatore, le guide, il piano, le pagine <code>_*</code>, Git e la documentazione.</li>
+    <li>Nella copia: splash page, cartelle dei negozi scelti, file comuni, risorse dei soli negozi scelti e <code>installati.js</code> scritto per loro. C'è anche l'area operatore con i soli loghi ufficiali (Importa e Gestisci), per aggiornare i menu BRAND del cliente nella sua copia: <code>installati.js</code> la dichiara copia per un cliente (<code>{ copiaCliente: true }</code>) e la pagina operatore toglie le altre voci. Restano fuori Struttura negozi, Prepara copia, la Guida tecnica, il piano, le pagine <code>_*</code>, Git e la documentazione.</li>
     <li>Per provarla in locale: si chiude il server del progetto (la porta 8000 è una sola), si mette nella cartella della copia <code>Avvia server.bat</code> (sul Mac <code>Avvia server mac.command</code>) e si fa doppio clic; finita la prova lo si toglie prima di consegnarla.</li>
     <li>Le correzioni si fanno sempre in questo progetto e si rifà la copia.</li>
   </ol>

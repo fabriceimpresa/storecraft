@@ -12,9 +12,11 @@
      Negozi.scheda(id)            scheda del negozio (null se non è installato)
      Negozi.corrente()            scheda del negozio della pagina (null nelle pagine della radice)
      Negozi.unico()               il negozio, se ne è installato uno solo; altrimenti null
+     Negozi.copiaCliente          true nella copia per un cliente (la pagina operatore mostra solo i loghi ufficiali)
    Nelle schede e in installati.js:
      Negozi.registra(id, scheda)  aggiunge la scheda di un negozio
-     Negozi.installa([...])       dichiara i negozi installati e carica le loro schede */
+     Negozi.installa([...])       dichiara i negozi installati e carica le loro schede;
+     Negozi.installa([...], { copiaCliente: true })   così lo scrive Prepara copia nella copia per un cliente */
 (() => {
   const script = document.currentScript;
   const versione = new URL(script.src).search;  // stessa versione (?v=) dei file comuni
@@ -22,6 +24,7 @@
   const negozio = document.documentElement.dataset.negozio || null;
   const schede = {};
   let installati = [];
+  let copiaCliente = false;
 
   // Caricamento durante la lettura della pagina: i moduli che seguono trovano già schede e colori.
   function scrivi(html) {
@@ -33,11 +36,13 @@
     scheda: id => (installati.includes(id) && schede[id]) || null,
     corrente: () => (negozio && schede[negozio]) || null,
     unico: () => (installati.length === 1 ? installati[0] : null),
+    get copiaCliente() { return copiaCliente; },
     registra(id, scheda) {
       schede[id] = Object.freeze({ id, ...scheda });
     },
-    installa(elenco) {
+    installa(elenco, opzioni = {}) {
       installati = elenco.slice();
+      copiaCliente = Boolean(opzioni.copiaCliente);
       installati.forEach(id => {
         scrivi(`<script src="${new URL(`${id}.js${versione}`, cartella).href}"><\/script>`);
       });

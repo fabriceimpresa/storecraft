@@ -2,11 +2,13 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
+  <script src="assets/js/negozi.js?v=20261010-45"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
   <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
-       e splash page e mai inclusa nelle copie per i clienti. Raccoglie l'importazione e la gestione dei loghi ufficiali
+       e splash page. Nella copia per un cliente (installati.js con copiaCliente) mostra solo Importa e Gestisci loghi
+       ufficiali, per aggiornare i menu BRAND di quel cliente senza toccare il progetto madre. Raccoglie l'importazione e la gestione dei loghi ufficiali
        (logoimport.html, logogestione.html), la guida tecnica (guida-componenti.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
        Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -291,8 +293,9 @@
 
     <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Prepara copia per un cliente">
       <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
-        le schede dei negozi, con installati.js scritto per loro. Restano fuori gli strumenti di quest'area, il piano di
-        lavoro, le pagine di prova _*, Git, la documentazione e i .bat. Il progetto non viene modificato.</p>
+        le schede dei negozi, con installati.js scritto per loro, e quest'area con i soli loghi ufficiali (importa e gestisci),
+        per aggiornare i menu BRAND del cliente. Restano fuori Struttura negozi, Prepara copia, la Guida tecnica, il piano
+        di lavoro, le pagine di prova _*, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
       <div class="step">
@@ -342,6 +345,13 @@
     const indietro = document.getElementById('indietro');
     const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
     let vistaAperta = null;
+
+    // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Struttura negozi,
+    // Prepara copia e Guida tecnica restano nel progetto madre
+    if (Negozi.copiaCliente) {
+      menu.querySelectorAll('a[href="schema-pagine.html"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
+      delete VISTE.copia;   // la sezione resta nella pagina, nascosta e non apribile (il suo script ne cerca i comandi)
+    }
 
     // la cornice passa dall'altezza di prima alla nuova con un'animazione (cambia passa al nuovo contenuto)
     function adatta(cambia, durata = 450) {
@@ -595,15 +605,15 @@
       return '/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).\r\n' +
         '   Con un solo negozio la splash page apre subito la sua dashboard e i menu mostrano solo quel negozio.\r\n' +
         `   Scritto dalla pagina operatore il ${oggi}. */\r\n` +
-        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}]);\r\n`;
+        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], { copiaCliente: true });\r\n`;
     }
 
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
-      // Radice: la splash page; non gli strumenti dell'operatore, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html', 'schema-pagine.html',
-        'Storecraft Aggiornamento.html'];
-      riga('// radice: splash page (non gli strumenti dell\'operatore, il piano e le pagine _*)', 'sezione');
+      // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
+      // non Struttura negozi, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
+      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'schema-pagine.html', 'Storecraft Aggiornamento.html'];
+      riga('// radice: splash page e area operatore dei loghi (non guida, struttura, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
         await copiaFile(voce, destinazione, nome);
@@ -629,7 +639,7 @@
           const scrittura = await (await arrivo.getFileHandle('installati.js', { create: true })).createWritable();
           await scrittura.write(testoInstallati(ids));
           await scrittura.close();
-          riga(`  scrivo assets/negozi/installati.js  → Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}])`, 'ok');
+          riga(`  scrivo assets/negozi/installati.js  → Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], { copiaCliente: true })`, 'ok');
           continue;
         }
         riga(`// assets/${nome}/`, 'sezione');

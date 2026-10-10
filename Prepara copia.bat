@@ -7,7 +7,8 @@ goto :eof
 
 # Prepara una copia di STORE // CRAFT per un cliente, con i negozi scelti (uno, due o tutti).
 # Doppio clic su questo file: nella prima finestra si spuntano i negozi, nella seconda si sceglie la cartella di
-# destinazione. La copia contiene la splash page della radice (non gli strumenti dell'operatore), i file comuni (assets/css, js,
+# destinazione. La copia contiene la splash page della radice, l'area operatore con i soli loghi ufficiali
+# (operatore, logoimport, logogestione: per aggiornare i menu BRAND del cliente), i file comuni (assets/css, js,
 # fonts), le cartelle dei negozi scelti con le loro risorse (assets/img/<negozio>/, logos, pdf, thumbnail, foto) e le
 # loro schede (assets/negozi/), con l'elenco assets/negozi/installati.js già scritto. Restano fuori la cronologia Git,
 # il piano di lavoro, la documentazione per lo sviluppo e questi comandi .bat. Il repository non viene modificato.
@@ -151,8 +152,10 @@ try {
   $tutti = @($negozi | ForEach-Object { $_.Id })
   $assets = Join-Path $root 'assets'
 
-  # Radice: la splash page; non gli strumenti dell'operatore (operatore, logoimport, logogestione, guide dei componenti), il piano e le pagine di prova (_*)
-  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html', 'schema-pagine.html') -notcontains $_.Name } | ForEach-Object {
+  # Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione: con
+  # copiaCliente in installati.js la pagina operatore mostra solo quelle due sezioni); non Struttura negozi, la Guida
+  # tecnica, il piano e le pagine di prova (_*)
+  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('guida-componenti.html', 'guida-campione.html', 'schema-pagine.html') -notcontains $_.Name } | ForEach-Object {
     Copia $_.FullName (Join-Path $destinazione $_.Name)
   }
 
@@ -173,7 +176,7 @@ try {
       $testo = "/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).`r`n" +
                "   Con un solo negozio la splash page apre subito la sua dashboard e i menu mostrano solo quel negozio.`r`n" +
                "   Scritto da Prepara copia.bat il $(Get-Date -Format 'dd/MM/yyyy'). */`r`n" +
-               "Negozi.installa([$elenco]);`r`n"
+               "Negozi.installa([$elenco], { copiaCliente: true });`r`n"
       if (-not (Test-Path -LiteralPath $arrivo)) { New-Item -ItemType Directory -Path $arrivo -Force | Out-Null }
       [IO.File]::WriteAllText((Join-Path $arrivo 'installati.js'), $testo, $utf8)
       return
