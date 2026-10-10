@@ -287,3 +287,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .passo-op .folder-status.err { color: var(--op-errore); }
 .passo-op .upload-box { margin-bottom: 12px; }
 .passo-op .queue-list .empty-msg, .passo-op .logo-list .empty-msg { padding: 4px 0 0; }
+/* pulsante della cartella a cartella collegata: acceso (pieno d'oro) con la spunta */
+.btn-folder.collegata { background: var(--op-oro); color: #121110; }
+.btn-folder.collegata::before { content: '✓ '; }
+.btn-folder.collegata:hover { background: var(--op-oro-chiaro); }

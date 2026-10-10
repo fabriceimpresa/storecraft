@@ -73,14 +73,21 @@
   // Scelta della cartella del progetto STORE // CRAFT (quella con index.html e assets, es. DesktopSTORECRAFT), in lettura e
   // scrittura, con il controllo che sia davvero il progetto: scegliendo un'altra cartella non si crea niente al suo interno.
   // La finestra si apre dove si era scelta la volta prima (stesso id della copia per un cliente).
-  async function scegliProgetto() {
+  // passaggio (facoltativo): funzione che riceve il passaggio in corso, da mostrare nella riga di stato della pagina
+  async function scegliProgetto(passaggio = () => {}) {
+    passaggio('scegli la cartella STORECRAFT nella finestra del browser…');
     const cartella = await window.showDirectoryPicker({ id: 'storecraft-progetto', mode: 'readwrite' });
+    passaggio(`cartella "${cartella.name}" scelta: controllo che sia il progetto…`);
     try {
       await cartella.getFileHandle('index.html');
       await (await cartella.getDirectoryHandle('assets')).getDirectoryHandle('negozi');
     } catch (error) {
       throw new Error(`"${cartella.name}" non è la cartella del progetto: scegli la cartella STORECRAFT, quella che contiene index.html e assets`);
     }
+    // permesso di modificare i file: il browser lo chiede con una sua finestra (rispondere «Modifica file»)
+    passaggio('chiedo il permesso di modificare i file: rispondi alla finestra del browser…');
+    const permesso = await cartella.requestPermission({ mode: 'readwrite' });
+    if (permesso !== 'granted') throw new Error('il browser non ha dato il permesso di modificare i file della cartella: ricollega e rispondi «Modifica file»');
     return cartella;
   }
 

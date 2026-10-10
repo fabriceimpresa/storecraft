@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261010-06"></script>
+<script src="assets/js/negozi.js?v=20261010-08"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-06">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-08">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-06">
-  <script src="assets/js/operatore-sezione.js?v=20261010-06"></script>
-  <script src="assets/js/admin-negozio.js?v=20261010-06"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-08">
+  <script src="assets/js/operatore-sezione.js?v=20261010-08"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-08"></script>
 </head>
 <body>
 
@@ -29,24 +29,24 @@
 
   <div class="container">
     <h1>Gestisci loghi ufficiali</h1>
-    <p class="subtitle">loghi ufficiali di <span data-admin-nome-negozio></span>: eliminando un logo si tolgono il png da assets/logos/<span data-admin-cartella-negozio></span>/, le 4 varianti colorate e la riga in elenco.js</p>
+    <p class="subtitle">elenca i loghi ufficiali di <span data-admin-nome-negozio></span> e permette di eliminarli. eliminando un logo si tolgono l'originale da assets/logos/<span data-admin-cartella-negozio></span>/, le sue 4 varianti per la stampa e la sua riga nell'elenco dei loghi (elenco.js): il brand sparisce dai menu BRAND delle pagine. alla fine le modifiche vanno pubblicate con un commit</p>
 
-    <!-- tre passi, come Importa loghi: negozio, cartella del progetto, loghi -->
+    <!-- tre passi, come Importa loghi: cartella del progetto, negozio da aggiornare, loghi -->
     <div class="passi-op">
       <section class="passo-op">
         <span class="passo-num">1</span>
         <div>
-          <p class="passo-titolo">negozio</p>
-          <div data-admin-negozio></div>
+          <p class="passo-titolo">cartella del progetto</p>
+          <p class="folder-status" id="folderStatus">non collegata: scegli la cartella STORECRAFT (con index.html e assets)</p>
+          <button type="button" class="btn-folder" id="folderBtn" onclick="connectProjectFolder()">collega cartella progetto</button>
         </div>
       </section>
 
       <section class="passo-op">
         <span class="passo-num">2</span>
         <div>
-          <p class="passo-titolo">cartella del progetto</p>
-          <p class="folder-status" id="folderStatus">non collegata: scegli la cartella STORECRAFT (con index.html e assets)</p>
-          <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
+          <p class="passo-titolo">negozio da aggiornare</p>
+          <div data-admin-negozio></div>
         </div>
       </section>
 
@@ -87,11 +87,20 @@
     try {
       // cartella del progetto STORECRAFT (controllata), poi le sottocartelle del negozio: assets/logos/<negozio> e
       // assets/img/<negozio>/printlogos
-      projectDirHandle = await AdminNegozio.scegliProgetto();
+      projectDirHandle = await AdminNegozio.scegliProgetto(passaggio => {
+        folderStatus.textContent = passaggio;
+        folderStatus.className = 'folder-status';
+      });
+      folderStatus.textContent = 'leggo l\'elenco dei loghi del negozio…';
       await openStoreFolders();
 
       folderStatus.textContent = 'cartella del progetto collegata: ' + projectDirHandle.name;
       folderStatus.className = 'folder-status ok';
+      // il pulsante si accende e lo dice; un clic ricollega (anche un'altra cartella)
+      const pulsanteCartella = document.getElementById('folderBtn');
+      pulsanteCartella.textContent = 'cartella collegata';
+      pulsanteCartella.classList.add('collegata');
+      pulsanteCartella.title = 'Cartella collegata: un clic per collegarne un’altra';
 
       await loadLogoList();
     } catch (err) {
@@ -207,7 +216,7 @@
         <span class="row-status ${entry.status === 'deleted' ? 'deleted' : entry.status === 'deleting' ? 'deleting' : entry.status === 'error' ? 'error' : ''}">
           ${entry.status === 'deleted' ? '[ ok ] eliminato' : entry.status === 'deleting' ? 'eliminazione…' : entry.status === 'error' ? '[ errore ]' : ''}
         </span>
-        <button type="button" class="btn-delete-row" ${entry.status === 'deleting' ? 'disabled' : ''} onclick="deleteLogo('${entry.name.replace(/'/g, "\\'")}')">🗑 Elimina</button>
+        <button type="button" class="btn-delete-row" ${entry.status === 'deleting' ? 'disabled' : ''} onclick="deleteLogo('${entry.name.replace(/'/g, "\\'")}')">Elimina</button>
       </div>
     `).join('');
   }
