@@ -588,7 +588,7 @@
 
   <script>
     const LOGO_PATH = "../assets/logos/luxury/";
-    const PLACEHOLDER_TEXT = "🔴 ━━━  SELEZIONA BRAND  ━━━ 🔴";
+    const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
     const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '54', '56', '58', '60'];
     const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL'];
 
@@ -860,7 +860,11 @@
 
     function loadBrandSelect() {
       const select = document.getElementById('brandSelect');
-      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = PLACEHOLDER_TEXT;
+      placeholder.className = 'brand-placeholder';   // placeholder testuale del menu BRAND
+      select.replaceChildren(placeholder);
 
       if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
         // Brand prioritari (stagionali) mostrati per primi ed evidenziati, poi il resto in ordine alfabetico

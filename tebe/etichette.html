@@ -606,9 +606,9 @@
       <!-- TAGLIE: DOPPIA CIFRA (prezzo originario e sconto) o STANDARD (logo TEBE al loro posto) -->
       <div class="form-group" id="groupSizeMode" style="display:none;">
         <label>Tipo di etichetta</label>
-        <div class="mode-switch" role="group" aria-label="Tipo di etichetta">
-          <button type="button" data-size-mode="standard" class="active" onclick="setSizeMode('standard')">STANDARD</button>
-          <button type="button" data-size-mode="doppia" onclick="setSizeMode('doppia')">DOPPIA CIFRA</button>
+        <div data-selettore id="sizeModeSelector" data-on-change="setSizeMode" aria-label="Tipo di etichetta">
+          <button value="standard" class="active">STANDARD</button>
+          <button value="doppia">DOPPIA CIFRA</button>
         </div>
       </div>
 
@@ -709,6 +709,7 @@
   </main>
 
   <script src="../assets/js/testi-pronti.js?v=20261010-44"></script>
+  <script src="../assets/js/selettore.js?v=20261010-44"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/logos/tebe/Tebe.png";
     const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
@@ -1055,7 +1056,11 @@
 
     function loadBrandSelect() {
       const select = document.getElementById('brandSelect');
-      select.innerHTML = `<option value="">${PLACEHOLDER_TEXT}</option>`;
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = PLACEHOLDER_TEXT;
+      placeholder.className = 'brand-placeholder';   // placeholder testuale del menu BRAND
+      select.replaceChildren(placeholder);
 
       if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
         const { priorityFiles, remainingFiles } = getSortedLogoFiles();
@@ -1211,9 +1216,7 @@
     function syncSizeModeFields() {
       if (!isSizeTemplate()) return;
       const isStandard = getSizeMode() === 'standard';
-      document.querySelectorAll('[data-size-mode]').forEach(button => {
-        button.classList.toggle('active', button.dataset.sizeMode === getSizeMode());
-      });
+      Selettore.attiva('sizeModeSelector', getSizeMode());
       document.getElementById('groupPriceRow').style.display = isStandard ? 'none' : 'flex';
       // Taglie Brand in DOPPIA CIFRA: niente testo descrittivo (al suo posto scende il blocco prezzi).
       const showDescription = currentTemplateKey !== 'tagliebrand' || isStandard;

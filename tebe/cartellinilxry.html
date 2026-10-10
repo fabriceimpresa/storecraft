@@ -360,7 +360,7 @@
 
     function renderTabs() {
       const container = document.getElementById('tabs-container');
-      container.innerHTML = '';
+      container.replaceChildren();
       cardsData.forEach((card, index) => {
         const item = document.createElement('div');
         item.className = `tab-item ${index === currentCardIdx ? 'active' : ''}`;
@@ -372,17 +372,21 @@
           }
         };
 
-        item.innerHTML = `
-          <label>#${card.id}</label>
-          <input type="checkbox" ${card.enabled ? 'checked' : ''} onchange="toggleCardEnabled(${index}, this.checked)">
-        `;
+        // Linguetta costruita con nodi DOM: numero del cartellino e casella che lo esclude dalla stampa.
+        const label = document.createElement('label');
+        label.textContent = `#${card.id}`;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = card.enabled;
+        checkbox.onchange = () => toggleCardEnabled(index, checkbox.checked);
+        item.append(label, checkbox);
         container.appendChild(item);
       });
     }
 
     function renderGrid() {
       const grid = document.getElementById('printable-grid');
-      grid.innerHTML = '';
+      grid.replaceChildren();
 
       cardsData.forEach((card) => {
         const el = document.createElement('div');

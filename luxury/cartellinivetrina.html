@@ -360,7 +360,7 @@
 
     function renderTabs() {
       const container = document.getElementById('tabs-container');
-      container.innerHTML = '';
+      container.replaceChildren();
       cardsData.forEach((card, index) => {
         const item = document.createElement('div');
         item.className = `tab-item ${index === currentCardIdx ? 'active' : ''}`;
@@ -372,57 +372,76 @@
           }
         };
 
-        item.innerHTML = `
-          <label>#${card.id}</label>
-          <input type="checkbox" ${card.enabled ? 'checked' : ''} onchange="toggleCardEnabled(${index}, this.checked)">
-        `;
+        // Linguetta costruita con nodi DOM: numero del cartellino e casella che lo esclude dalla stampa.
+        const label = document.createElement('label');
+        label.textContent = `#${card.id}`;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = card.enabled;
+        checkbox.onchange = () => toggleCardEnabled(index, checkbox.checked);
+        item.append(label, checkbox);
         container.appendChild(item);
       });
     }
 
     function renderGrid() {
       const grid = document.getElementById('printable-grid');
-      grid.innerHTML = '';
+      grid.replaceChildren();
 
       cardsData.forEach((card) => {
         const el = document.createElement('div');
         el.className = `cartellino ${!card.enabled ? 'disabled' : ''}`;
         el.id = `card-view-${card.id}`;
 
+        // Cartellino costruito con nodi DOM: il testo dell'utente va con textContent.
+        const node = (tag, className, text) => {
+          const element = document.createElement(tag);
+          if (className) element.className = className;
+          if (text !== undefined) element.textContent = text;
+          return element;
+        };
+
+        // Logo del brand; senza logo, o se il file non si carica, il nome del brand
         const brandDisplayName = cleanBrandName(card.brand);
-        let logoContent = `<div class="brand-text-fallback">${brandDisplayName}</div>`;
-
-        if (card.customLogoUrl) {
-          logoContent = `<img src="${card.customLogoUrl}" alt="${brandDisplayName}">`;
-        } else if (card.brand) {
-          const logoFile = getLogoFilename(card.brand);
-          const logoSrc = getLogoSource(logoFile);
-          logoContent = `<img src="${logoSrc}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${brandDisplayName}</div>'" alt="${brandDisplayName}">`;
-        }
-
-        let subRowContent = '';
-        if (card.usePreset) {
-          subRowContent = `<div class="preset-label">${card.presetText}</div>`;
+        const brandBox = node('div', 'brand-box');
+        if (card.customLogoUrl || card.brand) {
+          const logo = node('img');
+          logo.alt = brandDisplayName;
+          if (!card.customLogoUrl) logo.onerror = () => logo.replaceWith(node('div', 'brand-text-fallback', brandDisplayName));
+          logo.src = card.customLogoUrl || getLogoSource(getLogoFilename(card.brand));
+          brandBox.append(logo);
         } else {
-          subRowContent = `
-            <div class="orig-discount">
-              ${card.priceOrig ? `<span class="strike"><span class="currency">€</span> ${card.priceOrig}</span>` : ''}
-              ${card.sconto ? `<span class="badge-sconto">-${card.sconto}%</span>` : ''}
-            </div>
-          `;
+          brandBox.append(node('div', 'brand-text-fallback', brandDisplayName));
         }
 
-        el.innerHTML = `
-          <div class="brand-box">${logoContent}</div>
-          <div class="card-body-center">
-            <div class="desc-box">${card.desc}</div>
-            <div class="price-details-row">${subRowContent}</div>
-            <div class="final-price"><span class="currency">€</span> ${card.priceFinal}</div>
-          </div>
-          <div class="card-footer-logo">
-            <img src="../assets/img/luxury/logocartellini.png" onerror="this.style.display='none'" alt="Luxury Outlet">
-          </div>
-        `;
+        const details = node('div', 'price-details-row');
+        if (card.usePreset) {
+          details.append(node('div', 'preset-label', card.presetText));
+        } else {
+          const origDiscount = node('div', 'orig-discount');
+          if (card.priceOrig) {
+            const strike = node('span', 'strike');
+            strike.append(node('span', 'currency', '€'), ` ${card.priceOrig}`);
+            origDiscount.append(strike);
+          }
+          if (card.sconto) origDiscount.append(node('span', 'badge-sconto', `-${card.sconto}%`));
+          details.append(origDiscount);
+        }
+
+        const finalPrice = node('div', 'final-price');
+        finalPrice.append(node('span', 'currency', '€'), ` ${card.priceFinal}`);
+
+        const center = node('div', 'card-body-center');
+        center.append(node('div', 'desc-box', card.desc), details, finalPrice);
+
+        const footer = node('div', 'card-footer-logo');
+        const footerLogo = node('img');
+        footerLogo.alt = 'Luxury Outlet';
+        footerLogo.onerror = () => { footerLogo.style.display = 'none'; };
+        footerLogo.src = '../assets/img/luxury/logocartellini.png';
+        footer.append(footerLogo);
+
+        el.append(brandBox, center, footer);
 
         grid.appendChild(el);
 

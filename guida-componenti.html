@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.96</p>
+  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.97</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -506,7 +506,7 @@
     <tr><td>Pagine</td><td>Luxury: <code>etichette</code> (sei modelli, scelti con <code>?label=</code>: doppioprezzo, finalprice, lastchance, outlet, promo50, tagliedoppiacifra) · TEBE: <code>etichette</code> · OPHILYA: <code>etichetteophilya</code></td></tr>
     <tr><td>Foglio</td><td>etichetta 57 × 32 mm (<code>#labelPreview</code>), rasterizzata a 300 dpi; stampa centrata e ingrandita a 1,08×, spostata in alto di 1 mm</td></tr>
     <tr><td>Stampa</td><td>diretta sulla stampante DYMO (<code>dymo-direct.js</code> con <code>dymo.connect.framework.js</code>), altrimenti stampa del browser; campo Numero di etichette (1–99). Niente lista di stampa né vista telefono</td></tr>
-    <tr><td>Pannello</td><td>pannello delle etichette con <code>menu-cascata</code>; testi pronti <code>Etichette DYMO</code> in TEBE e OPHILYA (stagioni con ⭐, scelta iniziale SALE)</td></tr>
+    <tr><td>Pannello</td><td>pannello delle etichette con <code>menu-cascata</code>; testi pronti <code>Etichette DYMO</code> in TEBE e OPHILYA (stagioni con ⭐, scelta iniziale SALE); nelle Taglie di TEBE e OPHILYA il selettore STANDARD / DOPPIA CIFRA con <code>selettore.js</code> (<code>#sizeModeSelector</code>); menu BRAND da <code>-- Seleziona Brand --</code> nei tre negozi</td></tr>
     <tr><td>Nella dashboard</td><td>sezione <code>tipo: 'etichette'</code> (schede DYMO, <code>tipo: '57 x 32 MM'</code>) e <code>etichette: 'etichette.html'</code> nel contenuto del negozio per la voce del menu laterale</td></tr>
   </table>
 
@@ -615,14 +615,14 @@
     <li>[1] si collega la cartella del progetto, in <strong>sola lettura</strong>: il progetto non può essere modificato; [2] si spuntano i negozi; [3] si sceglie la cartella di destinazione, meglio una cartella nuova e vuota (non dentro il progetto: la pagina rifiuta; se non è vuota chiede conferma).</li>
     <li>Durante la copia, sotto i passi, il terminale nero mostra ogni operazione: comando di partenza, file copiati con percorso e peso, cartelle dei negozi non scelti saltate, <code>installati.js</code> scritto ed esito finale.</li>
     <li>Nella copia: splash page, cartelle dei negozi scelti, file comuni, risorse dei soli negozi scelti e <code>installati.js</code> scritto per loro. Restano fuori l'area operatore, le guide, il piano, le pagine <code>_*</code>, Git e la documentazione.</li>
-    <li>Per provarla in locale: si chiude il server del progetto (la porta 8000 è una sola), si mette nella cartella della copia <code>Avvia server.bat</code> e si fa doppio clic; finita la prova lo si toglie prima di consegnarla.</li>
+    <li>Per provarla in locale: si chiude il server del progetto (la porta 8000 è una sola), si mette nella cartella della copia <code>Avvia server.bat</code> (sul Mac <code>Avvia server mac.command</code>) e si fa doppio clic; finita la prova lo si toglie prima di consegnarla.</li>
     <li>Le correzioni si fanno sempre in questo progetto e si rifà la copia.</li>
   </ol>
 
   <!-- ================================================================ -->
   <h2 id="foto-guida">Foto della guida</h2>
   <ol class="passi">
-    <li>Server locale acceso (<code>Avvia server.bat</code>).</li>
+    <li>Server locale acceso (<code>Avvia server.bat</code>, sul Mac <code>Avvia server mac.command</code>).</li>
     <li>In PowerShell, dalla radice del progetto: <code>.\_foto-guida.ps1</code> rifà tutte le foto; con dei nomi solo quelle (<code>.\_foto-guida.ps1 es-natale 'colore-*'</code>).</li>
     <li>Ogni foto è descritta in <code>FOTO</code> di <code>_foto-guida.html</code>: pagina da aprire, azione (es. accendere un tema), elemento da ritagliare; i nomi <code>tel-*</code> con la vista telefono.</li>
     <li>Le foto vanno in <code>guida-immagini/</code>, fuori dalle copie per i clienti; nella guida si collegano per titolo della scheda (<code>IMMAGINI</code>) o con <code>data-foto</code>.</li>

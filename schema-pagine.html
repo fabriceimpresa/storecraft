@@ -56,11 +56,22 @@
     th { color: var(--oro); font-weight: 400; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; background: var(--pannello);
       white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px 6px; height: 150px; }
     th.pg { writing-mode: horizontal-tb; transform: none; height: auto; vertical-align: bottom; }
+    /* Esito del negozio: colonna larga quanto gli avvisi, la scritta verticale sta al centro della colonna;
+       verde con le pagine del negozio allineate, rossa se c'è qualcosa da sistemare */
+    th.centro { writing-mode: horizontal-tb; transform: none; text-align: center; vertical-align: bottom; }
+    th.centro span { display: inline-block; writing-mode: vertical-rl; transform: rotate(180deg); }
+    th.centro.si { color: var(--ok); }
+    th.centro.warn { color: var(--warn); }
     td { text-align: center; padding: 6px 4px; }
     td:first-child { color: var(--oro-chiaro); text-align: left; white-space: nowrap; }
     .si { color: var(--ok); }
     .no { color: var(--no); }
     .warn { color: var(--warn); }
+    /* Ultima colonna, l'esito della riga (come un totale): staccata dalle altre con un fondo appena più chiaro
+       e una linea a sinistra; la pagina allineata ha la spunta verde, più grande delle altre, senza alzare la riga */
+    th.centro, td.esito { border-left: 1px solid #4a453d; background: rgba(255, 255, 255, .035); }
+    td.esito { text-align: center; vertical-align: middle; }
+    .spunta-esito { color: var(--ok); font-size: 15px; line-height: 1; }
     .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--bordo); border-radius: 3px; color: var(--tenue); font-size: 10px; letter-spacing: .06em; }
     @media (prefers-reduced-motion: reduce) { .live::after { animation: none; } }
   </style>
@@ -74,7 +85,6 @@
     <span class="live" title="Lo schema si rifà a ogni apertura leggendo le pagine">.live update</span>
   </header>
 
-  <p>A ogni apertura la pagina legge le pagine di ogni negozio installato (dalle schede delle dashboard e dalle pagine di servizio) e controlla quali regole, moduli e campi comuni usano.</p>
   <p class="riga-stato"><span class="stato-etichetta">stato</span><span id="stato">Lettura in corso…</span></p>
   <div id="schema"></div>
 </div>
@@ -212,12 +222,19 @@
       thPagina.className = 'pg';
       thPagina.textContent = 'Pagina';
       intestazione.append(thPagina);
-      [...CONTROLLI.map(c => [c[0], c[1]]), ['Da sistemare', 'pezzi scritti a mano nella pagina']].forEach(([nome, descrizione]) => {
+      CONTROLLI.forEach(([nome, descrizione]) => {
         const th = document.createElement('th');
         th.textContent = nome;
         th.title = descrizione;
         intestazione.append(th);
       });
+      const thResidui = document.createElement('th');
+      thResidui.className = 'centro';
+      thResidui.title = 'pezzi scritti a mano nella pagina';
+      const scrittaResidui = document.createElement('span');
+      thResidui.append(scrittaResidui);
+      let daSistemare = 0;   // pagine del negozio con pezzi da sistemare o non lette
+      intestazione.append(thResidui);
       tabella.append(intestazione);
       let pagine = [];
       try { pagine = await pagineDelNegozio(id); } catch (errore) { titolo.textContent += ` · scheda della dashboard non letta (${errore.message})`; }
@@ -238,8 +255,14 @@
           CONTROLLI.forEach(([, , prova]) => riga.append(cella(prova(t))));
           const residui = RESIDUI.filter(([, prova]) => prova(t)).map(([nome]) => nome);
           const td = document.createElement('td');
-          if (residui.length) { td.className = 'warn'; td.textContent = '! ' + residui.join(', '); totResidui += residui.length; }
-          else { td.className = 'no'; td.textContent = '—'; }
+          if (residui.length) { td.className = 'esito warn'; td.textContent = '! ' + residui.join(', '); totResidui += residui.length; daSistemare++; }
+          else {   // pagina allineata ai moduli comuni
+            td.className = 'esito';
+            const spunta = document.createElement('span');
+            spunta.className = 'spunta-esito';
+            spunta.textContent = '✔\uFE0E';
+            td.append(spunta);
+          }
           riga.append(td);
         } catch (errore) {
           const td = document.createElement('td');
@@ -247,17 +270,22 @@
           td.className = 'warn';
           td.textContent = 'pagina non letta: ' + errore.message;
           riga.append(td);
+          daSistemare++;
         }
         tabella.append(riga);
         totPagine++;
       }
+      // Esito del negozio: pagine allineate (verde) o da sistemare (rosso)
+      const esito = pagine.length && !daSistemare;
+      thResidui.className = `centro ${esito ? 'si' : 'warn'}`;
+      scrittaResidui.textContent = esito ? 'pagine allineate' : 'da sistemare';
       scorri.append(tabella);
       sezione.append(scorri);
       contenitore.append(sezione);
     }
     const ora = new Date().toLocaleString('it-IT');
     document.getElementById('stato').textContent = `Letto il ${ora}: ${totPagine} pagine in ${Negozi.installati.length} negozi, ` +
-      (totResidui ? `${totResidui} pezzi da portare sui moduli comuni.` : 'nessun pezzo scritto a mano da sistemare.');
+      (totResidui ? `${totResidui} ${totResidui === 1 ? 'pezzo' : 'pezzi'} da portare sui moduli comuni.` : 'nessun pezzo scritto a mano da sistemare.');
   }
   schema();
 </script>

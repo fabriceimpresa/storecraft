@@ -499,7 +499,7 @@
 
     function renderTabs() {
       const container = document.getElementById('tabs-container');
-      container.innerHTML = '';
+      container.replaceChildren();
       cardsData.forEach((card, index) => {
         const item = document.createElement('div');
         item.className = `tab-item ${index === currentCardIdx ? 'active' : ''}`;
@@ -511,17 +511,21 @@
           }
         };
 
-        item.innerHTML = `
-          <label>#${card.id}</label>
-          <input type="checkbox" ${card.enabled ? 'checked' : ''} onchange="toggleCardEnabled(${index}, this.checked)">
-        `;
+        // Linguetta costruita con nodi DOM: numero del cartellino e casella che lo esclude dalla stampa.
+        const label = document.createElement('label');
+        label.textContent = `#${card.id}`;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = card.enabled;
+        checkbox.onchange = () => toggleCardEnabled(index, checkbox.checked);
+        item.append(label, checkbox);
         container.appendChild(item);
       });
     }
 
     function renderGrid() {
       const grid = document.getElementById('printable-grid');
-      grid.innerHTML = '';
+      grid.replaceChildren();
 
       cardsData.forEach((card) => {
         const el = document.createElement('div');
@@ -529,41 +533,54 @@
         el.className = `cartellino ${!card.enabled ? 'disabled' : ''} ${isBlackEvent ? 'is-black-event' : ''}`;
         el.id = `card-view-${card.id}`;
 
-        const brandDisplayName = cleanBrandName(card.brand);
-        let logoContent = `<div class="brand-text-fallback">${brandDisplayName}</div>`;
+        // Cartellino costruito con nodi DOM: il testo dell'utente va con textContent.
+        const node = (tag, className, text) => {
+          const element = document.createElement(tag);
+          if (className) element.className = className;
+          if (text !== undefined) element.textContent = text;
+          return element;
+        };
 
-        if (card.customLogoUrl) {
-          logoContent = `<img src="${card.customLogoUrl}" alt="${brandDisplayName}">`;
-        } else if (card.brand) {
-          const logoFile = getLogoFilename(card.brand);
-          const logoSrc = getLogoSource(logoFile);
-          logoContent = `<img src="${logoSrc}" onerror="this.outerHTML='<div class=\\'brand-text-fallback\\'>${brandDisplayName}</div>'" alt="${brandDisplayName}">`;
+        // Logo del brand; senza logo, o se il file non si carica, il nome del brand
+        const brandDisplayName = cleanBrandName(card.brand);
+        const brandBox = node('div', 'brand-box');
+        if (card.customLogoUrl || card.brand) {
+          const logo = node('img');
+          logo.alt = brandDisplayName;
+          if (!card.customLogoUrl) logo.onerror = () => logo.replaceWith(node('div', 'brand-text-fallback', brandDisplayName));
+          logo.src = card.customLogoUrl || getLogoSource(getLogoFilename(card.brand));
+          brandBox.append(logo);
+        } else {
+          brandBox.append(node('div', 'brand-text-fallback', brandDisplayName));
         }
-        el.innerHTML = `
-          <div class="brand-box">${logoContent}</div>
-          <div class="card-body-center">
-            ${card.withDesc ? `
-              <div class="article-placeholder">
-                <div class="article-desc">${formatDescriptionText(card.desc)}</div>
-              </div>
-            ` : `
-              <div class="orig-price-row ${card.withDiscount ? 'has-discount' : ''}">
-                <div class="orig-price-box">
-                  <span class="strike-line">€ ${card.priceOrig || '0,00'}</span>
-                </div>
-                ${card.withDiscount && card.sconto ? `<span class="discount-rate">-${card.sconto}%</span>` : ''}
-              </div>
-            `}
-            <div class="sale-banner-box ${isBlackEvent ? 'is-black-event' : ''}">
-              ${card.saleTitle ? `<div class="sale-banner-title">${card.saleTitle}</div>` : ''}
-              ${card.saleSub ? `<div class="sale-banner-sub">${card.saleSub}</div>` : ''}
-            </div>
-            <div class="final-price">€ ${card.priceFinal || '0,00'}</div>
-          </div>
-          <div class="card-footer-logo">
-            <img src="../assets/img/luxury/${isBlackEvent ? 'logocartellini.png' : 'loghinored.png'}" onerror="this.style.display='none'" alt="Luxury Outlet">
-          </div>
-        `;
+
+        const center = node('div', 'card-body-center');
+        if (card.withDesc) {
+          const article = node('div', 'article-placeholder');
+          article.append(node('div', 'article-desc', formatDescriptionText(card.desc)));
+          center.append(article);
+        } else {
+          const origRow = node('div', `orig-price-row ${card.withDiscount ? 'has-discount' : ''}`);
+          const origBox = node('div', 'orig-price-box');
+          origBox.append(node('span', 'strike-line', `€ ${card.priceOrig || '0,00'}`));
+          origRow.append(origBox);
+          if (card.withDiscount && card.sconto) origRow.append(node('span', 'discount-rate', `-${card.sconto}%`));
+          center.append(origRow);
+        }
+
+        const banner = node('div', `sale-banner-box ${isBlackEvent ? 'is-black-event' : ''}`);
+        if (card.saleTitle) banner.append(node('div', 'sale-banner-title', card.saleTitle));
+        if (card.saleSub) banner.append(node('div', 'sale-banner-sub', card.saleSub));
+        center.append(banner, node('div', 'final-price', `€ ${card.priceFinal || '0,00'}`));
+
+        const footer = node('div', 'card-footer-logo');
+        const footerLogo = node('img');
+        footerLogo.alt = 'Luxury Outlet';
+        footerLogo.onerror = () => { footerLogo.style.display = 'none'; };
+        footerLogo.src = `../assets/img/luxury/${isBlackEvent ? 'logocartellini.png' : 'loghinored.png'}`;
+        footer.append(footerLogo);
+
+        el.append(brandBox, center, footer);
 
         grid.appendChild(el);
 
