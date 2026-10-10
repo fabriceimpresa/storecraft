@@ -5,7 +5,8 @@
    Un modulo (pagina <cartella>/<pagina>.html, scheda nella dashboard del suo negozio) si associa a un negozio:
    - stesso negozio della pagina: la sua scheda entra nella dashboard del negozio;
    - altro negozio: la pagina si copia nella cartella del negozio e si adatta a lui (data-negozio, percorsi delle sue
-     risorse, con le immagini che mancano copiate dal negozio della pagina), la miniatura si copia nelle sue anteprime e
+     risorse, con le immagini che mancano copiate dal negozio della pagina; un logo ufficiale scritto nella pagina come
+     scelta di partenza che il negozio non ha diventa il logo di partenza delle sue pagine), la miniatura si copia nelle sue anteprime e
      la scheda entra nella sua dashboard, con origine: '<cartella>/<pagina>.html' (così si riconosce la copia). Se il
      negozio ha già una pagina con lo stesso nome, la copia si chiama <pagina>-<cartella>.html.
    Togliendo la spunta a un clone (pagina copiata da qui, con il segno storecraft-origine) la scheda esce dalla
@@ -20,6 +21,9 @@
      Associa.aggiungiScheda(testoDashboard, tipo, scheda)          nuovo testo con la scheda in fondo alla sezione
      Associa.togliScheda(testoDashboard, negozio, cartella, pagina) nuovo testo senza la scheda del modulo
      Associa.adattaPagina(html, da, a, origine)                    { html, risorse: [{ cartella, file }] } da copiare
+     Associa.elencoLoghi(testoElenco)                              { file, prioritari } da assets/logos/<negozio>/elenco.js
+     Associa.logoPredefinito(pagine, elenco)                       logo di partenza del negozio (dalle sue pagine o dal menu)
+     Associa.sostituisciLoghi(html, elencoDa, elencoA, logo)       { html, sostituiti }: i loghi che il negozio non ha
    Uso (file, con la cartella del progetto collegata):
      Associa.scegliProgetto(passaggio)                              cartella del progetto scelta e controllata (Chrome / Edge)
      Associa.associa(progetto, { modulo, tipo, cartella, negozio })   aggiunge il modulo al negozio
@@ -33,6 +37,13 @@
                                          assets/pacchetti/ e nell'elenco); restituisce { galleria, pagina }
 
    Un nuovo modulo non è in nessuna dashboard: si associa ai negozi dalla sua scheda, come gli altri.
+     Associa.eliminaModulo(progetto, { galleria, modulo, negozi })
+                                         toglie un nuovo modulo dalla sua galleria e cancella la sua pagina in moduli/ e la
+                                         miniatura (se nessun altro modulo le usa) e la galleria creata qui rimasta vuota;
+                                         rifiuta un modulo ancora in una dashboard (negozi: i negozi installati)
+     Associa.togliModulo(testoGalleria, modulo)                      { testo, rimasti }: il testo senza il modulo
+     Associa.rinomina(progetto, { galleria, titolo })              nuovo titolo del carosello (galleria creata qui: anche il nome)
+     Associa.rinominaGalleria(testoGalleria, titolo, conNome)        il testo con il titolo nuovo
 
    Etichette DYMO: un nuovo modulo clona un set (la pagina delle etichette di un negozio) tenendo solo i layout scelti.
      Associa.clonaEtichette(progetto, { cartella, link, moduli, nome })   pagina <cartella>/<nome>.html e galleria nuova
@@ -129,8 +140,11 @@
 
   function togliScheda(testo, negozio, cartella, nome) {
     const trovata = trovaScheda(testo, negozio, cartella, nome);
-    if (!trovata) return testo;
-    // la riga intera della scheda (anche su più righe) e la virgola che la separa dalla vicina
+    return trovata ? togliOggetto(testo, trovata) : testo;
+  }
+  // toglie dal testo un oggetto { … } di un elenco: la sua riga intera (anche su più righe) e la virgola che lo separa
+  // dal vicino
+  function togliOggetto(testo, trovata) {
     let inizio = testo.lastIndexOf('\n', trovata.inizio);
     let fine = trovata.fine + 1;
     if (testo[fine] === ',') fine++;
@@ -160,6 +174,47 @@
     nuovo = nuovo.replace(/\n?\s*<meta name="storecraft-(origine|copiati)" content="[^"]*">/g, '')
       .replace(/(<meta charset="[^"]*">)/i, `$1\n  <meta name="storecraft-origine" content="${origine}">`);
     return { html: nuovo, risorse };
+  }
+
+  // ----- Logo di partenza del menu BRAND in una pagina copiata in un altro negozio -----
+  // Una pagina può scrivere il nome di un logo ufficiale del suo negozio come scelta di partenza (es. Luxury:
+  // const DEFAULT_LOGO = "LUXURY_GOLD.png"). Copiata in un negozio che quel logo non ce l'ha, l'anteprima mostrerebbe
+  // un'immagine rotta: il nome si sostituisce con il logo di partenza che usano le pagine del negozio (il nome di logo
+  // del negozio scritto più spesso nelle sue pagine, cloni esclusi); se nessuna sua pagina ne scrive uno, il primo logo
+  // del suo menu BRAND (brand prioritari per primi, come getOrderedLogoFiles di logos.js).
+
+  // { file, prioritari } da assets/logos/<negozio>/elenco.js
+  function elencoLoghi(testo) {
+    const lista = nome => [...((String(testo).match(new RegExp(`^const\\s+${nome}\\s*=\\s*\\[([\\s\\S]*?)\\]`, 'm')) || [])[1] || '')
+      .matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
+    return { file: lista('LOGO_FILES'), prioritari: lista('PRIORITY_BRANDS') };
+  }
+  const tra = nome => new RegExp(`(["'\`])${nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\1`, 'g');
+  // il logo di partenza del negozio, dalle sue pagine (testi html) e dal suo elenco
+  function logoPredefinito(pagine, elenco) {
+    const conti = new Map();
+    for (const html of pagine) {
+      if (clone(html)) continue;
+      for (const file of elenco.file) {
+        const volte = (html.match(tra(file)) || []).length;
+        if (volte) conti.set(file, (conti.get(file) || 0) + volte);
+      }
+    }
+    if (conti.size) return [...conti].sort((x, y) => y[1] - x[1])[0][0];
+    const ordinati = elenco.prioritari.filter(f => elenco.file.includes(f)).concat(elenco.file.filter(f => !elenco.prioritari.includes(f)));
+    return ordinati[0] || '';
+  }
+  // sostituisce nella pagina i loghi del negozio di partenza che il negozio non ha; { html, sostituiti: [nomi] }
+  function sostituisciLoghi(html, elencoDa, elencoA, predefinito) {
+    const sostituiti = [];
+    let nuovo = html;
+    if (!predefinito) return { html, sostituiti };
+    for (const file of elencoDa.file) {
+      if (elencoA.file.includes(file) || !tra(file).test(nuovo)) continue;
+      nuovo = nuovo.replace(tra(file), (tutto, virgolette) => `${virgolette}${predefinito}${virgolette}`);
+      sostituiti.push(file);
+    }
+    return { html: nuovo, sostituiti };
   }
 
   // Origine scritta nella pagina clonata (null: pagina di partenza, non un clone)
@@ -237,6 +292,22 @@
     return copiati;
   }
 
+  // la pagina copiata dal negozio da al negozio a con il logo di partenza del negozio a (vedi sostituisciLoghi)
+  async function loghiDelNegozio(progetto, html, da, a, avviso = () => {}) {
+    const elenco = async negozio => elencoLoghi(await (await leggi(progetto, `assets/logos/${negozio}/elenco.js`)).text().catch(() => ''));
+    let elencoDa, elencoA;
+    try { [elencoDa, elencoA] = [await elenco(da), await elenco(a)]; } catch { return html; }   // un negozio senza elenco
+    if (!elencoDa.file.some(file => !elencoA.file.includes(file) && tra(file).test(html))) return html;
+    const pagine = [];
+    for await (const [file, voce] of (await cartella(progetto, a)).entries()) {
+      if (voce.kind === 'file' && file.endsWith('.html')) pagine.push(await (await voce.getFile()).text());
+    }
+    const predefinito = logoPredefinito(pagine, elencoA);
+    const esito = sostituisciLoghi(html, elencoDa, elencoA, predefinito);
+    if (esito.sostituiti.length) avviso(`logo di partenza: ${esito.sostituiti.join(', ')} → ${predefinito} (come nelle pagine di ${a})`);
+    return esito.html;
+  }
+
   async function associa(progetto, { modulo, tipo, cartella: da, negozio: a, avviso = () => {} }) {
     const dashboard = `assets/negozi/${a}-dashboard.js`;
     let testo = await (await leggi(progetto, dashboard)).text();
@@ -258,7 +329,8 @@
       const sorgente = await (await leggi(progetto, `${da}/${nome}`)).text();
       // il negozio delle risorse della pagina: il suo data-negozio (una pagina di moduli/ usa quelle del negozio di partenza)
       const origineRisorse = (sorgente.match(/data-negozio="([\w-]+)"/) || [])[1] || da;
-      const { html, risorse } = adattaPagina(sorgente, origineRisorse, a, `${da}/${nome}`);
+      let { html, risorse } = adattaPagina(sorgente, origineRisorse, a, `${da}/${nome}`);
+      if (origineRisorse !== a) html = await loghiDelNegozio(progetto, html, origineRisorse, a, avviso);
       const copiati = origineRisorse === a ? [] : await copiaRisorse(progetto, risorse, origineRisorse, a);   // il clone li elenca
       // la miniatura nelle anteprime del negozio (da quelle del negozio di partenza o da moduli/miniature/)
       scheda.miniature = await Promise.all((modulo.miniature || []).map(async miniatura => {
@@ -395,6 +467,100 @@ Pacchetti.registra('${galleria}', {
     return { galleria, pagina: percorso };
   }
 
+  // ----- Eliminare un nuovo modulo (Gestione pacchetti, scheda del modulo) -----
+  // Si eliminano solo i moduli creati da Nuovo modulo: quelli di una galleria creata qui (galleria-<n>), quelli aggiunti a
+  // un set di partenza (aggiunti) e gli strumenti di cassa clonati. Il modulo esce dalla sua galleria; la sua pagina in
+  // moduli/ e la miniatura provvisoria si cancellano se nessun altro modulo le usa (un set di etichette clonato ha una
+  // pagina per tutti i suoi layout). Una galleria creata qui rimasta senza moduli si cancella e esce da elenco.js; un set
+  // di partenza rimasto senza aggiunti perde l'elenco aggiunti. Un modulo ancora in una dashboard non si elimina: prima
+  // si tolgono le spunte dei negozi (le dashboard cambiano solo con le spunte).
+
+  // il modulo nel testo della galleria: { testo, rimasti } (rimasti: i moduli che restano nel suo elenco)
+  function togliModulo(testo, modulo) {
+    const chiave = modulo.aggiunto ? 'aggiunti: [' : 'moduli: [';
+    const posizione = testo.indexOf(chiave);
+    if (posizione < 0) throw new Error(`nella galleria non c'è l'elenco ${chiave.slice(0, -3)}`);
+    const elenco = { inizio: posizione + chiave.length - 1 };
+    elenco.fine = chiusura(testo, elenco.inizio);
+    const voci = schede(testo, elenco);
+    const segni = [`titolo: ${virgolette(modulo.titolo)}`, modulo.link ? `link: ${virgolette(modulo.link)}` : `strumento: ${virgolette(modulo.strumento)}`];
+    const trovata = voci.find(voce => segni.every(segno => voce.testo.includes(segno)));
+    if (!trovata) throw new Error(`il modulo ${modulo.titolo} non è nel file della galleria`);
+    let nuovo = togliOggetto(testo, trovata);
+    // un elenco rimasto vuoto si chiude su una riga
+    if (voci.length === 1) {
+      const aperta = nuovo.indexOf(chiave) + chiave.length - 1;
+      nuovo = nuovo.slice(0, aperta + 1) + '\n  ' + nuovo.slice(chiusura(nuovo, aperta));
+    }
+    return { testo: nuovo, rimasti: voci.length - 1 };
+  }
+  // un set di partenza senza più aggiunti: via l'elenco e il suo commento
+  const senzaAggiunti = testo => testo.replace(/,\s*(\/\/[^\n]*\n\s*)?aggiunti:\s*\[\s*\]/, '');
+  // la galleria fuori da elenco.js
+  const togliDaElenco = (testo, id) => testo.replace(new RegExp(`,\\s*'${id}'|'${id}',\\s*`), '');
+
+  async function eliminaModulo(progetto, { galleria, modulo, negozi = [], avviso = () => {} }) {
+    const nome = modulo.link ? pagina(modulo.link) : null;
+    // ancora in una dashboard: prima le spunte
+    if (nome && modulo.cartella) {
+      const dove = [];
+      for (const negozio of negozi) {
+        const testo = await (await leggi(progetto, `assets/negozi/${negozio}-dashboard.js`)).text();
+        if (usato(testo, negozio, modulo.cartella, nome)) dove.push(negozio);
+      }
+      if (dove.length) throw new Error(`il modulo è ancora nella dashboard di ${dove.join(', ')}: togli prima le spunte dei negozi`);
+    }
+    // fuori dalla galleria
+    const file = `assets/pacchetti/${galleria}.js`;
+    avviso(`tolgo ${modulo.titolo} dalla galleria ${galleria}…`);
+    const { testo, rimasti } = togliModulo(await (await leggi(progetto, file)).text(), modulo);
+    const galleriaVuota = rimasti === 0 && /^galleria-\d+$/.test(galleria);
+    if (galleriaVuota) {
+      avviso(`la galleria ${galleria} è vuota: la cancello…`);
+      await cancella(progetto, file);
+      const elenco = 'assets/pacchetti/elenco.js';
+      await scriviFile(progetto, elenco, togliDaElenco(await (await leggi(progetto, elenco)).text(), galleria));
+    } else await scriviFile(progetto, file, rimasti === 0 && modulo.aggiunto ? senzaAggiunti(testo) : testo);
+    // la pagina e la miniatura provvisoria, se nessun'altra galleria le usa
+    if (modulo.cartella !== MODULI) return { galleriaCancellata: galleriaVuota };
+    const gallerie = [];
+    for await (const [voce, maniglia] of (await cartella(progetto, 'assets/pacchetti')).entries()) {
+      if (maniglia.kind === 'file' && voce.endsWith('.js')) gallerie.push(await (await maniglia.getFile()).text());
+    }
+    const usata = segno => gallerie.some(testoGalleria => testoGalleria.includes(segno));
+    if (nome && !usata(`link: '${nome}'`) && !usata(`link: '${nome}?`)) {
+      avviso(`cancello ${MODULI}/${nome}…`);
+      try { await cancella(progetto, `${MODULI}/${nome}`); } catch { /* già tolta */ }
+    }
+    for (const miniatura of modulo.miniature || []) {
+      const file = (miniatura.split('?')[0].match(/^\.\.\/moduli\/(miniature\/.+)$/) || [])[1];
+      if (!file || usata(`${MODULI}/${file}`)) continue;
+      avviso(`cancello ${MODULI}/${file}…`);
+      try { await cancella(progetto, `${MODULI}/${file}`); } catch { /* già tolta */ }
+    }
+    return { galleriaCancellata: galleriaVuota };
+  }
+
+  // ----- Rinominare una galleria (il titolo sopra il suo carosello in Gestione pacchetti) -----
+  // Cambia il titolo nel file della galleria; una galleria creata qui (galleria-<n>) cambia anche il nome, uguale al
+  // titolo. Un set di partenza tiene il suo nome (Pacchetto …): cambia solo il titolo del carosello, le dashboard no.
+  const STRINGA = "'(?:[^'\\\\]|\\\\.)*'";
+  function rinominaGalleria(testo, titolo, conNome = false) {
+    const cambia = (chiave, valore) => {
+      const riga = new RegExp(`^(\\s*${chiave}:\\s*)${STRINGA}`, 'm');
+      if (!riga.test(testo)) throw new Error(`nel file della galleria non c'è ${chiave}`);
+      testo = testo.replace(riga, (tutto, prima) => `${prima}${virgolette(valore)}`);
+    };
+    cambia('titolo', titolo);
+    if (conNome) cambia('nome', titolo);
+    return testo;
+  }
+  async function rinomina(progetto, { galleria, titolo, avviso = () => {} }) {
+    const file = `assets/pacchetti/${galleria}.js`;
+    avviso(`rinomino la galleria ${galleria}…`);
+    await scriviFile(progetto, file, rinominaGalleria(await (await leggi(progetto, file)).text(), titolo, /^galleria-\d+$/.test(galleria)));
+  }
+
   // Cartella dei moduli in lavorazione (Nuovo modulo): le loro pagine e, in miniature/, le miniature provvisorie. Le pagine
   // usano le risorse del negozio di partenza (stessi percorsi ../assets/); nelle cartelle dei negozi vanno solo associandole.
   // Non entra nelle copie per i clienti (si copiano solo le cartelle dei negozi).
@@ -499,7 +665,7 @@ Pacchetti.registra('${galleria}', {
     return testo;
   }
 
-  const Associa = Object.freeze({ fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
+  const Associa = Object.freeze({ rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();

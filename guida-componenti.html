@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-53"></script>
+  <script src="assets/js/negozi.js?v=20261010-54"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.2.05</p>
+  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.2.06</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -426,7 +426,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-53</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-54</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -620,6 +620,90 @@
     <li>Le correzioni si fanno sempre in questo progetto e si rifà la copia.</li>
   </ol>
 
+
+  <!-- ================================================================ -->
+  <!-- CREATION ENGINE: gli strumenti dell'area operatore per costruire negozi e nuovi moduli (Gestione pacchetti,
+       Gestione negozi) e le regole decise per usarli -->
+  <h2 id="ce-panoramica">Creation Engine · Panoramica</h2>
+  <p>Il Creation Engine è l'insieme degli strumenti dell'area operatore con cui si costruiscono i negozi: <strong>Gestione pacchetti</strong> (il catalogo dei moduli, la creazione di nuovi moduli e l'associazione ai negozi) e <strong>Gestione negozi</strong> (le pagine di ogni negozio, il ghost e la rimozione dei cloni). Lo scopo: costruire un nuovo negozio scegliendo gallerie intere e singoli moduli, come base da personalizzare per il cliente. Luxury Outlet e TEBE sono gli standard; OPHILYA, clone di TEBE senza stili propri, resta fuori dai set.</p>
+  <table class="tipo">
+    <tr><th>Regola</th><th>Dettaglio</th></tr>
+    <tr><td>Modulo</td><td>una pagina che genera un cartello, un foglio di cartellini o un'etichetta, costruita con i moduli comuni; per la cassa, uno strumento di <code>cassa.js</code></td></tr>
+    <tr><td>Pacchetto (set, galleria)</td><td>una collezione di moduli dello stesso tipo, mostrata in un carosello come nella dashboard del cliente</td></tr>
+    <tr><td>Dashboard dei negozi</td><td>non cambiano mai da sole: cambiano solo con le spunte (associare o togliere un modulo) e con il ghost; i set di partenza le leggono senza modificarle</td></tr>
+    <tr><td>Pagine originali dei negozi</td><td>mai toccate: non si spostano, non si modificano, non si cancellano. Si cancellano solo i cloni creati da qui</td></tr>
+    <tr><td>Dove scrive</td><td>solo nella cartella del progetto collegata sul computer (Chrome o Edge), anche aprendo l'area operatore dal sito online; per pubblicare serve un commit con push. Conviene usarlo dal server locale, per vedere subito il risultato</td></tr>
+    <tr><td>Cartella collegata</td><td>la chiede la pagina operatore (come Prepara copia) e se la ricorda per indirizzo: le volte dopo basta l'avviso «Modifica file»</td></tr>
+    <tr><td>Browser</td><td>Chrome o Edge sul computer; l'anteprima di VS Code e Safari non sanno collegare cartelle (pulsanti e spunte spenti, avviso in rosso)</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="ce-gallerie">Creation Engine · Gallerie e moduli</h2>
+  <table class="tipo">
+    <tr><th>Voce</th><th>Regola</th></tr>
+    <tr><td>Pulsantiera</td><td>CARTELLI · CARTELLINI · ETICHETTE DYMO · UTILITÀ CASSA: un gruppo alla volta; Cartelli comprende le Promozioni Stagionali</td></tr>
+    <tr><td>Set di partenza</td><td>Outlet, Promozioni Stagionali, Cartellini Outlet, Etichette Outlet (Luxury); Boutique, Cartellini Boutique, Etichette Boutique (TEBE); Utilità Cassa (comune)</td></tr>
+    <tr><td>Sempre allineati</td><td>i set di partenza non hanno copie delle schede: le leggono a ogni apertura dalla dashboard del loro negozio (<code>origine: { negozio, sezione }</code>), quindi ogni modifica ai moduli o alla dashboard arriva da sola</td></tr>
+    <tr><td>Moduli aggiunti</td><td>un nuovo modulo aggiunto a un set di partenza sta nel file del set, tra gli <code>aggiunti</code>, dopo le schede della dashboard; non entra nella dashboard</td></tr>
+    <tr><td>Gallerie nuove</td><td><code>assets/pacchetti/galleria-&lt;n&gt;.js</code> («Nuova Galleria», o il nome del set di etichette clonato), con i moduli scritti nel file</td></tr>
+    <tr><td>Widget</td><td>come li vedrà il cliente nella dashboard (<code>pacchetto-vetrina.html</code>, con gli stili della dashboard); ogni carosello ha i suoi selettori chiaro / scuro e standard / compatto</td></tr>
+    <tr><td>Scheda del modulo</td><td>un clic su un widget: il widget da solo, «apri il modulo ↗» e i negozi con le spunte</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="ce-nuovo">Creation Engine · Nuovo modulo</h2>
+  <ol class="passi">
+    <li>«+ nuovo modulo» chiede prima <strong>in quale galleria</strong>: una esistente (anche un set di partenza) o «+ Nuova Galleria».</li>
+    <li><strong>Cartelli e cartellini</strong>: modulo di partenza (solo quelli compatibili con la galleria), nome, stile normale o dorato (per tutti i cartelli; un modulo con uno stile diverso dalla galleria lo porta con sé, <code>stile</code>), MENU SPECIALE, tipo in alto a destra (menu con «altro…»), note. Anteprima dal vivo e miniatura provvisoria NUOVO MODULO.</li>
+    <li><strong>Etichette DYMO</strong>: si clona un <strong>set</strong> (Outlet o Boutique) e si scelgono i layout da tenere, tutti o solo alcuni; nasce una pagina con i soli layout tenuti e una galleria con un modulo per layout.</li>
+    <li><strong>Utilità Cassa</strong>: si clona un <strong>singolo strumento</strong> con un nome obbligatorio e unico tra gli strumenti di cassa; è una voce del catalogo (nessuna pagina), da lavorare poi di codice per portarlo nella dashboard.</li>
+    <li>CREA MODULO scrive i file nella cartella <code>moduli/</code> e nel file della galleria: il nuovo modulo <strong>non entra in nessun negozio</strong>.</li>
+  </ol>
+  <table class="tipo">
+    <tr><th>Azione</th><th>Regola</th></tr>
+    <tr><td>Rinominare una galleria</td><td>«rinomina» accanto al titolo del carosello: il titolo diventa un campo (Invio salva, Esc annulla, al massimo 40 caratteri), unico nel suo gruppo; una galleria creata qui cambia titolo e nome, un set di partenza solo il titolo del carosello (<code>Associa.rinomina</code>)</td></tr>
+    <tr><td>Eliminare un nuovo modulo</td><td>nella sua scheda, blocco rosso ELIMINA MODULO (solo i moduli creati da Nuovo modulo, non quelli dei set di partenza): dopo una conferma il modulo esce dalla galleria e si cancellano la sua pagina in <code>moduli/</code> e la miniatura, se nessun altro modulo le usa (<code>Associa.eliminaModulo</code>)</td></tr>
+    <tr><td>Ultimo modulo di una galleria</td><td>eliminandolo si cancella anche la galleria creata qui (<code>galleria-&lt;n&gt;.js</code> e la sua voce in <code>elenco.js</code>); un set di partenza resta, senza l'elenco degli aggiunti</td></tr>
+    <tr><td>Modulo in una dashboard</td><td>non si elimina: la nota dice in quali dashboard è e il clic su «✕ elimina modulo» apre un avviso che spiega che è in uso e che prima si tolgono le spunte dei negozi</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="ce-negozi">Creation Engine · Associare ai negozi</h2>
+  <table class="tipo">
+    <tr><th>Azione</th><th>Regola</th></tr>
+    <tr><td>Spunta di un negozio</td><td>l'unico modo in cui una pagina entra nella cartella di un negozio: la pagina si copia nella cartella del negozio adattata a lui (colori, loghi, lista di stampa), con le immagini che gli mancano e la miniatura, e la scheda entra nella sua dashboard (nella sezione del suo tipo; un modulo dorato nelle Promo Stagionali)</td></tr>
+    <tr><td>Logo di partenza del BRAND</td><td>se la pagina scrive come scelta di partenza un logo ufficiale del suo negozio che il negozio nuovo non ha (es. <code>DEFAULT_LOGO = "LUXURY_GOLD.png"</code> di Luxury), il nome diventa il logo di partenza delle pagine del negozio (quello scritto più spesso nelle sue pagine, cloni esclusi) o, se nessuna ne scrive uno, il primo del suo menu BRAND (brand prioritari per primi): niente anteprima con il logo rotto (<code>Associa.sostituisciLoghi</code>)</td></tr>
+    <tr><td>Clone</td><td>la pagina copiata porta <code>storecraft-origine</code> (da dove viene) e <code>storecraft-copiati</code> (i file copiati per lei); se il nome esiste già nel negozio prende <code>-&lt;origine&gt;</code></td></tr>
+    <tr><td>Togliere la spunta</td><td>la scheda esce dalla dashboard e il clone si cancella con i file del suo elenco che nessun'altra pagina usa (i file del negozio, come la sua bandiera, restano); prima chiede conferma</td></tr>
+    <tr><td>Negozio del set</td><td>per le schede che un set di partenza legge dalla dashboard la spunta è bloccata (il set le perderebbe); per i moduli aggiunti è libera</td></tr>
+    <tr><td>Non associabili</td><td>etichette DYMO e strumenti di cassa, per ora</td></tr>
+    <tr><td>Gestione negozi</td><td>i cloni hanno l'etichetta clone e il pulsante ✕ rimuovi, che fa come togliere la spunta</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="ce-ghost">Creation Engine · Ghost</h2>
+  <table class="tipo">
+    <tr><th>Voce</th><th>Regola</th></tr>
+    <tr><td>Cosa fa</td><td>nasconde una pagina dalla dashboard del negozio (widget e voce del menu laterale) senza cancellarla: serve quando ci si lavora e i clienti non devono usarla</td></tr>
+    <tr><td>Dove</td><td>Gestione negozi, pulsante ghost su ogni pagina con schede nella dashboard; di nuovo («ghost · mostra») ricompare. C'è anche nelle copie per i clienti</td></tr>
+    <tr><td>Come</td><td><code>nascosta: true</code> in tutte le schede che aprono la pagina (es. tutte le varianti DYMO); <code>dashboard.js</code> le salta, toglie le sezioni rimaste vuote e la voce Etichette se la sua pagina è in ghost</td></tr>
+  </table>
+
+  <!-- ================================================================ -->
+  <h2 id="ce-file">Creation Engine · File e cartelle</h2>
+  <table class="tipo">
+    <tr><th>Cosa</th><th>File scritti</th></tr>
+    <tr><td>Nuovo modulo (cartelli, cartellini)</td><td>pagina <code>moduli/&lt;nome&gt;.html</code> (copia della pagina di partenza, con colori e risorse del suo negozio: funziona già da lì) · miniatura <code>moduli/miniature/&lt;nome&gt;.jpg</code> · il modulo nella galleria</td></tr>
+    <tr><td>Set di etichette clonato</td><td>una pagina <code>moduli/&lt;nome-del-set&gt;.html</code> con i soli layout tenuti · galleria <code>assets/pacchetti/galleria-&lt;n&gt;.js</code></td></tr>
+    <tr><td>Strumento di cassa</td><td>solo una riga nel file della galleria</td></tr>
+    <tr><td>Galleria nuova</td><td><code>assets/pacchetti/galleria-&lt;n&gt;.js</code> e il suo nome in <code>assets/pacchetti/elenco.js</code></td></tr>
+    <tr><td>Modulo aggiunto a un set</td><td>il file del set (es. <code>assets/pacchetti/outlet.js</code>), elenco <code>aggiunti</code></td></tr>
+    <tr><td>Spunta di un negozio</td><td>il clone in <code>&lt;negozio&gt;/</code>, immagini in <code>assets/img/&lt;negozio&gt;/</code>, miniatura in <code>assets/thumbnail/&lt;negozio&gt;/</code>, scheda in <code>assets/negozi/&lt;negozio&gt;-dashboard.js</code></td></tr>
+    <tr><td>Ghost</td><td>solo <code>assets/negozi/&lt;negozio&gt;-dashboard.js</code></td></tr>
+    <tr><td>Cartella <code>moduli/</code></td><td>i moduli in lavorazione, con <code>moduli/index.html</code> che riporta a Gestione pacchetti; non entra nelle copie per i clienti (si copiano solo le cartelle dei negozi), come Gestione pacchetti e <code>assets/pacchetti/</code></td></tr>
+    <tr><td>Codice</td><td><code>assets/js/pacchetti.js</code> (pacchetti), <code>assets/js/pacchetti-associa.js</code> (scrittura: associare, cloni, nuovo modulo, etichette, ghost), <code>pacchetti.html</code>, <code>pacchetto-vetrina.html</code>, <code>schema-pagine.html</code></td></tr>
+  </table>
+
   <!-- ================================================================ -->
   <h2 id="foto-guida">Foto della guida</h2>
   <ol class="passi">
@@ -674,6 +758,8 @@
       { id: 'parte-dashboard', nome: 'Dashboard', sezioni: { dashboard: 'Dashboard', 'dashboard-telefono': 'Dashboard telefono' } },
       { id: 'parte-negozi', nome: 'Negozi', sezioni: { 'scheda-negozio': 'Scheda del negozio', negozi: 'Colori', esclusivi: 'Moduli esclusivi',
         loghi: 'Loghi ufficiali e personalizzati' } },
+      { id: 'parte-creation', nome: 'Creation Engine', sezioni: { 'ce-panoramica': 'Panoramica', 'ce-gallerie': 'Gallerie e moduli',
+        'ce-nuovo': 'Nuovo modulo', 'ce-negozi': 'Associare ai negozi', 'ce-ghost': 'Ghost', 'ce-file': 'File e cartelle' } },
       { id: 'ricette', nome: 'Come si fa', sezioni: { 'nuova-pagina': 'Nuova pagina', 'aggiungi-tipo': 'Tipo di pagina in un negozio',
         'nuovo-negozio': 'Nuovo negozio', 'copia-cliente': 'Copia per un cliente', 'foto-guida': 'Foto della guida' } }
     ];

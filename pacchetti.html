@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-53"></script>
+  <script src="assets/js/negozi.js?v=20261010-54"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261010-53"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261010-54"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261010-53"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261010-53"></script>
+  <script src="assets/js/pacchetti.js?v=20261010-54"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261010-54"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261010-53"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261010-53"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-54"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261010-54"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -71,6 +71,15 @@
     .pacchetto { margin-top: 64px; }
     .pacchetto:first-child { margin-top: 50px; }
     .testa-pacchetto { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; margin-bottom: 12px; }
+    /* rinomina la galleria: accanto al titolo, piccolo e sottolineato come «cambia» del nuovo modulo */
+    .nome-riga { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+    .rinomina { padding: 0; border: 0; background: none; color: var(--tenue); font: 400 11px var(--mono); letter-spacing: .06em;
+      text-decoration: underline; cursor: pointer; }
+    .rinomina:hover:not(:disabled), .rinomina:focus-visible { color: var(--oro); outline: none; }
+    .rinomina:disabled { opacity: .35; cursor: default; }
+    .rinomina-campo { width: min(320px, 70vw); padding: 5px 8px; border: 1px solid var(--oro); border-radius: 4px; background: #0a0908;
+      color: var(--oro-chiaro); font: 500 15px 'Cinzel', serif; letter-spacing: .12em; text-transform: uppercase; outline: none; }
+    .nome-riga .esito { font-size: 11px; }
     .nome-pacchetto { margin: 0; color: var(--oro-chiaro); font: 500 17px 'Cinzel', serif; letter-spacing: .14em; text-transform: uppercase; }
     /* la vetrina: riquadro con il fondo della dashboard; dentro la pagina della vetrina larga 1440 px, rimpicciolita
        (sul telefono larga quanto lo schermo, nella vista telefono della dashboard) */
@@ -98,6 +107,15 @@
       font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
     .cartella button:hover:not(:disabled), .cartella button.collegata { background: var(--oro); color: #121110; }
     .cartella button:disabled { opacity: .35; cursor: default; }
+    /* elimina modulo (solo i moduli creati da Nuovo modulo), rosso come ✕ rimuovi di Gestione negozi */
+    .elimina { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--bordo); }
+    .elimina h4 { margin: 0 0 12px; color: #e07a5f; font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
+    .elimina h4::before { content: '// '; }
+    .elimina p { margin: 0 0 14px; color: var(--tenue); font-size: 11.5px; line-height: 1.6; }
+    .elimina button { padding: 7px 14px; border: 1px solid #e07a5f; border-radius: 4px; background: none; color: #e07a5f;
+      font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+    .elimina button:hover:not(:disabled), .elimina button:focus-visible { background: #e07a5f; color: #121110; outline: none; }
+    .elimina button:disabled { opacity: .35; cursor: default; }
     .esito { color: var(--tenue); }
     .esito::before { content: '$ '; color: var(--oro); }
     .esito:empty::before { content: none; }
@@ -383,19 +401,83 @@
     document.getElementById('stato').textContent = `${pacchetti.length} pacchetti · ${moduli} moduli`;
   }
 
-  // Un pacchetto: il titolo breve con a destra i suoi selettori e sotto il carosello
+  // Titolo del carosello di un pacchetto: quello rinominato in questa pagina, o quello del suo file
+  const titoli = {};
+  const titoloDi = pacchetto => titoli[pacchetto.id] || pacchetto.titolo || pacchetto.nome;
+
+  // Un pacchetto: il titolo breve (con «rinomina») con a destra i suoi selettori e sotto il carosello
   function blocco(pacchetto) {
     const sezione = document.createElement('section');
     sezione.className = 'pacchetto';
     const titolo = document.createElement('h3');
     titolo.className = 'nome-pacchetto';
-    titolo.textContent = pacchetto.titolo || pacchetto.nome;
+    titolo.textContent = titoloDi(pacchetto);
     const { cornice, riquadro } = vetrina(pacchetto);
     const testa = document.createElement('div');
     testa.className = 'testa-pacchetto';
-    testa.append(titolo, selettori(pacchetto, riquadro));
+    const nome = document.createElement('div');
+    nome.className = 'nome-riga';
+    nome.append(titolo, rinominaGalleria(pacchetto, titolo, nome));
+    testa.append(nome, selettori(pacchetto, riquadro));
     sezione.append(testa, cornice);
     return sezione;
+  }
+
+  // Rinomina: il titolo diventa un campo (Invio salva, Esc annulla) e si scrive nel file della galleria (cartella del
+  // progetto collegata). Il titolo è unico nel suo gruppo della pulsantiera
+  function rinominaGalleria(pacchetto, titolo, riga) {
+    const pulsante = nodo('button', 'rinomina', 'rinomina');
+    pulsante.type = 'button';
+    pulsante.setAttribute('aria-label', `Rinomina la galleria ${titoloDi(pacchetto)}`);
+    pulsante.disabled = !SCRIVIBILE;
+    if (!SCRIVIBILE) pulsante.title = 'per rinominare apri questa pagina in chrome o edge sul computer';
+    pulsante.addEventListener('click', () => {
+      const campo = nodo('input', 'rinomina-campo');
+      campo.value = titoloDi(pacchetto);
+      campo.maxLength = 40;
+      campo.setAttribute('aria-label', 'Nuovo titolo della galleria');
+      const salva = nodo('button', 'rinomina', 'salva');
+      const annulla = nodo('button', 'rinomina', 'annulla');
+      salva.type = annulla.type = 'button';
+      const esito = nodo('span', 'esito', '');
+      const avviso = (testo, classe = '') => { esito.textContent = testo; esito.className = `esito ${classe}`.trim(); };
+      const chiudi = () => { riga.replaceChildren(titolo, pulsante); pulsante.focus(); };
+      async function scrivi() {
+        const nuovo = campo.value.trim().replace(/\s+/g, ' ');
+        if (!nuovo) { avviso('scrivi un titolo', 'err'); return; }
+        if (nuovo === titoloDi(pacchetto)) { chiudi(); return; }
+        const tipi = (GRUPPI.find(gruppo => gruppo.tipi.includes(pacchetto.tipo)) || { tipi: [pacchetto.tipo] }).tipi;
+        const doppio = Pacchetti.elenco.map(Pacchetti.pacchetto)
+          .some(altro => altro && altro.id !== pacchetto.id && tipi.includes(altro.tipo) && titoloDi(altro).toLowerCase() === nuovo.toLowerCase());
+        if (doppio) { avviso(`c'è già una galleria ${nuovo} in questo gruppo`, 'err'); return; }
+        salva.disabled = true;
+        try {
+          if (!progetto) progetto = await scegliProgetto(passaggio => avviso(passaggio));
+          await Associa.rinomina(progetto, { galleria: pacchetto.id, titolo: nuovo, avviso });
+          titoli[pacchetto.id] = nuovo;
+          titolo.textContent = nuovo;
+          pulsante.setAttribute('aria-label', `Rinomina la galleria ${nuovo}`);
+          chiudi();
+          const fatto = nodo('span', 'esito ok', `rinominata in ${nuovo}. ricorda il commit per pubblicarlo`);
+          riga.append(fatto);
+          setTimeout(() => fatto.remove(), 6000);
+        } catch (errore) {
+          if (errore.name === 'AbortError') avviso('cartella non collegata: nessuna modifica');
+          else { console.error(errore); avviso(`errore (${errore.name}): ${errore.message}`, 'err'); }
+          salva.disabled = false;
+        }
+      }
+      salva.addEventListener('click', scrivi);
+      annulla.addEventListener('click', chiudi);
+      campo.addEventListener('keydown', evento => {
+        if (evento.key === 'Enter') { evento.preventDefault(); scrivi(); }
+        else if (evento.key === 'Escape') { evento.preventDefault(); chiudi(); }
+      });
+      riga.replaceChildren(campo, salva, annulla, esito);
+      campo.focus();
+      campo.select();
+    });
+    return pulsante;
   }
 
   // ----- Scheda del modulo -----
@@ -549,8 +631,8 @@
         voci.append(pulsante);
       };
       Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo) && (famiglia !== 'etichette' || p.origine))
-        .forEach(p => voce(p.titolo || p.nome, famiglia === 'etichette' ? `clona il set · ${p.moduli.length} layout` : `${p.moduli.length} moduli`,
-          { id: p.id, famiglia, tipo: p.tipo, negozio: p.origine?.negozio || null, nome: p.titolo || p.nome }));
+        .forEach(p => voce(titoloDi(p), famiglia === 'etichette' ? `clona il set · ${p.moduli.length} layout` : `${p.moduli.length} moduli`,
+          { id: p.id, famiglia, tipo: p.tipo, negozio: p.origine?.negozio || null, nome: titoloDi(p) }));
       if (famiglia !== 'etichette') voce('+ Nuova Galleria', null, { id: null, famiglia, tipo: famiglia, negozio: null, nome: 'Nuova Galleria' }, 'nuova');
       gruppo.append(voci);
       contenitore.append(gruppo);
@@ -572,7 +654,7 @@
     sorgente.replaceChildren();
     Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo)).forEach(p => {
       const gruppo = document.createElement('optgroup');
-      gruppo.label = p.titolo || p.nome;
+      gruppo.label = titoloDi(p);
       p.moduli.forEach((m, i) => { if ((m.link && !m.prossimamente) || m.strumento) gruppo.append(new Option(m.titolo, `${p.id}:${i}`)); });
       if (gruppo.children.length) sorgente.append(gruppo);
     });
@@ -765,11 +847,14 @@
     const esito = nodo('span', 'esito', '');
     const associabile = ASSOCIABILI.includes(pacchetto.tipo) && modulo.link && !modulo.prossimamente;
     const pagina = Associa.pagina(modulo.link);
+    const associati = [];   // i negozi che hanno il modulo nella dashboard (un modulo associato non si elimina)
     async function righe() {
       elenco.replaceChildren();
+      associati.length = 0;
       for (const negozio of Negozi.installati) {
         const testo = await testoDashboard(negozio);
         const usato = associabile && Associa.usato(testo, negozio, cartellaModulo, pagina);
+        if (usato) associati.push(negozio);
         const riga = nodo('label', 'negozio');
         const spunta = nodo('input');
         spunta.type = 'checkbox';
@@ -786,6 +871,7 @@
         spunta.addEventListener('change', () => cambia(negozio, spunta));
         elenco.append(riga);
       }
+      aggiornaElimina();
     }
     async function cambia(negozio, spunta) {
       const voglio = spunta.checked;
@@ -838,6 +924,61 @@
     cartella.append(pulsante, esito);
     negozi.append(cartella);
     contenitore.append(negozi);
+
+    // elimina modulo: solo i moduli creati da Nuovo modulo (in una galleria creata qui, aggiunti a un set di partenza,
+    // strumenti di cassa clonati), e solo se non è in nessuna dashboard. L'ultimo di una galleria creata qui la cancella
+    const cassaClonato = pacchetto.tipo === 'cassa' && modulo.strumento
+      && pacchetto.moduli.findIndex(voce => voce.strumento === modulo.strumento) < indice;
+    const eliminabile = /^galleria-\d+$/.test(id) || Boolean(modulo.aggiunto) || cassaClonato;
+    let pulsanteElimina = null, notaElimina = null;
+    function aggiornaElimina() {
+      if (!pulsanteElimina) return;
+      const nomi = associati.map(negozio => Negozi.scheda(negozio)?.nome || negozio);
+      pulsanteElimina.disabled = !SCRIVIBILE;   // anche in uso: il clic spiega con un avviso perché non si elimina
+      notaElimina.textContent = nomi.length
+        ? `è nella dashboard di ${nomi.join(', ')}: per eliminarlo togli prima le spunte dei negozi`
+        : `il modulo esce dalla galleria ${titoloDi(pacchetto)}${modulo.link && cartellaModulo === 'moduli' ? ` e si cancella la sua pagina moduli/${pagina}, con la miniatura` : ''}`
+          + (/^galleria-\d+$/.test(id) && pacchetto.moduli.length === 1 ? '. è l\'ultimo modulo: si cancella anche la galleria' : '');
+    }
+    if (eliminabile) {
+      const blocco = nodo('div', 'elimina');
+      blocco.append(nodo('h4', '', 'elimina modulo'));
+      notaElimina = nodo('p');
+      pulsanteElimina = nodo('button', '', '✕ elimina modulo');
+      pulsanteElimina.type = 'button';
+      const esitoElimina = nodo('span', 'esito', '');
+      const riga = nodo('div', 'cartella');
+      riga.append(pulsanteElimina, esitoElimina);
+      blocco.append(notaElimina, riga);
+      contenitore.append(blocco);
+      pulsanteElimina.addEventListener('click', async () => {
+        const avviso = (testo, classe = '') => { esitoElimina.textContent = testo; esitoElimina.className = `esito ${classe}`.trim(); };
+        try { if (!progetto) await collega(); } catch (errore) {
+          avviso(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? '' : 'err');
+          return;
+        }
+        await righe();   // con la cartella collegata: le dashboard di adesso
+        if (associati.length) {
+          const nomi = associati.map(negozio => Negozi.scheda(negozio)?.nome || negozio).join(', ');
+          avviso(notaElimina.textContent, 'err');
+          window.alert(`${modulo.titolo} non si può eliminare: è in uso nella dashboard di ${nomi}.\n\n`
+            + `Togli prima la spunta ${associati.length > 1 ? 'dei negozi' : 'del negozio'} qui sopra (la scheda esce dalla dashboard e la copia della pagina si cancella), poi elimina il modulo.`);
+          return;
+        }
+        if (!window.confirm(`Eliminare ${modulo.titolo}?\n\n${notaElimina.textContent.replace(/^./, lettera => lettera.toUpperCase())}.\nNon si può annullare (solo dal commit precedente).`)) return;
+        pulsanteElimina.disabled = true;
+        try {
+          const { galleriaCancellata } = await Associa.eliminaModulo(progetto, { galleria: id, modulo: { ...modulo, cartella: cartellaModulo },
+            negozi: Negozi.installati, avviso });
+          avviso(`eliminato ${modulo.titolo}${galleriaCancellata ? `, con la galleria ${titoloDi(pacchetto)}` : ''}. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
+          setTimeout(() => location.reload(), 1200);
+        } catch (errore) {
+          console.error(errore);
+          avviso(`errore (${errore.name}): ${errore.message}`, 'err');
+          pulsanteElimina.disabled = false;
+        }
+      });
+    }
     await righe();
   }
 

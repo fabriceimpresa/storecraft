@@ -2,9 +2,10 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
+  <meta name="storecraft-origine" content="luxury/cartellopercentuale.html">
   <script src="../assets/js/negozi.js?v=20261010-54"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cartello da Banco</title>
+  <title>NEW Percentuale - Test</title>
   <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261010-54">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/pannello.css?v=20261010-54">
@@ -12,6 +13,7 @@
   <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261010-54">
   <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261010-54">
   <link rel="stylesheet" href="../assets/css/cursore.css?v=20261010-54">
+  <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
   <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
   <script src="../assets/logos/luxury/elenco.js?v=20261010-54"></script>
   <script src="../assets/js/logos.js?v=20261010-54"></script>
@@ -45,9 +47,17 @@
       font-display: block;
     }
 
+    @font-face {
+      font-family: 'Space Invaders Project';
+      src: url('../assets/fonts/space_invaders.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* Sfondo UI */
+    /* Sfondo principale */
     body {
       font-family: Arial, sans-serif;
       background-color: #212529;
@@ -68,7 +78,7 @@
       font-weight: bold;
     }
 
-    /* CONTENITORE FOGLIO A4 PER LA STAMPA */
+    /* FOGLIO STAMPA */
     .print-sheet {
       position: relative;
       z-index: 1;
@@ -76,230 +86,217 @@
       height: 297mm;
       background: white;
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      padding: 8mm 12mm;
       display: flex;
       flex-direction: column;
-      box-sizing: border-box;
+      justify-content: flex-start;
+      overflow: hidden;
     }
 
-    /* METÀ FOGLIO A4 (148.5mm ciascuna) CON CENTRAGGIO CARTELLO */
-    .half-container {
-      height: 148.5mm;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-sizing: border-box;
+    .print-sheet.double-mode {
+      justify-content: space-between;
     }
 
-    /* LINEA TRATTEGGIATA AL CENTRO DEL FOGLIO */
-    .cut-line {
-      position: absolute;
-      top: 148.5mm;
-      left: 0;
-      width: 100%;
-      border-top: 1px dashed #777777;
-      z-index: 10;
+    .print-sheet.single-mode #card1 {
+      margin-bottom: 7mm;
     }
 
-    /* CARTELLO: LARGHEZZA INGRANDITA A 148.4mm (+6%), ALTEZZA 104mm */
     .card {
-      width: 148.4mm;
-      height: 104mm;
-      border: 2px solid #000000;
-      box-sizing: border-box;
+      width: 100%;
+      height: 132mm;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 3mm 4mm;
-      background: #ffffff;
-      position: relative;
-      overflow: hidden;
+      padding: 2mm 0;
       flex-shrink: 0;
     }
 
-    .card.disabled { display: none !important; }
+    .card > * {
+      position: relative;
+      z-index: 1;
+    }
 
-    .card.bf-active {
+    /* FILIGRANA BLACK FRIDAY */
+    .card.bf-active::before,
+    .card.xmas-active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
       background-image: url('../assets/img/luxury/halftone.png');
-      background-size: cover;
+      background-repeat: repeat;
       background-position: center;
-      background-repeat: no-repeat;
+      background-size: cover;
+      z-index: 0;
+      pointer-events: none;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
 
-    .card.xmas-active {
+    #card1.bf-active::before {
+      top: 0;
+      height: 50%;
+    }
+
+    #card2.bf-active::before {
+      top: 50%;
+      bottom: 0;
+    }
+
+    .card.xmas-active::before {
       background-image: url('../assets/img/luxury/tema_xmas_stars.png');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
     }
 
-    .card.bf-active .red-box {
-      background-color: #e89106 !important;
+    #card1.xmas-active::before {
+      top: 0;
+      height: 50%;
     }
 
-    .card.bf-active .discount-tag {
-      color: #e89106 !important;
+    #card2.xmas-active::before {
+      top: 50%;
+      bottom: 0;
     }
 
-    /* HEADER CARTELLO */
+    .card.disabled {
+      display: none !important;
+    }
+
+    .cut-line {
+      position: absolute;
+      top: 50%;
+      left: 12mm;
+      right: 12mm;
+      border-top: 1px dashed #ccc;
+      transform: translateY(-50%);
+      z-index: 10;
+      pointer-events: none;
+    }
+
     .header-row {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 25mm;
+      padding: 0 5mm;
       flex-shrink: 0;
-      margin-top: 2.5mm;
     }
 
-    /* FONT CLAIM IN COURIER NEW */
     .header-text {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: 'Space Invaders Project', 'Courier New', monospace;
       font-weight: bold;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       color: #e00000;
       text-align: center;
       line-height: 1.1;
       text-transform: uppercase;
-      width: 20%;
-      word-break: break-word;
+      width: 22%;
     }
 
     .claim-flag {
       width: auto;
       height: auto;
-      max-width: 15mm;
-      max-height: 9mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
+      max-width: 21mm;
+      max-height: 13mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
     }
 
-    .claim-flag-left { transform: translateX(-2mm); }
-    .claim-flag-right { transform: translateX(2mm); }
+    .claim-flag-left { transform: translateX(-3mm); }
+    .claim-flag-right { transform: translateX(3mm); }
 
-    /* RETTANGOLO ROSSO BRAND - ALTEZZA 25mm */
+    .claim-flag-bf {
+      width: auto;
+      height: auto;
+      max-width: 23.1mm;
+      max-height: 14.3mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
+    }
+
+    .claim-flag-bf.claim-flag-left { transform: translateX(-3mm) scale(1.1); }
+    .claim-flag-bf.claim-flag-right { transform: translateX(3mm) scale(1.1); }
+
     .red-box {
-      width: 58%;
-      height: 25mm;
+      width: 54%;
+      height: 28mm;
       background-color: #e00000 !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5mm 3mm;
-      gap: 10px;
-      box-sizing: border-box;
+      padding: 2mm;
+      flex-shrink: 0;
       overflow: hidden;
+      transition: background-color 0.2s ease-in-out;
     }
 
-    .red-box img {
-      max-height: 100%;
+    /* LOGHI E 2° BRAND TOGGLE */
+    .brand-logo-slot {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: width 0.35s ease;
+    }
+
+    .brand-logo-slot img {
+      max-width: 94%;
+      max-height: 94%;
       object-fit: contain;
-      transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    .red-box img.single-brand {
-      max-width: 92%;
-      width: auto;
-      margin: 0 auto;
-    }
-
-    .red-box img.double-brand {
-      max-width: 46%;
-      width: auto;
-      margin: 0 auto;
-    }
-
-    .red-box img.hidden-brand {
-      display: none !important;
-      opacity: 0;
-      width: 0;
-    }
-
-    /* TESTO DESCRITTIVO PROMOZIONALE */
-    .promo-description {
+    .brand-logo-slot.bis {
       display: none;
-      font-family: 'Bodoni Project', serif;
-      font-style: italic;
+      width: 0;
+      opacity: 0;
+      transition: width 0.35s ease, opacity 0.2s ease 0.1s;
+    }
+
+    .has-2-brands .brand-logo-slot { width: 50%; }
+    .has-2-brands .brand-logo-slot.bis { display: flex; opacity: 1; }
+
+    /* SOTTOTITOLO */
+    .card-subtitle {
+      font-family: 'Bodoni Project', Didot, serif;
+      font-size: 1.65rem;
       font-weight: 400;
-      font-size: 1.8rem;
-      line-height: 1;
-      letter-spacing: -0.02em;
-      color: #222222;
-      text-align: center;
-      margin-top: 1mm;
-      margin-bottom: 1mm;
-      width: 95%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* BLOCCO PREZZO */
-    .price-block {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .price-row-old {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 1.55rem;
-      margin-bottom: 2px;
-    }
-
-    .price-original {
-      font-family: 'Bodoni Project', serif;
-      font-weight: normal;
-      color: #333;
-      text-decoration: line-through;
-    }
-
-    .discount-tag {
-      font-family: 'Bodoni Project', serif;
-      font-style: normal;
-      color: #e00000;
-      font-weight: 800;
-    }
-
-    /* PREZZO FINALE */
-    .price-final {
-      font-family: 'Bodoni Project', serif;
-      font-size: 6.8rem;
-      font-weight: normal;
       color: #000;
-      line-height: 0.85;
       text-align: center;
-      letter-spacing: -2px;
-      display: flex;
-      align-items: baseline;
-      justify-content: center;
+      margin-top: 8mm;
+      margin-bottom: 2mm;
+      letter-spacing: -0.3px;
     }
 
-    .price-final .currency {
-      font-size: 1em;
-      margin-right: 10px;
-      font-weight: normal;
-    }
-
-    /* FOOTER CON LOGO AZIENDALE */
-    .card-footer {
-      height: 14mm;
+    /* SCONTO GIGANTE */
+    .card-discount-giant {
+      font-family: 'Bodoni Project', Didot, 'Garamond', serif;
+      font-size: 14.5rem;
+      font-weight: 400;
+      color: #000;
+      text-align: center;
+      line-height: 0.8;
+      letter-spacing: -3px;
+      margin: 0;
+      white-space: nowrap;
+      flex-grow: 1;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    /* FOOTER */
+    .card-footer {
+      height: 17mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1mm;
       flex-shrink: 0;
-      margin-bottom: 2.5mm;
     }
 
     .card-footer img {
       max-height: 100%;
-      max-width: 250px;
+      max-width: 240px;
       object-fit: contain;
     }
 
@@ -309,14 +306,15 @@
 
 
 
-    /* PULSANTE BLACK FRIDAY */
+
+    /* PULSANTI BLACK FRIDAY */
     .black-friday-btn {
       position: fixed;
       top: 8rem;
       right: 1.25rem;
       width: 44px;
       height: 44px;
-      padding: 7px;
+      padding: 6px;
       background: #000000;
       border: 1px solid #d4a373;
       border-radius: 50%;
@@ -335,12 +333,14 @@
       object-fit: contain;
     }
 
-    .black-friday-btn-lower { top: calc(50% + 4.5rem); }
-
     .black-friday-btn:hover,
     .black-friday-btn[aria-pressed="true"] {
       transform: scale(1.1);
       box-shadow: 0 5px 16px rgba(0,0,0,0.7);
+    }
+
+    .black-friday-btn-lower {
+      top: calc(50% + 4.5rem);
     }
 
     /* PULSANTI TEMA NATALIZIO */
@@ -379,19 +379,20 @@
       box-shadow: 0 5px 16px rgba(0,0,0,0.7);
     }
 
-    .xmas-btn-lower { top: calc(50% + 8rem); }
+    .xmas-btn-lower {
+      top: calc(50% + 8rem);
+    }
 
     @page {
       size: A4 portrait;
       margin: 0mm !important;
     }
 
-
-
     @media print {
       html, body {
         width: 210mm;
         height: 297mm !important;
+        max-height: 297mm !important;
         background: white !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -401,38 +402,42 @@
       }
 
       body::before { display: none !important; }
+
       .sidebar, .black-friday-btn, .xmas-btn, .floating-nav-box { display: none !important; }
 
       .print-sheet {
         box-shadow: none;
         margin: 0 auto !important;
-        padding: 0 !important;
+        padding: 8mm 10mm;
         width: 210mm;
         height: 297mm !important;
-      }
-
-      .half-container {
-        height: 148.5mm !important;
-      }
-
-      .card {
-        border: 2px solid #000000 !important;
+        max-height: 297mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
         page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
       }
 
       .cut-line {
-        border-top: 1px dashed #000000 !important;
-        display: block !important;
+        left: 10mm !important;
+        right: 10mm !important;
+      }
+
+      .card.bf-active::before,
+      .card.xmas-active::before {
+        left: 0 !important;
+        right: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
 
       .red-box { 
         background-color: #e00000 !important; 
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-      }
-
-      .card.bf-active .red-box {
-        background-color: #e89106 !important;
       }
     }
   </style>
@@ -446,18 +451,20 @@
 </head>
 <body data-layout="cartelli">
 
-  <!-- Pulsanti Navigazione UI -->
-  <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
-  <button class="made-in-italy-btn made-in-italy-btn--banco" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
+
+  <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
     <img src="../assets/img/luxury/madeinitaly.png" alt="Made in Italy">
   </button>
-  <button class="made-in-italy-btn made-in-italy-btn-lower made-in-italy-btn--banco" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
+  <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
     <img src="../assets/img/luxury/madeinitaly.png" alt="Made in Italy">
   </button>
-  <button class="black-friday-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Black Friday del cartello superiore" aria-pressed="false" onclick="toggleBlackFriday(1)">
+
+  <button class="black-friday-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva il tema Black Friday del cartello superiore" aria-pressed="false" onclick="toggleBlackFriday(1)">
     <img src="../assets/img/luxury/tema_blackfriday_icon.png" alt="Black Friday">
   </button>
-  <button class="black-friday-btn black-friday-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Black Friday del cartello inferiore" aria-pressed="false" onclick="toggleBlackFriday(2)">
+  <button class="black-friday-btn black-friday-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva il tema Black Friday del cartello inferiore" aria-pressed="false" onclick="toggleBlackFriday(2)">
     <img src="../assets/img/luxury/tema_blackfriday_icon.png" alt="Black Friday">
   </button>
   <button class="xmas-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva il tema natalizio del cartello superiore" aria-pressed="false" onclick="toggleXmas(1)">
@@ -469,18 +476,18 @@
 
   <div class="floating-nav-box">
     <div class="floating-nav-title">STORE // CRAFT</div>
-    <a href="index.html" class="floating-nav-btn">← Torna al Menu Principale</a>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
   </div>
 
   <div class="sidebar">
     <div class="controls">
-      <h2>Cartello da Banco</h2>
+      <h2>Cartello Percentuale</h2>
 
       <!-- Blocco 1: selettori e pulsanti -->
       <div class="panel-block">
         <div id="cardSelector" data-selettore-cartello></div>
-
-        <div id="priceModeSelector" data-selettore-modalita-prezzo></div>
 
         <div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div>
       </div>
@@ -512,18 +519,18 @@
         <div class="form-row">
           <div class="form-group">
             <label for="leftClaim">Claim Sinistro</label>
-            <input type="text" id="leftClaim" oninput="onFieldInput('left', this.value)">
+            <input type="text" id="leftClaim" oninput="onCardFieldInput('left', this.value)">
           </div>
           <div class="form-group">
             <label for="rightClaim">Claim Destro</label>
-            <input type="text" id="rightClaim" oninput="onFieldInput('right', this.value)">
+            <input type="text" id="rightClaim" oninput="onCardFieldInput('right', this.value)">
           </div>
         </div>
       </div>
 
       <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
       <div class="panel-block">
-        <div class="form-group" id="descGroup" hidden>
+        <div class="form-group">
           <label class="section-label" for="presetDesc">TESTI PRONTI</label>
           <div class="preset-select">
             <select id="presetDesc" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyPreset()">
@@ -531,30 +538,14 @@
             </select>
           </div>
           <label for="desc">Testo Libero</label>
-          <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" oninput="onFieldInput('desc', this.value)">
+          <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" oninput="onCardFieldInput('desc', this.value)">
         </div>
 
-        <div class="form-row">
-          <div class="form-group" id="priceOldGroup">
-            <label for="priceOld">Prezzo Originario</label>
-            <div class="input-affix">
-              <span class="affix">€</span>
-              <input data-prezzo type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)">
-            </div>
-          </div>
-          <div class="form-group" id="discountGroup">
-            <label for="discount">Sconto</label>
-            <div class="input-affix">
-              <input data-percentuale type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
-              <span class="affix">%</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="priceNew">Prezzo Finale</label>
-            <div class="input-affix">
-              <span class="affix">€</span>
-              <input data-prezzo type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)">
-            </div>
+        <div class="form-group">
+          <label for="discount">Sconto</label>
+          <div class="input-affix">
+            <input data-percentuale type="number" id="discount" min="1" max="99" placeholder="50" oninput="onDiscountInput()">
+            <span class="affix">%</span>
           </div>
         </div>
       </div>
@@ -577,72 +568,46 @@
     </div>
   </div>
 
-  <!-- AREA STAMPA FOGLIO A4 -->
-  <div class="print-sheet" id="printSheet">
-
-    <!-- METÀ SUPERIORE A4 -->
-    <div class="half-container">
-      <div class="card" id="card1">
-        <div class="header-row">
-          <div class="header-text" id="headLeft1">SALDI<br>2026</div>
-          <div class="red-box">
-            <img id="cardLogo1_A" class="single-brand" src="" alt="Logo Brand 1">
-            <img id="cardLogo1_B" class="double-brand hidden-brand" src="" alt="Logo Brand 2">
-          </div>
-          <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+  <!-- AREA STAMPA A4 -->
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">SPRING<br>2026</div>
+        <div class="red-box" id="redBox1">
+          <div class="brand-logo-slot"><img id="cardLogo1" src="" alt="Logo Brand 1"></div>
+          <div class="brand-logo-slot bis"><img id="cardLogo1Bis" src="" alt="Logo Brand 1 Bis"></div>
         </div>
-
-        <div class="promo-description" id="promoDesc1">Outlet price</div>
-
-        <div class="price-block">
-          <div class="price-row-old" id="priceOldRow1">
-            <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
-            <span class="discount-tag" id="discountDisplay1">-75%</span>
-          </div>
-          <div class="price-final" id="priceNewDisplay1">
-            <span class="currency">€</span><span id="priceVal1">99,00</span>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <img class="luxuryLogo" src="../assets/img/luxury/footer.png" alt="Luxury Outlet">
-        </div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
       </div>
+
+      <div class="card-subtitle" id="subDisp1">Fino ad esaurimento scorte</div>
+
+      <div class="card-discount-giant" id="discountDisp1">-50%</div>
+
+      <div class="card-footer"><img class="luxuryLogo" id="footerLogo1" src="../assets/img/luxury/footer.png" alt="Luxury Outlet"></div>
     </div>
 
-    <!-- LINEA TRATTEGGIATA DI RITAGLIO AL CENTRO DEL FOGLIO A4 -->
-    <div class="cut-line" id="cutLine"></div>
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
 
-    <!-- METÀ INFERIORE A4 -->
-    <div class="half-container" id="halfContainer2">
-      <div class="card" id="card2">
-        <div class="header-row">
-          <div class="header-text" id="headLeft2">SALDI<br>2026</div>
-          <div class="red-box">
-            <img id="cardLogo2_A" class="single-brand" src="" alt="Logo Brand 1">
-            <img id="cardLogo2_B" class="double-brand hidden-brand" src="" alt="Logo Brand 2">
-          </div>
-          <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">SPRING<br>2026</div>
+        <div class="red-box" id="redBox2">
+          <div class="brand-logo-slot"><img id="cardLogo2" src="" alt="Logo Brand 2"></div>
+          <div class="brand-logo-slot bis"><img id="cardLogo2Bis" src="" alt="Logo Brand 2 Bis"></div>
         </div>
-
-        <div class="promo-description" id="promoDesc2">Outlet price</div>
-
-        <div class="price-block">
-          <div class="price-row-old" id="priceOldRow2">
-            <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
-            <span class="discount-tag" id="discountDisplay2">-75%</span>
-          </div>
-          <div class="price-final" id="priceNewDisplay2">
-            <span class="currency">€</span><span id="priceVal2">99,00</span>
-          </div>
-        </div>
-
-        <div class="card-footer">
-          <img class="luxuryLogo" src="../assets/img/luxury/footer.png" alt="Luxury Outlet">
-        </div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
       </div>
-    </div>
 
+      <div class="card-subtitle" id="subDisp2">Fino ad esaurimento scorte</div>
+
+      <div class="card-discount-giant" id="discountDisp2">-50%</div>
+
+      <div class="card-footer"><img class="luxuryLogo" id="footerLogo2" src="../assets/img/luxury/footer.png" alt="Luxury Outlet"></div>
+    </div>
   </div>
 
   <script src="../assets/js/testi-pronti.js?v=20261010-54"></script>
@@ -650,43 +615,40 @@
   <script src="../assets/js/second-brand-toggle.js?v=20261010-54"></script>
   <script src="../assets/js/selettore.js?v=20261010-54"></script>
   <script src="../assets/js/selettore-cartello.js?v=20261010-54"></script>
-  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261010-54"></script>
 
   <script>
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
 
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
-    function createCardState(withDesc) {
+    function createCardState() {
       return {
         brand: '', customBrand: '',          // brand principale: file ufficiale o logo personalizzato (data URL)
         brandBis: '', customBrandBis: '',    // secondo brand, visibile con + AGGIUNGI 2° BRAND
         twoBrands: false,
-        left: 'SALDI 2026', right: 'SHOP NOW',
-        withDesc,                            // DOPPIA CIFRA (false) o DESCRIZIONE ARTICOLO (true)
-        descPreset: '', desc: 'Outlet Price',
-        old: '395,00', disc: '-75%', price: '99,00'
+        left: 'SPRING 2026', right: 'SHOP NOW',
+        descPreset: '', desc: 'Fino ad esaurimento scorte',   // sottotitolo sopra lo sconto
+        disc: '-50%'
       };
     }
 
-    // Come prima del pannello standard: il cartello superiore parte con il doppio prezzo, l'inferiore con la descrizione.
-    const cards = { 1: createCardState(false), 2: createCardState(true) };
+    const cloneCard = state => ({ ...state });
+
+    const cards = { 1: createCardState(), 2: createCardState() };
     let currentCard = 1;
     let sheetMode = 'double';
     let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
 
     const madeInItalyClaimsActive = { 1: false, 2: false };
+    const previousDescriptionState = { 1: null, 2: null };
     const blackFridayActive = { 1: false, 2: false };
     const xmasActive = { 1: false, 2: false };
-    const previousDescriptionState = { 1: null, 2: null };
 
-    // Con la casella spuntata (e il foglio intero) ogni modifica vale per tutti e due i cartelli.
-    function setField(field, value) {
-      const targets = linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
-      targets.forEach(cardIndex => { cards[cardIndex][field] = value; });
+    // Cartelli a cui vanno le modifiche: con la casella spuntata (e 2 cartelli) tutti e due.
+    const editedCards = () => linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+
+    function setCardField(field, value) {
+      editedCards().forEach(cardIndex => { cards[cardIndex][field] = value; });
     }
-
-    // La descrizione si vede con DESCRIZIONE ARTICOLO e, con DOPPIA CIFRA, quando è acceso Made in Italy.
-    const showsDescription = cardIndex => cards[cardIndex].withDesc || madeInItalyClaimsActive[cardIndex];
 
     function cleanBrandName(filename) {
       return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
@@ -741,8 +703,8 @@
     function onOfficialBrandChange(slot) {
       const suffix = slot === 'brandBis' ? 'Bis' : '';
       const custom = slot === 'brandBis' ? 'customBrandBis' : 'customBrand';
-      setField(slot, document.getElementById('brandSelect' + suffix).value);
-      setField(custom, '');
+      setCardField(slot, document.getElementById('brandSelect' + suffix).value);
+      setCardField(custom, '');
       document.getElementById('customBrandSelect' + suffix).value = '';
       renderCards();
     }
@@ -750,22 +712,22 @@
     function onCustomBrandChange(slot) {
       const suffix = slot === 'brandBis' ? 'Bis' : '';
       const custom = slot === 'brandBis' ? 'customBrandBis' : 'customBrand';
-      setField(custom, document.getElementById('customBrandSelect' + suffix).value);
-      setField(slot, '');
+      setCardField(custom, document.getElementById('customBrandSelect' + suffix).value);
+      setCardField(slot, '');
       document.getElementById('brandSelect' + suffix).value = '';
       renderCards();
     }
 
-    function onFieldInput(field, value) {
-      setField(field, value);
+    function onCardFieldInput(field, value) {
+      setCardField(field, value);
       renderCards();
     }
 
     function applyPreset() {
       const value = document.getElementById('presetDesc').value;
-      setField('descPreset', value);
+      setCardField('descPreset', value);
       if (value !== '') {
-        setField('desc', value);
+        setCardField('desc', value);
         document.getElementById('desc').value = value;
       }
       renderCards();
@@ -775,14 +737,7 @@
     // li aggiunge la pagina; nel pannello il % sta fisso accanto al campo. Come in cartelli_outlet.html.
     function onDiscountInput() {
       const digits = document.getElementById('discount').value.replace(/\D/g, '').slice(0, 2);
-      onFieldInput('disc', digits ? `-${digits}%` : '');
-    }
-
-
-
-    function onPriceInput(field, input) {
-      input.value = input.value.replace(/[^\d,.]/g, '');
-      onFieldInput(field, input.value);
+      onCardFieldInput('disc', digits ? `-${digits}%` : '');
     }
 
 
@@ -793,6 +748,7 @@
     // Riporta nel pannello i valori del cartello scelto.
     function syncPanel() {
       const state = cards[currentCard];
+
       document.getElementById('brandSelect').value = state.brand;
       document.getElementById('customBrandSelect').value = state.customBrand;
       document.getElementById('brandSelectBis').value = state.brandBis;
@@ -801,21 +757,14 @@
       document.getElementById('rightClaim').value = state.right;
       document.getElementById('presetDesc').value = state.descPreset;
       document.getElementById('desc').value = state.desc;
-      document.getElementById('priceOld').value = state.old;
       document.getElementById('discount').value = state.disc.replace(/\D/g, '');
-      document.getElementById('priceNew').value = state.price;
 
       SelettoreCartello.setActive('selectCard' + currentCard);
-      SelettoreModalitaPrezzo.setDescription(state.withDesc);
       SecondBrandToggle.setState('secondBrandBtn', state.twoBrands);
       document.getElementById('brandBisGroup').hidden = !state.twoBrands;
       // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi Personalizzati 1
       document.getElementById('brandLabel').textContent = state.twoBrands ? 'BRAND 1' : 'BRAND';
       document.getElementById('customBrandLabel').textContent = state.twoBrands ? 'Loghi Personalizzati 1' : 'Loghi Personalizzati';
-      // DOPPIA CIFRA: prezzo originario e sconto; DESCRIZIONE ARTICOLO: il testo al loro posto
-      document.getElementById('descGroup').hidden = !showsDescription(currentCard);
-      document.getElementById('priceOldGroup').hidden = state.withDesc;
-      document.getElementById('discountGroup').hidden = state.withDesc;
 
       document.getElementById('linkCards').checked = linkedCards;
       document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
@@ -829,13 +778,7 @@
 
     // + AGGIUNGI 2° BRAND accende e spegne il secondo brand del cartello in modifica.
     function toggleSecondBrand() {
-      setField('twoBrands', !cards[currentCard].twoBrands);
-      syncPanel();
-      renderCards();
-    }
-
-    function setDescriptionMode(withDesc) {
-      setField('withDesc', withDesc);
+      setCardField('twoBrands', !cards[currentCard].twoBrands);
       syncPanel();
       renderCards();
     }
@@ -848,8 +791,8 @@
       linkedCards = isLinked;
       if (isLinked) {
         const otherCard = currentCard === 1 ? 2 : 1;
-        overwrittenCard = { cardIndex: otherCard, state: { ...cards[otherCard] } };
-        cards[otherCard] = { ...cards[currentCard] };
+        overwrittenCard = { cardIndex: otherCard, state: cloneCard(cards[otherCard]) };
+        cards[otherCard] = cloneCard(cards[currentCard]);
       } else if (overwrittenCard) {
         cards[overwrittenCard.cardIndex] = overwrittenCard.state;
         overwrittenCard = null;
@@ -858,14 +801,15 @@
       syncPanel();
     }
 
-    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore (senza metà inferiore e linea di taglio).
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore.
     function setSheetMode(mode) {
       sheetMode = mode;
       const isSingle = mode === 'single';
       document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
+      const sheet = document.getElementById('printSheet');
       document.getElementById('card2').classList.toggle('disabled', isSingle);
-      document.getElementById('halfContainer2').style.display = isSingle ? 'none' : 'flex';
-      document.getElementById('cutLine').style.display = isSingle ? 'none' : 'block';
+      sheet.classList.toggle('single-mode', isSingle);
+      sheet.classList.toggle('double-mode', !isSingle);
       SelettoreCartello.setLowerDisabled(isSingle);
       document.getElementById('sheetModeSelect').value = mode;
       if (isSingle && currentCard === 2) currentCard = 1;
@@ -881,6 +825,23 @@
       Object.entries(buttons).forEach(([selector, activeState]) => {
         const button = document.querySelector(selector + '[data-card-index="' + cardIndex + '"]');
         if (button) button.setAttribute('aria-pressed', String(activeState[cardIndex]));
+      });
+    }
+
+    // Made in Italy, Black Friday e Natale si escludono a vicenda sullo stesso cartello.
+    function toggleMadeInItaly(cardIndex) {
+      MadeInItaly.toggle({
+        index: cardIndex,
+        active: madeInItalyClaimsActive,
+        otherThemes: [blackFridayActive, xmasActive],
+        previous: previousDescriptionState,
+        state: cards[cardIndex],
+        targets: [cards[cardIndex]],
+        onChange: () => {
+          setThemeButtonsPressed(cardIndex);
+          syncPanel();
+          renderCards();
+        }
       });
     }
 
@@ -904,27 +865,9 @@
       renderCards();
     }
 
-    // Made in Italy: bandierine al posto dei claim e "Made in Italy" come testo (visibile anche con DOPPIA CIFRA);
-    // alla disattivazione ripristina il testo di prima.
-    function toggleMadeInItaly(cardIndex) {
-      MadeInItaly.toggle({
-        index: cardIndex,
-        active: madeInItalyClaimsActive,
-        otherThemes: [blackFridayActive, xmasActive],
-        previous: previousDescriptionState,
-        state: cards[cardIndex],
-        targets: [cards[cardIndex]],
-        onChange: () => {
-          setThemeButtonsPressed(cardIndex);
-          syncPanel();
-          renderCards();
-        }
-      });
-    }
-
-    function createClaimImage(src, alt, side) {
+    function createClaimImage(src, alt, side, isBlackFriday) {
       const image = document.createElement('img');
-      image.className = 'claim-flag claim-flag-' + side;
+      image.className = 'claim-flag' + (isBlackFriday ? ' claim-flag-bf' : '') + ' claim-flag-' + side;
       image.src = src;
       image.alt = alt;
       return image;
@@ -959,42 +902,37 @@
     function renderCard(cardIndex) {
       const state = cards[cardIndex];
       const card = document.getElementById('card' + cardIndex);
+      const redBox = document.getElementById('redBox' + cardIndex);
       const headLeft = document.getElementById('headLeft' + cardIndex);
       const headRight = document.getElementById('headRight' + cardIndex);
 
-      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex + '_A', state.customBrand, state.brand, DEFAULT_LOGO, 'white');
-      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex + '_B', state.customBrandBis, state.brandBis, DEFAULT_LOGO, 'white');
-      document.getElementById('cardLogo' + cardIndex + '_A').className = state.twoBrands ? 'double-brand' : 'single-brand';
-      document.getElementById('cardLogo' + cardIndex + '_B').className = state.twoBrands ? 'double-brand' : 'double-brand hidden-brand';
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex, state.customBrand, state.brand, DEFAULT_LOGO, 'white');
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex + 'Bis', state.customBrandBis, state.brandBis, DEFAULT_LOGO, 'white');
+      card.classList.toggle('has-2-brands', state.twoBrands);
 
       card.classList.toggle('bf-active', blackFridayActive[cardIndex]);
-      card.classList.toggle('xmas-active', xmasActive[cardIndex]);
-      card.querySelector('.card-footer img').src = blackFridayActive[cardIndex] ? '../assets/img/luxury/footer_orange.png'
+      card.classList.toggle('xmas-active', xmasActive[cardIndex] && !blackFridayActive[cardIndex]);
+      redBox.style.setProperty('background-color', blackFridayActive[cardIndex] ? '#e89106' : '#e00000', 'important');
+      document.getElementById('footerLogo' + cardIndex).src = blackFridayActive[cardIndex] ? '../assets/img/luxury/footer_orange.png'
         : xmasActive[cardIndex] ? '../assets/img/luxury/footer_xmas.png'
         : '../assets/img/luxury/footer.png';
 
       if (blackFridayActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_blackfriday.png', 'Black Friday', 'left'));
-        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_blackfriday.png', 'Black Friday', 'right'));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_blackfriday.png', 'Black Friday', 'left', true));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_blackfriday.png', 'Black Friday', 'right', true));
       } else if (xmasActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'left'));
-        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'right'));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'left', false));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/tema_xmas.png', 'Natale', 'right', false));
       } else if (madeInItalyClaimsActive[cardIndex]) {
-        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'left'));
-        headRight.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'right'));
+        headLeft.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'left', false));
+        headRight.replaceChildren(createClaimImage('../assets/img/luxury/madeinitaly.png', 'Made in Italy', 'right', false));
       } else {
         setClaimText(headLeft, state.left);
         setClaimText(headRight, state.right);
       }
 
-      // DOPPIA CIFRA: riga prezzo originario e sconto; DESCRIZIONE ARTICOLO: il testo al suo posto
-      const promoDesc = document.getElementById('promoDesc' + cardIndex);
-      promoDesc.style.display = showsDescription(cardIndex) ? 'block' : 'none';
-      setDescriptionText(promoDesc, state.desc);
-      document.getElementById('priceOldRow' + cardIndex).style.display = state.withDesc ? 'none' : 'flex';
-      document.getElementById('priceOldDisplay' + cardIndex).textContent = state.old ? '€ ' + state.old : '';
-      document.getElementById('discountDisplay' + cardIndex).textContent = state.disc;
-      document.getElementById('priceVal' + cardIndex).textContent = state.price;
+      setDescriptionText(document.getElementById('subDisp' + cardIndex), state.desc);
+      document.getElementById('discountDisp' + cardIndex).textContent = state.disc;
     }
 
     function renderCards() {
@@ -1011,33 +949,26 @@
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
     const inActiveCard = selector => () => activeCard().querySelector(selector);
-    const inActiveCardId = id => () => document.getElementById(id + currentCard);
     const cardOf = target => target.closest('.card');
-    // I loghi brand stanno sul riquadro rosso, dove il triangolo rosso non si vedrebbe, e sopra il riquadro c'è poco
-    // spazio fino al bordo nero del cartello: il cursore sta fuori dal cartello, con la punta 1 mm sopra il bordo,
-    // centrato sul logo. Con il 2° brand acceso indica tutti e due i loghi (il cursore si sdoppia).
-    const ABOVE_CARD_GAP = target => target.getBoundingClientRect().top - cardOf(target).getBoundingClientRect().top + 96 / 25.4;
-    const logo = slot => () => document.getElementById('cardLogo' + currentCard + '_' + slot);
-    const brandLogos = () => cards[currentCard].twoBrands ? [logo('A')(), logo('B')()] : [logo('A')()];
+    // I loghi brand stanno sul riquadro rosso, dove il triangolo rosso non si vedrebbe: il cursore sta sempre sopra
+    // il riquadro, centrato sul logo scelto (punta a 1 mm dal riquadro: 2 mm di margine interno + 1 mm).
+    const ABOVE_RED_BOX_GAP = 3 * 96 / 25.4;
 
     Cursore.create({
       panel: '.controls',
       watch: '#printSheet',
       scope: cardOf,
-      obstacles: target => cardOf(target).querySelectorAll('.header-text, .red-box, .promo-description, .price-original, .discount-tag, .price-final, .card-footer img'),
+      obstacles: target => cardOf(target).querySelectorAll('.header-text, .red-box, .card-subtitle, .card-discount-giant, .card-footer img'),
       rules: [
         { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
-        // la modalità indica la riga che cambia: la descrizione o prezzo originario e sconto
-        { controls: '#doublePriceBtn, #descriptionBtn', target: () => document.getElementById((cards[currentCard].withDesc ? 'promoDesc' : 'priceOldRow') + currentCard) },
-        { controls: '#secondBrandBtn', target: brandLogos, placement: 'above', gap: ABOVE_CARD_GAP },
-        { controls: '#brandSelect, #customBrandSelect', target: logo('A'), placement: 'above', gap: ABOVE_CARD_GAP },
-        { controls: '#brandSelectBis, #customBrandSelectBis', target: logo('B'), placement: 'above', gap: ABOVE_CARD_GAP },
+        // + AGGIUNGI 2° BRAND: acceso indica tutti e due i loghi (il cursore si sdoppia), spento solo il primo
+        { controls: '#secondBrandBtn', target: () => activeCard().querySelectorAll(cards[currentCard].twoBrands ? '.brand-logo-slot' : '.brand-logo-slot:not(.bis)'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#brandSelect, #customBrandSelect', target: inActiveCard('.brand-logo-slot:not(.bis)'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#brandSelectBis, #customBrandSelectBis', target: inActiveCard('.brand-logo-slot.bis'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
         { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },
         { controls: '#rightClaim', target: inActiveCard('.header-text:last-child') },
-        { controls: '#presetDesc, #desc', target: inActiveCardId('promoDesc') },
-        { controls: '#priceOld', target: inActiveCardId('priceOldDisplay') },
-        { controls: '#discount, #discount ~ .percent-stepper', target: inActiveCardId('discountDisplay') },
-        { controls: '#priceNew', target: inActiveCardId('priceNewDisplay') }
+        { controls: '#presetDesc, #desc', target: inActiveCard('.card-subtitle') },
+        { controls: '#discount, #discount ~ .percent-stepper', target: inActiveCard('.card-discount-giant') }
       ]
     });
   </script>
