@@ -686,7 +686,8 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: 16px;
+    /* centro alla stessa altezza dei selettori a destra e di STORE // CRAFT: selettori a 24 px dall'alto e alti 39 px */
+    top: calc(24px + (39px - 34px) / 2);
     left: 20px;
     width: 34px;
     height: 34px;
@@ -1239,9 +1240,10 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   #main-content > header.con-logo .orologio-testata .orologio-ora { color: #fff; }
   :root[data-interface-theme="light"] #main-content > header.con-logo .orologio-testata .orologio-ora { color: #282522; }
   #main-content > header.con-logo .orologio-testata .orologio-punto { color: var(--text-muted); opacity: .7; }
-  /* scritta più grande che nel selettore: 0,8rem nello STANDARD (invece di 0,65), 12 px nel COMPATTO (invece di 10) */
-  #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 0.8rem; }
-  :root[data-interface-look="minimal"] #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 12px; }
+  /* scritta un poco più grande che nel selettore e più spaziata: 0,74rem con lettere a 0,1em nello STANDARD (selettore 0,65rem),
+     11 px con lettere a 0,12em nel COMPATTO (selettore 10 px) */
+  #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 0.74rem; letter-spacing: .1em; }
+  :root[data-interface-look="minimal"] #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 11px; letter-spacing: .12em; }
   /* come il titolo della pagina operatore: Cinzel 500 in maiuscolo, lettere molto spaziate, tra due linee sottili oro */
   .testata-titolo { display: flex; align-items: center; gap: 16px; font-family: 'Cinzel', serif; font-size: 15px; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: var(--interface-accent, var(--accent)); white-space: nowrap; }
   .testata-titolo::before,
@@ -1260,6 +1262,15 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 .testata-centro > .is-sotto { transform: translateY(100%); opacity: 0; }
 .testata-centro > .is-sopra { transform: translateY(-100%); opacity: 0; }
 .testata-centro > .senza-animazione { transition: none; }
+/* banner che non entra più tra i due elementi ai lati (finestra stretta): sparisce con una dissolvenza invece di essere
+   coperto o tagliato, e ricompare quando torna lo spazio (dashboard.js, controllaBanner) */
+.testata-centro { transition: opacity .3s ease, visibility .3s; }
+.testata-centro.is-nascosto { opacity: 0; visibility: hidden; }
+/* finestra desktop stretta, menu laterale chiuso: STORE // CRAFT in Cinzel al posto del banner, tra ☰ e i selettori
+   (posizione e comparsa da dashboard.js, marchioStretto); come la scritta del menu laterale */
+.testata-marchio { position: absolute; transform: translateY(-50%); font-family: 'Cinzel', serif; font-size: 17px; line-height: 1;
+  font-weight: 600; letter-spacing: .16em; margin-right: -.16em; color: var(--interface-accent, var(--accent)); white-space: nowrap; pointer-events: none; }
+.testata-marchio[hidden] { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .testata-centro > * { transform: none !important; transition: opacity .6s ease; }
 }

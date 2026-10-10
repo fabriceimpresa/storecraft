@@ -26,7 +26,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.98 2026';
+  const VERSIONE = 'V 1.99 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -430,6 +430,64 @@
     }, 10 * 1000);
   }
 
+  // Banner dell'intestazione, da desktop e tablet: si vede solo se la scritta più larga entra tutta tra i due elementi ai
+  // lati (selettori, data e ora) con 24 px di respiro per parte; stringendo la finestra, prima di essere coperto o
+  // tagliato, sparisce con una dissolvenza (.is-nascosto in dashboard.css) e ricompare quando torna lo spazio
+  function controllaBanner(banner, testata) {
+    const RESPIRO = 24;
+    const misura = () => {
+      if (phoneViewQuery.matches || banner.parentElement !== testata) return;
+      const stile = getComputedStyle(testata);
+      const interno = testata.clientWidth - parseFloat(stile.paddingLeft) - parseFloat(stile.paddingRight);
+      // gli elementi ai lati, nel flusso dell'intestazione (non il pulsante HOME, fisso)
+      const lati = [...testata.children].filter(figlio => figlio !== banner && figlio.offsetWidth
+        && !['fixed', 'absolute'].includes(getComputedStyle(figlio).position));
+      const lato = Math.max(0, ...lati.map(figlio => figlio.getBoundingClientRect().width));
+      const serve = Math.max(0, ...[...banner.children].map(scritta => scritta.scrollWidth));
+      banner.classList.toggle('is-nascosto', serve > interno - 2 * (lato + RESPIRO));
+    };
+    new ResizeObserver(misura).observe(testata);
+    document.fonts?.ready.then(misura);
+    new MutationObserver(misura).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-interface-look'] });
+    phoneViewQuery.addEventListener('change', misura);
+    requestAnimationFrame(misura);
+  }
+
+  // Finestra desktop stretta (fino a 720 px con il mouse): il menu laterale è chiuso e il banner non c'è, quindi al suo
+  // posto, nello spazio libero tra ☰ e i selettori a destra, la scritta STORE // CRAFT in Cinzel come nel menu laterale
+  // (.testata-marchio in dashboard.css); se non entra con 24 px di respiro per parte si nasconde. Non sul telefono,
+  // dove STORE // CRAFT sta già nella barra in alto
+  function marchioStretto(testata) {
+    const RESPIRO = 24;
+    const marchio = el('div', { class: 'testata-marchio', 'aria-hidden': 'true', text: 'STORE // CRAFT' });
+    testata.append(marchio);
+    const menu = document.querySelector('.mobile-nav-toggle');
+    const misura = () => {
+      marchio.hidden = true;
+      if (!narrowViewQuery.matches || phoneViewQuery.matches || !menu) return;
+      const selettori = [...testata.querySelectorAll('.mode-switcher')].filter(selettore => selettore.offsetWidth)
+        .map(selettore => selettore.getBoundingClientRect());
+      if (!selettori.length) return;
+      const riquadro = testata.getBoundingClientRect();
+      const inizio = menu.getBoundingClientRect().right + RESPIRO;
+      const fine = Math.min(...selettori.map(rettangolo => rettangolo.left)) - RESPIRO;
+      marchio.hidden = false;
+      const larghezza = marchio.offsetWidth;
+      if (fine - inizio < larghezza) { marchio.hidden = true; return; }
+      // al centro dello spazio libero, alla stessa altezza dei selettori
+      marchio.style.left = `${(inizio + fine - larghezza) / 2 - riquadro.left}px`;
+      marchio.style.top = `${(selettori[0].top + selettori[0].bottom) / 2 - riquadro.top}px`;
+    };
+    new ResizeObserver(misura).observe(testata);
+    document.fonts?.ready.then(misura);
+    new MutationObserver(misura).observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-interface-look'] });
+    narrowViewQuery.addEventListener('change', misura);
+    phoneViewQuery.addEventListener('change', misura);
+    requestAnimationFrame(misura);
+  }
+
   function disegna() {
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
     const corpo = document.body;
@@ -561,6 +619,8 @@
       phoneViewQuery.addEventListener('change', posto);
       posto();
       alternaTestata([titoloBanner, identitaHero].filter(Boolean));
+      controllaBanner(banner, testataLogo);
+      marchioStretto(testataLogo);
     }
     // l'interruttore dei negozi sta a sinistra del selettore CASSIERE / CREATOR, largo uguale (la larghezza del più largo
     // dei due, --larghezza-selettore, che cambia con l'aspetto), e titolo e sottotitolo lasciano libero lo spazio dei due
@@ -635,6 +695,8 @@
       };
       phoneViewQuery.addEventListener('change', posto);
       posto();
+      if (centro) controllaBanner(centro, testata);
+      marchioStretto(testata);
       document.fonts?.ready.then(misura);
       window.addEventListener('resize', misura);
       new MutationObserver(misura).observe(document.documentElement,

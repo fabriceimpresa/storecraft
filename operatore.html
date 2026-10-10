@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-45"></script>
+  <script src="assets/js/negozi.js?v=20261010-49"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -275,15 +275,18 @@
     <h1 class="title" id="titolo">Area operatore</h1>
 
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
+      <button class="voce" type="button" data-vista="struttura">Struttura negozi</button>
       <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
       <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
-      <a class="voce" href="schema-pagine.html">Struttura negozi</a>
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
       <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
       <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
     </nav>
 
-    <!-- Sezioni: le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
+    <!-- Sezioni: Struttura negozi e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
+    <section class="vista" data-vista="struttura" hidden>
+      <iframe data-src="schema-pagine.html?incorporata" title="Struttura negozi"></iframe>
+    </section>
     <section class="vista" data-vista="importa" hidden>
       <iframe data-src="logoimport.html?incorporata" title="Importa loghi ufficiali"></iframe>
     </section>
@@ -336,8 +339,8 @@
 
   <script>
     // ----- Viste delle sezioni dentro la cornice -----
-    // #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
-    const VISTE = { importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    // #struttura, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    const VISTE = { struttura: 'Struttura negozi', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -349,8 +352,10 @@
     // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Struttura negozi,
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
-      menu.querySelectorAll('a[href="schema-pagine.html"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
-      delete VISTE.copia;   // la sezione resta nella pagina, nascosta e non apribile (il suo script ne cerca i comandi)
+      menu.querySelectorAll('[data-vista="struttura"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
+      // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
+      delete VISTE.struttura;
+      delete VISTE.copia;
     }
 
     // la cornice passa dall'altezza di prima alla nuova con un'animazione (cambia passa al nuovo contenuto)

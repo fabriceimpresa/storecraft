@@ -2,11 +2,12 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-45"></script>
+  <script src="assets/js/negozi.js?v=20261010-49"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Struttura negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
+  <script src="assets/js/operatore-sezione.js?v=20261010-49"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -70,10 +71,54 @@
     /* Ultima colonna, l'esito della riga (come un totale): staccata dalle altre con un fondo appena più chiaro
        e una linea a sinistra; la pagina allineata ha la spunta verde, più grande delle altre, senza alzare la riga */
     th.centro, td.esito { border-left: 1px solid #4a453d; background: rgba(255, 255, 255, .035); }
+    /* il titolo ha il fondo pieno (stessa tinta): sul telefono resta fermo in alto e le righe gli scorrono sotto */
+    th.centro { background: linear-gradient(rgba(255, 255, 255, .035), rgba(255, 255, 255, .035)), var(--pannello); }
     td.esito { text-align: center; vertical-align: middle; }
     .spunta-esito { color: var(--ok); font-size: 15px; line-height: 1; }
     .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--bordo); border-radius: 3px; color: var(--tenue); font-size: 10px; letter-spacing: .06em; }
+    /* mentre la tabella scorre di lato, la prima colonna (i nomi delle pagine) resta ferma a sinistra */
+    th.pg, td:first-child { position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0 var(--bordo); }
+    th.pg { z-index: 3; }
+    td:first-child { background: var(--bg); }
+    /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria (il titolo è quello
+       della cornice) né fondo; sul computer la tabella non scorre nel suo riquadro ma allarga la cornice quanto serve */
+    html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
+    html.incorporata .pagina { max-width: none; padding: 0; }
+    html.incorporata .torna, html.incorporata header.testa { display: none; }
+    html.incorporata .riga-stato { margin-top: 0; }
+    /* le colonne ferme prendono il fondo della pagina operatore, così non si vede una fascia più scura */
+    html.incorporata { --bg: #121110; }
+    @media (min-width: 701px) { html.incorporata .schema-scroll { overflow: visible; } }
+    /* zoom della tabella (comandi − / + sopra la tabella, solo sul telefono) */
+    .schema-scroll table { zoom: var(--zoom-tabella, 1); }
+    .zoom-tabella { display: none; }
     @media (prefers-reduced-motion: reduce) { .live::after { animation: none; } }
+    /* Telefono: la pagina sta nella larghezza dello schermo; la tabella è un riquadro che scorre in tutte e due le
+       direzioni, con la riga dei titoli e la colonna delle pagine ferme, e si ingrandisce o rimpicciolisce con − / +
+       (il pizzico con due dita sulla pagina resta libero) */
+    @media (max-width: 700px) {
+      .pagina { padding: 14px 14px 40px; }
+      header.testa { flex-wrap: wrap; gap: 10px 16px; margin-bottom: 26px; padding-bottom: 16px; }
+      header.testa img { width: 72px; }
+      h1 { font-size: 12px; letter-spacing: .16em; }
+      .live { font-size: 13px; }
+      .riga-stato { gap: 10px; font-size: 11px; }
+      .insegne { gap: 22px; margin: 28px 0 18px; }
+      .insegna { height: 34px; }
+      .insegna img { max-height: 26px; max-width: 28vw; }
+      /* alta al massimo il 72% dello schermo (dentro la pagina operatore l'altezza della sua finestra, --alto-schermo) */
+      .schema-scroll { max-height: calc(var(--alto-schermo, 100vh) * .72); overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+      th { position: sticky; top: 0; z-index: 2; }
+      /* anche l'ultima colonna, l'esito della riga, resta ferma a destra mentre la tabella scorre di lato (fondo pieno) */
+      th.centro, td.esito { position: sticky; right: 0; box-shadow: -1px 0 0 #4a453d; }
+      th.centro { z-index: 3; }
+      td.esito { z-index: 1; background: linear-gradient(rgba(255, 255, 255, .035), rgba(255, 255, 255, .035)), var(--bg); }
+      .zoom-tabella { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin: 0 0 10px; color: var(--tenue); font-size: 11px; }
+      .zoom-tabella button { width: 36px; height: 32px; border: 1px solid var(--bordo); border-radius: 4px; background: var(--pannello);
+        color: var(--oro); font: 400 16px var(--mono); cursor: pointer; }
+      .zoom-tabella button:disabled { opacity: .35; }
+      .zoom-tabella output { min-width: 44px; text-align: center; color: var(--oro-chiaro); }
+    }
   </style>
 </head>
 <body>
@@ -149,6 +194,14 @@
     return td;
   }
 
+  // Dentro la pagina operatore: l'altezza dello schermo è quella della sua finestra (il riquadro cresce con il contenuto)
+  const incorporata = document.documentElement.classList.contains('incorporata');
+  if (incorporata) {
+    const altoSchermo = () => document.documentElement.style.setProperty('--alto-schermo', `${window.parent.innerHeight}px`);
+    altoSchermo();
+    window.parent.addEventListener('resize', altoSchermo);
+  }
+
   async function schema() {
     const contenitore = document.getElementById('schema');
     let totPagine = 0, totResidui = 0;
@@ -163,6 +216,33 @@
     const scelto = () => insegne.querySelector('[aria-selected="true"]');
     insegne.addEventListener('mouseleave', () => scelto() && sposta(scelto()));
     contenitore.append(insegne);
+    // zoom della tabella sul telefono (dal 60 al 150 %, a passi di 10; di partenza 80 %, così si vedono più colonne)
+    const zoom = document.createElement('div');
+    zoom.className = 'zoom-tabella';
+    const meno = document.createElement('button');
+    const piu = document.createElement('button');
+    const valore = document.createElement('output');
+    meno.type = piu.type = 'button';
+    meno.textContent = '−';
+    piu.textContent = '+';
+    meno.setAttribute('aria-label', 'Rimpicciolisci la tabella');
+    piu.setAttribute('aria-label', 'Ingrandisci la tabella');
+    let livello = 80;
+    const applica = () => {
+      contenitore.style.setProperty('--zoom-tabella', livello / 100);
+      valore.textContent = `${livello}%`;
+      meno.disabled = livello <= 60;
+      piu.disabled = livello >= 150;
+    };
+    meno.addEventListener('click', () => { livello = Math.max(60, livello - 10); applica(); });
+    piu.addEventListener('click', () => { livello = Math.min(150, livello + 10); applica(); });
+    zoom.append('zoom', meno, valore, piu);
+    contenitore.append(zoom);
+    // sul computer la tabella resta al 100 %
+    const telefono = window.matchMedia('(max-width: 700px)');
+    const secondoSchermo = () => { if (telefono.matches) applica(); else contenitore.style.removeProperty('--zoom-tabella'); };
+    telefono.addEventListener('change', secondoSchermo);
+    secondoSchermo();
     for (const id of Negozi.installati) {
       const scheda = Negozi.scheda(id) || {};
       const tasto = document.createElement('button');
@@ -243,6 +323,7 @@
         const tdPagina = document.createElement('td');
         const link = document.createElement('a');
         link.href = `${id}/${pagina}`;
+        if (incorporata) link.target = '_top';   // dalla pagina operatore la pagina si apre a tutta finestra
         link.textContent = pagina.replace('.html', '');
         tdPagina.append(link);
         const tipo = document.createElement('span');
