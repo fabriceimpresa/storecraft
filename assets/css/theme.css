@@ -707,7 +707,8 @@
   }
 
   :root[data-interface-theme="dark"][data-interface-look="minimal"] body:not([data-layout]) .mode-switcher .mode-btn:hover {
-    background: var(--card);
+    /* un poco più chiaro del fondo grigio scuro del selettore (#24221f) */
+    background: #302d2a;
     color: var(--text);
   }
 

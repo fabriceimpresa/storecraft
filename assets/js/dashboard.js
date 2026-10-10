@@ -7,9 +7,10 @@
    La pagina chiama Dashboard.disegna() in fondo al <body>, prima che theme.js prepari il menu di sistema.
 
    Contenuto del negozio:
-     intestazione   { titolo, sottotitolo, interruttore: ['tebe', 'ophilya'] } (interruttore facoltativo: negozi tra cui passare,
+     intestazione   { titolo, sottotitolo, interruttore: ['tebe', 'ophilya'], logo } (interruttore facoltativo: negozi tra cui passare,
                     mostrati solo se installati almeno due; titolo: false toglie titolo e sottotitolo e mette l'interruttore
-                    in alto a sinistra, come nella dashboard originale di TEBE)
+                    in alto a sinistra, come nella dashboard originale di TEBE; con titolo: false e logo (true o il percorso di un'immagine propria), senza interruttore, in
+                    alto a sinistra c'è il logo del negozio; con dataOra: true, senza logo, data e ora del giorno)
      logo           { src (nella cartella assets/), larghezza, alt }: sotto il divisorio, bianco su fondo scuro e nero
                     su fondo chiaro
      identita       [riga principale, riga sotto] accanto al logo (es. indirizzo e descrizione)
@@ -25,7 +26,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.93 2026';
+  const VERSIONE = 'V 1.94 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -378,6 +379,31 @@
         el('strong', { text: dati.identita[0] }), dati.identita[1] ? el('span', { text: dati.identita[1] }) : null) : null);
   }
 
+  // Banner dell'intestazione: le scritte si alternano in giro, una ogni 10 secondi, quella in uscita sale e sparisce,
+  // quella nuova entra dal basso (stile in dashboard.css, .testata-centro); parte con la prima visibile
+  function alternaTestata(scritte) {
+    let attiva = scritte[0];
+    scritte.forEach((scritta, indice) => {
+      scritta.classList.remove('is-visibile', 'is-sotto', 'is-sopra');
+      scritta.classList.add(indice ? 'is-sotto' : 'is-visibile');
+    });
+    setInterval(() => {
+      const prossima = scritte[(scritte.indexOf(attiva) + 1) % scritte.length];
+      attiva.classList.replace('is-visibile', 'is-sopra');
+      prossima.classList.remove('is-sotto');
+      prossima.classList.add('is-visibile');
+      const uscita = attiva;
+      // finito lo scorrimento, la scritta uscita torna sotto senza animazione, pronta per il giro dopo
+      setTimeout(() => {
+        uscita.classList.add('senza-animazione');
+        uscita.classList.replace('is-sopra', 'is-sotto');
+        uscita.offsetHeight;
+        uscita.classList.remove('senza-animazione');
+      }, 900);
+      attiva = prossima;
+    }, 10 * 1000);
+  }
+
   function disegna() {
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
     const corpo = document.body;
@@ -421,6 +447,92 @@
     window.addEventListener('scroll', alzaPulsanteImpostazioni, { passive: true });
     window.addEventListener('resize', alzaPulsanteImpostazioni);
     phoneViewQuery.addEventListener('change', alzaPulsanteImpostazioni);
+    // Intestazione con titolo (Luxury): da desktop e tablet titolo e sottotitolo si alternano ogni 10 secondi con
+    // indirizzo e descrizione, allineati a sinistra, con lo stesso scorrimento verso l'alto di TEBE e OPHILYA
+    // (.testata-sinistra in dashboard.css); il logo resta sotto, da solo nella sua riga. Sul telefono indirizzo e
+    // descrizione tornano nella riga del logo, nascosti
+    const intestazioneTitolo = corpo.querySelector('#main-content > header:not(.solo-selettori)');
+    const identitaNegozio = corpo.querySelector('#main-content > .store-hero .store-identity');
+    if (intestazioneTitolo && identitaNegozio && !intestazioneTitolo.querySelector('.store-switch')) {
+      const titoli = el('div', { class: 'testata-titoli' }, ...intestazioneTitolo.querySelectorAll(':scope > :is(h1, p)'));
+      const banner = el('div', { class: 'testata-centro testata-sinistra', 'aria-live': 'off' }, titoli);
+      intestazioneTitolo.append(banner);
+      const rigaLogo = identitaNegozio.parentElement;
+      const posto = () => {
+        if (phoneViewQuery.matches) rigaLogo.append(identitaNegozio);
+        else banner.append(identitaNegozio);
+      };
+      phoneViewQuery.addEventListener('change', posto);
+      posto();
+      alternaTestata([titoli, identitaNegozio]);
+    }
+    // Intestazione senza titolo e senza interruttore dei negozi (Luxury dal 10 ottobre 2026): da desktop e tablet, come in
+    // TEBE e OPHILYA, una sola riga in tre colonne (.con-logo in dashboard.css): a sinistra il posto dell'interruttore,
+    // al centro il banner (la scritta Visual Merchandising Studio, poi indirizzo e descrizione, centrati) e a destra
+    // CASSIERE / CREATOR. Il posto a sinistra resta vuoto, salvo logo nei contenuti: logo: true vi sposta il logo della
+    // riga sotto, logo: 'percorso' vi mette un'immagine propria (colorata come il logo); in questi due casi la riga del
+    // logo si nasconde. Sul telefono logo e selettore tornano al loro posto
+    const testataLogo = corpo.querySelector('#main-content > header.solo-selettori');
+    const rigaHero = corpo.querySelector('#main-content > .store-hero');
+    if (testataLogo && rigaHero && !testataLogo.querySelector('.store-switch')) {
+      testataLogo.classList.add('con-logo');
+      const logoHero = rigaHero.querySelector('.store-logo');
+      const selettoreCassa = corpo.querySelector('.mobile-top-bar .mode-switcher');
+      const barraTelefono = corpo.querySelector('.mobile-top-bar');
+      const identitaHero = rigaHero.querySelector('.store-identity');
+      const sceltaLogo = dati.intestazione.logo;
+      const logoProprio = typeof sceltaLogo === 'string'
+        ? el('img', { class: 'store-logo logo-testata', src: risorsa(sceltaLogo), alt: dati.logo?.alt || Negozi.corrente().nome })
+        : null;
+      const riquadroLogo = el('div', { class: 'testata-logo' }, logoProprio);
+      // dataOra: true nei contenuti (Luxury): nel posto a sinistra, senza logo, data e ora del giorno (es. VEN 10 OTT ·
+      // 10:42) in un riquadro con l'aspetto e la larghezza di CASSIERE / CREATOR (stesse classi, regole in dashboard.css,
+      // .orologio-testata); si aggiorna a ogni minuto
+      if (!sceltaLogo && dati.intestazione.dataOra) {
+        const testo = el('span', { class: 'mode-btn' });
+        const orologio = el('div', { class: 'mode-switcher orologio-testata', role: 'timer', 'aria-label': 'Data e ora' }, testo);
+        riquadroLogo.append(orologio);
+        const scrivi = () => {
+          const ora = new Date();
+          const giorno = ora.toLocaleDateString('it-IT', { weekday: 'short' }).replace('.', '');
+          const mese = ora.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '');
+          const orario = ora.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+          // la data in oro, l'ora in bianco (nel tema chiaro scura), divise da un puntino tenue
+          testo.replaceChildren(el('span', { class: 'orologio-data', text: `${giorno} ${ora.getDate()} ${mese}`.toUpperCase() }),
+            el('span', { class: 'orologio-punto', text: '·' }), el('span', { class: 'orologio-ora', text: orario }));
+          setTimeout(scrivi, 60000 - (Date.now() % 60000) + 50);
+        };
+        scrivi();
+        // largo come il selettore CASSIERE / CREATOR, che cambia con l'aspetto
+        const pareggia = () => {
+          orologio.style.minWidth = '';
+          if (!phoneViewQuery.matches) orologio.style.minWidth = `${Math.ceil(selettoreCassa.offsetWidth)}px`;
+        };
+        document.fonts?.ready.then(pareggia);
+        window.addEventListener('resize', pareggia);
+        new MutationObserver(pareggia).observe(document.documentElement,
+          { attributes: true, attributeFilter: ['data-interface-look', 'data-interface-theme'] });
+        requestAnimationFrame(pareggia);
+      }
+      const titoloBanner = el('div', { class: 'testata-titolo', text: 'Visual Merchandising Studio' });
+      const banner = el('div', { class: 'testata-centro', 'aria-live': 'off' }, titoloBanner);
+      testataLogo.append(riquadroLogo, banner);
+      const posto = () => {
+        if (phoneViewQuery.matches) {
+          if (logoHero) rigaHero.prepend(logoHero);
+          if (identitaHero) rigaHero.append(identitaHero);
+          barraTelefono.append(selettoreCassa);
+        } else {
+          if (sceltaLogo === true && logoHero) riquadroLogo.append(logoHero);
+          if (identitaHero) banner.append(identitaHero);
+          testataLogo.append(selettoreCassa);
+        }
+        rigaHero.classList.toggle('is-vuota', !phoneViewQuery.matches && Boolean(sceltaLogo));
+      };
+      phoneViewQuery.addEventListener('change', posto);
+      posto();
+      alternaTestata([titoloBanner, identitaHero].filter(Boolean));
+    }
     // l'interruttore dei negozi sta a sinistra del selettore CASSIERE / CREATOR, largo uguale (la larghezza del più largo
     // dei due, --larghezza-selettore, che cambia con l'aspetto), e titolo e sottotitolo lasciano libero lo spazio dei due
     // selettori (--larghezza-selettori); variabili usate da dashboard.css
@@ -468,31 +580,13 @@
       const barra = corpo.querySelector('.mobile-top-bar');
       const rigaLogo = corpo.querySelector('#main-content > .store-hero');
       const identita = rigaLogo?.querySelector('.store-identity');
-      // Al centro dell'intestazione indirizzo e descrizione si alternano ogni 2 minuti con la scritta Visual Merchandising
+      // Al centro dell'intestazione indirizzo e descrizione si alternano ogni 10 secondi con la scritta Visual Merchandising
       // Studio, con un effetto di scorrimento verso l'alto (stile in dashboard.css, .testata-centro)
       const centro = testata.classList.contains('solo-selettori') && identita
         ? el('div', { class: 'testata-centro', 'aria-live': 'off' },
           el('div', { class: 'testata-titolo is-sotto', text: 'Visual Merchandising Studio' }))
         : null;
-      if (centro) {
-        let attiva = identita;
-        identita.classList.add('is-visibile');
-        setInterval(() => {
-          const prossima = attiva === identita ? centro.querySelector('.testata-titolo') : identita;
-          attiva.classList.replace('is-visibile', 'is-sopra');
-          prossima.classList.remove('is-sotto');
-          prossima.classList.add('is-visibile');
-          const uscita = attiva;
-          // finito lo scorrimento, la scritta uscita torna sotto senza animazione, pronta per il giro dopo
-          setTimeout(() => {
-            uscita.classList.add('senza-animazione');
-            uscita.classList.replace('is-sopra', 'is-sotto');
-            uscita.offsetHeight;
-            uscita.classList.remove('senza-animazione');
-          }, 900);
-          attiva = prossima;
-        }, 2 * 60 * 1000);
-      }
+      if (centro) alternaTestata([identita, centro.querySelector('.testata-titolo')]);
       const posto = () => {
         if (phoneViewQuery.matches) {
           barra.append(selettore);
@@ -747,7 +841,7 @@
     const mainElem = document.getElementById('main-content');
     const riga = mainElem?.querySelector(':scope > .store-hero');
     const pulsante = document.getElementById('system-menu-toggle')?.getBoundingClientRect();
-    if (!riga || !document.body.classList.contains('cassiere-mode') || !pulsante?.height || pulsante.bottom > window.innerHeight) {
+    if (!riga || !riga.getClientRects().length || !document.body.classList.contains('cassiere-mode') || !pulsante?.height || pulsante.bottom > window.innerHeight) {
       mainElem?.style.removeProperty('--hero-fondo');
       return;
     }

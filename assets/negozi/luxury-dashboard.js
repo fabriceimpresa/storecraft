@@ -1,10 +1,10 @@
 /* Contenuto della dashboard di Luxury Outlet (vedi assets/js/dashboard.js). Immagini e PDF nella cartella assets/. */
 Dashboard.contenuto({
   intestazione: {
-    titolo: 'Visual Merchandising Studio',
-    sottotitolo: 'Crea la tua grafica promozionale in tempo reale'
+    titolo: false,  // come TEBE: niente titolo, banner al centro dell'intestazione
+    dataOra: true   // a sinistra, al posto dell'interruttore dei negozi di TEBE, data e ora del giorno
   },
-  logo: { src: 'img/luxury/logo-dashboard.png', larghezza: 205, alt: 'LUXURY OUTLET' },
+  logo: { src: 'img/luxury/logo-lxry-orizzontale.png', larghezza: 205, alt: 'LUXURY OUTLET' },
   identita: ['VIA DEL CORSO 15', 'OUTLET MULTI BRAND · LINEA LXRY'],
   qr: 'https://instagram.com/luxuryoutletroma',
   cassa: 'sempre',

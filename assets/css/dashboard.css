@@ -34,7 +34,7 @@ aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8px 56px;
+  padding: 0 8px 68px;   /* sotto STORE // CRAFT 68 px prima di CREA CARTELLI (56 fino al 10 ottobre 2026: 12 px in più tra intestazione e resto) */
   width: 100%;
 }
 
@@ -241,16 +241,27 @@ main { flex: 1; padding: 24px 3rem 2rem; overflow-y: auto; position: relative; s
 main > * { max-width: calc(1450px - 6rem); margin-left: auto; margin-right: auto; }
 header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
 /* Sul desktop il divisorio sotto l'intestazione cade sempre all'altezza della voce CREA CARTELLI del menu laterale
-   (24 px sopra + 94 px di intestazione = 118 px), con il titolo, l'interruttore o l'aspetto che sia */
-@media screen and (min-width: 721px) { #main-content > header { min-height: 94px; } }
+   (24 px sopra + 106 px di intestazione = 130 px; prima del 10 ottobre 2026 94 px, 12 px più in alto), con il titolo, l'interruttore o l'aspetto che sia */
+@media screen and (min-width: 721px) { #main-content > header { min-height: 106px; } }
 /* Sotto il divisorio lo stesso spazio che c'è sopra, tra il sottotitolo e il divisorio (circa 35 px in STANDARD): nel look COMPATTO
    il sottotitolo in Arial è più piccolo e lascia sopra 5 px in più, quindi anche sotto si aggiungono 5 px */
 @media screen and (min-width: 721px) { :root[data-interface-look="minimal"] #main-content > header { margin-bottom: calc(2rem + 5px); } }
+/* Intestazione con titolo (oggi nessun negozio): niente divisorio (dal 10 ottobre 2026), e in CREATOR la riga del logo
+   comincia dove prima c'era il divisorio, all'altezza di CREA CARTELLI come in TEBE. In CASSIERE sotto l'intestazione
+   c'è il titolo UTILITÀ CASSA e resta lo spazio di prima. Vale anche nelle finestre desktop strette; sul telefono
+   valgono le sue regole. */
+@media not screen and (max-width: 720px) and (pointer: coarse) {
+  #main-content > header:not(.solo-selettori) { border-bottom: 0; }
+  body:not(.cassiere-mode) #main-content > header:not(.solo-selettori),
+  :root[data-interface-look="minimal"] body:not(.cassiere-mode) #main-content > header:not(.solo-selettori) { margin-bottom: 0; }
+  /* riga del logo rimasta vuota (logo salito nell'intestazione, .con-logo con logo nei contenuti): si nasconde */
+  #main-content > .store-hero.is-vuota { display: none; }
+}
 .home-mark { position: fixed; top: 24px; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
 
-/* Selettore CASSIERE / CREATOR (e TEBE / OPHILYA): un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro.
+/* Selettore CASSIERE / CREATOR (e TEBE / OPHILYA): un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro. Fondo (e voce non scelta) grigio molto scuro e opaco, #24221f, invece del nero #0a0908 (dal 10 ottobre 2026).
    In STANDARD stesse misure del look COMPATTO (riquadro 4 px, pulsanti alti 29 px): cambiano solo forma e carattere */
-.mode-switcher { position: fixed; top: 24px; right: 2rem; display: flex; gap: 4px; padding: 4px; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
+.mode-switcher { position: fixed; top: 24px; right: 2rem; display: flex; gap: 4px; padding: 4px; background: #24221f; border: 1px solid var(--border); border-radius: 4px; z-index: 30; }
 .mode-btn { display: inline-flex; align-items: center; gap: 0.35rem; height: 29px; padding: 0 13px; background: transparent; border: 1px solid transparent; border-radius: 3px; color: var(--text); font-family: inherit; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 0.2s ease; }
 .mode-btn:hover { color: var(--accent); }
 .mode-btn.active { background: var(--accent); color: #000; border-color: var(--accent-hover); box-shadow: 0 0 4px rgba(229,186,115,0.35), 0 2px 4px rgba(0,0,0,0.45); }
@@ -1204,17 +1215,33 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
    di CREA CARTELLI del menu laterale. */
 @media screen and (min-width: 721px) {
   #main-content > header.solo-selettori,
-  :root[data-interface-look="minimal"] #main-content > header.solo-selettori { min-height: 0; padding-bottom: 36px; margin-bottom: 16px; border-bottom: 0; }
+  :root[data-interface-look="minimal"] #main-content > header.solo-selettori { min-height: 0; padding-bottom: 48px; margin-bottom: 16px; border-bottom: 0; }
   #main-content > header.solo-selettori { display: flex; justify-content: space-between; align-items: center; }
   #main-content > header.solo-selettori .mode-switcher { position: static; display: inline-flex; }
   #main-content > header.solo-selettori .store-identity { text-align: center; padding-bottom: 0; }  /* Al centro si alternano ogni 2 minuti (dashboard.js) indirizzo e descrizione e la scritta Visual Merchandising Studio:
      la scritta in uscita sale e sparisce, quella nuova entra dal basso */
   #main-content > header.solo-selettori .testata-centro { display: grid; align-items: center; justify-items: center; height: 40px; overflow: hidden; }
-  .testata-centro > * { grid-area: 1 / 1; transition: transform .8s cubic-bezier(.22, .61, .36, 1), opacity .8s ease; }
-  .testata-centro > .is-visibile { transform: translateY(0); opacity: 1; }
-  .testata-centro > .is-sotto { transform: translateY(100%); opacity: 0; }
-  .testata-centro > .is-sopra { transform: translateY(-100%); opacity: 0; }
-  .testata-centro > .senza-animazione { transition: none; }
+  /* Senza interruttore dei negozi (.con-logo, Luxury dal 10 ottobre 2026): tre colonne come in TEBE, a sinistra il posto
+     dell'interruttore (vuoto, o il logo con logo nei contenuti: 140 px senza transform, un'immagine propria 205 px),
+     banner al centro esatto del contenuto, CASSIERE / CREATOR a destra */
+  #main-content > header.solo-selettori.con-logo { display: grid; grid-template-columns: 1fr auto 1fr; }
+  #main-content > header.con-logo .testata-logo { justify-self: start; display: flex; }
+  #main-content > header.con-logo .mode-switcher { justify-self: end; }
+  :root[data-negozio] #main-content > header.con-logo .store-logo { max-width: 140px; transform: none; }
+  /* immagine propria dell'intestazione (logo: 'percorso'), larga come il logo di TEBE */
+  :root[data-negozio] #main-content > header.con-logo .store-logo.logo-testata { max-width: 205px; }
+  /* data e ora (dataOra nei contenuti, Luxury): riquadro uguale a CASSIERE / CREATOR, largo uguale (dashboard.js), scritta al
+     centro come una voce non scelta, senza effetti al passaggio del mouse perché non è un comando */
+  #main-content > header.con-logo .orologio-testata { justify-content: center; }
+  #main-content > header.con-logo .orologio-testata .mode-btn { justify-content: center; cursor: default; pointer-events: none; font-variant-numeric: tabular-nums; }
+  /* la data in oro, l'ora in bianco (nel tema chiaro scura, come la voce scelta del selettore), il puntino tenue */
+  #main-content > header.con-logo .orologio-testata .orologio-data { color: var(--interface-accent, var(--accent)); }
+  #main-content > header.con-logo .orologio-testata .orologio-ora { color: #fff; }
+  :root[data-interface-theme="light"] #main-content > header.con-logo .orologio-testata .orologio-ora { color: #282522; }
+  #main-content > header.con-logo .orologio-testata .orologio-punto { color: var(--text-muted); opacity: .7; }
+  /* scritta più grande che nel selettore: 0,8rem nello STANDARD (invece di 0,65), 12 px nel COMPATTO (invece di 10) */
+  #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 0.8rem; }
+  :root[data-interface-look="minimal"] #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 12px; }
   /* come il titolo della pagina operatore: Cinzel 500 in maiuscolo, lettere molto spaziate, tra due linee sottili oro */
   .testata-titolo { display: flex; align-items: center; gap: 16px; font-family: 'Cinzel', serif; font-size: 15px; font-weight: 500; letter-spacing: .32em; text-transform: uppercase; color: var(--interface-accent, var(--accent)); white-space: nowrap; }
   .testata-titolo::before,
@@ -1222,6 +1249,17 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   .testata-titolo::after { margin-left: -.32em; }   /* la spaziatura dopo l'ultima lettera non allontana la linea destra */
 }
 .testata-centro { display: none; }   /* sul telefono indirizzo e descrizione stanno nella riga del logo, nascosti */
+.orologio-testata { display: none; }   /* data e ora solo da desktop e tablet (regole sopra) */
+/* Luxury (intestazione con titolo): il titolo (e il sottotitolo, se c'è) si alterna ogni 10 secondi (dashboard.js) con la riga di
+   indirizzo e descrizione, allineata a sinistra e al centro dell'altezza del titolo */
+#main-content > header .testata-sinistra { display: grid; align-items: center; justify-items: start; overflow: hidden; }
+#main-content > header .testata-sinistra .store-identity { text-align: left; padding-bottom: 0; }
+/* scorrimento delle scritte: quella in uscita sale e sparisce, quella nuova entra dal basso */
+.testata-centro > * { grid-area: 1 / 1; transition: transform .8s cubic-bezier(.22, .61, .36, 1), opacity .8s ease; }
+.testata-centro > .is-visibile { transform: translateY(0); opacity: 1; }
+.testata-centro > .is-sotto { transform: translateY(100%); opacity: 0; }
+.testata-centro > .is-sopra { transform: translateY(-100%); opacity: 0; }
+.testata-centro > .senza-animazione { transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .testata-centro > * { transform: none !important; transition: opacity .6s ease; }
 }
@@ -1238,8 +1276,6 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 :root[data-interface-theme="light"] .store-logo { filter: brightness(0); opacity: 1; }
 /* Luxury, tema chiaro: logo taupe scuro (#544e44 circa) invece del nero, meno duro sul fondo avorio */
 :root[data-negozio="luxury"][data-interface-theme="light"] .store-logo { filter: brightness(0) invert(28%) sepia(50%) saturate(110%); }
-/* Luxury: logo un poco più piccolo (90%) nello stesso spazio, così l'area sotto il divisorio resta uguale agli altri negozi */
-:root[data-negozio="luxury"] .store-logo { transform: scale(.9); transform-origin: left center; }
 .store-identity { text-align: right; padding-bottom: 3px; }
 .store-identity strong { display: block; font-size: 12px; font-weight: 400; letter-spacing: .2em; color: var(--accent); }
 .store-identity span { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .16em; color: var(--text-muted); }
@@ -1292,7 +1328,8 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   /* sul telefono niente titolo, sottotitolo e divisorio, e niente righe dell'indirizzo e descrittiva: la pagina parte dal
      logo del negozio e sotto cominciano subito le sezioni */
   #main-content > header { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }
-  #main-content > header :is(h1, p) { display: none; }
+  #main-content > header :is(h1, p),
+  #main-content > header .testata-sinistra { display: none; }
   .store-identity { display: none; }
   /* logo (largo al massimo 160 px) al centro tra la barra in alto e il titolo della prima sezione: circa 29 px sopra e
      sotto, fino alle lettere del titolo (nello STANDARD il titolo in Cinzel ha più aria nella riga, quindi il margine
@@ -1311,7 +1348,6 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   body .mobile-top-bar:has(.store-switch) .mode-switcher { flex: 1 1 0; min-width: 0; box-sizing: border-box; height: 40px; padding: 2px !important; gap: 2px; }
   body .mobile-top-bar:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; min-width: 0; width: auto; height: 34px; padding: 0 !important; justify-content: center; font-size: 0.72rem; }
   .store-logo { max-width: 160px; margin: 0 auto; }
-  :root[data-negozio="luxury"] .store-logo { transform-origin: center; }
   .mode-switcher.store-switch { position: static; display: inline-flex; margin-top: 0; z-index: auto; }
   #main-content > header:has(.store-switch) :is(h1, p) { padding-right: 0; }
   body:has(.store-switch) .mode-switcher { width: auto; }

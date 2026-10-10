@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-08"></script>
+  <script src="assets/js/negozi.js?v=20261010-35"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -54,6 +54,9 @@
     h1::before { content: '> '; color: var(--oro); }
     @keyframes cursore { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     .sotto { margin: 4px 0 0; color: var(--tenue); font-size: 11.5px; }
+    /* nota con la data dell'ultimo aggiornamento, sotto l'intestazione a destra */
+    .aggiornamento { margin: -6px 0 6px; color: var(--tenue); font-size: 11px; text-align: right; }
+    .aggiornamento::before { content: '// '; color: var(--oro); }
     /* pulsantiera delle sezioni, ferma in alto */
     nav.indice { position: sticky; top: 0; z-index: 5; display: flex; flex-direction: column; gap: 14px; margin: 6px 0 12px; padding: 16px 0 18px;
       border-top: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); background: var(--bg); }
@@ -151,6 +154,8 @@
       <div id="risultati" class="risultati" role="listbox" aria-label="Risultati della ricerca" hidden></div>
     </div>
   </header>
+  <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
+  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.94</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -173,6 +178,7 @@
     <li><strong>Immagini del foglio senza <code>object-fit</code></strong>: si dimensionano con <code>width/height: auto</code> e <code>max-width / max-height</code> (html2canvas, che fotografa il foglio per la lista e per iPhone, non applica <code>object-fit</code>).</li>
     <li><strong>Versione dei file comuni</strong>: le pagine richiamano i file comuni con <code>?v=</code> (data + progressivo, uguale in tutte le pagine); a ogni modifica di un file comune si aggiorna dappertutto. La <strong>versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>) sale di uno a ogni commit.</li>
     <li><strong>Lingua</strong>: testi dell'interfaccia, commenti e documentazione in italiano.</li>
+    <li><strong>Questa guida si aggiorna a ogni modifica</strong> (dal 10 ottobre 2026): quando cambia qualcosa in STORE // CRAFT si aggiornano anche le sezioni che ne parlano e, se cambia l'aspetto, le foto (<code>_foto-guida.ps1</code>). Deve sempre descrivere il progetto com'è.</li>
   </ul>
 
   <!-- ================================================================ -->
@@ -276,9 +282,10 @@
   <h2 id="dashboard">Dashboard</h2>
   <table>
     <tr><th>Componente</th><th>Dove</th><th>Aspetto</th><th>Regole</th></tr>
+    <tr><td>Splash page e punto vendita</td><td><code>index.html</code> nella radice + <code>punto-vendita.js</code></td><td>cornice oro, logo STORE // CRAFT, «Seleziona il tuo punto vendita» e i loghi dei negozi installati</td><td>compare al primo avvio del browser e a ogni nuovo giorno (scelta in <code>localStorage</code> con il giorno, più un cookie di sessione <code>storecraft_sessione</code> che il browser cancella chiudendosi); tema e aspetto restano ricordati; con un solo negozio si apre subito la sua dashboard; HOME ⌂ del menu di sistema riporta qui</td></tr>
     <tr><td>Dashboard unica</td><td><code>dashboard.js</code> + <code>dashboard.css</code> + contenuti in <code>assets/negozi/&lt;negozio&gt;-dashboard.js</code></td><td>menu laterale, intestazione, logo, caroselli, Utilità Cassa</td><td>le tre pagine <code>index.html</code> sono uguali, cambia solo <code>data-negozio</code></td></tr>
     <tr><td>CASSIERE / CREATOR e interruttore dei negozi</td><td><code>.mode-switcher</code></td><td>scuro: riquadro nero, voce scelta oro · chiaro: fondo crema <code>#eee8dd</code>, voce scelta bianca <code>#fffdfa</code> testo <code>#282522</code>, non scelta <code>#887d70</code> · STANDARD 0,65rem peso 600 · COMPATTO Arial 10 px, lettere 0,14em</td><td>i due selettori larghi uguale</td></tr>
-    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury: titolo VISUAL MERCHANDISING STUDIO e sottotitolo, divisorio · TEBE (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 2 minuti con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
+    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury (dal 10 ottobre 2026): come TEBE (<code>titolo: false</code>, <code>.con-logo</code>), a sinistra, al posto dell'interruttore, data e ora (<code>dataOra: true</code>, es. SAB 10 OTT · 11:45, riquadro come CASSIERE / CREATOR), banner centrato con VISUAL MERCHANDISING STUDIO e poi indirizzo e descrizione · con un titolo: titolo VISUAL MERCHANDISING STUDIO, senza sottotitolo, alternato ogni 10 secondi con indirizzo e descrizione, allineati a sinistra (si parte dal titolo), niente divisorio: il logo comincia all'altezza di CREA CARTELLI · TEBE (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 10 secondi con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
     <tr><td>Schede e caroselli</td><td><code>sezioni</code> e <code>schede</code> nei contenuti; <code>caroselli.css/js</code></td><td>4 schede per riga (2 sotto 1300 px, 1 sul telefono) · titolo Cinzel (STANDARD) o Fraunces (COMPATTO); chiaro taupe <code>#665e54</code>, scuro STANDARD peso 600</td><td>Crea Cartelli su due righe (<code>righe: 1</code> per una sola); Coming Soon con <code>prossimamente: true</code></td></tr>
     <tr><td>Utilità Cassa</td><td><code>cassa.js</code></td><td>widget squadrati (COMPATTO) o arrotondati (STANDARD); titoli bianchi nel tema scuro, taupe nel chiaro</td><td>su desktop si aprono in un popup; <code>cassa: 'solo-cassiere'</code> le mostra solo in CASSIERE (sul telefono anche in CREATOR)</td></tr>
     <tr><td>Tema e aspetto</td><td><code>theme.js</code> + <code>theme.css</code></td><td>CHIARO / SCURO e STANDARD / COMPATTO, indipendenti, ricordati per negozio</td><td>iniziali: Luxury scuro + STANDARD, TEBE chiaro + COMPATTO; non cambiano mai i fogli di stampa</td></tr>
@@ -341,7 +348,7 @@
   <table>
     <tr><th>Modulo</th><th>Dove</th><th>Cosa fa</th><th>Altrove</th></tr>
     <tr><td>Dove montare la stampa?</td><td><code>guida</code> nella scheda del negozio + <code>strumenti-stampa.js</code>; foto in <code>assets/foto/&lt;negozio&gt;/</code></td><td>pulsante sotto il pannello che apre le foto di dove si monta la stampa (cartelli in morsa, albero, cornice, paletti); senza foto riquadri "Foto in arrivo"</td><td>Luxury: spenta (<code>guida: null</code>)</td></tr>
-    <tr><td>Interruttore TEBE / OPHILYA</td><td>dashboard (<code>titolo: false</code> nei contenuti del negozio)</td><td>intestazione senza titolo: interruttore dei negozi a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 2 minuti con VISUAL MERCHANDISING STUDIO</td><td>Luxury: titolo e sottotitolo fissi</td></tr>
+    <tr><td>Interruttore TEBE / OPHILYA</td><td>dashboard (<code>titolo: false</code> nei contenuti del negozio)</td><td>intestazione senza titolo: interruttore dei negozi a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 10 secondi con VISUAL MERCHANDISING STUDIO</td><td>Luxury: stessa intestazione, al posto dell'interruttore data e ora</td></tr>
     <tr><td>Cornici</td><td><code>tebe/cornici10x15</code>, <code>tebe/cornice21x27</code></td><td>carattere Castoro, testi pronti <code>Materiali</code> in maiuscolo con ⭐, CORNICE SINISTRA / DESTRA</td><td>Luxury: non previsto</td></tr>
     <tr><td>Albero e Paletti</td><td><code>albero</code>, <code>paletto</code>, <code>paletto18x12</code> (in OPHILYA <code>-ophilya</code>)</td><td>due cartellini indipendenti, uno per metà foglio; Paletti con DOPPIO ARTICOLO</td><td>Luxury: ha solo il Paletto 15x10 (Cartello da Banco)</td></tr>
     <tr><td>Cartelli in morsa</td><td>Semplice, Sale, Brand, Percentuale, Multi Articolo di TEBE</td><td>le due metà del foglio sono fronte e retro dello stesso cartello: niente CARTELLO SUPERIORE / INFERIORE, COPIA SU ALTRO CARTELLO né 2 / 1 CARTELLI</td><td>Luxury: due cartelli indipendenti per foglio</td></tr>
@@ -360,7 +367,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-08</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-35</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -502,7 +509,7 @@
   <!-- ================================================================ -->
   <h2 id="loghi">Loghi ufficiali e personalizzati</h2>
   <ul class="regole">
-    <li><strong>Ufficiali</strong>: file in <code>assets/logos/&lt;negozio&gt;/</code>, elenco in <code>elenco.js</code> accanto (<code>LOGO_FILES</code> e <code>PRIORITY_BRANDS</code>), quattro varianti colore (white, black, red, gold) in <code>assets/img/&lt;negozio&gt;/printlogos/</code>. Si aggiungono e si tolgono dall'area operatore (Importa e Gestisci loghi ufficiali): solo PNG già trasparenti.</li>
+    <li><strong>Ufficiali</strong>: file in <code>assets/logos/&lt;negozio&gt;/</code>, elenco in <code>elenco.js</code> accanto (<code>LOGO_FILES</code> e <code>PRIORITY_BRANDS</code>), quattro varianti colore (white, black, red, gold) in <code>assets/img/&lt;negozio&gt;/printlogos/</code>. Si aggiungono e si tolgono dall'area operatore (Importa e Gestisci loghi ufficiali), con gli stessi tre passi: [1] cartella del progetto (la riga di stato in verde mostra ogni passaggio, il browser chiede il permesso di modificare i file, a cartella collegata il pulsante diventa «✓ cartella collegata»), [2] negozio da aggiornare, [3] i loghi. Solo PNG già trasparenti; alla fine i file nuovi vanno pubblicati con un commit.</li>
     <li><strong>Personalizzati</strong>: nel browser, una lista per negozio (<code>loghi-personalizzati.js</code>, IndexedDB <code>storecraft-loghi-personalizzati</code>); si creano con Genera Loghi e si gestiscono con Gestisci Lista; per portarli su un altro computer si usa il backup.</li>
     <li><strong>Nelle pagine</strong>: prima <code>elenco.js</code> del negozio, poi <code>logos.js</code>; i menu Loghi Personalizzati si riempiono quando la lista è pronta (<code>LoghiPersonalizzati.pronto</code>). Per la stampa i loghi sono ricolorati da <code>print-logo-colors.js</code> (eccezione: Promo Multibrand con il filtro CSS).</li>
   </ul>
@@ -546,8 +553,10 @@
   <h2 id="copia-cliente">Copia per un cliente</h2>
   <ol class="passi">
     <li>Area operatore › Prepara copia per un cliente (Chrome o Edge sul computer), oppure doppio clic su <code>Prepara copia.bat</code>.</li>
-    <li>Si collega la cartella del progetto, si spuntano i negozi, si sceglie la cartella di destinazione (non dentro il progetto).</li>
+    <li>[1] si collega la cartella del progetto, in <strong>sola lettura</strong>: il progetto non può essere modificato; [2] si spuntano i negozi; [3] si sceglie la cartella di destinazione, meglio una cartella nuova e vuota (non dentro il progetto: la pagina rifiuta; se non è vuota chiede conferma).</li>
+    <li>Durante la copia, sotto i passi, il terminale nero mostra ogni operazione: comando di partenza, file copiati con percorso e peso, cartelle dei negozi non scelti saltate, <code>installati.js</code> scritto ed esito finale.</li>
     <li>Nella copia: splash page, cartelle dei negozi scelti, file comuni, risorse dei soli negozi scelti e <code>installati.js</code> scritto per loro. Restano fuori l'area operatore, le guide, il piano, le pagine <code>_*</code>, Git e la documentazione.</li>
+    <li>Per provarla in locale: si chiude il server del progetto (la porta 8000 è una sola), si mette nella cartella della copia <code>Avvia server.bat</code> e si fa doppio clic; finita la prova lo si toglie prima di consegnarla.</li>
     <li>Le correzioni si fanno sempre in questo progetto e si rifà la copia.</li>
   </ol>
 
