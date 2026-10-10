@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261009-38"></script>
+<script src="assets/js/negozi.js?v=20261010-03"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IMPORT LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261009-38">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261010-03">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261009-38">
-  <script src="assets/js/operatore-sezione.js?v=20261009-38"></script>
-  <script src="assets/js/admin-negozio.js?v=20261009-38"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261010-03">
+  <script src="assets/js/operatore-sezione.js?v=20261010-03"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-03"></script>
 </head>
 <body>
 
@@ -30,7 +30,7 @@
 
   <div class="container">
     <h1>Importa loghi ufficiali</h1>
-    <p class="subtitle">aggiunge loghi ufficiali di <span data-admin-nome-negozio></span> in assets/logos/<span data-admin-cartella-negozio></span>/, genera le 4 varianti colorate (oro del negozio) e aggiorna elenco.js</p>
+    <p class="subtitle" style="margin-bottom: 34px">aggiunge loghi ufficiali di <span data-admin-nome-negozio></span> in assets/logos/<span data-admin-cartella-negozio></span>/, genera le 4 varianti colorate (oro del negozio) e aggiorna elenco.js. <!-- la pagina non elabora le immagini (per togliere lo sfondo c'è Genera Loghi) --><span style="color: #fff">solo png pronti già trasparenti</span></p>
 
     <div data-admin-negozio></div>
 
@@ -39,10 +39,7 @@
       <button type="button" class="btn-folder" onclick="connectProjectFolder()">collega cartella progetto</button>
     </div>
 
-    <!-- promemoria ben visibile: la pagina non elabora le immagini (per togliere lo sfondo c'è Genera Loghi) -->
-    <p class="avviso-file"><span>[ solo png pronti ]</span> carica loghi già lavorati e con lo sfondo trasparente: il file viene salvato così com'è, senza togliere lo sfondo né ritagliare i bordi</p>
-
-    <div class="upload-box disabled" id="dropZone" onclick="onDropZoneClick()">
+    <div class="upload-box disabled" id="dropZone" role="button" tabindex="0" aria-label="Scegli i png dei loghi" onclick="onDropZoneClick()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onDropZoneClick(); }">
       <strong>trascina qui i png dei loghi, o clicca per sceglierli</strong>
       <input type="file" id="fileInput" accept="image/png" multiple onchange="handleFiles(this.files); this.value=''">
     </div>

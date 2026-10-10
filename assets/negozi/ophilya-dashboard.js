@@ -10,7 +10,7 @@ Dashboard.contenuto({
   logo: { src: 'img/ophilya/ophilyablack.png', larghezza: 205, alt: 'OPHILYA' },
   identita: ['VIA DEL CORSO 268', 'LEATHER GOODS · MADE IN ITALY'],
   qr: 'https://www.instagram.com/tebe_269/',
-  cassa: 'solo-cassiere',
+  cassa: 'sempre',
   etichette: 'etichetteophilya.html',
   sezioni: [
     {

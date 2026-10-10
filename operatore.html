@@ -7,7 +7,7 @@
   <title>STORE // CRAFT · Area operatore</title>
   <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
        e splash page e mai inclusa nelle copie per i clienti. Raccoglie l'importazione e la gestione dei loghi ufficiali
-       (logoimport.html, logogestione.html), la guida dei componenti (guida-componenti.html) e la preparazione di una copia per un cliente, fatta qui con la File System
+       (logoimport.html, logogestione.html), la guida tecnica (guida-componenti.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
        Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
@@ -51,7 +51,9 @@
     .frame {
       position: relative;
       width: min(880px, 100%);
-      padding: 48px 44px 44px;
+      /* sotto 13 px in più che sopra: il logo ha un poco di margine trasparente in alto, così lo spazio libero tra la
+         linea interna della cornice e il contenuto è uguale sopra e sotto */
+      padding: 58px 44px 67px;
       border: 1px solid var(--frame);
     }
 
@@ -102,6 +104,7 @@
       flex-direction: column;
       max-width: 520px;
       margin: 6px auto 0;
+      padding-top: 12px;   /* un poco di respiro sotto il titolo (un margine si fonderebbe con quello del titolo) */
     }
 
     .voce {
@@ -112,8 +115,8 @@
       gap: 12px;
       padding: 22px 0;
       border: 0;
-      border-top: 1px solid rgba(143, 106, 31, 0.22);
-      background: none;
+      /* divisorio sopra la voce, largo quanto il riquadro di Guida tecnica (--larghezza-divisori, misurata nello script) */
+      background: linear-gradient(rgba(143, 106, 31, 0.22), rgba(143, 106, 31, 0.22)) top center / var(--larghezza-divisori, 100%) 1px no-repeat;
       /* grigio chiaro del testo della guida dei componenti (#d9d3c7); al passaggio oro */
       color: #d9d3c7;
       /* carattere da terminale, come dentro le sezioni operatore (guida dei componenti) */
@@ -125,7 +128,13 @@
       transition: color 0.2s ease, letter-spacing 0.3s ease;
     }
 
-    .voce:first-child { border-top: 0; }
+    .voce:first-child { background: none; }
+    /* Guida tecnica: un aiuto, staccata dagli strumenti (spazio, niente linea sopra) e chiusa in un riquadro con il
+       solo bordo, tutto nell'oro spento della cornice (--frame), con l'icona dell'aiuto */
+    .voce-aiuto { align-self: center; margin-top: 42px; padding: 12px 24px; border: 1px solid var(--frame); background: none; color: var(--frame); }
+    .voce-aiuto::before, .voce-aiuto::after { color: var(--frame); }
+    .voce-aiuto svg { flex: none; width: 15px; height: 15px; }
+    .voce-aiuto:hover, .voce-aiuto:focus-visible { color: var(--gold); border-color: var(--gold); }
 
     .voce::before,
     .voce::after {
@@ -240,8 +249,9 @@
     }
 
     @media (max-width: 760px) {
-      .frame { padding: 38px 20px 28px; }
+      .frame { padding: 46px 20px 59px; }
       .voce { padding: 18px 0; font-size: 0.7rem; letter-spacing: 0.1em; }
+      .voce-aiuto { padding: 10px 18px; }
       .voce:hover, .voce:focus-visible, .voce[aria-expanded="true"] { letter-spacing: 0.12em; }
       .title { font-size: 0.64rem; letter-spacing: 0.2em; }
       .indietro { top: 14px; left: 16px; }
@@ -257,8 +267,10 @@
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
       <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
       <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
-      <a class="voce" href="guida-componenti.html">Guida dei componenti</a>
+      <a class="voce" href="schema-pagine.html">Struttura negozi</a>
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
+      <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
+      <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
     </nav>
 
     <!-- Sezioni: le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
@@ -372,13 +384,51 @@
       if (anima) scrivi(nuova ? VISTE[nuova] : TITOLO_MENU);
       else titolo.textContent = nuova ? VISTE[nuova] : TITOLO_MENU;
       vistaAperta = nuova;
+      // aperta una sezione, la tastiera parte da ← area operatore: con Tab si entra nei suoi comandi
+      if (nuova && !subito) indietro.focus({ preventScroll: true });
     }
+
+    // divisori delle voci larghi quanto il riquadro di Guida tecnica (misurato a riposo: all'apertura, a caratteri
+    // caricati e cambiando la finestra, non al passaggio del mouse, che allarga appena le lettere)
+    const misuraDivisori = () => {
+      const aiuto = menu.querySelector('.voce-aiuto');
+      if (aiuto && aiuto.offsetWidth) menu.style.setProperty('--larghezza-divisori', `${aiuto.offsetWidth}px`);
+    };
+    misuraDivisori();
+    document.fonts.ready.then(misuraDivisori);
+    window.addEventListener('resize', misuraDivisori);
 
     menu.addEventListener('click', evento => {
       const voce = evento.target.closest('[data-vista]');
       if (voce) location.hash = voce.dataset.vista;
     });
-    indietro.addEventListener('click', () => { history.pushState(null, '', location.pathname); apri(null); });
+    // Tastiera: nel menu frecce su / giù (e Home / Fine) tra le voci, Invio apre; Tab passa ai comandi della sezione;
+    // Esc in una sezione torna al menu, sulla voce di prima
+    menu.addEventListener('keydown', evento => {
+      const voci = [...menu.querySelectorAll('.voce')];
+      const ora = voci.indexOf(document.activeElement);
+      const passi = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
+      let prossima = null;
+      if (evento.key in passi) prossima = voci[(Math.max(ora, 0) + passi[evento.key] + voci.length) % voci.length];
+      else if (evento.key === 'Home') prossima = voci[0];
+      else if (evento.key === 'End') prossima = voci[voci.length - 1];
+      if (!prossima) return;
+      evento.preventDefault();
+      prossima.focus();
+    });
+    const tornaAlMenu = () => {
+      const voce = menu.querySelector(`[data-vista="${vistaAperta}"]`);
+      history.pushState(null, '', location.pathname);
+      apri(null).then(() => voce?.focus());
+    };
+    indietro.addEventListener('click', tornaAlMenu);
+    document.addEventListener('keydown', evento => {
+      if (evento.key === 'Escape' && vistaAperta) { evento.preventDefault(); tornaAlMenu(); }
+    });
+    // le pagine dei loghi nel riquadro mandano il loro Esc qui (operatore-sezione.js)
+    window.addEventListener('message', evento => {
+      if (evento.origin === location.origin && evento.data?.esc && vistaAperta) tornaAlMenu();
+    });
     window.addEventListener('hashchange', () => apri(location.hash.slice(1)));
     if (VISTE[location.hash.slice(1)]) apri(location.hash.slice(1), true);
 
@@ -516,7 +566,7 @@
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page; non gli strumenti dell'operatore, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html',
+      const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html', 'schema-pagine.html',
         'Storecraft Aggiornamento.html'];
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;

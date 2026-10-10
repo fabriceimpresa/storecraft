@@ -1,7 +1,8 @@
 /* Punto vendita scelto: quale negozio usa il browser oggi.
    La scelta si fa nella splash page (index.html nella radice) o da PROFILO UTENTE nella dashboard di un negozio, e vale
-   per la giornata: il giorno dopo, aprendo STORE // CRAFT, la splash page la chiede di nuovo. Salvata in localStorage
-   ("storecraft_punto_vendita": { negozio, giorno }).
+   per la giornata e finché il browser resta aperto: il giorno dopo, o riaprendo il browser, la splash page la chiede di
+   nuovo. Salvata in localStorage ("storecraft_punto_vendita": { negozio, giorno }) più un cookie di sessione
+   ("storecraft_sessione"), che il browser cancella quando viene chiuso.
 
    Uso:
      PuntoVendita.NEGOZI                 negozi installati: { luxury: { nome, sigla, logo, larghezzaLogo, pronto }, tebe: …, ophilya: … }
@@ -35,9 +36,17 @@
     return `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}-${String(data.getDate()).padStart(2, '0')}`;
   }
 
+  // Sessione del browser: un cookie senza scadenza, che il browser cancella quando viene chiuso. Così la splash page
+  // torna a ogni avvio del browser (la mattina, accendendo il computer), anche se è ancora lo stesso giorno; tra una
+  // scheda e l'altra e ricaricando la pagina la scelta resta. Con i cookie spenti vale solo la giornata.
+  const COOKIE = 'storecraft_sessione';
+  const sessioneAperta = () => !navigator.cookieEnabled || document.cookie.split('; ').includes(`${COOKIE}=1`);
+  const apriSessione = () => { document.cookie = `${COOKIE}=1; path=/; SameSite=Lax`; };
+
   function sceltoOggi() {
     // Con un solo negozio installato non c'è niente da scegliere: è sempre quello.
     if (Negozi.unico()) return Negozi.unico();
+    if (!sessioneAperta()) return null;
     try {
       const scelta = JSON.parse(localStorage.getItem(CHIAVE) || 'null');
       return scelta && scelta.giorno === oggi() && NEGOZI[scelta.negozio]?.pronto ? scelta.negozio : null;
@@ -48,6 +57,7 @@
   }
 
   function ricorda(negozio) {
+    apriSessione();
     try {
       localStorage.setItem(CHIAVE, JSON.stringify({ negozio, giorno: oggi() }));
     } catch (error) {

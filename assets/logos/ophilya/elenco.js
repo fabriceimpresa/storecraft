@@ -8,8 +8,8 @@ const LOGO_FILES = [
   "HAVEONE.png",
   "OKKIA.png",
   "SOUVENIR.png",
-  "Tebe269.png",
   "Tebe.png",
+  "Tebe269.png",
   "TENSIONEIN.png",
   "VICOLO.png",
   "WUSIDE.png"

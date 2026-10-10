@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <script src="assets/js/negozi.js?v=20261010-03"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Struttura negozi</title>
+  <link rel="icon" href="assets/img/favicon-32.png">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
+       ogni negozio installato e mostra quali regole e moduli comuni usano e quali pezzi scritti a mano restano.
+       Stesso aspetto da sito tecnico della guida dei componenti. */
+    :root {
+      --bg: #0d0c0b; --pannello: #151412; --bordo: #2a2723; --testo: #d9d3c7; --tenue: #8f877b;
+      --oro: #d4a373; --oro-chiaro: #e5ba73; --ok: #8fbf7a; --no: #4b4740; --warn: #e07a5f;
+      --mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--testo); font: 300 13px/1.65 var(--mono); letter-spacing: .01em; }
+    a { color: var(--oro); }
+    .pagina { max-width: 1120px; margin: 0 auto; padding: 18px 20px 60px; }
+    .torna { display: inline-block; margin-bottom: 14px; color: var(--tenue); font-size: 11.5px; letter-spacing: .08em; text-decoration: none; }
+    .torna:hover { color: var(--oro); }
+    header.testa { display: flex; align-items: center; gap: 18px; padding: 0 0 20px; margin-bottom: 42px; border-bottom: 1px solid var(--bordo); }
+    header.testa img { width: 74px; filter: brightness(0) saturate(100%) invert(56%) sepia(58%) saturate(437%) hue-rotate(359deg) brightness(88%); opacity: .9; }
+    h1 { margin: 0; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
+    h1::before { content: '> '; color: var(--oro); }
+    @keyframes cursore { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    p { margin: 0 0 12px; }
+    /* segnale "live update" nel titolo: scritta verde minuscola .live update e cursore che lampeggia */
+    .live { margin-left: 14px; color: var(--ok); font-size: 11px; letter-spacing: .06em; text-transform: none; vertical-align: 1px; }
+    .live::after { content: '_'; margin-left: 2px; animation: cursore 1s steps(1) infinite; }
+    /* riga di stato: casella nera, "stato" in verde e l'esito dell'ultima lettura in oro, in JetBrains Mono */
+    .riga-stato { display: flex; align-items: baseline; gap: 14px; margin: 14px 0 0; padding: 9px 14px; background: #0a0908;
+      border: 1px solid var(--bordo); border-radius: 4px; font: 400 12px/1.6 'JetBrains Mono', var(--mono); }
+    .stato-etichetta { flex: none; color: var(--ok); letter-spacing: .08em; }
+    .stato-etichetta::after { content: ':'; }
+    #stato { color: var(--oro-chiaro); }
+    /* insegne dei negozi: discrete (bianche e tenui), quella scelta più chiara; sotto il segnalino oro che segue il mouse */
+    .insegne { position: relative; display: flex; align-items: center; gap: 34px; margin: 44px 0 30px; padding-bottom: 12px; }
+    .insegna { display: flex; align-items: center; height: 46px; padding: 0; border: 0; background: none; cursor: pointer; }
+    .insegna img { display: block; height: auto; max-height: 42px; filter: brightness(0) invert(1); opacity: .35; transition: opacity .2s; }
+    .insegna:hover img, .insegna:focus-visible img, .insegna[aria-selected="true"] img { opacity: .9; }
+    .insegna:focus-visible { outline: none; }
+    .segnalino { position: absolute; bottom: -1px; left: 0; width: 0; height: 2px; background: var(--oro); transition: left .3s ease, width .3s ease; }
+    /* tabella dello schema */
+    .schema-negozio { margin: 18px 0; }
+    .schema-negozio > h3 { display: none; }
+    .schema-scroll { overflow-x: auto; border: 1px solid var(--bordo); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { text-align: left; vertical-align: top; padding: 7px 9px; border-bottom: 1px solid var(--bordo); }
+    th { color: var(--oro); font-weight: 400; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; background: var(--pannello);
+      white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); padding: 10px 6px; height: 150px; }
+    th.pg { writing-mode: horizontal-tb; transform: none; height: auto; vertical-align: bottom; }
+    td { text-align: center; padding: 6px 4px; }
+    td:first-child { color: var(--oro-chiaro); text-align: left; white-space: nowrap; }
+    .si { color: var(--ok); }
+    .no { color: var(--no); }
+    .warn { color: var(--warn); }
+    .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--bordo); border-radius: 3px; color: var(--tenue); font-size: 10px; letter-spacing: .06em; }
+    @media (prefers-reduced-motion: reduce) { .live::after { animation: none; } }
+  </style>
+</head>
+<body>
+<div class="pagina">
+  <a class="torna" href="operatore.html">← Area operatore</a>
+  <header class="testa">
+    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
+    <h1>Struttura negozi <span class="live" title="Lo schema si rifà a ogni apertura leggendo le pagine">.live update</span></h1>
+  </header>
+
+  <p>A ogni apertura la pagina legge le pagine di ogni negozio installato (dalle schede delle dashboard e dalle pagine di servizio) e controlla quali regole, moduli e campi comuni usano.</p>
+  <p class="riga-stato"><span class="stato-etichetta">stato</span><span id="stato">Lettura in corso…</span></p>
+  <div id="schema"></div>
+</div>
+
+<script>
+  // Ogni controllo: [titolo breve, descrizione, funzione che dal testo della pagina dà true/false o un numero]
+  const conta = (testo, regex) => (testo.match(regex) || []).length;
+  const CONTROLLI = [
+    ['Pannello', 'pannello.css: pannello standard', t => /pannello\.css/.test(t)],
+    ['Blocchi', 'quanti <div class="panel-block">', t => conta(t, /class="panel-block"/g)],
+    ['Menu a cascata', 'menu-cascata.js', t => /menu-cascata\.js/.test(t)],
+    ['Selettore', 'selettore.js e quanti data-selettore', t => /assets\/js\/selettore\.js/.test(t) ? Math.max(1, conta(t, /data-selettore[\s>]/g)) : false],
+    ['Cartello sup./inf.', 'selettore-cartello.js', t => /selettore-cartello\.js/.test(t)],
+    ['Modalità prezzo', 'selettore-modalita-prezzo.js', t => /selettore-modalita-prezzo\.js/.test(t)],
+    ['N. articoli', 'selettore-numero-articoli.js', t => /selettore-numero-articoli\.js/.test(t)],
+    ['2° brand', 'second-brand-toggle.js', t => /second-brand-toggle\.js/.test(t)],
+    ['Copia cartello', 'copia-cartello.js', t => /copia-cartello\.js/.test(t)],
+    ['Campi prezzo', 'campi-prezzo.js e quanti campi data-prezzo / data-percentuale', t => /campi-prezzo\.js/.test(t) ? Math.max(1, conta(t, /data-(prezzo|percentuale)[\s>]/g)) : false],
+    ['Testi pronti', 'testi-pronti.js', t => /testi-pronti\.js/.test(t)],
+    ['Fasce prezzo', 'fasce-prezzo.js', t => /fasce-prezzo\.js/.test(t)],
+    ['Brand cartellini', 'menu-brand-cartellini.js', t => /menu-brand-cartellini\.js/.test(t)],
+    ['Brand ufficiali', 'logos.js', t => /assets\/js\/logos\.js/.test(t)],
+    ['Loghi personalizzati', 'loghi-personalizzati.js', t => /loghi-personalizzati\.js/.test(t)],
+    ['Cursore', 'cursore.js', t => /cursore\.js/.test(t)],
+    ['Pulsantiera / lista', 'strumenti-stampa.js', t => /strumenti-stampa\.js/.test(t)],
+    ['Stampa iPhone', 'stampa-ios.js', t => /stampa-ios\.js/.test(t)],
+    ['Vista telefono', 'responsive.js (data-layout)', t => /responsive\.js/.test(t) ? ((t.match(/data-layout="([^"]+)"/) || [])[1] || true) : false],
+    ['Made in Italy', 'madeinitaly.js', t => /madeinitaly\.js/.test(t) ? (/data-automatico/.test(t) ? 'auto' : true) : false],
+    ['✕ / Torna', 'chiudi-pagina.css e torna-al-menu.css', t => /chiudi-pagina\.css/.test(t) && /torna-al-menu\.css/.test(t)],
+    ['Tema', 'theme.js', t => /theme\.js/.test(t)]
+  ];
+  // Pezzi scritti a mano che dovrebbero venire dai moduli comuni
+  const RESIDUI = [
+    ['selettore a mano', t => /class="mode-switch/.test(t)],
+    ['regola prezzi copiata', t => /function formatPriceValue|onPriceBlur\(/.test(t)],
+    ['frecce sconto copiate', t => /function stepDiscount|function stepPercent/.test(t)],
+    ['menu con stile proprio', t => /select-control|price-range-control/.test(t)],
+    ['testo con innerHTML', t => /innerHTML\s*=\s*`[^`]*\$\{/.test(t)]
+  ];
+  const SERVIZIO = ['genera_loghi.html', 'gestisci_lista.html', 'lista-stampa.html', 'pdf-viewer.html'];
+
+  async function testo(url) {
+    const risposta = await fetch(url, { cache: 'no-store' });
+    if (!risposta.ok) throw new Error(`${url}: ${risposta.status}`);
+    return risposta.text();
+  }
+
+  async function pagineDelNegozio(id) {
+    const contenuto = await testo(`assets/negozi/${id}-dashboard.js`);
+    const pagine = new Set();
+    for (const m of contenuto.matchAll(/link:\s*'([^'?]+\.html)/g)) pagine.add(m[1]);
+    const etichette = contenuto.match(/etichette:\s*'([^'?]+\.html)/);
+    if (etichette) pagine.add(etichette[1]);
+    return ['index.html', ...pagine, ...SERVIZIO];
+  }
+
+  function cella(valore) {
+    const td = document.createElement('td');
+    if (valore === false || valore === 0) { td.className = 'no'; td.textContent = '·'; }
+    else if (valore === true) { td.className = 'si'; td.textContent = '✓'; }
+    else { td.className = 'si'; td.textContent = String(valore); }
+    return td;
+  }
+
+  async function schema() {
+    const contenitore = document.getElementById('schema');
+    let totPagine = 0, totResidui = 0;
+    // insegne dei negozi sopra lo schema: una tabella alla volta, di partenza Luxury Outlet; il segnalino oro sotto le
+    // insegne segue il mouse da un'insegna all'altra e torna sotto quella scelta
+    const insegne = document.createElement('div');
+    insegne.className = 'insegne';
+    insegne.setAttribute('role', 'tablist');
+    const segnalino = document.createElement('span');
+    segnalino.className = 'segnalino';
+    const sposta = tasto => { segnalino.style.left = `${tasto.offsetLeft}px`; segnalino.style.width = `${tasto.offsetWidth}px`; };
+    const scelto = () => insegne.querySelector('[aria-selected="true"]');
+    insegne.addEventListener('mouseleave', () => scelto() && sposta(scelto()));
+    contenitore.append(insegne);
+    for (const id of Negozi.installati) {
+      const scheda = Negozi.scheda(id) || {};
+      const tasto = document.createElement('button');
+      tasto.type = 'button';
+      tasto.className = 'insegna';
+      tasto.setAttribute('role', 'tab');
+      tasto.setAttribute('aria-selected', String(id === 'luxury'));
+      tasto.dataset.negozio = id;
+      if (scheda.logoSplash) {
+        const logo = document.createElement('img');
+        logo.src = `assets/${scheda.logoSplash}`;
+        logo.alt = scheda.nome || id;
+        // larghezza della splash page ridotta, così le insegne sembrano grandi uguale
+        logo.style.width = `${Math.round((scheda.logoSplashLarghezza || 140) * .8)}px`;
+        tasto.append(logo);
+      } else tasto.textContent = scheda.nome || id;
+      tasto.addEventListener('mouseenter', () => sposta(tasto));
+      tasto.addEventListener('focus', () => sposta(tasto));
+      tasto.addEventListener('click', () => {
+        insegne.querySelectorAll('.insegna').forEach(t => { t.setAttribute('aria-selected', String(t === tasto)); t.tabIndex = t === tasto ? 0 : -1; });
+        contenitore.querySelectorAll('.schema-negozio').forEach(s => { s.hidden = s.dataset.negozio !== id; });
+        sposta(tasto);
+      });
+      insegne.append(tasto);
+    }
+    insegne.append(segnalino);
+    // Tastiera: con Tab si arriva sull'insegna scelta, le frecce (e Home / Fine) passano al negozio accanto
+    insegne.querySelectorAll('.insegna').forEach(t => { t.tabIndex = t.getAttribute('aria-selected') === 'true' ? 0 : -1; });
+    insegne.addEventListener('keydown', evento => {
+      const tasti = [...insegne.querySelectorAll('.insegna')];
+      const ora = tasti.indexOf(document.activeElement);
+      const passi = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+      let dove = null;
+      if (evento.key in passi) dove = (ora + passi[evento.key] + tasti.length) % tasti.length;
+      else if (evento.key === 'Home') dove = 0;
+      else if (evento.key === 'End') dove = tasti.length - 1;
+      if (dove === null || ora < 0) return;
+      evento.preventDefault();
+      tasti[dove].click();
+      tasti[dove].focus();
+    });
+    requestAnimationFrame(() => scelto() && sposta(scelto()));
+    window.addEventListener('load', () => scelto() && sposta(scelto()));
+    for (const id of Negozi.installati) {
+      const sezione = document.createElement('div');
+      sezione.className = 'schema-negozio';
+      sezione.dataset.negozio = id;
+      sezione.hidden = id !== 'luxury';
+      const titolo = document.createElement('h3');
+      titolo.textContent = Negozi.scheda(id)?.nome || id;
+      sezione.append(titolo);
+      const scorri = document.createElement('div');
+      scorri.className = 'schema-scroll';
+      const tabella = document.createElement('table');
+      const intestazione = document.createElement('tr');
+      const thPagina = document.createElement('th');
+      thPagina.className = 'pg';
+      thPagina.textContent = 'Pagina';
+      intestazione.append(thPagina);
+      [...CONTROLLI.map(c => [c[0], c[1]]), ['Da sistemare', 'pezzi scritti a mano nella pagina']].forEach(([nome, descrizione]) => {
+        const th = document.createElement('th');
+        th.textContent = nome;
+        th.title = descrizione;
+        intestazione.append(th);
+      });
+      tabella.append(intestazione);
+      let pagine = [];
+      try { pagine = await pagineDelNegozio(id); } catch (errore) { titolo.textContent += ` · scheda della dashboard non letta (${errore.message})`; }
+      for (const pagina of pagine) {
+        const riga = document.createElement('tr');
+        const tdPagina = document.createElement('td');
+        const link = document.createElement('a');
+        link.href = `${id}/${pagina}`;
+        link.textContent = pagina.replace('.html', '');
+        tdPagina.append(link);
+        const tipo = document.createElement('span');
+        tipo.className = 'tipo';
+        tipo.textContent = pagina === 'index.html' ? 'dashboard' : SERVIZIO.includes(pagina) ? 'servizio' : 'pagina';
+        tdPagina.append(tipo);
+        riga.append(tdPagina);
+        try {
+          const t = await testo(`${id}/${pagina}`);
+          CONTROLLI.forEach(([, , prova]) => riga.append(cella(prova(t))));
+          const residui = RESIDUI.filter(([, prova]) => prova(t)).map(([nome]) => nome);
+          const td = document.createElement('td');
+          if (residui.length) { td.className = 'warn'; td.textContent = '! ' + residui.join(', '); totResidui += residui.length; }
+          else { td.className = 'no'; td.textContent = '—'; }
+          riga.append(td);
+        } catch (errore) {
+          const td = document.createElement('td');
+          td.colSpan = CONTROLLI.length + 1;
+          td.className = 'warn';
+          td.textContent = 'pagina non letta: ' + errore.message;
+          riga.append(td);
+        }
+        tabella.append(riga);
+        totPagine++;
+      }
+      scorri.append(tabella);
+      sezione.append(scorri);
+      contenitore.append(sezione);
+    }
+    const ora = new Date().toLocaleString('it-IT');
+    document.getElementById('stato').textContent = `Letto il ${ora}: ${totPagine} pagine in ${Negozi.installati.length} negozi, ` +
+      (totResidui ? `${totResidui} pezzi da portare sui moduli comuni.` : 'nessun pezzo scritto a mano da sistemare.');
+  }
+  schema();
+</script>
+</body>
+</html>

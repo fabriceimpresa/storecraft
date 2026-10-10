@@ -101,6 +101,8 @@ html.incorporata .container::before, html.incorporata h1, html.incorporata .app-
 .admin-negozio button[aria-pressed="true"] { color: var(--op-oro-chiaro); border-color: var(--op-oro); background: rgba(212, 163, 115, .1); }
 .admin-negozio button[aria-pressed="true"]::before { content: '> '; }
 .admin-negozio button:focus-visible { outline: 1px solid var(--op-oro-chiaro); outline-offset: 2px; }
+/* tastiera: ogni comando raggiunto con Tab ha il contorno oro */
+button:focus-visible, a:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 1px solid var(--op-oro-chiaro); outline-offset: 2px; }
 
 /* Riga della cartella del progetto: una riga di terminale con il comando a destra */
 .folder-bar {
@@ -152,7 +154,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .upload-box {
   margin-bottom: 16px;
   padding: 22px;
-  border: 1px dashed var(--op-bordo);
+  border: 2px dashed rgba(212, 163, 115, .55);
   border-radius: 4px;
   background: var(--op-fondo);
   color: var(--op-testo);

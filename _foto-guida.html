@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Foto della guida</title>
+  <style>
+    /* Pagina di servizio (prefisso _: fuori dalle copie per i clienti): fotografa un elemento di una pagina per le schede
+       della guida dei componenti. ?foto=<nome> apre la pagina indicata in FOTO in un riquadro, fa l'azione (es. accende un
+       tema), ritaglia l'elemento con un piccolo margine e scrive nel titolo "PRONTA larghezza altezza". Con più viste le
+       mette affiancate (es. Luxury e TEBE). Le foto si fanno con Chrome senza finestra: _foto-guida.ps1 */
+    html, body { margin: 0; overflow: hidden; background: #0a0908; }
+    body { display: flex; align-items: flex-start; gap: 16px; }
+    .ritaglio { position: relative; flex: none; overflow: hidden; }
+    .ritaglio iframe { position: absolute; border: 0; }
+  </style>
+</head>
+<body>
+<script>
+  const V = '20261010-03';
+  // nome della foto (guida-immagini/<nome>.png) → viste: pagina, azione nella pagina (w = la sua finestra), elemento da
+  // ritagliare (sel, tutti gli elementi trovati insieme) oppure un riquadro fisso (ritaglio: [x, y, larghezza, altezza]);
+  // larghezza / altezza della finestra della pagina, margine attorno all'elemento, altezza massima del ritaglio.
+  // I nomi tel-* si fotografano con il puntatore da telefono (vista telefono delle pagine).
+  const cerca = (w, testo) => [...w.document.querySelectorAll('.tool-btn')].find(b => b.getAttribute('aria-label') === testo);
+  const caricaLista = w => new Promise((fatto, errore) => {
+    if (w.ListaStampa) return fatto();
+    const s = w.document.createElement('script');
+    s.src = `../assets/js/lista-stampa.js?v=${V}`;
+    s.onload = fatto; s.onerror = errore;
+    w.document.head.append(s);
+  });
+  const pdfPronto = async w => { await caricaLista(w); w.ListaStampa.offerPdf(Promise.resolve(new Blob(['%PDF'])), 'cartello.pdf'); };
+  const FOTO = {
+    'es-blackfriday': [{ pagina: 'luxury/cartelli_semplici.html', azione: w => w.toggleBlackFriday(1), sel: '#card1' }],
+    'es-natale': [{ pagina: 'luxury/cartelli_semplici.html', azione: w => w.toggleXmas(1), sel: '#card1' }],
+    'es-promo': [{ pagina: 'luxury/index.html', sel: '#seasonal-promo-section' }],
+    'es-menu-su-misura': [
+      { pagina: 'luxury/promo_multibrand.html', sel: '.sidebar', massimo: 640 },
+      { pagina: 'luxury/xmas_ball.html', sel: '.sidebar', massimo: 640 }],
+    'es-loghi-filtro': [{ pagina: 'luxury/promo_multibrand.html', sel: '#card1' }],
+    'es-magazzino': [{ pagina: 'luxury/magazzino.html', sel: '#cartelloBox1' }],
+    'es-guida-montaggio': [{ pagina: 'tebe/cartelli_semplici.html', azione: w => cerca(w, 'Dove montare la stampa?').click(), sel: '.app-modal-dialog', margine: 0, massimo: 760 }],
+    'es-interruttore': [{ pagina: 'tebe/index.html', sel: '#main-content > header' }],
+    'es-cornici': [{ pagina: 'tebe/cornici10x15.html', sel: '#printSheet' }],
+    'es-albero-paletti': [
+      { pagina: 'tebe/albero.html', sel: '.print-sheet' },
+      { pagina: 'tebe/paletto.html', sel: '.print-sheet' }],
+    'es-morsa': [{ pagina: 'tebe/cartelli_semplici.html', sel: '#printSheet' }],
+    'es-etichette': [{ pagina: 'tebe/etichette.html', altezza: 2200, azione: w => { w.document.getElementById('promoSelect').size = 10; }, sel: '#groupPromo' }],
+    'es-ophilya': [{ pagina: 'ophilya/index.html', sel: '#main-content', margine: 0, massimo: 400 }],
+    'es-brand-prioritari': [
+      { pagina: 'guida-campione.html?negozio=luxury&pezzo=brand', larghezza: 340, azione: w => { w.document.querySelector('[data-pezzo="brand"] select').size = 9; }, sel: '[data-pezzo="brand"]' },
+      { pagina: 'guida-campione.html?negozio=tebe&pezzo=brand', larghezza: 340, azione: w => { w.document.querySelector('[data-pezzo="brand"] select').size = 9; }, sel: '[data-pezzo="brand"]' }],
+    'es-simboli': [
+      { pagina: 'guida-campione.html?negozio=luxury&pezzo=prezzi', larghezza: 360, sel: '[data-pezzo="prezzi"]' },
+      { pagina: 'guida-campione.html?negozio=tebe&pezzo=prezzi', larghezza: 360, sel: '[data-pezzo="prezzi"]' }],
+    // la lista resta vuota: in Chrome senza finestra IndexedDB non risponde
+    'stampa-lista': [{
+      pagina: 'luxury/lista-stampa.html', ritaglio: [0, 0, 1280, 760], larghezza: 1280, altezza: 760, margine: 0, attesa: 2500 }],
+    'stampa-ios': [
+      { pagina: 'luxury/cartelli_semplici.html', azione: pdfPronto, sel: '.lista-pdf-box' },
+      { pagina: 'tebe/cartelli_semplici.html', azione: pdfPronto, sel: '.lista-pdf-box' }],
+    'tel-home': [{ pagina: 'luxury/index.html', larghezza: 390, altezza: 844, azione: w => w.scrollTo(0, 700), ritaglio: [0, 0, 390, 150], margine: 0 }],
+    'tel-pagina': [
+      { pagina: 'luxury/index.html', larghezza: 390, altezza: 844, ritaglio: [0, 0, 390, 844], margine: 0 },
+      { pagina: 'tebe/index.html', larghezza: 390, altezza: 844, ritaglio: [0, 0, 390, 844], margine: 0 }]
+  };
+
+  // Colori del pannello (sezione Colori negozi della guida, colore-<variabile>.png): nel campionario di Luxury Outlet la
+  // variabile diventa verde da terminale, così si vede ovunque sia usata
+  const EVIDENZIA = '#22b84f';   // verde da terminale, un poco spento
+  const COLORI = {
+    'pannello-sfondo': ['--pannello-sfondo'], 'pannello-testo': ['--pannello-testo'], 'pannello-bordo': ['--pannello-bordo'],
+    'pannello-titolo': ['--pannello-titolo', '--pannello-oro'], 'pannello-oro-chiaro': ['--pannello-oro-chiaro'],
+    'pannello-etichetta': ['--pannello-etichetta'], 'pannello-campo': ['--pannello-campo'], 'pannello-riquadro': ['--pannello-riquadro'],
+    'pannello-selettore': ['--pannello-selettore'], 'pannello-selettore-testo': ['--pannello-selettore-testo'],
+    'pannello-selettore-attivo': ['--pannello-selettore-attivo'], 'pannello-stampa-testo': ['--pannello-stampa-testo']
+  };
+  Object.entries(COLORI).forEach(([nome, variabili]) => {
+    FOTO[`colore-${nome}`] = [{ pagina: 'guida-campione.html?negozio=luxury', larghezza: 420, sel: '.sidebar',
+      azione: w => variabili.forEach(v => w.document.documentElement.style.setProperty(v, EVIDENZIA)) }];
+  });
+  // tipi di pagina della guida: la pagina intera come si apre (Luxury e, dove c'è, TEBE)
+  const paginaIntera = pagina => ({ pagina, larghezza: 1440, altezza: 900, ritaglio: [0, 0, 1440, 900], margine: 0 });
+  FOTO['tipo-cartello'] = [paginaIntera('luxury/cartelli_semplici.html')];
+  FOTO['tipo-cartello-tebe'] = [paginaIntera('tebe/cartelli_semplici.html')];
+  FOTO['tipo-cartellini'] = [paginaIntera('luxury/cartellinivetrina.html')];
+  FOTO['tipo-cartellini-tebe'] = [paginaIntera('tebe/cartellinilxry.html')];
+  FOTO['tipo-prezzi'] = [paginaIntera('luxury/prezzivetrina.html')];
+  FOTO['tipo-dymo'] = [paginaIntera('luxury/etichette.html')];
+  FOTO['tipo-loghi'] = [paginaIntera('luxury/genera_loghi.html')];
+  FOTO['tipo-stampe'] = [{ pagina: 'luxury/index.html', altezza: 3600, sel: '#prints-section' }];
+  FOTO['tipo-cassa'] = [{ pagina: 'luxury/index.html', altezza: 3600, sel: '#tools' }];
+  // il cursore sul foglio (sopra il cartellino scelto) e l'oro dei loghi (logo in fondo ai cartellini), Luxury e TEBE affiancati
+  FOTO['colore-cursore-colore'] = [
+    { pagina: 'luxury/cartelliniquadrati.html', sel: '#printable-grid > :first-child, .cursore' },
+    { pagina: 'tebe/cartellinitebe.html', sel: '#printable-grid > :first-child, .cursore' }];
+  FOTO['colore-oro'] = [
+    { pagina: 'luxury/cartelliniquadrati.html', sel: '#printable-grid > :first-child' },
+    { pagina: 'tebe/cartellinitebe.html', sel: '#printable-grid > :first-child' }];
+  // ?elenco: il titolo elenca tutte le foto (per _foto-guida.ps1)
+  if (new URLSearchParams(location.search).has('elenco')) document.title = `ELENCO ${Object.keys(FOTO).join(' ')}`;
+
+  const pausa = ms => new Promise(fatto => setTimeout(fatto, ms));
+  // una dashboard senza la scelta del punto vendita di oggi rimanda alla splash page: prima la si scrive (punto-vendita.js)
+  const oggi = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  const carica = (riquadro, indirizzo) => new Promise(fatto => {
+    const dashboard = indirizzo.match(/^([a-z]+)\/index\.html/);
+    if (dashboard) {
+      localStorage.setItem('storecraft_punto_vendita', JSON.stringify({ negozio: dashboard[1], giorno: oggi() }));
+      document.cookie = 'storecraft_sessione=1; path=/; SameSite=Lax';
+    }
+    riquadro.onload = fatto; riquadro.src = indirizzo;
+  });
+
+  async function pronta(riquadro, vista) {
+    const w = riquadro.contentWindow;
+    await w.document.fonts.ready;
+    await pausa(1500);
+    if (vista.azione) await vista.azione(w);
+    await pausa(vista.attesa ?? 900);
+    return w;
+  }
+
+  async function fotografa() {
+    const viste = FOTO[new URLSearchParams(location.search).get('foto')];
+    if (!viste) throw new Error('foto sconosciuta');
+    let larghezzaTotale = 0, altezzaTotale = 0;
+    for (const vista of viste) {
+      const L = vista.larghezza || 1440, A = vista.altezza || 1400;
+      const ritaglio = document.createElement('div');
+      ritaglio.className = 'ritaglio';
+      const riquadro = document.createElement('iframe');
+      riquadro.style.width = `${L}px`;
+      riquadro.style.height = `${A}px`;
+      riquadro.setAttribute('scrolling', 'no');
+      ritaglio.append(riquadro);
+      document.body.append(ritaglio);
+      await carica(riquadro, vista.pagina);
+      const w = await pronta(riquadro, vista);
+      let [x, y, l, a] = vista.ritaglio || [];
+      if (!vista.ritaglio) {
+        const elementi = [...w.document.querySelectorAll(vista.sel)].filter(e => e.getClientRects().length);
+        if (!elementi.length) throw new Error(`${vista.pagina}: ${vista.sel} non trovato`);
+        const r = elementi.map(e => e.getBoundingClientRect());
+        x = Math.min(...r.map(q => q.left)); y = Math.min(...r.map(q => q.top));
+        l = Math.max(...r.map(q => q.right)) - x; a = Math.max(...r.map(q => q.bottom)) - y;
+      }
+      const m = vista.margine ?? 14;
+      x = Math.floor(x - m); y = Math.floor(y - m);
+      l = Math.ceil(l + 2 * m); a = Math.ceil(Math.min(a + 2 * m, vista.massimo || Infinity));
+      riquadro.style.left = `${-x}px`;
+      riquadro.style.top = `${-y}px`;
+      ritaglio.style.width = `${l}px`;
+      ritaglio.style.height = `${a}px`;
+      larghezzaTotale += l + (larghezzaTotale ? 16 : 0);
+      altezzaTotale = Math.max(altezzaTotale, a);
+    }
+    document.title = `PRONTA ${larghezzaTotale} ${altezzaTotale}`;
+  }
+  if (!new URLSearchParams(location.search).has('elenco')) fotografa().catch(errore => { document.title = `ERRORE ${errore.message}`; });
+</script>
+</body>
+</html>
