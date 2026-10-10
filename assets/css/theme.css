@@ -104,7 +104,7 @@
       & #system-menu-toggle { font-size: 10px; }
     }
     & .system-menu-heading.system-menu-title { font-size: .72rem; }
-    & :is(.system-menu-item, .system-menu-back) { font-size: .62rem; }
+    & :is(.system-menu-item, .system-menu-back) { font-size: .59rem; }   /* .62rem fino al 10 ottobre 2026 */
     & .system-menu-badge { font-size: .48rem; }
     & .system-store-current { font-size: .52rem; }
     & .system-setting-label { font-size: .62rem; }
@@ -847,8 +847,10 @@
 .system-menu {
   position: absolute;
   z-index: 1001;
-  left: 23px;
-  right: 23px;
+  /* desktop e tablet: largo quasi quanto il menu laterale (12 px dai bordi, 221 px; fino al 10 ottobre 2026 23 px, 199 px),
+     così le voci hanno più spazio e vanno meno a capo */
+  left: 12px;
+  right: 12px;
   bottom: 96px;
   display: block;
   width: auto;
@@ -898,6 +900,16 @@
   letter-spacing: .12em;
 }
 
+/* sotto il titolo oro un separatore grigio appena visibile, sfumato ai due capi (dal 10 ottobre 2026) */
+.system-menu-heading.system-menu-title::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 14px 6px 0;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--interface-muted) 45%, transparent) 20%,
+    color-mix(in srgb, var(--interface-muted) 45%, transparent) 80%, transparent);
+}
+
 .system-menu-items { display: grid; gap: 10px; }
 
 .system-menu-item {
@@ -913,7 +925,7 @@
   background: transparent;
   color: var(--interface-text);
   font: inherit;
-  font-size: .68rem;
+  font-size: .64rem;   /* 0,68rem fino al 10 ottobre 2026: nel menu più largo un poco più piccola */
   font-weight: 400;
   letter-spacing: .08em;
   text-align: left;
@@ -947,11 +959,10 @@
   text-align: center;
 }
 .system-menu-badge { flex: 0 0 auto; color: var(--interface-muted); font-size: .52rem; letter-spacing: .03em; }
+/* sigla del negozio attivo accanto a PROFILO UTENTE: solo la scritta oro, senza riquadro (tolto il 10 ottobre 2026) */
 .system-store-current {
   flex: 0 0 auto;
-  padding: 4px 7px;
-  border: 1px solid var(--interface-accent);
-  border-radius: 4px;
+  padding: 0;
   color: var(--interface-accent);
   font-size: .57rem;
   letter-spacing: .08em;
@@ -972,7 +983,7 @@
   border-radius: 6px;
   background: transparent;
   color: var(--interface-accent);
-  font: 400 .68rem/1.3 var(--interface-font);
+  font: 400 .64rem/1.3 var(--interface-font);
   letter-spacing: .08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -1109,6 +1120,5 @@
 .system-menu-item-label { gap: 9px; }
 [data-system-menu-item="settings"] .system-menu-icon { --icona-scala: 1.08; }
 [data-system-menu-item="profile"] .system-menu-icon { --icona-scala: .92; }
-[data-system-menu-item="store"] .system-menu-icon { --icona-scala: 1.08; --icona-y: -1px; }
 [data-system-menu-item="contacts"] .system-menu-icon { --icona-scala: .9; }
 [data-system-menu-item="home"] .system-menu-icon { --icona-scala: 1.45; --icona-y: -2px; }

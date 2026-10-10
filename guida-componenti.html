@@ -2,12 +2,12 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-37"></script>
+  <script src="assets/js/negozi.js?v=20261010-44"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Guida tecnica di STORE // CRAFT: basi, tipi di pagina, componenti, dashboard, negozi e ricette (area operatore:
        non collegata, non copiata ai clienti).
@@ -55,8 +55,32 @@
     @keyframes cursore { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     .sotto { margin: 4px 0 0; color: var(--tenue); font-size: 11.5px; }
     /* nota con la data dell'ultimo aggiornamento, sotto l'intestazione a destra */
-    .aggiornamento { margin: -6px 0 6px; color: var(--tenue); font-size: 11px; text-align: right; }
+    .aggiornamento { margin: -6px 0 6px; color: var(--ok); font-size: 11px; text-align: right; }   /* è uno stato: verde come gli esiti dell'area operatore */
     .aggiornamento::before { content: '// '; color: var(--oro); }
+    /* sezione Manifesto, la copertina della guida (la prima sezione, si apre per prima): logo STORE // CRAFT grande e la filosofia del prodotto,
+       COOL · EASY · SMART (il claim, in bianco caldo #f4f1ea) e sotto bello · utile · facile; Cinzel come il marchio */
+    /* cornice oro doppia come la splash page, nell'oro della guida: linea oro #d4a373 e, 7 px all'interno, un filetto più tenue */
+    .copertina { position: relative; display: flex; flex-direction: column; align-items: center; width: min(820px, 100%); margin: 30px auto 20px; padding: 84px 40px 80px; border: 1px solid var(--oro); text-align: center; animation: compare .25s ease-out; }
+    .copertina::before { content: ''; position: absolute; inset: 7px; border: 1px solid rgba(212, 163, 115, .3); pointer-events: none; }
+    /* più staccata dal titolo $ MANIFESTO delle altre sezioni (la regola comune toglie il margine sopra al primo elemento) */
+    section.sezione > h2 + .copertina { margin-top: 64px !important; }   /* si fonde con il margine sotto il titolo (28 px): vale questo */
+    /* sezione Filosofia: testo da leggere, un poco più grande e arioso del resto della guida, largo al massimo 780 px */
+    .filosofia-testo { max-width: 780px; font-size: 14px; line-height: 1.85; }
+    .filosofia-testo p { margin: 0 0 18px; }
+    .filosofia-testo .filosofia-base { margin: 26px 0 34px; color: var(--oro-chiaro); }
+    .filosofia-testo .filosofia-base em { color: #f4f1ea; font-family: 'Cinzel', serif; font-weight: 600; letter-spacing: .2em; }
+    .filosofia-testo ul { margin: 0; padding-left: 18px; }
+    .filosofia-testo li { margin-bottom: 8px; }
+
+    .copertina img { width: 175px; filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: .9; }
+    .copertina .claim { display: flex; align-items: center; justify-content: center; gap: 28px; margin: 50px 0 0; color: #f4f1ea; font: 600 38px/1.1 'Cinzel', serif; letter-spacing: .34em; }
+    .copertina .claim span { margin-right: -.34em; }   /* la spaziatura dopo l'ultima lettera non sposta la parola */
+    .copertina .claim i { width: 7px; height: 7px; border-radius: 50%; background: var(--oro); opacity: .8; }
+    .copertina .significato { margin: 18px 0 0; color: var(--tenue); font-size: 15px; letter-spacing: .34em; text-transform: uppercase; }
+    .copertina .entra { margin-top: 58px;   /* stessa distanza visibile logo → claim e bello · utile · facile → pulsante (67 px) */ padding: 9px 18px; border: 1px solid var(--bordo); border-radius: 3px; background: transparent; color: var(--oro-chiaro); font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+    .copertina .entra:hover, .copertina .entra:focus-visible { border-color: var(--oro); background: rgba(212, 163, 115, .1); outline: none; }
+    @media (max-width: 760px) { .copertina { padding: 40px 14px 44px; } .copertina img { width: 170px; } .copertina .claim { gap: 14px; font-size: 22px; letter-spacing: .24em; } .copertina .claim span { margin-right: -.24em; } }
+    @media (prefers-reduced-motion: reduce) { .copertina { animation: none; } }
     /* pulsantiera delle sezioni, ferma in alto */
     nav.indice { position: sticky; top: 0; z-index: 5; display: flex; flex-direction: column; gap: 14px; margin: 6px 0 12px; padding: 16px 0 18px;
       border-top: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); background: var(--bg); }
@@ -119,9 +143,16 @@
     .anteprima.foto { display: flex; align-items: center; justify-content: center; width: 100%; height: 170px; padding: 8px; cursor: zoom-in; }
     .anteprima.foto img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; }
     .anteprima.foto:hover, .anteprima.foto:focus-visible { border-color: var(--oro); outline: none; }
-    .ingrandita { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 30px; background: rgba(0, 0, 0, .85); cursor: zoom-out; }
+    /* foto ingrandita in un popup al centro (dal 10 ottobre 2026): dietro la guida resta visibile sotto un velo leggero;
+       finestra con il nome della foto e ✕, si chiude con ✕, Esc, Invio, spazio o un clic fuori dalla finestra */
+    .ingrandita { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 30px; background: rgba(0, 0, 0, .5); backdrop-filter: blur(2px); }
     .ingrandita:focus { outline: none; }
-    .ingrandita img { max-width: 100%; max-height: 100%; border: 1px solid var(--bordo); }
+    .finestra-foto { display: flex; flex-direction: column; max-width: min(1000px, 100%); max-height: 100%; border: 1px solid var(--oro); border-radius: 4px; background: var(--bg); box-shadow: 0 6px 24px rgba(0, 0, 0, .55); }
+    .finestra-foto header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 9px 10px 9px 16px; border-bottom: 1px solid var(--bordo); color: var(--oro-chiaro); font: 400 12px var(--mono); letter-spacing: .08em; }
+    .finestra-foto header button { flex: none; width: 28px; height: 28px; border: 1px solid var(--bordo); border-radius: 3px; background: transparent; color: var(--tenue); font: 400 14px var(--mono); cursor: pointer; }
+    .finestra-foto header button:hover, .finestra-foto header button:focus-visible { border-color: var(--oro); color: var(--oro-chiaro); outline: none; }
+    .finestra-foto .corpo-foto { display: flex; align-items: center; justify-content: center; min-height: 0; padding: 14px; overflow: auto; }
+    .finestra-foto img { display: block; max-width: 100%; max-height: calc(100vh - 140px); }
     /* selettore delle anteprime: subito sotto il divisorio della pulsantiera, a destra */
     .scelta-negozio { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin: 0 0 20px; color: var(--tenue); font-size: 11px; letter-spacing: .06em; }
     .scelta-negozio .tasto[aria-pressed="true"] { color: var(--oro-chiaro); border-color: var(--oro); background: rgba(212, 163, 115, .1); }
@@ -155,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.95</p>
+  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.96</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -165,8 +196,36 @@
   </nav>
 
   <!-- ================================================================ -->
+  <!-- Manifesto: la prima sezione della parte Filosofia, quella che si apre per prima, come copertina della guida: logo e claim di
+       STORE // CRAFT, il claim del prodotto per le guide e le campagne di lancio -->
+  <h2 id="manifesto">Manifesto</h2>
+  <div class="copertina">
+    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
+    <p class="claim"><span>COOL</span><i aria-hidden="true"></i><span>EASY</span><i aria-hidden="true"></i><span>SMART</span></p>
+    <p class="significato">bello · utile · facile</p>
+    <button type="button" class="entra">› entra nella guida</button>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Filosofia: perché nasce STORE // CRAFT, cosa fa e dove andrà (testo del titolare, 10 ottobre 2026) -->
+  <h2 id="filosofia">Filosofia</h2>
+  <div class="filosofia-testo">
+    <p>STORE // CRAFT nasce da un'esigenza concreta dei negozianti: accompagnare l'esposizione dei prodotti in vendita con una segnaletica disponibile in formati diversi (A4, A5, A6, 10X15, 13X18, ecc) su vari tipi di supporti: cartelli in morsa sugli stand, paletti da tavolo o da scaffale, display in plexiglass da terra, cornici e display da tavolo.</p>
+    <p>STORE // CRAFT permette di ottenere un risultato dal look professionale ed esteticamente bello, con le comuni stampanti da ufficio o con stampanti dedicate come la DYMO per le etichette adesive, il tutto con un occhio sempre rivolto al risparmio di toner. Una stampa <strong>bella e professionale</strong>, come fosse preparata dalle mani di un grafico professionista, ma allo stesso tempo generata <strong>facilmente</strong> in tempi record e con pochi click, da chiunque anche chi non ha alcun tipo di esperienza di computer o grafica.</p>
+    <p>Finalmente la cartellonistica e la segnaletica del negozio non saranno più un incubo (quante belle esposizioni rovinate da cartelli e cartellini scritti a mano...), bensì un vanto per il look del punto vendita ed uno strumento di marketing <strong>utile</strong> e mirato alle vendite: la segnaletica professionale generata tramite STORE // CRAFT valorizza il prodotto ed incrementa le vendite.</p>
+    <p class="filosofia-base">Questa è la filosofia di base di STORE // CRAFT: <em>COOL · EASY · SMART</em>.</p>
+    <h3>Gli sviluppi futuri</h3>
+    <p>Oltre alla grafica fai da te, ma di «lusso» professionale, STORE // CRAFT si occuperà anche di:</p>
+    <ul>
+      <li><strong>grafica digitale</strong> per chi ha TV o ledwall nel negozio, in risoluzione HD e 4K;</li>
+      <li><strong>grafica tipografica e vettoriale</strong> per flyer e vetrofanie da far stampare a tipografie esterne, a cui verrà fornito un vero file PDF di stampa.</li>
+    </ul>
+  </div>
+
+  <!-- ================================================================ -->
   <h2 id="regole">Regole comuni</h2>
   <ul class="regole">
+    <li><strong>La filosofia di STORE // CRAFT: COOL · EASY · SMART</strong> (in italiano bello · utile · facile), il claim del prodotto, sulla copertina della guida. Ogni pagina e ogni componente devono essere belli da vedere (curati come la grafica del negozio), utili (fanno risparmiare tempo nel lavoro di ogni giorno) e facili da usare (chi lavora in negozio capisce subito cosa fare, senza istruzioni). Davanti a una scelta, si sceglie quello che rispetta di più queste tre parole.</li>
     <li><strong>Ogni pagina si costruisce con i moduli comuni</strong> (regola generale dal 9 ottobre 2026): pannello, selettori, campi, menu e pulsanti vengono da <code>assets/css/pannello.css</code> e dai moduli di <code>assets/js/</code>. Un negozio può avere un componente suo: lo si scrive come modulo comune riutilizzabile o lo si dichiara come <em>eccezione voluta</em> con un commento nella pagina. Se un modulo non copre un caso, si allarga il modulo, non si copia il codice nella pagina.</li>
     <li><strong>Una pagina per strumento, una per negozio</strong> (<code>luxury/</code>, <code>tebe/</code>, <code>ophilya/</code>), anche quando due pagine si assomigliano; nella radice solo la splash page e le pagine dell'operatore.</li>
     <li><strong>Il menu di sinistra ha sempre quattro blocchi</strong>, in quest'ordine: 1 selettori e pulsanti · 2 brand e claim · 3 campi del cartello · 4 stampa. Un blocco vuoto si omette.</li>
@@ -367,7 +426,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-37</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-44</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -604,6 +663,7 @@
     // Parti della guida (riga in alto della pulsantiera) e loro sezioni (riga sotto), con il nome breve dei pulsanti.
     // Ogni sezione è un <h2 id> della pagina: l'ordine e la parte si decidono qui, non dalla posizione nel file.
     const PARTI = [
+      { id: 'parte-filosofia', nome: 'Filosofia', sezioni: { manifesto: 'Manifesto', filosofia: 'Filosofia' } },
       { id: 'basi', nome: 'Basi', sezioni: { regole: 'Regole', pagina: 'Struttura di una pagina', versioni: 'Versioni e cache' } },
       { id: 'tipi', nome: 'Tipi di pagina', sezioni: { tipi: 'Panoramica', 'tipo-cartello': 'Cartello', 'tipo-cartellini': 'Cartellini',
         'tipo-prezzi': 'Prezzi Vetrina', 'tipo-promo': 'Promo stagionale', 'tipo-dymo': 'Etichetta DYMO', 'tipo-stampe': 'Stampa pronta',
@@ -668,9 +728,12 @@
       return { parte, tastoParte, vociParte };
     });
 
+    // Manifesto, la prima sezione (si apre per prima, come copertina): › entra nella guida apre le Regole, la prima sezione delle Basi
+    document.querySelector('.copertina .entra').addEventListener('click', () => mostra('regole', true));
     function mostra(id, scrivi) {
+      const richiesta = String(id || '').split(':')[0];
       // #sezione oppure #sezione:elemento (risultati della ricerca): si apre la sezione
-      const scelta = voci.find(v => v.sezione.id === String(id || '').split(':')[0]) || voci[0];
+      const scelta = voci.find(v => v.sezione.id === richiesta) || voci[0];
       voci.forEach(v => {
         v.sezione.classList.toggle('attiva', v === scelta);
         v.tasto.setAttribute('aria-selected', String(v === scelta));
@@ -797,16 +860,33 @@
       velo.setAttribute('role', 'dialog');
       velo.setAttribute('aria-modal', 'true');
       velo.setAttribute('aria-label', nome);
+      // popup: finestra con il nome della foto e la ✕, la foto sotto; la guida resta dietro
+      const finestra = document.createElement('div');
+      finestra.className = 'finestra-foto';
+      const testa = document.createElement('header');
+      const titolo = document.createElement('span');
+      titolo.textContent = nome;
+      const x = document.createElement('button');
+      x.type = 'button';
+      x.textContent = '✕';
+      x.setAttribute('aria-label', 'Chiudi');
+      testa.append(titolo, x);
+      const corpo = document.createElement('div');
+      corpo.className = 'corpo-foto';
       const grande = document.createElement('img');
       grande.src = indirizzo;
       grande.alt = nome;
-      velo.append(grande);
+      corpo.append(grande);
+      finestra.append(testa, corpo);
+      velo.append(finestra);
       const chiudi = () => { velo.remove(); document.removeEventListener('keydown', esc); prima?.focus?.(); };
       const esc = e => {
         if (['Escape', 'Enter', ' '].includes(e.key)) { e.preventDefault(); chiudi(); }
         else if (e.key === 'Tab') e.preventDefault();
       };
-      velo.addEventListener('click', chiudi);
+      // si chiude con la ✕ o con un clic fuori dalla finestra (sul velo)
+      x.addEventListener('click', chiudi);
+      velo.addEventListener('click', e => { if (e.target === velo) chiudi(); });
       document.addEventListener('keydown', esc);
       document.body.append(velo);
       velo.focus();

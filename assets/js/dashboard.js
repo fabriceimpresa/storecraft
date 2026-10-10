@@ -26,7 +26,7 @@
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.95 2026';
+  const VERSIONE = 'V 1.96 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -117,6 +117,32 @@
   }
 
   // Menu di sistema (MENU // IMPOSTAZIONI): viste e comportamento in theme.js
+  // Cambio di negozio dalla lista NEGOZI del menu di sistema: come in IMPOSTAZIONI il menu resta aperto. La dashboard
+  // del nuovo negozio lo riapre subito sulla stessa lista, senza animazione, così sembra che non si sia mai chiuso e si
+  // possono fare più cambi di seguito (sessionStorage, solo per questa scheda); si richiude cliccando altrove
+  const MENU_NEGOZI = 'storecraft_menu_negozi';
+  function cambiaNegozioDalMenu(id) {
+    try { sessionStorage.setItem(MENU_NEGOZI, '1'); } catch (errore) { /* senza sessionStorage il menu resta chiuso */ }
+    PuntoVendita.scegli(id);
+  }
+  function riapriMenuNegozi() {
+    let riapri = false;
+    try {
+      riapri = sessionStorage.getItem(MENU_NEGOZI) === '1';
+      sessionStorage.removeItem(MENU_NEGOZI);
+    } catch (errore) { return; }
+    const menu = document.getElementById('system-menu');
+    if (!riapri || !menu || !menu.hidden) return;
+    menu.style.animation = 'none';   // riaperto senza l'animazione di apertura
+    window.toggleSystemMenu();
+    window.openSystemMenuView('stores');
+    // l'animazione torna quando il menu si chiude (rimetterla con il menu aperto lo farebbe riaprire da capo)
+    const ripristina = new MutationObserver(() => {
+      if (menu.hidden) { menu.style.removeProperty('animation'); ripristina.disconnect(); }
+    });
+    ripristina.observe(menu, { attributes: true, attributeFilter: ['hidden'] });
+  }
+
   function menuSistema() {
     const scheda = Negozi.corrente();
     const indietro = () => el('div', { class: 'system-menu-footer' },
@@ -135,7 +161,7 @@
       ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true },
           el('span', { text: n.nome }), el('span', { class: 'system-store-status', text: `${n.sigla} · ATTIVO` }))
       : el('button', { class: 'system-store-choice', type: 'button', 'aria-pressed': 'false', 'data-punto-vendita': id,
-          disabled: !n.pronto, onclick: n.pronto ? () => PuntoVendita.scegli(id) : null },
+          disabled: !n.pronto, onclick: n.pronto ? () => cambiaNegozioDalMenu(id) : null },
           el('span', { text: n.nome }),
           n.pronto ? el('span', { 'aria-hidden': 'true', text: '›' }) : el('span', { class: 'system-menu-badge', text: 'IN ARRIVO' })));
 
@@ -146,7 +172,7 @@
           // ︎ dopo il simbolo: iPhone lo mostra come carattere (oro, come gli altri) e non come emoji colorata
           voce('settings', '⚙︎', 'IMPOSTAZIONI', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('settings')),
           voce('profile', '♙', 'PROFILO UTENTE', el('span', { class: 'system-store-current', text: scheda.sigla }), () => openSystemMenuView('stores')),
-          voce('store', '◈', 'STORE', el('span', { class: 'system-menu-badge', text: 'COMING SOON' }), null),
+          // STORE (in Coming Soon) tolta il 10 ottobre 2026: per ora non c'è
           voce('contacts', '✉︎', 'CONTATTI & CREDITS', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('contacts')),
           // HOME: torna alla scelta del punto vendita (solo con più di un negozio installato)
           PuntoVendita.unico() ? null : voce('home', '⌂', 'HOME', el('span', { 'aria-hidden': 'true', text: '›' }), () => PuntoVendita.apriSplash()))),
@@ -442,6 +468,9 @@
         piedePagina()),
       pulsanteImpostazioni());
     Cassa.crea(strumenti, { qr: dati.qr || '' });
+    // appena la pagina è pronta (theme.js collega il menu a DOMContentLoaded, prima di questo)
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', riapriMenuNegozi, { once: true });
+    else riapriMenuNegozi();
     postoMenuSistema();
     phoneViewQuery.addEventListener('change', postoMenuSistema);
     window.addEventListener('scroll', alzaPulsanteImpostazioni, { passive: true });
