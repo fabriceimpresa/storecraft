@@ -10,9 +10,17 @@
    le schede pronte per la dashboard di quel negozio (con ../<cartella>/ davanti ai collegamenti se le pagine del
    pacchetto stanno nella cartella di un altro negozio).
 
+   Set di partenza (Outlet, Boutique…): non hanno una copia delle schede, ma origine: { negozio, sezione }. Le schede
+   si leggono ogni volta da quella sezione della dashboard del negozio (il file assets/negozi/<negozio>-dashboard.js si
+   carica in sola lettura, senza la dashboard), così il set resta sempre uguale alla dashboard. I set nuovi, composti
+   per un nuovo negozio, avranno invece i loro moduli scritti nel file.
+
    Uso:
-     Pacchetti.registra(id, { nome, tipo, cartella, negozio, descrizione, moduli })   nel file del pacchetto
-       tipo      'cartelli', 'promo' o 'cartellini' (come le sezioni della dashboard)
+     Pacchetti.registra(id, { nome, titolo, tipo, cartella, negozio, descrizione, moduli | origine })   nel file del pacchetto
+       origine   { negozio, sezione }: le schede sono quelle della sezione (id) della dashboard del negozio
+       titolo    titolo breve sopra il carosello in Gestione pacchetti (es. 'Outlet'; il nome resta univoco)
+       tipo      'cartelli', 'promo', 'cartellini', 'etichette' (come le sezioni della dashboard) o 'cassa' (Utilità
+                 Cassa: ogni modulo è { titolo, strumento }, l'id del widget in assets/js/cassa.js)
        cartella  cartella delle pagine dei moduli (es. 'luxury')
        negozio   il negozio di cui è il set di partenza, se c'è (es. 'luxury')
        moduli    [{ titolo, link, tipo, miniature, alt, specifiche, badge, voce, prossimamente }] (come le schede della
@@ -27,9 +35,37 @@
   const script = document.currentScript;
   const versione = new URL(script.src).search;   // stessa versione (?v=) dei file comuni
   const cartella = new URL('../pacchetti/', script.src);
+  const schede = new URL('../negozi/', script.src);
   const pacchetti = {};
   const richiesti = new Set();
+  const dashboard = {};            // contenuti delle dashboard lette, per negozio
+  const dashboardRichieste = new Set();
   let elenco = [];
+
+  // Lettura delle dashboard senza la dashboard: i file dei contenuti chiamano Dashboard.contenuto({...}); in queste
+  // pagine (nessuna dashboard.js) lo raccoglie questo modulo, per negozio (dal nome del file che lo chiama)
+  if (!window.Dashboard) {
+    window.Dashboard = Object.freeze({
+      contenuto(dati) {
+        const negozio = (document.currentScript?.src.match(/\/negozi\/([^/?]+)-dashboard\.js/) || [])[1];
+        if (negozio) dashboard[negozio] = dati;
+      }
+    });
+  }
+  function leggiDashboard(negozio) {
+    if (dashboardRichieste.has(negozio)) return;
+    dashboardRichieste.add(negozio);
+    document.write(`<script src="${new URL(`${negozio}-dashboard.js${versione}`, schede).href}"><\/script>`);
+  }
+
+  // I moduli di un pacchetto: scritti nel file, oppure (set di partenza) le schede della sezione della dashboard
+  function moduli(pacchetto) {
+    if (!pacchetto.origine) return pacchetto.moduli || [];
+    const { negozio, sezione } = pacchetto.origine;
+    const trovata = dashboard[negozio]?.sezioni?.find(voce => voce.id === sezione);
+    if (!trovata) throw new Error(`Sezione ${sezione} non trovata in assets/negozi/${negozio}-dashboard.js (pacchetto ${pacchetto.id})`);
+    return trovata.schede.map(scheda => ({ ...scheda }));
+  }
 
   function carica(ids) {
     ids.filter(id => !richiesti.has(id)).forEach(id => {
@@ -42,6 +78,7 @@
   window.Pacchetti = Object.freeze({
     registra(id, pacchetto) {
       pacchetti[id] = Object.freeze({ id, ...pacchetto });
+      if (pacchetto.origine) leggiDashboard(pacchetto.origine.negozio);
     },
     carica,
     installa(ids) {
@@ -49,11 +86,12 @@
       carica(ids);
     },
     get elenco() { return elenco.slice(); },
-    pacchetto: id => pacchetti[id] || null,
+    // il pacchetto con i suoi moduli (per i set di partenza letti in quel momento dalla dashboard)
+    pacchetto: id => (pacchetti[id] ? Object.freeze({ ...pacchetti[id], moduli: moduli(pacchetti[id]) }) : null),
     schede(id, negozio) {
       const pacchetto = pacchetti[id];
       if (!pacchetto) throw new Error(`Pacchetto non trovato: assets/pacchetti/${id}.js`);
-      return pacchetto.moduli.map(modulo => (modulo.link && pacchetto.cartella !== negozio
+      return moduli(pacchetto).map(modulo => (modulo.link && pacchetto.cartella !== negozio
         ? { ...modulo, link: `../${pacchetto.cartella}/${modulo.link}` }
         : { ...modulo }));
     }

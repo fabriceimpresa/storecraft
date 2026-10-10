@@ -1,20 +1,13 @@
 /* Pacchetto Cartellini Outlet (vedi assets/js/pacchetti.js): set di partenza di Luxury Outlet, moduli di tipo cartellini,
-   pagine nella cartella luxury/. I moduli sono le schede della sua dashboard, copiate così come sono. */
+   pagine nella cartella luxury/. I moduli sono le schede della sua dashboard,
+   lette dalla dashboard a ogni apertura (origine), senza copia: il set resta sempre allineato. */
 Pacchetti.registra('cartellini-outlet', {
   nome: 'Pacchetto Cartellini Outlet',
+  titolo: 'Outlet',   // titolo breve, sopra il carosello in Gestione pacchetti
   tipo: 'cartellini',
   cartella: 'luxury',
   negozio: 'luxury',
   descrizione: "Cartellini di Luxury Outlet: vetrina, promozionali, quadrati e prezzi vetrina.",
-  moduli: [
-    { titolo: 'Vetrina', link: 'cartellinivetrina.html', tipo: 'CARTELLINI', miniature: ['thumbnail/luxury/cartellini.png'], alt: 'Anteprima Cartellini Vetrina',
-      specifiche: ['Brand', 'I Miei Loghi', 'Descrizione', 'Doppio Prezzo', 'Sconto'] },
-    { titolo: 'Promozionali', link: 'cartellinipromo.html', tipo: 'CARTELLINI', miniature: ['thumbnail/luxury/cartellinipromo.png'], alt: 'Anteprima Cartellini Promozionali',
-      specifiche: ['Brand', 'I Miei Loghi', 'Promozione', 'Evento', 'Doppio Prezzo', 'Sconto'] },
-    { titolo: 'Quadrati', link: 'cartelliniquadrati.html', tipo: 'CARTELLINI', miniature: ['thumbnail/luxury/cartelliniquadrati.png'], alt: 'Anteprima Quadrati',
-      specifiche: ['Brand', 'I Miei Loghi', 'Descrizione', 'Doppio Prezzo', 'Sconto', 'Tema Sale'] },
-    { titolo: 'Prezzi Vetrina', link: 'prezzivetrina.html', tipo: 'CARTELLINI', miniature: ['thumbnail/luxury/prezzivetrina.png'], alt: 'Anteprima Prezzi Vetrina',
-      specifiche: ['Fasce Prezzo', 'Promozione', '24 cartellini'] }
-      
-  ]
+  // le schede sono quelle della sezione tickets-section della dashboard di luxury, lette a ogni apertura (sempre allineate)
+  origine: { negozio: 'luxury', sezione: 'tickets-section' }
 });

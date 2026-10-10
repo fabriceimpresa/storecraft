@@ -2,12 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-49"></script>
+  <script src="assets/js/negozi.js?v=20261010-50"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Struttura negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261010-49"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261010-50"></script>
+  <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
+  <script src="assets/js/pacchetti-associa.js?v=20261010-50"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -75,6 +77,13 @@
     th.centro { background: linear-gradient(rgba(255, 255, 255, .035), rgba(255, 255, 255, .035)), var(--pannello); }
     td.esito { text-align: center; vertical-align: middle; }
     .spunta-esito { color: var(--ok); font-size: 15px; line-height: 1; }
+    /* clone creato da Gestione pacchetti (pagina con storecraft-origine): l'etichetta clone in oro e il pulsante ✕ rimuovi;
+       le pagine di partenza dei negozi non hanno il pulsante */
+    .tipo.clone { border-color: var(--oro); color: var(--oro); }
+    .rimuovi { margin-left: 8px; padding: 0 6px; border: 1px solid #e07a5f; border-radius: 3px; background: none; color: #e07a5f;
+      font: 400 10px var(--mono); letter-spacing: .06em; cursor: pointer; }
+    .rimuovi:hover, .rimuovi:focus-visible { background: #e07a5f; color: #121110; outline: none; }
+    .rimuovi:disabled { opacity: .4; cursor: default; }
     .tipo { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--bordo); border-radius: 3px; color: var(--tenue); font-size: 10px; letter-spacing: .06em; }
     /* mentre la tabella scorre di lato, la prima colonna (i nomi delle pagine) resta ferma a sinistra */
     th.pg, td:first-child { position: sticky; left: 0; z-index: 1; box-shadow: 1px 0 0 var(--bordo); }
@@ -200,6 +209,44 @@
     const altoSchermo = () => document.documentElement.style.setProperty('--alto-schermo', `${window.parent.innerHeight}px`);
     altoSchermo();
     window.parent.addEventListener('resize', altoSchermo);
+  }
+
+  // Rimuovere un clone (solo le pagine create da Gestione pacchetti): la sua scheda esce dalla dashboard e la pagina si
+  // cancella, con le immagini copiate per lui; la cartella del progetto la collega la pagina operatore (o questa pagina)
+  let progettoLocale = null;
+  async function progetto() {
+    if (incorporata && typeof window.parent.collegaProgetto === 'function') return window.parent.collegaProgetto();
+    if (!progettoLocale) progettoLocale = await Associa.scegliProgetto();
+    return progettoLocale;
+  }
+  function pulsanteRimuovi(negozio, pagina, origine) {
+    const pulsante = document.createElement('button');
+    pulsante.type = 'button';
+    pulsante.className = 'rimuovi';
+    pulsante.textContent = '✕ rimuovi';
+    pulsante.title = `Rimuovi il clone ${negozio}/${pagina}`;
+    pulsante.addEventListener('click', async () => {
+      const stato = document.getElementById('stato');
+      // prima la cartella (Chrome apre la finestra solo subito dopo il clic), poi la conferma
+      let cartella;
+      try { cartella = await progetto(); } catch (errore) {
+        stato.textContent = errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`;
+        return;
+      }
+      if (!window.confirm(`Rimuovere il clone ${negozio}/${pagina} (copia di ${origine})?\n\nLa sua scheda esce dalla dashboard di ${Negozi.scheda(negozio)?.nome || negozio} e la pagina viene cancellata, con le immagini copiate per lui.`)) return;
+      pulsante.disabled = true;
+      try {
+        await Associa.eliminaClone(cartella, { negozio, nome: pagina, avviso: testo => { stato.textContent = testo; } });
+        stato.textContent = `rimosso ${negozio}/${pagina}: ricorda il commit per pubblicarlo. rileggo…`;
+        setTimeout(() => location.reload(), 900);
+      } catch (errore) {
+        pulsante.disabled = false;
+        if (errore.name === 'AbortError') { stato.textContent = 'cartella non collegata: nessuna modifica'; return; }
+        console.error(errore);
+        stato.textContent = `errore (${errore.name}): ${errore.message}`;
+      }
+    });
+    return pulsante;
   }
 
   async function schema() {
@@ -333,6 +380,13 @@
         riga.append(tdPagina);
         try {
           const t = await testo(`${id}/${pagina}`);
+          const origine = Associa.clone(t);
+          if (origine) {
+            tipo.textContent = 'clone';
+            tipo.classList.add('clone');
+            tipo.title = `clone di ${origine}, creato da Gestione pacchetti`;
+            tdPagina.append(pulsanteRimuovi(id, pagina, origine));
+          }
           CONTROLLI.forEach(([, , prova]) => riga.append(cella(prova(t))));
           const residui = RESIDUI.filter(([, prova]) => prova(t)).map(([nome]) => nome);
           const td = document.createElement('td');

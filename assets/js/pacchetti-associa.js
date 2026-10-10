@@ -1,0 +1,307 @@
+/* Associare un modulo ai negozi (area operatore, Gestione pacchetti › scheda del modulo). Strumento solo dell'operatore:
+   scrive nella cartella del progetto collegata (File System Access API, Chrome / Edge sul computer, come Importa loghi);
+   le modifiche vanno poi pubblicate con un commit.
+
+   Un modulo (pagina <cartella>/<pagina>.html, scheda nella dashboard del suo negozio) si associa a un negozio:
+   - stesso negozio della pagina: la sua scheda entra nella dashboard del negozio;
+   - altro negozio: la pagina si copia nella cartella del negozio e si adatta a lui (data-negozio, percorsi delle sue
+     risorse, con le immagini che mancano copiate dal negozio della pagina), la miniatura si copia nelle sue anteprime e
+     la scheda entra nella sua dashboard, con origine: '<cartella>/<pagina>.html' (così si riconosce la copia). Se il
+     negozio ha già una pagina con lo stesso nome, la copia si chiama <pagina>-<cartella>.html.
+   Togliendo la spunta a un clone (pagina copiata da qui, con il segno storecraft-origine) la scheda esce dalla
+   dashboard e il clone si cancella, con i file copiati per lui (elencati dal clone stesso in
+   <meta name="storecraft-copiati">, cioè solo quelli che nel negozio mancavano) che nessun'altra pagina del negozio
+   usa. I file del negozio (es. la sua bandiera) e le pagine di partenza dei negozi non si cancellano mai.
+   Le schede stanno nella prima sezione della dashboard del tipo del modulo (cartelli, promo o, se manca, cartelli,
+   cartellini). Le funzioni sul testo non toccano i file: le usa anche la prova da riga di comando.
+
+   Uso (testo):
+     Associa.usato(testoDashboard, negozio, cartella, pagina)      true se la dashboard usa il modulo (sua scheda o copia)
+     Associa.aggiungiScheda(testoDashboard, tipo, scheda)          nuovo testo con la scheda in fondo alla sezione
+     Associa.togliScheda(testoDashboard, negozio, cartella, pagina) nuovo testo senza la scheda del modulo
+     Associa.adattaPagina(html, da, a, origine)                    { html, risorse: [{ cartella, file }] } da copiare
+   Uso (file, con la cartella del progetto collegata):
+     Associa.scegliProgetto(passaggio)                              cartella del progetto scelta e controllata (Chrome / Edge)
+     Associa.associa(progetto, { modulo, tipo, cartella, negozio })   aggiunge il modulo al negozio
+     Associa.togli(progetto, { modulo, cartella, negozio })           lo toglie dalla dashboard (un clone si cancella)
+     Associa.eliminaClone(progetto, { negozio, nome })              cancella il clone <negozio>/<nome> e la sua scheda
+     Associa.clone(html)                                             origine del clone ('<cartella>/<pagina>.html') o null */
+(() => {
+  const RISORSE = ['img', 'logos', 'thumbnail', 'pdf', 'foto'];
+  const virgolette = valore => `'${String(valore).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+  const pagina = link => String(link || '').split('?')[0];
+
+  // Scheda come riga di testo, nella forma delle schede delle dashboard
+  function scrivi(scheda) {
+    const parti = Object.entries(scheda).filter(([, valore]) => valore !== undefined && valore !== null && valore !== false)
+      .map(([chiave, valore]) => `${chiave}: ${Array.isArray(valore) ? `[${valore.map(virgolette).join(', ')}]`
+        : valore === true ? 'true' : typeof valore === 'number' ? valore : virgolette(valore)}`);
+    return `{ ${parti.join(', ')} }`;
+  }
+
+  // Fine della parentesi che si apre in posizione inizio (salta le stringhe)
+  function chiusura(testo, inizio) {
+    const apre = testo[inizio], chiude = apre === '[' ? ']' : '}';
+    let livello = 0, stringa = null;
+    for (let i = inizio; i < testo.length; i++) {
+      const c = testo[i];
+      if (stringa) { if (c === '\\') i++; else if (c === stringa) stringa = null; continue; }
+      if (c === "'" || c === '"' || c === '`') { stringa = c; continue; }
+      if (c === apre) livello++;
+      else if (c === chiude && --livello === 0) return i;
+    }
+    throw new Error('Testo della dashboard non leggibile: parentesi non chiusa.');
+  }
+
+  // Le sezioni della dashboard: { tipo, inizio, fine } dell'elenco schede ([ … ])
+  function sezioni(testo) {
+    const elenco = [];
+    for (const trovato of testo.matchAll(/tipo:\s*'(cartelli|promo|cartellini|etichette|stampe)'/g)) {
+      // il tipo di una sezione è minuscolo (quello delle schede è maiuscolo: CARTELLO, PDF…); l'elenco schede la segue
+      const schede = testo.indexOf('schede: [', trovato.index);
+      if (schede < 0) continue;
+      const aperta = schede + 'schede: '.length;
+      elenco.push({ tipo: trovato[1], inizio: aperta, fine: chiusura(testo, aperta) });
+    }
+    return elenco;
+  }
+
+  function sezione(testo, tipo) {
+    const tutte = sezioni(testo);
+    return tutte.find(voce => voce.tipo === tipo) || (tipo === 'promo' ? tutte.find(voce => voce.tipo === 'cartelli') : null);
+  }
+
+  // Le schede (oggetti { … }) di un elenco, con la loro posizione nel testo
+  function schede(testo, { inizio, fine }) {
+    const elenco = [];
+    for (let i = inizio + 1; i < fine; i++) {
+      if (testo[i] === '{') { const termine = chiusura(testo, i); elenco.push({ inizio: i, fine: termine, testo: testo.slice(i, termine + 1) }); i = termine; }
+    }
+    return elenco;
+  }
+
+  const suaScheda = (scheda, negozio, cartella, nome) =>
+    (negozio === cartella && new RegExp(`link:\\s*'${nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`).test(scheda.testo))
+    || scheda.testo.includes(`origine: '${cartella}/${nome}'`);
+
+  function trovaScheda(testo, negozio, cartella, nome) {
+    for (const voce of sezioni(testo)) {
+      const trovata = schede(testo, voce).find(scheda => suaScheda(scheda, negozio, cartella, nome));
+      if (trovata) return trovata;
+    }
+    return null;
+  }
+
+  function usato(testo, negozio, cartella, nome) {
+    return Boolean(trovaScheda(testo, negozio, cartella, nome));
+  }
+
+  function aggiungiScheda(testo, tipo, scheda) {
+    const voce = sezione(testo, tipo);
+    if (!voce) throw new Error(`Nella dashboard non c'è una sezione ${tipo} in cui mettere il modulo.`);
+    const esistenti = schede(testo, voce);
+    const riga = testo.lastIndexOf('\n', voce.fine);
+    const rientro = esistenti.length ? testo.slice(testo.lastIndexOf('\n', esistenti[0].inizio) + 1, esistenti[0].inizio) : '        ';
+    if (!esistenti.length) {
+      const base = testo.slice(riga + 1, voce.fine);
+      return `${testo.slice(0, voce.inizio + 1)}\n${rientro}${scrivi(scheda)}\n${base}${testo.slice(voce.fine)}`;
+    }
+    const ultima = esistenti[esistenti.length - 1];
+    return `${testo.slice(0, ultima.fine + 1)},\n${rientro}${scrivi(scheda)}${testo.slice(ultima.fine + 1)}`;
+  }
+
+  function togliScheda(testo, negozio, cartella, nome) {
+    const trovata = trovaScheda(testo, negozio, cartella, nome);
+    if (!trovata) return testo;
+    // la riga intera della scheda (anche su più righe) e la virgola che la separa dalla vicina
+    let inizio = testo.lastIndexOf('\n', trovata.inizio);
+    let fine = trovata.fine + 1;
+    if (testo[fine] === ',') fine++;
+    else {
+      // ultima dell'elenco: si toglie la virgola dopo la scheda precedente
+      const prima = testo.slice(0, inizio).search(/,\s*$/);
+      if (prima >= 0) inizio = prima;
+    }
+    return testo.slice(0, inizio) + testo.slice(fine);
+  }
+
+  // Pagina copiata in un altro negozio: data-negozio, percorsi delle risorse del negozio, segno dell'origine.
+  // Restituisce anche le risorse del negozio di partenza da copiare (file con il nome scritto nella pagina, o i file
+  // che cominciano con il nome scritto prima di ${…}; non le cartelle intere, come printlogos/, che il negozio ha già)
+  function adattaPagina(html, da, a, origine) {
+    const risorse = [];
+    const percorso = new RegExp(`(assets/(${RISORSE.join('|')})/)${da}/([^'"\`\\s)]*)`, 'g');
+    let nuovo = html.replace(percorso, (tutto, prima, cartella, resto) => {
+      const dinamico = resto.indexOf('${');
+      const file = (dinamico >= 0 ? resto.slice(0, dinamico) : resto).split('?')[0];
+      // i loghi no: il negozio ha i suoi (assets/logos/<negozio>/, con il suo elenco.js)
+      if (cartella !== 'logos' && file) risorse.push({ cartella, file, prefisso: dinamico >= 0 });
+      return `${prima}${a}/${resto}`;
+    });
+    nuovo = nuovo.replace(new RegExp(`data-negozio="${da}"`, 'g'), `data-negozio="${a}"`);
+    if (!nuovo.includes('name="storecraft-origine"')) {
+      nuovo = nuovo.replace(/(<meta charset="[^"]*">)/i, `$1\n  <meta name="storecraft-origine" content="${origine}">`);
+    }
+    return { html: nuovo, risorse };
+  }
+
+  // Origine scritta nella pagina clonata (null: pagina di partenza, non un clone)
+  function clone(html) {
+    return (String(html).match(/<meta name="storecraft-origine" content="([^"]+)">/) || [])[1] || null;
+  }
+
+  // ----- File (cartella del progetto collegata) -----
+  async function scegliProgetto(passaggio = () => {}) {
+    passaggio('scegli la cartella STORECRAFT nella finestra del browser…');
+    let progetto;
+    try {
+      progetto = await window.showDirectoryPicker({ id: 'storecraft-progetto', mode: 'readwrite' });
+    } catch (errore) {
+      if (errore.name === 'AbortError') throw errore;   // finestra chiusa senza scegliere
+      // i rifiuti di Chrome, spiegati: un'altra finestra di scelta aperta, o il clic troppo lontano nel tempo
+      if (/already active/i.test(errore.message)) throw new Error("c'è già una finestra di scelta della cartella aperta in Chrome (forse dietro un'altra finestra): chiudila e riprova");
+      if (errore.name === 'SecurityError' || /user gesture|activation/i.test(errore.message)) throw new Error('Chrome apre la finestra solo subito dopo un clic: clicca di nuovo il pulsante');
+      throw errore;
+    }
+    passaggio(`cartella "${progetto.name}" scelta: controllo che sia il progetto…`);
+    try {
+      await progetto.getFileHandle('index.html');
+      await (await progetto.getDirectoryHandle('assets')).getDirectoryHandle('negozi');
+    } catch {
+      throw new Error(`"${progetto.name}" non è la cartella del progetto: scegli la cartella STORECRAFT, quella che contiene index.html e assets`);
+    }
+    passaggio('chiedo il permesso di modificare i file: rispondi alla finestra del browser («Modifica file»)…');
+    if (await progetto.requestPermission({ mode: 'readwrite' }) !== 'granted') {
+      throw new Error('il browser non ha dato il permesso di modificare i file: ricollega e rispondi «Modifica file»');
+    }
+    return progetto;
+  }
+  async function cartella(progetto, percorso, crea = false) {
+    let attuale = progetto;
+    for (const nome of percorso.split('/').filter(Boolean)) attuale = await attuale.getDirectoryHandle(nome, { create: crea });
+    return attuale;
+  }
+  async function leggi(progetto, percorso) {
+    const parti = percorso.split('/');
+    const dir = await cartella(progetto, parti.slice(0, -1).join('/'));
+    return (await (await dir.getFileHandle(parti.at(-1))).getFile());
+  }
+  async function esiste(progetto, percorso) {
+    try { await leggi(progetto, percorso); return true; } catch { return false; }
+  }
+  async function scriviFile(progetto, percorso, contenuto) {
+    const parti = percorso.split('/');
+    const dir = await cartella(progetto, parti.slice(0, -1).join('/'), true);
+    const scrittura = await (await dir.getFileHandle(parti.at(-1), { create: true })).createWritable();
+    await scrittura.write(contenuto);
+    await scrittura.close();
+  }
+  // copia un file del negozio di partenza nel negozio, se manca; true se l'ha copiato
+  async function copiaRisorsa(progetto, tipo, da, a, file) {
+    if (!file || await esiste(progetto, `assets/${tipo}/${a}/${file}`)) return false;
+    try { await scriviFile(progetto, `assets/${tipo}/${a}/${file}`, await leggi(progetto, `assets/${tipo}/${da}/${file}`)); return true; } catch { return false; /* manca anche nel negozio di partenza */ }
+  }
+
+  async function associa(progetto, { modulo, tipo, cartella: da, negozio: a, avviso = () => {} }) {
+    const dashboard = `assets/negozi/${a}-dashboard.js`;
+    let testo = await (await leggi(progetto, dashboard)).text();
+    const nome = pagina(modulo.link);
+    if (usato(testo, a, da, nome)) return;
+    const scheda = { ...modulo };
+    delete scheda.prossimamente;
+    if (a !== da) {
+      // la pagina nella cartella del negozio (nome libero), adattata a lui, con le risorse che le servono
+      const libero = await esiste(progetto, `${a}/${nome}`) ? nome.replace(/\.html$/, `-${da}.html`) : nome;
+      avviso(`copio ${da}/${nome} in ${a}/${libero}…`);
+      const sorgente = await (await leggi(progetto, `${da}/${nome}`)).text();
+      const { html, risorse } = adattaPagina(sorgente, da, a, `${da}/${nome}`);
+      const copiati = [];   // file copiati davvero (mancavano nel negozio): il clone li elenca, per poterli togliere con lui
+      const copia = async (tipo, file) => { if (await copiaRisorsa(progetto, tipo, da, a, file)) copiati.push(`${tipo}/${file}`); };
+      for (const risorsa of risorse) {
+        if (risorsa.prefisso) {
+          if (!risorsa.file || risorsa.file.endsWith('/')) continue;
+          const parti = risorsa.file.split('/');
+          const dir = await cartella(progetto, `assets/${risorsa.cartella}/${da}/${parti.slice(0, -1).join('/')}`).catch(() => null);
+          if (!dir) continue;
+          for await (const [file, voce] of dir.entries()) {
+            if (voce.kind === 'file' && file.startsWith(parti.at(-1))) await copia(risorsa.cartella, [...parti.slice(0, -1), file].join('/'));
+          }
+        } else await copia(risorsa.cartella, risorsa.file);
+      }
+      // la miniatura nelle anteprime del negozio
+      scheda.miniature = await Promise.all((modulo.miniature || []).map(async miniatura => {
+        const [file, query = ''] = miniatura.split('?');
+        const trovato = file.match(new RegExp(`^thumbnail/${da}/(.+)$`));
+        if (!trovato) return miniatura;
+        await copia('thumbnail', trovato[1]);
+        return `thumbnail/${a}/${trovato[1]}${query ? `?${query}` : ''}`;
+      }));
+      // la pagina per ultima, con l'elenco dei file copiati per lei
+      const elencoCopiati = `\n  <meta name="storecraft-copiati" content="${copiati.join(',')}">`;
+      await scriviFile(progetto, `${a}/${libero}`, html.replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1${elencoCopiati}`));
+      scheda.link = libero + (modulo.link.includes('?') ? `?${modulo.link.split('?')[1]}` : '');
+      scheda.origine = `${da}/${nome}`;
+    }
+    avviso(`aggiungo la scheda alla dashboard di ${a}…`);
+    testo = aggiungiScheda(testo, tipo, scheda);
+    await scriviFile(progetto, dashboard, testo);
+  }
+
+  async function cancella(progetto, percorso) {
+    const parti = percorso.split('/');
+    await (await cartella(progetto, parti.slice(0, -1).join('/'))).removeEntry(parti.at(-1));
+  }
+
+  // Cancella il clone <negozio>/<nome>: la sua scheda dalla dashboard, la pagina e i file copiati per lui (il suo elenco
+  // storecraft-copiati) che nessun'altra pagina del negozio e la dashboard usano. Le pagine di partenza no.
+  async function eliminaClone(progetto, { negozio, nome, avviso = () => {} }) {
+    const html = await (await leggi(progetto, `${negozio}/${nome}`)).text();
+    const origine = clone(html);
+    if (!origine) throw new Error(`${negozio}/${nome} è una pagina di partenza del negozio: non si cancella`);
+    const da = origine.split('/')[0];
+    const dashboard = `assets/negozi/${negozio}-dashboard.js`;
+    let testo = await (await leggi(progetto, dashboard)).text();
+    const scheda = trovaScheda(testo, negozio, da, pagina(origine.split('/').slice(1).join('/')));
+    if (scheda) {
+      avviso(`tolgo la scheda dalla dashboard di ${negozio}…`);
+      testo = togliScheda(testo, negozio, da, pagina(origine.split('/').slice(1).join('/')));
+      await scriviFile(progetto, dashboard, testo);
+    }
+    avviso(`cancello ${negozio}/${nome}…`);
+    await cancella(progetto, `${negozio}/${nome}`);
+    // file copiati per il clone (elencati da lui): quelli che ora nessuno usa più. Un clone senza elenco non ne cancella
+    const copiati = ((html.match(/<meta name="storecraft-copiati" content="([^"]*)">/) || [])[1] || '').split(',').filter(Boolean);
+    const usate = [testo];
+    for await (const [file, voce] of (await cartella(progetto, negozio)).entries()) {
+      if (voce.kind === 'file' && file.endsWith('.html')) usate.push(await (await voce.getFile()).text());
+    }
+    for (const copiato of copiati) {
+      const [tipo, ...resto] = copiato.split('/');
+      const file = resto.join('/');
+      if (usate.some(testoPagina => testoPagina.includes(`${tipo}/${negozio}/${file}`))) continue;
+      try { avviso(`cancello assets/${tipo}/${negozio}/${file}…`); await cancella(progetto, `assets/${tipo}/${negozio}/${file}`); } catch { /* già tolto */ }
+    }
+  }
+
+  async function togli(progetto, { modulo, cartella: da, negozio: a, avviso = () => {} }) {
+    const dashboard = `assets/negozi/${a}-dashboard.js`;
+    const testo = await (await leggi(progetto, dashboard)).text();
+    const scheda = trovaScheda(testo, a, da, pagina(modulo.link));
+    const link = scheda && (scheda.testo.match(/link:\s*'([^']+)'/) || [])[1];
+    // nel negozio c'è un clone: si cancella tutto (scheda, pagina, risorse copiate)
+    let eClone = false;
+    if (a !== da && link) {
+      try { eClone = Boolean(clone(await (await leggi(progetto, `${a}/${pagina(link)}`)).text())); } catch { /* pagina mancante */ }
+    }
+    if (eClone) {
+      await eliminaClone(progetto, { negozio: a, nome: pagina(link), avviso });
+      return;
+    }
+    avviso(`tolgo la scheda dalla dashboard di ${a}…`);
+    await scriviFile(progetto, dashboard, togliScheda(testo, a, da, pagina(modulo.link)));
+  }
+
+  const Associa = Object.freeze({ usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, pagina });
+  if (typeof window !== 'undefined') window.Associa = Associa;
+  if (typeof module !== 'undefined') module.exports = Associa;
+})();

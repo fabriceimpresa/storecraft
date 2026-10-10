@@ -20,21 +20,14 @@ Dashboard.contenuto({
         { titolo: 'Albero Accessori', link: 'albero-ophilya.html', tipo: 'RASTRELLIERA', miniature: ['thumbnail/ophilya/alberoophilyathumb.png?v=20261002', 'thumbnail/ophilya/alberoophilyathumb2.png'], alt: 'Albero Accessori OPHILYA' },
         { titolo: 'Paletto 15x10', link: 'paletto-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 15x10 OPHILYA' },
         { titolo: 'Paletto 18x12', link: 'paletto18x12-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 18x12 OPHILYA' },
-        { titolo: 'Semplice', tipo: 'CARTELLO', prossimamente: true },
-        { titolo: 'Sale', tipo: 'CARTELLO', prossimamente: true },
-        { titolo: 'Percentuale', tipo: 'CARTELLO', prossimamente: true },
-        { titolo: 'Brand', tipo: 'CARTELLO', prossimamente: true },
-        { titolo: 'Multi Articolo', tipo: 'CARTELLO', prossimamente: true },
-        { titolo: 'Cornici 10x15', tipo: 'CORNICE', prossimamente: true },
-        { titolo: 'Cornice 21x27', tipo: 'CORNICE', prossimamente: true }
+        { titolo: 'Semplice', tipo: 'CARTELLO', prossimamente: true }
       ]
     },
     {
       id: 'tickets-section', carosello: 'tickets-carousel', titolo: 'Cartellini', tipo: 'cartellini',
       schede: [
         { titolo: 'Cartellini', tipo: 'CARTELLINI', prossimamente: true },
-        { titolo: 'Cartellini LXRY', tipo: 'CARTELLINI', prossimamente: true },
-        { titolo: 'Prezzi Vetrina', tipo: 'CARTELLINI', prossimamente: true }
+        { titolo: 'Cartellini LXRY', tipo: 'CARTELLINI', prossimamente: true }
       ]
     },
     {

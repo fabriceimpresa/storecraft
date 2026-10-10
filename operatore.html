@@ -2,7 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-49"></script>
+  <script src="assets/js/negozi.js?v=20261010-50"></script>
+  <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Struttura negozi): Associa.scegliProgetto -->
+  <script src="assets/js/pacchetti-associa.js?v=20261010-50"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -344,6 +346,14 @@
   <script>
     // ----- Viste delle sezioni dentro la cornice -----
     // #struttura, #pacchetti, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    // Cartella del progetto collegata per scrivere (Gestione pacchetti): la sceglie questa pagina, come Prepara copia, e
+    // le sezioni nel riquadro la usano (window.parent.collegaProgetto); resta collegata finché la pagina è aperta
+    window.progettoCollegato = null;
+    window.collegaProgetto = async (passaggio = () => {}) => {
+      if (!window.progettoCollegato) window.progettoCollegato = await Associa.scegliProgetto(passaggio);
+      return window.progettoCollegato;
+    };
+
     const VISTE = { struttura: 'Struttura negozi', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');

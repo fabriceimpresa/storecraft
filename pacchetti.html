@@ -2,14 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-49"></script>
+  <script src="assets/js/negozi.js?v=20261010-50"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261010-49"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261010-50"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261010-49"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261010-49"></script>
+  <script src="assets/js/pacchetti.js?v=20261010-50"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261010-50"></script>
+  <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
+  <script src="assets/js/admin-negozio.js?v=20261010-50"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261010-50"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -31,10 +34,10 @@
     h1 { margin: 0; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
     h1::before { content: '> '; color: var(--oro); }
     p { margin: 0; }
-    /* totali del catalogo: piccola casella nera al centro, come la riga di stato di Struttura negozi */
-    .riga-stato { width: fit-content; margin: 0 auto; padding: 6px 12px; background: #0a0908; border: 1px solid var(--bordo);
+    /* totali del catalogo: piccola casella nera al centro, in fondo alla pagina, con il testo verde da terminale */
+    .riga-stato { width: fit-content; margin: 64px auto 0; padding: 6px 12px; background: #0a0908; border: 1px solid var(--bordo);
       border-radius: 4px; font: 400 11px/1.6 'JetBrains Mono', var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-    #stato { color: var(--oro-chiaro); }
+    #stato { color: #8fbf7a; }
 
     /* selettori TEMA e ASPETTO di un carosello (come in IMPOSTAZIONI della dashboard): cambiano tema e aspetto dei suoi widget */
     .stile { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px 12px; }
@@ -46,8 +49,27 @@
     .scelta-voci button[aria-pressed="true"] { background: var(--oro); color: #121110; }
     .scelta-voci button:focus-visible { outline: 1px solid var(--oro); outline-offset: 2px; }
 
+    /* Pulsantiera dei gruppi (CARTELLI, CARTELLINI, ETICHETTE DYMO), come la riga delle parti della Guida tecnica: una
+       linea sottile sotto e la linea oro sotto il gruppo aperto; al passaggio del mouse (e sul gruppo aperto) l'accenno
+       da terminale delle voci del menu della pagina operatore: > davanti e < dopo, oro chiaro e lettere più spaziate */
+    .pulsantiera { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 34px; margin: 0 0 8px; border-bottom: 1px solid var(--bordo); }
+    .gruppo-voce { display: flex; align-items: center; gap: 10px; margin-bottom: -1px; padding: 6px 0 12px; border: 0;
+      border-bottom: 2px solid transparent; background: none; color: #d9d3c7; font: 400 12.5px var(--mono); letter-spacing: .16em;
+      text-transform: uppercase; cursor: pointer; transition: color .2s ease, letter-spacing .3s ease, border-color .2s ease; }
+    .gruppo-voce::before, .gruppo-voce::after { color: var(--oro); letter-spacing: 0; opacity: 0; transition: opacity .2s ease; }
+    .gruppo-voce::before { content: '>'; }
+    .gruppo-voce::after { content: '<'; }
+    .gruppo-voce:hover, .gruppo-voce:focus-visible, .gruppo-voce[aria-selected="true"] { color: var(--oro-chiaro); letter-spacing: .19em; outline: none; }
+    .gruppo-voce:hover::before, .gruppo-voce:focus-visible::before, .gruppo-voce[aria-selected="true"]::before,
+    .gruppo-voce:hover::after, .gruppo-voce:focus-visible::after, .gruppo-voce[aria-selected="true"]::after { opacity: 1; }
+    .gruppo-voce[aria-selected="true"] { border-bottom-color: var(--oro); }
+    .gruppo[hidden] { display: none; }
+    @media (prefers-reduced-motion: reduce) { .gruppo-voce, .gruppo-voce::before, .gruppo-voce::after { transition: none; } }
+
     /* un pacchetto: il titolo con a destra i suoi selettori e subito sotto il carosello */
-    .pacchetto { margin-top: 34px; }
+    /* tra un carosello e l'altro 64 px; il primo a 50 px dalla pulsantiera */
+    .pacchetto { margin-top: 64px; }
+    .pacchetto:first-child { margin-top: 50px; }
     .testa-pacchetto { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; margin-bottom: 12px; }
     .nome-pacchetto { margin: 0; color: var(--oro-chiaro); font: 500 17px 'Cinzel', serif; letter-spacing: .14em; text-transform: uppercase; }
     /* la vetrina: riquadro con il fondo della dashboard; dentro la pagina della vetrina larga 1440 px, rimpicciolita
@@ -55,10 +77,37 @@
     .vetrina { position: relative; overflow: hidden; border: 1px solid var(--bordo); border-radius: 8px; }
     .vetrina iframe { display: block; border: 0; transform-origin: 0 0; }
 
+    /* Scheda del modulo (un clic su una scheda di un carosello): il widget da solo con i suoi selettori, il collegamento
+       alla pagina e i negozi, con la spunta su quelli che lo usano; cambiare una spunta scrive nella cartella collegata */
+    .scheda-modulo[hidden], .catalogo-vista[hidden] { display: none; }
+    .torna-catalogo { margin: 0 0 18px; padding: 0; border: 0; background: none; color: var(--tenue); font: 400 11.5px var(--mono);
+      letter-spacing: .08em; cursor: pointer; }
+    .torna-catalogo:hover, .torna-catalogo:focus-visible { color: var(--oro); outline: none; }
+    .apri-modulo { display: inline-block; margin-top: 12px; color: var(--oro); font-size: 11.5px; letter-spacing: .1em; text-decoration: none; }
+    .apri-modulo:hover { color: var(--oro-chiaro); }
+    .negozi { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--bordo); }
+    .negozi h4 { margin: 0 0 12px; color: var(--oro); font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
+    .negozi h4::before { content: '// '; }
+    .negozio { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--bordo); font-size: 12.5px; letter-spacing: .06em; }
+    .negozio input { width: 16px; height: 16px; margin: 0; accent-color: var(--oro); cursor: pointer; }
+    .negozio input:disabled { cursor: default; }
+    .negozio-nome { min-width: 160px; color: var(--testo); text-transform: uppercase; }
+    .negozio-nota { color: var(--tenue); font-size: 11px; }
+    .cartella { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; font-size: 12px; }
+    .cartella button { padding: 7px 14px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro);
+      font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+    .cartella button:hover:not(:disabled), .cartella button.collegata { background: var(--oro); color: #121110; }
+    .cartella button:disabled { opacity: .35; cursor: default; }
+    .esito { color: var(--tenue); }
+    .esito::before { content: '$ '; color: var(--oro); }
+    .esito.ok { color: #8fbf7a; }
+    .esito.err { color: #e07a5f; }
+
     /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
     html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
     html.incorporata .pagina { max-width: none; padding: 0; }
     html.incorporata .torna, html.incorporata header.testa { display: none; }
+    html.incorporata .pulsantiera { margin-top: 16px; }   /* un poco di respiro sotto il titolo della cornice */
 
     @media (max-width: 700px) {
       .pagina { padding: 14px 14px 40px; }
@@ -68,6 +117,8 @@
       .scelta-voci button { min-width: 0; }
       .stile { justify-content: flex-start; }
       .nome-pacchetto { font-size: 14px; }
+      .pulsantiera { gap: 4px 18px; }
+      .gruppo-voce { font-size: 11px; letter-spacing: .12em; }
     }
   </style>
 </head>
@@ -78,8 +129,16 @@
     <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
     <h1>Gestione pacchetti</h1>
   </header>
-  <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
-  <div id="catalogo"></div>
+  <div class="catalogo-vista" id="vista-catalogo">
+    <!-- pulsantiera: un gruppo di pacchetti alla volta -->
+    <nav class="pulsantiera" role="tablist" aria-label="Gruppi di pacchetti"></nav>
+    <div id="catalogo"></div>
+    <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
+  </div>
+  <section class="scheda-modulo" id="vista-modulo" hidden aria-label="Scheda del modulo">
+    <button class="torna-catalogo" type="button" id="torna-catalogo">← tutti i pacchetti</button>
+    <div id="modulo"></div>
+  </section>
 </div>
 
 <script>
@@ -93,8 +152,8 @@
   // largo) e si rimpicciolisce perché la sua zona centrale stia nel riquadro; sul telefono è larga quanto il riquadro
   function adatta(riquadro, cornice) {
     const documento = riquadro.contentDocument;
-    if (!documento?.body) return;
     const spazio = cornice.clientWidth;
+    if (!documento?.body || !spazio) return;   // nascosta (gruppo chiuso): si adatta quando si apre
     const scala = telefono.matches ? 1 : Math.min(1, spazio / LARGHEZZA_ZONA);
     riquadro.style.width = `${telefono.matches ? spazio : LARGHEZZA_DASHBOARD}px`;
     const altezza = documento.querySelector('main')?.offsetHeight || documento.documentElement.scrollHeight;
@@ -103,12 +162,12 @@
     cornice.style.height = `${Math.ceil(altezza * scala)}px`;
   }
 
-  function vetrina(pacchetto) {
+  function vetrina(pacchetto, indice = null) {
     const cornice = document.createElement('div');
     cornice.className = 'vetrina';
     const riquadro = document.createElement('iframe');
     riquadro.title = pacchetto.nome;
-    riquadro.src = `pacchetto-vetrina.html?pacchetto=${encodeURIComponent(pacchetto.id)}&tema=dark&aspetto=standard`;
+    riquadro.src = `pacchetto-vetrina.html?pacchetto=${encodeURIComponent(pacchetto.id)}&tema=dark&aspetto=standard${indice === null ? '' : `&modulo=${indice}`}`;
     riquadro.addEventListener('load', () => {
       const ricalcola = () => adatta(riquadro, cornice);
       const zona = riquadro.contentDocument.querySelector('main');
@@ -153,24 +212,227 @@
     return contenitore;
   }
 
+  // Gruppi della pulsantiera, nell'ordine: i cartelli (con le promozioni stagionali), i cartellini, le etichette DYMO,
+  // le utilità cassa;
+  // dentro un gruppo i pacchetti nell'ordine di assets/pacchetti/elenco.js. Si vede un gruppo alla volta
+  const GRUPPI = [
+    { nome: 'Cartelli', tipi: ['cartelli', 'promo'] },
+    { nome: 'Cartellini', tipi: ['cartellini'] },
+    { nome: 'Etichette DYMO', tipi: ['etichette'] },
+    { nome: 'Utilità Cassa', tipi: ['cassa'] }
+  ];
+
   function catalogo() {
     const contenitore = document.getElementById('catalogo');
     const pacchetti = Pacchetti.elenco.map(Pacchetti.pacchetto).filter(Boolean);
-    pacchetti.forEach(pacchetto => {
-      const blocco = document.createElement('section');
-      blocco.className = 'pacchetto';
-      const titolo = document.createElement('h2');
-      titolo.className = 'nome-pacchetto';
-      titolo.textContent = pacchetto.nome;
-      const { cornice, riquadro } = vetrina(pacchetto);
-      const testa = document.createElement('div');
-      testa.className = 'testa-pacchetto';
-      testa.append(titolo, selettori(pacchetto, riquadro));
-      blocco.append(testa, cornice);
-      contenitore.append(blocco);
+    const pulsantiera = document.querySelector('.pulsantiera');
+    const voci = [];
+    GRUPPI.forEach(({ nome, tipi }, indice) => {
+      const delGruppo = pacchetti.filter(pacchetto => tipi.includes(pacchetto.tipo));
+      if (!delGruppo.length) return;
+      const gruppo = document.createElement('section');
+      gruppo.className = 'gruppo';
+      gruppo.id = `gruppo-${indice}`;
+      gruppo.setAttribute('role', 'tabpanel');
+      gruppo.setAttribute('aria-label', nome);
+      delGruppo.forEach(pacchetto => gruppo.append(blocco(pacchetto)));
+      contenitore.append(gruppo);
+      const voce = document.createElement('button');
+      voce.type = 'button';
+      voce.className = 'gruppo-voce';
+      voce.textContent = nome;
+      voce.setAttribute('role', 'tab');
+      voce.setAttribute('aria-controls', gruppo.id);
+      voce.addEventListener('click', () => mostra(voce));
+      pulsantiera.append(voce);
+      voci.push({ voce, gruppo });
     });
+    // un gruppo alla volta: quello scelto si vede, gli altri si nascondono; le sue vetrine si riadattano alla larghezza
+    function mostra(scelta) {
+      voci.forEach(({ voce, gruppo }) => {
+        const aperto = voce === scelta;
+        voce.setAttribute('aria-selected', String(aperto));
+        voce.tabIndex = aperto ? 0 : -1;
+        gruppo.hidden = !aperto;
+      });
+      ricalcolaTutte();
+    }
+    // tastiera: frecce sinistra / destra (e Home / Fine) tra le voci della pulsantiera
+    pulsantiera.addEventListener('keydown', evento => {
+      const tasti = voci.map(({ voce }) => voce);
+      const ora = tasti.indexOf(document.activeElement);
+      const passi = { ArrowRight: 1, ArrowLeft: -1 };
+      let dove = null;
+      if (evento.key in passi) dove = (ora + passi[evento.key] + tasti.length) % tasti.length;
+      else if (evento.key === 'Home') dove = 0;
+      else if (evento.key === 'End') dove = tasti.length - 1;
+      if (dove === null || ora < 0) return;
+      evento.preventDefault();
+      tasti[dove].click();
+      tasti[dove].focus();
+    });
+    if (voci.length) mostra(voci[0].voce);
     const moduli = pacchetti.reduce((totale, pacchetto) => totale + pacchetto.moduli.length, 0);
     document.getElementById('stato').textContent = `${pacchetti.length} pacchetti · ${moduli} moduli`;
+  }
+
+  // Un pacchetto: il titolo breve con a destra i suoi selettori e sotto il carosello
+  function blocco(pacchetto) {
+    const sezione = document.createElement('section');
+    sezione.className = 'pacchetto';
+    const titolo = document.createElement('h3');
+    titolo.className = 'nome-pacchetto';
+    titolo.textContent = pacchetto.titolo || pacchetto.nome;
+    const { cornice, riquadro } = vetrina(pacchetto);
+    const testa = document.createElement('div');
+    testa.className = 'testa-pacchetto';
+    testa.append(titolo, selettori(pacchetto, riquadro));
+    sezione.append(testa, cornice);
+    return sezione;
+  }
+
+  // ----- Scheda del modulo -----
+  const ASSOCIABILI = ['cartelli', 'promo', 'cartellini'];
+  // collegare una cartella del computer: solo Chrome / Edge sul computer (File System Access API). Dentro la pagina
+  // operatore la cartella la chiede la pagina operatore (come Prepara copia) e resta collegata per tutte le sezioni
+  const operatore = window.parent !== window && typeof window.parent.collegaProgetto === 'function' ? window.parent : null;
+  const SCRIVIBILE = typeof (operatore || window).showDirectoryPicker === 'function';
+  const scegliProgetto = passaggio => (operatore ? operatore.collegaProgetto(passaggio) : AdminNegozio.scegliProgetto(passaggio));
+  let progetto = null;   // cartella del progetto collegata (per scrivere)
+  let vetrinaModulo = null;
+
+  const nodo = (tag, classe, testo) => {
+    const elemento = document.createElement(tag);
+    if (classe) elemento.className = classe;
+    if (testo !== undefined) elemento.textContent = testo;
+    return elemento;
+  };
+  // testo della dashboard di un negozio: dalla cartella collegata (dopo una modifica è già quello nuovo), o dal sito
+  async function testoDashboard(negozio) {
+    if (progetto) {
+      const file = await (await (await progetto.getDirectoryHandle('assets')).getDirectoryHandle('negozi')).getFileHandle(`${negozio}-dashboard.js`);
+      return (await file.getFile()).text();
+    }
+    const risposta = await fetch(`assets/negozi/${negozio}-dashboard.js`, { cache: 'no-store' });
+    return risposta.ok ? risposta.text() : '';
+  }
+
+  window.apriModulo = (id, indice) => {
+    document.getElementById('vista-catalogo').hidden = true;
+    document.getElementById('vista-modulo').hidden = false;
+    disegnaModulo(id, indice);
+    window.scrollTo(0, 0);
+  };
+  document.getElementById('torna-catalogo').addEventListener('click', () => {
+    document.getElementById('vista-modulo').hidden = true;
+    document.getElementById('vista-catalogo').hidden = false;
+    if (vetrinaModulo) vetrine.splice(vetrine.indexOf(vetrinaModulo), 1);
+    vetrinaModulo = null;
+    document.getElementById('modulo').replaceChildren();
+    ricalcolaTutte();
+  });
+
+  async function disegnaModulo(id, indice) {
+    if (!progetto && operatore?.progettoCollegato) progetto = operatore.progettoCollegato;   // già collegata prima
+    const pacchetto = Pacchetti.pacchetto(id);
+    const modulo = pacchetto.moduli[indice];
+    const contenitore = document.getElementById('modulo');
+    contenitore.replaceChildren();
+    // il widget da solo, con i suoi selettori di stile
+    const { cornice, riquadro } = vetrina(pacchetto, indice);
+    vetrinaModulo = vetrine.at(-1);
+    const titolo = nodo('h3', 'nome-pacchetto', modulo.titolo);
+    const testa = nodo('div', 'testa-pacchetto');
+    testa.append(titolo, selettori(pacchetto, riquadro));
+    contenitore.append(testa, cornice);
+    if (modulo.link && !modulo.prossimamente) {
+      const apri = nodo('a', 'apri-modulo', `apri il modulo ↗  ${pacchetto.cartella}/${modulo.link}`);
+      apri.href = `${pacchetto.cartella}/${modulo.link}`;
+      apri.target = '_blank';
+      apri.rel = 'noopener';
+      contenitore.append(apri);
+    }
+    // i negozi
+    const negozi = nodo('div', 'negozi');
+    negozi.append(nodo('h4', '', 'negozi'));
+    const elenco = nodo('div');
+    negozi.append(elenco);
+    const esito = nodo('span', 'esito', '');
+    const associabile = ASSOCIABILI.includes(pacchetto.tipo) && modulo.link && !modulo.prossimamente;
+    const pagina = Associa.pagina(modulo.link);
+    async function righe() {
+      elenco.replaceChildren();
+      for (const negozio of Negozi.installati) {
+        const testo = await testoDashboard(negozio);
+        const usato = associabile && Associa.usato(testo, negozio, pacchetto.cartella, pagina);
+        const riga = nodo('label', 'negozio');
+        const spunta = nodo('input');
+        spunta.type = 'checkbox';
+        spunta.checked = usato;
+        const partenza = negozio === pacchetto.negozio;
+        // il negozio del set di partenza non si toglie: il set legge le sue schede dalla dashboard di quel negozio
+        spunta.disabled = !associabile || partenza || !SCRIVIBILE;
+        const nota = !associabile ? 'non associabile da qui'
+          : partenza ? 'set di partenza: il modulo resta nella sua dashboard'
+          : usato ? (negozio === pacchetto.cartella ? 'nella dashboard' : 'clone nella cartella del negozio, nella dashboard: togliendo la spunta si cancella')
+          : (negozio === pacchetto.cartella ? '' : `spuntando: clone in ${negozio}/ e scheda nella dashboard`);
+        riga.append(spunta, nodo('span', 'negozio-nome', Negozi.scheda(negozio)?.nome || negozio), nodo('span', 'negozio-nota', nota));
+        spunta.addEventListener('change', () => cambia(negozio, spunta));
+        elenco.append(riga);
+      }
+    }
+    async function cambia(negozio, spunta) {
+      const voglio = spunta.checked;
+      spunta.checked = !voglio;   // finché non è scritto
+      // prima la cartella (Chrome apre la finestra solo subito dopo il clic), poi la conferma
+      try { if (!progetto) await collega(); } catch (errore) {
+        esito.textContent = errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`;
+        esito.className = errore.name === 'AbortError' ? 'esito' : 'esito err';
+        return;
+      }
+      // togliere un clone lo cancella: prima si chiede
+      if (!voglio && negozio !== pacchetto.cartella
+        && !window.confirm(`Togliere ${modulo.titolo} da ${Negozi.scheda(negozio)?.nome || negozio}?\n\nLa sua scheda esce dalla dashboard e il clone della pagina nella cartella ${negozio}/ viene cancellato, con le immagini copiate per lui.`)) return;
+      try {
+        if (!progetto) await collega();
+        const avviso = testo => { esito.textContent = testo; esito.className = 'esito'; };
+        const dati = { modulo, tipo: pacchetto.tipo, cartella: pacchetto.cartella, negozio, avviso };
+        if (voglio) await Associa.associa(progetto, dati);
+        else await Associa.togli(progetto, dati);
+        esito.textContent = `fatto: ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${Negozi.scheda(negozio)?.nome || negozio}. ricorda il commit per pubblicarlo`;
+        esito.className = 'esito ok';
+      } catch (errore) {
+        if (errore.name === 'AbortError') { esito.textContent = 'cartella non collegata: nessuna modifica'; esito.className = 'esito'; }
+        else { console.error(errore); esito.textContent = `errore (${errore.name}): ${errore.message}`; esito.className = 'esito err'; }
+      }
+      await righe();
+    }
+    // cartella del progetto
+    const cartella = nodo('div', 'cartella');
+    const pulsante = nodo('button', progetto ? 'collegata' : '', progetto ? '✓ cartella collegata' : 'collega la cartella del progetto');
+    pulsante.type = 'button';
+    async function collega() {
+      progetto = await scegliProgetto(passaggio => { esito.textContent = passaggio; esito.className = 'esito'; });
+      pulsante.textContent = '✓ cartella collegata';
+      pulsante.classList.add('collegata');
+      esito.textContent = `cartella del progetto collegata: ${progetto.name}`;
+      esito.className = 'esito ok';
+    }
+    pulsante.addEventListener('click', () => collega().then(righe).catch(errore => {
+      if (errore.name === 'AbortError') return;
+      console.error(errore);
+      esito.textContent = `errore (${errore.name}): ${errore.message}`; esito.className = 'esito err';
+    }));
+    if (!SCRIVIBILE) {
+      // questo browser (Safari, Firefox, telefono, anteprima di VS Code…) non può scrivere nelle cartelle del computer
+      pulsante.disabled = true;
+      esito.textContent = 'questo browser non può collegare la cartella del progetto: per cambiare le spunte apri questa pagina in chrome o edge sul computer';
+      esito.className = 'esito err';
+    } else if (!progetto) { esito.textContent = 'per cambiare le spunte collega la cartella del progetto'; }
+    cartella.append(pulsante, esito);
+    negozi.append(cartella);
+    contenitore.append(negozi);
+    await righe();
   }
 
   const ricalcolaTutte = () => vetrine.forEach(({ riquadro, cornice }) => adatta(riquadro, cornice));
