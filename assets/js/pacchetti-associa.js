@@ -156,9 +156,9 @@
       return `${prima}${a}/${resto}`;
     });
     nuovo = nuovo.replace(new RegExp(`data-negozio="${da}"`, 'g'), `data-negozio="${a}"`);
-    if (!nuovo.includes('name="storecraft-origine"')) {
-      nuovo = nuovo.replace(/(<meta charset="[^"]*">)/i, `$1\n  <meta name="storecraft-origine" content="${origine}">`);
-    }
+    // segno d'origine nuovo (una pagina che era già un clone o un modulo di moduli/ perde i suoi: origine e file copiati)
+    nuovo = nuovo.replace(/\n?\s*<meta name="storecraft-(origine|copiati)" content="[^"]*">/g, '')
+      .replace(/(<meta charset="[^"]*">)/i, `$1\n  <meta name="storecraft-origine" content="${origine}">`);
     return { html: nuovo, risorse };
   }
 
@@ -252,19 +252,26 @@
     delete scheda.cartella;   // cartella del modulo nelle gallerie: nella dashboard il collegamento è dalla cartella del negozio
     if (a !== da) {
       // la pagina nella cartella del negozio (nome libero), adattata a lui, con le risorse che le servono
-      const libero = await esiste(progetto, `${a}/${nome}`) ? nome.replace(/\.html$/, `-${da}.html`) : nome;
+      let libero = nome;
+      for (let n = 1; await esiste(progetto, `${a}/${libero}`); n++) libero = nome.replace(/\.html$/, n === 1 ? `-${da}.html` : `-${da}-${n}.html`);
       avviso(`copio ${da}/${nome} in ${a}/${libero}…`);
       const sorgente = await (await leggi(progetto, `${da}/${nome}`)).text();
-      const { html, risorse } = adattaPagina(sorgente, da, a, `${da}/${nome}`);
-      const copiati = await copiaRisorse(progetto, risorse, da, a);   // il clone li elenca, per poterli togliere con lui
-      const copia = async (tipo, file) => { if (await copiaRisorsa(progetto, tipo, da, a, file)) copiati.push(`${tipo}/${file}`); };
-      // la miniatura nelle anteprime del negozio
+      // il negozio delle risorse della pagina: il suo data-negozio (una pagina di moduli/ usa quelle del negozio di partenza)
+      const origineRisorse = (sorgente.match(/data-negozio="([\w-]+)"/) || [])[1] || da;
+      const { html, risorse } = adattaPagina(sorgente, origineRisorse, a, `${da}/${nome}`);
+      const copiati = origineRisorse === a ? [] : await copiaRisorse(progetto, risorse, origineRisorse, a);   // il clone li elenca
+      // la miniatura nelle anteprime del negozio (da quelle del negozio di partenza o da moduli/miniature/)
       scheda.miniature = await Promise.all((modulo.miniature || []).map(async miniatura => {
         const [file, query = ''] = miniatura.split('?');
-        const trovato = file.match(new RegExp(`^thumbnail/${da}/(.+)$`));
-        if (!trovato) return miniatura;
-        await copia('thumbnail', trovato[1]);
-        return `thumbnail/${a}/${trovato[1]}${query ? `?${query}` : ''}`;
+        const daNegozio = file.match(new RegExp(`^thumbnail/${origineRisorse}/(.+)$`));
+        const daModuli = file.match(/^\.\.\/moduli\/miniature\/(.+)$/);
+        const nomeMiniatura = (daNegozio || daModuli || [])[1];
+        if (!nomeMiniatura || (daNegozio && origineRisorse === a)) return miniatura;
+        if (!await esiste(progetto, `assets/thumbnail/${a}/${nomeMiniatura}`)) {
+          await scriviFile(progetto, `assets/thumbnail/${a}/${nomeMiniatura}`, await leggi(progetto, daModuli ? `moduli/miniature/${nomeMiniatura}` : `assets/thumbnail/${origineRisorse}/${nomeMiniatura}`));
+          copiati.push(`thumbnail/${nomeMiniatura}`);
+        }
+        return `thumbnail/${a}/${nomeMiniatura}${query ? `?${query}` : ''}`;
       }));
       // la pagina per ultima, con l'elenco dei file copiati per lei
       const elencoCopiati = `\n  <meta name="storecraft-copiati" content="${copiati.join(',')}">`;
@@ -326,20 +333,22 @@
     const { cartella: da, link } = sorgente;
     // strumento di cassa: niente pagina né miniatura, solo il modulo nel catalogo (lo strumento di partenza con il suo nome)
     if (sorgente.strumento) return scriviNellaGalleria(progetto, { modulo: { titolo: nome, strumento: sorgente.strumento }, tipo, galleria, pagina: null, avviso });
-    const a = da;
+    // la pagina nella cartella dei moduli in lavorazione (non in quella di un negozio: ci va solo associandolo)
+    const a = MODULI;
+    await preparaModuli(progetto);
     const origine = `${da}/${pagina(link)}`;
     let base = nomeFile(nome), libero = `${base}.html`;
     for (let n = 2; await esiste(progetto, `${a}/${libero}`); n++) libero = `${base}-${n}.html`;
     base = libero.replace(/\.html$/, '');
     avviso(`creo la pagina ${a}/${libero}…`);
-    const { html } = adattaPagina(await (await leggi(progetto, origine)).text(), da, a, origine);
-    avviso(`salvo la miniatura assets/thumbnail/${a}/${base}.jpg…`);
-    await scriviFile(progetto, `assets/thumbnail/${a}/${base}.jpg`, miniatura);
-    await scriviFile(progetto, `${a}/${libero}`, html
-      .replace(/<title>[^<]*<\/title>/i, `<title>${nome.replace(/[<&]/g, '')}</title>`)
-      .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1\n  <meta name="storecraft-copiati" content="thumbnail/${base}.jpg">`));
-    // la variante della pagina (etichette DYMO: ?label=…) resta quella del modulo di partenza
-    const modulo = { ...scheda, titolo: nome, link: libero + (link.includes('?') ? `?${link.split('?')[1]}` : ''), miniature: [`thumbnail/${a}/${base}.jpg`] };
+    // la pagina resta del negozio di partenza (colori, loghi, risorse) finché non la si associa a un negozio
+    const { html } = adattaPagina(await (await leggi(progetto, origine)).text(), da, da, origine);
+    avviso(`salvo la miniatura ${MODULI}/miniature/${base}.jpg…`);
+    await scriviFile(progetto, `${MODULI}/miniature/${base}.jpg`, miniatura);
+    await scriviFile(progetto, `${a}/${libero}`, html.replace(/<title>[^<]*<\/title>/i, `<title>${nome.replace(/[<&]/g, '')}</title>`));
+    // la variante della pagina (etichette DYMO: ?label=…) resta quella del modulo di partenza; la miniatura dalla cartella
+    // assets/ (come le altre): ../moduli/miniature/
+    const modulo = { ...scheda, titolo: nome, link: libero + (link.includes('?') ? `?${link.split('?')[1]}` : ''), miniature: [`../${MODULI}/miniature/${base}.jpg`] };
     modulo.cartella = a;
     return scriviNellaGalleria(progetto, { modulo, tipo, galleria, pagina: `${a}/${libero}`, avviso });
   }
@@ -386,6 +395,28 @@ Pacchetti.registra('${galleria}', {
     return { galleria, pagina: percorso };
   }
 
+  // Cartella dei moduli in lavorazione (Nuovo modulo): le loro pagine e, in miniature/, le miniature provvisorie. Le pagine
+  // usano le risorse del negozio di partenza (stessi percorsi ../assets/); nelle cartelle dei negozi vanno solo associandole.
+  // Non entra nelle copie per i clienti (si copiano solo le cartelle dei negozi).
+  const MODULI = 'moduli';
+  async function preparaModuli(progetto) {
+    if (await esiste(progetto, `${MODULI}/index.html`)) return;
+    // la ✕ delle pagine (index.html) da qui torna a Gestione pacchetti
+    await scriviFile(progetto, `${MODULI}/index.html`, `<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Moduli in lavorazione</title>
+  <!-- Cartella dei moduli creati in Gestione pacchetti, non ancora in un negozio: la ✕ delle loro pagine torna qui,
+       e da qui a Gestione pacchetti -->
+  <meta http-equiv="refresh" content="0; url=../operatore.html#pacchetti">
+</head>
+<body></body>
+</html>
+`);
+  }
+
   // Layout di una pagina di etichette: da ?label=… al layout (paramMap della pagina) e il layout di partenza (senza label)
   function layoutEtichette(html) {
     const mappa = {};
@@ -397,9 +428,10 @@ Pacchetti.registra('${galleria}', {
 
   async function clonaEtichette(progetto, { cartella: da, link, moduli, nome, avviso = () => {} }) {
     const origine = `${da}/${pagina(link)}`;
+    await preparaModuli(progetto);
     let base = nomeFile(nome), libero = `${base}.html`;
-    for (let n = 2; await esiste(progetto, `${da}/${libero}`); n++) libero = `${base}-${n}.html`;
-    avviso(`creo la pagina ${da}/${libero}…`);
+    for (let n = 2; await esiste(progetto, `${MODULI}/${libero}`); n++) libero = `${base}-${n}.html`;
+    avviso(`creo la pagina ${MODULI}/${libero}…`);
     const sorgente = await (await leggi(progetto, origine)).text();
     const { layout } = layoutEtichette(sorgente);
     const tenuti = [...new Set(moduli.map(modulo => layout(modulo.link)).filter(Boolean))];
@@ -415,19 +447,19 @@ Pacchetti.registra('${galleria}', {
   </script>`;
     const html = adattaPagina(sorgente, da, da, origine).html
       .replace(/<title>[^<]*<\/title>/i, `<title>${nome.replace(/[<&]/g, '')}</title>`)
-      .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1\n  <meta name="storecraft-copiati" content="">${filtro}`);
-    await scriviFile(progetto, `${da}/${libero}`, html);
+      .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1${filtro}`);
+    await scriviFile(progetto, `${MODULI}/${libero}`, html);
     // la galleria: i layout scelti, con le loro miniature, che aprono la nuova pagina
     const scelte = moduli.map(modulo => {
       const query = String(modulo.link).split('?')[1];
-      const scheda = { ...modulo, link: libero + (query ? `?${query}` : ''), cartella: da };
+      const scheda = { ...modulo, link: libero + (query ? `?${query}` : ''), cartella: MODULI };
       delete scheda.aggiunto;
       return scheda;
     });
     avviso('creo la galleria…');
     const { galleria } = await scriviNellaGalleria(progetto, { modulo: scelte[0], tipo: 'etichette', galleria: null, pagina: null, avviso, titolo: nome });
     for (const scheda of scelte.slice(1)) await scriviNellaGalleria(progetto, { modulo: scheda, tipo: 'etichette', galleria, pagina: null, avviso });
-    return { galleria, pagina: `${da}/${libero}` };
+    return { galleria, pagina: `${MODULI}/${libero}` };
   }
 
   async function togli(progetto, { modulo, cartella: da, negozio: a, avviso = () => {} }) {
