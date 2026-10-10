@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-51"></script>
+  <script src="assets/js/negozi.js?v=20261010-52"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261010-51"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261010-52"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261010-51"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261010-51"></script>
+  <script src="assets/js/pacchetti.js?v=20261010-52"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261010-52"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261010-51"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261010-51"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-52"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261010-52"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -117,10 +117,40 @@
     .campi input:not([type="checkbox"]), .campi select, .campi textarea { padding: 8px 10px; border: 1px solid var(--bordo); border-radius: 4px;
       background: #0a0908; color: var(--testo); font: 400 12.5px var(--mono); letter-spacing: .02em; text-transform: none; }
     .campi textarea { resize: vertical; }
+    /* menu a discesa in stile terminale (Chrome / Edge: appearance base-select; altrove il menu del sistema): elenco nero
+       con il bordo oro sottile, carattere mono piccolo, voce al passaggio su fondo scuro e oro chiaro, scelta in oro */
+    .campi select, .campi select::picker(select) { appearance: base-select; }
+    .campi select { display: flex; align-items: center; cursor: pointer; }
+    .campi select::picker-icon { color: var(--oro); font-size: 10px; transition: rotate .2s; }
+    .campi select:open::picker-icon { rotate: 180deg; }
+    .campi select::picker(select) { margin-top: 4px; padding: 4px 0; max-height: 280px; overflow-y: auto; border: 1px solid #8f6a1f;
+      border-radius: 4px; background: #0a0908; color: var(--testo); box-shadow: 0 6px 18px rgba(0, 0, 0, .55);
+      scrollbar-width: thin; scrollbar-color: var(--bordo) transparent; }
+    .campi select option { padding: 5px 12px; font: 400 12px var(--mono); letter-spacing: .04em; text-transform: none; color: var(--testo); }
+    .campi select option::checkmark { content: '>'; color: var(--oro); margin-right: 6px; }
+    .campi select option:hover, .campi select option:focus-visible { background: var(--pannello); color: var(--oro-chiaro); outline: none; }
+    .campi select option:checked { color: var(--oro); }
+    /* titoli dei gruppi (modulo di partenza: Outlet, Boutique…) piccoli e grigi; le voci hanno il loro carattere */
+    .campi select optgroup { padding: 8px 12px 2px; color: var(--tenue); font: 400 10px var(--mono); letter-spacing: .18em; text-transform: uppercase; }
+    .campi select optgroup option { margin-left: -12px; }
     .campi input:focus, .campi select:focus, .campi textarea:focus { outline: none; border-color: var(--oro); }
     .campi .spunta-riga { flex-direction: row; align-items: center; gap: 10px; }
     .campi .spunta-riga input { width: 16px; height: 16px; margin: 0; accent-color: var(--oro); }
     .campi .scelta-voci { align-self: flex-start; }
+    .campi[data-famiglia="cassa"] .solo-schede, .campi[data-famiglia="etichette"] .solo-schede,
+    .campi[data-famiglia="etichette"] .non-etichette, .campi:not([data-famiglia="etichette"]) .solo-etichette { display: none; }
+    /* la nota sotto l'anteprima secondo la famiglia (schede: cartelli e cartellini) */
+    .nota-nuovo[data-per]:not([data-per="schede"]) { display: none; }
+    #vista-nuovo[data-famiglia="etichette"] .nota-nuovo[data-per="schede"], #vista-nuovo[data-famiglia="cassa"] .nota-nuovo[data-per="schede"] { display: none; }
+    #vista-nuovo[data-famiglia="etichette"] .nota-nuovo[data-per="etichette"], #vista-nuovo[data-famiglia="cassa"] .nota-nuovo[data-per="cassa"] { display: block; }
+    .avviso-etichette, .nota-gruppo { margin: 0; color: var(--oro-chiaro); font-size: 11.5px; letter-spacing: .04em; }
+    .avviso-etichette::before, .nota-gruppo::before { content: '! '; color: var(--oro); }
+    .nota-gruppo { margin: -4px 0 10px; color: var(--tenue); }
+    .layout { display: flex; flex-direction: column; gap: 6px; text-transform: none; letter-spacing: .04em; }
+    .layout label { flex-direction: row; align-items: center; gap: 10px; color: var(--testo); font-size: 12px; text-transform: none; letter-spacing: .04em; }
+    .layout input { width: 15px; height: 15px; margin: 0; accent-color: var(--oro); }
+    .layout .tutti { color: var(--oro); }
+    .errore-nome { margin-top: -8px; color: #e07a5f; font-size: 11px; }
     .anteprima-nuovo { min-width: 0; }   /* la vetrina larga 1440 px non allarga la colonna (né la cornice) */
     /* passo 1: le gallerie, divise in cartelli e cartellini, come pulsanti; + Nuova Galleria in fondo a ogni gruppo */
     .passo-galleria[hidden], .nuovo-griglia[hidden], .cartella[hidden] { display: none; }
@@ -190,22 +220,27 @@
     </div>
     <div class="nuovo-griglia" id="nm-passo-modulo" hidden>
       <form class="campi" id="campi-nuovo" autocomplete="off">
-        <label>modulo di partenza<select id="nm-sorgente"></select></label>
-        <label>nome<input id="nm-nome" maxlength="40" value="Nuovo modulo"></label>
-        <div class="campo">stile della scheda
+        <p class="avviso-etichette solo-etichette">il nuovo modulo clona il set di etichette scelto: una nuova pagina con i soli layout che tieni</p>
+        <label class="non-etichette">modulo di partenza<select id="nm-sorgente"></select></label>
+        <label><span id="nm-nome-etichetta">nome</span><input id="nm-nome" maxlength="40" value="Nuovo modulo"></label>
+        <span class="errore-nome" id="nm-errore-nome" hidden></span>
+        <div class="campo solo-etichette">layout da tenere<div class="layout" id="nm-layout"></div></div>
+        <div class="campo solo-schede">stile della scheda
           <div class="scelta-voci" id="nm-stile">
             <button type="button" data-valore="normale" aria-pressed="true">Normale</button>
             <button type="button" data-valore="dorata" aria-pressed="false">Dorata</button>
           </div>
         </div>
-        <label class="spunta-riga"><input type="checkbox" id="nm-menu"> etichetta menu speciale</label>
-        <label>tipo in alto a destra<input id="nm-tipo" list="nm-tipi" maxlength="24"><datalist id="nm-tipi"></datalist></label>
-        <label>note del widget, una per riga<textarea id="nm-note" rows="4"></textarea></label>
+        <label class="spunta-riga solo-schede"><input type="checkbox" id="nm-menu"> etichetta menu speciale</label>
+        <label class="solo-schede">tipo in alto a destra<select id="nm-tipi"></select><input id="nm-tipo" maxlength="24" placeholder="scrivi il tipo" hidden></label>
+        <label class="solo-schede">note del widget, una per riga<textarea id="nm-note" rows="4"></textarea></label>
         <div class="campo">galleria<span class="galleria-scelta"><span id="nm-galleria-nome"></span><button type="button" id="nm-cambia">cambia</button></span></div>
       </form>
       <div class="anteprima-nuovo">
         <div class="vetrina" id="nm-vetrina" data-zona="640"><iframe title="Anteprima del nuovo modulo"></iframe></div>
-        <p class="nota-nuovo">la pagina del modulo si copia da quella di partenza, nella stessa cartella; la miniatura è provvisoria. dopo la creazione si associa ai negozi dalla sua scheda</p>
+        <p class="nota-nuovo" data-per="schede">la pagina del modulo si copia da quella di partenza, nella stessa cartella; la miniatura è provvisoria. dopo la creazione si associa ai negozi dalla sua scheda</p>
+        <p class="nota-nuovo" data-per="etichette">la pagina delle etichette del set si copia con i soli layout tenuti; ogni layout diventa un modulo della nuova galleria, con la sua miniatura</p>
+        <p class="nota-nuovo" data-per="cassa">lo strumento di partenza con il nuovo nome: una voce del catalogo, senza pagina né miniatura, da lavorare poi di codice per portarlo nella dashboard</p>
       </div>
     </div>
     <div class="cartella" id="nm-azioni" hidden><button type="button" id="nm-collega">collega la cartella del progetto</button><button type="button" class="crea" id="nm-crea">crea modulo</button><span class="esito" id="nm-esito"></span></div>
@@ -438,6 +473,23 @@
   // galleria scelta al passo 1: { id (null: nuova), famiglia ('cartelli': cartelli e promo, 'cartellini'), tipo, negozio
   // (set di partenza: la scheda va nella dashboard del negozio), nome }
   let galleriaScelta = null;
+  // famiglie di gallerie del nuovo modulo e tipi di pacchetto di ognuna (le etichette DYMO sono varianti di una pagina, gli
+  // strumenti di cassa widget di cassa.js: un nuovo modulo di cassa mostra lo strumento di partenza con il suo nome)
+  const FAMIGLIE = {
+    cartelli: { nome: 'Cartelli', tipi: ['cartelli', 'promo'] },
+    cartellini: { nome: 'Cartellini', tipi: ['cartellini'] },
+    etichette: { nome: 'Etichette DYMO', tipi: ['etichette'] },
+    cassa: { nome: 'Utilità Cassa', tipi: ['cassa'] }
+  };
+  const ALTRO_TIPO = '__altro';
+  // il tipo nel menu (se è tra quelli già usati) o in altro… con il campo da scrivere
+  function impostaTipo(tipo) {
+    const menu = document.getElementById('nm-tipi'), campo = document.getElementById('nm-tipo');
+    const noto = [...menu.options].some(opzione => opzione.value === tipo);
+    menu.value = noto ? tipo : ALTRO_TIPO;
+    campo.value = noto ? '' : tipo;
+    campo.hidden = noto;
+  }
 
   // il nuovo modulo come lo descrivono i campi (tipo della galleria, scheda, sorgente)
   function datiNuovo() {
@@ -446,20 +498,31 @@
     const sorgente = pacchetto.moduli[Number(indice)];
     const dorata = document.querySelector('#nm-stile [aria-pressed="true"]').dataset.valore === 'dorata';
     // tipo: quello della galleria esistente; per una nuova galleria di cartelli lo decide lo stile (dorata: promo)
-    const tipo = galleriaScelta.id ? galleriaScelta.tipo : galleriaScelta.famiglia === 'cartellini' ? 'cartellini' : dorata ? 'promo' : 'cartelli';
+    const tipo = galleriaScelta.id ? galleriaScelta.tipo : galleriaScelta.famiglia === 'cartelli' ? (dorata ? 'promo' : 'cartelli') : galleriaScelta.famiglia;
     const nome = document.getElementById('nm-nome').value.trim() || 'Nuovo modulo';
     const specifiche = document.getElementById('nm-note').value.split('\n').map(riga => riga.trim()).filter(Boolean);
-    const scheda = { titolo: nome, tipo: document.getElementById('nm-tipo').value.trim().toUpperCase() || sorgente.tipo,
+    // tipo: la voce del menu, o quello scritto con «altro…»
+    const sceltaTipo = document.getElementById('nm-tipi').value;
+    const tipoScritto = sceltaTipo === ALTRO_TIPO ? document.getElementById('nm-tipo').value.trim().toUpperCase() : sceltaTipo;
+    const scheda = sorgente.strumento ? { titolo: nome, strumento: sorgente.strumento } : { titolo: nome, tipo: tipoScritto || sorgente.tipo,
       alt: `Anteprima ${nome}`, ...(specifiche.length ? { specifiche } : {}), ...(document.getElementById('nm-menu').checked ? { badge: 'MENU SPECIALE' } : {}) };
-    return { pacchetto, sorgente: { cartella: sorgente.cartella || pacchetto.cartella, link: sorgente.link }, tipo, nome, scheda };
+    // stile diverso da quello della galleria (es. dorato in Outlet): il modulo porta il suo (scheda dorata o normale)
+    if (galleriaScelta.famiglia === 'cartelli' && dorata !== (tipo === 'promo')) scheda.stile = dorata ? 'dorata' : 'normale';
+    return { pacchetto, sorgente: { cartella: sorgente.cartella || pacchetto.cartella, link: sorgente.link, strumento: sorgente.strumento }, tipo, nome, scheda };
   }
 
   // anteprima dal vivo del widget
   async function aggiornaNuovo() {
     if (!galleriaScelta) return;
+    if (galleriaScelta.famiglia === 'etichette') {
+      const set = Pacchetti.pacchetto(galleriaScelta.id);
+      window.anteprimaNuovoModulo = { tipo: 'etichette', moduli: layoutScelti().map(m => ({ ...m, link: '', cartella: set.cartella })) };
+      document.querySelector('#nm-vetrina iframe').src = `pacchetto-vetrina.html?anteprima=1&tema=dark&aspetto=standard&v=${Date.now()}`;
+      return;
+    }
     const dati = datiNuovo();
     const { url } = await miniaturaNuovoModulo(dati.nome);
-    window.anteprimaNuovoModulo = { tipo: dati.tipo, modulo: { ...dati.scheda, link: '', miniature: [url] } };
+    window.anteprimaNuovoModulo = { tipo: dati.tipo, modulo: dati.scheda.strumento ? dati.scheda : { ...dati.scheda, link: '', miniature: [url] } };
     const riquadro = document.querySelector('#nm-vetrina iframe');
     riquadro.src = `pacchetto-vetrina.html?anteprima=1&tema=dark&aspetto=standard&v=${Date.now()}`;
   }
@@ -472,10 +535,11 @@
     document.getElementById('nm-azioni').hidden = true;
     const contenitore = document.getElementById('nm-gallerie');
     contenitore.replaceChildren();
-    const famiglie = [{ famiglia: 'cartelli', nome: 'Cartelli', tipi: ['cartelli', 'promo'] }, { famiglia: 'cartellini', nome: 'Cartellini', tipi: ['cartellini'] }];
+    const famiglie = Object.entries(FAMIGLIE).map(([famiglia, { nome, tipi }]) => ({ famiglia, nome, tipi }));
     famiglie.forEach(({ famiglia, nome, tipi }) => {
       const gruppo = nodo('div', 'gruppo-gallerie');
       gruppo.append(nodo('h4', '', nome));
+      if (famiglia === 'etichette') gruppo.append(nodo('p', 'nota-gruppo', 'il nuovo modulo clona un set di etichette: scegli quale, poi i layout da tenere'));
       const voci = nodo('div', 'voci-gallerie');
       const voce = (testo, nota, scelta, classe = '') => {
         const pulsante = nodo('button', classe, testo);
@@ -484,10 +548,10 @@
         pulsante.addEventListener('click', () => sceltaGalleria(scelta));
         voci.append(pulsante);
       };
-      Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo)).forEach(p => voce(p.titolo || p.nome,
-        `${p.moduli.length} moduli`,
-        { id: p.id, famiglia, tipo: p.tipo, negozio: p.origine?.negozio || null, nome: p.titolo || p.nome }));
-      voce('+ Nuova Galleria', null, { id: null, famiglia, tipo: famiglia, negozio: null, nome: 'Nuova Galleria' }, 'nuova');
+      Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo) && (famiglia !== 'etichette' || p.origine))
+        .forEach(p => voce(p.titolo || p.nome, famiglia === 'etichette' ? `clona il set · ${p.moduli.length} layout` : `${p.moduli.length} moduli`,
+          { id: p.id, famiglia, tipo: p.tipo, negozio: p.origine?.negozio || null, nome: p.titolo || p.nome }));
+      if (famiglia !== 'etichette') voce('+ Nuova Galleria', null, { id: null, famiglia, tipo: famiglia, negozio: null, nome: 'Nuova Galleria' }, 'nuova');
       gruppo.append(voci);
       contenitore.append(gruppo);
     });
@@ -500,28 +564,76 @@
     document.getElementById('nm-passo-modulo').hidden = false;
     document.getElementById('nm-azioni').hidden = false;
     document.getElementById('nm-galleria-nome').textContent = scelta.id ? scelta.nome : `Nuova Galleria (${scelta.famiglia})`;
-    const tipi = scelta.famiglia === 'cartellini' ? ['cartellini'] : ['cartelli', 'promo'];
+    const tipi = FAMIGLIE[scelta.famiglia].tipi;
+    // per la cassa non servono stile, etichetta, tipo e note (gli strumenti non sono schede)
+    document.getElementById('campi-nuovo').dataset.famiglia = scelta.famiglia;
+    document.getElementById('vista-nuovo').dataset.famiglia = scelta.famiglia;
     const sorgente = document.getElementById('nm-sorgente');
     sorgente.replaceChildren();
     Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo)).forEach(p => {
       const gruppo = document.createElement('optgroup');
       gruppo.label = p.titolo || p.nome;
-      p.moduli.forEach((m, i) => { if (m.link && !m.prossimamente) gruppo.append(new Option(m.titolo, `${p.id}:${i}`)); });
+      p.moduli.forEach((m, i) => { if ((m.link && !m.prossimamente) || m.strumento) gruppo.append(new Option(m.titolo, `${p.id}:${i}`)); });
       if (gruppo.children.length) sorgente.append(gruppo);
     });
+    // etichette: i layout del set, tutti spuntati; nome del set
+    const layout = document.getElementById('nm-layout');
+    layout.replaceChildren();
+    document.getElementById('nm-nome-etichetta').textContent = scelta.famiglia === 'etichette' ? 'nome del nuovo set' : scelta.famiglia === 'cassa' ? 'nome dello strumento (unico)' : 'nome';
+    document.getElementById('nm-nome').value = scelta.famiglia === 'etichette' ? `Etichette ${scelta.nome}` : 'Nuovo modulo';
+    if (scelta.famiglia === 'etichette') {
+      const tutti = nodo('label', 'tutti');
+      const spuntaTutti = nodo('input'); spuntaTutti.type = 'checkbox'; spuntaTutti.checked = true;
+      tutti.append(spuntaTutti, 'tutti i layout');
+      layout.append(tutti);
+      Pacchetti.pacchetto(scelta.id).moduli.forEach((m, i) => {
+        const voce = nodo('label');
+        const spunta = nodo('input'); spunta.type = 'checkbox'; spunta.checked = true; spunta.value = i; spunta.dataset.layout = '1';
+        voce.append(spunta, m.titolo);
+        layout.append(voce);
+      });
+      const spunte = () => [...layout.querySelectorAll('[data-layout]')];
+      spuntaTutti.addEventListener('change', () => { spunte().forEach(s => { s.checked = spuntaTutti.checked; }); aggiornaNuovo(); });
+      spunte().forEach(s => s.addEventListener('change', () => { spuntaTutti.checked = spunte().every(x => x.checked); aggiornaNuovo(); }));
+    }
     presetNuovo();
+    controllaNome();
     aggiornaNuovo();
   }
 
+  // Cassa: il nome dello strumento è unico (né quello di un altro strumento di cassa); etichette: almeno un layout
+  function controllaNome() {
+    const errore = document.getElementById('nm-errore-nome');
+    let testo = '';
+    if (galleriaScelta?.famiglia === 'cassa') {
+      const nome = document.getElementById('nm-nome').value.trim().toLowerCase();
+      const usati = Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && p.tipo === 'cassa').flatMap(p => p.moduli.map(m => m.titolo.toLowerCase()));
+      if (!nome) testo = 'scrivi il nome dello strumento';
+      else if (usati.includes(nome)) testo = 'nome già usato da un altro strumento di cassa: scegline un altro';
+    }
+    if (galleriaScelta?.famiglia === 'etichette' && !document.querySelector('#nm-layout [data-layout]:checked')) testo = 'tieni almeno un layout';
+    errore.textContent = testo;
+    errore.hidden = !testo;
+    document.getElementById('nm-crea').disabled = Boolean(testo) || !SCRIVIBILE;
+    return !testo;
+  }
+  document.getElementById('nm-nome').addEventListener('input', controllaNome);
+  document.getElementById('nm-layout').addEventListener('change', controllaNome);
+
+  // etichette: i layout spuntati del set scelto
+  const layoutScelti = () => [...document.querySelectorAll('#nm-layout [data-layout]:checked')].map(s => Pacchetti.pacchetto(galleriaScelta.id).moduli[Number(s.value)]);
+
   // dal modulo di partenza: tipo, note, MENU SPECIALE; lo stile lo decide la galleria (solo una nuova di cartelli lo lascia scegliere)
   function presetNuovo() {
+    if (galleriaScelta.famiglia === 'etichette') return;
     const [id, indice] = document.getElementById('nm-sorgente').value.split(':');
     const p = Pacchetti.pacchetto(id), m = p.moduli[Number(indice)];
-    document.getElementById('nm-tipo').value = m.tipo || '';
+    impostaTipo(m.tipo || '');
     document.getElementById('nm-note').value = (m.specifiche || []).join('\n');
     document.getElementById('nm-menu').checked = Boolean(m.badge);
-    const libero = !galleriaScelta.id && galleriaScelta.famiglia === 'cartelli';
-    const stile = galleriaScelta.id ? (galleriaScelta.tipo === 'promo' ? 'dorata' : 'normale') : (p.tipo === 'promo' && libero ? 'dorata' : 'normale');
+    // lo stile si sceglie per tutti i cartelli; parte da quello della galleria (o, per una nuova, del modulo di partenza)
+    const libero = galleriaScelta.famiglia === 'cartelli';
+    const stile = (galleriaScelta.id ? galleriaScelta.tipo : p.tipo) === 'promo' && libero ? 'dorata' : 'normale';
     document.querySelectorAll('#nm-stile button').forEach(b => {
       b.setAttribute('aria-pressed', String(b.dataset.valore === stile));
       b.disabled = !libero && b.dataset.valore !== stile;
@@ -532,8 +644,14 @@
     document.getElementById('vista-catalogo').hidden = true;
     document.getElementById('vista-nuovo').hidden = false;
     if (!document.getElementById('nm-tipi').options.length) {
+      // tipi già usati nei moduli (CARTELLO, PALETTO FERRO, CORNICE…) e altro… per scriverne uno nuovo
       const tipi = new Set(Pacchetti.elenco.map(Pacchetti.pacchetto).filter(Boolean).flatMap(p => p.moduli.map(m => m.tipo)).filter(Boolean));
-      document.getElementById('nm-tipi').replaceChildren(...[...tipi].map(t => new Option(t)));
+      document.getElementById('nm-tipi').replaceChildren(...[...tipi].sort().map(t => new Option(t)), new Option('altro…', ALTRO_TIPO));
+      document.getElementById('nm-tipi').addEventListener('change', () => {
+        const scrivi = document.getElementById('nm-tipi').value === ALTRO_TIPO;
+        document.getElementById('nm-tipo').hidden = !scrivi;
+        if (scrivi) document.getElementById('nm-tipo').focus();
+      });
       document.getElementById('nm-sorgente').addEventListener('change', () => { presetNuovo(); aggiornaNuovo(); });
       document.getElementById('nm-cambia').addEventListener('click', passoGalleria);
     }
@@ -584,9 +702,19 @@
     const esito = document.getElementById('nm-esito');
     const pulsante = document.getElementById('nm-crea');
     const avviso = (testo, classe = '') => { esito.textContent = testo; esito.className = `esito ${classe}`.trim(); };
+    if (!controllaNome()) return;
     if (!await collegaNuovo()) return;
     pulsante.disabled = true;
     try {
+      if (galleriaScelta.famiglia === 'etichette') {
+        const set = Pacchetti.pacchetto(galleriaScelta.id);
+        const scelti = layoutScelti();
+        const nome = document.getElementById('nm-nome').value.trim() || `Etichette ${galleriaScelta.nome}`;
+        const { galleria, pagina } = await Associa.clonaEtichette(progetto, { cartella: scelti[0].cartella || set.cartella, link: scelti[0].link, moduli: scelti, nome, avviso });
+        avviso(`creato il set ${nome}: ${pagina} con ${scelti.length} layout, galleria ${galleria}. si associa ai negozi dalla scheda di ogni layout. ricorda il commit. rileggo…`, 'ok');
+        setTimeout(() => location.reload(), 1500);
+        return;
+      }
       const dati = datiNuovo();
       const { blob } = await miniaturaNuovoModulo(dati.nome);
       const { galleria, pagina } = await Associa.creaModulo(progetto, { sorgente: dati.sorgente, nome: dati.nome, scheda: dati.scheda,

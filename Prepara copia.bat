@@ -7,7 +7,7 @@ goto :eof
 
 # Prepara una copia di STORE // CRAFT per un cliente, con i negozi scelti (uno, due o tutti).
 # Doppio clic su questo file: nella prima finestra si spuntano i negozi, nella seconda si sceglie la cartella di
-# destinazione. La copia contiene la splash page della radice, l'area operatore ridotta (Struttura negozi con
+# destinazione. La copia contiene la splash page della radice, l'area operatore ridotta (Gestione negozi con
 # il ghost delle pagine e i loghi ufficiali: operatore, schema-pagine, logoimport, logogestione), i file comuni (assets/css, js,
 # fonts), le cartelle dei negozi scelti con le loro risorse (assets/img/<negozio>/, logos, pdf, thumbnail, foto) e le
 # loro schede (assets/negozi/), con l'elenco assets/negozi/installati.js già scritto. Restano fuori la cronologia Git,

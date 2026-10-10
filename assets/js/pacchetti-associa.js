@@ -34,7 +34,12 @@
 
    Un nuovo modulo non è in nessuna dashboard: si associa ai negozi dalla sua scheda, come gli altri.
 
-   Ghost (Struttura negozi): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
+   Etichette DYMO: un nuovo modulo clona un set (la pagina delle etichette di un negozio) tenendo solo i layout scelti.
+     Associa.clonaEtichette(progetto, { cartella, link, moduli, nome })   pagina <cartella>/<nome>.html e galleria nuova
+                                         con i layout scelti (moduli: le schede del set da tenere); nella pagina gli altri
+                                         layout si nascondono e si apre su uno di quelli scelti
+
+   Ghost (Gestione negozi): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
    come widget né nel menu laterale; le sue schede hanno nascosta: true (dashboard.js le salta).
      Associa.fantasma(testoDashboard, pagina)               true se le schede che aprono la pagina sono in ghost
      Associa.impostaFantasma(testoDashboard, pagina, sì/no)  nuovo testo con tutte le schede della pagina in ghost o no */
@@ -238,6 +243,11 @@
     const nome = pagina(modulo.link);
     if (usato(testo, a, da, nome)) return;
     const scheda = { ...modulo };
+    // un modulo con il suo stile va nella sezione di quello stile: dorato nelle promo, normale nei cartelli
+    if (modulo.stile === 'dorata') tipo = 'promo';
+    else if (modulo.stile === 'normale' && tipo === 'promo') tipo = 'cartelli';
+    delete scheda.stile;
+    delete scheda.aggiunto;
     delete scheda.prossimamente;
     delete scheda.cartella;   // cartella del modulo nelle gallerie: nella dashboard il collegamento è dalla cartella del negozio
     if (a !== da) {
@@ -314,6 +324,8 @@
   // (galleria: null). Non entra in nessuna dashboard: si associa ai negozi dalla sua scheda.
   async function creaModulo(progetto, { sorgente, nome, scheda, tipo, galleria = null, miniatura, avviso = () => {} }) {
     const { cartella: da, link } = sorgente;
+    // strumento di cassa: niente pagina né miniatura, solo il modulo nel catalogo (lo strumento di partenza con il suo nome)
+    if (sorgente.strumento) return scriviNellaGalleria(progetto, { modulo: { titolo: nome, strumento: sorgente.strumento }, tipo, galleria, pagina: null, avviso });
     const a = da;
     const origine = `${da}/${pagina(link)}`;
     let base = nomeFile(nome), libero = `${base}.html`;
@@ -326,8 +338,14 @@
     await scriviFile(progetto, `${a}/${libero}`, html
       .replace(/<title>[^<]*<\/title>/i, `<title>${nome.replace(/[<&]/g, '')}</title>`)
       .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1\n  <meta name="storecraft-copiati" content="thumbnail/${base}.jpg">`));
-    const modulo = { ...scheda, titolo: nome, link: libero, miniature: [`thumbnail/${a}/${base}.jpg`] };
+    // la variante della pagina (etichette DYMO: ?label=…) resta quella del modulo di partenza
+    const modulo = { ...scheda, titolo: nome, link: libero + (link.includes('?') ? `?${link.split('?')[1]}` : ''), miniature: [`thumbnail/${a}/${base}.jpg`] };
     modulo.cartella = a;
+    return scriviNellaGalleria(progetto, { modulo, tipo, galleria, pagina: `${a}/${libero}`, avviso });
+  }
+
+  // il modulo nella galleria: una creata qui o un set di partenza (tra gli aggiunti), o una nuova galleria-<n>.js
+  async function scriviNellaGalleria(progetto, { modulo, tipo, galleria, pagina: percorso, avviso, titolo = 'Nuova Galleria' }) {
     if (galleria) {
       avviso(`aggiungo il modulo alla galleria ${galleria}…`);
       const file = `assets/pacchetti/${galleria}.js`;
@@ -351,8 +369,8 @@
       await scriviFile(progetto, `assets/pacchetti/${galleria}.js`, `/* Nuova Galleria (vedi assets/js/pacchetti.js): galleria creata in Gestione pacchetti, moduli di tipo ${tipo}. Ogni
    modulo ha la cartella delle sue pagine (cartella); si associa ai negozi dalla sua scheda. */
 Pacchetti.registra('${galleria}', {
-  nome: 'Nuova Galleria',
-  titolo: 'Nuova Galleria',   // titolo breve, sopra il carosello in Gestione pacchetti
+  nome: ${virgolette(titolo)},
+  titolo: ${virgolette(titolo)},   // titolo breve, sopra il carosello in Gestione pacchetti
   tipo: '${tipo}',
   moduli: [
     ${scrivi(modulo)}
@@ -365,7 +383,51 @@ Pacchetti.registra('${galleria}', {
       const fine = chiusura(testo, inizio);
       await scriviFile(progetto, elenco, `${testo.slice(0, fine)}, '${galleria}'${testo.slice(fine)}`);
     }
-    return { galleria, pagina: `${a}/${libero}` };
+    return { galleria, pagina: percorso };
+  }
+
+  // Layout di una pagina di etichette: da ?label=… al layout (paramMap della pagina) e il layout di partenza (senza label)
+  function layoutEtichette(html) {
+    const mappa = {};
+    const tabella = (html.match(/paramMap\s*=\s*\{([^}]*)\}/) || [])[1] || '';
+    for (const [, label, layout] of tabella.matchAll(/'([\w-]+)'\s*:\s*'([\w-]+)'/g)) mappa[label] = layout;
+    const iniziale = (html.match(/class="template-card active"[^>]*id="card-tpl-([\w-]+)"/) || html.match(/id="card-tpl-([\w-]+)"/) || [])[1];
+    return { layout: link => mappa[new URLSearchParams(String(link).split('?')[1] || '').get('label')] || iniziale };
+  }
+
+  async function clonaEtichette(progetto, { cartella: da, link, moduli, nome, avviso = () => {} }) {
+    const origine = `${da}/${pagina(link)}`;
+    let base = nomeFile(nome), libero = `${base}.html`;
+    for (let n = 2; await esiste(progetto, `${da}/${libero}`); n++) libero = `${base}-${n}.html`;
+    avviso(`creo la pagina ${da}/${libero}…`);
+    const sorgente = await (await leggi(progetto, origine)).text();
+    const { layout } = layoutEtichette(sorgente);
+    const tenuti = [...new Set(moduli.map(modulo => layout(modulo.link)).filter(Boolean))];
+    // solo i layout scelti: gli altri nascosti nella galleria della pagina; se si apre su un layout nascosto, il primo tenuto
+    const filtro = `\n  <meta name="storecraft-layout" content="${tenuti.join(',')}">
+  <style>.template-card:not(${tenuti.map(chiave => `#card-tpl-${chiave}`).join(', ')}) { display: none !important; }</style>
+  <script>
+    // dopo che la pagina ha scelto il suo layout (dall'indirizzo o quello di partenza)
+    addEventListener('load', () => setTimeout(() => {
+      const attivo = document.querySelector('.template-card.active');
+      if (attivo && getComputedStyle(attivo).display === 'none') document.getElementById('card-tpl-${tenuti[0]}')?.click();
+    }));
+  </script>`;
+    const html = adattaPagina(sorgente, da, da, origine).html
+      .replace(/<title>[^<]*<\/title>/i, `<title>${nome.replace(/[<&]/g, '')}</title>`)
+      .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1\n  <meta name="storecraft-copiati" content="">${filtro}`);
+    await scriviFile(progetto, `${da}/${libero}`, html);
+    // la galleria: i layout scelti, con le loro miniature, che aprono la nuova pagina
+    const scelte = moduli.map(modulo => {
+      const query = String(modulo.link).split('?')[1];
+      const scheda = { ...modulo, link: libero + (query ? `?${query}` : ''), cartella: da };
+      delete scheda.aggiunto;
+      return scheda;
+    });
+    avviso('creo la galleria…');
+    const { galleria } = await scriviNellaGalleria(progetto, { modulo: scelte[0], tipo: 'etichette', galleria: null, pagina: null, avviso, titolo: nome });
+    for (const scheda of scelte.slice(1)) await scriviNellaGalleria(progetto, { modulo: scheda, tipo: 'etichette', galleria, pagina: null, avviso });
+    return { galleria, pagina: `${da}/${libero}` };
   }
 
   async function togli(progetto, { modulo, cartella: da, negozio: a, avviso = () => {} }) {
@@ -405,7 +467,7 @@ Pacchetti.registra('${galleria}', {
     return testo;
   }
 
-  const Associa = Object.freeze({ fantasma, impostaFantasma, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
+  const Associa = Object.freeze({ fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();

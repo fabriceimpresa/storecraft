@@ -12,19 +12,19 @@
     radice.dataset.interfaceTheme = parametri.get('tema') === 'light' ? 'light' : 'dark';
     radice.dataset.interfaceLook = parametri.get('aspetto') === 'minimal' ? 'minimal' : 'standard';
   </script>
-  <script src="assets/js/negozi.js?v=20261010-51"></script>
+  <script src="assets/js/negozi.js?v=20261010-52"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Vetrina del pacchetto</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261010-51">
-  <script src="assets/js/caroselli.js?v=20261010-51"></script>
-  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261010-51">
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261010-51">
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261010-52">
+  <script src="assets/js/caroselli.js?v=20261010-52"></script>
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261010-52">
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261010-52">
   <!-- Utilità Cassa: gli strumenti veri della dashboard (cassa.js, con qrcode.js per il QR) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="assets/js/cassa.js?v=20261010-51"></script>
-  <script src="assets/js/pacchetti.js?v=20261010-51"></script>
+  <script src="assets/js/cassa.js?v=20261010-52"></script>
+  <script src="assets/js/pacchetti.js?v=20261010-52"></script>
   <script>
     // il file del pacchetto scelto, durante la lettura della pagina
     if (parametri.get('pacchetto')) Pacchetti.carica([parametri.get('pacchetto')]);
@@ -37,6 +37,9 @@
     body { display: block; overflow: visible; }
     main { width: min(100%, 1195px); overflow: visible; padding-top: 18px; padding-bottom: 18px; }
     main > * { margin-bottom: 0 !important; }
+    /* Utilità Cassa: le tre colonne della dashboard anche con pochi strumenti visibili (la griglia della dashboard, auto-fit,
+       allargherebbe uno strumento da solo a tutta la riga); sul telefono una colonna, come nella dashboard */
+    @media (min-width: 721px) { #tools { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; } }
   </style>
 </head>
 <body>
@@ -64,7 +67,7 @@
     // Gestione pacchetti; la miniatura può essere un'immagine generata, data:…)
     const anteprimaModulo = parametri.get('anteprima') === '1' ? (window.parent?.anteprimaNuovoModulo || null) : null;
     const pacchetto = anteprimaModulo
-      ? { id: 'anteprima', tipo: anteprimaModulo.tipo, moduli: [anteprimaModulo.modulo] }
+      ? { id: 'anteprima', tipo: anteprimaModulo.tipo, moduli: anteprimaModulo.moduli || [anteprimaModulo.modulo] }
       : Pacchetti.pacchetto(parametri.get('pacchetto'));
     // cartella delle pagine del modulo: la sua (gallerie con moduli di negozi diversi) o quella del pacchetto
     const cartellaDi = modulo => modulo.cartella || pacchetto.cartella;
@@ -78,7 +81,7 @@
         class: 'preview-image', src: src.startsWith('data:') ? src : `assets/${src}`, alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false
       }));
       return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}`,
-        style: pacchetto.tipo === 'promo' ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
+        style: (scheda.stile ? scheda.stile === 'dorata' : pacchetto.tipo === 'promo') ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
         immagini, scheda.badge ? el('span', { class: 'card-badge', text: scheda.badge }) : null);
     }
 
@@ -87,7 +90,9 @@
         el('span', { class: 'number', text: due(numero) }),
         s.tipo ? el('span', { class: 'card-type', text: s.tipo }) : null);
       const titolo = el('h3', { class: s.compatto ? 'compact-title' : false, text: s.titolo });
-      const classi = `carousel-card${pacchetto.tipo === 'promo' ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
+      // scheda dorata: quella delle promo, o di un modulo con stile: 'dorata' (Nuovo modulo); stile: 'normale' la toglie
+      const dorata = s.stile ? s.stile === 'dorata' : pacchetto.tipo === 'promo';
+      const classi = `carousel-card${dorata ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
       const specifiche = s.specifiche?.length
         ? el('div', { class: 'card-desc' }, el('div', {}, el('p', {}, el('span', { class: 'spec-list' },
             s.specifiche.flatMap((testo, i) => [i ? ' ' : null, el('span', { class: 'spec', text: testo })])))))
@@ -131,8 +136,26 @@
       const strumenti = el('div', { class: 'tools-grid', id: 'tools' });
       document.getElementById('main-content').append(strumenti);
       Cassa.crea(strumenti, { qr: 'https://fabriceimpresa.github.io/storecraft/' });
-      const scelti = pacchetto.moduli.map(modulo => modulo.strumento);
-      strumenti.querySelectorAll(':scope > .widget').forEach(widget => { if (!scelti.includes(widget.id)) widget.remove(); });
+      // gli strumenti fuori dal pacchetto si nascondono (non si tolgono: cassa.js li usa ancora, es. il cambio quando arrivano i tassi)
+      const originali = [...strumenti.querySelectorAll(':scope > .widget')];
+      originali.forEach(widget => { widget.style.display = 'none'; });
+      // ogni modulo con il suo nome, nell'ordine del pacchetto: il primo di uno strumento è lo strumento vero, un clone dello
+      // stesso strumento (Nuovo modulo) è una sua copia da vedere, senza id, da lavorare poi di codice
+      const usati = new Set();
+      pacchetto.moduli.forEach(modulo => {
+        const originale = originali.find(widget => widget.id === modulo.strumento);
+        if (!originale) return;
+        let widget = originale;
+        if (usati.has(modulo.strumento)) {
+          widget = originale.cloneNode(true);
+          widget.removeAttribute('id');
+          widget.querySelectorAll('[id]').forEach(elemento => elemento.removeAttribute('id'));
+        }
+        usati.add(modulo.strumento);
+        widget.style.display = '';
+        widget.querySelector('h3').textContent = modulo.titolo;
+        strumenti.append(widget);
+      });
     } else if (pacchetto) {
       // un modulo solo (scheda del modulo): una riga, senza lo spazio della seconda
       const classi = `carousel-container${pacchetto.tipo === 'cartelli' && soloModulo === null && !anteprimaModulo ? ' two-rows' : ''}${pacchetto.tipo === 'etichette' ? ' dymo' : ''}`;
