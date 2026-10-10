@@ -207,7 +207,17 @@
       padding: 14px 0;
       border-top: 1px solid #2a2723;
     }
-    .step:last-child { border-bottom: 1px solid #2a2723; }
+    /* niente linea sotto l'ultimo passo: sotto c'è il terminale della copia */
+    .terminale { margin-top: 18px; border: 1px solid #2a2723; border-radius: 6px; overflow: hidden; background: #000; box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+    .terminale-barra { display: flex; align-items: center; gap: 6px; padding: 7px 10px; border-bottom: 1px solid #1d1c1a; background: #0d0c0b; }
+    .terminale-barra span { width: 9px; height: 9px; border-radius: 50%; background: #3a3631; }
+    .terminale-barra b { margin-left: 8px; color: var(--text-muted); font: 400 10.5px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .08em; }
+    .terminale-testo { height: 260px; margin: 0; padding: 12px 14px; overflow-y: auto; color: #8c857b; font: 400 11.5px/1.6 'IBM Plex Mono', ui-monospace, monospace; white-space: pre-wrap; word-break: break-all; }
+    .terminale-testo .comando { color: var(--gold-light); }
+    .terminale-testo .sezione { color: #d9d3c7; }
+    .terminale-testo .salta { color: #5d5850; }
+    .terminale-testo .ok { color: #8fbf7a; }
+    .terminale-testo .err { color: #e07a5f; }
     .step-num { color: var(--gold-light); font-size: 12px; }
     .step-num::before { content: '['; color: var(--text-muted); }
     .step-num::after { content: ']'; color: var(--text-muted); }
@@ -283,6 +293,7 @@
       <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
         le schede dei negozi, con installati.js scritto per loro. Restano fuori gli strumenti di quest'area, il piano di
         lavoro, le pagine di prova _*, Git, la documentazione e i .bat. Il progetto non viene modificato.</p>
+      <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
       <div class="step">
         <span class="step-num">1</span>
@@ -308,6 +319,12 @@
           <button class="btn" type="button" id="pickTarget" disabled>scegli cartella e prepara</button>
           <p class="status" id="copyStatus" role="status" aria-live="polite"></p>
         </div>
+      </div>
+
+      <!-- terminale della copia: durante la preparazione ci scorrono tutte le operazioni -->
+      <div class="terminale" id="terminale" hidden>
+        <div class="terminale-barra" aria-hidden="true"><span></span><span></span><span></span><b>prepara-copia</b></div>
+        <pre class="terminale-testo" id="terminaleTesto" role="log" aria-label="Operazioni della copia"></pre>
       </div>
     </section>
   </main>
@@ -543,20 +560,34 @@
     // ----- Copia -----
     let copiati = 0;
 
-    async function copiaFile(voce, dir, nome) {
+    // Terminale della copia: una riga per operazione (tipo: comando, sezione, file, salta, ok, err), sempre in fondo;
+    // tiene le ultime 600 righe
+    const terminale = $('terminale');
+    const terminaleTesto = $('terminaleTesto');
+    function riga(testo, tipo = 'file') {
+      const linea = document.createElement('span');
+      linea.className = tipo;
+      linea.textContent = `${testo}\n`;
+      terminaleTesto.append(linea);
+      while (terminaleTesto.childElementCount > 600) terminaleTesto.firstElementChild.remove();
+      terminaleTesto.scrollTop = terminaleTesto.scrollHeight;
+    }
+
+    async function copiaFile(voce, dir, nome, percorso = nome) {
       const file = await voce.getFile();
       const scrittura = await (await dir.getFileHandle(nome, { create: true })).createWritable();
       await scrittura.write(file);
       await scrittura.close();
       copiati += 1;
+      riga(`  copio ${percorso}  (${Math.max(1, Math.round(file.size / 1024))} kB)`);
       if (copiati % 20 === 0) stato($('copyStatus'), `Copia in corso… ${copiati} file.`);
     }
 
     // Copia un file o una cartella; le cartelle si uniscono a quelle già presenti (come Esplora file)
-    async function copia(voce, dir, nome) {
-      if (voce.kind === 'file') return copiaFile(voce, dir, nome);
+    async function copia(voce, dir, nome, percorso = nome) {
+      if (voce.kind === 'file') return copiaFile(voce, dir, nome, percorso);
       const arrivo = await dir.getDirectoryHandle(nome, { create: true });
-      for await (const [figlio, sotto] of voce.entries()) await copia(sotto, arrivo, figlio);
+      for await (const [figlio, sotto] of voce.entries()) await copia(sotto, arrivo, figlio, `${percorso}/${figlio}`);
     }
 
     function testoInstallati(ids) {
@@ -572,12 +603,14 @@
       // Radice: la splash page; non gli strumenti dell'operatore, il piano di lavoro e le pagine di prova (_*)
       const esclusi = ['operatore.html', 'logoimport.html', 'logogestione.html', 'guida-componenti.html', 'guida-campione.html', 'schema-pagine.html',
         'Storecraft Aggiornamento.html'];
+      riga('// radice: splash page (non gli strumenti dell\'operatore, il piano e le pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
         await copiaFile(voce, destinazione, nome);
       }
       // Cartelle delle pagine dei negozi scelti
       for (const id of ids) {
+        riga(`// pagine del negozio: ${id}/`, 'sezione');
         const pagine = await cartella(sorgente, id);
         if (pagine) await copia(pagine, destinazione, id);
       }
@@ -585,26 +618,32 @@
       const assets = await cartella(sorgente, 'assets');
       const assetsArrivo = await destinazione.getDirectoryHandle('assets', { create: true });
       for await (const [nome, voce] of assets.entries()) {
-        if (voce.kind === 'file') { await copiaFile(voce, assetsArrivo, nome); continue; }
+        if (voce.kind === 'file') { await copiaFile(voce, assetsArrivo, nome, `assets/${nome}`); continue; }
         if (nome === 'negozi') {
+          riga('// schede dei negozi scelti: assets/negozi/', 'sezione');
           const arrivo = await assetsArrivo.getDirectoryHandle('negozi', { create: true });
           for await (const [file, scheda] of voce.entries()) {
             const base = file.replace(/\.[^.]+$/, '');
-            if (scheda.kind === 'file' && ids.some(id => base === id || base === `${id}-dashboard`)) await copiaFile(scheda, arrivo, file);
+            if (scheda.kind === 'file' && ids.some(id => base === id || base === `${id}-dashboard`)) await copiaFile(scheda, arrivo, file, `assets/negozi/${file}`);
           }
           const scrittura = await (await arrivo.getFileHandle('installati.js', { create: true })).createWritable();
           await scrittura.write(testoInstallati(ids));
           await scrittura.close();
+          riga(`  scrivo assets/negozi/installati.js  → Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}])`, 'ok');
           continue;
         }
+        riga(`// assets/${nome}/`, 'sezione');
         const figli = [];
         for await (const voceFiglia of voce.entries()) figli.push(voceFiglia);
         const divisa = figli.some(([figlio, sotto]) => sotto.kind === 'directory' && tutti.includes(figlio));
-        if (!divisa) { await copia(voce, assetsArrivo, nome); continue; }
+        if (!divisa) { await copia(voce, assetsArrivo, nome, `assets/${nome}`); continue; }
         const arrivo = await assetsArrivo.getDirectoryHandle(nome, { create: true });
         for (const [figlio, sotto] of figli) {
-          if (sotto.kind === 'directory' && tutti.includes(figlio) && !ids.includes(figlio)) continue;
-          await copia(sotto, arrivo, figlio);
+          if (sotto.kind === 'directory' && tutti.includes(figlio) && !ids.includes(figlio)) {
+            riga(`  salto assets/${nome}/${figlio}/  (negozio non scelto)`, 'salta');
+            continue;
+          }
+          await copia(sotto, arrivo, figlio, `assets/${nome}/${figlio}`);
         }
       }
     }
@@ -635,11 +674,18 @@
       copiati = 0;
       aggiornaPassi();
       stato($('copyStatus'), `Preparo la copia con: ${nomi}…`);
+      // terminale: si apre vuoto e mostra il comando di partenza
+      terminaleTesto.replaceChildren();
+      adatta(() => { terminale.hidden = false; }, 300);
+      riga(`$ prepara-copia --negozi ${ids.join(',')} --da "${sorgente.name}" --a "${destinazione.name}"`, 'comando');
+      const inizio = performance.now();
       try {
         await preparaCopia(destinazione, ids);
+        riga(`✓ copia pronta: ${copiati} file in ${((performance.now() - inizio) / 1000).toFixed(1)} s nella cartella "${destinazione.name}"`, 'ok');
         stato($('copyStatus'), `Copia pronta: ${nomi} (${copiati} file) nella cartella "${destinazione.name}". Per provarla o pubblicarla, la pagina d'ingresso è index.html.`, 'ok');
       } catch (errore) {
         console.error(errore);
+        riga(`✗ copia interrotta dopo ${copiati} file: ${errore.message}`, 'err');
         stato($('copyStatus'), `La copia non è riuscita (${copiati} file copiati): ${errore.message}`, 'err');
       } finally {
         inCorso = false;
