@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-50"></script>
+  <script src="assets/js/negozi.js?v=20261010-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261010-50"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261010-51"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261010-50"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261010-50"></script>
+  <script src="assets/js/pacchetti.js?v=20261010-51"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261010-51"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261010-50"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261010-50"></script>
+  <script src="assets/js/admin-negozio.js?v=20261010-51"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261010-51"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -100,8 +100,47 @@
     .cartella button:disabled { opacity: .35; cursor: default; }
     .esito { color: var(--tenue); }
     .esito::before { content: '$ '; color: var(--oro); }
+    .esito:empty::before { content: none; }
     .esito.ok { color: #8fbf7a; }
     .esito.err { color: #e07a5f; }
+
+    /* + nuovo modulo, sotto la pulsantiera a destra */
+    .azioni { display: flex; justify-content: flex-end; margin: 14px 0 -24px; }
+    .nuovo, .cartella .crea { padding: 7px 14px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro);
+      font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+    .nuovo:hover, .nuovo:focus-visible, .cartella .crea:hover:not(:disabled) { background: var(--oro); color: #121110; outline: none; }
+    .cartella .crea:disabled { opacity: .35; cursor: default; }
+    /* Nuovo modulo: campi a sinistra, anteprima dal vivo a destra (una sotto l'altra sul telefono) */
+    .nuovo-griglia { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 28px; margin-top: 18px; align-items: start; }
+    .campi { display: flex; flex-direction: column; gap: 14px; }
+    .campi label, .campi .campo { display: flex; flex-direction: column; gap: 6px; color: var(--tenue); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+    .campi input:not([type="checkbox"]), .campi select, .campi textarea { padding: 8px 10px; border: 1px solid var(--bordo); border-radius: 4px;
+      background: #0a0908; color: var(--testo); font: 400 12.5px var(--mono); letter-spacing: .02em; text-transform: none; }
+    .campi textarea { resize: vertical; }
+    .campi input:focus, .campi select:focus, .campi textarea:focus { outline: none; border-color: var(--oro); }
+    .campi .spunta-riga { flex-direction: row; align-items: center; gap: 10px; }
+    .campi .spunta-riga input { width: 16px; height: 16px; margin: 0; accent-color: var(--oro); }
+    .campi .scelta-voci { align-self: flex-start; }
+    .anteprima-nuovo { min-width: 0; }   /* la vetrina larga 1440 px non allarga la colonna (né la cornice) */
+    /* passo 1: le gallerie, divise in cartelli e cartellini, come pulsanti; + Nuova Galleria in fondo a ogni gruppo */
+    .passo-galleria[hidden], .nuovo-griglia[hidden], .cartella[hidden] { display: none; }
+    .domanda { margin: 18px 0 6px; color: var(--testo); font-size: 12.5px; letter-spacing: .06em; }
+    .domanda::before { content: '> '; color: var(--oro); }
+    .gruppo-gallerie { margin-top: 18px; }
+    .gruppo-gallerie h4 { margin: 0 0 10px; color: var(--oro); font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
+    .gruppo-gallerie h4::before { content: '// '; }
+    .voci-gallerie { display: flex; flex-wrap: wrap; gap: 10px; }
+    .voci-gallerie button { padding: 10px 16px; border: 1px solid var(--bordo); border-radius: 4px; background: #0a0908; color: var(--testo);
+      font: 400 12px var(--mono); letter-spacing: .08em; cursor: pointer; transition: border-color .2s, color .2s; }
+    .voci-gallerie button small { display: block; margin-top: 3px; color: var(--tenue); font-size: 10px; letter-spacing: .06em; }
+    .voci-gallerie button:hover, .voci-gallerie button:focus-visible { border-color: var(--oro); color: var(--oro-chiaro); outline: none; }
+    .voci-gallerie button.nuova { border-style: dashed; color: var(--oro); }
+    .galleria-scelta { display: flex; align-items: center; gap: 12px; color: var(--oro-chiaro); font-size: 12.5px; letter-spacing: .04em; text-transform: none; }
+    .galleria-scelta button { padding: 0; border: 0; background: none; color: var(--tenue); font: 400 11px var(--mono); text-decoration: underline; cursor: pointer; }
+    .galleria-scelta button:hover { color: var(--oro); }
+    .nota-nuovo { margin-top: 10px; color: var(--tenue); font-size: 11px; }
+    .nota-nuovo::before { content: '// '; color: var(--oro); }
+    @media (max-width: 700px) { .nuovo-griglia { grid-template-columns: 1fr; } .azioni { margin-bottom: 0; } }
 
     /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
     html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
@@ -132,12 +171,44 @@
   <div class="catalogo-vista" id="vista-catalogo">
     <!-- pulsantiera: un gruppo di pacchetti alla volta -->
     <nav class="pulsantiera" role="tablist" aria-label="Gruppi di pacchetti"></nav>
+    <div class="azioni"><button class="nuovo" type="button" id="apri-nuovo">+ nuovo modulo</button></div>
     <div id="catalogo"></div>
     <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
   </div>
   <section class="scheda-modulo" id="vista-modulo" hidden aria-label="Scheda del modulo">
     <button class="torna-catalogo" type="button" id="torna-catalogo">← tutti i pacchetti</button>
     <div id="modulo"></div>
+  </section>
+  <!-- Nuovo modulo: da un modulo esistente, con nome, aspetto, note e galleria; anteprima dal vivo del widget -->
+  <section class="scheda-modulo" id="vista-nuovo" hidden aria-label="Nuovo modulo">
+    <button class="torna-catalogo" type="button" data-torna>← tutti i pacchetti</button>
+    <h3 class="nome-pacchetto">Nuovo modulo</h3>
+    <!-- passo 1: la galleria in cui va il modulo (una esistente o una nuova) -->
+    <div class="passo-galleria" id="nm-passo-galleria">
+      <p class="domanda">in quale galleria va il nuovo modulo?</p>
+      <div id="nm-gallerie"></div>
+    </div>
+    <div class="nuovo-griglia" id="nm-passo-modulo" hidden>
+      <form class="campi" id="campi-nuovo" autocomplete="off">
+        <label>modulo di partenza<select id="nm-sorgente"></select></label>
+        <label>nome<input id="nm-nome" maxlength="40" value="Nuovo modulo"></label>
+        <div class="campo">stile della scheda
+          <div class="scelta-voci" id="nm-stile">
+            <button type="button" data-valore="normale" aria-pressed="true">Normale</button>
+            <button type="button" data-valore="dorata" aria-pressed="false">Dorata</button>
+          </div>
+        </div>
+        <label class="spunta-riga"><input type="checkbox" id="nm-menu"> etichetta menu speciale</label>
+        <label>tipo in alto a destra<input id="nm-tipo" list="nm-tipi" maxlength="24"><datalist id="nm-tipi"></datalist></label>
+        <label>note del widget, una per riga<textarea id="nm-note" rows="4"></textarea></label>
+        <div class="campo">galleria<span class="galleria-scelta"><span id="nm-galleria-nome"></span><button type="button" id="nm-cambia">cambia</button></span></div>
+      </form>
+      <div class="anteprima-nuovo">
+        <div class="vetrina" id="nm-vetrina" data-zona="640"><iframe title="Anteprima del nuovo modulo"></iframe></div>
+        <p class="nota-nuovo">la pagina del modulo si copia da quella di partenza, nella stessa cartella; la miniatura è provvisoria. dopo la creazione si associa ai negozi dalla sua scheda</p>
+      </div>
+    </div>
+    <div class="cartella" id="nm-azioni" hidden><button type="button" id="nm-collega">collega la cartella del progetto</button><button type="button" class="crea" id="nm-crea">crea modulo</button><span class="esito" id="nm-esito"></span></div>
   </section>
 </div>
 
@@ -154,7 +225,8 @@
     const documento = riquadro.contentDocument;
     const spazio = cornice.clientWidth;
     if (!documento?.body || !spazio) return;   // nascosta (gruppo chiuso): si adatta quando si apre
-    const scala = telefono.matches ? 1 : Math.min(1, spazio / LARGHEZZA_ZONA);
+    // un widget da solo (scheda del modulo, nuovo modulo: data-zona più stretta) si vede alla sua grandezza vera
+    const scala = telefono.matches ? 1 : Math.min(1, spazio / (Number(cornice.dataset.zona) || LARGHEZZA_ZONA));
     riquadro.style.width = `${telefono.matches ? spazio : LARGHEZZA_DASHBOARD}px`;
     const altezza = documento.querySelector('main')?.offsetHeight || documento.documentElement.scrollHeight;
     riquadro.style.height = `${altezza}px`;
@@ -323,31 +395,236 @@
     disegnaModulo(id, indice);
     window.scrollTo(0, 0);
   };
-  document.getElementById('torna-catalogo').addEventListener('click', () => {
+  document.querySelectorAll('#torna-catalogo, [data-torna]').forEach(pulsante => pulsante.addEventListener('click', () => {
     document.getElementById('vista-modulo').hidden = true;
+    document.getElementById('vista-nuovo').hidden = true;
     document.getElementById('vista-catalogo').hidden = false;
     if (vetrinaModulo) vetrine.splice(vetrine.indexOf(vetrinaModulo), 1);
     vetrinaModulo = null;
     document.getElementById('modulo').replaceChildren();
     ricalcolaTutte();
+  }));
+
+  // ----- Nuovo modulo -----
+  // Miniatura provvisoria: fondo scuro, cornice oro doppia come la splash page, NUOVO MODULO in Cinzel e il nome del modulo
+  async function miniaturaNuovoModulo(nome) {
+    await Promise.all(['600 64px Cinzel', '500 30px Cinzel', '400 26px "IBM Plex Mono"'].map(font => document.fonts.load(font).catch(() => {})));
+    const tela = document.createElement('canvas');
+    tela.width = 1280; tela.height = 720;
+    const c = tela.getContext('2d');
+    const sfondo = c.createRadialGradient(640, 300, 40, 640, 360, 760);
+    sfondo.addColorStop(0, '#2a2218'); sfondo.addColorStop(1, '#0a0908');
+    c.fillStyle = sfondo; c.fillRect(0, 0, 1280, 720);
+    c.strokeStyle = '#8f6a1f'; c.lineWidth = 3; c.strokeRect(60, 60, 1160, 600);
+    c.strokeStyle = 'rgba(143, 106, 31, .45)'; c.lineWidth = 1.5; c.strokeRect(76, 76, 1128, 568);
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillStyle = '#e5ba73'; c.font = '600 64px Cinzel';
+    c.letterSpacing = '14px';
+    c.fillText('NUOVO MODULO', 640 + 7, 320);
+    c.strokeStyle = 'rgba(212, 163, 115, .5)'; c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(440, 380); c.lineTo(840, 380); c.stroke();
+    c.letterSpacing = '4px';
+    c.fillStyle = '#d9d3c7'; c.font = '400 26px "IBM Plex Mono"';
+    c.fillText(String(nome).toUpperCase().slice(0, 40), 640 + 2, 430);
+    c.fillStyle = '#8f6a1f'; c.font = '500 22px Cinzel'; c.letterSpacing = '6px';
+    c.fillText('STORE // CRAFT', 640 + 3, 590);
+    // JPG: dieci volte più leggero del PNG con la sfumatura dello sfondo
+    return { url: tela.toDataURL('image/jpeg', .9), blob: await new Promise(fatto => tela.toBlob(fatto, 'image/jpeg', .9)) };
+  }
+
+  let anteprimaPronta = null;
+  window.anteprimaNuovoModulo = null;
+
+  // galleria scelta al passo 1: { id (null: nuova), famiglia ('cartelli': cartelli e promo, 'cartellini'), tipo, negozio
+  // (set di partenza: la scheda va nella dashboard del negozio), nome }
+  let galleriaScelta = null;
+
+  // il nuovo modulo come lo descrivono i campi (tipo della galleria, scheda, sorgente)
+  function datiNuovo() {
+    const [id, indice] = document.getElementById('nm-sorgente').value.split(':');
+    const pacchetto = Pacchetti.pacchetto(id);
+    const sorgente = pacchetto.moduli[Number(indice)];
+    const dorata = document.querySelector('#nm-stile [aria-pressed="true"]').dataset.valore === 'dorata';
+    // tipo: quello della galleria esistente; per una nuova galleria di cartelli lo decide lo stile (dorata: promo)
+    const tipo = galleriaScelta.id ? galleriaScelta.tipo : galleriaScelta.famiglia === 'cartellini' ? 'cartellini' : dorata ? 'promo' : 'cartelli';
+    const nome = document.getElementById('nm-nome').value.trim() || 'Nuovo modulo';
+    const specifiche = document.getElementById('nm-note').value.split('\n').map(riga => riga.trim()).filter(Boolean);
+    const scheda = { titolo: nome, tipo: document.getElementById('nm-tipo').value.trim().toUpperCase() || sorgente.tipo,
+      alt: `Anteprima ${nome}`, ...(specifiche.length ? { specifiche } : {}), ...(document.getElementById('nm-menu').checked ? { badge: 'MENU SPECIALE' } : {}) };
+    return { pacchetto, sorgente: { cartella: sorgente.cartella || pacchetto.cartella, link: sorgente.link }, tipo, nome, scheda };
+  }
+
+  // anteprima dal vivo del widget
+  async function aggiornaNuovo() {
+    if (!galleriaScelta) return;
+    const dati = datiNuovo();
+    const { url } = await miniaturaNuovoModulo(dati.nome);
+    window.anteprimaNuovoModulo = { tipo: dati.tipo, modulo: { ...dati.scheda, link: '', miniature: [url] } };
+    const riquadro = document.querySelector('#nm-vetrina iframe');
+    riquadro.src = `pacchetto-vetrina.html?anteprima=1&tema=dark&aspetto=standard&v=${Date.now()}`;
+  }
+
+  // passo 1: le gallerie di cartelli (con le promozioni) e di cartellini, più + Nuova Galleria per ognuno
+  function passoGalleria() {
+    galleriaScelta = null;
+    document.getElementById('nm-passo-galleria').hidden = false;
+    document.getElementById('nm-passo-modulo').hidden = true;
+    document.getElementById('nm-azioni').hidden = true;
+    const contenitore = document.getElementById('nm-gallerie');
+    contenitore.replaceChildren();
+    const famiglie = [{ famiglia: 'cartelli', nome: 'Cartelli', tipi: ['cartelli', 'promo'] }, { famiglia: 'cartellini', nome: 'Cartellini', tipi: ['cartellini'] }];
+    famiglie.forEach(({ famiglia, nome, tipi }) => {
+      const gruppo = nodo('div', 'gruppo-gallerie');
+      gruppo.append(nodo('h4', '', nome));
+      const voci = nodo('div', 'voci-gallerie');
+      const voce = (testo, nota, scelta, classe = '') => {
+        const pulsante = nodo('button', classe, testo);
+        pulsante.type = 'button';
+        if (nota) pulsante.append(nodo('small', '', nota));
+        pulsante.addEventListener('click', () => sceltaGalleria(scelta));
+        voci.append(pulsante);
+      };
+      Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo)).forEach(p => voce(p.titolo || p.nome,
+        `${p.moduli.length} moduli`,
+        { id: p.id, famiglia, tipo: p.tipo, negozio: p.origine?.negozio || null, nome: p.titolo || p.nome }));
+      voce('+ Nuova Galleria', null, { id: null, famiglia, tipo: famiglia, negozio: null, nome: 'Nuova Galleria' }, 'nuova');
+      gruppo.append(voci);
+      contenitore.append(gruppo);
+    });
+  }
+
+  // passo 2: i campi, con i moduli di partenza compatibili con la galleria e lo stile che la galleria permette
+  function sceltaGalleria(scelta) {
+    galleriaScelta = scelta;
+    document.getElementById('nm-passo-galleria').hidden = true;
+    document.getElementById('nm-passo-modulo').hidden = false;
+    document.getElementById('nm-azioni').hidden = false;
+    document.getElementById('nm-galleria-nome').textContent = scelta.id ? scelta.nome : `Nuova Galleria (${scelta.famiglia})`;
+    const tipi = scelta.famiglia === 'cartellini' ? ['cartellini'] : ['cartelli', 'promo'];
+    const sorgente = document.getElementById('nm-sorgente');
+    sorgente.replaceChildren();
+    Pacchetti.elenco.map(Pacchetti.pacchetto).filter(p => p && tipi.includes(p.tipo)).forEach(p => {
+      const gruppo = document.createElement('optgroup');
+      gruppo.label = p.titolo || p.nome;
+      p.moduli.forEach((m, i) => { if (m.link && !m.prossimamente) gruppo.append(new Option(m.titolo, `${p.id}:${i}`)); });
+      if (gruppo.children.length) sorgente.append(gruppo);
+    });
+    presetNuovo();
+    aggiornaNuovo();
+  }
+
+  // dal modulo di partenza: tipo, note, MENU SPECIALE; lo stile lo decide la galleria (solo una nuova di cartelli lo lascia scegliere)
+  function presetNuovo() {
+    const [id, indice] = document.getElementById('nm-sorgente').value.split(':');
+    const p = Pacchetti.pacchetto(id), m = p.moduli[Number(indice)];
+    document.getElementById('nm-tipo').value = m.tipo || '';
+    document.getElementById('nm-note').value = (m.specifiche || []).join('\n');
+    document.getElementById('nm-menu').checked = Boolean(m.badge);
+    const libero = !galleriaScelta.id && galleriaScelta.famiglia === 'cartelli';
+    const stile = galleriaScelta.id ? (galleriaScelta.tipo === 'promo' ? 'dorata' : 'normale') : (p.tipo === 'promo' && libero ? 'dorata' : 'normale');
+    document.querySelectorAll('#nm-stile button').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.valore === stile));
+      b.disabled = !libero && b.dataset.valore !== stile;
+    });
+  }
+
+  function apriNuovo() {
+    document.getElementById('vista-catalogo').hidden = true;
+    document.getElementById('vista-nuovo').hidden = false;
+    if (!document.getElementById('nm-tipi').options.length) {
+      const tipi = new Set(Pacchetti.elenco.map(Pacchetti.pacchetto).filter(Boolean).flatMap(p => p.moduli.map(m => m.tipo)).filter(Boolean));
+      document.getElementById('nm-tipi').replaceChildren(...[...tipi].map(t => new Option(t)));
+      document.getElementById('nm-sorgente').addEventListener('change', () => { presetNuovo(); aggiornaNuovo(); });
+      document.getElementById('nm-cambia').addEventListener('click', passoGalleria);
+    }
+    const vetrinaNuovo = { riquadro: document.querySelector('#nm-vetrina iframe'), cornice: document.getElementById('nm-vetrina') };
+    if (!vetrine.includes(anteprimaPronta)) {
+      anteprimaPronta = vetrinaNuovo;
+      vetrine.push(vetrinaNuovo);
+      vetrinaNuovo.riquadro.addEventListener('load', () => {
+        const zona = vetrinaNuovo.riquadro.contentDocument.querySelector('main');
+        if (zona) new ResizeObserver(() => adatta(vetrinaNuovo.riquadro, vetrinaNuovo.cornice)).observe(zona);
+        adatta(vetrinaNuovo.riquadro, vetrinaNuovo.cornice);
+      });
+    }
+    passoGalleria();
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('apri-nuovo').addEventListener('click', apriNuovo);
+  let attesa = 0;
+  document.getElementById('campi-nuovo').addEventListener('input', () => { clearTimeout(attesa); attesa = setTimeout(aggiornaNuovo, 350); });
+  document.querySelectorAll('#nm-stile button').forEach(pulsante => pulsante.addEventListener('click', () => {
+    document.querySelectorAll('#nm-stile button').forEach(b => b.setAttribute('aria-pressed', String(b === pulsante)));
+    aggiornaNuovo();
+  }));
+
+  // cartella del progetto per il nuovo modulo (pulsante, o CREA MODULO se non è collegata): true se collegata
+  async function collegaNuovo() {
+    const esito = document.getElementById('nm-esito');
+    const avviso = (testo, classe = '') => { esito.textContent = testo; esito.className = `esito ${classe}`.trim(); };
+    if (!progetto && operatore?.progettoCollegato) progetto = operatore.progettoCollegato;
+    try {
+      if (!progetto) progetto = await scegliProgetto(avviso);
+    } catch (errore) {
+      // anche il messaggio di Chrome, per capire il motivo esatto
+      avviso(errore.name === 'AbortError' ? `cartella non collegata: la finestra di scelta si è chiusa senza una cartella (chrome: ${errore.message})`
+        : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? '' : 'err');
+      return false;
+    }
+    const pulsante = document.getElementById('nm-collega');
+    pulsante.textContent = '✓ cartella collegata';
+    pulsante.classList.add('collegata');
+    avviso(`cartella del progetto collegata: ${progetto.name}`, 'ok');
+    return true;
+  }
+  document.getElementById('nm-collega').addEventListener('click', collegaNuovo);
+
+  // CREA MODULO: cartella del progetto (come le spunte), poi pagina, miniatura e galleria; poi la pagina si rilegge
+  document.getElementById('nm-crea').addEventListener('click', async () => {
+    const esito = document.getElementById('nm-esito');
+    const pulsante = document.getElementById('nm-crea');
+    const avviso = (testo, classe = '') => { esito.textContent = testo; esito.className = `esito ${classe}`.trim(); };
+    if (!await collegaNuovo()) return;
+    pulsante.disabled = true;
+    try {
+      const dati = datiNuovo();
+      const { blob } = await miniaturaNuovoModulo(dati.nome);
+      const { galleria, pagina } = await Associa.creaModulo(progetto, { sorgente: dati.sorgente, nome: dati.nome, scheda: dati.scheda,
+        tipo: dati.tipo, galleria: galleriaScelta.id, miniatura: blob, avviso });
+      avviso(`creato: ${pagina} nella galleria ${galleria}. per metterlo in un negozio usa le spunte della sua scheda. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
+      setTimeout(() => location.reload(), 1200);
+    } catch (errore) {
+      console.error(errore);
+      avviso(`errore (${errore.name}): ${errore.message}`, 'err');
+      pulsante.disabled = false;
+    }
   });
+  if (!SCRIVIBILE) {
+    document.getElementById('nm-crea').disabled = true;
+    document.getElementById('nm-collega').disabled = true;
+    document.getElementById('nm-esito').textContent = 'questo browser non può collegare la cartella del progetto: apri questa pagina in chrome o edge sul computer';
+    document.getElementById('nm-esito').className = 'esito err';
+  }
 
   async function disegnaModulo(id, indice) {
     if (!progetto && operatore?.progettoCollegato) progetto = operatore.progettoCollegato;   // già collegata prima
     const pacchetto = Pacchetti.pacchetto(id);
     const modulo = pacchetto.moduli[indice];
+    // cartella delle pagine del modulo: la sua (gallerie con moduli di negozi diversi) o quella del pacchetto
+    const cartellaModulo = modulo.cartella || pacchetto.cartella;
     const contenitore = document.getElementById('modulo');
     contenitore.replaceChildren();
     // il widget da solo, con i suoi selettori di stile
     const { cornice, riquadro } = vetrina(pacchetto, indice);
+    cornice.dataset.zona = 640;
     vetrinaModulo = vetrine.at(-1);
     const titolo = nodo('h3', 'nome-pacchetto', modulo.titolo);
     const testa = nodo('div', 'testa-pacchetto');
     testa.append(titolo, selettori(pacchetto, riquadro));
     contenitore.append(testa, cornice);
     if (modulo.link && !modulo.prossimamente) {
-      const apri = nodo('a', 'apri-modulo', `apri il modulo ↗  ${pacchetto.cartella}/${modulo.link}`);
-      apri.href = `${pacchetto.cartella}/${modulo.link}`;
+      const apri = nodo('a', 'apri-modulo', `apri il modulo ↗  ${cartellaModulo}/${modulo.link}`);
+      apri.href = `${cartellaModulo}/${modulo.link}`;
       apri.target = '_blank';
       apri.rel = 'noopener';
       contenitore.append(apri);
@@ -364,18 +641,19 @@
       elenco.replaceChildren();
       for (const negozio of Negozi.installati) {
         const testo = await testoDashboard(negozio);
-        const usato = associabile && Associa.usato(testo, negozio, pacchetto.cartella, pagina);
+        const usato = associabile && Associa.usato(testo, negozio, cartellaModulo, pagina);
         const riga = nodo('label', 'negozio');
         const spunta = nodo('input');
         spunta.type = 'checkbox';
         spunta.checked = usato;
-        const partenza = negozio === pacchetto.negozio;
+        // il negozio del set di partenza è bloccato solo per le schede che il set legge dalla sua dashboard (non per i moduli aggiunti)
+        const partenza = negozio === pacchetto.negozio && !modulo.aggiunto;
         // il negozio del set di partenza non si toglie: il set legge le sue schede dalla dashboard di quel negozio
         spunta.disabled = !associabile || partenza || !SCRIVIBILE;
         const nota = !associabile ? 'non associabile da qui'
           : partenza ? 'set di partenza: il modulo resta nella sua dashboard'
-          : usato ? (negozio === pacchetto.cartella ? 'nella dashboard' : 'clone nella cartella del negozio, nella dashboard: togliendo la spunta si cancella')
-          : (negozio === pacchetto.cartella ? '' : `spuntando: clone in ${negozio}/ e scheda nella dashboard`);
+          : usato ? (negozio === cartellaModulo ? 'nella dashboard' : 'clone nella cartella del negozio, nella dashboard: togliendo la spunta si cancella')
+          : (negozio === cartellaModulo ? '' : `spuntando: clone in ${negozio}/ e scheda nella dashboard`);
         riga.append(spunta, nodo('span', 'negozio-nome', Negozi.scheda(negozio)?.nome || negozio), nodo('span', 'negozio-nota', nota));
         spunta.addEventListener('change', () => cambia(negozio, spunta));
         elenco.append(riga);
@@ -391,12 +669,12 @@
         return;
       }
       // togliere un clone lo cancella: prima si chiede
-      if (!voglio && negozio !== pacchetto.cartella
+      if (!voglio && negozio !== cartellaModulo
         && !window.confirm(`Togliere ${modulo.titolo} da ${Negozi.scheda(negozio)?.nome || negozio}?\n\nLa sua scheda esce dalla dashboard e il clone della pagina nella cartella ${negozio}/ viene cancellato, con le immagini copiate per lui.`)) return;
       try {
         if (!progetto) await collega();
         const avviso = testo => { esito.textContent = testo; esito.className = 'esito'; };
-        const dati = { modulo, tipo: pacchetto.tipo, cartella: pacchetto.cartella, negozio, avviso };
+        const dati = { modulo, tipo: pacchetto.tipo, cartella: cartellaModulo, negozio, avviso };
         if (voglio) await Associa.associa(progetto, dati);
         else await Associa.togli(progetto, dati);
         esito.textContent = `fatto: ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${Negozi.scheda(negozio)?.nome || negozio}. ricorda il commit per pubblicarlo`;

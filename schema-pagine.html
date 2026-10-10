@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-50"></script>
+  <script src="assets/js/negozi.js?v=20261010-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Struttura negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261010-50"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261010-51"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261010-50"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261010-51"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -80,6 +80,13 @@
     /* clone creato da Gestione pacchetti (pagina con storecraft-origine): l'etichetta clone in oro e il pulsante ✕ rimuovi;
        le pagine di partenza dei negozi non hanno il pulsante */
     .tipo.clone { border-color: var(--oro); color: var(--oro); }
+    /* ghost: la pagina resta nel negozio ma la dashboard non la mostra (né widget né menu); riga attenuata */
+    .ghost { margin-left: 8px; padding: 0 6px; border: 1px solid var(--bordo); border-radius: 3px; background: none; color: var(--tenue);
+      font: 400 10px var(--mono); letter-spacing: .06em; cursor: pointer; }
+    .ghost:hover, .ghost:focus-visible { border-color: var(--oro); color: var(--oro-chiaro); outline: none; }
+    .ghost[aria-pressed="true"] { border-color: #9b8fd0; color: #b9aef0; }
+    .ghost:disabled { opacity: .4; cursor: default; }
+    tr.in-ghost td:not(:first-child), tr.in-ghost td:first-child a { opacity: .45; }
     .rimuovi { margin-left: 8px; padding: 0 6px; border: 1px solid #e07a5f; border-radius: 3px; background: none; color: #e07a5f;
       font: 400 10px var(--mono); letter-spacing: .06em; cursor: pointer; }
     .rimuovi:hover, .rimuovi:focus-visible { background: #e07a5f; color: #121110; outline: none; }
@@ -186,8 +193,10 @@
     return risposta.text();
   }
 
+  const testiDashboard = {};
   async function pagineDelNegozio(id) {
     const contenuto = await testo(`assets/negozi/${id}-dashboard.js`);
+    testiDashboard[id] = contenuto;   // per il ghost delle pagine
     const pagine = new Set();
     for (const m of contenuto.matchAll(/link:\s*'([^'?]+\.html)/g)) pagine.add(m[1]);
     const etichette = contenuto.match(/etichette:\s*'([^'?]+\.html)/);
@@ -219,6 +228,42 @@
     if (!progettoLocale) progettoLocale = await Associa.scegliProgetto();
     return progettoLocale;
   }
+  // Ghost: la pagina sparisce dalla dashboard del negozio (widget e menu laterale) ma resta nella cartella; di nuovo per
+  // farla ricomparire. Scrive nascosta: true nelle schede della dashboard (cartella del progetto collegata)
+  function pulsanteGhost(negozio, pagina, inGhost) {
+    const pulsante = document.createElement('button');
+    pulsante.type = 'button';
+    pulsante.className = 'ghost';
+    pulsante.textContent = inGhost ? 'ghost · mostra' : 'ghost';
+    pulsante.setAttribute('aria-pressed', String(inGhost));
+    pulsante.title = inGhost ? `${negozio}/${pagina} è nascosta nella dashboard: un clic per farla ricomparire`
+      : `Nascondi ${negozio}/${pagina} nella dashboard (widget e menu); la pagina resta nella cartella`;
+    pulsante.addEventListener('click', async () => {
+      const stato = document.getElementById('stato');
+      let cartella;
+      try { cartella = await progetto(); } catch (errore) {
+        stato.textContent = errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`;
+        return;
+      }
+      pulsante.disabled = true;
+      try {
+        const negozi = await (await cartella.getDirectoryHandle('assets')).getDirectoryHandle('negozi');
+        const file = await negozi.getFileHandle(`${negozio}-dashboard.js`);
+        const testoDashboard = await (await file.getFile()).text();
+        const scrittura = await file.createWritable();
+        await scrittura.write(Associa.impostaFantasma(testoDashboard, pagina, !inGhost));
+        await scrittura.close();
+        stato.textContent = `${negozio}/${pagina} ${inGhost ? 'di nuovo visibile' : 'in ghost'} nella dashboard. ricorda il commit per pubblicarlo. rileggo…`;
+        setTimeout(() => location.reload(), 900);
+      } catch (errore) {
+        pulsante.disabled = false;
+        console.error(errore);
+        stato.textContent = `errore (${errore.name}): ${errore.message}`;
+      }
+    });
+    return pulsante;
+  }
+
   function pulsanteRimuovi(negozio, pagina, origine) {
     const pulsante = document.createElement('button');
     pulsante.type = 'button';
@@ -380,6 +425,13 @@
         riga.append(tdPagina);
         try {
           const t = await testo(`${id}/${pagina}`);
+          // ghost: per le pagine con schede nella dashboard (non la dashboard stessa né le pagine di servizio)
+          const dashboardNegozio = testiDashboard[id] || '';
+          if (pagina !== 'index.html' && !SERVIZIO.includes(pagina) && dashboardNegozio.includes(`'${pagina}`)) {
+            const inGhost = Associa.fantasma(dashboardNegozio, pagina);
+            riga.classList.toggle('in-ghost', inGhost);
+            tdPagina.append(pulsanteGhost(id, pagina, inGhost));
+          }
           const origine = Associa.clone(t);
           if (origine) {
             tipo.textContent = 'clone';

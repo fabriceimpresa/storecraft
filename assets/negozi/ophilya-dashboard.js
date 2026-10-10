@@ -19,8 +19,7 @@ Dashboard.contenuto({
       schede: [
         { titolo: 'Albero Accessori', link: 'albero-ophilya.html', tipo: 'RASTRELLIERA', miniature: ['thumbnail/ophilya/alberoophilyathumb.png?v=20261002', 'thumbnail/ophilya/alberoophilyathumb2.png'], alt: 'Albero Accessori OPHILYA' },
         { titolo: 'Paletto 15x10', link: 'paletto-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 15x10 OPHILYA' },
-        { titolo: 'Paletto 18x12', link: 'paletto18x12-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 18x12 OPHILYA' },
-        { titolo: 'Semplice', tipo: 'CARTELLO', prossimamente: true }
+        { titolo: 'Paletto 18x12', link: 'paletto18x12-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 18x12 OPHILYA' }
       ]
     },
     {

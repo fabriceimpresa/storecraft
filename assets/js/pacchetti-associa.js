@@ -25,7 +25,19 @@
      Associa.associa(progetto, { modulo, tipo, cartella, negozio })   aggiunge il modulo al negozio
      Associa.togli(progetto, { modulo, cartella, negozio })           lo toglie dalla dashboard (un clone si cancella)
      Associa.eliminaClone(progetto, { negozio, nome })              cancella il clone <negozio>/<nome> e la sua scheda
-     Associa.clone(html)                                             origine del clone ('<cartella>/<pagina>.html') o null */
+     Associa.clone(html)                                             origine del clone ('<cartella>/<pagina>.html') o null
+     Associa.creaModulo(progetto, { sorgente, nome, scheda, tipo, galleria, miniatura })
+                                         nuovo modulo da uno esistente: pagina <cartella>/<nome>.html (copia della pagina di
+                                         partenza, con storecraft-origine), miniatura JPG, modulo in una galleria (galleria:
+                                         id di una galleria creata qui, o null per una Nuova Galleria, galleria-<n>.js in
+                                         assets/pacchetti/ e nell'elenco); restituisce { galleria, pagina }
+
+   Un nuovo modulo non è in nessuna dashboard: si associa ai negozi dalla sua scheda, come gli altri.
+
+   Ghost (Struttura negozi): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
+   come widget né nel menu laterale; le sue schede hanno nascosta: true (dashboard.js le salta).
+     Associa.fantasma(testoDashboard, pagina)               true se le schede che aprono la pagina sono in ghost
+     Associa.impostaFantasma(testoDashboard, pagina, sì/no)  nuovo testo con tutte le schede della pagina in ghost o no */
 (() => {
   const RISORSE = ['img', 'logos', 'thumbnail', 'pdf', 'foto'];
   const virgolette = valore => `'${String(valore).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
@@ -202,6 +214,24 @@
     try { await scriviFile(progetto, `assets/${tipo}/${a}/${file}`, await leggi(progetto, `assets/${tipo}/${da}/${file}`)); return true; } catch { return false; /* manca anche nel negozio di partenza */ }
   }
 
+  // copia nel negozio a le risorse della pagina adattata che gli mancano; restituisce i file copiati davvero
+  async function copiaRisorse(progetto, risorse, da, a) {
+    const copiati = [];
+    const copia = async (tipo, file) => { if (await copiaRisorsa(progetto, tipo, da, a, file)) copiati.push(`${tipo}/${file}`); };
+    for (const risorsa of risorse) {
+      if (risorsa.prefisso) {
+        if (!risorsa.file || risorsa.file.endsWith('/')) continue;
+        const parti = risorsa.file.split('/');
+        const dir = await cartella(progetto, `assets/${risorsa.cartella}/${da}/${parti.slice(0, -1).join('/')}`).catch(() => null);
+        if (!dir) continue;
+        for await (const [file, voce] of dir.entries()) {
+          if (voce.kind === 'file' && file.startsWith(parti.at(-1))) await copia(risorsa.cartella, [...parti.slice(0, -1), file].join('/'));
+        }
+      } else await copia(risorsa.cartella, risorsa.file);
+    }
+    return copiati;
+  }
+
   async function associa(progetto, { modulo, tipo, cartella: da, negozio: a, avviso = () => {} }) {
     const dashboard = `assets/negozi/${a}-dashboard.js`;
     let testo = await (await leggi(progetto, dashboard)).text();
@@ -209,25 +239,15 @@
     if (usato(testo, a, da, nome)) return;
     const scheda = { ...modulo };
     delete scheda.prossimamente;
+    delete scheda.cartella;   // cartella del modulo nelle gallerie: nella dashboard il collegamento è dalla cartella del negozio
     if (a !== da) {
       // la pagina nella cartella del negozio (nome libero), adattata a lui, con le risorse che le servono
       const libero = await esiste(progetto, `${a}/${nome}`) ? nome.replace(/\.html$/, `-${da}.html`) : nome;
       avviso(`copio ${da}/${nome} in ${a}/${libero}…`);
       const sorgente = await (await leggi(progetto, `${da}/${nome}`)).text();
       const { html, risorse } = adattaPagina(sorgente, da, a, `${da}/${nome}`);
-      const copiati = [];   // file copiati davvero (mancavano nel negozio): il clone li elenca, per poterli togliere con lui
+      const copiati = await copiaRisorse(progetto, risorse, da, a);   // il clone li elenca, per poterli togliere con lui
       const copia = async (tipo, file) => { if (await copiaRisorsa(progetto, tipo, da, a, file)) copiati.push(`${tipo}/${file}`); };
-      for (const risorsa of risorse) {
-        if (risorsa.prefisso) {
-          if (!risorsa.file || risorsa.file.endsWith('/')) continue;
-          const parti = risorsa.file.split('/');
-          const dir = await cartella(progetto, `assets/${risorsa.cartella}/${da}/${parti.slice(0, -1).join('/')}`).catch(() => null);
-          if (!dir) continue;
-          for await (const [file, voce] of dir.entries()) {
-            if (voce.kind === 'file' && file.startsWith(parti.at(-1))) await copia(risorsa.cartella, [...parti.slice(0, -1), file].join('/'));
-          }
-        } else await copia(risorsa.cartella, risorsa.file);
-      }
       // la miniatura nelle anteprime del negozio
       scheda.miniature = await Promise.all((modulo.miniature || []).map(async miniatura => {
         const [file, query = ''] = miniatura.split('?');
@@ -261,10 +281,12 @@
     const da = origine.split('/')[0];
     const dashboard = `assets/negozi/${negozio}-dashboard.js`;
     let testo = await (await leggi(progetto, dashboard)).text();
-    const scheda = trovaScheda(testo, negozio, da, pagina(origine.split('/').slice(1).join('/')));
+    // la scheda del clone: quella che apre il clone (il suo nome di file nella cartella del negozio), non la pagina di
+    // partenza, che può stare nella stessa cartella (moduli creati da Nuovo modulo)
+    const scheda = trovaScheda(testo, negozio, negozio, nome);
     if (scheda) {
       avviso(`tolgo la scheda dalla dashboard di ${negozio}…`);
-      testo = togliScheda(testo, negozio, da, pagina(origine.split('/').slice(1).join('/')));
+      testo = togliScheda(testo, negozio, negozio, nome);
       await scriviFile(progetto, dashboard, testo);
     }
     avviso(`cancello ${negozio}/${nome}…`);
@@ -281,6 +303,69 @@
       if (usate.some(testoPagina => testoPagina.includes(`${tipo}/${negozio}/${file}`))) continue;
       try { avviso(`cancello assets/${tipo}/${negozio}/${file}…`); await cancella(progetto, `assets/${tipo}/${negozio}/${file}`); } catch { /* già tolto */ }
     }
+  }
+
+  // nome di file dal nome del modulo: minuscolo, senza accenti, parole unite da trattini
+  const nomeFile = testo => String(testo).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'nuovo-modulo';
+
+  // Nuovo modulo: la pagina di partenza copiata nella stessa cartella con un nome libero, la miniatura provvisoria e il
+  // modulo in una galleria: una creata qui o un set di partenza (galleria: id; nel set va tra gli aggiunti) o una nuova
+  // (galleria: null). Non entra in nessuna dashboard: si associa ai negozi dalla sua scheda.
+  async function creaModulo(progetto, { sorgente, nome, scheda, tipo, galleria = null, miniatura, avviso = () => {} }) {
+    const { cartella: da, link } = sorgente;
+    const a = da;
+    const origine = `${da}/${pagina(link)}`;
+    let base = nomeFile(nome), libero = `${base}.html`;
+    for (let n = 2; await esiste(progetto, `${a}/${libero}`); n++) libero = `${base}-${n}.html`;
+    base = libero.replace(/\.html$/, '');
+    avviso(`creo la pagina ${a}/${libero}…`);
+    const { html } = adattaPagina(await (await leggi(progetto, origine)).text(), da, a, origine);
+    avviso(`salvo la miniatura assets/thumbnail/${a}/${base}.jpg…`);
+    await scriviFile(progetto, `assets/thumbnail/${a}/${base}.jpg`, miniatura);
+    await scriviFile(progetto, `${a}/${libero}`, html
+      .replace(/<title>[^<]*<\/title>/i, `<title>${nome.replace(/[<&]/g, '')}</title>`)
+      .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, `$1\n  <meta name="storecraft-copiati" content="thumbnail/${base}.jpg">`));
+    const modulo = { ...scheda, titolo: nome, link: libero, miniature: [`thumbnail/${a}/${base}.jpg`] };
+    modulo.cartella = a;
+    if (galleria) {
+      avviso(`aggiungo il modulo alla galleria ${galleria}…`);
+      const file = `assets/pacchetti/${galleria}.js`;
+      let testo = await (await leggi(progetto, file)).text();
+      // set di partenza (origine): il modulo va tra gli aggiunti (l'elenco si crea la prima volta, dopo l'origine)
+      if (/origine:\s*\{/.test(testo) && !testo.includes('aggiunti: [')) {
+        const origineInizio = testo.indexOf('{', testo.search(/origine:\s*\{/));
+        const origineFine = chiusura(testo, origineInizio);
+        testo = `${testo.slice(0, origineFine + 1)},\n  // moduli aggiunti da Nuovo modulo (Gestione pacchetti): non sono nella dashboard, si associano dalla loro scheda\n  aggiunti: [\n  ]${testo.slice(origineFine + 1)}`;
+      }
+      const chiave = testo.includes('aggiunti: [') ? 'aggiunti: [' : 'moduli: [';
+      const inizio = testo.indexOf(chiave) + chiave.length - 1;
+      const fine = chiusura(testo, inizio);
+      const vuoto = !testo.slice(inizio + 1, fine).trim();
+      await scriviFile(progetto, file, `${testo.slice(0, fine).replace(/\s*$/, '')}${vuoto ? '' : ','}\n    ${scrivi(modulo)}\n  ${testo.slice(fine)}`);
+    } else {
+      let n = 1;
+      while (await esiste(progetto, `assets/pacchetti/galleria-${n}.js`)) n++;
+      galleria = `galleria-${n}`;
+      avviso(`creo la galleria assets/pacchetti/${galleria}.js…`);
+      await scriviFile(progetto, `assets/pacchetti/${galleria}.js`, `/* Nuova Galleria (vedi assets/js/pacchetti.js): galleria creata in Gestione pacchetti, moduli di tipo ${tipo}. Ogni
+   modulo ha la cartella delle sue pagine (cartella); si associa ai negozi dalla sua scheda. */
+Pacchetti.registra('${galleria}', {
+  nome: 'Nuova Galleria',
+  titolo: 'Nuova Galleria',   // titolo breve, sopra il carosello in Gestione pacchetti
+  tipo: '${tipo}',
+  moduli: [
+    ${scrivi(modulo)}
+  ]
+});
+`);
+      const elenco = 'assets/pacchetti/elenco.js';
+      const testo = await (await leggi(progetto, elenco)).text();
+      const inizio = testo.indexOf('installa([') + 'installa('.length;
+      const fine = chiusura(testo, inizio);
+      await scriviFile(progetto, elenco, `${testo.slice(0, fine)}, '${galleria}'${testo.slice(fine)}`);
+    }
+    return { galleria, pagina: `${a}/${libero}` };
   }
 
   async function togli(progetto, { modulo, cartella: da, negozio: a, avviso = () => {} }) {
@@ -301,7 +386,26 @@
     await scriviFile(progetto, dashboard, togliScheda(testo, a, da, pagina(modulo.link)));
   }
 
-  const Associa = Object.freeze({ usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, pagina });
+  // Schede che aprono la pagina (link uguale, senza ?…), in tutte le sezioni
+  function schedeDellaPagina(testo, nome) {
+    return sezioni(testo).flatMap(voce => schede(testo, voce))
+      .filter(scheda => pagina((scheda.testo.match(/link:\s*'([^']+)'/) || [])[1]) === nome);
+  }
+  function fantasma(testo, nome) {
+    const trovate = schedeDellaPagina(testo, nome);
+    return trovate.length > 0 && trovate.every(scheda => /nascosta:\s*true/.test(scheda.testo));
+  }
+  function impostaFantasma(testo, nome, nascosta) {
+    // dall'ultima alla prima, così le posizioni delle schede prima restano giuste
+    for (const scheda of schedeDellaPagina(testo, nome).reverse()) {
+      const senza = scheda.testo.replace(/,\s*nascosta:\s*true/, '');
+      const nuova = nascosta ? senza.replace(/\s*\}$/, ', nascosta: true }') : senza;
+      testo = testo.slice(0, scheda.inizio) + nuova + testo.slice(scheda.fine + 1);
+    }
+    return testo;
+  }
+
+  const Associa = Object.freeze({ fantasma, impostaFantasma, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();

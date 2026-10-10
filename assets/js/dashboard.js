@@ -23,10 +23,12 @@
                     Stampa; menu STAMPE PRONTE con la voce voceMenu)
      schede         [{ titolo, link | pdf, tipo, miniature: [immagine, seconda immagine facoltativa] (nella cartella
                     assets/), alt, specifiche: [...], badge, compatto, voce (nome nel menu, se diverso dal titolo),
-                    prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca) }] */
+                    prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca),
+                    nascosta (pagina in ghost, da Struttura negozi: la scheda non si vede, né come widget né nel menu;
+                    la pagina resta nella cartella) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.02 2026';
+  const VERSIONE = 'V 1.2.03 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -490,6 +492,14 @@
 
   function disegna() {
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
+    // Pagine in ghost (Struttura negozi, nascosta: true): le loro schede non si vedono, né come widget né nel menu
+    // laterale; una sezione che resta senza schede sparisce, e la voce Etichette DYMO se la sua pagina è in ghost
+    const pagina = link => String(link || '').split('?')[0];
+    const fantasmi = new Set(dati.sezioni.flatMap(s => s.schede).filter(s => s.nascosta && s.link).map(s => pagina(s.link)));
+    dati.sezioni.forEach(s => { s.schede = s.schede.filter(scheda => !scheda.nascosta); });
+    dati.sezioni = dati.sezioni.filter(s => s.schede.length);
+    if (dati.etichette && fantasmi.has(pagina(dati.etichette))
+      && !dati.sezioni.some(s => s.schede.some(scheda => pagina(scheda.link) === pagina(dati.etichette)))) dati.etichette = null;
     const corpo = document.body;
     corpo.classList.add('sidebar-collapsed');
     if (dati.cassa === 'solo-cassiere') corpo.classList.add('cassa-solo-cassiere');

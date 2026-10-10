@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-50"></script>
+  <script src="assets/js/negozi.js?v=20261010-51"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Struttura negozi): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261010-50"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261010-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -302,8 +302,8 @@
 
     <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Prepara copia per un cliente">
       <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
-        le schede dei negozi, con installati.js scritto per loro, e quest'area con i soli loghi ufficiali (importa e gestisci),
-        per aggiornare i menu BRAND del cliente. Restano fuori Struttura negozi, Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
+        le schede dei negozi, con installati.js scritto per loro, e quest'area ridotta: struttura negozi (con il ghost delle pagine) e loghi ufficiali
+        (importa e gestisci), per aggiornare i menu BRAND del cliente. Restano fuori Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
         di lavoro, le pagine di prova _*, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
@@ -349,8 +349,34 @@
     // Cartella del progetto collegata per scrivere (Gestione pacchetti): la sceglie questa pagina, come Prepara copia, e
     // le sezioni nel riquadro la usano (window.parent.collegaProgetto); resta collegata finché la pagina è aperta
     window.progettoCollegato = null;
+    // La cartella collegata si ricorda (IndexedDB, in questo browser): le volte dopo, anche riaprendo Chrome, basta il
+    // permesso di modificare i file (un piccolo avviso di Chrome), senza la finestra di scelta della cartella
+    const CARTELLA_DB = 'storecraft-operatore';
+    const cartellaRicordata = modo => new Promise(fatto => {
+      try {
+        const apertura = indexedDB.open(CARTELLA_DB, 1);
+        apertura.onupgradeneeded = () => apertura.result.createObjectStore('cartelle');
+        apertura.onerror = () => fatto(null);
+        apertura.onsuccess = () => {
+          const transazione = apertura.result.transaction('cartelle', modo === 'leggi' ? 'readonly' : 'readwrite');
+          const archivio = transazione.objectStore('cartelle');
+          const richiesta = modo === 'leggi' ? archivio.get('progetto') : archivio.put(modo, 'progetto');
+          richiesta.onsuccess = () => fatto(modo === 'leggi' ? richiesta.result || null : true);
+          richiesta.onerror = () => fatto(null);
+        };
+      } catch { fatto(null); }
+    });
     window.collegaProgetto = async (passaggio = () => {}) => {
-      if (!window.progettoCollegato) window.progettoCollegato = await Associa.scegliProgetto(passaggio);
+      if (window.progettoCollegato) return window.progettoCollegato;
+      const ricordata = await cartellaRicordata('leggi');
+      if (ricordata) {
+        passaggio(`cartella "${ricordata.name}" già collegata: chiedo il permesso di modificare i file («Modifica file»)…`);
+        let permesso = await ricordata.queryPermission({ mode: 'readwrite' });
+        if (permesso !== 'granted') permesso = await ricordata.requestPermission({ mode: 'readwrite' }).catch(() => 'denied');
+        if (permesso === 'granted') return (window.progettoCollegato = ricordata);
+      }
+      window.progettoCollegato = await Associa.scegliProgetto(passaggio);
+      await cartellaRicordata(window.progettoCollegato);
       return window.progettoCollegato;
     };
 
@@ -366,9 +392,9 @@
     // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Struttura negozi,
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
-      menu.querySelectorAll('[data-vista="struttura"], [data-vista="pacchetti"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
+      // Struttura negozi resta (anche nella copia si mettono e tolgono le pagine in ghost)
+      menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
       // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
-      delete VISTE.struttura;
       delete VISTE.pacchetti;
       delete VISTE.copia;
     }
@@ -632,8 +658,8 @@
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
       // non Struttura negozi, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'schema-pagine.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'Storecraft Aggiornamento.html'];
-      riga('// radice: splash page e area operatore dei loghi (non guida, struttura, pacchetti, piano e pagine _*)', 'sezione');
+      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'Storecraft Aggiornamento.html'];
+      riga('// radice: splash page e area operatore ridotta: struttura negozi e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
         await copiaFile(voce, destinazione, nome);

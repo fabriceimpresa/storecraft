@@ -18,6 +18,8 @@
    Uso:
      Pacchetti.registra(id, { nome, titolo, tipo, cartella, negozio, descrizione, moduli | origine })   nel file del pacchetto
        origine   { negozio, sezione }: le schede sono quelle della sezione (id) della dashboard del negozio
+       aggiunti  (con origine) moduli aggiunti al set da Nuovo modulo, scritti nel file, dopo le schede della dashboard:
+                 non sono nella dashboard del negozio (si associano ai negozi dalla loro scheda); hanno aggiunto: true
        titolo    titolo breve sopra il carosello in Gestione pacchetti (es. 'Outlet'; il nome resta univoco)
        tipo      'cartelli', 'promo', 'cartellini', 'etichette' (come le sezioni della dashboard) o 'cassa' (Utilità
                  Cassa: ogni modulo è { titolo, strumento }, l'id del widget in assets/js/cassa.js)
@@ -64,7 +66,16 @@
     const { negozio, sezione } = pacchetto.origine;
     const trovata = dashboard[negozio]?.sezioni?.find(voce => voce.id === sezione);
     if (!trovata) throw new Error(`Sezione ${sezione} non trovata in assets/negozi/${negozio}-dashboard.js (pacchetto ${pacchetto.id})`);
-    return trovata.schede.map(scheda => ({ ...scheda }));
+    const schede = trovata.schede.map(scheda => ({ ...scheda }));
+    // i moduli aggiunti; quelli che intanto sono entrati nella dashboard del negozio (spunta nella loro scheda) non si
+    // ripetono: la loro scheda della dashboard resta un modulo aggiunto (spunta del negozio non bloccata)
+    const aggiunti = [];
+    (pacchetto.aggiunti || []).forEach(modulo => {
+      const inDashboard = (modulo.cartella || pacchetto.cartella) === negozio && schede.find(scheda => scheda.link === modulo.link);
+      if (inDashboard) inDashboard.aggiunto = true;
+      else aggiunti.push({ ...modulo, aggiunto: true });
+    });
+    return schede.concat(aggiunti);
   }
 
   function carica(ids) {

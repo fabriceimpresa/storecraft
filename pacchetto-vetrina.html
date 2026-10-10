@@ -12,22 +12,22 @@
     radice.dataset.interfaceTheme = parametri.get('tema') === 'light' ? 'light' : 'dark';
     radice.dataset.interfaceLook = parametri.get('aspetto') === 'minimal' ? 'minimal' : 'standard';
   </script>
-  <script src="assets/js/negozi.js?v=20261010-50"></script>
+  <script src="assets/js/negozi.js?v=20261010-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Vetrina del pacchetto</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261010-50">
-  <script src="assets/js/caroselli.js?v=20261010-50"></script>
-  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261010-50">
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261010-50">
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261010-51">
+  <script src="assets/js/caroselli.js?v=20261010-51"></script>
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261010-51">
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261010-51">
   <!-- Utilità Cassa: gli strumenti veri della dashboard (cassa.js, con qrcode.js per il QR) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="assets/js/cassa.js?v=20261010-50"></script>
-  <script src="assets/js/pacchetti.js?v=20261010-50"></script>
+  <script src="assets/js/cassa.js?v=20261010-51"></script>
+  <script src="assets/js/pacchetti.js?v=20261010-51"></script>
   <script>
     // il file del pacchetto scelto, durante la lettura della pagina
-    Pacchetti.carica([parametri.get('pacchetto') || '']);
+    if (parametri.get('pacchetto')) Pacchetti.carica([parametri.get('pacchetto')]);
   </script>
   <style>
     /* Solo la zona dei caroselli della dashboard: la pagina scorre per intero (niente altezza fissa di dashboard.css) e
@@ -60,15 +60,22 @@
       return nodo;
     }
     const due = numero => String(numero).padStart(2, '0');
-    const pacchetto = Pacchetti.pacchetto(parametri.get('pacchetto'));
+    // anteprima=1: un modulo non ancora salvato ({ tipo, modulo } in window.parent.anteprimaNuovoModulo, Nuovo modulo in
+    // Gestione pacchetti; la miniatura può essere un'immagine generata, data:…)
+    const anteprimaModulo = parametri.get('anteprima') === '1' ? (window.parent?.anteprimaNuovoModulo || null) : null;
+    const pacchetto = anteprimaModulo
+      ? { id: 'anteprima', tipo: anteprimaModulo.tipo, moduli: [anteprimaModulo.modulo] }
+      : Pacchetti.pacchetto(parametri.get('pacchetto'));
+    // cartella delle pagine del modulo: la sua (gallerie con moduli di negozi diversi) o quella del pacchetto
+    const cartellaDi = modulo => modulo.cartella || pacchetto.cartella;
     // modulo=<n>: solo quel modulo (scheda del modulo in Gestione pacchetti)
     const soloModulo = parametri.has('modulo') ? Number(parametri.get('modulo')) : null;
     // nel catalogo un clic su una scheda apre la scheda del modulo (Gestione pacchetti); altrimenti apre la pagina
-    const apriScheda = soloModulo === null && typeof window.parent?.apriModulo === 'function' && window.parent !== window;
+    const apriScheda = !anteprimaModulo && soloModulo === null && typeof window.parent?.apriModulo === 'function' && window.parent !== window;
 
     function anteprima(scheda) {
       const immagini = (scheda.miniature || []).map((src, i) => el('img', {
-        class: 'preview-image', src: `assets/${src}`, alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false
+        class: 'preview-image', src: src.startsWith('data:') ? src : `assets/${src}`, alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false
       }));
       return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}`,
         style: pacchetto.tipo === 'promo' ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
@@ -86,7 +93,7 @@
             s.specifiche.flatMap((testo, i) => [i ? ' ' : null, el('span', { class: 'spec', text: testo })])))))
         : null;
       // il modulo si apre in un'altra scheda del browser, la vetrina resta
-      return el('a', { href: s.prossimamente || !s.link ? false : `${pacchetto.cartella}/${s.link}`, target: '_blank', class: classi,
+      return el('a', { href: s.prossimamente || !s.link ? false : `${cartellaDi(s)}/${s.link}`, target: '_blank', class: classi,
         onclick: apriScheda ? evento => { evento.preventDefault(); window.parent.apriModulo(pacchetto.id, numero - 1); } : null,
         'aria-disabled': s.prossimamente ? 'true' : false, 'aria-label': s.prossimamente ? `${s.titolo}, prossimamente` : false },
         cima, anteprima(s),
@@ -128,7 +135,7 @@
       strumenti.querySelectorAll(':scope > .widget').forEach(widget => { if (!scelti.includes(widget.id)) widget.remove(); });
     } else if (pacchetto) {
       // un modulo solo (scheda del modulo): una riga, senza lo spazio della seconda
-      const classi = `carousel-container${pacchetto.tipo === 'cartelli' && soloModulo === null ? ' two-rows' : ''}${pacchetto.tipo === 'etichette' ? ' dymo' : ''}`;
+      const classi = `carousel-container${pacchetto.tipo === 'cartelli' && soloModulo === null && !anteprimaModulo ? ' two-rows' : ''}${pacchetto.tipo === 'etichette' ? ' dymo' : ''}`;
       const carosello = el('div', { class: classi, id: 'carosello' }, pacchetto.moduli.map((modulo, i) => scheda(modulo, i + 1))
         .filter((carta, i) => soloModulo === null || i === soloModulo));
       document.getElementById('main-content').append(el('div', { id: 'vetrina' },
