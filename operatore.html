@@ -276,6 +276,7 @@
 
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
       <button class="voce" type="button" data-vista="struttura">Struttura negozi</button>
+      <button class="voce" type="button" data-vista="pacchetti">Gestione pacchetti</button>
       <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
       <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
@@ -287,6 +288,9 @@
     <section class="vista" data-vista="struttura" hidden>
       <iframe data-src="schema-pagine.html?incorporata" title="Struttura negozi"></iframe>
     </section>
+    <section class="vista" data-vista="pacchetti" hidden>
+      <iframe data-src="pacchetti.html?incorporata" title="Gestione pacchetti"></iframe>
+    </section>
     <section class="vista" data-vista="importa" hidden>
       <iframe data-src="logoimport.html?incorporata" title="Importa loghi ufficiali"></iframe>
     </section>
@@ -297,7 +301,7 @@
     <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Prepara copia per un cliente">
       <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
         le schede dei negozi, con installati.js scritto per loro, e quest'area con i soli loghi ufficiali (importa e gestisci),
-        per aggiornare i menu BRAND del cliente. Restano fuori Struttura negozi, Prepara copia, la Guida tecnica, il piano
+        per aggiornare i menu BRAND del cliente. Restano fuori Struttura negozi, Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
         di lavoro, le pagine di prova _*, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
@@ -339,8 +343,8 @@
 
   <script>
     // ----- Viste delle sezioni dentro la cornice -----
-    // #struttura, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
-    const VISTE = { struttura: 'Struttura negozi', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    // #struttura, #pacchetti, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    const VISTE = { struttura: 'Struttura negozi', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -352,9 +356,10 @@
     // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Struttura negozi,
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
-      menu.querySelectorAll('[data-vista="struttura"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
+      menu.querySelectorAll('[data-vista="struttura"], [data-vista="pacchetti"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
       // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
       delete VISTE.struttura;
+      delete VISTE.pacchetti;
       delete VISTE.copia;
     }
 
@@ -617,8 +622,8 @@
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
       // non Struttura negozi, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'schema-pagine.html', 'Storecraft Aggiornamento.html'];
-      riga('// radice: splash page e area operatore dei loghi (non guida, struttura, piano e pagine _*)', 'sezione');
+      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'schema-pagine.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'Storecraft Aggiornamento.html'];
+      riga('// radice: splash page e area operatore dei loghi (non guida, struttura, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
         await copiaFile(voce, destinazione, nome);
@@ -634,6 +639,7 @@
       const assetsArrivo = await destinazione.getDirectoryHandle('assets', { create: true });
       for await (const [nome, voce] of assets.entries()) {
         if (voce.kind === 'file') { await copiaFile(voce, assetsArrivo, nome, `assets/${nome}`); continue; }
+        if (nome === 'pacchetti') { riga('// assets/pacchetti/ saltata: pacchetti dell\'area operatore', 'sezione'); continue; }
         if (nome === 'negozi') {
           riga('// schede dei negozi scelti: assets/negozi/', 'sezione');
           const arrivo = await assetsArrivo.getDirectoryHandle('negozi', { create: true });

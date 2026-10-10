@@ -155,7 +155,7 @@ try {
   # Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione: con
   # copiaCliente in installati.js la pagina operatore mostra solo quelle due sezioni); non Struttura negozi, la Guida
   # tecnica, il piano e le pagine di prova (_*)
-  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('guida-componenti.html', 'guida-campione.html', 'schema-pagine.html') -notcontains $_.Name } | ForEach-Object {
+  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('guida-componenti.html', 'guida-campione.html', 'schema-pagine.html', 'pacchetti.html', 'pacchetto-vetrina.html') -notcontains $_.Name } | ForEach-Object {
     Copia $_.FullName (Join-Path $destinazione $_.Name)
   }
 
@@ -166,7 +166,8 @@ try {
   }
 
   # assets: file comuni interi; nelle cartelle divise per negozio i file comuni e le sottocartelle dei soli negozi scelti
-  Get-ChildItem -LiteralPath $assets -Directory | ForEach-Object {
+  # assets/pacchetti: i pacchetti dell'area operatore (Gestione pacchetti), non vanno ai clienti
+  Get-ChildItem -LiteralPath $assets -Directory | Where-Object { $_.Name -ne 'pacchetti' } | ForEach-Object {
     $arrivo = Join-Path $destinazione "assets\$($_.Name)"
     if ($_.Name -eq 'negozi') {
       foreach ($id in $scelti) {

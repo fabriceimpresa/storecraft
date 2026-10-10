@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <!-- Vetrina di un pacchetto di moduli (area operatore, Gestione pacchetti): il carosello del pacchetto con le schede
+       esattamente come nella dashboard del cliente (stessi file di stile e stessa struttura delle schede di
+       assets/js/dashboard.js), nel tema e nell'aspetto scelti. Si apre dentro pacchetti.html, che ne sceglie la larghezza:
+       pacchetto-vetrina.html?pacchetto=<id>&tema=dark|light&aspetto=standard|minimal. Non va ai clienti. -->
+  <script>
+    const parametri = new URLSearchParams(location.search);
+    const radice = document.documentElement;
+    radice.dataset.interfaceTheme = parametri.get('tema') === 'light' ? 'light' : 'dark';
+    radice.dataset.interfaceLook = parametri.get('aspetto') === 'minimal' ? 'minimal' : 'standard';
+  </script>
+  <script src="assets/js/negozi.js?v=20261010-49"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Vetrina del pacchetto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261010-49">
+  <script src="assets/js/caroselli.js?v=20261010-49"></script>
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261010-49">
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261010-49">
+  <script src="assets/js/pacchetti.js?v=20261010-49"></script>
+  <script>
+    // il file del pacchetto scelto, durante la lettura della pagina
+    Pacchetti.carica([parametri.get('pacchetto') || '']);
+  </script>
+  <style>
+    /* Solo la zona dei caroselli della dashboard: la pagina scorre per intero (niente altezza fissa di dashboard.css) e
+       la zona centrale è larga al massimo come in una dashboard vista a 1440 px (1440 − menu laterale 245 px); la pagina
+       Gestione pacchetti apre la vetrina a 1440 px e la rimpicciolisce per la sua cornice */
+    html, body { height: auto; }
+    body { display: block; overflow: visible; }
+    main { width: min(100%, 1195px); overflow: visible; padding-top: 18px; padding-bottom: 18px; }
+    main > * { margin-bottom: 0 !important; }
+  </style>
+</head>
+<body>
+  <main id="main-content"></main>
+  <script>
+    // Stessa struttura delle schede di assets/js/dashboard.js (scheda, anteprima, sezione): le regole di stile sono quelle
+    // della dashboard, così i widget si vedono come li vedrà il cliente
+    function el(tag, attributi = {}, ...figli) {
+      const nodo = document.createElement(tag);
+      Object.entries(attributi).forEach(([nome, valore]) => {
+        if (valore === false || valore === null || valore === undefined) return;
+        if (nome === 'class') nodo.className = valore;
+        else if (nome === 'text') nodo.textContent = valore;
+        else if (nome.startsWith('on')) nodo.addEventListener(nome.slice(2), valore);
+        else nodo.setAttribute(nome, valore === true ? '' : valore);
+      });
+      figli.flat().forEach(figlio => {
+        if (figlio === null || figlio === undefined || figlio === false) return;
+        nodo.append(typeof figlio === 'string' ? document.createTextNode(figlio) : figlio);
+      });
+      return nodo;
+    }
+    const due = numero => String(numero).padStart(2, '0');
+    const pacchetto = Pacchetti.pacchetto(parametri.get('pacchetto'));
+
+    function anteprima(scheda) {
+      const immagini = (scheda.miniature || []).map((src, i) => el('img', {
+        class: 'preview-image', src: `assets/${src}`, alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false
+      }));
+      return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}`,
+        style: pacchetto.tipo === 'promo' ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
+        immagini, scheda.badge ? el('span', { class: 'card-badge', text: scheda.badge }) : null);
+    }
+
+    function scheda(s, numero) {
+      const cima = el('div', { class: 'card-top' },
+        el('span', { class: 'number', text: due(numero) }),
+        s.tipo ? el('span', { class: 'card-type', text: s.tipo }) : null);
+      const titolo = el('h3', { class: s.compatto ? 'compact-title' : false, text: s.titolo });
+      const classi = `carousel-card${pacchetto.tipo === 'promo' ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
+      const specifiche = s.specifiche?.length
+        ? el('div', { class: 'card-desc' }, el('div', {}, el('p', {}, el('span', { class: 'spec-list' },
+            s.specifiche.flatMap((testo, i) => [i ? ' ' : null, el('span', { class: 'spec', text: testo })])))))
+        : null;
+      // il modulo si apre in un'altra scheda del browser, la vetrina resta
+      return el('a', { href: s.prossimamente || !s.link ? false : `${pacchetto.cartella}/${s.link}`, target: '_blank', class: classi,
+        'aria-disabled': s.prossimamente ? 'true' : false, 'aria-label': s.prossimamente ? `${s.titolo}, prossimamente` : false },
+        cima, anteprima(s),
+        el('div', { class: 'card-body' }, titolo, specifiche ? el('span', { class: 'spec-toggle' }) : null),
+        specifiche);
+    }
+
+    // Specifiche: il + apre e chiude le specifiche di tutte le schede insieme, come nella dashboard
+    function specifiche() {
+      const tasti = [...document.querySelectorAll('.card-body .spec-toggle')];
+      const apri = aperto => tasti.forEach(tasto => {
+        tasto.closest('.carousel-card').classList.toggle('desc-open', aperto);
+        tasto.setAttribute('aria-expanded', String(aperto));
+        tasto.setAttribute('aria-label', aperto ? 'Nascondi specifiche' : 'Mostra specifiche');
+        tasto.nextElementSibling.textContent = aperto ? 'Nascondi specifiche' : 'Mostra specifiche';
+      });
+      tasti.forEach(tasto => {
+        tasto.after(el('span', { class: 'spec-tip', 'aria-hidden': 'true' }));
+        tasto.setAttribute('role', 'button');
+        tasto.setAttribute('tabindex', '0');
+        const cambia = evento => {
+          evento.preventDefault();
+          evento.stopPropagation();
+          apri(tasto.getAttribute('aria-expanded') !== 'true');
+        };
+        tasto.addEventListener('click', cambia);
+        tasto.addEventListener('keydown', evento => { if (evento.key === 'Enter' || evento.key === ' ') cambia(evento); });
+      });
+      apri(false);
+    }
+
+    if (pacchetto) {
+      const classi = `carousel-container${pacchetto.tipo === 'cartelli' ? ' two-rows' : ''}`;
+      const carosello = el('div', { class: classi, id: 'carosello' }, pacchetto.moduli.map((modulo, i) => scheda(modulo, i + 1)));
+      document.getElementById('main-content').append(el('div', { id: 'vetrina' },
+        el('div', { class: 'carousel-wrapper' },
+          el('button', { class: 'carousel-arrow prev', type: 'button', 'aria-label': 'Scorri a sinistra', text: '‹', onclick: () => Caroselli.scroll(carosello, -1) }),
+          carosello,
+          el('button', { class: 'carousel-arrow next', type: 'button', 'aria-label': 'Scorri a destra', text: '›', onclick: () => Caroselli.scroll(carosello, 1) }))));
+      specifiche();
+      Caroselli.init();
+    }
+
+    // Tema e aspetto cambiati dalla pagina Gestione pacchetti, senza ricaricare
+    window.impostaStile = (tema, aspetto) => {
+      radice.dataset.interfaceTheme = tema;
+      radice.dataset.interfaceLook = aspetto;
+      Caroselli.refresh();
+    };
+  </script>
+</body>
+</html>

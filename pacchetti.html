@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <script src="assets/js/negozi.js?v=20261010-49"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gestione pacchetti</title>
+  <script src="assets/js/operatore-sezione.js?v=20261010-49"></script>
+  <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
+  <script src="assets/js/pacchetti.js?v=20261010-49"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261010-49"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
+       pacchetto (assets/pacchetti/, vedi assets/js/pacchetti.js) il titolo e sotto il suo carosello con i widget come li
+       vedrà il cliente nella dashboard (pacchetto-vetrina.html, con gli stili della dashboard); ogni carosello ha i suoi
+       selettori TEMA e ASPETTO, che cambiano solo i suoi widget. Si apre dentro la cornice della pagina operatore (?incorporata) o da sola. */
+    :root {
+      --bg: #0d0c0b; --pannello: #151412; --bordo: #2a2723; --testo: #d9d3c7; --tenue: #8f877b;
+      --oro: #d4a373; --oro-chiaro: #e5ba73;
+      --mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--testo); font: 300 13px/1.65 var(--mono); letter-spacing: .01em; }
+    .pagina { max-width: 1120px; margin: 0 auto; padding: 18px 20px 60px; }
+    .torna { display: inline-block; margin-bottom: 14px; color: var(--tenue); font-size: 11.5px; letter-spacing: .08em; text-decoration: none; }
+    .torna:hover { color: var(--oro); }
+    header.testa { display: flex; align-items: center; gap: 22px; padding: 0 0 20px; margin-bottom: 42px; border-bottom: 1px solid var(--bordo); }
+    header.testa img { width: 104px; filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: .9; }
+    h1 { margin: 0; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
+    h1::before { content: '> '; color: var(--oro); }
+    p { margin: 0; }
+    /* totali del catalogo: piccola casella nera al centro, come la riga di stato di Struttura negozi */
+    .riga-stato { width: fit-content; margin: 0 auto; padding: 6px 12px; background: #0a0908; border: 1px solid var(--bordo);
+      border-radius: 4px; font: 400 11px/1.6 'JetBrains Mono', var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    #stato { color: var(--oro-chiaro); }
+
+    /* selettori TEMA e ASPETTO di un carosello (come in IMPOSTAZIONI della dashboard): cambiano tema e aspetto dei suoi widget */
+    .stile { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px 12px; }
+    .scelta { display: flex; align-items: center; gap: 12px; }
+    .scelta-voci { display: flex; padding: 3px; gap: 3px; border: 1px solid var(--bordo); border-radius: 6px; background: #0a0908; }
+    .scelta-voci button { min-width: 96px; padding: 6px 12px; border: 0; border-radius: 4px; background: none; color: var(--tenue);
+      font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: background .2s, color .2s; }
+    .scelta-voci button:hover { color: var(--oro-chiaro); }
+    .scelta-voci button[aria-pressed="true"] { background: var(--oro); color: #121110; }
+    .scelta-voci button:focus-visible { outline: 1px solid var(--oro); outline-offset: 2px; }
+
+    /* un pacchetto: il titolo con a destra i suoi selettori e subito sotto il carosello */
+    .pacchetto { margin-top: 34px; }
+    .testa-pacchetto { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; margin-bottom: 12px; }
+    .nome-pacchetto { margin: 0; color: var(--oro-chiaro); font: 500 17px 'Cinzel', serif; letter-spacing: .14em; text-transform: uppercase; }
+    /* la vetrina: riquadro con il fondo della dashboard; dentro la pagina della vetrina larga 1440 px, rimpicciolita
+       (sul telefono larga quanto lo schermo, nella vista telefono della dashboard) */
+    .vetrina { position: relative; overflow: hidden; border: 1px solid var(--bordo); border-radius: 8px; }
+    .vetrina iframe { display: block; border: 0; transform-origin: 0 0; }
+
+    /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
+    html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
+    html.incorporata .pagina { max-width: none; padding: 0; }
+    html.incorporata .torna, html.incorporata header.testa { display: none; }
+
+    @media (max-width: 700px) {
+      .pagina { padding: 14px 14px 40px; }
+      header.testa { gap: 16px; margin-bottom: 26px; }
+      header.testa img { width: 72px; }
+      h1 { font-size: 12px; letter-spacing: .16em; }
+      .scelta-voci button { min-width: 0; }
+      .stile { justify-content: flex-start; }
+      .nome-pacchetto { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+<div class="pagina">
+  <a class="torna" href="operatore.html#pacchetti">← Area operatore</a>
+  <header class="testa">
+    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
+    <h1>Gestione pacchetti</h1>
+  </header>
+  <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
+  <div id="catalogo"></div>
+</div>
+
+<script>
+  // Larghezza della dashboard da cui si guarda: zona centrale di una dashboard a 1440 px (vedi pacchetto-vetrina.html)
+  const LARGHEZZA_DASHBOARD = 1440;
+  const LARGHEZZA_ZONA = 1195;
+  const telefono = window.matchMedia('(max-width: 700px)');
+  const vetrine = [];
+
+  // Adatta la vetrina: da computer la pagina della vetrina è larga 1440 px (le regole della dashboard per lo schermo
+  // largo) e si rimpicciolisce perché la sua zona centrale stia nel riquadro; sul telefono è larga quanto il riquadro
+  function adatta(riquadro, cornice) {
+    const documento = riquadro.contentDocument;
+    if (!documento?.body) return;
+    const spazio = cornice.clientWidth;
+    const scala = telefono.matches ? 1 : Math.min(1, spazio / LARGHEZZA_ZONA);
+    riquadro.style.width = `${telefono.matches ? spazio : LARGHEZZA_DASHBOARD}px`;
+    const altezza = documento.querySelector('main')?.offsetHeight || documento.documentElement.scrollHeight;
+    riquadro.style.height = `${altezza}px`;
+    riquadro.style.transform = scala < 1 ? `scale(${scala})` : '';
+    cornice.style.height = `${Math.ceil(altezza * scala)}px`;
+  }
+
+  function vetrina(pacchetto) {
+    const cornice = document.createElement('div');
+    cornice.className = 'vetrina';
+    const riquadro = document.createElement('iframe');
+    riquadro.title = pacchetto.nome;
+    riquadro.src = `pacchetto-vetrina.html?pacchetto=${encodeURIComponent(pacchetto.id)}&tema=dark&aspetto=standard`;
+    riquadro.addEventListener('load', () => {
+      const ricalcola = () => adatta(riquadro, cornice);
+      const zona = riquadro.contentDocument.querySelector('main');
+      if (zona) new ResizeObserver(ricalcola).observe(zona);
+      ricalcola();
+      riquadro.contentDocument.fonts?.ready.then(ricalcola);
+    });
+    cornice.append(riquadro);
+    vetrine.push({ riquadro, cornice });
+    return { cornice, riquadro };
+  }
+
+  // Selettori TEMA e ASPETTO di un carosello: cambiano solo i suoi widget, senza ricaricarlo (partono da SCURO e STANDARD)
+  function selettori(pacchetto, riquadro) {
+    const stile = { tema: 'dark', aspetto: 'standard' };
+    const gruppo = (nome, chiave, voci) => {
+      const scelta = document.createElement('div');
+      scelta.className = 'scelta';
+      scelta.setAttribute('role', 'group');
+      scelta.setAttribute('aria-label', `${nome} del ${pacchetto.nome}`);
+      const pulsanti = document.createElement('div');
+      pulsanti.className = 'scelta-voci';
+      voci.forEach(([valore, testo]) => {
+        const pulsante = document.createElement('button');
+        pulsante.type = 'button';
+        pulsante.textContent = testo;
+        pulsante.setAttribute('aria-pressed', String(stile[chiave] === valore));
+        pulsante.addEventListener('click', () => {
+          stile[chiave] = valore;
+          pulsanti.querySelectorAll('button').forEach(voce => voce.setAttribute('aria-pressed', String(voce === pulsante)));
+          riquadro.contentWindow?.impostaStile?.(stile.tema, stile.aspetto);
+        });
+        pulsanti.append(pulsante);
+      });
+      scelta.append(pulsanti);   // il nome (Tema, Aspetto) solo per chi legge con lo screen reader, in aria-label
+      return scelta;
+    };
+    const contenitore = document.createElement('div');
+    contenitore.className = 'stile';
+    contenitore.append(gruppo('Tema', 'tema', [['light', 'Chiaro'], ['dark', 'Scuro']]),
+      gruppo('Aspetto', 'aspetto', [['standard', 'Standard'], ['minimal', 'Compatto']]));
+    return contenitore;
+  }
+
+  function catalogo() {
+    const contenitore = document.getElementById('catalogo');
+    const pacchetti = Pacchetti.elenco.map(Pacchetti.pacchetto).filter(Boolean);
+    pacchetti.forEach(pacchetto => {
+      const blocco = document.createElement('section');
+      blocco.className = 'pacchetto';
+      const titolo = document.createElement('h2');
+      titolo.className = 'nome-pacchetto';
+      titolo.textContent = pacchetto.nome;
+      const { cornice, riquadro } = vetrina(pacchetto);
+      const testa = document.createElement('div');
+      testa.className = 'testa-pacchetto';
+      testa.append(titolo, selettori(pacchetto, riquadro));
+      blocco.append(testa, cornice);
+      contenitore.append(blocco);
+    });
+    const moduli = pacchetti.reduce((totale, pacchetto) => totale + pacchetto.moduli.length, 0);
+    document.getElementById('stato').textContent = `${pacchetti.length} pacchetti · ${moduli} moduli`;
+  }
+
+  const ricalcolaTutte = () => vetrine.forEach(({ riquadro, cornice }) => adatta(riquadro, cornice));
+  window.addEventListener('resize', ricalcolaTutte);
+  telefono.addEventListener('change', ricalcolaTutte);
+  catalogo();
+</script>
+</body>
+</html>
