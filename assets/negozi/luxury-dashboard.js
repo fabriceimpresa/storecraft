@@ -4,7 +4,7 @@ Dashboard.contenuto({
     titolo: false,  // come TEBE: niente titolo, banner al centro dell'intestazione
     dataOra: true   // a sinistra, al posto dell'interruttore dei negozi di TEBE, data e ora del giorno
   },
-  logo: { src: 'img/luxury/logo-lxry-orizzontale.png', larghezza: 205, alt: 'LUXURY OUTLET' },
+  logo: { src: 'img/luxury/logo-lxry-orizzontale.png', larghezza: 185, alt: 'LUXURY OUTLET' },
   identita: ['VIA DEL CORSO 15', 'OUTLET MULTI BRAND · LINEA LXRY'],
   qr: 'https://instagram.com/luxuryoutletroma',
   cassa: 'sempre',

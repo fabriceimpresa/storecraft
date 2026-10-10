@@ -34,7 +34,7 @@ aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8px 68px;   /* sotto STORE // CRAFT 68 px prima di CREA CARTELLI (56 fino al 10 ottobre 2026: 12 px in più tra intestazione e resto) */
+  padding: 0 8px 62px;   /* sotto STORE // CRAFT 62 px prima di CREA CARTELLI (56 fino al 10 ottobre 2026, poi 68, poi 62: 6 px in più tra intestazione e resto) */
   width: 100%;
 }
 
@@ -241,8 +241,8 @@ main { flex: 1; padding: 24px 3rem 2rem; overflow-y: auto; position: relative; s
 main > * { max-width: calc(1450px - 6rem); margin-left: auto; margin-right: auto; }
 header { position: relative; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; margin-bottom: 2rem; }
 /* Sul desktop il divisorio sotto l'intestazione cade sempre all'altezza della voce CREA CARTELLI del menu laterale
-   (24 px sopra + 106 px di intestazione = 130 px; prima del 10 ottobre 2026 94 px, 12 px più in alto), con il titolo, l'interruttore o l'aspetto che sia */
-@media screen and (min-width: 721px) { #main-content > header { min-height: 106px; } }
+   (24 px sopra + 100 px di intestazione = 124 px; prima del 10 ottobre 2026 94 px, 6 px più in alto), con il titolo, l'interruttore o l'aspetto che sia */
+@media screen and (min-width: 721px) { #main-content > header { min-height: 100px; } }
 /* Sotto il divisorio lo stesso spazio che c'è sopra, tra il sottotitolo e il divisorio (circa 35 px in STANDARD): nel look COMPATTO
    il sottotitolo in Arial è più piccolo e lascia sopra 5 px in più, quindi anche sotto si aggiungono 5 px */
 @media screen and (min-width: 721px) { :root[data-interface-look="minimal"] #main-content > header { margin-bottom: calc(2rem + 5px); } }
@@ -1215,7 +1215,7 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
    di CREA CARTELLI del menu laterale. */
 @media screen and (min-width: 721px) {
   #main-content > header.solo-selettori,
-  :root[data-interface-look="minimal"] #main-content > header.solo-selettori { min-height: 0; padding-bottom: 48px; margin-bottom: 16px; border-bottom: 0; }
+  :root[data-interface-look="minimal"] #main-content > header.solo-selettori { min-height: 0; padding-bottom: 42px; margin-bottom: 16px; border-bottom: 0; }
   #main-content > header.solo-selettori { display: flex; justify-content: space-between; align-items: center; }
   #main-content > header.solo-selettori .mode-switcher { position: static; display: inline-flex; }
   #main-content > header.solo-selettori .store-identity { text-align: center; padding-bottom: 0; }  /* Al centro si alternano ogni 2 minuti (dashboard.js) indirizzo e descrizione e la scritta Visual Merchandising Studio:
