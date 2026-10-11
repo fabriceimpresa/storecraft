@@ -5,13 +5,13 @@ Pacchetti.registra('cassa', {
   nome: 'Pacchetto Utilità Cassa',
   titolo: 'Utilità Cassa',   // titolo breve, sopra il carosello in Gestione pacchetti
   tipo: 'cassa',
-  descrizione: "Strumenti di cassa: calcola sconto, calcola aliquota sconto, cambio valuta, calcola IVA, generatore QR code e blocco note.",
+  descrizione: "Strumenti di cassa: calcola sconto, calcola aliquota sconto, cambio valuta, calcola IVA, generatore QR code e bacheca.",
   moduli: [
     { titolo: 'Calcola Sconto', strumento: 'widget-sconto' },
     { titolo: 'Calcola Aliquota Sconto', strumento: 'widget-aliquota' },
     { titolo: 'Cambio Valuta', strumento: 'widget-valuta' },
     { titolo: 'Calcola IVA', strumento: 'widget-iva' },
     { titolo: 'Generatore QR Code', strumento: 'widget-qrcode' },
-    { titolo: 'Blocco Note', strumento: 'widget-note' }
+    { titolo: 'Bacheca', strumento: 'widget-bacheca' }
   ]
 });

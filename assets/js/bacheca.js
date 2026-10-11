@@ -1,6 +1,6 @@
-/* Blocco Note (Utilità Cassa): post-it con un titolo e un testo libero, nella pagina blocco-note.html del negozio, a
-   schermo intero. Stile in assets/css/blocco-note.css.
-   - Le note stanno nel browser, una lista per negozio (localStorage, chiave "storecraft_blocco_note_<negozio>"): solo
+/* Bacheca (Utilità Cassa): post-it con un titolo e un testo libero, nella pagina bacheca.html del negozio, a
+   schermo intero. Stile in assets/css/bacheca.css.
+   - Le note stanno nel browser, una lista per negozio (localStorage, chiave "storecraft_bacheca_<negozio>", fino all'11 ottobre 2026 "storecraft_blocco_note_<negozio>"): solo
      testo, poche decine di KB anche con tante note. Come la lista di stampa e i loghi personali restano nel browser
      e nel computer in cui si scrivono.
    - Ogni post-it ha un aspetto suo, scelto quando nasce: colore della carta, inclinazione, dettaglio (nastro adesivo,
@@ -9,12 +9,22 @@
      e si posano, e quando la bacheca cambia (nota nuova, eliminata, finestra più stretta) si spostano animati.
    - Se i post-it non entrano nello schermo, o la finestra è stretta, diventano etichette con il solo titolo, cliccabili.
    - Un clic apre il post-it in grande per scrivere: si salva da solo mentre si scrive; una nota lasciata vuota sparisce.
-   Uso nella pagina: <div id="bacheca" data-blocco-note></div> con la barra (#nuova, #info) e l'editor (#velo…).
-   BloccoNote.elenco(negozio) dà le note (anche al widget della dashboard, cassa.js). Testi scritti sempre con
+   Uso nella pagina: <div id="bacheca" data-bacheca></div> con la barra (#nuova, #info) e l'editor (#velo…).
+   Bacheca.elenco(negozio) dà le note (anche al widget della dashboard, cassa.js). Testi scritti sempre con
    textContent. */
 (() => {
   const NEGOZIO = document.documentElement.dataset.negozio || 'luxury';
-  const chiave = negozio => `storecraft_blocco_note_${negozio}`;
+  const chiave = negozio => `storecraft_bacheca_${negozio}`;
+  // fino all'11 ottobre 2026 la Bacheca si chiamava Blocco Note: le note salvate con la chiave di prima passano alla
+  // nuova la prima volta che si leggono, così non si perde niente
+  function trasloca(negozio) {
+    try {
+      const vecchia = `storecraft_blocco_note_${negozio}`;
+      const prima = localStorage.getItem(vecchia);
+      if (prima !== null && localStorage.getItem(chiave(negozio)) === null) localStorage.setItem(chiave(negozio), prima);
+      if (prima !== null) localStorage.removeItem(vecchia);
+    } catch (errore) { /* localStorage spento: niente da spostare */ }
+  }
   // Carte dei post-it, sempre in quest'ordine (le note salvate ricordano la posizione): giallo, il colore base, rosa,
   // azzurro, verdino, arancio, viola, rosso e ocra. Ogni nota nuova prende un colore a caso, con il giallo classico più
   // probabile degli altri (PESI: circa una nota su tre), diverso da quello della
@@ -28,11 +38,12 @@
   const MAX_TESTO = 1500;
 
   function elenco(negozio = NEGOZIO) {
+    trasloca(negozio);
     try {
       const note = JSON.parse(localStorage.getItem(chiave(negozio)) || '[]');
       return Array.isArray(note) ? note : [];
     } catch (errore) {
-      console.error('Lettura del blocco note non riuscita.', errore);
+      console.error('Lettura della bacheca non riuscita.', errore);
       return [];
     }
   }
@@ -42,7 +53,7 @@
       localStorage.setItem(chiave(NEGOZIO), JSON.stringify(note));
       return true;
     } catch (errore) {
-      console.error('Salvataggio del blocco note non riuscito.', errore);
+      console.error('Salvataggio della bacheca non riuscito.', errore);
       return false;
     }
   }
@@ -71,14 +82,15 @@
       giro: Math.round((Math.random() * 5 - 2.5) * 10) / 10,
       seme: Math.floor(Math.random() * 1000),
       creata: Date.now(),
-      modificata: Date.now()
+      modificata: Date.now(),
+      nuova: true   // da leggere: l'avviso della dashboard resta finché qualcuno non apre il post-it
     };
   }
 
   // ----- Pagina -----
-  const bacheca = document.querySelector('[data-blocco-note]');
+  const bacheca = document.querySelector('[data-bacheca]');
   if (!bacheca) {
-    window.BloccoNote = Object.freeze({ elenco });
+    window.Bacheca = Object.freeze({ elenco });
     return;
   }
 
@@ -102,13 +114,13 @@
   const quando = tempo => new Date(tempo).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
 
 
-  // Misure della bacheca (variabili CSS di .bn-griglia): larghezza minima di una colonna, altezza di una riga, spazio
+  // Misure della bacheca (variabili CSS di .bc-griglia): larghezza minima di una colonna, altezza di una riga, spazio
   function misure(griglia) {
     const stile = getComputedStyle(griglia);
     return {
-      colonna: parseFloat(stile.getPropertyValue('--bn-colonna')) || 180,
-      riga: parseFloat(stile.getPropertyValue('--bn-riga')) || 165,
-      spazio: parseFloat(stile.getPropertyValue('--bn-spazio')) || 26
+      colonna: parseFloat(stile.getPropertyValue('--bc-colonna')) || 180,
+      riga: parseFloat(stile.getPropertyValue('--bc-riga')) || 165,
+      spazio: parseFloat(stile.getPropertyValue('--bc-spazio')) || 26
     };
   }
 
@@ -217,7 +229,7 @@
     const elenco = [];
     if (soloOggi) {
       const data = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-      elenco.push({ titolo: [`Solo oggi, ${data}, hai `, nodo('strong', 'bn-numero', String(diOggi.length)), ` ${scrittaNote(diOggi.length)} in bacheca`], note: diOggi, aperto: true });
+      elenco.push({ titolo: [`Solo oggi, ${data}, hai `, nodo('strong', 'bc-numero', String(diOggi.length)), ` ${scrittaNote(diOggi.length)} in bacheca`], note: diOggi, aperto: true });
     }
     const settimane = new Map();
     lista.filter(nota => !(soloOggi && nota.creata >= oggi)).forEach(nota => {
@@ -235,13 +247,13 @@
     const lista = ordinate();
     // promemoria scritto a mano: Oggi, domenica 11 ottobre, hai 12 note in bacheca!
     const oggi = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-    // il numero di note in grassetto (oro nel tema scuro, rosso mattone nel chiaro: .bn-numero)
-    const numero = nodo('strong', 'bn-numero', String(lista.length));
+    // il numero di note in grassetto (oro nel tema scuro, rosso mattone nel chiaro: .bc-numero)
+    const numero = nodo('strong', 'bc-numero', String(lista.length));
     $('info').replaceChildren(...(!lista.length ? [`Oggi, ${oggi}, nessuna nota in bacheca.`]
       : [`Oggi, ${oggi}, hai `, numero, ` ${scrittaNote(lista.length)} in bacheca!`]));
     if (!lista.length) {
-      const vuota = nodo('div', 'bn-vuota');
-      vuota.append(nodo('strong', '', 'Blocco Note'), 'Ancora nessun post-it. Premi «Nuova nota» e scrivi un promemoria, un ordine, un numero di telefono…');
+      const vuota = nodo('div', 'bc-vuota');
+      vuota.append(nodo('strong', '', 'Bacheca'), 'Ancora nessun post-it. Premi il pulsante con il + qui sopra e scrivi un promemoria, un ordine, un numero di telefono…');
       bacheca.replaceChildren(vuota);
       primaVolta = false;
       return;
@@ -249,7 +261,7 @@
     const crea = (tipo, note) => note.map(nota => {
       const decoro = nota.decoro === 'puntina' ? 'nastro' : nota.decoro;
       const nastro = decoro === 'nastro' ? ` nastro-${(nota.seme || 0) % 4}` : '';
-      const el = nodo('button', tipo === 'post-it' ? `bn-nota ${formato(nota)} ${decoro}${nastro}` : 'bn-etichetta');
+      const el = nodo('button', tipo === 'post-it' ? `bc-nota ${formato(nota)} ${decoro}${nastro}` : 'bc-etichetta');
       el.type = 'button';
       el.dataset.id = nota.id;
       el.style.setProperty('--carta', CARTE[nota.carta % CARTE.length]);
@@ -257,14 +269,16 @@
       el.setAttribute('aria-label', `Apri la nota ${titoloDi(nota)}`);
       if (tipo === 'post-it') {
         // senza titolo il post-it mostra solo il testo (il titolo ricavato dal testo serve alle etichette)
-        if (nota.sticker) el.append(nodo('span', 'bn-sticker', nota.sticker));
-        if (nota.titolo.trim()) el.append(nodo('h2', 'bn-nota-titolo', nota.titolo.trim()));
-        el.append(nodo('p', 'bn-nota-testo', nota.testo), nodo('span', 'bn-nota-data', quando(nota.modificata)));
+        if (nota.sticker) el.append(nodo('span', 'bc-sticker', nota.sticker));
+        if (nota.titolo.trim()) el.append(nodo('h2', 'bc-nota-titolo', nota.titolo.trim()));
+        el.append(nodo('p', 'bc-nota-testo', nota.testo), nodo('span', 'bc-nota-data', quando(nota.modificata)));
+        if (nota.nuova) el.append(nodo('span', 'bc-da-leggere', 'nuova'));   // ancora da leggere
       } else {
         el.textContent = nota.sticker ? `${nota.sticker} ${titoloDi(nota)}` : titoloDi(nota);
+        if (nota.nuova) el.prepend(nodo('span', 'bc-da-leggere-punto'));   // pallino rosso: ancora da leggere
       }
       // in modalità cancellazione un tocco seleziona la nota invece di aprirla; il pallino in alto a sinistra lo mostra
-      el.append(nodo('span', 'bn-seleziona'));
+      el.append(nodo('span', 'bc-seleziona'));
       el.style.setProperty('--i', String(elementiCreati++ % 7));
       if (selezionate.has(nota.id)) el.classList.add('selezionata');
       if (cancellazione) el.setAttribute('aria-pressed', String(selezionate.has(nota.id)));
@@ -278,16 +292,16 @@
     const elementi = [];
     bacheca.replaceChildren(...sezioni.map(gruppo => {
       const tipo = gruppo.aperto ? 'post-it' : 'etichette';
-        const sezione = nodo('section', 'bn-gruppo');
+        const sezione = nodo('section', 'bc-gruppo');
         if (gruppo.titolo) {
-          const titolo = nodo('h2', 'bn-gruppo-titolo');
+          const titolo = nodo('h2', 'bc-gruppo-titolo');
           // il testo in un solo elemento, così la linea che segue (::after) non lo spezza
           const testo = nodo('span');
           testo.append(...gruppo.titolo.map(parte => (typeof parte === 'string' ? parte : parte.cloneNode(true))));
           titolo.append(testo);
           sezione.append(titolo);
         }
-        const contenitore = nodo('div', tipo === 'post-it' ? 'bn-griglia' : 'bn-elenco');
+        const contenitore = nodo('div', tipo === 'post-it' ? 'bc-griglia' : 'bc-elenco');
         const suoi = crea(tipo, gruppo.note);
         contenitore.append(...suoi);
         sezione.append(contenitore);
@@ -297,7 +311,7 @@
     }));
     // i post-it aperti si dispongono in colonne, in ordine di tempo
     contenitori.forEach((contenitore, i) => {
-      if (contenitore.classList.contains('bn-griglia')) disponi(contenitore, [...contenitore.children], sezioni[i].note);
+      if (contenitore.classList.contains('bc-griglia')) disponi(contenitore, [...contenitore.children], sezioni[i].note);
     });
     if (primaVolta && !riduciMovimento.matches) {
       const ordine = mescolati(elementi.length);
@@ -310,16 +324,41 @@
     primaVolta = false;
   }
 
+  // ----- Pulsanti e messaggi -----
+  // NUOVA NOTA, CANCELLA NOTE e ANNULLA sono pulsanti a icona, come la pulsantiera della lista di stampa: il loro messaggio
+  // (.bc-suggerimento) compare sotto al passaggio del mouse e sparisce da solo, e compare anche quando il pulsante cambia
+  // stato (utile dal telefono, dove non c'è il passaggio del mouse)
+  const DURATA_SUGGERIMENTO = 1800;
+  function suggerisci(tasto, durata = DURATA_SUGGERIMENTO) {
+    const fumetto = tasto.querySelector('.bc-suggerimento');
+    if (!fumetto) return;
+    clearTimeout(tasto.timerSuggerimento);
+    fumetto.classList.add('is-visible');
+    tasto.timerSuggerimento = setTimeout(() => fumetto.classList.remove('is-visible'), durata);
+  }
+  document.querySelectorAll('.bc-tasto').forEach(tasto => {
+    tasto.addEventListener('mouseenter', () => suggerisci(tasto));
+    tasto.addEventListener('mouseleave', () => {
+      clearTimeout(tasto.timerSuggerimento);
+      tasto.querySelector('.bc-suggerimento')?.classList.remove('is-visible');
+    });
+  });
+
   // ----- Cancella note -----
-  // CANCELLA NOTE, accanto a NUOVA NOTA, mette la bacheca in modalità cancellazione, come le app dell'iPhone tenendo
-  // premuto: le note tremano e su ognuna compare un pallino; un tocco la seleziona (pallino rosso con la spunta). Il
-  // pulsante dice FINE finché non c'è niente di selezionato (esce senza cancellare), poi diventa rosso, «Cancella 3 note»,
-  // e con un clic cancella tutte le note selezionate. Con note selezionate compare accanto ANNULLA, che esce senza
-  // cancellare e toglie tutte le selezioni in una volta. Esc esce dalla modalità.
+  // CANCELLA NOTE (il cestino), accanto a NUOVA NOTA, mette la bacheca in modalità cancellazione, come le app dell'iPhone
+  // tenendo premuto: le note tremano e su ognuna compare un pallino; un tocco la seleziona (pallino rosso con la spunta).
+  // Finché non c'è niente di selezionato il cestino esce senza cancellare; con note selezionate diventa rosso, con il
+  // numero, e con un clic cancella tutte le note selezionate («Cancella 3 note»). Con note selezionate compare accanto
+  // ANNULLA, che esce senza cancellare e toglie tutte le selezioni in una volta. Esc esce dalla modalità.
   const tastoCancella = $('cancella');
   function aggiornaCancella() {
     const n = selezionate.size;
-    $('cancellaTesto').textContent = !cancellazione ? 'Cancella note' : !n ? 'Fine' : `Cancella ${n} ${scrittaNote(n)}`;
+    const messaggio = !cancellazione ? 'Seleziona note da cancellare'
+      : !n ? 'Tocca le note da cancellare, o qui per uscire' : `Cancella ${n} ${scrittaNote(n)}`;
+    $('cancellaTesto').textContent = messaggio;
+    tastoCancella.setAttribute('aria-label', messaggio);
+    $('cancellaConta').textContent = String(n);
+    $('cancellaConta').hidden = !(cancellazione && n > 0);
     tastoCancella.classList.toggle('rosso', cancellazione && n > 0);
     $('annulla').hidden = !(cancellazione && n > 0);
     tastoCancella.setAttribute('aria-pressed', String(cancellazione));
@@ -330,6 +369,7 @@
     el.classList.toggle('selezionata', selezionate.has(id));
     el.setAttribute('aria-pressed', String(selezionate.has(id)));
     aggiornaCancella();
+    suggerisci(tastoCancella);
   }
   function esciCancellazione() {
     cancellazione = false;
@@ -339,11 +379,17 @@
   }
   tastoCancella.addEventListener('click', () => {
     if (!cancellazione) {
-      if (!note.length) return;
+      if (!note.length) {
+        $('cancellaTesto').textContent = 'Nessuna nota da cancellare';
+        suggerisci(tastoCancella);
+        setTimeout(aggiornaCancella, DURATA_SUGGERIMENTO + 200);
+        return;
+      }
       cancellazione = true;
       selezionate.clear();
       disegna();
       aggiornaCancella();
+      suggerisci(tastoCancella, 3000);
       return;
     }
     if (!selezionate.size) { esciCancellazione(); return; }
@@ -364,8 +410,8 @@
     if (note.length <= LIMITE_NOTE || avvisoAperto) return;
     avvisoAperto = true;
     const recenti = note.filter(n => Date.now() - n.modificata <= UN_MESE).length;
-    const velo = nodo('div', 'bn-velo bn-avviso-velo');
-    const box = nodo('div', 'bn-avviso');
+    const velo = nodo('div', 'bc-velo bc-avviso-velo');
+    const box = nodo('div', 'bc-avviso');
     box.setAttribute('role', 'alertdialog');
     box.setAttribute('aria-modal', 'true');
     box.setAttribute('aria-labelledby', 'bnAvvisoTitolo');
@@ -373,9 +419,9 @@
     titolo.id = 'bnAvvisoTitolo';
     const testo = nodo('p', '', `Sulla bacheca ci sono ${note.length} note. Vuoi fare un po' di ordine? `
       + `Le note dell'ultimo mese sono ${recenti}.`);
-    const comandi = nodo('div', 'bn-avviso-comandi');
+    const comandi = nodo('div', 'bc-avviso-comandi');
     const pulsante = (testoPulsante, classe, azione) => {
-      const b = nodo('button', `bn-comando ${classe}`, testoPulsante);
+      const b = nodo('button', `bc-comando ${classe}`, testoPulsante);
       b.type = 'button';
       b.addEventListener('click', () => { azione(); chiudiAvviso(); });
       return b;
@@ -383,8 +429,8 @@
     const chiudiAvviso = () => { velo.remove(); avvisoAperto = false; document.removeEventListener('keydown', esc); };
     const esc = evento => { if (evento.key === 'Escape') chiudiAvviso(); };
     comandi.append(
-      pulsante('Tieni l\'ultimo mese', 'bn-fatto', () => { note = note.filter(n => Date.now() - n.modificata <= UN_MESE); salva(note); disegna(); }),
-      pulsante('Cancella tutte', 'bn-elimina', () => {
+      pulsante('Tieni l\'ultimo mese', 'bc-fatto', () => { note = note.filter(n => Date.now() - n.modificata <= UN_MESE); salva(note); disegna(); }),
+      pulsante('Cancella tutte', 'bc-elimina', () => {
         if (!confirm(`Cancellare tutte le ${note.length} note?`)) return;
         note = [];
         salva(note);
@@ -406,9 +452,11 @@
   let ultimoFuoco = null;
   let salvataggio = 0;
 
-  function apri(id) {
+  // aprire un post-it lo segna come letto (toglie «nuova»), tranne quando si apre la nota appena creata per scriverla
+  function apri(id, appenaCreata = false) {
     const nota = note.find(n => n.id === id);
     if (!nota) return;
+    if (nota.nuova && !appenaCreata) { delete nota.nuova; salva(note); }
     aperta = id;
     ultimoFuoco = document.activeElement;
     foglio.style.setProperty('--carta', CARTE[nota.carta % CARTE.length]);
@@ -451,14 +499,14 @@
   function nuova() {
     const nota = nuovaNota(ordinate()[0]);
     note.push(nota);
-    apri(nota.id);
+    apri(nota.id, true);
   }
 
   // Colore scelto dall'utente: una fila di pallini, uno per carta, sotto il testo
   const NOMI_CARTE = ['Giallo', 'Rosa', 'Azzurro', 'Verdino', 'Arancio', 'Viola', 'Rosso', 'Ocra'];
   const colori = $('colori');
   colori.append(...CARTE.map((carta, i) => {
-    const pallino = nodo('button', 'bn-colore');
+    const pallino = nodo('button', 'bc-colore');
     pallino.type = 'button';
     pallino.style.setProperty('--carta', carta);
     pallino.setAttribute('aria-label', NOMI_CARTE[i]);
@@ -467,7 +515,7 @@
     return pallino;
   }));
   function segnaColore(carta) {
-    colori.querySelectorAll('.bn-colore').forEach((pallino, i) => pallino.setAttribute('aria-pressed', String(i === carta)));
+    colori.querySelectorAll('.bc-colore').forEach((pallino, i) => pallino.setAttribute('aria-pressed', String(i === carta)));
   }
   function scegliColore(carta) {
     const nota = note.find(n => n.id === aperta);
@@ -532,7 +580,7 @@
     apriTavolozza();
   }
   const voci = (griglia, azione) => $(griglia).append(...EMOJI.map(emoji => {
-    const b = nodo('button', 'bn-emoji-voce', emoji);
+    const b = nodo('button', 'bc-emoji-voce', emoji);
     b.type = 'button';
     // tenere il cursore nel campo: il clic non gli toglie il fuoco
     b.addEventListener('mousedown', evento => evento.preventDefault());
@@ -554,7 +602,7 @@
   });
   // un clic fuori dalle tavolozze le chiude
   foglio.addEventListener('click', evento => {
-    if (tavolozzaAperta() && !evento.target.closest('.bn-emoji, #emojiTasto, #stickerTasto')) apriTavolozza();
+    if (tavolozzaAperta() && !evento.target.closest('.bc-emoji, #emojiTasto, #stickerTasto')) apriTavolozza();
   });
 
   // cambia aspetto: colore, dettaglio e inclinazione nuovi
@@ -610,7 +658,16 @@
   });
 
   // i caratteri cambiano le misure: si disegna quando sono pronti
-  // all'apertura, finita la caduta dei post-it, l'eventuale avviso dei troppi post-it
-  (document.fonts?.ready || Promise.resolve()).then(() => { disegna(); setTimeout(avvisoTroppe, riduciMovimento.matches ? 0 : 900); });
-  window.BloccoNote = Object.freeze({ elenco });
+  // all'apertura, finita la caduta dei post-it, l'eventuale avviso dei troppi post-it; aperta dal banner della dashboard
+  // (NUOVI MESSAGGI IN BACHECA, bacheca.html?nota=<id>) apre subito quel post-it, che così diventa letto
+  const daAprire = new URLSearchParams(location.search).get('nota');
+  if (daAprire) history.replaceState(null, '', location.pathname);
+  (document.fonts?.ready || Promise.resolve()).then(() => {
+    disegna();
+    setTimeout(() => {
+      if (daAprire && note.some(n => n.id === daAprire)) apri(daAprire);
+      else avvisoTroppe();
+    }, riduciMovimento.matches ? 0 : 900);
+  });
+  window.Bacheca = Object.freeze({ elenco });
 })();

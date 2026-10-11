@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261011-45"></script>
+  <script src="assets/js/negozi.js?v=20261011-52"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261011-45"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261011-52"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261011-45"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261011-52"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -185,7 +185,7 @@
     ['menu con stile proprio', t => /select-control|price-range-control/.test(t)],
     ['testo con innerHTML', t => /innerHTML\s*=\s*`[^`]*\$\{/.test(t)]
   ];
-  const SERVIZIO = ['genera_loghi.html', 'gestisci_lista.html', 'lista-stampa.html', 'cronologia-stampa.html', 'blocco-note.html', 'pdf-viewer.html'];
+  const SERVIZIO = ['genera_loghi.html', 'gestisci_lista.html', 'lista-stampa.html', 'cronologia-stampa.html', 'bacheca.html', 'pdf-viewer.html'];
 
   async function testo(url) {
     const risposta = await fetch(url, { cache: 'no-store' });

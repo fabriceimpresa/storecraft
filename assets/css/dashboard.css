@@ -1255,6 +1255,10 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   .testata-titolo::before,
   .testata-titolo::after { content: ''; width: 36px; height: 1px; background: currentColor; opacity: .45; }
   .testata-titolo::after { margin-left: -.32em; }   /* la spaziatura dopo l'ultima lettera non allontana la linea destra */
+  /* NUOVI MESSAGGI IN BACHECA: stesso stile, si clicca per aprire la Bacheca; nascosto non prende i clic */
+  .testata-avviso { cursor: pointer; }
+  .testata-avviso:hover { color: var(--interface-accent-bright, var(--gold)); }
+  .testata-avviso:not(.is-visibile) { pointer-events: none; }
 }
 .testata-centro { display: none; }   /* sul telefono indirizzo e descrizione stanno nella riga del logo, nascosti */
 .orologio-testata { display: none; }   /* data e ora solo da desktop e tablet (regole sopra) */
@@ -1384,21 +1388,65 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   :root[data-interface-theme="light"] body.sidebar-collapsed aside { box-shadow: none; }
 }
 
-/* Blocco Note (Utilità Cassa, cassa.js): strumento speciale, con un aspetto suo. Al posto dei campi un piccolo mazzo di
-   post-it a ventaglio con i titoli delle ultime note (carta colorata, inclinata, ombra corta), il numero di note e il
-   pulsante che apre la bacheca a schermo intero (blocco-note.html). Al passaggio del mouse il ventaglio si apre. */
-#tools .widget-note { overflow: hidden; }
-.note-mazzo { position: relative; height: 104px; margin: 16px 0 10px; }
-.note-foglio {
+/* Bacheca (Utilità Cassa, cassa.js): strumento speciale, con un aspetto suo. Al posto dei campi un piccolo mazzo di
+   post-it a ventaglio con i titoli delle ultime note: post-it classici, quadrati, con la fascia adesiva un poco più
+   scura in alto e l'angolo in basso a destra appena sollevato (ombra corta), il numero di note e il pulsante che apre
+   la bacheca a schermo intero (bacheca.html). Al passaggio del mouse il ventaglio si apre. */
+#tools .widget-bacheca { overflow: hidden; }
+/* titolo «La tua Bacheca»: il widget è speciale, quindi il titolo è nel Cinzel del marchio STORE // CRAFT e del banner
+   dell'intestazione, in oro e con le lettere spaziate, un poco più grande degli altri titoli dei widget; vale in tutti gli
+   aspetti e i temi, quindi più forte delle regole dei titoli dei widget di theme.css */
+#tools .widget-bacheca { position: relative; }
+#tools #widget-bacheca h3.bacheca-titolo {   /* due id: più forte delle regole :root[…] body #tools .widget h3 */
+  margin-bottom: 6px;
+  color: var(--interface-accent, var(--accent)) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+:root[data-interface-theme="light"] #tools #widget-bacheca h3.bacheca-titolo { color: #b48b37 !important; }   /* l'oro dei cartelli */
+/* avviso delle note nuove: campanella e numero, in alto a destra, rosso come il cestino della Bacheca; compare con un
+   piccolo scatto */
+.bacheca-avviso {
   position: absolute;
-  top: 6px;
-  left: calc(4% + var(--i) * 27%);
-  width: 44%;
-  height: 78px;
-  padding: 16px 9px 8px;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px 0 8px;
+  border-radius: 14px;
+  background: #96382b;
+  color: #fff;
+  font: 700 13px/1 'Plus Jakarta Sans', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+  animation: bacheca-avviso .5s cubic-bezier(.2, .9, .3, 1.4) both;
+}
+.bacheca-avviso[hidden] { display: none; }
+.bacheca-avviso svg { width: 16px; height: 16px; transform-origin: 50% 10%; animation: bacheca-campanella 1.2s ease .5s 2; }
+:root[data-interface-theme="light"] .bacheca-avviso { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+@keyframes bacheca-avviso { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes bacheca-campanella { 0%, 60%, 100% { transform: rotate(0); } 15% { transform: rotate(16deg); } 30% { transform: rotate(-14deg); } 45% { transform: rotate(8deg); } }
+@media (prefers-reduced-motion: reduce) { .bacheca-avviso, .bacheca-avviso svg { animation: none; } }
+/* fondo come le anteprime delle schede (.preview): scuro nel tema scuro, beige del menu laterale nel chiaro */
+.bacheca-mazzo { position: relative; height: 128px; margin: 16px 0 12px; overflow: hidden; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; }
+:root[data-interface-theme="light"] .bacheca-mazzo { background: var(--interface-sidebar); }
+.bacheca-foglio {
+  position: absolute;
+  top: 18px;
+  left: calc(50% - 44px + (var(--i) - 1) * 76px);   /* un poco sovrapposti, come un mazzo */
+  box-sizing: border-box;
+  width: 88px;
+  height: 88px;
+  padding: 18px 9px 8px;
   overflow: hidden;
-  border-radius: 2px 2px 2px 12px / 2px 2px 2px 5px;
-  background: var(--carta);
+  border-radius: 1px 1px 2px 1px;
+  /* fascia adesiva in alto, un poco più scura, come i blocchetti veri */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .07) 0 13px, transparent 13px), var(--carta);
   color: #2b2620;
   font: 600 0.72rem/1.25 'Plus Jakarta Sans', sans-serif;
   text-overflow: ellipsis;
@@ -1406,22 +1454,21 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
   transition: transform .3s cubic-bezier(.2, .9, .3, 1.2);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
-/* nastro adesivo sul foglio davanti */
-.note-foglio:last-child::before {
+/* angolo in basso a destra appena sollevato */
+.bacheca-foglio::after {
   content: '';
   position: absolute;
-  top: -5px;
-  left: 50%;
-  width: 40px;
-  height: 12px;
-  background: rgba(255, 255, 255, .55);
-  transform: translateX(-50%) rotate(-4deg);
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, .1) 50%);
 }
-#tools .widget-note:hover .note-foglio { transform: rotate(calc(-11deg + var(--i) * 11deg)) translateY(-4px); }
-:root[data-interface-theme="light"] .note-foglio { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
-.note-conteggio { margin: 0 0 14px; color: var(--text-muted); font-size: 0.78rem; }
-#tools .widget-note .tool-btn { margin-top: auto; }   /* in fondo, come Azzera IVA e Scarica QR dei widget accanto */
-@media (prefers-reduced-motion: reduce) { .note-foglio { transition: none; } }
+#tools .widget-bacheca:hover .bacheca-foglio { transform: rotate(calc(-11deg + var(--i) * 11deg)) translateY(-4px); }
+:root[data-interface-theme="light"] .bacheca-foglio { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
+.bacheca-conteggio { margin: 0 0 14px; color: var(--text-muted); font-size: 0.78rem; }
+#tools .widget-bacheca .tool-btn { margin-top: auto; }   /* in fondo, come Azzera IVA e Scarica QR dei widget accanto */
+@media (prefers-reduced-motion: reduce) { .bacheca-foglio { transition: none; } }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="ophilya">
+<head>
+  <meta charset="UTF-8">
+  <script src="../assets/js/negozi.js?v=20261011-52"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bacheca · OPHILYA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-52">
+  <!-- Bacheca (Utilità Cassa): stile e logica comuni ai negozi, la pagina cambia solo data-negozio -->
+  <link rel="stylesheet" href="../assets/css/bacheca.css?v=20261011-52">
+  <script src="../assets/js/theme.js?v=20261011-52"></script>
+</head>
+<body data-layout="note">
+  <header class="bc-testata">
+    <div class="bc-marchio">STORE // CRAFT</div>
+    <h1 class="bc-titolo">Bacheca</h1>
+    <a href="index.html" class="app-close-btn app-close-btn--pdf" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
+  </header>
+
+  <div class="bc-barra">
+    <span class="bc-info" id="info"></span>
+    <!-- nuova nota, cancella note e annulla: pulsanti a icona come la pulsantiera della lista di stampa, ognuno con il suo
+         messaggio sotto (bc-suggerimento) -->
+    <button type="button" class="bc-tasto bc-nuova" id="nuova" aria-label="Aggiungi una nuova nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4h16v10.5L14.5 20H4z"/><path d="M14.5 20v-5.5H20"/><path d="M12 7.5v6M9 10.5h6"/></svg><span class="bc-suggerimento" aria-hidden="true">Aggiungi una nuova nota</span></button>
+    <!-- cancella note: le note tremano e si selezionano, poi si cancellano tutte insieme -->
+    <button type="button" class="bc-tasto bc-cancella" id="cancella" aria-pressed="false" aria-label="Seleziona note da cancellare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h16M9.5 7V4.8h5V7M6.5 7l1 12.2h9l1-12.2M10 10.5v5.5M14 10.5v5.5"/></svg><span class="bc-conta" id="cancellaConta" hidden></span><span class="bc-suggerimento" id="cancellaTesto" aria-hidden="true">Seleziona note da cancellare</span></button>
+    <!-- annulla: esce dalla modalità cancellazione e toglie tutte le selezioni, senza cancellare -->
+    <button type="button" class="bc-tasto bc-annulla" id="annulla" aria-label="Annulla, non cancellare" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span class="bc-suggerimento" aria-hidden="true">Annulla, non cancellare</span></button>
+  </div>
+
+  <main class="bc-bacheca" id="bacheca" data-bacheca aria-label="Le tue note"></main>
+
+  <div class="bc-velo" id="velo" hidden>
+    <div class="bc-foglio" id="foglio" role="dialog" aria-modal="true" aria-label="Nota">
+      <!-- sticker: nell'angolo in alto a destra, dove si attacca; senza sticker un'iconcina, con lo sticker lo sticker stesso -->
+      <button type="button" class="bc-sticker-tasto" id="stickerTasto" aria-expanded="false" aria-controls="stickerTavolozza" title="Sticker" aria-label="Sticker">
+        <span class="bc-sticker" id="notaSticker" aria-hidden="true"></span>
+        <svg class="bc-sticker-icona" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.5V7a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M21 12.5 12.5 21v-4.5a4 4 0 0 1 4-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 7.5v6M9 10.5h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div class="bc-emoji bc-emoji-sticker" id="stickerTavolozza" role="dialog" aria-label="Sticker" hidden>
+        <div class="bc-emoji-titolo">Sticker</div>
+        <div class="bc-emoji-griglia" id="stickerGriglia"></div>
+        <button type="button" class="bc-togli-sticker" id="togliSticker" hidden>Togli lo sticker</button>
+      </div>
+      <input id="notaTitolo" type="text" placeholder="Titolo" autocomplete="off" aria-label="Titolo della nota">
+      <textarea id="notaTesto" placeholder="Scrivi qui…" aria-label="Testo della nota"></textarea>
+      <!-- emoji: l'iconcina a destra, sotto l'ultima riga del testo, apre la tavolozza che le mette nel testo -->
+      <div class="bc-strumenti">
+        <button type="button" class="bc-emoji-tasto" id="emojiTasto" aria-expanded="false" aria-controls="emojiTavolozza" title="Emoji" aria-label="Emoji">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="10" r="1.1" fill="currentColor"/><circle cx="15" cy="10" r="1.1" fill="currentColor"/><path d="M8.3 14c1 1.4 2.2 2 3.7 2s2.7-.6 3.7-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div class="bc-emoji" id="emojiTavolozza" role="dialog" aria-label="Emoji" hidden>
+          <div class="bc-emoji-titolo">Emoji nel testo</div>
+          <div class="bc-emoji-griglia" id="emojiGriglia"></div>
+        </div>
+      </div>
+      <div class="bc-colori" id="colori" role="group" aria-label="Colore della nota"></div>
+      <div class="bc-comandi">
+        <span class="bc-salvata" id="salvata" role="status"></span>
+        <span class="bc-spazio"></span>
+        <button type="button" class="bc-comando" id="aspetto">Cambia aspetto</button>
+        <button type="button" class="bc-comando bc-elimina" id="elimina">Elimina</button>
+        <button type="button" class="bc-comando bc-fatto" id="fatto">Fatto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/bacheca.js?v=20261011-52"></script>
+</body>
+</html>

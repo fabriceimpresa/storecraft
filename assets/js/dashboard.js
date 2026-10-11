@@ -28,7 +28,7 @@
                     la pagina resta nella cartella) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.09 2026';
+  const VERSIONE = 'V 1.2.10 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -405,16 +405,48 @@
         el('strong', { text: dati.identita[0] }), dati.identita[1] ? el('span', { text: dati.identita[1] }) : null) : null);
   }
 
+  // Note nuove della Bacheca (Utilità Cassa): quelle ancora da leggere (nuova: true, finché qualcuno non apre il
+  // post-it, bacheca.js), dalla più recente; le stesse dell'avviso sul widget (cassa.js)
+  function noteNuoveBacheca() {
+    const negozio = document.documentElement.dataset.negozio || 'luxury';
+    try {
+      const note = JSON.parse(localStorage.getItem(`storecraft_bacheca_${negozio}`) || '[]');
+      return Array.isArray(note) ? note.filter(nota => nota.nuova).sort((a, b) => b.creata - a.creata) : [];
+    } catch (errore) { return []; }
+  }
+
   // Banner dell'intestazione: le scritte si alternano in giro, una ogni 10 secondi, quella in uscita sale e sparisce,
-  // quella nuova entra dal basso (stile in dashboard.css, .testata-centro); parte con la prima visibile
+  // quella nuova entra dal basso (stile in dashboard.css, .testata-centro); parte con la prima visibile. Con note nuove
+  // nella Bacheca entra nel giro, dopo ogni scritta, l'avviso NUOVI MESSAGGI IN BACHECA, nello stesso stile di Visual
+  // Merchandising Studio (un clic apre la Bacheca sul post-it da leggere), e si parte da lui
   function alternaTestata(scritte) {
-    let attiva = scritte[0];
-    scritte.forEach((scritta, indice) => {
+    const titolo = scritte.find(scritta => scritta.classList.contains('testata-titolo'));
+    let avviso = null;
+    if (titolo) {
+      avviso = el('div', { class: 'testata-titolo testata-avviso', text: 'Nuovi messaggi in bacheca', title: 'Apri il nuovo messaggio' });
+      // un clic apre la Bacheca sul post-it da leggere più recente, già aperto (bacheca.js legge ?nota=)
+      avviso.addEventListener('click', () => {
+        const prima = noteNuoveBacheca()[0];
+        location.href = prima ? `bacheca.html?nota=${encodeURIComponent(prima.id)}` : 'bacheca.html';
+      });
+      titolo.after(avviso);
+    }
+    const giro = () => (avviso && noteNuoveBacheca().length ? scritte.flatMap(scritta => [scritta, avviso]) : scritte);
+    // al singolare con un solo messaggio da leggere
+    const scriviAvviso = () => { if (avviso) avviso.textContent = noteNuoveBacheca().length === 1 ? 'Nuovo messaggio in bacheca' : 'Nuovi messaggi in bacheca'; };
+    scriviAvviso();
+    let posto = giro().length > scritte.length ? 1 : 0;
+    let attiva = giro()[posto];
+    [...scritte, avviso].filter(Boolean).forEach(scritta => {
       scritta.classList.remove('is-visibile', 'is-sotto', 'is-sopra');
-      scritta.classList.add(indice ? 'is-sotto' : 'is-visibile');
+      scritta.classList.add(scritta === attiva ? 'is-visibile' : 'is-sotto');
     });
     setInterval(() => {
-      const prossima = scritte[(scritte.indexOf(attiva) + 1) % scritte.length];
+      const elenco = giro();
+      posto = (posto + 1) % elenco.length;
+      const prossima = elenco[posto];
+      if (prossima === avviso) scriviAvviso();
+      if (prossima === attiva) return;
       attiva.classList.replace('is-visibile', 'is-sopra');
       prossima.classList.remove('is-sotto');
       prossima.classList.add('is-visibile');

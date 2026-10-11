@@ -1,6 +1,6 @@
 /* Utilità Cassa, comuni a tutti i negozi: Calcola Sconto, Calcola Aliquota Sconto, Cambio Valuta, Calcola IVA,
-   Generatore QR Code, Blocco Note. Stile in assets/css/dashboard.css (.widget); serve qrcode.js (cdnjs) per il QR. Il Blocco Note è
-   uno strumento speciale: il widget mostra le ultime note e un clic apre la sua pagina a schermo intero (blocco-note.html;
+   Generatore QR Code, Bacheca. Stile in assets/css/dashboard.css (.widget); serve qrcode.js (cdnjs) per il QR. La Bacheca è
+   uno strumento speciale: il widget mostra le ultime note e un clic apre la sua pagina a schermo intero (bacheca.html;
    Cassa.crea(…, { note }) ne cambia il percorso).
    Comportamento (regola presa da TEBE): su desktop e tablet lo strumento scelto si apre in un popup al centro della
    pagina, sopra un velo, e si chiude con la ✕, con Esc o toccando il velo; sul telefono gli strumenti restano pronti
@@ -118,28 +118,36 @@
         </div>
       </div>
 
-      <div class="widget widget-note" id="widget-note">
-        <h3>Blocco Note</h3>
-        <div class="note-mazzo" id="note-mazzo" aria-hidden="true"></div>
-        <p class="note-conteggio" id="note-conteggio"></p>
-        <button class="tool-btn" type="button" style="width:100%;" data-cassa="apri-note">Apri Blocco Note</button>
+      <div class="widget widget-bacheca" id="widget-bacheca">
+        <h3 class="bacheca-titolo">La tua Bacheca</h3>
+        <!-- avviso delle note nuove, ancora da leggere: campanella e numero -->
+        <span class="bacheca-avviso" id="bacheca-avviso" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span id="bacheca-avviso-numero"></span></span>
+        <div class="bacheca-mazzo" id="bacheca-mazzo" aria-hidden="true"></div>
+        <p class="bacheca-conteggio" id="bacheca-conteggio"></p>
+        <button class="tool-btn" type="button" style="width:100%;" data-cassa="apri-bacheca">Apri Bacheca</button>
       </div>`;
   }
 
-  // ----- Blocco Note -----
-  // Strumento speciale: non si apre nel popup ma nella sua pagina a schermo intero (blocco-note.html del negozio,
-  // assets/js/blocco-note.js). Il widget mostra le ultime note come un piccolo mazzo di post-it, con i colori di carta
-  // di blocco-note.js, letti dalla stessa lista nel browser (localStorage, una per negozio).
-  const CARTE_NOTE = ['#fff3a3', '#ffd1dc', '#c7ecff', '#d4f5c4', '#ffd9a8', '#e6d7ff', '#ffb3a8', '#ecd08c'];
-  let paginaNote = 'blocco-note.html';
+  // ----- Bacheca -----
+  // Strumento speciale: non si apre nel popup ma nella sua pagina a schermo intero (bacheca.html del negozio,
+  // assets/js/bacheca.js). Il widget mostra le ultime note come un piccolo mazzo di post-it, con i colori di carta
+  // di bacheca.js, letti dalla stessa lista nel browser (localStorage, una per negozio).
+  const CARTE_BACHECA = ['#fff3a3', '#ffd1dc', '#c7ecff', '#d4f5c4', '#ffd9a8', '#e6d7ff', '#ffb3a8', '#ecd08c'];
+  let paginaBacheca = 'bacheca.html';
   function leggiNote() {
+    const negozio = document.documentElement.dataset.negozio || 'luxury';
     try {
-      const note = JSON.parse(localStorage.getItem(`storecraft_blocco_note_${document.documentElement.dataset.negozio || 'luxury'}`) || '[]');
+      // fino all'11 ottobre 2026 la Bacheca si chiamava Blocco Note: le note con la chiave di prima passano alla nuova
+      const vecchia = `storecraft_blocco_note_${negozio}`;
+      const prima = localStorage.getItem(vecchia);
+      if (prima !== null && localStorage.getItem(`storecraft_bacheca_${negozio}`) === null) localStorage.setItem(`storecraft_bacheca_${negozio}`, prima);
+      if (prima !== null) localStorage.removeItem(vecchia);
+      const note = JSON.parse(localStorage.getItem(`storecraft_bacheca_${negozio}`) || '[]');
       return Array.isArray(note) ? note : [];
     } catch (errore) { return []; }
   }
-  function mazzoNote() {
-    const mazzo = $('note-mazzo');
+  function mazzoBacheca() {
+    const mazzo = $('bacheca-mazzo');
     if (!mazzo) return;
     const note = leggiNote().sort((a, b) => b.creata - a.creata);
     const titolo = nota => (nota.titolo || '').trim() || (nota.testo || '').trim().split('\n')[0].slice(0, 30) || 'Nota';
@@ -147,16 +155,22 @@
     const fogli = note.length ? note.slice(0, 3) : [null, null, null];
     mazzo.replaceChildren(...fogli.map((nota, i) => {
       const foglio = document.createElement('span');
-      foglio.className = 'note-foglio';
-      foglio.style.setProperty('--carta', nota ? CARTE_NOTE[nota.carta % CARTE_NOTE.length] : CARTE_NOTE[[0, 1, 2][i]]);
+      foglio.className = 'bacheca-foglio';
+      foglio.style.setProperty('--carta', nota ? CARTE_BACHECA[nota.carta % CARTE_BACHECA.length] : CARTE_BACHECA[[0, 1, 2][i]]);
       foglio.style.setProperty('--i', i);
       if (nota) foglio.textContent = titolo(nota);
       return foglio;
     }));
-    $('note-conteggio').textContent = !note.length ? 'Post-it per promemoria, ordini e numeri utili'
-      : note.length === 1 ? '1 nota' : `${note.length} note`;
+    // avviso delle note nuove: quelle ancora da leggere (nuova: true), finché qualcuno non apre il post-it (bacheca.js)
+    const nuove = note.filter(nota => nota.nuova).length;
+    const avviso = $('bacheca-avviso');
+    avviso.hidden = !nuove;
+    $('bacheca-avviso-numero').textContent = String(nuove);
+    avviso.title = nuove === 1 ? '1 nota nuova' : `${nuove} note nuove`;
+    $('bacheca-conteggio').textContent = !note.length ? 'Post-it per promemoria, ordini e numeri utili'
+      : `${note.length === 1 ? '1 nota' : `${note.length} note`}${nuove ? `, ${nuove === 1 ? '1 nuova' : `${nuove} nuove`}` : ''}`;
   }
-  const apriNote = () => { location.href = paginaNote; };
+  const apriBacheca = () => { location.href = paginaBacheca; };
 
   // ----- Calcoli -----
   function calcolaSconto() {
@@ -329,17 +343,17 @@
     etichetteValuta();
   }
 
-  function crea(elemento, { qr = '', note = 'blocco-note.html' } = {}) {
+  function crea(elemento, { qr = '', bacheca = 'bacheca.html' } = {}) {
     contenitore = elemento;
     qrPredefinito = qr;
-    paginaNote = note;
+    paginaBacheca = bacheca;
     contenitore.innerHTML = markup();
     $('qr-input').value = qr;
 
     // Calcoli
     const azioni = {
       sconto: calcolaSconto, aliquota: calcolaAliquota, valuta: calcolaValuta,
-      'azzera-iva': azzeraIva, 'scarica-qr': scaricaQr, 'stampa-qr': stampaQr, 'apri-note': apriNote
+      'azzera-iva': azzeraIva, 'scarica-qr': scaricaQr, 'stampa-qr': stampaQr, 'apri-bacheca': apriBacheca
     };
     contenitore.querySelectorAll('[data-cassa]').forEach(b => b.addEventListener('click', () => azioni[b.dataset.cassa]()));
     contenitore.querySelectorAll('[data-aliquota]').forEach(b => b.addEventListener('click', () => impostaAliquota(b)));
@@ -354,8 +368,8 @@
     contenitore.querySelectorAll('.widget').forEach(strumento => {
       strumento.addEventListener('click', evento => {
         if (evento.target.closest('[data-cassa-chiudi]')) { evento.stopPropagation(); chiudi(); return; }
-        // il Blocco Note si apre nella sua pagina, non nel popup
-        if (strumento.id === 'widget-note') { if (!evento.target.closest('[data-cassa]')) apriNote(); return; }
+        // la Bacheca si apre nella sua pagina, non nel popup
+        if (strumento.id === 'widget-bacheca') { if (!evento.target.closest('[data-cassa]')) apriBacheca(); return; }
         apri(strumento.id);
       });
     });
@@ -375,10 +389,10 @@
     etichetteValuta();
     generaQr();
     caricaTassi();
-    // mazzo del Blocco Note: subito, e di nuovo tornando alla dashboard o se le note cambiano in un'altra scheda
-    mazzoNote();
-    window.addEventListener('pageshow', mazzoNote);
-    window.addEventListener('storage', evento => { if (evento.key?.startsWith('storecraft_blocco_note_')) mazzoNote(); });
+    // mazzo della Bacheca: subito, e di nuovo tornando alla dashboard o se le note cambiano in un'altra scheda
+    mazzoBacheca();
+    window.addEventListener('pageshow', mazzoBacheca);
+    window.addEventListener('storage', evento => { if (evento.key?.startsWith('storecraft_bacheca_')) mazzoBacheca(); });
   }
 
   window.Cassa = Object.freeze({ crea, apri, chiudi });
