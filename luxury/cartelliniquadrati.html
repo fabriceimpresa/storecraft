@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quadrati</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261011-14">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261010-54">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261011-14">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261011-14">
 
   <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261010-54"></script>
-  <script src="../assets/js/logos.js?v=20261010-54"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261010-54"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261011-14"></script>
+  <script src="../assets/js/logos.js?v=20261011-14"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261011-14"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
     @font-face {
@@ -362,14 +362,14 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261010-54">
-  <script defer src="../assets/js/menu-cascata.js?v=20261010-54"></script>
-  <script defer src="../assets/js/testi-pronti.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261010-54">
-  <script defer src="../assets/js/responsive.js?v=20261010-54"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261010-54"></script>
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261011-14">
+  <script defer src="../assets/js/menu-cascata.js?v=20261011-14"></script>
+  <script defer src="../assets/js/testi-pronti.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261011-14">
+  <script defer src="../assets/js/responsive.js?v=20261011-14"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261011-14"></script>
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261011-14">
 </head>
 <body data-layout="cartellini">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -398,7 +398,7 @@
         </div>
       </div>
 
-      <!-- Blocco 2: brand (ufficiali e personalizzati), solo in modalità Brand -->
+      <!-- Blocco 2: brand (ufficiali e personali), solo in modalità Brand -->
       <div class="panel-block" id="group-brand" hidden>
         <div class="form-group" data-menu-brand-cartellini data-brand-change="updateBrandSelection" data-custom-change="updateCustomBrandSelection" data-custom-value="id" data-sort-custom="true"></div>
       </div>
@@ -459,8 +459,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/selettore.js?v=20261010-54"></script>
-  <script src="../assets/js/menu-brand-cartellini.js?v=20261010-54"></script>
+  <script src="../assets/js/selettore.js?v=20261011-14"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261011-14"></script>
   <script>
     function cleanBrandName(fileName) {
       return fileName.replace(/\.[^.]+$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
@@ -471,7 +471,7 @@
     }
 
     // Ogni cartellino è in modalità Descrizione, Doppio Prezzo oppure Brand (mode: 'desc' | 'double' | 'brand').
-    // In Brand sopra il doppio prezzo compare il logo del brand in oro (ufficiale o personalizzato).
+    // In Brand sopra il doppio prezzo compare il logo del brand in oro (ufficiale o personale).
     // Valori predefiniti alternati a scacchiera sulla griglia 4 × 3.
     const DEFAULT_CARDS = [
       { mode: 'double', priceOrig: '396,00', sconto: '50', desc: '', priceFinal: '198,00' },
@@ -638,7 +638,7 @@
       card.brand.officialFile = '';
       document.getElementById('brandSelect').value = '';
 
-      // Deselezionando il logo personalizzato si torna al brand predefinito, mai a un cartellino senza logo.
+      // Deselezionando il logo personale si torna al brand predefinito, mai a un cartellino senza logo.
       if (!card.brand.customLogoId) {
         card.brand.officialFile = getDefaultBrandFile();
         document.getElementById('brandSelect').value = card.brand.officialFile;
@@ -649,7 +649,7 @@
     function getBrandLogoSource(brand) {
       const customLogo = MenuBrandCartellini.readCustomLogos().find(logo => logo.id === brand.customLogoId);
       if (brand.customLogoId && !customLogo) {
-        return Promise.reject(new Error(`Logo personalizzato non trovato: ${brand.customLogoId}`));
+        return Promise.reject(new Error(`Logo personale non trovato: ${brand.customLogoId}`));
       }
 
       return PrintLogoColors.getBrandLogoSrc(
@@ -660,7 +660,7 @@
       );
     }
 
-    // Logo brand in oro: file pregenerato per i loghi ufficiali, ricolorato via canvas per i personalizzati.
+    // Logo brand in oro: file pregenerato per i loghi ufficiali, ricolorato via canvas per i personali.
     // L'ultimo indirizzo risolto resta in cache, così ridisegnando i cartellini il logo non lampeggia.
     const brandSourceCache = new Map();
 
@@ -848,7 +848,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261010-54"></script>
+  <script src="../assets/js/cursore.js?v=20261011-14"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -875,6 +875,6 @@
     });
     cursore.point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261010-54" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261011-14" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

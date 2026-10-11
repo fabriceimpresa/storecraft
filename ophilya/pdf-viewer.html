@@ -2,10 +2,10 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizzatore PDF · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -40,7 +40,7 @@
       padding: 0.8rem 1.5rem;
       background: var(--card);
       border-bottom: 1px solid var(--border);
-      box-shadow: 0 4px 18px rgba(50,43,36,.06);
+      box-shadow: 0 1px 3px rgba(40, 34, 28, .14);
     }
 
     .brand {
@@ -68,7 +68,11 @@
       white-space: nowrap;
     }
 
-    .viewer-actions { display: flex; gap: 0.6rem; }
+    .viewer-actions { display: flex; align-items: center; gap: 0.6rem; }
+    /* ✕ dentro l'intestazione, al centro della sua altezza (non fisso in alto come nelle altre pagine) */
+    .viewer-header .app-close-btn--pdf { position: static; flex: none; }
+    /* nel tema chiaro ombra corta e netta (come le ombre della dashboard) invece di quella larga del fondo scuro */
+    :root[data-interface-theme="light"] .viewer-header .app-close-btn--pdf { box-shadow: 0 1px 3px rgba(40, 34, 28, 0.38); }
     .viewer-btn {
       display: inline-flex;
       align-items: center;

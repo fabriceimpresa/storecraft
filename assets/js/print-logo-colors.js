@@ -1,12 +1,12 @@
 /**
- * Risolve i loghi brand (ufficiali e personalizzati) verso una versione già
+ * Risolve i loghi brand (ufficiali e personali) verso una versione già
  * colorata "in memoria", eliminando la dipendenza dai filtri CSS che Safari
  * (e talvolta Chrome) non applicano correttamente in fase di stampa.
  *
  * - Loghi ufficiali (assets/logos/<negozio>/NOME.png): esiste un file gemello
  *   pre-colorato in assets/img/<negozio>/printlogos/<colore><NOME>.png (es. "white",
  *   "black", "red", "gold"), generato una tantum per ogni brand.
- * - Loghi personalizzati (data URL, loghi-personalizzati.js): non esistono
+ * - Loghi personali (data URL, loghi-personalizzati.js): non esistono
  *   su disco, quindi vengono ricolorati al volo via canvas la prima volta che
  *   servono e la versione risultante viene tenuta in cache in memoria.
  */
@@ -22,7 +22,7 @@
     return `${PRINT_LOGOS_PATH}${color}${getGeneratedLogoFileName(logoFileName)}?v=${LOGO_ASSET_VERSION}`;
   }
 
-  // Se un logo personalizzato viene rinominato/eliminato (in questa o in un'altra
+  // Se un logo personale viene rinominato/eliminato (in questa o in un'altra
   // scheda, es. genera_loghi.html), invalidiamo la cache in memoria: eviterà di
   // riutilizzare per errore una versione colorata "orfana" del vecchio logo.
   // L'evento lo manda loghi-personalizzati.js.
@@ -64,7 +64,7 @@
           reject(error);
         }
       };
-      sourceImage.onerror = () => reject(new Error('Logo personalizzato non disponibile.'));
+      sourceImage.onerror = () => reject(new Error('Logo personale non disponibile.'));
       sourceImage.src = sourceDataUrl;
     });
   }
@@ -109,7 +109,7 @@
    *   dei 4 nomi predefiniti, restituisce subito (sincrono) il percorso del
    *   file pre-colorato gemello.
    * - In tutti gli altri casi (colore esadecimale arbitrario, oppure logo
-   *   personalizzato in data URL) colorizza al volo via canvas e mette in
+   *   personale in data URL) colorizza al volo via canvas e mette in
    *   cache il risultato in memoria.
    */
   function resolvePrintLogoSource(source, color) {
@@ -175,12 +175,12 @@
   }
 
   /**
-   * Imposta il logo (ufficiale o personalizzato) di un <img id="imgId">
+   * Imposta il logo (ufficiale o personale) di un <img id="imgId">
    * usando direttamente la versione già colorata, così sia a schermo sia in
    * stampa (qualsiasi browser) il colore è sempre corretto senza filtri CSS.
    *
    * @param {string} imgId - id dell'elemento <img>.
-   * @param {string} customValue - data URL del logo personalizzato (o vuoto).
+   * @param {string} customValue - data URL del logo personale (o vuoto).
    * @param {string} officialFileName - nome file in assets/logos/<negozio>/ (o vuoto).
    * @param {string} defaultFileName - nome file di fallback in assets/logos/<negozio>/.
    * @param {'white'|'black'|'red'|'gold'} color - colore richiesto dalla pagina.

@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-54"></script>
+  <script src="assets/js/negozi.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 10 ottobre 2026 · versione 1.2.07</p>
+  <p class="aggiornamento">ultimo aggiornamento: 11 ottobre 2026 · versione 1.2.08</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -228,11 +228,12 @@
     <li><strong>La filosofia di STORE // CRAFT: COOL · EASY · SMART</strong> (in italiano bello · utile · facile), il claim del prodotto, sulla copertina della guida. Ogni pagina e ogni componente devono essere belli da vedere (curati come la grafica del negozio), utili (fanno risparmiare tempo nel lavoro di ogni giorno) e facili da usare (chi lavora in negozio capisce subito cosa fare, senza istruzioni). Davanti a una scelta, si sceglie quello che rispetta di più queste tre parole.</li>
     <li><strong>Ogni pagina si costruisce con i moduli comuni</strong> (regola generale dal 9 ottobre 2026): pannello, selettori, campi, menu e pulsanti vengono da <code>assets/css/pannello.css</code> e dai moduli di <code>assets/js/</code>. Un negozio può avere un componente suo: lo si scrive come modulo comune riutilizzabile o lo si dichiara come <em>eccezione voluta</em> con un commento nella pagina. Se un modulo non copre un caso, si allarga il modulo, non si copia il codice nella pagina.</li>
     <li><strong>Una pagina per strumento, una per negozio</strong> (<code>luxury/</code>, <code>tebe/</code>, <code>ophilya/</code>), anche quando due pagine si assomigliano; nella radice solo la splash page e le pagine dell'operatore.</li>
+    <li><strong>Ombre nel tema chiaro più solide che sfumate</strong> (dall'11 ottobre 2026): corte, poco sfocate e un poco più marcate, es. <code>0 1px 3px rgba(40, 34, 28, .38)</code> per i pulsanti tondi, <code>0 2px 6px rgba(40, 34, 28, .24)</code> per fogli e riquadri, <code>0 4px 10px rgba(40, 34, 28, .26)</code> per i popup; mai aloni larghi come <code>0 4px 12px rgba(0, 0, 0, .5)</code>. Il tema scuro tiene le sue.</li>
     <li><strong>Il menu di sinistra ha sempre quattro blocchi</strong>, in quest'ordine: 1 selettori e pulsanti · 2 brand e claim · 3 campi del cartello · 4 stampa. Un blocco vuoto si omette.</li>
     <li><strong>I fogli di stampa non si toccano</strong> (misure in mm / pt, grafica, caratteri) se il lavoro non lo chiede; i colori del foglio sono fissi e non cambiano con il tema.</li>
     <li><strong>Testo dell'utente sempre come testo</strong> (<code>textContent</code> o nodi DOM), mai con <code>innerHTML</code>.</li>
     <li><strong>Menu a cascata sulla voce di partenza</strong> all'apertura (<code>-- Seleziona … --</code>): il valore sul cartello sta nel Testo Libero o nel campo. Eccezioni: menu dove la voce è il valore (BRAND, Stagionalità / Evento, Promozioni Cartellini) e Promozioni di Promo Multibrand.</li>
-    <li><strong>Nomi dei menu</strong>: titoli al plurale con l'iniziale maiuscola (Promozioni, Loghi Personalizzati), tranne BRAND e TESTI PRONTI tutti maiuscoli; voce di partenza al singolare (<code>-- Seleziona Logo Personalizzato --</code>); il campo sotto un menu si chiama <em>Testo Libero</em> (max 37 caratteri).</li>
+    <li><strong>Nomi dei menu</strong>: titoli al plurale con l'iniziale maiuscola (Promozioni, Loghi Personali), tranne BRAND e TESTI PRONTI tutti maiuscoli; voce di partenza al singolare (<code>-- Seleziona Logo Personale --</code>); il campo sotto un menu si chiama <em>Testo Libero</em> (max 37 caratteri).</li>
     <li><strong>Prezzi</strong> in formato italiano <code>€ 29,90</code>: il simbolo € è fisso nel campo e uscendo dal campo si hanno sempre due decimali; lo sconto è un numero da 1 a 99 con % fisso e frecce ▲▼.</li>
     <li><strong>Immagini del foglio senza <code>object-fit</code></strong>: si dimensionano con <code>width/height: auto</code> e <code>max-width / max-height</code> (html2canvas, che fotografa il foglio per la lista e per iPhone, non applica <code>object-fit</code>).</li>
     <li><strong>Versione dei file comuni</strong>: le pagine richiamano i file comuni con <code>?v=</code> (data + progressivo, uguale in tutte le pagine); a ogni modifica di un file comune si aggiorna dappertutto. La <strong>versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>) sale di uno a ogni commit.</li>
@@ -289,11 +290,11 @@
     <tr><td>Menu a cascata</td><td><code>&lt;div class="preset-select"&gt;&lt;select&gt;</code> + <code>menu-cascata.css/js</code></td><td>come il campo · riquadro della freccia ▼ largo 1,6rem in <code>--pannello-riquadro</code> · elenco largo quanto il campo, maniglia di scorrimento oro squadrata alta 36 px</td><td>parte dalla voce <code>-- Seleziona … --</code>; il browser non rimette l'ultima scelta (<code>autocomplete="off"</code>)</td></tr>
     <tr><td>Testi pronti</td><td><code>&lt;select data-testi-pronti="Promozioni,Articoli"&gt;</code> + <code>testi-pronti.js</code></td><td>gruppi in corsivo allineati a destra; <code>data-testi-senza-gruppi</code> senza titoli dei gruppi; <code>data-testi-maiuscolo</code></td><td>liste: Promozioni, Articoli, Materiali, Promozioni Cartellini, Etichette DYMO; voci della pagina con <code>data-voce-propria</code>; scelta → Testo Libero</td></tr>
     <tr><td>Fasce Prezzo</td><td><code>&lt;div data-fasce-prezzo data-select-id data-on-change&gt;</code> + <code>fasce-prezzo.js</code></td><td>etichetta e menu creati dal modulo · gruppi Prezzi tondi / Prezzi ,90</td><td>la funzione della pagina mette il prezzo dove serve</td></tr>
-    <tr><td>Campo prezzo</td><td><code>&lt;input data-prezzo&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>simbolo € fisso davanti in <code>--pannello-oro</code> (semigrassetto in TEBE)</td><td>solo cifre, virgola e punto; uscendo sempre due decimali (35 → 35,00) e nuovo evento <code>input</code></td></tr>
-    <tr><td>Campo sconto</td><td><code>&lt;input data-percentuale type="number" min="1" max="99"&gt;</code></td><td>% fisso dopo · frecce ▲▼ in una colonna larga 1,6rem</td><td>numeri da 1 a 99; le frecce sono del modulo (nessuna funzione nella pagina)</td></tr>
+    <tr><td>Campo prezzo</td><td><code>&lt;input data-prezzo&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>simbolo € fisso davanti, oro (grassetto nel tema chiaro, un poco meno marcato nello scuro), grande quanto le cifre, in un riquadro a parte come nelle Utilità Cassa (0,7rem ai lati, linea che lo separa dal campo), con il fondo del riquadro della freccia dei menu (<code>--pannello-riquadro</code>: grigio scuro nel tema scuro, beige nel chiaro)</td><td>solo cifre, virgola e punto; uscendo sempre due decimali (35 → 35,00) e nuovo evento <code>input</code></td></tr>
+    <tr><td>Campo sconto</td><td><code>&lt;input data-percentuale type="number" min="1" max="99"&gt;</code></td><td>% fisso in fondo al campo, un poco staccato dalle frecce, nel grigio del valore di esempio del campo vuoto, senza riquadro (sul fondo del campo) · frecce ▲▼ oro in una colonna larga 1,6rem, come la freccia dei menu e il suo riquadro</td><td>numeri da 1 a 99; le frecce sono del modulo (nessuna funzione nella pagina)</td></tr>
     <tr><td>TEXT AREA</td><td><code>&lt;textarea rows="4"&gt;</code> (altre righe: <code>style="--righe: 2"</code>)</td><td>come il campo · interlinea 1,4 · alta quanto le righe · senza maniglia</td><td>il numero massimo di righe lo controlla la pagina (es. Magazzino, Cornici)</td></tr>
     <tr><td>Barra</td><td><code>&lt;input type="range"&gt;</code></td><td>alta 31,4 px · linea 6 px · maniglia tonda 16 px <code>--pannello-oro</code>, al passaggio <code>--pannello-oro-chiaro</code></td><td>es. Dimensione Testo del Magazzino</td></tr>
-    <tr><td>Menu BRAND</td><td><code>&lt;select&gt;</code> riempito con <code>appendBrandOption</code> (<code>logos.js</code> + <code>assets/logos/&lt;negozio&gt;/elenco.js</code>); cartellini: <code>data-menu-brand-cartellini</code></td><td>voce di partenza <code>-- Seleziona Brand --</code> (<code>brand-placeholder</code>) · brand prioritari con ★ gialla (Luxury) o ⭐ e maiuscolo (TEBE)</td><td>Loghi Personalizzati dalla lista del negozio (<code>LoghiPersonalizzati</code>, IndexedDB); scegliere l'uno azzera l'altro</td></tr>
+    <tr><td>Menu BRAND</td><td><code>&lt;select&gt;</code> riempito con <code>appendBrandOption</code> (<code>logos.js</code> + <code>assets/logos/&lt;negozio&gt;/elenco.js</code>); cartellini: <code>data-menu-brand-cartellini</code></td><td>voce di partenza <code>-- Seleziona Brand --</code> (<code>brand-placeholder</code>) · brand prioritari con ★ gialla (Luxury) o ⭐ e maiuscolo (TEBE)</td><td>Loghi Personali dalla lista del negozio (<code>LoghiPersonalizzati</code>, IndexedDB); scegliere l'uno azzera l'altro</td></tr>
   </table>
 
   <!-- ================================================================ -->
@@ -313,7 +314,8 @@
   <table>
     <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
     <tr><td>Pulsantiera</td><td><code>strumenti-stampa.js</code> in fondo (<code>data-panel</code>, <code>data-sheet</code> nei cartellini)</td><td>pulsanti tondi sotto il pannello, colori <code>--tool-*</code> del negozio</td><td>Gestisci lista di stampa · Aggiungi a lista stampa · "Dove montare la stampa?" (solo TEBE, foto in <code>assets/foto/</code>)</td></tr>
-    <tr><td>Lista di stampa</td><td><code>lista-stampa.js</code> + <code>lista-stampa.html</code> del negozio</td><td>una lista per negozio (IndexedDB) · <code>lista.pdf</code> A4 a misura reale</td><td>foto del foglio con html2canvas usando le regole <code>@media print</code> della pagina; foglio verticale in alto, cartellini orizzontali a 4 mm dall'alto</td></tr>
+    <tr><td>Lista di stampa</td><td><code>lista-stampa.js</code> + <code>lista-stampa.html</code> del negozio</td><td>una lista per negozio (IndexedDB) · <code>lista.pdf</code> A4 a misura reale · si svuota da sola: ogni pagina resta due giorni</td><td>foto del foglio con html2canvas usando le regole <code>@media print</code> della pagina; foglio verticale in alto, cartellini orizzontali a 4 mm dall'alto</td></tr>
+    <tr><td>Cronologia di stampa</td><td><code>cronologia-stampa.js</code> + <code>cronologia-stampa.html</code> del negozio, caricato da <code>strumenti-stampa.js</code></td><td>ogni stampa di cartelli, cartellini e promo (non DYMO né PDF pronti) entra da sola, dopo la finestra di stampa (<code>afterprint</code>) o su iPhone e iPad a PDF pronto · ultimi 7 giorni · una ristampa identica aggiorna data e numero di stampe</td><td>IndexedDB per negozio (<code>cronologiaStampa</code> della scheda), archivi <code>stampe</code> (dati e miniatura) e <code>fogli</code> (foto grande, circa 240 dpi come la lista) · promo dichiarate con <code>data-cronologia="promo"</code> sullo script di <code>strumenti-stampa.js</code></td></tr>
     <tr><td>Loghi colorati con filtro</td><td><code>colorFilteredImages</code> in <code>lista-stampa.js</code></td><td>immagini del foglio con un filtro CSS (es. <code>.tint-*</code> di Promo Multibrand) ridisegnate già colorate prima della foto</td><td>Chrome / Edge applicano il filtro sul canvas; Safari su iPhone e iPad no: il filtro è calcolato a mano sui pixel (<code>filtroCalcolato</code>, differenze di pochi punti su 255); funzioni non calcolabili (blur, drop-shadow) lasciano l'immagine com'è</td></tr>
     <tr><td>Stampa da iPhone e iPad</td><td><code>stampa-ios.js</code> (defer)</td><td>riquadro CONDIVIDI O STAMPA .PDF, colori <code>--lista-pdf-*</code></td><td>niente stampa del browser su iOS: PDF A4 a misura esatta da stampare al 100%; foto identica a quella del computer (verificato su 32 pagine)</td></tr>
   </table>
@@ -344,7 +346,7 @@
     <tr><td>Splash page e punto vendita</td><td><code>index.html</code> nella radice + <code>punto-vendita.js</code></td><td>cornice oro, logo STORE // CRAFT, «Seleziona il tuo punto vendita» e i loghi dei negozi installati</td><td>compare al primo avvio del browser e a ogni nuovo giorno (scelta in <code>localStorage</code> con il giorno, più un cookie di sessione <code>storecraft_sessione</code> che il browser cancella chiudendosi); tema e aspetto restano ricordati; con un solo negozio si apre subito la sua dashboard; HOME ⌂ del menu di sistema riporta qui</td></tr>
     <tr><td>Dashboard unica</td><td><code>dashboard.js</code> + <code>dashboard.css</code> + contenuti in <code>assets/negozi/&lt;negozio&gt;-dashboard.js</code></td><td>menu laterale, intestazione, logo, caroselli, Utilità Cassa</td><td>le tre pagine <code>index.html</code> sono uguali, cambia solo <code>data-negozio</code></td></tr>
     <tr><td>CASSIERE / CREATOR e interruttore dei negozi</td><td><code>.mode-switcher</code></td><td>scuro: riquadro nero, voce scelta oro · chiaro: fondo crema <code>#eee8dd</code>, voce scelta bianca <code>#fffdfa</code> testo <code>#282522</code>, non scelta <code>#887d70</code> · STANDARD 0,65rem peso 600 · COMPATTO Arial 10 px, lettere 0,14em</td><td>i due selettori larghi uguale</td></tr>
-    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury (dal 10 ottobre 2026): come TEBE (<code>titolo: false</code>, <code>.con-logo</code>), a sinistra, al posto dell'interruttore, data e ora (<code>dataOra: true</code>, es. SAB 10 OTT · 11:45, riquadro come CASSIERE / CREATOR), banner centrato con VISUAL MERCHANDISING STUDIO e poi indirizzo e descrizione · con un titolo: titolo VISUAL MERCHANDISING STUDIO, senza sottotitolo, alternato ogni 10 secondi con indirizzo e descrizione, allineati a sinistra (si parte dal titolo), niente divisorio: il logo comincia all'altezza di CREA CARTELLI · TEBE (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 10 secondi con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee) · in tutti i negozi, stringendo la finestra, il banner sparisce con una dissolvenza quando la sua scritta più larga non entra più tra i due elementi ai lati con 24 px di respiro, invece di essere coperto o tagliato (<code>controllaBanner</code> in <code>dashboard.js</code>, <code>.testata-centro.is-nascosto</code>) · finestra desktop stretta (fino a 720 px con il mouse, menu laterale chiuso): tra ☰ e i selettori la scritta STORE // CRAFT in Cinzel, se entra con 24 px di respiro (<code>marchioStretto</code>, <code>.testata-marchio</code>)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
+    <tr><td>Intestazione</td><td><code>intestazione</code> nei contenuti del negozio</td><td>Luxury (dal 10 ottobre 2026): come TEBE (<code>titolo: false</code>, <code>.con-logo</code>), a sinistra, al posto dell'interruttore, data e ora (<code>dataOra: true</code>, es. SAB 10 OTT · 11:45, riquadro come CASSIERE / CREATOR; i due punti dell'ora lampeggiano a battere i secondi, <code>.orologio-battito</code>), banner centrato con VISUAL MERCHANDISING STUDIO e poi indirizzo e descrizione · con un titolo: titolo VISUAL MERCHANDISING STUDIO, senza sottotitolo, alternato ogni 10 secondi con indirizzo e descrizione, allineati a sinistra (si parte dal titolo), niente divisorio: il logo comincia all'altezza di CREA CARTELLI · TEBE (<code>titolo: false</code>): interruttore a sinistra, CASSIERE / CREATOR a destra, al centro indirizzo e descrizione alternati ogni 10 secondi con VISUAL MERCHANDISING STUDIO (Cinzel 500, 15 px, lettere 0,32em, tra due linee) · in tutti i negozi, stringendo la finestra, il banner sparisce con una dissolvenza quando la sua scritta più larga non entra più tra i due elementi ai lati con 24 px di respiro, invece di essere coperto o tagliato (<code>controllaBanner</code> in <code>dashboard.js</code>, <code>.testata-centro.is-nascosto</code>) · finestra desktop stretta (fino a 720 px con il mouse, menu laterale chiuso): tra ☰ e i selettori la scritta STORE // CRAFT in Cinzel, se entra con 24 px di respiro (<code>marchioStretto</code>, <code>.testata-marchio</code>)</td><td>sul telefono i selettori stanno nella barra in alto</td></tr>
     <tr><td>Schede e caroselli</td><td><code>sezioni</code> e <code>schede</code> nei contenuti; <code>caroselli.css/js</code></td><td>4 schede per riga (2 sotto 1300 px, 1 sul telefono) · titolo Cinzel (STANDARD) o Fraunces (COMPATTO); chiaro taupe <code>#665e54</code>, scuro STANDARD peso 600</td><td>Crea Cartelli su due righe (<code>righe: 1</code> per una sola); Coming Soon con <code>prossimamente: true</code></td></tr>
     <tr><td>Utilità Cassa</td><td><code>cassa.js</code></td><td>widget squadrati (COMPATTO) o arrotondati (STANDARD); titoli bianchi nel tema scuro, taupe nel chiaro</td><td>su desktop si aprono in un popup; <code>cassa: 'solo-cassiere'</code> le mostra solo in CASSIERE (sul telefono anche in CREATOR)</td></tr>
     <tr><td>Tema e aspetto</td><td><code>theme.js</code> + <code>theme.css</code></td><td>CHIARO / SCURO e STANDARD / COMPATTO, indipendenti, ricordati per negozio</td><td>iniziali: Luxury scuro + STANDARD, TEBE chiaro + COMPATTO; non cambiano mai i fogli di stampa</td></tr>
@@ -420,13 +422,12 @@
     <tr><th>Modulo</th><th>Luxury Outlet</th><th>TEBE e OPHILYA</th><th>Dove</th></tr>
     <tr><td>Made in Italy</td><td><code>MadeInItaly.toggle</code>: la pagina tiene lo stato e crea i pulsanti</td><td>modo automatico (<code>data-automatico</code>): il modulo crea pulsante e bandierine e ricorda i campi</td><td><code>madeinitaly.js</code></td></tr>
     <tr><td>Brand prioritari</td><td>stella gialla ★ (<code>brandPrioritari: 'stella'</code>)</td><td>⭐ e nome in maiuscolo (<code>'maiuscolo'</code>)</td><td>scheda del negozio + <code>logos.js</code></td></tr>
-    <tr><td>Simboli € e %</td><td>peso normale</td><td>semigrassetto (<code>--pannello-simbolo-peso: 600</code>), l'oro chiaro sul fondo avorio si vede poco</td><td>scheda del negozio (.css)</td></tr>
   </table>
 
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261010-54</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261011-14</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -443,7 +444,7 @@
     <tr><td>Etichetta DYMO</td><td>etichetta adesiva 57 × 32 mm, stampa diretta sulla stampante DYMO; sezione ETICHETTE</td></tr>
     <tr><td>Stampa pronta</td><td>PDF già fatto (listini, orari, cartelli di servizio) aperto nel visualizzatore; sezione STAMPE PRONTE</td></tr>
     <tr><td>Utilità Cassa</td><td>strumenti di cassa nella dashboard (IVA, sconto, cambio valuta, QR…), non una pagina</td></tr>
-    <tr><td>Loghi</td><td>Genera Loghi e Gestisci Lista: i loghi personalizzati del negozio</td></tr>
+    <tr><td>Loghi</td><td>Genera Loghi e Gestisci Lista: i loghi personali del negozio</td></tr>
     <tr><td>Pagine di servizio</td><td>Lista di Stampa e visualizzatore PDF, usate dalle altre pagine</td></tr>
   </table>
   <p class="nota">Quali pagine usano quali moduli, negozio per negozio: pagina Gestione negozi dell'area operatore (lettura dal vivo).</p>
@@ -455,7 +456,7 @@
     <tr><th>Voce</th><th>Dettaglio</th></tr>
     <tr><td>Pagine</td><td>Luxury: <code>cartelli_semplici</code>, <code>cartelli_outlet</code>, <code>cartelli_outletmulti</code>, <code>cartelli_multireferenza</code>, <code>cartellopercentuale</code>, <code>cartelli_lastchance</code>, <code>cartello_banco</code> (Paletto 15x10), <code>magazzino</code> · TEBE: <code>cartelli_semplici</code>, <code>cartelli_sale</code>, <code>cartelli_brand</code>, <code>cartellopercentuale</code>, <code>cartelli_multiarticolo</code>, <code>albero</code>, <code>paletto</code>, <code>paletto18x12</code>, <code>cornici10x15</code>, <code>cornice21x27</code> · OPHILYA: <code>albero-ophilya</code>, <code>paletto-ophilya</code>, <code>paletto18x12-ophilya</code></td></tr>
     <tr><td>Foglio</td><td>A4 verticale, <code>#printSheet</code> (o <code>.print-sheet</code>, <code>#a4Sheet</code>); due cartelli <code>#card1</code> / <code>#card2</code> (TEBE <code>#cardTop</code> / <code>#cardBottom</code>); con 1 CARTELLO solo il superiore. Cartelli in morsa di TEBE: le due metà sono fronte e retro dello stesso cartello</td></tr>
-    <tr><td>Pannello</td><td>i quattro blocchi: 1 selettori (CARTELLO SUPERIORE / INFERIORE, modalità, numero di articoli, + AGGIUNGI 2° BRAND) · 2 BRAND, Loghi Personalizzati, claim · 3 TESTI PRONTI, Testo Libero, prezzi · 4 COPIA SU ALTRO CARTELLO, Impostazioni di Stampa, STAMPA CARTELLI</td></tr>
+    <tr><td>Pannello</td><td>i quattro blocchi: 1 selettori (CARTELLO SUPERIORE / INFERIORE, modalità, numero di articoli, + AGGIUNGI 2° BRAND) · 2 BRAND, Loghi Personali, claim · 3 TESTI PRONTI, Testo Libero, prezzi · 4 COPIA SU ALTRO CARTELLO, Impostazioni di Stampa, STAMPA CARTELLI</td></tr>
     <tr><td>Moduli</td><td><code>pannello.css</code>, <code>selettore.js</code> e selettori pronti, <code>copia-cartello.js</code>, <code>second-brand-toggle.js</code>, <code>testi-pronti.js</code>, <code>fasce-prezzo.js</code>, <code>campi-prezzo.js</code>, <code>logos.js</code> + <code>elenco.js</code> del negozio, <code>loghi-personalizzati.js</code>, <code>print-logo-colors.js</code>, <code>cursore.js</code>, <code>strumenti-stampa.js</code>, <code>stampa-ios.js</code>, <code>responsive.js</code> (<code>data-layout="cartelli"</code>), <code>madeinitaly.js</code></td></tr>
     <tr><td>Stato</td><td>un oggetto per cartello (<code>cards[1]</code>, <code>cards[2]</code>): un solo gruppo di campi modifica il cartello scelto</td></tr>
     <tr><td>Nella dashboard</td><td>sezione <code>tipo: 'cartelli'</code>, scheda <code>{ titolo, link, tipo: 'CARTELLO', miniature, specifiche }</code></td></tr>
@@ -469,7 +470,7 @@
     <tr><td>Pagine</td><td>Luxury: <code>cartellinivetrina</code>, <code>cartellinipromo</code>, <code>cartelliniquadrati</code> · TEBE: <code>cartellinilxry</code> (modello di Cartellini Vetrina), <code>cartellinitebe</code> (modello dei Quadrati)</td></tr>
     <tr><td>Foglio</td><td>A4 orizzontale <code>.a4-landscape #printable-grid</code> dentro <code>.sheet-wrap</code>: 8 cartellini (Vetrina, Promo) o 12 quadrati da 60 mm; stampa a 4 mm dall'alto e 7,5 mm da sinistra</td></tr>
     <tr><td>Pannello</td><td>linguette <code>#tabs-container</code> (#1, #2… con la casella per escludere un cartellino dalla stampa) e un riquadro <code>#editorPanel</code> «Modifica Cartellino #N» con i quattro blocchi, più compatti (tra i blocchi lo spazio dei campi); largo 360 px; tasto STAMPA FOGLIO A4</td></tr>
-    <tr><td>Moduli</td><td>come i cartelli, più <code>menu-brand-cartellini.js</code> (BRAND e Loghi Personalizzati); <code>data-layout="cartellini"</code>: sul telefono il cartellino scelto ingrandito e la lente</td></tr>
+    <tr><td>Moduli</td><td>come i cartelli, più <code>menu-brand-cartellini.js</code> (BRAND e Loghi Personali); <code>data-layout="cartellini"</code>: sul telefono il cartellino scelto ingrandito e la lente</td></tr>
     <tr><td>Stato</td><td><code>cardsData</code>: un oggetto per cartellino</td></tr>
     <tr><td>Nella dashboard</td><td>sezione <code>tipo: 'cartellini'</code>, scheda con <code>tipo: 'CARTELLINI'</code></td></tr>
   </table>
@@ -526,7 +527,7 @@
   <table class="tipo">
     <tr><th>Voce</th><th>Dettaglio</th></tr>
     <tr><td>Modulo</td><td><code>cassa.js</code> (<code>Cassa.crea</code>, <code>apri</code>, <code>chiudi</code>), uguale per tutti i negozi, cinque strumenti: Calcola Sconto, Calcola Aliquota Sconto, Cambio Valuta, Calcola IVA, Generatore QR Code</td></tr>
-    <tr><td>Uso</td><td>desktop e tablet: un clic apre lo strumento in un popup; telefono: widget pronti nella pagina. Vista CASSIERE: solo le Utilità Cassa</td></tr>
+    <tr><td>Uso</td><td>desktop e tablet: un clic apre lo strumento in un popup; telefono: widget pronti nella pagina. Vista CASSIERE: solo le Utilità Cassa. Non sono nel menu di sinistra (dall'11 ottobre 2026): si arriva dal selettore CASSIERE / CREATOR o dai widget</td></tr>
     <tr><td>Nella dashboard</td><td><code>cassa: 'sempre'</code> (o <code>'solo-cassiere'</code>, oggi non usato) e <code>qr</code>: collegamento iniziale del Generatore QR</td></tr>
   </table>
 
@@ -536,7 +537,7 @@
   <table class="tipo">
     <tr><th>Voce</th><th>Dettaglio</th></tr>
     <tr><td>Pagine</td><td>in ogni negozio <code>genera_loghi</code> (crea un logo da un'immagine: toglie lo sfondo e ritaglia) e <code>gestisci_lista</code> (rinomina, ordina, elimina, backup JSON con Unisci / Sostituisci Lista)</td></tr>
-    <tr><td>Dati</td><td>loghi personalizzati del negozio nel browser (<code>loghi-personalizzati.js</code>, IndexedDB); vedi Negozi › Loghi ufficiali e personalizzati</td></tr>
+    <tr><td>Dati</td><td>loghi personali del negozio nel browser (<code>loghi-personalizzati.js</code>, IndexedDB); vedi Negozi › Loghi ufficiali e personali</td></tr>
     <tr><td>Aspetto</td><td>TEBE e OPHILYA: intestazione e stile del progetto TEBE, corpo della versione Luxury; <code>data-layout="loghi"</code> (telefono sotto i 600 px)</td></tr>
   </table>
 
@@ -545,8 +546,9 @@
   <div class="foto-tipo" data-foto="stampa-lista"></div>
   <table class="tipo">
     <tr><th>Voce</th><th>Dettaglio</th></tr>
-    <tr><td>Lista di Stampa</td><td><code>lista-stampa.html</code> del negozio, aperta in una finestra sua da «Gestisci lista di stampa» (pulsantiera sotto il pannello) o dal menu laterale; una lista per negozio (IndexedDB, nome in <code>listaStampa</code> della scheda); stampa <code>lista.pdf</code> a misura reale</td></tr>
-    <tr><td>Visualizzatore PDF</td><td><code>pdf-viewer.html</code> del negozio, per le stampe pronte; ✕ <code>.app-close-btn--pdf</code></td></tr>
+    <tr><td>Lista di Stampa</td><td><code>lista-stampa.html</code> del negozio, aperta in una finestra sua da «Gestisci lista di stampa» (pulsantiera sotto il pannello) o dal menu laterale; una lista per negozio (IndexedDB, nome in <code>listaStampa</code> della scheda), che si svuota da sola dopo due giorni; stampa <code>lista.pdf</code> a misura reale; caratteri della cronologia e del visualizzatore PDF (Cinzel per il titolo, Plus Jakarta Sans)</td></tr>
+    <tr><td>Cronologia di Stampa</td><td><code>cronologia-stampa.html</code> del negozio, dal menu laterale (LISTA DI STAMPA E CRONOLOGIA › Cronologia di Stampa): le stampe degli ultimi 7 giorni divise per giorno, filtri Tutte · Cartelli · Cartellini · Promo, anteprima con STAMPA (.PDF) a misura reale, AGGIUNGI A LISTA DI STAMPA ed ELIMINA; caratteri del visualizzatore PDF (Cinzel e Plus Jakarta Sans)</td></tr>
+    <tr><td>Visualizzatore PDF</td><td><code>pdf-viewer.html</code> del negozio, per le stampe pronte; ✕ <code>.app-close-btn--pdf</code>; intestazione e fondo seguono il tema chiaro o scuro (la barra del PDF è del lettore del browser); ✕ al centro dell'intestazione, con un'ombra corta nel tema chiaro</td></tr>
   </table>
 
   <!-- ================================================================ -->
@@ -567,11 +569,11 @@
   </table>
 
   <!-- ================================================================ -->
-  <h2 id="loghi">Loghi ufficiali e personalizzati</h2>
+  <h2 id="loghi">Loghi ufficiali e personali</h2>
   <ul class="regole">
     <li><strong>Ufficiali</strong>: file in <code>assets/logos/&lt;negozio&gt;/</code>, elenco in <code>elenco.js</code> accanto (<code>LOGO_FILES</code> e <code>PRIORITY_BRANDS</code>), quattro varianti colore (white, black, red, gold) in <code>assets/img/&lt;negozio&gt;/printlogos/</code>. Si aggiungono e si tolgono dall'area operatore (Importa e Gestisci loghi ufficiali), con gli stessi tre passi: [1] cartella del progetto (la riga di stato in verde mostra ogni passaggio, il browser chiede il permesso di modificare i file, a cartella collegata il pulsante diventa «✓ cartella collegata»), [2] negozio da aggiornare, [3] i loghi. Solo PNG già trasparenti; alla fine i file nuovi vanno pubblicati con un commit.</li>
-    <li><strong>Personalizzati</strong>: nel browser, una lista per negozio (<code>loghi-personalizzati.js</code>, IndexedDB <code>storecraft-loghi-personalizzati</code>); si creano con Genera Loghi e si gestiscono con Gestisci Lista; per portarli su un altro computer si usa il backup.</li>
-    <li><strong>Nelle pagine</strong>: prima <code>elenco.js</code> del negozio, poi <code>logos.js</code>; i menu Loghi Personalizzati si riempiono quando la lista è pronta (<code>LoghiPersonalizzati.pronto</code>). Per la stampa i loghi sono ricolorati da <code>print-logo-colors.js</code> (eccezione: Promo Multibrand con il filtro CSS).</li>
+    <li><strong>Personali</strong>: nel browser, una lista per negozio (<code>loghi-personalizzati.js</code>, IndexedDB <code>storecraft-loghi-personalizzati</code>); si creano con Genera Loghi e si gestiscono con Gestisci Lista; per portarli su un altro computer si usa il backup.</li>
+    <li><strong>Nelle pagine</strong>: prima <code>elenco.js</code> del negozio, poi <code>logos.js</code>; i menu Loghi Personali si riempiono quando la lista è pronta (<code>LoghiPersonalizzati.pronto</code>). Per la stampa i loghi sono ricolorati da <code>print-logo-colors.js</code> (eccezione: Promo Multibrand con il filtro CSS).</li>
   </ul>
 
   <!-- ================================================================ -->
@@ -735,13 +737,13 @@
       'Barra in alto': 'tel-barra', 'Menu di sinistra': 'tel-menu-sinistra', 'Rotella': 'tel-rotella',
       'Logo del menu': 'tel-menu-sinistra', 'Pulsante IMPOSTAZIONI': 'tel-pulsante-impostazioni',
       'Menu impostazioni': 'tel-menu-impostazioni', 'Fondo pagina': 'tel-fondo', 'Pulsante HOME': 'tel-home', 'Pagina': 'tel-pagina',
-      'Lista di stampa': 'stampa-lista', 'Loghi colorati con filtro': 'es-loghi-filtro', 'Stampa da iPhone e iPad': 'stampa-ios',
+      'Lista di stampa': 'stampa-lista', 'Cronologia di stampa': 'stampa-cronologia', 'Loghi colorati con filtro': 'es-loghi-filtro', 'Stampa da iPhone e iPad': 'stampa-ios',
       // moduli esclusivi (foto fatte con _foto-guida.html e _foto-guida.ps1)
       'Tema Black Friday': 'es-blackfriday', 'Tema Natale': 'es-natale', 'Promo stagionali': 'es-promo',
       'Menu su misura': 'es-menu-su-misura', 'Pagine proprie': 'es-magazzino', 'Dove montare la stampa?': 'es-guida-montaggio',
       'Interruttore TEBE / OPHILYA': 'es-interruttore', 'Cornici': 'es-cornici', 'Albero e Paletti': 'es-albero-paletti',
       'Cartelli in morsa': 'es-morsa', 'Testi pronti delle etichette': 'es-etichette', 'Crea Cartelli su una riga': 'es-ophilya',
-      'Brand prioritari': 'es-brand-prioritari', 'Simboli € e %': 'es-simboli' };
+      'Brand prioritari': 'es-brand-prioritari' };
     // negozio delle anteprime (selettore LUXURY / TEBE accanto alla pulsantiera), ricordato in questa scheda del browser
     let negozioAnteprime = 'luxury';
     try { negozioAnteprime = sessionStorage.getItem('guida_negozio_anteprime') || 'luxury'; } catch (e) { /* senza memoria resta Luxury */ }
@@ -757,7 +759,7 @@
         selettori: 'Selettori', stampa: 'Stampa', foglio: 'Foglio', telefono: 'Telefono' } },
       { id: 'parte-dashboard', nome: 'Dashboard', sezioni: { dashboard: 'Dashboard', 'dashboard-telefono': 'Dashboard telefono' } },
       { id: 'parte-negozi', nome: 'Negozi', sezioni: { 'scheda-negozio': 'Scheda del negozio', negozi: 'Colori', esclusivi: 'Moduli esclusivi',
-        loghi: 'Loghi ufficiali e personalizzati' } },
+        loghi: 'Loghi ufficiali e personali' } },
       { id: 'parte-creation', nome: 'Creation Engine', sezioni: { 'ce-panoramica': 'Panoramica', 'ce-gallerie': 'Gallerie e moduli',
         'ce-nuovo': 'Nuovo modulo', 'ce-negozi': 'Associare ai negozi', 'ce-ghost': 'Ghost', 'ce-file': 'File e cartelle' } },
       { id: 'ricette', nome: 'Come si fa', sezioni: { 'nuova-pagina': 'Nuova pagina', 'aggiungi-tipo': 'Tipo di pagina in un negozio',

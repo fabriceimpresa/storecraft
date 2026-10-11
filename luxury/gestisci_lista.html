@@ -2,10 +2,10 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GESTISCI LISTA PERSONALE</title>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -313,10 +313,10 @@
     }
     .modal-btn-import-custom:hover { background: #4d7544; }
   </style>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261010-54">
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261011-14">
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261011-14">
 </head>
 <body data-layout="loghi">
 
@@ -367,8 +367,8 @@
         await LoghiPersonalizzati.salva(logos);
         return true;
       } catch (error) {
-        console.error('Salvataggio dei loghi personalizzati fallito.', error);
-        alert('Salvataggio dei loghi personalizzati non riuscito: ' + (error && error.message ? error.message : error));
+        console.error('Salvataggio dei loghi personali fallito.', error);
+        alert('Salvataggio dei loghi personali non riuscito: ' + (error && error.message ? error.message : error));
         return false;
       }
     }
@@ -387,7 +387,7 @@
       const link = document.createElement('a');
 
       link.href = downloadUrl;
-      link.download = `storecraft-loghi-personalizzati-${LoghiPersonalizzati.negozio}.json`;
+      link.download = `storecraft-loghi-personali-${LoghiPersonalizzati.negozio}.json`;
       link.click();
       URL.revokeObjectURL(downloadUrl);
     }
@@ -436,11 +436,11 @@
     async function clearCustomLogos() {
       const logos = LoghiPersonalizzati.elenco();
       if (logos.length === 0) {
-        alert('Non ci sono loghi personalizzati da rimuovere.');
+        alert('Non ci sono loghi personali da rimuovere.');
         return;
       }
 
-      const confirmed = await showConfirmModal('Vuoi rimuovere tutti i loghi personalizzati salvati? Esporta prima un backup per poterli ripristinare.');
+      const confirmed = await showConfirmModal('Vuoi rimuovere tutti i loghi personali salvati? Esporta prima un backup per poterli ripristinare.');
       if (confirmed && await saveLogoList([])) {
         renderSavedLogos();
       }
@@ -491,8 +491,8 @@
         if (!await saveLogoList(logos)) return;
         renderSavedLogos();
         alert(choice === 'unisci'
-          ? `Loghi personalizzati uniti: ${added} aggiunti.`
-          : 'Loghi personalizzati importati con successo.');
+          ? `Loghi personali uniti: ${added} aggiunti.`
+          : 'Loghi personali importati con successo.');
       };
       reader.readAsText(file);
     }
@@ -528,7 +528,7 @@
       document.getElementById('sortChronological').classList.toggle('active', logoSortOrder === 'chronological');
 
       if (logos.length === 0) {
-        container.innerHTML = '<p style="font-size:0.8rem; color:#888;">Nessun logo personalizzato salvato.</p>';
+        container.innerHTML = '<p style="font-size:0.8rem; color:#888;">Nessun logo personale salvato.</p>';
         return;
       }
 
@@ -675,7 +675,7 @@
     }
 
     async function deleteLogo(index) {
-      const confirmed = await showConfirmModal("Sei sicuro di voler eliminare questo logo personalizzato?", 'delete-single');
+      const confirmed = await showConfirmModal("Sei sicuro di voler eliminare questo logo personale?", 'delete-single');
       if (confirmed) {
         const logos = LoghiPersonalizzati.elenco();
         logos.splice(index, 1);

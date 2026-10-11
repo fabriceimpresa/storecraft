@@ -36,7 +36,12 @@
   window.print = () => {
     if (document.querySelector('.lista-pdf-overlay')) return;
     loadListaStampa()
-      .then(lista => lista.offerPdf(lista.sheetPdf(sheet), `${document.title}.pdf`, fallback))
+      .then(lista => {
+        const pdf = lista.sheetPdf(sheet);
+        // PDF pronto: la stampa entra nella cronologia di stampa (strumenti-stampa.js ascolta storecraft:stampa)
+        pdf.then(() => window.dispatchEvent(new Event('storecraft:stampa'))).catch(() => {});
+        lista.offerPdf(pdf, `${document.title}.pdf`, fallback);
+      })
       .catch(error => {
         console.error('Preparazione del PDF di stampa non riuscita.', error);
         browserPrint();

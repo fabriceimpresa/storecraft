@@ -201,3 +201,9 @@
 @media print {
   .tool-buttons, .app-modal, .tool-toast { display: none !important; }
 }
+
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+:root[data-interface-theme="light"] .tool-btn { box-shadow: 0 1px 3px rgba(40, 34, 28, .32); }
+:root[data-interface-theme="light"] .tool-btn:hover { box-shadow: 0 2px 0 rgba(40, 34, 28, .3); }
+:root[data-interface-theme="light"] :is(.tool-tip, .tool-toast) { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }
+:root[data-interface-theme="light"] .app-modal-dialog { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }

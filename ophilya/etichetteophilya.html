@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261011-14">
   <title>Etichette DYMO · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261011-14">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <script src="../assets/logos/ophilya/elenco.js?v=20261010-54"></script>
-  <script src="../assets/js/logos.js?v=20261010-54"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <script src="../assets/logos/ophilya/elenco.js?v=20261011-14"></script>
+  <script src="../assets/js/logos.js?v=20261011-14"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261010-54"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261011-14"></script>
 
   <style>
     @font-face {
@@ -39,7 +39,7 @@
       --success: #2a9d8f;
       --error: #c0533b;
     }
-    /* tema SCURO: loghi personalizzati in oro chiaro (nel tema chiaro resta il marrone di TEBE) */
+    /* tema SCURO: loghi personali in oro chiaro (nel tema chiaro resta il marrone di TEBE) */
     :root[data-interface-theme="dark"] :is(.form-control.custom-select, select option.priority-brand-option) { color: var(--interface-accent-bright); }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -91,7 +91,7 @@
       /* La miniatura e' bianca come la card: bordo e ombra leggera la staccano, come un'etichetta appoggiata. */
       background: #fff;
       border: 1px solid var(--border);
-      box-shadow: 0 2px 6px rgba(40, 34, 28, 0.16);
+      box-shadow: 0 1px 3px rgba(40, 34, 28, .26);
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
       align-self: center;
     }
@@ -99,7 +99,7 @@
     .template-card:hover .tpl-preview-box,
     .template-card.active .tpl-preview-box {
       border-color: var(--accent);
-      box-shadow: 0 3px 10px rgba(40, 34, 28, 0.22);
+      box-shadow: 0 2px 4px rgba(40, 34, 28, .26);
     }
 
     .tpl-preview-box img {
@@ -237,7 +237,7 @@
     .made-in-italy-sticker { display: none; }
     .tpl-outlet.is-made-in-italy .label-top,
     .tpl-final.is-made-in-italy .label-top { justify-content: space-between; padding: 0 6px 0 10px; }
-    /* Con l'adesivo il logo (OPHILYA, ufficiale o personalizzato) si rimpicciolisce un poco e l'adesivo cresce. */
+    /* Con l'adesivo il logo (OPHILYA, ufficiale o personale) si rimpicciolisce un poco e l'adesivo cresce. */
     .tpl-outlet.is-made-in-italy .brand-logo-container,
     .tpl-final.is-made-in-italy .brand-logo-container { justify-content: flex-start; width: 240px; height: 96px; }
     .is-made-in-italy .made-in-italy-sticker { display: block; flex: 0 0 auto; width: 120px; height: auto; margin-top: 4px; }
@@ -511,9 +511,10 @@
         margin-top: 8px;
       }
     }
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .label-preview-wrapper { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .custom-brand-box { box-shadow: 0 1px 3px rgba(40, 34, 28, .2); }    @media (max-width: 768px) {      :root[data-interface-theme="light"] .preview-section { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }      :root[data-interface-theme="light"] aside { box-shadow: 0 -1px 4px rgba(40, 34, 28, .22); }    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261010-54">
-  <script defer src="../assets/js/menu-cascata.js?v=20261010-54"></script>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261011-14">
+  <script defer src="../assets/js/menu-cascata.js?v=20261011-14"></script>
 </head>
 <body>
   <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -596,11 +597,11 @@
 
       <div class="custom-brand-box" id="groupCustomBrand">
         <div class="custom-brand-header">
-          <span>★ LOGHI PERSONALIZZATI</span>
+          <span>★ LOGHI PERSONALI</span>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <select id="customLogoSelect" class="form-control custom-select" onchange="onCustomLogoSelectChange()">
-            <option value="">-- Seleziona Logo Personalizzato --</option>
+            <option value="">-- Seleziona Logo Personale --</option>
           </select>
         </div>
       </div>
@@ -685,8 +686,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261010-54"></script>
-  <script src="../assets/js/selettore.js?v=20261010-54"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261011-14"></script>
+  <script src="../assets/js/selettore.js?v=20261011-14"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/img/ophilya/ophilyablack.png";
     // Voce del menu brand che rimette il logo OPHILYA predefinito.
@@ -1006,13 +1007,13 @@
       const select = document.getElementById('customLogoSelect');
       const customLogos = LoghiPersonalizzati.elenco();
 
-      select.innerHTML = '<option value="">-- Seleziona Logo Personalizzato --</option>';
+      select.innerHTML = '<option value="">-- Seleziona Logo Personale --</option>';
 
       if (Array.isArray(customLogos) && customLogos.length > 0) {
         customLogos.forEach((item, index) => {
           const option = document.createElement('option');
           option.value = item.data || item.url || item.src || item;
-          option.textContent = "★ " + (item.name || `Logo Personalizzato ${index + 1}`);
+          option.textContent = "★ " + (item.name || `Logo Personale ${index + 1}`);
           select.appendChild(option);
         });
       }
@@ -1031,7 +1032,7 @@
     function onCustomLogoSelectChange() {
       const val = document.getElementById('customLogoSelect').value;
       selectedCustomLogo = val;
-      // Senza logo personalizzato si torna al logo OPHILYA predefinito.
+      // Senza logo personale si torna al logo OPHILYA predefinito.
       selectedBrand = val ? '' : DEFAULT_BRAND_VALUE;
       document.getElementById('brandSelect').value = selectedBrand;
       updateLabel();
@@ -1688,7 +1689,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261010-54"></script>
+  <script src="../assets/js/cursore.js?v=20261011-14"></script>
   <script>
     // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
     // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.

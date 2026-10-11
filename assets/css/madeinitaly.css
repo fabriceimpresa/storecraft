@@ -71,3 +71,7 @@
 @media print {
   .made-in-italy-btn { display: none !important; }
 }
+
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+:root[data-interface-theme="light"] .made-in-italy-btn { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+:root[data-interface-theme="light"] :is(.made-in-italy-btn:hover, .made-in-italy-btn[aria-pressed="true"], .made-in-italy-btn.is-active) { box-shadow: 0 2px 4px rgba(40, 34, 28, .4); }

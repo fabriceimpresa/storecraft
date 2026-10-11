@@ -91,3 +91,7 @@
   .carousel-container { scroll-behavior: auto; }
   .carousel-arrow { transition: none; }
 }
+
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+:root[data-interface-theme="light"] .carousel-arrow { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
+:root[data-interface-theme="light"] .carousel-arrow:hover:not(:disabled) { box-shadow: 0 2px 4px rgba(40, 34, 28, .32); }

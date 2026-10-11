@@ -11,7 +11,7 @@ Dashboard.contenuto({
   etichette: 'etichette.html?label=outlet',
   sezioni: [
     {
-      id: 'generators-section', carosello: 'generators-carousel', titolo: 'Genera Cartelli', tipo: 'cartelli',
+      id: 'generators-section', carosello: 'generators-carousel', titolo: 'Crea Cartelli', tipo: 'cartelli',
       schede: [
         { titolo: 'Semplice', link: 'cartelli_semplici.html', tipo: 'CARTELLO', miniature: ['thumbnail/luxury/cartellosemplice.png'], alt: 'Anteprima Cartello Semplice',
           specifiche: ['Brand', '2° Brand', 'I Miei Loghi', 'Claim', 'Descrizione', 'Prezzo'] },
@@ -45,7 +45,7 @@ Dashboard.contenuto({
       ]
     },
     {
-      id: 'tickets-section', carosello: 'tickets-carousel', titolo: 'Genera Cartellini', tipo: 'cartellini',
+      id: 'tickets-section', carosello: 'tickets-carousel', titolo: 'Crea Cartellini', tipo: 'cartellini',
       schede: [
         { titolo: 'Vetrina', link: 'cartellinivetrina.html', tipo: 'CARTELLINI', miniature: ['thumbnail/luxury/cartellini.png'], alt: 'Anteprima Cartellini Vetrina',
           specifiche: ['Brand', 'I Miei Loghi', 'Descrizione', 'Doppio Prezzo', 'Sconto'] },

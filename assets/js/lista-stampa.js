@@ -8,7 +8,9 @@
  *   ridisegnate già colorate (colorFilteredImages), perché html2canvas i filtri non li applica.
  * - lista-stampa.html mostra le pagine, le elimina, svuota la lista e la stampa come lista.pdf, generato qui
  *   senza librerie: un PDF A4 con una pagina per immagine (JPEG incorporato così com'è, filtro DCTDecode).
- * La lista resta nel browser e nel computer in cui è stata creata, come i loghi personalizzati.
+ * La lista resta nel browser e nel computer in cui è stata creata, come i loghi personali, e si svuota da sola:
+ * ogni pagina resta due giorni dall'aggiunta (DURATA_LISTA).
+ * - fotografa(sheet) dà la foto del foglio con le misure vere: la usa anche la cronologia di stampa (cronologia-stampa.js).
  */
 (function initListaStampa() {
   // Una lista per negozio (data-negozio della pagina): il nome del database è nella scheda del negozio
@@ -42,11 +44,31 @@
     });
   }
 
-  // Pagine in ordine di inserimento: { id, createdAt, page, title, orientation, width, height, jpeg, thumb }
-  const getPages = () => withStore('readonly', store => store.getAll());
+  // La lista si svuota da sola: ogni pagina resta due giorni (48 ore) dall'aggiunta, poi si cancella, così i fogli
+  // dimenticati non riempiono lo spazio del browser. La pulizia si fa a ogni lettura e aggiunta.
+  const DURATA_LISTA = 2 * 24 * 60 * 60 * 1000;
+  const scadute = () => withStore('readwrite', store => {
+    const limite = Date.now() - DURATA_LISTA;
+    store.openCursor().onsuccess = event => {
+      const cursore = event.target.result;
+      if (!cursore) return;
+      if (!(cursore.value.createdAt >= limite)) cursore.delete();
+      cursore.continue();
+    };
+  });
+
+  // Pagine in ordine di inserimento: { id, createdAt, page, title, orientation, width, height, mmWidth, mmHeight, jpeg, thumb }
+  const getPages = () => scadute().then(() => withStore('readonly', store => store.getAll()));
   const deletePage = id => withStore('readwrite', store => store.delete(id));
   const clearPages = () => withStore('readwrite', store => store.clear());
-  const countPages = () => withStore('readonly', store => store.count());
+  const countPages = () => scadute().then(() => withStore('readonly', store => store.count()));
+  // pagina già pronta (es. dalla cronologia di stampa): entra in fondo alla lista con la data di oggi
+  async function addPage(pagina) {
+    const { id, ...dati } = pagina;
+    await scadute();
+    await withStore('readwrite', store => store.add({ ...dati, createdAt: Date.now() }));
+    return countPages();
+  }
 
   function loadHtml2canvas() {
     if (window.html2canvas) return Promise.resolve(window.html2canvas);
@@ -278,7 +300,7 @@
     document.head.appendChild(regola);
   }
 
-  async function captureSheet(sheet) {
+  async function captureSheet(sheet, scala = CAPTURE_SCALE) {
     proteggiControlloTesto();
     const html2canvas = await step('caricamento di html2canvas', loadHtml2canvas);
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
@@ -319,7 +341,7 @@
     });
     try {
       canvas = await step('foto del foglio', () => html2canvas(sheet, {
-        scale: CAPTURE_SCALE,
+        scale: scala,
         backgroundColor: '#ffffff',
         useCORS: true,
         logging: false,
@@ -370,33 +392,39 @@
     return canvas;
   }
 
-  // Misure del foglio in mm, ricavate dalla foto (px CSS × CAPTURE_SCALE).
-  const toMm = px => px / CAPTURE_SCALE * 25.4 / 96;
+  // Misure del foglio in mm, ricavate dalla foto (px CSS × scala della foto).
+  const toMm = (px, scala = CAPTURE_SCALE) => px / scala * 25.4 / 96;
   // Orientamento della carta come nella stampa da computer: orizzontale solo per i cartellini (A4 orizzontale),
   // verticale per tutti gli altri fogli, anche per il mezzo A4 del Magazzino.
   const paperOrientation = sheet => sheet.classList.contains('a4-landscape') ? 'landscape' : 'portrait';
 
-  // Ogni pagina della lista ricorda le misure vere del foglio (mmWidth, mmHeight): in lista.pdf sta a misura reale.
-  async function addSheet(sheet) {
-    const canvas = await captureSheet(sheet);
-    const jpeg = await canvasToBlob(canvas, 'image/jpeg', JPEG_QUALITY);
+  // Foto del foglio con i dati per ristamparlo a misura reale: { page, title, orientation, width, height, mmWidth,
+  // mmHeight, jpeg, thumb }. scala e qualita: la lista usa circa 240 dpi, la cronologia di stampa un poco meno.
+  async function fotografa(sheet, { scala = CAPTURE_SCALE, qualita = JPEG_QUALITY } = {}) {
+    const canvas = await captureSheet(sheet, scala);
+    const jpeg = await canvasToBlob(canvas, 'image/jpeg', qualita);
     const thumbCanvas = document.createElement('canvas');
     thumbCanvas.width = THUMB_WIDTH;
     thumbCanvas.height = Math.round(canvas.height * THUMB_WIDTH / canvas.width);
     thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
     const thumb = await canvasToBlob(thumbCanvas, 'image/jpeg', 0.85);
-    const record = {
-      createdAt: Date.now(),
+    return {
       page: location.pathname.split('/').pop() || 'index.html',
       title: document.title,
       orientation: paperOrientation(sheet),
       width: canvas.width,
       height: canvas.height,
-      mmWidth: toMm(canvas.width),
-      mmHeight: toMm(canvas.height),
+      mmWidth: toMm(canvas.width, scala),
+      mmHeight: toMm(canvas.height, scala),
       jpeg,
       thumb
     };
+  }
+
+  // Ogni pagina della lista ricorda le misure vere del foglio (mmWidth, mmHeight): in lista.pdf sta a misura reale.
+  async function addSheet(sheet) {
+    const record = { createdAt: Date.now(), ...await fotografa(sheet) };
+    await scadute();
     await withStore('readwrite', store => store.add(record));
     return countPages();
   }
@@ -592,5 +620,5 @@
     document.head.append(style);
   }
 
-  window.ListaStampa = { addSheet, sheetPdf, getPages, deletePage, clearPages, countPages, buildPdf, isIos, offerPdf };
+  window.ListaStampa = { addSheet, addPage, fotografa, sheetPdf, getPages, deletePage, clearPages, countPages, buildPdf, isIos, offerPdf };
 })();

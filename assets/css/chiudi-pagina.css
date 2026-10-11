@@ -71,3 +71,6 @@
 @media print {
   .app-close-btn { display: none !important; }
 }
+
+/* Tema chiaro: ombra corta e netta, più solida che sfumata (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+:root[data-interface-theme="light"] .app-close-btn { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }

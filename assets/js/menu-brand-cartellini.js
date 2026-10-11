@@ -1,5 +1,5 @@
 (() => {
-  // Loghi personalizzati del negozio della pagina (loghi-personalizzati.js).
+  // Loghi personali del negozio della pagina (loghi-personalizzati.js).
   function readCustomLogos() {
     return LoghiPersonalizzati.elenco().filter(logo => logo && logo.name && logo.data);
   }
@@ -31,7 +31,7 @@
 
     const customLabel = document.createElement('label');
     customLabel.htmlFor = customSelectId;
-    customLabel.textContent = 'Loghi Personalizzati';
+    customLabel.textContent = 'Loghi Personali';
     const customWrap = document.createElement('div');
     customWrap.className = 'preset-select';
     customWrap.append(customSelect);
@@ -53,13 +53,13 @@
 
     const customPlaceholder = document.createElement('option');
     customPlaceholder.value = '';
-    customPlaceholder.textContent = '-- Seleziona Logo Personalizzato --';
+    customPlaceholder.textContent = '-- Seleziona Logo Personale --';
     customSelect.append(customPlaceholder);
     const customValue = placeholder.dataset.customValue || 'data';
     if (!['data', 'id'].includes(customValue)) {
       throw new Error(`Valore personalizzato non supportato per il menu loghi: ${customValue}`);
     }
-    // I loghi personalizzati arrivano quando la lista del negozio è pronta; la scelta già fatta resta.
+    // I loghi personali arrivano quando la lista del negozio è pronta; la scelta già fatta resta.
     LoghiPersonalizzati.pronto.then(() => {
       const logos = readCustomLogos();
       if (placeholder.dataset.sortCustom === 'true') {
@@ -85,7 +85,7 @@
     customSelect.addEventListener('change', () => {
       const handler = window[customChangeName];
       if (typeof handler !== 'function') {
-        throw new Error(`Funzione non disponibile per il menu Loghi Personalizzati: ${customChangeName}`);
+        throw new Error(`Funzione non disponibile per il menu Loghi Personali: ${customChangeName}`);
       }
       handler();
     });

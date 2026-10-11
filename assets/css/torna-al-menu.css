@@ -70,3 +70,6 @@
 @media print {
   .floating-nav-box { display: none !important; }
 }
+
+/* Tema chiaro: ombra corta e netta, più solida che sfumata (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+:root[data-interface-theme="light"] .floating-nav-box { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }

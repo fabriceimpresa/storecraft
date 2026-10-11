@@ -1,4 +1,4 @@
-/* Loghi personalizzati: una lista per negozio, salvata nel browser (IndexedDB, database "storecraft-loghi-personalizzati",
+/* Loghi personali: una lista per negozio, salvata nel browser (IndexedDB, database "storecraft-loghi-personalizzati",
    archivio "liste", una voce per negozio con l'elenco dei loghi { id, name, data } nell'ordine scelto dall'utente).
    Il negozio è quello della pagina (<html data-negozio="…">): ogni negozio vede e modifica solo la propria lista.
    Le immagini restano data URL, come prima, così menu, stampa e lista di stampa le usano senza cambiare.
@@ -69,7 +69,7 @@
         const valore = JSON.parse(localStorage.getItem(chiave) || '[]');
         if (Array.isArray(valore) && valore.length) return valore;
       } catch (error) {
-        console.error(`Lettura della vecchia lista dei loghi personalizzati (${chiave}) fallita.`, error);
+        console.error(`Lettura della vecchia lista dei loghi personali (${chiave}) fallita.`, error);
       }
     }
     return [];
@@ -90,7 +90,7 @@
   }
 
   const pronto = carica().catch(error => {
-    console.error('Lettura dei loghi personalizzati fallita.', error);
+    console.error('Lettura dei loghi personali fallita.', error);
   });
 
   async function salva(nuovaLista) {
@@ -105,7 +105,7 @@
   if (canale) {
     canale.onmessage = event => {
       if (event.data !== NEGOZIO) return;
-      carica().then(avvisa).catch(error => console.error('Aggiornamento dei loghi personalizzati fallito.', error));
+      carica().then(avvisa).catch(error => console.error('Aggiornamento dei loghi personali fallito.', error));
     };
   }
 

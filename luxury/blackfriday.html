@@ -2,23 +2,23 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Black Friday</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261011-14">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261010-54">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261011-14">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261011-14">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261010-54"></script>
-  <script src="../assets/js/logos.js?v=20261010-54"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261010-54"></script>
-  <script src="../assets/js/print-white-logos.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261011-14"></script>
+  <script src="../assets/js/logos.js?v=20261011-14"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261011-14"></script>
+  <script src="../assets/js/print-white-logos.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -357,13 +357,13 @@
       }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261010-54">
-  <script defer src="../assets/js/menu-cascata.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261010-54">
-  <script defer src="../assets/js/responsive.js?v=20261010-54"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261010-54"></script>
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261011-14">
+  <script defer src="../assets/js/menu-cascata.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261011-14">
+  <script defer src="../assets/js/responsive.js?v=20261011-14"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261011-14"></script>
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261011-14">
 </head>
 <body data-layout="cartelli">
 
@@ -389,14 +389,14 @@
         <button type="button" class="btn-toggle" id="discountBtn" aria-pressed="false" onclick="toggleDiscount()">+ AGGIUNGI SCONTISTICA</button>
       </div>
 
-      <!-- Blocco 2: brand (ufficiali e personalizzati); nascosto con la descrizione, che prende il posto del logo -->
+      <!-- Blocco 2: brand (ufficiali e personali); nascosto con la descrizione, che prende il posto del logo -->
       <div class="panel-block" id="brandBlock">
         <div class="form-group">
           <label class="section-label" for="brandSelect">BRAND</label>
           <div class="preset-select">
             <select id="brandSelect" onchange="onOfficialBrandChange()"></select>
           </div>
-          <label for="customBrandSelect">Loghi Personalizzati</label>
+          <label for="customBrandSelect">Loghi Personali</label>
           <div class="preset-select">
             <select id="customBrandSelect" onchange="onCustomBrandChange()"></select>
           </div>
@@ -518,8 +518,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/selettore.js?v=20261010-54"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261010-54"></script>
+  <script src="../assets/js/selettore.js?v=20261011-14"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261011-14"></script>
 
   <script>
     const LOGO_PATH = "../assets/logos/luxury/";
@@ -528,7 +528,7 @@
     // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
     function createCardState() {
       return {
-        brand: '', customBrand: '',          // logo nel rettangolo nero: file ufficiale o logo personalizzato (data URL)
+        brand: '', customBrand: '',          // logo nel rettangolo nero: file ufficiale o logo personale (data URL)
         withDesc: false, desc: 'Sciarpe',    // + AGGIUNGI DESCRIZIONE: il testo prende il posto del logo
         withDiscount: false,                 // + AGGIUNGI SCONTISTICA: prezzo originario e sconto sotto il logo
         orig: '130,00', disc: '60',
@@ -556,7 +556,7 @@
         const logos = LoghiPersonalizzati.elenco();
         return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
       } catch (error) {
-        console.error('Lettura dei loghi personalizzati fallita.', error);
+        console.error('Lettura dei loghi personali fallita.', error);
         return [];
       }
     }
@@ -579,7 +579,7 @@
       });
 
       const customSelect = document.getElementById('customBrandSelect');
-      addPlaceholder(customSelect, '-- Seleziona Logo Personalizzato --');
+      addPlaceholder(customSelect, '-- Seleziona Logo Personale --');
       readCustomLogos().forEach(logo => {
         const option = document.createElement('option');
         option.value = logo.data;
@@ -591,7 +591,7 @@
       renderCards();
     }
 
-    // Scegliere un brand ufficiale azzera il logo personalizzato, e viceversa.
+    // Scegliere un brand ufficiale azzera il logo personale, e viceversa.
     function onOfficialBrandChange() {
       setField('brand', document.getElementById('brandSelect').value);
       setField('customBrand', '');
@@ -802,10 +802,10 @@
       renderCard(2);
     }
 
-    // I menu si riempiono quando la lista dei loghi personalizzati del negozio è pronta (loghi-personalizzati.js).
+    // I menu si riempiono quando la lista dei loghi personali del negozio è pronta (loghi-personalizzati.js).
     window.onload = () => LoghiPersonalizzati.pronto.then(loadLocalLogos);
   </script>
-  <script src="../assets/js/cursore.js?v=20261010-54"></script>
+  <script src="../assets/js/cursore.js?v=20261011-14"></script>
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
     const activeCard = () => document.getElementById('card' + currentCard);
@@ -829,7 +829,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/copia-cartello.js?v=20261010-54"></script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261010-54"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261011-14"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261011-14" data-cronologia="promo"></script>
 </body>
 </html>

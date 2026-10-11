@@ -79,7 +79,7 @@
 
 /* Blocchi del pannello (.panel-block), uguali in tutti i menu e sempre in quest'ordine:
    1. selettori e pulsanti (cartello superiore / inferiore, modalità, + AGGIUNGI 2° BRAND);
-   2. brand (ufficiali e personalizzati) e claim laterali;
+   2. brand (ufficiali e personali) e claim laterali;
    3. campi del cartello: prezzi, descrizione o entrambi, secondo la modalità (con il selettore dell'articolo, se c'è);
    4. stampa (COPIA SU ALTRO CARTELLO, impostazioni di stampa, tasto di stampa).
    Dentro un blocco i campi sono un poco più vicini che in TEBE (0,65rem tra un campo e l'etichetta successiva,
@@ -236,7 +236,7 @@
   background: var(--interface-control, #0a0908);
   color: var(--interface-text, #f4f1ea);
 }
-/* Stella dei brand prioritari (stagionali) nei menu BRAND: la ★ dei loghi personalizzati, sempre gialla */
+/* Stella dei brand prioritari (stagionali) nei menu BRAND: la ★ dei loghi personali, sempre gialla */
 .brand-star { color: #f2b705; }
 
 @supports (appearance: base-select) {
@@ -511,21 +511,41 @@
   margin: 0;
 }
 
+/* Simbolo in un riquadro a parte, come nelle Utilità Cassa (.input-prefix della dashboard): 0,7rem ai lati, una
+   linea lo separa dal campo, simbolo oro in grassetto. Il fondo è quello del riquadro della freccia dei menu
+   (--pannello-riquadro: grigio scuro nel tema scuro, beige nel chiaro), quindi segue tema e negozio.
+   Grandezza e interlinea uguali alle cifre del campo, così il simbolo sta sulla loro stessa linea.
+   Arial ha solo il normale e il grassetto: nel tema scuro (valori di riserva) il simbolo è un poco meno marcato,
+   carattere normale con un contorno sottile; nel tema chiaro grassetto pieno (--pannello-simbolo-peso: 700 e
+   --pannello-simbolo-tratto: 0 nelle schede di TEBE e OPHILYA, theme.css per Luxury). */
 .input-affix .affix {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
+  justify-content: center;
+  padding: 0 0.7rem;
+  background: var(--pannello-riquadro);
   color: var(--pannello-oro);
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 0.82rem;
+  line-height: normal;
   font-weight: var(--pannello-simbolo-peso, 400);
+  -webkit-text-stroke: var(--pannello-simbolo-tratto, 0.45px) currentColor;
   pointer-events: none;
 }
 
-.input-affix .affix:first-child { padding-left: 0.45rem; }
-.input-affix .affix:first-child + input { padding-left: 0.3rem; }
-.input-affix input + .affix { padding-right: 0.35rem; }
+.input-affix .affix:first-child { border-right: 1px solid var(--pannello-bordo); }
+/* il % dopo il campo resta senza riquadro (accanto ci sono le frecce ▲▼, che hanno già il loro), in fondo al campo,
+   un poco staccato dalle frecce */
+.input-affix input + .affix { padding: 0 0.75rem 0 0.45rem; background: none; }
+
+/* il % ha il grigio del valore di esempio del campo vuoto (lo stesso colore per tutti e due, --pannello-segnaposto-campo:
+   il grigio dei browser, #757575): ricorda che sul cartello ci sarà, senza disturbare le cifre */
+.input-affix input[data-percentuale]::placeholder { color: var(--pannello-segnaposto-campo, #757575); opacity: 1; }
+.input-affix input[data-percentuale] + .affix { color: var(--pannello-segnaposto-campo, #757575); }
 
 .input-affix .stepper {
-  flex: 0 0 1.4rem;
+  flex: 0 0 1.6rem;   /* larga come il riquadro della freccia dei menu (.preset-select::after) */
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--pannello-bordo);
@@ -585,4 +605,15 @@
     font-size: 0.64rem;
   }
   .btn-print { padding: 9px; }
+}
+
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026).
+   Vale anche per il foglio di stampa a schermo, nelle pagine di tutti i negozi (in stampa il foglio non ha ombra). */
+:root[data-interface-theme="light"] .btn-toggle { box-shadow: 0 1px 3px var(--pannello-ombra); }
+:root[data-interface-theme="light"] .btn-toggle:hover { box-shadow: 0 2px 0 var(--pannello-ombra); }
+@supports (appearance: base-select) {
+  :root[data-interface-theme="light"] .form-group select::picker(select) { box-shadow: 0 2px 5px var(--interface-dropdown-shadow, rgba(40, 34, 28, .2)); }
+}
+@media screen {
+  :root[data-interface-theme="light"] :is(.print-sheet, .a4-sheet, .a4-landscape, .a4-portrait) { box-shadow: 0 2px 6px rgba(40, 34, 28, .24) !important; }
 }

@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261010-54"></script>
+  <script src="assets/js/negozi.js?v=20261011-14"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Gestione negozi): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261010-54"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -195,6 +195,8 @@
     .frame { overflow: hidden; }
     .frame.con-sezione { width: min(1120px, 100%); }
     .menu[hidden] { display: none; }
+    /* promemoria sotto il menu, come le note // delle sezioni: piccolo, nell'oro spento della cornice */
+    .nota-browser { margin: 26px auto 0; max-width: 420px; color: var(--frame); font: 400 0.68rem/1.6 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 0.04em; text-align: center; }
     .vista[hidden] { display: none; }
     .vista { margin-top: 8px; }
     .vista iframe { display: block; width: 100%; height: 320px; border: 0; background: transparent; }
@@ -284,6 +286,8 @@
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
       <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
       <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
+      <!-- promemoria: gli strumenti che scrivono nella cartella del progetto usano la File System Access API -->
+      <p class="nota-browser">// solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto</p>
     </nav>
 
     <!-- Sezioni: Gestione negozi e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->

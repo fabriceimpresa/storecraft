@@ -2,20 +2,20 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Etichette DYMO // STORE CRAFT</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261010-54"></script>
-  <script src="../assets/js/logos.js?v=20261010-54"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261011-14"></script>
+  <script src="../assets/js/logos.js?v=20261011-14"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261010-54"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261011-14"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <style>
     :root {
       --bg: #121110;
@@ -423,12 +423,13 @@
         margin-top: 8px;
       }
     }
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .label-preview-wrapper { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .custom-brand-box { box-shadow: 0 1px 3px rgba(40, 34, 28, .2); }    @media (max-width: 768px) {      :root[data-interface-theme="light"] .preview-section { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }      :root[data-interface-theme="light"] aside { box-shadow: 0 -1px 4px rgba(40, 34, 28, .22); }    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261010-54">
-  <script defer src="../assets/js/menu-cascata.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261010-54">
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261011-14">
+  <script defer src="../assets/js/menu-cascata.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261011-14">
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261011-14">
 </head>
 <body data-layout="dymo">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -512,11 +513,11 @@
 
       <div class="custom-brand-box" id="groupCustomBrand">
         <div class="custom-brand-header">
-          <span>★ LOGHI PERSONALIZZATI</span>
+          <span>★ LOGHI PERSONALI</span>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
           <select id="customLogoSelect" class="form-control custom-select" onchange="onCustomLogoSelectChange()">
-            <option value="">-- Nessun Logo Personalizzato --</option>
+            <option value="">-- Nessun Logo Personale --</option>
           </select>
         </div>
       </div>
@@ -808,7 +809,7 @@
     function init() {
       initSizeSelects();
       loadBrandSelect();
-      LoghiPersonalizzati.pronto.then(loadCustomLogosSelect);   // menu pronto con la lista dei loghi personalizzati
+      LoghiPersonalizzati.pronto.then(loadCustomLogosSelect);   // menu pronto con la lista dei loghi personali
       checkDymoPresence();
 
       // PARSING PARAMETRI URL PER SELEZIONE AUTOMATICA TEMPLATE
@@ -883,13 +884,13 @@
       const select = document.getElementById('customLogoSelect');
       const customLogos = LoghiPersonalizzati.elenco();
 
-      select.innerHTML = '<option value="">-- Nessun Logo Personalizzato --</option>';
+      select.innerHTML = '<option value="">-- Nessun Logo Personale --</option>';
 
       if (Array.isArray(customLogos) && customLogos.length > 0) {
         customLogos.forEach((item, index) => {
           const option = document.createElement('option');
           option.value = item.data || item.url || item.src || item;
-          option.textContent = "★ " + (item.name || `Logo Personalizzato ${index + 1}`);
+          option.textContent = "★ " + (item.name || `Logo Personale ${index + 1}`);
           select.appendChild(option);
         });
       }

@@ -74,3 +74,8 @@ select { color-scheme: var(--pannello-schema, dark); }
   .menu-cascata-thumb:active { cursor: grabbing; }
   .menu-cascata-track[hidden] { display: none; }
 }
+
+/* Tema chiaro: ombra dell'elenco corta e netta (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+@supports (appearance: base-select) {
+  :root[data-interface-theme="light"] select::picker(select) { box-shadow: 0 2px 5px var(--interface-dropdown-shadow, rgba(40, 34, 28, .2)); }
+}

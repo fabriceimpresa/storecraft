@@ -28,7 +28,7 @@
                     la pagina resta nella cartella) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.07 2026';
+  const VERSIONE = 'V 1.2.08 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -95,7 +95,7 @@
     if (dati.etichette) {
       gruppi.push(gruppoMenu('etichette', 'ETICHETTE', el('a', { href: dati.etichette, class: 'nav-btn', text: 'Etichette DYMO' })));
     }
-    gruppi.push(gruppoMenu('loghi', 'LOGHI PERSONALIZZATI',
+    gruppi.push(gruppoMenu('loghi', 'LOGHI PERSONALI',
       el('a', { href: 'genera_loghi.html', class: 'nav-btn', text: 'Importa Loghi' }),
       el('a', { href: 'gestisci_lista.html', class: 'nav-btn', text: 'Gestisci Loghi' })));
     const stampe = sezioni('stampe').filter(s => s.schede.some(scheda => !scheda.prossimamente));
@@ -104,17 +104,15 @@
         el('a', { href: `#${s.id}`, class: 'nav-btn', text: s.voceMenu || s.titolo,
           onclick: event => { event.preventDefault(); scrollToSection(s.id); } }))));
     }
-    gruppi.push(gruppoMenu('cassa', "UTILITA' CASSA", [
-      ['widget-sconto', 'Calcola Sconto'], ['widget-aliquota', 'Calcola Aliquota'], ['widget-valuta', 'Cambio Valuta'],
-      ['widget-iva', 'Calcola IVA'], ['widget-qrcode', 'Generatore QR']
-    ].map(([id, nome]) => el('a', { class: 'nav-btn', href: `#${id}`, text: nome,
-      onclick: event => { event.preventDefault(); apriStrumento(id); } }))));
+    // Utilità Cassa: niente sezione nel menu laterale (dall'11 ottobre 2026), si aprono dal selettore CASSIERE / CREATOR
     // Lista di stampa del negozio: si apre nella sua finestra dedicata, come dal pulsante sotto i pannelli
     // (strumenti-stampa.js; nome della finestra nella scheda del negozio, listaStampa)
     const finestraLista = Negozi.corrente()?.listaStampa || `${document.documentElement.dataset.negozio}-lista-stampa`;
-    gruppi.push(gruppoMenu('lista', 'LISTA STAMPA',
-      el('a', { href: 'lista-stampa.html', class: 'nav-btn', text: 'Gestisci Lista di Stampa',
-        onclick: event => { event.preventDefault(); window.open('lista-stampa.html', finestraLista); } })));
+    // Cronologia di Stampa: le stampe degli ultimi 7 giorni (cronologia-stampa.html del negozio), nella stessa scheda
+    gruppi.push(gruppoMenu('lista', 'LISTA DI STAMPA E CRONOLOGIA',
+      el('a', { href: 'lista-stampa.html', class: 'nav-btn', text: 'Lista di Stampa',
+        onclick: event => { event.preventDefault(); window.open('lista-stampa.html', finestraLista); } }),
+      el('a', { href: 'cronologia-stampa.html', class: 'nav-btn', text: 'Cronologia di Stampa' })));
     return gruppi;
   }
 
@@ -593,10 +591,15 @@
           const ora = new Date();
           const giorno = ora.toLocaleDateString('it-IT', { weekday: 'short' }).replace('.', '');
           const mese = ora.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '');
-          const orario = ora.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+          const [ore, minuti] = ora.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }).split(':');
+          // i due punti lampeggiano a battere i secondi, come negli orologi veri: l'animazione (1 s, in dashboard.css)
+          // parte indietro di quanto è già passato del secondo, così si accendono allo scoccare di ogni secondo
+          const battito = el('span', { class: 'orologio-battito', text: ':', 'aria-hidden': 'true' });
+          battito.style.animationDelay = `-${Date.now() % 1000}ms`;
           // la data in oro, l'ora in bianco (nel tema chiaro scura), divise da un puntino tenue
           testo.replaceChildren(el('span', { class: 'orologio-data', text: `${giorno} ${ora.getDate()} ${mese}`.toUpperCase() }),
-            el('span', { class: 'orologio-punto', text: '·' }), el('span', { class: 'orologio-ora', text: orario }));
+            el('span', { class: 'orologio-punto', text: '·' }),
+            el('span', { class: 'orologio-ora', 'aria-label': `${ore}:${minuti}` }, ore, battito, minuti));
           setTimeout(scrivi, 60000 - (Date.now() % 60000) + 50);
         };
         scrivi();
@@ -836,8 +839,7 @@
   const VOCI_RUOTA = ':is(.nav-btn, .nav-subtoggle)';
   // sopra la prima voce una voce guida, solo decorativa (non si sceglie), sfumata come le altre: fa capire che le voci
   // scorrono anche quando la rotella è all'inizio
-  const GUIDE_RUOTA = { cartelli: 'Trova il tuo cartello', cartellini: 'Trova il tuo cartellino', stampe: 'Trova la tua stampa',
-    cassa: 'Trova lo strumento' };
+  const GUIDE_RUOTA = { cartelli: 'Trova il tuo cartello', cartellini: 'Trova il tuo cartellino', stampe: 'Trova la tua stampa' };
   function aggiornaRuota(nav) {
     if (!phoneViewQuery.matches) return;
     const riquadro = nav.getBoundingClientRect();
@@ -923,17 +925,6 @@
     if (phoneViewQuery.matches) window.scrollTo({ top: 0, behavior: 'smooth' });
     else mainElem?.scrollTo({ top: 0, behavior: 'smooth' });
     Cassa.chiudi();
-  }
-
-  // Dal menu laterale: porta allo strumento di cassa e lo apre (popup su desktop e tablet, evidenziato sul telefono)
-  function apriStrumento(id) {
-    if (narrowViewQuery.matches) toggleMobileSidebar(false);
-    if (phoneViewQuery.matches) {
-      Cassa.apri(id, { scorri: true });
-      return;
-    }
-    document.getElementById('tools-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    Cassa.apri(id, { scorri: true });
   }
 
   // Vista CASSIERE su desktop e tablet: la riga con logo e indirizzo sta in fondo alla pagina, con il bordo più basso

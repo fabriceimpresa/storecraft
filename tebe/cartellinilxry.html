@@ -2,22 +2,22 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261010-54">
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261011-14">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261011-14">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cartellini LXRY</title>
     <!-- CARICAMENTO ELENCO LOGHI CENTRALIZZATO -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261010-54"></script>
-  <script src="../assets/js/logos.js?v=20261010-54"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261010-54">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261010-54"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261011-14"></script>
+  <script src="../assets/js/logos.js?v=20261011-14"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261011-14">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261011-14"></script>
 
   <style>
     /* Definizione Font Locali Bodoni Std da assets/fonts */
@@ -216,12 +216,12 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261010-54">
-  <script defer src="../assets/js/menu-cascata.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261010-54">
-  <script defer src="../assets/js/responsive.js?v=20261010-54"></script>
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261011-14">
+  <script defer src="../assets/js/menu-cascata.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261011-14">
+  <script defer src="../assets/js/responsive.js?v=20261011-14"></script>
 </head>
 <body data-layout="cartellini">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi">✕</a>
@@ -247,7 +247,7 @@
         </div>
       </div>
 
-      <!-- Blocco 2: brand (ufficiali e personalizzati), menu comuni di menu-brand-cartellini.js -->
+      <!-- Blocco 2: brand (ufficiali e personali), menu comuni di menu-brand-cartellini.js -->
       <div class="panel-block">
         <div class="form-group" data-menu-brand-cartellini data-brand-change="updateBrandSelection" data-custom-change="updateCustomBrandSelection" data-custom-value="id" data-sort-custom="true"></div>
       </div>
@@ -303,9 +303,9 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261010-54"></script>
-  <script src="../assets/js/selettore.js?v=20261010-54"></script>
-  <script src="../assets/js/menu-brand-cartellini.js?v=20261010-54"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261011-14"></script>
+  <script src="../assets/js/selettore.js?v=20261011-14"></script>
+  <script src="../assets/js/menu-brand-cartellini.js?v=20261011-14"></script>
   <script>
 
     function cleanBrandName(fileName) {
@@ -317,7 +317,7 @@
         const logos = LoghiPersonalizzati.elenco();
         return Array.isArray(logos) ? logos.filter(logo => logo && logo.id && logo.name && logo.data) : [];
       } catch (error) {
-        console.error('Lettura dei loghi personalizzati fallita.', error);
+        console.error('Lettura dei loghi personali fallita.', error);
         return [];
       }
     }
@@ -336,7 +336,7 @@
       return rotation.length ? rotation[index % rotation.length] : '';
     }
 
-    // Ogni cartellino ha il proprio brand: file ufficiale oppure id di un logo personalizzato.
+    // Ogni cartellino ha il proprio brand: file ufficiale oppure id di un logo personale.
     // Modalità alternate a scacchiera sulla griglia 4×2: Doppio Prezzo e Promo non stanno mai affiancati.
     const cardsData = [
       { id: 1, enabled: true, desc: 'Giubbino', usePreset: false, priceOrig: '396,00', sconto: '50', presetText: '', priceFinal: '198,00' },
@@ -351,7 +351,7 @@
 
     let currentCardIdx = 0;
 
-    // I menu BRAND e Loghi Personalizzati li crea e li riempie menu-brand-cartellini.js.
+    // I menu BRAND e Loghi Personali li crea e li riempie menu-brand-cartellini.js.
     function init() {
       renderTabs();
       renderGrid();
@@ -451,7 +451,7 @@
       card.brand.officialFile = '';
       document.getElementById('brandSelect').value = '';
 
-      // Deselezionando il logo personalizzato si torna al brand predefinito, mai a un cartellino senza logo.
+      // Deselezionando il logo personale si torna al brand predefinito, mai a un cartellino senza logo.
       if (!card.brand.customLogoId) {
         card.brand.officialFile = getDefaultBrandFile();
         document.getElementById('brandSelect').value = card.brand.officialFile;
@@ -462,7 +462,7 @@
     function getBrandLogoSource(brand) {
       const customLogo = readCustomLogos().find(logo => logo.id === brand.customLogoId);
       if (brand.customLogoId && !customLogo) {
-        return Promise.reject(new Error(`Logo personalizzato non trovato: ${brand.customLogoId}`));
+        return Promise.reject(new Error(`Logo personale non trovato: ${brand.customLogoId}`));
       }
 
       return PrintLogoColors.getBrandLogoSrc(
@@ -473,7 +473,7 @@
       );
     }
 
-    // Logo brand in oro: file pregenerato per i loghi ufficiali, ricolorato via canvas per i personalizzati.
+    // Logo brand in oro: file pregenerato per i loghi ufficiali, ricolorato via canvas per i personali.
     function loadBrandImage(brandBox, brand) {
       if (!brand.customLogoId && !brand.officialFile) return;
       const brandImage = document.createElement('img');
@@ -620,7 +620,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261010-54"></script>
+  <script src="../assets/js/cursore.js?v=20261011-14"></script>
   <script>
     // Cursore: sopra il cartellino selezionato quando si sceglie una linguetta, sopra (o di lato)
     // all'elemento del cartellino legato al campo in uso quando si lavora sul pannello.
@@ -647,7 +647,7 @@
       ]
     }).point({ target: currentCardView, placement: 'above' });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261010-54" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261010-54"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261011-14" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261011-14"></script>
 </body>
 </html>

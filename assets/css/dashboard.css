@@ -1240,6 +1240,12 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   #main-content > header.con-logo .orologio-testata .orologio-ora { color: #fff; }
   :root[data-interface-theme="light"] #main-content > header.con-logo .orologio-testata .orologio-ora { color: #282522; }
   #main-content > header.con-logo .orologio-testata .orologio-punto { color: var(--text-muted); opacity: .7; }
+  /* i due punti dell'ora lampeggiano a battere i secondi: mezzo secondo accesi, mezzo spenti (l'aggancio al secondo vero
+     lo dà dashboard.js con animation-delay); con «riduci animazioni» restano accesi */
+  #main-content > header.con-logo .orologio-testata .orologio-battito { animation: orologio-battito 1s step-end infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    #main-content > header.con-logo .orologio-testata .orologio-battito { animation: none; }
+  }
   /* scritta un poco più grande che nel selettore e più spaziata: 0,74rem con lettere a 0,1em nello STANDARD (selettore 0,65rem),
      11 px con lettere a 0,12em nel COMPATTO (selettore 10 px) */
   #main-content > header.con-logo .orologio-testata .mode-btn { font-size: 0.74rem; letter-spacing: .1em; }
@@ -1363,4 +1369,17 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   #main-content > header:has(.store-switch) :is(h1, p) { padding-right: 0; }
   body:has(.store-switch) .mode-switcher { width: auto; }
   body:has(.store-switch) .mode-switcher .mode-btn { flex: 0 1 auto; }
+}
+
+/* battito dei due punti dell'orologio dell'intestazione (.orologio-battito): accesi nella prima metà del secondo */
+@keyframes orologio-battito {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Tema chiaro: il menu laterale aperto sopra la pagina (finestra stretta e telefono) ha un'ombra corta e netta, più solida
+   che sfumata (regola delle ombre nel tema chiaro, 11 ottobre 2026); chiuso resta senza ombra */
+@media screen and (max-width: 720px) {
+  :root[data-interface-theme="light"] body aside { box-shadow: 2px 0 6px rgba(40, 34, 28, .22); }
+  :root[data-interface-theme="light"] body.sidebar-collapsed aside { box-shadow: none; }
 }

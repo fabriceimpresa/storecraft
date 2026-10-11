@@ -26,8 +26,9 @@
   --interface-option-hover: #eee8dd;
   --interface-text: #282522;
   --interface-muted: #665e54;
-  --interface-shadow: rgba(40, 37, 34, .14);
-  --interface-dropdown-shadow: rgba(40, 37, 34, .14);
+  --interface-shadow: rgba(40, 34, 28, .24);   /* ombre del tema chiaro più solide che sfumate (11 ottobre 2026) */
+  --interface-dropdown-shadow: rgba(40, 34, 28, .2);
+  --pannello-ombra: rgba(40, 34, 28, .26);   /* pagine di Luxury nel tema chiaro: ombre di pulsanti e selettori del pannello */
 }
 
 :root[data-interface-look="minimal"] {
@@ -553,14 +554,22 @@
 
   :root[data-interface-theme="light"] body :is(.input-affix .affix, .stepper button) {
     background-color: var(--interface-sidebar) !important;
-    color: var(--interface-text) !important;
+    color: var(--interface-accent) !important;   /* oro, come la freccia dei menu (.preset-select::after) */
     border-color: var(--interface-border) !important;
   }
 
-  /* Il fondo crema del simbolo (€, %) ha lo stesso spazio ai due lati, così il simbolo non sembra tagliato. */
+  /* Il simbolo (€, %) resta oro sul fondo crema, come nelle Utilità Cassa; forma e spazi in pannello.css. */
   :root[data-interface-theme="light"] body .input-affix .affix {
-    padding-left: 0.45rem;
-    padding-right: 0.45rem;
+    color: var(--interface-accent) !important;
+    --pannello-simbolo-peso: 700;
+    --pannello-simbolo-tratto: 0;
+  }
+
+  /* il % dopo il campo resta senza riquadro, sul fondo del campo (accanto ci sono le frecce ▲▼) */
+  :root[data-interface-theme="light"] body .input-affix input + .affix {
+    background-color: transparent !important;
+    color: var(--interface-muted) !important;   /* come il valore di esempio del campo vuoto (::placeholder qui sopra) */
+    opacity: .72;
   }
 
   :root[data-interface-theme="light"] body :is(
@@ -802,7 +811,7 @@
       background: var(--interface-surface) !important;
       color: var(--interface-text) !important;
       border-color: var(--interface-border) !important;
-      box-shadow: 0 4px 10px var(--interface-dropdown-shadow) !important;
+      box-shadow: 0 2px 5px var(--interface-dropdown-shadow) !important;
     }
 
     :root[data-interface-theme="light"] body select::picker(select)::-webkit-scrollbar-track {
@@ -1080,7 +1089,7 @@
 .system-menu-toggle[aria-expanded="true"] {
   border-color: var(--interface-accent);
   background: var(--interface-surface);
-  box-shadow: 0 3px 8px var(--interface-shadow);
+  box-shadow: 0 2px 4px var(--interface-shadow);
   transform: translateY(-2px);
   outline: none;
 }
@@ -1122,3 +1131,15 @@
 [data-system-menu-item="profile"] .system-menu-icon { --icona-scala: .92; }
 [data-system-menu-item="contacts"] .system-menu-icon { --icona-scala: .9; }
 [data-system-menu-item="home"] .system-menu-icon { --icona-scala: 1.45; --icona-y: -2px; }
+
+/* Ombre nel tema chiaro: più solide che sfumate, corte e nette (decisione dell'11 ottobre 2026). Pagine di Luxury, che
+   passano al chiaro con questo file: pulsanti tondi dei temi, riquadri e finestre di Genera Loghi e Gestisci Lista,
+   popup degli strumenti di cassa e menu laterale sopra la pagina. */
+@media screen {
+  :root[data-interface-theme="light"] body :is(.black-friday-btn, .xmas-btn, .sale-theme-btn) { box-shadow: 0 1px 3px rgba(40, 34, 28, .38) !important; }
+  :root[data-interface-theme="light"] body :is(.black-friday-btn, .xmas-btn, .sale-theme-btn):is(:hover, [aria-pressed="true"], .is-active) { box-shadow: 0 2px 4px rgba(40, 34, 28, .4) !important; }
+  :root[data-interface-theme="light"] body[data-layout="loghi"] .container { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }
+  :root[data-interface-theme="light"] body .modal-box { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }
+  :root[data-interface-theme="light"] body .modal-warning-icon { box-shadow: 0 1px 4px rgba(40, 34, 28, .3); }
+  :root[data-interface-theme="light"] .widget.expanded { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }
+}

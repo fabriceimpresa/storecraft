@@ -207,7 +207,7 @@
   }
   body.phone-full-preview .app-close-btn,
   body.phone-full-preview .phone-theme-toolbar { display: none !important; }
-  /* Titoli dei campi (BRAND, Loghi Personalizzati, Prezzo…) un poco più grandi che nel pannello desktop. */
+  /* Titoli dei campi (BRAND, Loghi Personali, Prezzo…) un poco più grandi che nel pannello desktop. */
   body[data-layout="cartelli"] .sidebar .form-group label {
     font-size: 0.78rem;
     margin-bottom: 0.25rem;

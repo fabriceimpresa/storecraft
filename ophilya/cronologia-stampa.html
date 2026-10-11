@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="ophilya">
+<head>
+  <meta charset="UTF-8">
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cronologia di Stampa · OPHILYA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
+  <style>
+    /* Cronologia di stampa del negozio (assets/js/cronologia-stampa.js): le stampe degli ultimi 7 giorni dalle pagine di
+       cartelli, cartellini e promo stagionali, divise per giorno, da rivedere, ristampare a misura reale, rimettere nella
+       lista di stampa o eliminare. Caratteri del visualizzatore PDF (Cinzel e Plus Jakarta Sans), colori del tema
+       (--interface-*: theme.css per Luxury, scheda del negozio per TEBE e OPHILYA). Classi cr-, per non prendere le
+       regole generiche del tema chiaro. */
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      display: flex;
+      flex-direction: column;
+      background: var(--interface-page, #121110);
+      color: var(--interface-text, #f4f1ea);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Intestazione come il visualizzatore PDF: STORE // CRAFT a sinistra, titolo al centro, ✕ a destra */
+    .cr-testata {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 68px;
+      padding: 0.8rem 1.5rem;
+      background: var(--interface-sidebar, #181715);
+      border-bottom: 1px solid var(--interface-accent, #d4a373);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    }
+    .cr-marchio { color: var(--interface-accent, #d4a373); font-family: 'Cinzel', serif; font-size: 1.15rem; letter-spacing: 2px; white-space: nowrap; }
+    .cr-titolo {
+      position: absolute;
+      left: 50%;
+      margin: 0;
+      color: var(--interface-muted, #8c857b);
+      font-size: 1.05rem;
+      font-weight: 400;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      transform: translateX(-50%);
+    }
+    .cr-chiudi-posto { width: 40px; height: 40px; }
+
+    /* Barra dei filtri e delle informazioni */
+    .cr-barra {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem 1.5rem;
+      width: 100%;
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 1.4rem 1.5rem 0.4rem;
+    }
+    .cr-filtri { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .cr-filtro {
+      padding: 0.5rem 0.95rem;
+      border: 1px solid var(--interface-border, #2e2b27);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--interface-muted, #8c857b);
+      font: 600 0.74rem 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    }
+    .cr-filtro:hover { border-color: var(--interface-accent, #d4a373); color: var(--interface-text, #f4f1ea); }
+    .cr-filtro[aria-pressed="true"] { border-color: var(--interface-accent, #d4a373); background: var(--interface-accent, #d4a373); color: #121110; }
+    .cr-filtro .cr-numero { margin-left: 0.35rem; opacity: 0.7; font-weight: 500; }
+    .cr-info { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; color: var(--interface-muted, #8c857b); font-size: 0.8rem; }
+    .cr-svuota {
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--interface-accent, #d4a373);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--interface-accent, #d4a373);
+      font: 700 0.72rem 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .cr-svuota:hover:not(:disabled) { background: var(--interface-accent, #d4a373); color: #121110; }
+    .cr-svuota:disabled { opacity: 0.4; cursor: default; }
+
+    /* Stampe divise per giorno */
+    .cr-elenco { width: 100%; max-width: 1450px; margin: 0 auto; padding: 0.6rem 1.5rem 3rem; }
+    .cr-giorno { margin-top: 1.6rem; }
+    .cr-giorno-titolo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin: 0 0 0.9rem;
+      color: var(--interface-accent, #d4a373);
+      font: 500 0.95rem 'Cinzel', serif;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .cr-giorno-titolo::after { content: ''; flex: 1; height: 1px; background: var(--interface-border, #2e2b27); }
+    .cr-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+    .cr-scheda {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--interface-border, #2e2b27);
+      border-radius: 8px;
+      background: var(--interface-surface, #1e1d1a);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .cr-scheda:hover { border-color: var(--interface-accent, #d4a373); transform: translateY(-1px); }
+    .cr-scheda:focus-visible, .cr-filtro:focus-visible, .cr-svuota:focus-visible, .cr-comando:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
+    .cr-miniatura {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1;
+      padding: 8px;
+      border-radius: 4px;
+      background: var(--interface-control, #0a0908);
+    }
+    .cr-miniatura img { display: block; max-width: 100%; max-height: 100%; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35); }
+    .cr-nome { overflow: hidden; font-size: 0.82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    .cr-dettagli { display: flex; justify-content: space-between; gap: 6px; color: var(--interface-muted, #8c857b); font-size: 0.72rem; }
+    .cr-tipo { color: var(--interface-accent, #d4a373); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .cr-vuota { max-width: 460px; margin: 4rem auto; color: var(--interface-muted, #8c857b); font-size: 0.95rem; line-height: 1.6; text-align: center; }
+    .cr-vuota strong { display: block; margin-bottom: 0.4rem; color: var(--interface-accent, #d4a373); font: 500 1rem 'Cinzel', serif; letter-spacing: 0.16em; text-transform: uppercase; }
+
+    /* Anteprima di una stampa, al centro sopra un velo */
+    .cr-velo {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(10, 9, 8, 0.78);
+      backdrop-filter: blur(3px);
+    }
+    .cr-velo[hidden] { display: none; }
+    .cr-finestra {
+      display: flex;
+      gap: 24px;
+      width: min(1100px, 100%);
+      max-height: 100%;
+      padding: 20px;
+      border: 1px solid var(--interface-accent, #d4a373);
+      border-radius: 10px;
+      background: var(--interface-surface, #1e1d1a);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+    .cr-foglio { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 6px; background: var(--interface-control, #0a0908); }
+    .cr-foglio img { display: block; max-width: 100%; max-height: calc(100vh - 110px); background: #fff; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+    .cr-lato { flex: 0 0 250px; display: flex; flex-direction: column; gap: 0.7rem; }
+    .cr-lato h2 { margin: 0 0 0.2rem; color: var(--interface-accent, #d4a373); font: 500 1.05rem/1.35 'Cinzel', serif; letter-spacing: 0.08em; }
+    .cr-righe { margin: 0 0 0.4rem; color: var(--interface-muted, #8c857b); font-size: 0.8rem; line-height: 1.6; }
+    .cr-righe a { color: var(--interface-accent, #d4a373); }
+    .cr-comando {
+      width: 100%;
+      min-height: 40px;
+      padding: 10px;
+      border: 1px solid var(--interface-accent, #d4a373);
+      border-radius: 5px;
+      background: var(--interface-accent, #d4a373);
+      color: #121110;
+      font: 700 0.76rem 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .cr-comando:hover:not(:disabled) { filter: brightness(1.08); }
+    .cr-comando:disabled { opacity: 0.45; cursor: default; }
+    .cr-comando.cr-stampa { border-color: #96382b; background: #96382b; color: #fff; }
+    .cr-comando.cr-contorno { background: transparent; color: var(--interface-accent, #d4a373); }
+    .cr-comando.cr-contorno:hover { background: var(--interface-accent, #d4a373); color: #121110; filter: none; }
+    .cr-spazio { flex: 1; }
+    .cr-esito { min-height: 1.2em; color: var(--interface-accent-bright, #e5ba73); font-size: 0.76rem; text-align: center; }
+
+    .cr-cornice-stampa { position: fixed; width: 0; height: 0; border: 0; visibility: hidden; }
+
+    /* Telefono e finestre strette: due stampe per riga, anteprima a tutto schermo con i comandi sotto */
+    @media (max-width: 760px) {
+      .cr-testata { min-height: 60px; padding: 0.6rem 0.75rem; }
+      .cr-marchio { font-size: 0.9rem; letter-spacing: 1px; }
+      .cr-titolo { position: static; transform: none; font-size: 0.85rem; }
+      .cr-barra, .cr-elenco { padding-left: 12px; padding-right: 12px; }
+      .cr-griglia { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .cr-velo { padding: 0; }
+      .cr-finestra { flex-direction: column; gap: 12px; height: 100%; padding: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); border: 0; border-radius: 0; }
+      .cr-foglio { flex: 1 1 auto; min-height: 0; }
+      .cr-foglio img { max-height: 100%; }
+      .cr-lato { flex: 0 0 auto; }
+      .cr-comando { min-height: 44px; }
+    }
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .cr-testata { box-shadow: 0 1px 3px rgba(40, 34, 28, .14); }    :root[data-interface-theme="light"] .cr-miniatura img { box-shadow: 0 1px 3px rgba(40, 34, 28, .26); }    :root[data-interface-theme="light"] .cr-foglio img { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .cr-finestra { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }
+  </style>
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+</head>
+<body data-layout="cronologia">
+  <header class="cr-testata">
+    <div class="cr-marchio">STORE // CRAFT</div>
+    <h1 class="cr-titolo">Cronologia di Stampa</h1>
+    <div class="cr-chiudi-posto">
+      <a href="index.html" class="app-close-btn app-close-btn--pdf" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
+    </div>
+  </header>
+
+  <div class="cr-barra">
+    <div class="cr-filtri" role="group" aria-label="Filtra le stampe" id="filtri"></div>
+    <div class="cr-info">
+      <span id="info"></span>
+      <button type="button" class="cr-svuota" id="svuota">Svuota cronologia</button>
+    </div>
+  </div>
+
+  <div class="cr-elenco" id="elenco"></div>
+
+  <div class="cr-velo" id="velo" hidden>
+    <div class="cr-finestra" role="dialog" aria-modal="true" aria-labelledby="anteprimaTitolo">
+      <div class="cr-foglio" id="anteprimaFoglio"></div>
+      <div class="cr-lato">
+        <h2 id="anteprimaTitolo"></h2>
+        <p class="cr-righe" id="anteprimaRighe"></p>
+        <button type="button" class="cr-comando cr-stampa" id="ristampa">Stampa (.PDF)</button>
+        <button type="button" class="cr-comando" id="inLista">Aggiungi a lista di stampa</button>
+        <button type="button" class="cr-comando cr-contorno" id="elimina">Elimina dalla cronologia</button>
+        <div class="cr-esito" id="esito" role="status"></div>
+        <div class="cr-spazio"></div>
+        <button type="button" class="cr-comando cr-contorno" id="chiudiAnteprima">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/lista-stampa.js?v=20261011-14"></script>
+  <script src="../assets/js/cronologia-stampa.js?v=20261011-14"></script>
+  <script>
+    // Pagina della cronologia di stampa del negozio (../assets/js/cronologia-stampa.js): uguale nei tre negozi, cambia
+    // solo data-negozio.
+    const TIPI = [['tutte', 'Tutte'], ['cartelli', 'Cartelli'], ['cartellini', 'Cartellini'], ['promo', 'Promo']];
+    const NOMI_TIPO = { cartelli: 'Cartello', cartellini: 'Cartellini', promo: 'Promo' };
+    let stampe = [];
+    let filtro = 'tutte';
+    let aperta = null;          // stampa nell'anteprima (con la foto grande)
+    let ultimoFuoco = null;
+    let indirizzi = [];
+
+    const nodo = (tag, classe, testo) => {
+      const n = document.createElement(tag);
+      if (classe) n.className = classe;
+      if (testo !== undefined) n.textContent = testo;
+      return n;
+    };
+    const nomeStampa = stampa => stampa.title.replace(/ · .*$/, '').replace(/ \/\/ .*$/, '');
+    const ora = tempo => new Date(tempo).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const megabyte = byte => `${(byte / 1048576).toLocaleString('it-IT', { maximumFractionDigits: 1 })} MB`;
+
+    // Titolo del giorno: OGGI, IERI, poi il giorno della settimana con la data
+    function titoloGiorno(tempo) {
+      const giorno = new Date(tempo); giorno.setHours(0, 0, 0, 0);
+      const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+      const differenza = Math.round((oggi - giorno) / 86400000);
+      const data = giorno.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+      return differenza === 0 ? `Oggi · ${data}` : differenza === 1 ? `Ieri · ${data}` : data;
+    }
+
+    function indirizzo(blob) {
+      const url = URL.createObjectURL(blob);
+      indirizzi.push(url);
+      return url;
+    }
+
+    async function carica() {
+      stampe = await CronologiaStampa.elenco();
+      disegna();
+    }
+
+    function disegna() {
+      indirizzi.forEach(url => URL.revokeObjectURL(url));
+      indirizzi = [];
+      // filtri con il numero di stampe
+      const conta = tipo => tipo === 'tutte' ? stampe.length : stampe.filter(s => s.tipo === tipo).length;
+      document.getElementById('filtri').replaceChildren(...TIPI.map(([tipo, nome]) => {
+        const pulsante = nodo('button', 'cr-filtro', nome);
+        pulsante.type = 'button';
+        pulsante.setAttribute('aria-pressed', String(tipo === filtro));
+        pulsante.append(nodo('span', 'cr-numero', String(conta(tipo))));
+        pulsante.addEventListener('click', () => { filtro = tipo; disegna(); });
+        return pulsante;
+      }));
+      document.getElementById('svuota').disabled = !stampe.length;
+      const info = document.getElementById('info');
+      info.textContent = `ultimi 7 giorni · ${stampe.length === 1 ? '1 stampa' : `${stampe.length} stampe`}`;
+      CronologiaStampa.spazio().then(byte => { if (byte !== null) info.textContent += ` · ${megabyte(byte)} usati nel browser`; });
+
+      const elenco = document.getElementById('elenco');
+      const visibili = stampe.filter(s => filtro === 'tutte' || s.tipo === filtro);
+      if (!visibili.length) {
+        const vuota = nodo('div', 'cr-vuota');
+        vuota.append(nodo('strong', '', 'Nessuna stampa'),
+          stampe.length ? 'Nessuna stampa di questo tipo negli ultimi 7 giorni.'
+            : 'Qui compaiono da sole le stampe degli ultimi 7 giorni fatte dalle pagine di cartelli, cartellini e promo stagionali.');
+        elenco.replaceChildren(vuota);
+        return;
+      }
+      // per giorno, dal più recente
+      const giorni = new Map();
+      visibili.forEach(stampa => {
+        const chiave = new Date(stampa.stampataIl).toDateString();
+        if (!giorni.has(chiave)) giorni.set(chiave, []);
+        giorni.get(chiave).push(stampa);
+      });
+      elenco.replaceChildren(...[...giorni.values()].map(gruppo => {
+        const sezione = nodo('section', 'cr-giorno');
+        const griglia = nodo('div', 'cr-griglia');
+        griglia.append(...gruppo.map(stampa => {
+          const scheda = nodo('button', 'cr-scheda');
+          scheda.type = 'button';
+          scheda.setAttribute('aria-label', `${nomeStampa(stampa)}, stampata alle ${ora(stampa.stampataIl)}`);
+          const miniatura = nodo('div', 'cr-miniatura');
+          const img = document.createElement('img');
+          img.src = indirizzo(stampa.thumb);
+          img.alt = '';
+          miniatura.append(img);
+          const dettagli = nodo('div', 'cr-dettagli');
+          dettagli.append(nodo('span', 'cr-tipo', NOMI_TIPO[stampa.tipo] || stampa.tipo),
+            nodo('span', '', `${ora(stampa.stampataIl)}${stampa.volte > 1 ? ` · ${stampa.volte} volte` : ''}`));
+          scheda.append(miniatura, nodo('div', 'cr-nome', nomeStampa(stampa)), dettagli);
+          scheda.addEventListener('click', () => apriAnteprima(stampa.id));
+          return scheda;
+        }));
+        sezione.append(nodo('h2', 'cr-giorno-titolo', titoloGiorno(gruppo[0].stampataIl)), griglia);
+        return sezione;
+      }));
+    }
+
+    // ----- Anteprima di una stampa -----
+    let urlAnteprima = '';
+    async function apriAnteprima(id) {
+      aperta = await CronologiaStampa.stampa(id);
+      if (!aperta) return carica();
+      ultimoFuoco = document.activeElement;
+      if (urlAnteprima) URL.revokeObjectURL(urlAnteprima);
+      urlAnteprima = URL.createObjectURL(aperta.jpeg);
+      const img = document.createElement('img');
+      img.src = urlAnteprima;
+      img.alt = nomeStampa(aperta);
+      document.getElementById('anteprimaFoglio').replaceChildren(img);
+      document.getElementById('anteprimaTitolo').textContent = nomeStampa(aperta);
+      const righe = document.getElementById('anteprimaRighe');
+      const pagina = document.createElement('a');
+      pagina.href = aperta.page;
+      pagina.textContent = 'apri la pagina ↗';
+      righe.replaceChildren(
+        `${NOMI_TIPO[aperta.tipo] || aperta.tipo} · foglio ${Math.round(aperta.mmWidth)} × ${Math.round(aperta.mmHeight)} mm`,
+        document.createElement('br'),
+        `stampata ${new Date(aperta.stampataIl).toLocaleString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`,
+        aperta.volte > 1 ? ` · ${aperta.volte} volte` : '',
+        document.createElement('br'),
+        pagina);
+      document.getElementById('esito').textContent = '';
+      document.getElementById('velo').hidden = false;
+      document.getElementById('ristampa').focus();
+    }
+
+    function chiudiAnteprima() {
+      document.getElementById('velo').hidden = true;
+      document.getElementById('anteprimaFoglio').replaceChildren();
+      aperta = null;
+      ultimoFuoco?.focus?.();
+    }
+
+    // Stampa del foglio a misura reale: sul computer da un riquadro nascosto (come la lista di stampa), su iPhone e iPad
+    // con il menu Condividi
+    async function ristampa() {
+      if (!aperta) return;
+      const esito = document.getElementById('esito');
+      const nomeFile = `${nomeStampa(aperta)}.pdf`;
+      const pdf = ListaStampa.buildPdf([aperta]);
+      CronologiaStampa.ristampata(aperta.id).then(carica);
+      if (ListaStampa.isIos()) { ListaStampa.offerPdf(pdf, nomeFile); return; }
+      esito.textContent = 'Preparazione del PDF…';
+      try {
+        const url = URL.createObjectURL(new File([await pdf], nomeFile, { type: 'application/pdf' }));
+        const cornice = document.createElement('iframe');
+        cornice.className = 'cr-cornice-stampa';
+        cornice.title = nomeFile;
+        cornice.src = url;
+        cornice.onload = () => {
+          try {
+            cornice.contentWindow.focus();
+            cornice.contentWindow.print();
+            esito.textContent = '';
+          } catch (error) {
+            window.open(url, '_blank');
+            esito.textContent = 'PDF aperto in una nuova scheda: stampalo da lì.';
+          }
+        };
+        document.querySelectorAll('.cr-cornice-stampa').forEach(vecchia => vecchia.remove());
+        document.body.append(cornice);
+      } catch (error) {
+        console.error('Preparazione del PDF non riuscita.', error);
+        esito.textContent = 'Non è stato possibile preparare il PDF.';
+      }
+    }
+
+    async function inLista() {
+      if (!aperta) return;
+      const esito = document.getElementById('esito');
+      try {
+        const totale = await ListaStampa.addPage(aperta);
+        esito.textContent = `Aggiunta alla lista di stampa (${totale} ${totale === 1 ? 'pagina' : 'pagine'})`;
+      } catch (error) {
+        console.error('Aggiunta alla lista di stampa non riuscita.', error);
+        esito.textContent = 'Non è stato possibile aggiungerla alla lista di stampa.';
+      }
+    }
+
+    async function elimina() {
+      if (!aperta || !confirm(`Eliminare «${nomeStampa(aperta)}» dalla cronologia di stampa?`)) return;
+      await CronologiaStampa.elimina(aperta.id);
+      chiudiAnteprima();
+      carica();
+    }
+
+    async function svuota() {
+      if (!stampe.length || !confirm('Svuotare la cronologia di stampa? Tutte le stampe degli ultimi 7 giorni verranno eliminate.')) return;
+      await CronologiaStampa.svuota();
+      carica();
+    }
+
+    document.getElementById('svuota').addEventListener('click', svuota);
+    document.getElementById('ristampa').addEventListener('click', ristampa);
+    document.getElementById('inLista').addEventListener('click', inLista);
+    document.getElementById('elimina').addEventListener('click', elimina);
+    document.getElementById('chiudiAnteprima').addEventListener('click', chiudiAnteprima);
+    document.getElementById('velo').addEventListener('click', evento => { if (evento.target.id === 'velo') chiudiAnteprima(); });
+    document.addEventListener('keydown', evento => {
+      if (evento.key === 'Escape' && !document.getElementById('velo').hidden) chiudiAnteprima();
+    });
+    // la pagina resta aperta mentre si stampa dalle altre: tornando in primo piano si rilegge la cronologia
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !aperta) carica(); });
+
+    carica().catch(error => {
+      console.error('Lettura della cronologia di stampa non riuscita.', error);
+      document.getElementById('info').textContent = 'Non è stato possibile leggere la cronologia di stampa.';
+    });
+  </script>
+</body>
+</html>

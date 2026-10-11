@@ -2,19 +2,19 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261010-54"></script>
+  <script src="../assets/js/negozi.js?v=20261011-14"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Promo Multibrand</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261011-14">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261010-54">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261011-14">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261011-14">
   <!-- Inclusione script centralizzato loghi -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261010-54"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261010-54"></script>
-  <script src="../assets/js/logos.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261010-54">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261011-14"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261011-14"></script>
+  <script src="../assets/js/logos.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-14">
   <style>
     @font-face { font-family: 'Bodoni Project'; src: url('../assets/fonts/BodoniStd.otf') format('opentype'); font-style: normal; font-weight: 400; font-display: block; }
     @font-face { font-family: 'Bodoni Project'; src: url('../assets/fonts/BodoniStd-Italic.otf') format('opentype'); font-style: italic; font-weight: 400; font-display: block; }
@@ -42,7 +42,7 @@
     .color-badge { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #fff; background-color: #e00000; flex-shrink: 0; }
 
     /* Marchi: due menu per riga, con lo stesso spazio di Claim Sinistro / Destro. Accanto al numero di ogni posto la
-       spunta "Loghi Personalizzati" cambia l'elenco del menu. L'elenco che si apre è largo almeno quanto il nome più
+       spunta "Loghi Personali" cambia l'elenco del menu. L'elenco che si apre è largo almeno quanto il nome più
        lungo, così i nomi dei brand si leggono per intero anche se il campo è stretto. */
     .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6px; }
     .logo-grid .form-group { min-width: 0; }
@@ -76,7 +76,7 @@
     /* Brand prioritari (stagionali) evidenziati nel menu */
     .form-group select option.priority-brand-option { font-weight: bold; }
 
-    .legend { margin-top: auto; background: #fff; border: 1px solid #d4a373; border-radius: 8px; padding: 8px; box-shadow: 0 4px 15px rgba(0,0,0,.6); }
+    .legend { margin-top: auto; background: #fff; border: 1px solid #d4a373; border-radius: 8px; padding: 8px; box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }
     .legend img { display: block; width: 100%; height: auto; }
 
     /* MENU SU MISURA DI PROMO MULTIBRAND: spazi e caratteri del pannello standard, ma, per distinguerlo dagli altri
@@ -111,7 +111,7 @@
     }
 
     /* LAYOUT A SCHERMO ANTEPRIMA */
-    .print-sheet { width: 210mm; height: 297mm; background: #fff; padding: 10mm; box-shadow: 0 4px 20px rgba(0,0,0,.7); position: relative; z-index: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+    .print-sheet { width: 210mm; height: 297mm; background: #fff; padding: 10mm; box-shadow: 0 2px 6px rgba(40, 34, 28, .24); position: relative; z-index: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
     .card { width: 100%; height: 132mm; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 2mm 0; }
     .card.disabled { display: none !important; }
     .cut-line { width: 100%; border-top: 1px dashed #ccc; margin: 2mm 0; }
@@ -408,13 +408,13 @@
       .modal-btn-confirm { min-width: 60%; min-height: 48px; border-radius: 10px; font-size: 0.95rem; }
     }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261010-54">
-  <script defer src="../assets/js/menu-cascata.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261010-54">
-  <script defer src="../assets/js/responsive.js?v=20261010-54"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261010-54"></script>
-  <script src="../assets/js/theme.js?v=20261010-54"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261010-54">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261011-14">
+  <script defer src="../assets/js/menu-cascata.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261011-14">
+  <script defer src="../assets/js/responsive.js?v=20261011-14"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261011-14"></script>
+  <script src="../assets/js/theme.js?v=20261011-14"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261011-14">
 </head>
 <body data-layout="cartelli">
   <div class="modal-overlay" id="browserWarningModal">
@@ -547,13 +547,13 @@
         const logos = LoghiPersonalizzati.elenco();
         return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
       } catch (error) {
-        console.error('Lettura dei loghi personalizzati fallita.', error);
+        console.error('Lettura dei loghi personali fallita.', error);
         return [];
       }
     }
 
-    // Brands in promozione: per ogni posto (BRAND 1–8) la spunta "Loghi Personalizzati" sceglie quale elenco mostra
-    // il menu: spenta i brand ufficiali (predefinito), spuntata i loghi personalizzati (valore = data URL).
+    // Brands in promozione: per ogni posto (BRAND 1–8) la spunta "Loghi Personali" sceglie quale elenco mostra
+    // il menu: spenta i brand ufficiali (predefinito), spuntata i loghi personali (valore = data URL).
     // Ogni posto ricorda tutte e due le scelte, così spegnendo e riaccendendo la spunta torna il logo di prima.
     const logoChoices = defaults.map(file => ({ official: file, custom: '', useCustom: false }));
     let customLogoList = [];
@@ -571,10 +571,10 @@
       const select = document.getElementById('logo' + index + 'Card1');
       select.replaceChildren();
       if (choice.useCustom) {
-        addLogoOption(select, '', '-- Seleziona Logo Personalizzato --');
+        addLogoOption(select, '', '-- Seleziona Logo Personale --');
         customLogoList.forEach(logo => addLogoOption(select, logo.data, '★ ' + logo.name));
         if (!customLogoList.length) {
-          addLogoOption(select, '', 'Nessun logo personalizzato: creali in Genera Loghi');
+          addLogoOption(select, '', 'Nessun logo personale: creali in Genera Loghi');
           select.lastChild.disabled = true;
         }
         select.value = choice.custom;
@@ -589,7 +589,7 @@
       markCustomPlaceholder(select, choice);
     }
 
-    // Con la spunta Loghi Personalizzati e nessun logo scelto, la voce di partenza "-- Seleziona Logo Personalizzato --"
+    // Con la spunta Loghi Personali e nessun logo scelto, la voce di partenza "-- Seleziona Logo Personale --"
     // è lunga per il campo stretto: il campo la mostra un poco più piccola (classe .custom-placeholder).
     function markCustomPlaceholder(select, choice) {
       select.classList.toggle('custom-placeholder', choice.useCustom && !select.value);
@@ -606,7 +606,7 @@
         const head = document.createElement('div'); head.className = 'logo-head';
         const label = document.createElement('label'); label.className = 'section-label'; label.textContent = String(index); label.htmlFor = 'logo' + index + 'Card1';
         const switchLabel = document.createElement('label'); switchLabel.className = 'logo-switch';
-        const switchText = document.createElement('span'); switchText.textContent = 'Loghi Personalizzati';
+        const switchText = document.createElement('span'); switchText.textContent = 'Loghi Personali';
         const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.id = 'useCustom' + index;
         checkbox.onchange = () => { choice.useCustom = checkbox.checked; fillLogoSelect(index); updateCards(); };
         switchLabel.append(switchText, checkbox);
@@ -621,7 +621,7 @@
       }
     }
 
-    // Logo di un posto: file ufficiale in assets/logos/luxury/ oppure logo personalizzato (data URL).
+    // Logo di un posto: file ufficiale in assets/logos/luxury/ oppure logo personale (data URL).
     function createLogoImage(value, index, tintClass) {
       const img = document.createElement('img');
       img.className = tintClass;
@@ -717,11 +717,11 @@
     }
 
     createLogoControls();
-    // Quando la lista dei loghi personalizzati del negozio è pronta (loghi-personalizzati.js) i menu dei posti si rifanno con i loghi.
+    // Quando la lista dei loghi personali del negozio è pronta (loghi-personalizzati.js) i menu dei posti si rifanno con i loghi.
     LoghiPersonalizzati.pronto.then(() => { createLogoControls(); updateCards(); });
     updateCards();
     showBrowserWarningIfNeeded();
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261010-54"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261011-14" data-cronologia="promo"></script>
 </body>
 </html>

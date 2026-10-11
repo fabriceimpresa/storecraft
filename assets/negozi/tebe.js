@@ -12,6 +12,8 @@ Negozi.registra('tebe', {
   brandPrioritari: 'maiuscolo',
   // database della lista di stampa nel browser e nome della sua finestra
   listaStampa: 'tebe-lista-stampa',
+  // database della cronologia di stampa nel browser (cronologia-stampa.js): le stampe degli ultimi 7 giorni
+  cronologiaStampa: 'tebe-cronologia-stampa',
   // guida "Dove montare la stampa?": per pagina, le foto in assets/foto/tebe/ (cartelli in morsa sulla rastrelliera:
   // stessa foto, con sopra il cartello della pagina)
   guida: {

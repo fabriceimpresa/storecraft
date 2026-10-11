@@ -12,6 +12,8 @@ Negozi.registra('ophilya', {
   brandPrioritari: 'maiuscolo',
   // database della lista di stampa nel browser e nome della sua finestra
   listaStampa: 'ophilya-lista-stampa',
+  // database della cronologia di stampa nel browser (cronologia-stampa.js): le stampe degli ultimi 7 giorni
+  cronologiaStampa: 'ophilya-cronologia-stampa',
   // guida "Dove montare la stampa?": per pagina, le foto in assets/foto/ophilya/ (senza foto: riquadri "Foto in arrivo")
   guida: {
     'paletto-ophilya.html': ['palettoophilya.jpg'],

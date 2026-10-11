@@ -17,7 +17,7 @@
 </head>
 <body>
 <script>
-  const V = '20261010-54';
+  const V = '20261011-14';
   // nome della foto (guida-immagini/<nome>.png) → viste: pagina, azione nella pagina (w = la sua finestra), elemento da
   // ritagliare (sel, tutti gli elementi trovati insieme) oppure un riquadro fisso (ritaglio: [x, y, larghezza, altezza]);
   // larghezza / altezza della finestra della pagina, margine attorno all'elemento, altezza massima del ritaglio.
@@ -52,12 +52,12 @@
     'es-brand-prioritari': [
       { pagina: 'guida-campione.html?negozio=luxury&pezzo=brand', larghezza: 340, azione: w => { w.document.querySelector('[data-pezzo="brand"] select').size = 9; }, sel: '[data-pezzo="brand"]' },
       { pagina: 'guida-campione.html?negozio=tebe&pezzo=brand', larghezza: 340, azione: w => { w.document.querySelector('[data-pezzo="brand"] select').size = 9; }, sel: '[data-pezzo="brand"]' }],
-    'es-simboli': [
-      { pagina: 'guida-campione.html?negozio=luxury&pezzo=prezzi', larghezza: 360, sel: '[data-pezzo="prezzi"]' },
-      { pagina: 'guida-campione.html?negozio=tebe&pezzo=prezzi', larghezza: 360, sel: '[data-pezzo="prezzi"]' }],
     // la lista resta vuota: in Chrome senza finestra IndexedDB non risponde
     'stampa-lista': [{
       pagina: 'luxury/lista-stampa.html', ritaglio: [0, 0, 1280, 760], larghezza: 1280, altezza: 760, margine: 0, attesa: 2500 }],
+    // come la lista: senza finestra la cronologia resta vuota; la foto della guida è stata fatta con stampe vere
+    'stampa-cronologia': [{
+      pagina: 'luxury/cronologia-stampa.html', ritaglio: [0, 0, 1280, 760], larghezza: 1280, altezza: 760, margine: 0, attesa: 2500 }],
     'stampa-ios': [
       { pagina: 'luxury/cartelli_semplici.html', azione: pdfPronto, sel: '.lista-pdf-box' },
       { pagina: 'tebe/cartelli_semplici.html', azione: pdfPronto, sel: '.lista-pdf-box' }],

@@ -47,7 +47,7 @@ function appendBrandOption(selectEl, fileName, displayName, isPriority) {
     option.textContent = `⭐ ${displayName.toUpperCase()}`;
     option.className = 'priority-brand-option';
   } else if (isPriority) {
-    // brand prioritari: la stella ★ dei loghi personalizzati, ma gialla (.brand-star, colore in pannello.css)
+    // brand prioritari: la stella ★ dei loghi personali, ma gialla (.brand-star, colore in pannello.css)
     const star = document.createElement('span');
     star.className = 'brand-star';
     star.textContent = '★ ';

@@ -74,13 +74,13 @@
   --pannello-selettore-hover: #282522;
   --pannello-selettore-attivo: #fffdfa;
   --pannello-selettore-attivo-testo: #282522;
-  --pannello-ombra: rgba(40, 34, 28, 0.12);
+  --pannello-ombra: rgba(40, 34, 28, .26);   /* ombre corte e nette nel tema chiaro (11 ottobre 2026) */
   --pannello-linea: rgba(180, 154, 98, 0.28);
   --pannello-stampa-testo: #fffdfa;
   --pannello-schema: light;
-  /* simboli € e % dei campi un poco più marcati: l'oro chiaro sul fondo avorio si vede poco */
-  --pannello-simbolo-peso: 600;
-
+  /* simboli € e % dei campi in grassetto pieno sul fondo chiaro (nel tema scuro il valore di riserva, più leggero) */
+  --pannello-simbolo-peso: 700;
+  --pannello-simbolo-tratto: 0;
 
   /* Pulsante Made in Italy (madeinitaly.css): bordo oro chiaro, 36 px come la ✕, ombra leggera */
   --madeinitaly-background: #fff;
@@ -158,6 +158,7 @@
   --pannello-stampa-testo: #f4f1ea;
   --pannello-schema: dark;
   --pannello-simbolo-peso: 400;
+  --pannello-simbolo-tratto: 0.45px;
 
   --madeinitaly-border: #d4a373;
   --madeinitaly-ombra: rgba(0, 0, 0, .5);
@@ -179,8 +180,8 @@
   --interface-sidebar: #f3ede0;
   --interface-sunken: #eee8dd;
   --interface-border: #e3dacb;
-  --interface-shadow: rgba(40, 34, 28, 0.12);
-  --interface-dropdown-shadow: rgba(40, 34, 28, 0.14);
+  --interface-shadow: rgba(40, 34, 28, .24);
+  --interface-dropdown-shadow: rgba(40, 34, 28, .2);
 }
 
 :where(:root[data-negozio="ophilya"][data-interface-theme="dark"]) {

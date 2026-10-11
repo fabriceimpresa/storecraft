@@ -12,6 +12,8 @@ Negozi.registra('luxury', {
   brandPrioritari: 'stella',
   // database della lista di stampa nel browser e nome della sua finestra
   listaStampa: 'storecraft-lista-stampa',
+  // database della cronologia di stampa nel browser (cronologia-stampa.js): le stampe degli ultimi 7 giorni
+  cronologiaStampa: 'storecraft-cronologia-stampa',
   // guida "Dove montare la stampa?": null la spegne; altrimenti { pagina: [foto in assets/foto/luxury/] }
   guida: null,
   // valori iniziali dell'interfaccia, finché l'utente non sceglie (theme.js)

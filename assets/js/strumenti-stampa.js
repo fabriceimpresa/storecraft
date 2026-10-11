@@ -155,7 +155,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('lista-stampa.js?v=20261010-54', script.src).href;
+      tag.src = new URL('lista-stampa.js?v=20261011-14', script.src).href;
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -183,6 +183,42 @@
   function openPrintList() {
     window.open('lista-stampa.html', LIST_WINDOW);
   }
+
+  // Cronologia di stampa (assets/js/cronologia-stampa.js, caricato solo quando serve, dopo lista-stampa.js): ogni
+  // foglio stampato si salva da solo, subito dopo la finestra di stampa del browser (afterprint, anche con Ctrl+P), o su
+  // iPhone e iPad quando il PDF a misura è pronto (evento storecraft:stampa di stampa-ios.js). Il browser non dice se
+  // si è premuto Stampa o Annulla: una stampa annullata entra comunque e si può eliminare dalla cronologia.
+  // data-cronologia="promo" sullo script dichiara le promo stagionali (per i filtri della cronologia).
+  const TIPO_CRONOLOGIA = script?.dataset.cronologia || '';
+  function loadCronologia() {
+    if (window.CronologiaStampa) return Promise.resolve(window.CronologiaStampa);
+    return loadListaStampa().then(() => new Promise((resolve, reject) => {
+      const tag = document.createElement('script');
+      tag.src = new URL('cronologia-stampa.js?v=20261011-14', script.src).href;
+      tag.onload = () => resolve(window.CronologiaStampa);
+      tag.onerror = () => reject(new Error('Caricamento di cronologia-stampa.js non riuscito.'));
+      document.head.appendChild(tag);
+    }));
+  }
+
+  let registrando = false;
+  async function registraStampa() {
+    const sheet = document.querySelector(sheetSelector);
+    if (!sheet || registrando) return;
+    registrando = true;
+    try {
+      const cronologia = await loadCronologia();
+      const { nuova } = await cronologia.registra(sheet, TIPO_CRONOLOGIA);
+      showToast(nuova ? 'Stampa salvata nella cronologia' : 'Ristampa segnata nella cronologia', 2200);
+    } catch (error) {
+      console.error('Salvataggio nella cronologia di stampa non riuscito.', error);
+    } finally {
+      registrando = false;
+    }
+  }
+  // dopo la chiusura della finestra di stampa, con un attimo di respiro perché la pagina torni com'era
+  window.addEventListener('afterprint', () => setTimeout(registraStampa, 300));
+  window.addEventListener('storecraft:stampa', () => setTimeout(registraStampa, 300));
 
   // Avviso in basso al centro, che sparisce da solo
   let toast = null;
