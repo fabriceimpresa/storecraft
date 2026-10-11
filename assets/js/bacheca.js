@@ -647,14 +647,16 @@
   const comComandi = nodo('div', 'bc-comandi');
   comComandi.append(comSalvata, nodo('span', 'bc-spazio'), comElimina, comFatto);
   comFoglio.append(nodo('span', 'bc-com-anelli'), nodo('span', 'bc-com-etichetta', 'Comunicazione ufficiale'), comTitolo, comAnteprima, comTesto, rigaDurata, comComandi);
-  // Accanto al foglio aperto la colonna dei COMMENTI: tutti i commenti, ognuno con la ✕ per toglierlo, e in fondo un
-  // post-it giallo per scriverne uno nuovo (AGGIUNGI, o Invio; Maiuscolo + Invio va a capo). Sul telefono sta sotto
+  // Nel foglio aperto i commenti stanno attaccati sopra il bordo destro del foglio, come post-it appiccicati (sul telefono
+  // sul bordo basso), ognuno con la ✕ per toglierlo. + COMMENTA, tra i comandi del foglio, fa comparire in fondo un
+  // post-it giallo per scriverne uno nuovo (AGGIUNGI, o Invio; Maiuscolo + Invio va a capo): aggiunto, il commento
+  // compare attaccato con gli altri e il post-it giallo sparisce. Senza commenti la colonna non c'è
   const comCommenti = nodo('aside', 'bc-com-commenti');
   comCommenti.id = 'comCommenti';
   comCommenti.setAttribute('aria-label', 'Commenti alla comunicazione');
-  const comCommentiTitolo = nodo('h3', 'bc-com-commenti-titolo', 'Commenti');
   const comElenco = nodo('div', 'bc-com-elenco');
   const comNuovo = nodo('div', 'bc-com-nota bc-com-nuovo');
+  comNuovo.hidden = true;
   const comCommento = nodo('textarea');
   comCommento.id = 'comCommento';
   comCommento.placeholder = 'Scrivi un commento…';
@@ -663,13 +665,36 @@
   const comAggiungi = nodo('button', 'bc-comando bc-fatto', 'Aggiungi');
   comAggiungi.type = 'button';
   comNuovo.append(comCommento, comAggiungi);
-  comCommenti.append(comCommentiTitolo, comElenco, comNuovo);
+  comCommenti.append(comElenco, comNuovo);
   const comApertura = nodo('div', 'bc-com-apertura');
   comApertura.append(comFoglio, comCommenti);
   comVelo.append(comApertura);
+  const comCommenta = nodo('button', 'bc-comando bc-commenta-foglio', '+ Commenta');
+  comCommenta.type = 'button';
+  comElimina.before(comCommenta);
+  // il post-it per scrivere il commento resta sempre ben visibile, da dovunque si commenti (+ COMMENTA sulla bacheca o
+  // nel foglio): sul telefono (stessa soglia della colonna sotto il foglio) va in cima allo schermo, e di nuovo quando
+  // la tastiera si apre e lo schermo utile si accorcia
+  const comTelefono = window.matchMedia('(max-width: 900px)');
+  function scriviCommento() {
+    comNuovo.hidden = false;
+    comCommenti.hidden = false;
+    comApertura.classList.add('con-commenti');
+    comCommento.focus({ preventScroll: true });
+    // sul telefono il post-it va in cima allo schermo, sopra dove si apre la tastiera (.scrive dà lo spazio per scorrere fin lì)
+    comApertura.classList.toggle('scrive', comTelefono.matches);
+    const inVista = () => { if (!comNuovo.hidden) comNuovo.scrollIntoView({ block: comTelefono.matches ? 'start' : 'nearest' }); };
+    requestAnimationFrame(inVista);
+    if (!comTelefono.matches) return;
+    window.visualViewport?.addEventListener('resize', inVista, { once: true });
+    setTimeout(inVista, 400);
+  }
+  comCommenta.addEventListener('click', scriviCommento);
   function disegnaCommenti(com) {
     const commenti = com.commenti || [];
-    comCommentiTitolo.textContent = commenti.length ? `Commenti (${commenti.length})` : 'Commenti';
+    comCommenti.hidden = !commenti.length && comNuovo.hidden;
+    comApertura.classList.toggle('con-commenti', !comCommenti.hidden);
+    comCommenta.textContent = commenti.length ? `+ Commenta (${commenti.length})` : '+ Commenta';
     comElenco.replaceChildren(...commenti.map(commento => {
       const nota = notaCommento(commento);
       const togli = nodo('button', 'bc-com-togli');
@@ -700,10 +725,12 @@
       creata: ora
     });
     comCommento.value = '';
+    comNuovo.hidden = true;
+    comApertura.classList.remove('scrive');
     comSalvata.textContent = salvaComunicazioni(comunicazioni) ? 'commento aggiunto' : 'non salvato: spazio del browser pieno?';
     disegnaCommenti(com);
     comElenco.lastElementChild?.scrollIntoView({ block: 'nearest' });
-    comCommento.focus();
+    comCommenta.focus();
   }
   comAggiungi.addEventListener('click', aggiungiCommento);
   comCommento.addEventListener('keydown', evento => {
@@ -727,10 +754,13 @@
     mostraScadenza(com);
     comSalvata.textContent = com.titolo || com.testo ? `modificata ${new Date(com.modificata).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
     comVelo.hidden = false;
-    disegnaCommenti(com);
+    // da + COMMENTA sulla bacheca si apre già il post-it per scrivere il commento
     comCommento.value = '';
-    // da + COMMENTA sulla bacheca si parte dal campo del commento
-    (conCommento ? comCommento : com.titolo ? comTesto : comTitolo).focus();
+    comNuovo.hidden = !conCommento;
+    comApertura.classList.remove('scrive');
+    disegnaCommenti(com);
+    if (conCommento) scriviCommento();
+    else (com.titolo ? comTesto : comTitolo).focus();
   }
   let ultimoFuocoCom = null;
   function scriviComunicazione() {

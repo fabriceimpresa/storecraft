@@ -595,14 +595,14 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
 .bc-suggerimento.is-visible { opacity: 1; transform: translateY(0); }
 
 
-/* Comunicazioni ufficiali (bacheca.js): una sezione a sé in cima alla bacheca, con il titolo rosso come il timbro invece
+/* Comunicazioni ufficiali (bacheca.js): una sezione a sé in cima alla bacheca, con il titolo dorato invece
    del colore delle settimane; ogni comunicazione è un foglio di quaderno ad anelli, a righe, con il margine rosso:
    bianco carta, gli anelli metallici sul bordo sinistro (forati sul foglio), l'etichetta COMUNICAZIONE UFFICIALE, il
    titolo, il testo a mano sulle righe e la scadenza in fondo (rossa nell'ultimo giorno) */
-.bc-gruppo-com .bc-gruppo-titolo { color: #e07a6b; }
-:root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo { color: #a83228; }
-.bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(224, 122, 107, .35); }
-:root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(168, 50, 40, .3); }
+.bc-gruppo-com .bc-gruppo-titolo { color: var(--interface-accent, #d4a373); }
+:root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo { color: #b48b37; }   /* l'oro dei cartelli */
+.bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(212, 163, 115, .4); }
+:root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(180, 139, 55, .4); }
 .bc-numero-com { font-weight: 700; }
 .bc-fogli { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 30px 34px; padding-left: 12px; }
 /* righe del quaderno ogni 26 px, margine rosso a 44 px dal bordo sinistro */
@@ -744,11 +744,11 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
 .bc-com-scade { color: rgba(43, 38, 32, .65); }
 
 
-/* Commenti alle comunicazioni: piccoli post-it attaccati accanto al foglio, un poco sovrapposti al suo bordo destro, uno
+/* Commenti alle comunicazioni: sulla bacheca piccoli post-it a destra del foglio, staccati da lui e tra loro, uno
    sotto l'altro (gli ultimi tre, sopra «+ altri N»), e in fondo + COMMENTA; sul telefono vanno sotto il foglio, in fila */
 .bc-com-blocco { display: flex; align-items: flex-start; max-width: 100%; }
 .bc-com-blocco > .bc-com { flex: none; }
-.bc-com-note { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; width: 156px; margin-left: -14px; padding-top: 30px; }
+.bc-com-note { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; width: 160px; margin-left: 26px; padding-top: 18px; }
 .bc-com-nota {
   position: relative;
   display: flex;
@@ -772,37 +772,53 @@ button.bc-com-nota { cursor: pointer; transition: transform .2s ease; }
 button.bc-com-nota:hover { transform: rotate(var(--giro, 0deg)) translateY(-2px); }
 button.bc-com-nota .bc-com-nota-testo { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .bc-com-nota-data { color: rgba(43, 38, 32, .55); font: 600 0.58rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .03em; }
-.bc-com-altri, .bc-com-commenta {
-  padding: 6px 10px;
-  border: 1.5px dashed var(--interface-muted, #8c857b);
-  border-radius: 4px;
+.bc-com-altri {
   background: transparent;
   color: var(--interface-muted, #8c857b);
   font: 700 0.64rem 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+}
+/* + COMMENTA: dorato e ben visibile, pieno d'oro al passaggio del mouse */
+.bc-com-commenta {
+  min-height: 38px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--interface-accent, #d4a373);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--interface-accent, #d4a373);
+  font: 700 0.76rem 'Plus Jakarta Sans', sans-serif;
   letter-spacing: .08em;
   text-transform: uppercase;
   cursor: pointer;
+  transition: background .15s ease, color .15s ease;
 }
-.bc-com-altri { border-style: solid; border-color: transparent; padding-left: 2px; text-transform: none; letter-spacing: .02em; }
-.bc-com-commenta:hover, .bc-com-altri:hover { border-color: var(--interface-accent, #d4a373); color: var(--interface-accent, #d4a373); }
-.bc-com-altri:hover { border-color: transparent; }
-.bc-com-altri, .bc-com-commenta { margin-left: 20px; }   /* staccati dal bordo del foglio, che i post-it invece coprono un poco */
+.bc-com-commenta:hover { background: var(--interface-accent, #d4a373); color: var(--interface-page, #121110); }
+:root[data-interface-theme="light"] .bc-com-commenta { border-color: #b48b37; color: #8a6a35; }
+:root[data-interface-theme="light"] .bc-com-commenta:hover { background: #b48b37; color: #fff; }
+.bc-com-altri { padding: 2px 0; border: 0; text-transform: none; letter-spacing: .02em; }
+.bc-com-altri:hover { color: var(--interface-accent, #d4a373); }
 .in-cancellazione .bc-com-note { opacity: .5; pointer-events: none; }
 @media (max-width: 760px) {
   .bc-com-blocco { flex-direction: column; width: 100%; }
-  .bc-com-note { flex-direction: row; flex-wrap: wrap; align-items: center; width: 100%; margin: -8px 0 0; padding: 0 0 0 16px; }
+  .bc-com-note { flex-direction: row; flex-wrap: wrap; align-items: center; width: 100%; margin: 18px 0 0; padding: 0 0 0 8px; gap: 16px; }
   .bc-com-note .bc-com-nota { width: 132px; }
-  .bc-com-altri, .bc-com-commenta { margin-left: 0; }
+  .bc-com-commenta { margin-top: 4px; }
 }
 
-/* foglio aperto: accanto, la colonna dei commenti (tutti, con la ✕ per toglierli, e il post-it giallo per scriverne uno);
+/* foglio aperto: i commenti attaccati sopra il bordo destro del foglio (tutti, con la ✕ per toglierli, e il post-it giallo
+   per scriverne uno, che compare con + COMMENTA);
    sul telefono sotto il foglio, e scorre tutto insieme */
-.bc-com-apertura { display: flex; align-items: flex-start; gap: 26px; max-width: 100%; max-height: 100%; }
+.bc-com-apertura { display: flex; align-items: flex-start; gap: 0;   /* i commenti si sovrappongono al bordo destro del foglio (margine negativo) */ max-width: 100%; max-height: 100%; }
 .bc-com-apertura .bc-com-foglio { max-height: calc(100dvh - 48px); }
 :root body #comCommenti { background: transparent !important; border: 0 !important; box-shadow: none !important; }   /* niente fondo dal tema (theme.css) */
-.bc-com-commenti { display: flex; flex-direction: column; gap: 14px; width: 250px; flex: none; max-height: calc(100dvh - 48px); overflow-y: auto; padding: 8px 6px 10px 4px; }
-.bc-com-commenti-titolo { margin: 0; color: #e07a6b;   /* rosso chiaro in tutti e due i temi: sta sul velo scuro */
-   font: 400 1.7rem/1 'Caveat', cursive; }
+.bc-com-apertura { position: relative; }
+.bc-com-apertura.con-commenti { padding-right: 184px; }   /* il foglio resta al centro anche con i commenti accanto */
+/* i commenti stanno nell'altezza del foglio, tra la ✕ e la riga dei comandi (FATTO resta libero); se sono tanti scorrono */
+.bc-com-commenti { position: absolute; top: 72px; bottom: 74px; left: calc(100% - 184px - 52px); z-index: 2; display: flex; flex-direction: column; gap: 14px; width: 236px; overflow-y: auto; scrollbar-width: thin; padding: 8px 8px 12px 6px; }
+.bc-com-commenti[hidden], .bc-com-nuovo[hidden] { display: none; }
+/* + COMMENTA tra i comandi del foglio, dorato */
+.bc-comando.bc-commenta-foglio { border-color: #b48b37; color: #8a6a35; }
+.bc-comando.bc-commenta-foglio:hover { background: #b48b37; color: #fff; }
 .bc-com-elenco { display: flex; flex-direction: column; gap: 16px; padding-top: 6px; }
 .bc-com-elenco .bc-com-nota { padding-right: 28px; }
 .bc-com-togli {
@@ -836,9 +852,12 @@ button.bc-com-nota .bc-com-nota-testo { display: -webkit-box; -webkit-line-clamp
 .bc-com-nuovo textarea::placeholder { color: rgba(43, 38, 32, .45); }
 .bc-com-nuovo .bc-comando { align-self: flex-end; min-height: 32px; padding: 6px 12px; }
 @media (max-width: 900px) {
-  .bc-com-apertura { flex-direction: column; align-items: stretch; gap: 18px; overflow-y: auto; padding: 22px 22px 0 12px; }   /* spazio per gli anelli e la ✕ */
+  .bc-com-apertura { flex-direction: column; align-items: stretch; gap: 0; overflow-y: auto; padding: 22px 22px 0 12px; }   /* spazio per gli anelli e la ✕ */
   .bc-com-apertura .bc-com-foglio, .bc-com-commenti { max-height: none; overflow: visible; }
-  .bc-com-commenti { width: auto; }
+  .bc-com-commenti { position: static; width: auto; margin: -22px 0 0; padding: 0 10px 10px 34px; }   /* attaccati sul bordo basso del foglio */
+  .bc-com-apertura.con-commenti { padding-right: 22px; }
+  .bc-com-apertura.scrive { padding-bottom: 60vh; }   /* spazio per portare in cima il post-it del nuovo commento */
+  .bc-com-nuovo { scroll-margin-top: 14px; }
 }
 /* conferma nello stile STORE // CRAFT (per cancellare le comunicazioni ufficiali), nei colori del tema */
 .bc-conferma-velo { z-index: 70; }
