@@ -5,9 +5,10 @@
      e nel computer in cui si scrivono.
    - Ogni post-it ha un aspetto suo, scelto quando nasce: colore della carta, inclinazione, dettaglio (nastro adesivo,
      angolo piegato o niente; il nastro in quattro versioni, dal seme della nota) e formato (quadrato, alto, largo, grande), che segue anche quanto testo c'è.
-     La bacheca è una griglia che li incastra tra loro (grid-auto-flow: dense); aprendo la pagina cadono uno dopo l'altro
+     I post-it si incastrano in colonne, in ordine di tempo (disponi); aprendo la pagina cadono alla rinfusa
      e si posano, e quando la bacheca cambia (nota nuova, eliminata, finestra più stretta) si spostano animati.
-   - Se i post-it non entrano nello schermo, o la finestra è stretta, diventano etichette con il solo titolo, cliccabili.
+   - Due viste per i gruppi di note: BACHECA NORMALE, i post-it aperti a grandezza piena (la settimana in corso), e
+     BACHECA COMPATTA, le note chiuse in piccole etichette con il solo titolo, cliccabili (le settimane passate).
    - Un clic apre il post-it in grande per scrivere: si salva da solo mentre si scrive; una nota lasciata vuota sparisce.
    Uso nella pagina: <div id="bacheca" data-bacheca></div> con la barra (#nuova, #info) e l'editor (#velo…).
    Bacheca.elenco(negozio) dà le note (anche al widget della dashboard, cassa.js). Testi scritti sempre con
@@ -102,7 +103,39 @@
     return n;
   };
   const riduciMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // ✕ per chiudere il foglio aperto (nota o comunicazione): un cerchio oro appena fuori dall'angolo in alto a destra,
+  // dritto anche quando il foglio è storto (stile in bacheca.css, .bc-chiudi)
+  function tastoChiudi(nome, azione) {
+    const tasto = nodo('button', 'bc-chiudi');
+    tasto.type = 'button';
+    tasto.title = nome;
+    tasto.setAttribute('aria-label', nome);
+    tasto.addEventListener('click', azione);
+    return tasto;
+  }
   let note = elenco();
+  // Comunicazioni ufficiali: una lista a parte, accanto alle note ("storecraft_bacheca_comunicazioni_<negozio>"), ognuna
+  // con una scadenza; scadute spariscono da sole dalla bacheca (vedi "Comunicazioni ufficiali" più sotto)
+  const chiaveComunicazioni = `storecraft_bacheca_comunicazioni_${NEGOZIO}`;
+  function elencoComunicazioni() {
+    try {
+      const lista = JSON.parse(localStorage.getItem(chiaveComunicazioni) || '[]');
+      return Array.isArray(lista) ? lista : [];
+    } catch (errore) {
+      console.error('Lettura delle comunicazioni non riuscita.', errore);
+      return [];
+    }
+  }
+  function salvaComunicazioni(lista) {
+    try {
+      localStorage.setItem(chiaveComunicazioni, JSON.stringify(lista));
+      return true;
+    } catch (errore) {
+      console.error('Salvataggio delle comunicazioni non riuscito.', errore);
+      return false;
+    }
+  }
+  let comunicazioni = elencoComunicazioni();
   let aperta = null;          // id della nota nell'editor
   let cancellazione = false;  // modalità cancellazione: le note tremano e si selezionano
   const selezionate = new Set();
@@ -194,8 +227,9 @@
   }
 
   // ----- Gruppi per settimana -----
-  // La settimana in corso (dal lunedì alla domenica) si vede sempre con i post-it aperti, anche se sono tanti, e la pagina
-  // si scorre; le settimane passate si chiudono in etichette con il titolo. La bacheca si divide per settimana, dalla più
+  // La settimana in corso (dal lunedì alla domenica) si vede sempre in BACHECA NORMALE, i post-it aperti, anche se sono
+  // tanti, e la pagina si scorre; le settimane passate vanno in BACHECA COMPATTA, piccole etichette con il titolo. La
+  // bacheca si divide per settimana, dalla più
   // recente, con sopra ogni gruppo una scritta a mano («Settimana dal 5 all'11 ottobre»), quando le note sono tante (più
   // di SOGLIA_SETTIMANE) o quando c'è almeno una nota di una settimana passata. Se oggi sono state scritte almeno
   // NOTE_OGGI note, quelle di oggi stanno in un gruppo a sé, in cima: «Solo oggi, domenica 11 ottobre, hai 5 note in
@@ -225,11 +259,11 @@
     const soloOggi = diOggi.length >= NOTE_OGGI;
     const questaSettimana = inizioSettimana(Date.now()).getTime();
     const passate = lista.some(nota => nota.creata < questaSettimana);
-    if (lista.length <= SOGLIA_SETTIMANE && !soloOggi && !passate) return [{ titolo: null, note: lista, aperto: true }];
+    if (lista.length <= SOGLIA_SETTIMANE && !soloOggi && !passate) return [{ titolo: null, note: lista, vista: 'normale' }];
     const elenco = [];
     if (soloOggi) {
       const data = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-      elenco.push({ titolo: [`Solo oggi, ${data}, hai `, nodo('strong', 'bc-numero', String(diOggi.length)), ` ${scrittaNote(diOggi.length)} in bacheca`], note: diOggi, aperto: true });
+      elenco.push({ titolo: [`Solo oggi, ${data}, hai `, nodo('strong', 'bc-numero', String(diOggi.length)), ` ${scrittaNote(diOggi.length)} in bacheca`], note: diOggi, vista: 'normale' });
     }
     const settimane = new Map();
     lista.filter(nota => !(soloOggi && nota.creata >= oggi)).forEach(nota => {
@@ -237,8 +271,8 @@
       if (!settimane.has(chiave)) settimane.set(chiave, []);
       settimane.get(chiave).push(nota);
     });
-    // aperta solo la settimana in corso, chiuse in etichette quelle passate
-    settimane.forEach((note, chiave) => elenco.push({ titolo: [titoloSettimana(new Date(chiave))], note, aperto: chiave >= questaSettimana }));
+    // in bacheca normale la settimana in corso, in bacheca compatta quelle passate
+    settimane.forEach((note, chiave) => elenco.push({ titolo: [titoloSettimana(new Date(chiave))], note, vista: chiave >= questaSettimana ? 'normale' : 'compatta' }));
     return elenco;
   }
 
@@ -251,10 +285,14 @@
     const numero = nodo('strong', 'bc-numero', String(lista.length));
     $('info').replaceChildren(...(!lista.length ? [`Oggi, ${oggi}, nessuna nota in bacheca.`]
       : [`Oggi, ${oggi}, hai `, numero, ` ${scrittaNote(lista.length)} in bacheca!`]));
+    // le comunicazioni ufficiali in cima, in una sezione a sé (null se non ce ne sono)
+    const sezioneCom = sezioneComunicazioni();
+    bacheca.classList.toggle('in-cancellazione', cancellazione);
     if (!lista.length) {
       const vuota = nodo('div', 'bc-vuota');
       vuota.append(nodo('strong', '', 'Bacheca'), 'Ancora nessun post-it. Premi il pulsante con il + qui sopra e scrivi un promemoria, un ordine, un numero di telefono…');
-      bacheca.replaceChildren(vuota);
+      bacheca.replaceChildren(...(sezioneCom ? [sezioneCom] : [vuota]));
+      if (!primaVolta) scivola(prima);
       primaVolta = false;
       return;
     }
@@ -291,13 +329,15 @@
     const contenitori = [];
     const elementi = [];
     bacheca.replaceChildren(...sezioni.map(gruppo => {
-      const tipo = gruppo.aperto ? 'post-it' : 'etichette';
+      const tipo = gruppo.vista === 'normale' ? 'post-it' : 'etichette';   // bacheca normale o compatta
         const sezione = nodo('section', 'bc-gruppo');
-        if (gruppo.titolo) {
+        // con poche note il gruppo non ha titolo; sotto le comunicazioni ufficiali prende «Le note», per distinguere le sezioni
+        const scritta = gruppo.titolo || (sezioneCom ? ['Le note'] : null);
+        if (scritta) {
           const titolo = nodo('h2', 'bc-gruppo-titolo');
           // il testo in un solo elemento, così la linea che segue (::after) non lo spezza
           const testo = nodo('span');
-          testo.append(...gruppo.titolo.map(parte => (typeof parte === 'string' ? parte : parte.cloneNode(true))));
+          testo.append(...scritta.map(parte => (typeof parte === 'string' ? parte : parte.cloneNode(true))));
           titolo.append(testo);
           sezione.append(titolo);
         }
@@ -309,6 +349,7 @@
         elementi.push(...suoi);
         return sezione;
     }));
+    if (sezioneCom) bacheca.prepend(sezioneCom);
     // i post-it aperti si dispongono in colonne, in ordine di tempo
     contenitori.forEach((contenitore, i) => {
       if (contenitore.classList.contains('bc-griglia')) disponi(contenitore, [...contenitore.children], sezioni[i].note);
@@ -323,6 +364,483 @@
     }
     primaVolta = false;
   }
+
+  // ----- Comunicazioni ufficiali -----
+  // Accanto alle note, le comunicazioni ufficiali (NUOVA COMUNICAZIONE, il foglio ad anelli): scritte su un foglio di
+  // quaderno ad anelli, a righe, con il margine rosso, in una sezione a sé in cima alla bacheca («Comunicazioni
+  // ufficiali», con il titolo in blu inchiostro). Ognuna ha una scadenza, scelta quando la si scrive (DURATE, dalla
+  // creazione): scaduta sparisce da sola dalla bacheca. Si cancellano dal foglio (ELIMINA) o con CANCELLA NOTE, sempre
+  // dopo una conferma: «Sei sicuro di volerla cancellare? È una Comunicazione Ufficiale».
+  const UN_GIORNO = 24 * 60 * 60 * 1000;
+  const DURATE = [[1, '1 giorno'], [3, '3 giorni'], [7, '1 settimana'], [14, '2 settimane'], [30, '1 mese'], [90, '3 mesi']];
+  const DURATA_INIZIALE = 7;
+  // Foto delle comunicazioni: una per comunicazione, allegata dal telefono (fotocamera o galleria) o dal computer. Le foto
+  // stanno in IndexedDB (database "storecraft-bacheca-foto", archivio "foto", chiave "<negozio>:<id>"), che ha molto più
+  // spazio del localStorage; la comunicazione ricorda solo che ha la foto (foto: true). All'importazione una foto grande
+  // si riduce: il lato più lungo al massimo LATO_FOTO px, JPEG di qualità 0,85 (qualche centinaio di KB)
+  const LATO_FOTO = 1600;
+  const chiaveFoto = id => `${NEGOZIO}:${id}`;
+  let databaseFoto = null;
+  function apriDatabaseFoto() {
+    databaseFoto ||= new Promise((ok, ko) => {
+      const richiesta = indexedDB.open('storecraft-bacheca-foto', 1);
+      richiesta.onupgradeneeded = () => richiesta.result.createObjectStore('foto');
+      richiesta.onsuccess = () => ok(richiesta.result);
+      richiesta.onerror = () => ko(richiesta.error);
+    });
+    return databaseFoto;
+  }
+  async function archivioFoto(modo, operazione) {
+    const db = await apriDatabaseFoto();
+    return new Promise((ok, ko) => {
+      const transazione = db.transaction('foto', modo);
+      const richiesta = operazione(transazione.objectStore('foto'));
+      transazione.oncomplete = () => ok(richiesta.result);
+      transazione.onerror = () => ko(transazione.error);
+    });
+  }
+  const leggiFoto = id => archivioFoto('readonly', archivio => archivio.get(chiaveFoto(id)));
+  const salvaFoto = (id, blob) => archivioFoto('readwrite', archivio => archivio.put(blob, chiaveFoto(id)));
+  const urlFoto = new Map();   // id → indirizzo della foto già letta, per non rileggerla a ogni disegno
+  function dimenticaFoto(id) {
+    if (urlFoto.has(id)) URL.revokeObjectURL(urlFoto.get(id));
+    urlFoto.delete(id);
+  }
+  function togliFoto(id) {
+    dimenticaFoto(id);
+    return archivioFoto('readwrite', archivio => archivio.delete(chiaveFoto(id))).catch(errore => console.error('Foto non cancellata.', errore));
+  }
+  function mostraFoto(img, id) {
+    if (urlFoto.has(id)) { img.src = urlFoto.get(id); return; }
+    leggiFoto(id).then(blob => {
+      if (!blob) return;
+      urlFoto.set(id, URL.createObjectURL(blob));
+      img.src = urlFoto.get(id);
+    }).catch(errore => console.error('Foto non letta.', errore));
+  }
+  // riduce la foto (e la gira come la mostra il telefono: il browser applica l'orientamento della foto)
+  async function riduciFoto(file) {
+    const indirizzo = URL.createObjectURL(file);
+    try {
+      const immagine = await new Promise((ok, ko) => {
+        const img = new Image();
+        img.onload = () => ok(img);
+        img.onerror = () => ko(new Error('Immagine non leggibile'));
+        img.src = indirizzo;
+      });
+      const scala = Math.min(1, LATO_FOTO / Math.max(immagine.naturalWidth, immagine.naturalHeight));
+      const tela = document.createElement('canvas');
+      tela.width = Math.round(immagine.naturalWidth * scala);
+      tela.height = Math.round(immagine.naturalHeight * scala);
+      const ctx = tela.getContext('2d');
+      ctx.fillStyle = '#fff';   // le parti trasparenti (PNG) diventano bianche, non nere
+      ctx.fillRect(0, 0, tela.width, tela.height);
+      ctx.drawImage(immagine, 0, 0, tela.width, tela.height);
+      return await new Promise(ok => tela.toBlob(ok, 'image/jpeg', 0.85));
+    } finally {
+      URL.revokeObjectURL(indirizzo);
+    }
+  }
+  // all'apertura: le foto rimaste senza comunicazione (scadute o cancellate altrove) si tolgono; il browser non deve
+  // cancellare l'archivio da solo quando lo spazio scarseggia
+  navigator.storage?.persist?.().catch(() => {});
+  apriDatabaseFoto().then(() => archivioFoto('readonly', archivio => archivio.getAllKeys())).then(chiavi => {
+    const vive = new Set(comunicazioni.filter(c => c.foto).map(c => chiaveFoto(c.id)));
+    chiavi.filter(k => String(k).startsWith(`${NEGOZIO}:`) && !vive.has(k)).forEach(k => togliFoto(String(k).slice(NEGOZIO.length + 1)));
+  }).catch(() => {});
+
+  // le scadute si tolgono all'apertura e poi a ogni minuto
+  function togliScadute() {
+    const rimaste = comunicazioni.filter(com => com.scadenza > Date.now());
+    comunicazioni.filter(com => com.scadenza <= Date.now() && com.foto).forEach(com => togliFoto(com.id));
+    if (rimaste.length === comunicazioni.length) return false;
+    comunicazioni = rimaste;
+    salvaComunicazioni(comunicazioni);
+    return true;
+  }
+  togliScadute();
+  // «Scade il 18 ottobre, tra 7 giorni», «Scade domani alle 18:30», «Scade oggi alle 18:30»
+  function scritturaScadenza(scadenza) {
+    const giorno = new Date(scadenza).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+    const ora = new Date(scadenza).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+    const giorni = Math.round((inizioGiorno(scadenza) - inizioGiorno(Date.now())) / UN_GIORNO);
+    if (giorni <= 0) return `Scade oggi alle ${ora}`;
+    if (giorni === 1) return `Scade domani alle ${ora}`;
+    return `Scade il ${giorno}, tra ${giorni} giorni`;
+  }
+
+  // Commenti alle comunicazioni: piccoli post-it attaccati accanto al foglio (com.commenti, dal più vecchio), ognuno con
+  // il testo (al massimo MAX_COMMENTO caratteri), il colore della carta, un'inclinazione sua e la data; sulla bacheca se
+  // ne vedono gli ultimi COMMENTI_VISIBILI, tutti nel foglio aperto, dove si aggiungono e si tolgono
+  const MAX_COMMENTO = 300;
+  const COMMENTI_VISIBILI = 3;
+  const quandoCommento = tempo => new Date(tempo).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  function notaCommento(commento, tag = 'div') {
+    const nota = nodo(tag, 'bc-com-nota');
+    nota.style.setProperty('--carta', CARTE[commento.carta % CARTE.length]);
+    nota.style.setProperty('--giro', `${commento.giro || 0}deg`);
+    nota.append(nodo('span', 'bc-com-nota-testo', commento.testo), nodo('span', 'bc-com-nota-data', quandoCommento(commento.creata)));
+    return nota;
+  }
+
+  // la sezione delle comunicazioni sulla bacheca: un foglio ad anelli per comunicazione, dalla più recente
+  function sezioneComunicazioni() {
+    if (!comunicazioni.length) return null;
+    const sezione = nodo('section', 'bc-gruppo bc-gruppo-com');
+    const titolo = nodo('h2', 'bc-gruppo-titolo');
+    const testo = nodo('span');
+    testo.append('Comunicazioni ufficiali ', nodo('strong', 'bc-numero-com', String(comunicazioni.length)));
+    titolo.append(testo);
+    const fogli = nodo('div', 'bc-fogli');
+    fogli.append(...[...comunicazioni].sort((a, b) => b.creata - a.creata).map(com => {
+      const el = nodo('button', 'bc-com');
+      el.type = 'button';
+      el.dataset.id = com.id;
+      el.style.setProperty('--giro', `${com.giro || 0}deg`);
+      el.style.setProperty('--i', String(elementiCreati++ % 7));
+      el.setAttribute('aria-label', `Apri la comunicazione ${com.titolo.trim() || 'senza titolo'}`);
+      const scade = nodo('span', 'bc-com-scadenza', scritturaScadenza(com.scadenza));
+      if (com.scadenza - Date.now() < UN_GIORNO) scade.classList.add('presto');
+      el.append(nodo('span', 'bc-com-anelli'), nodo('span', 'bc-com-etichetta', 'Comunicazione ufficiale'));
+      if (com.titolo.trim()) el.append(nodo('h3', 'bc-com-titolo', com.titolo.trim()));
+      if (com.foto) {
+        const foto = nodo('img', 'bc-com-immagine');
+        foto.alt = '';
+        mostraFoto(foto, com.id);
+        el.append(foto);
+      }
+      el.append(nodo('p', 'bc-com-testo', com.testo), scade, nodo('span', 'bc-seleziona'));
+      if (selezionate.has(com.id)) el.classList.add('selezionata');
+      if (cancellazione) el.setAttribute('aria-pressed', String(selezionate.has(com.id)));
+      el.addEventListener('click', () => (cancellazione ? selezionaNota(com.id, el) : apriComunicazione(com.id)));
+      // accanto al foglio i commenti, come piccoli post-it attaccati di fianco: gli ultimi tre, «+ altri N» e + COMMENTA
+      const blocco = nodo('div', 'bc-com-blocco');
+      const colonna = nodo('div', 'bc-com-note');
+      const commenti = com.commenti || [];
+      if (commenti.length > COMMENTI_VISIBILI) {
+        const nascosti = commenti.length - COMMENTI_VISIBILI;
+        const altri = nodo('button', 'bc-com-altri', nascosti === 1 ? '+ 1 altro commento' : `+ altri ${nascosti} commenti`);
+        altri.type = 'button';
+        altri.addEventListener('click', () => { if (!cancellazione) apriComunicazione(com.id); });
+        colonna.append(altri);
+      }
+      colonna.append(...commenti.slice(-COMMENTI_VISIBILI).map(commento => {
+        const nota = notaCommento(commento, 'button');
+        nota.type = 'button';
+        nota.setAttribute('aria-label', `Commento: ${commento.testo}`);
+        nota.addEventListener('click', () => { if (!cancellazione) apriComunicazione(com.id); });
+        return nota;
+      }));
+      const commenta = nodo('button', 'bc-com-commenta', '+ Commenta');
+      commenta.type = 'button';
+      commenta.addEventListener('click', () => { if (!cancellazione) apriComunicazione(com.id, true); });
+      colonna.append(commenta);
+      blocco.append(el, colonna);
+      return blocco;
+    }));
+    sezione.append(titolo, fogli);
+    return sezione;
+  }
+
+  // Conferma nello stile STORE // CRAFT, nei colori del tema: titolo in Cinzel oro, testo, ANNULLA e il pulsante rosso.
+  // Risponde true se si conferma; Esc, ANNULLA o un clic fuori rispondono false
+  function conferma({ titolo, testo, si }) {
+    return new Promise(risposta => {
+      const veloConferma = nodo('div', 'bc-velo bc-conferma-velo');
+      const box = nodo('div', 'bc-conferma');
+      box.setAttribute('role', 'alertdialog');
+      box.setAttribute('aria-modal', 'true');
+      box.setAttribute('aria-labelledby', 'bcConfermaTitolo');
+      const h = nodo('h2', '', titolo);
+      h.id = 'bcConfermaTitolo';
+      const no = nodo('button', 'bc-conferma-no', 'Annulla');
+      const ok = nodo('button', 'bc-conferma-si', si);
+      no.type = 'button';
+      ok.type = 'button';
+      const comandi = nodo('div', 'bc-conferma-comandi');
+      comandi.append(no, ok);
+      box.append(h, nodo('p', '', testo), comandi);
+      veloConferma.append(box);
+      const prima = document.activeElement;
+      // Esc chiude solo la conferma (prima degli altri ascoltatori della pagina)
+      const tasti = evento => {
+        if (evento.key !== 'Escape') return;
+        evento.stopImmediatePropagation();
+        fine(false);
+      };
+      function fine(valore) {
+        veloConferma.remove();
+        window.removeEventListener('keydown', tasti, true);
+        prima?.focus?.();
+        risposta(valore);
+      }
+      no.addEventListener('click', () => fine(false));
+      ok.addEventListener('click', () => fine(true));
+      veloConferma.addEventListener('click', evento => { if (evento.target === veloConferma) fine(false); });
+      window.addEventListener('keydown', tasti, true);
+      document.body.append(veloConferma);
+      no.focus();
+    });
+  }
+  const confermaComunicazioni = (quante, conNote = 0) => conferma({
+    titolo: quante === 1 ? 'Sei sicuro di volerla cancellare?' : 'Sei sicuro di volerle cancellare?',
+    testo: (quante === 1 ? 'È una Comunicazione Ufficiale.' : `Sono ${quante} Comunicazioni Ufficiali.`)
+      + (conNote ? ` Insieme a ${conNote === 1 ? 'una nota' : `${conNote} note`}.` : ''),
+    si: quante === 1 ? 'Cancella la comunicazione' : 'Cancella'
+  });
+
+  // Il foglio della comunicazione, per scriverla: titolo, testo su righe da quaderno, scadenza, ELIMINA e FATTO
+  // (Esc o un clic fuori chiudono); si salva da solo mentre si scrive e una comunicazione lasciata vuota sparisce
+  const comVelo = nodo('div', 'bc-velo');
+  comVelo.hidden = true;
+  const comFoglio = nodo('div', 'bc-com-foglio');
+  comFoglio.id = 'comFoglio';
+  comFoglio.setAttribute('role', 'dialog');
+  comFoglio.setAttribute('aria-modal', 'true');
+  comFoglio.setAttribute('aria-label', 'Comunicazione ufficiale');
+  const comTitolo = nodo('input');
+  comTitolo.type = 'text';
+  comTitolo.placeholder = 'Titolo della comunicazione';
+  comTitolo.autocomplete = 'off';
+  comTitolo.maxLength = MAX_TITOLO;
+  comTitolo.setAttribute('aria-label', 'Titolo della comunicazione');
+  const comTesto = nodo('textarea');
+  comTesto.placeholder = 'Scrivi qui la comunicazione per tutto lo staff…';
+  comTesto.maxLength = MAX_TESTO;
+  comTesto.setAttribute('aria-label', 'Testo della comunicazione');
+  // ALLEGA FOTO: dal telefono apre fotocamera o galleria, dal computer la scelta del file; la foto si vede sotto il titolo,
+  // con TOGLI LA FOTO
+  const comFile = nodo('input');
+  comFile.type = 'file';
+  comFile.accept = 'image/*';
+  comFile.hidden = true;
+  const comAllega = nodo('button', 'bc-comando bc-allega');
+  comAllega.type = 'button';
+  comAllega.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h2.5l1.5-2h6l1.5 2H19a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+  const comAllegaTesto = nodo('span', '', 'Allega foto');
+  comAllega.append(comAllegaTesto);
+  const comAnteprima = nodo('div', 'bc-com-foto');
+  comAnteprima.hidden = true;
+  const comImmagine = nodo('img');
+  comImmagine.alt = 'Foto allegata alla comunicazione';
+  const comTogliFoto = nodo('button', 'bc-comando', 'Togli la foto');
+  comTogliFoto.type = 'button';
+  comAnteprima.append(comImmagine, comTogliFoto);
+  const comDurata = nodo('select', 'bc-com-durata');
+  comDurata.id = 'comDurata';
+  comDurata.append(...DURATE.map(([giorni, nome]) => {
+    const voce = nodo('option', '', nome);
+    voce.value = String(giorni);
+    return voce;
+  }));
+  const comScade = nodo('span', 'bc-com-scade', '');
+  const rigaDurata = nodo('div', 'bc-com-riga');
+  const etichettaDurata = nodo('label', '', 'Scadenza');
+  etichettaDurata.htmlFor = 'comDurata';
+  rigaDurata.append(etichettaDurata, comDurata, comScade, nodo('span', 'bc-spazio'), comAllega, comFile);
+  const comSalvata = nodo('span', 'bc-salvata');
+  comSalvata.setAttribute('role', 'status');
+  const comElimina = nodo('button', 'bc-comando bc-elimina', 'Elimina');
+  const comFatto = nodo('button', 'bc-comando bc-fatto', 'Fatto');
+  comElimina.type = 'button';
+  comFatto.type = 'button';
+  const comComandi = nodo('div', 'bc-comandi');
+  comComandi.append(comSalvata, nodo('span', 'bc-spazio'), comElimina, comFatto);
+  comFoglio.append(nodo('span', 'bc-com-anelli'), nodo('span', 'bc-com-etichetta', 'Comunicazione ufficiale'), comTitolo, comAnteprima, comTesto, rigaDurata, comComandi);
+  // Accanto al foglio aperto la colonna dei COMMENTI: tutti i commenti, ognuno con la ✕ per toglierlo, e in fondo un
+  // post-it giallo per scriverne uno nuovo (AGGIUNGI, o Invio; Maiuscolo + Invio va a capo). Sul telefono sta sotto
+  const comCommenti = nodo('aside', 'bc-com-commenti');
+  comCommenti.id = 'comCommenti';
+  comCommenti.setAttribute('aria-label', 'Commenti alla comunicazione');
+  const comCommentiTitolo = nodo('h3', 'bc-com-commenti-titolo', 'Commenti');
+  const comElenco = nodo('div', 'bc-com-elenco');
+  const comNuovo = nodo('div', 'bc-com-nota bc-com-nuovo');
+  const comCommento = nodo('textarea');
+  comCommento.id = 'comCommento';
+  comCommento.placeholder = 'Scrivi un commento…';
+  comCommento.maxLength = MAX_COMMENTO;
+  comCommento.setAttribute('aria-label', 'Nuovo commento');
+  const comAggiungi = nodo('button', 'bc-comando bc-fatto', 'Aggiungi');
+  comAggiungi.type = 'button';
+  comNuovo.append(comCommento, comAggiungi);
+  comCommenti.append(comCommentiTitolo, comElenco, comNuovo);
+  const comApertura = nodo('div', 'bc-com-apertura');
+  comApertura.append(comFoglio, comCommenti);
+  comVelo.append(comApertura);
+  function disegnaCommenti(com) {
+    const commenti = com.commenti || [];
+    comCommentiTitolo.textContent = commenti.length ? `Commenti (${commenti.length})` : 'Commenti';
+    comElenco.replaceChildren(...commenti.map(commento => {
+      const nota = notaCommento(commento);
+      const togli = nodo('button', 'bc-com-togli');
+      togli.type = 'button';
+      togli.title = 'Togli il commento';
+      togli.setAttribute('aria-label', 'Togli il commento');
+      togli.addEventListener('click', () => {
+        com.commenti = (com.commenti || []).filter(c => c.id !== commento.id);
+        if (!com.commenti.length) delete com.commenti;
+        salvaComunicazioni(comunicazioni);
+        disegnaCommenti(com);
+        comSalvata.textContent = 'commento tolto';
+      });
+      nota.append(togli);
+      return nota;
+    }));
+  }
+  function aggiungiCommento() {
+    const com = comunicazione();
+    const testo = comCommento.value.trim().slice(0, MAX_COMMENTO);
+    if (!com || !testo) return;
+    const ora = Date.now();
+    (com.commenti ||= []).push({
+      id: `k${ora.toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+      testo,
+      carta: Math.floor(Math.random() * CARTE.length),
+      giro: Math.round((Math.random() * 6 - 3) * 10) / 10,
+      creata: ora
+    });
+    comCommento.value = '';
+    comSalvata.textContent = salvaComunicazioni(comunicazioni) ? 'commento aggiunto' : 'non salvato: spazio del browser pieno?';
+    disegnaCommenti(com);
+    comElenco.lastElementChild?.scrollIntoView({ block: 'nearest' });
+    comCommento.focus();
+  }
+  comAggiungi.addEventListener('click', aggiungiCommento);
+  comCommento.addEventListener('keydown', evento => {
+    if (evento.key === 'Enter' && !evento.shiftKey) { evento.preventDefault(); aggiungiCommento(); }
+  });
+  document.body.append(comVelo);
+
+  let comAperta = null;
+  let comSalvataggio = 0;
+  const comunicazione = () => comunicazioni.find(com => com.id === comAperta);
+  const mostraScadenza = com => { comScade.textContent = scritturaScadenza(com.scadenza); };
+  function apriComunicazione(id, conCommento = false) {
+    const com = comunicazioni.find(c => c.id === id);
+    if (!com) return;
+    comAperta = id;
+    ultimoFuocoCom = document.activeElement;
+    comTitolo.value = com.titolo;
+    comTesto.value = com.testo;
+    comDurata.value = String(com.durata || DURATA_INIZIALE);
+    mostraFotoFoglio(com);
+    mostraScadenza(com);
+    comSalvata.textContent = com.titolo || com.testo ? `modificata ${new Date(com.modificata).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
+    comVelo.hidden = false;
+    disegnaCommenti(com);
+    comCommento.value = '';
+    // da + COMMENTA sulla bacheca si parte dal campo del commento
+    (conCommento ? comCommento : com.titolo ? comTesto : comTitolo).focus();
+  }
+  let ultimoFuocoCom = null;
+  function scriviComunicazione() {
+    const com = comunicazione();
+    if (!com) return;
+    com.titolo = comTitolo.value.slice(0, MAX_TITOLO);
+    com.testo = comTesto.value.slice(0, MAX_TESTO);
+    com.modificata = Date.now();
+    clearTimeout(comSalvataggio);
+    comSalvataggio = setTimeout(() => {
+      comSalvata.textContent = salvaComunicazioni(comunicazioni) ? 'salvata' : 'non salvata: spazio del browser pieno?';
+    }, 300);
+  }
+  // la scadenza conta dalla creazione: 1 settimana = una settimana dopo che la comunicazione è stata scritta
+  comDurata.addEventListener('change', () => {
+    const com = comunicazione();
+    if (!com) return;
+    com.durata = Number(comDurata.value);
+    com.scadenza = com.creata + com.durata * UN_GIORNO;
+    mostraScadenza(com);
+    comSalvata.textContent = salvaComunicazioni(comunicazioni) ? 'salvata' : 'non salvata: spazio del browser pieno?';
+  });
+  function chiudiComunicazione() {
+    if (comVelo.hidden) return;
+    clearTimeout(comSalvataggio);
+    comunicazioni = comunicazioni.filter(c => c.id !== comAperta || c.titolo.trim() || c.testo.trim() || c.foto || c.commenti?.length);
+    salvaComunicazioni(comunicazioni);
+    comAperta = null;
+    comVelo.hidden = true;
+    disegna();
+    ultimoFuocoCom?.focus?.();
+  }
+  function nuovaComunicazione() {
+    const ora = Date.now();
+    const com = {
+      id: `c${ora.toString(36)}${Math.random().toString(36).slice(2, 6)}`,
+      titolo: '',
+      testo: '',
+      durata: DURATA_INIZIALE,
+      scadenza: ora + DURATA_INIZIALE * UN_GIORNO,
+      giro: Math.round((Math.random() * 2 - 1) * 10) / 10,   // appena storto, come un foglio appeso
+      creata: ora,
+      modificata: ora
+    };
+    comunicazioni.push(com);
+    apriComunicazione(com.id);
+  }
+  comElimina.addEventListener('click', async () => {
+    const com = comunicazione();
+    if (!com) return;
+    // una comunicazione appena iniziata e ancora vuota si toglie senza chiedere
+    if ((com.titolo.trim() || com.testo.trim() || com.foto) && !(await confermaComunicazioni(1))) return;
+    if (com.foto) togliFoto(com.id);
+    comunicazioni = comunicazioni.filter(c => c.id !== com.id);
+    salvaComunicazioni(comunicazioni);
+    comAperta = null;
+    comVelo.hidden = true;
+    disegna();
+  });
+  comFatto.addEventListener('click', chiudiComunicazione);
+  comFoglio.append(tastoChiudi('Chiudi la comunicazione', chiudiComunicazione));
+  // foto nel foglio aperto: si vede, o si nasconde, e il pulsante dice ALLEGA o CAMBIA FOTO
+  function mostraFotoFoglio(com) {
+    comAnteprima.hidden = !com.foto;
+    if (com.foto) mostraFoto(comImmagine, com.id);
+    else comImmagine.removeAttribute('src');
+    comAllegaTesto.textContent = com.foto ? 'Cambia foto' : 'Allega foto';
+  }
+  comAllega.addEventListener('click', () => comFile.click());
+  comFile.addEventListener('change', async () => {
+    const file = comFile.files[0];
+    comFile.value = '';
+    const com = comunicazione();
+    if (!file || !com) return;
+    comSalvata.textContent = 'preparo la foto…';
+    try {
+      const blob = await riduciFoto(file);
+      await salvaFoto(com.id, blob);
+      dimenticaFoto(com.id);
+      com.foto = true;
+      com.modificata = Date.now();
+      salvaComunicazioni(comunicazioni);
+      if (comAperta === com.id) mostraFotoFoglio(com);
+      comSalvata.textContent = 'foto allegata';
+    } catch (errore) {
+      console.error('Foto non allegata.', errore);
+      comSalvata.textContent = 'foto non allegata: il file è un\'immagine?';
+    }
+  });
+  comTogliFoto.addEventListener('click', () => {
+    const com = comunicazione();
+    if (!com) return;
+    togliFoto(com.id);
+    delete com.foto;
+    com.modificata = Date.now();
+    salvaComunicazioni(comunicazioni);
+    mostraFotoFoglio(com);
+    comSalvata.textContent = 'foto tolta';
+  });
+  comTitolo.addEventListener('input', scriviComunicazione);
+  comTesto.addEventListener('input', scriviComunicazione);
+  comTitolo.addEventListener('keydown', evento => { if (evento.key === 'Enter') { evento.preventDefault(); comTesto.focus(); } });
+  comVelo.addEventListener('click', evento => { if (evento.target === comVelo) chiudiComunicazione(); });
+  $('nuovaCom').addEventListener('click', nuovaComunicazione);
+  // a ogni minuto le comunicazioni scadute spariscono e le altre aggiornano «tra N giorni»
+  setInterval(() => {
+    if (!$('velo').hidden || !comVelo.hidden || cancellazione) return;
+    togliScadute();
+    disegna();
+  }, 60 * 1000);
 
   // ----- Pulsanti e messaggi -----
   // NUOVA NOTA, CANCELLA NOTE e ANNULLA sono pulsanti a icona, come la pulsantiera della lista di stampa: il loro messaggio
@@ -363,6 +881,7 @@
     $('annulla').hidden = !(cancellazione && n > 0);
     tastoCancella.setAttribute('aria-pressed', String(cancellazione));
     $('nuova').disabled = cancellazione;
+    $('nuovaCom').disabled = cancellazione;
   }
   function selezionaNota(id, el) {
     if (selezionate.has(id)) selezionate.delete(id); else selezionate.add(id);
@@ -377,27 +896,85 @@
     disegna();
     aggiornaCancella();
   }
-  tastoCancella.addEventListener('click', () => {
+  tastoCancella.addEventListener('click', async () => {
     if (!cancellazione) {
-      if (!note.length) {
+      if (!note.length && !comunicazioni.length) {
         $('cancellaTesto').textContent = 'Nessuna nota da cancellare';
         suggerisci(tastoCancella);
         setTimeout(aggiornaCancella, DURATA_SUGGERIMENTO + 200);
         return;
       }
-      cancellazione = true;
-      selezionate.clear();
-      disegna();
-      aggiornaCancella();
-      suggerisci(tastoCancella, 3000);
+      entraCancellazione();
       return;
     }
     if (!selezionate.size) { esciCancellazione(); return; }
+    // le comunicazioni ufficiali si cancellano solo dopo la conferma
+    const comScelte = comunicazioni.filter(c => selezionate.has(c.id)).length;
+    const noteScelte = note.filter(n => selezionate.has(n.id)).length;
+    if (comScelte && !(await confermaComunicazioni(comScelte, noteScelte))) return;
+    comunicazioni.filter(c => selezionate.has(c.id) && c.foto).forEach(c => togliFoto(c.id));
+    comunicazioni = comunicazioni.filter(c => !selezionate.has(c.id));
+    salvaComunicazioni(comunicazioni);
     note = note.filter(n => !selezionate.has(n.id));
     salva(note);
     esciCancellazione();
   });
   $('annulla').addEventListener('click', esciCancellazione);
+
+  // ----- Tieni premuto (telefono e tablet) -----
+  // Come sull'iPhone: tenendo premuto il dito su una nota, un'etichetta o una comunicazione per TIENI_PREMUTO ms si entra
+  // in modalità cancellazione con quella già selezionata (e il telefono vibra appena, dove si può). Spostando il dito (per
+  // scorrere la pagina) non succede niente; il tocco che segue non apre né deseleziona la nota. Solo al tocco: con il
+  // mouse resta il cestino
+  const TIENI_PREMUTO = 550;
+  const SELEZIONABILI = '.bc-nota, .bc-etichetta, .bc-com';
+  let pressione = null;
+  let ignoraTocco = false;
+  function entraCancellazione(id) {
+    cancellazione = true;
+    selezionate.clear();
+    if (id) selezionate.add(id);
+    disegna();
+    aggiornaCancella();
+    suggerisci(tastoCancella, 3000);
+  }
+  const lascia = () => {
+    if (!pressione) return;
+    clearTimeout(pressione.timer);
+    pressione = null;
+  };
+  bacheca.addEventListener('pointerdown', evento => {
+    if (evento.pointerType !== 'touch' || cancellazione) return;
+    const el = evento.target.closest(SELEZIONABILI);
+    if (!el) return;
+    lascia();
+    pressione = {
+      x: evento.clientX,
+      y: evento.clientY,
+      timer: setTimeout(() => {
+        pressione = null;
+        ignoraTocco = true;
+        navigator.vibrate?.(15);
+        entraCancellazione(el.dataset.id);
+      }, TIENI_PREMUTO)
+    };
+  });
+  bacheca.addEventListener('pointermove', evento => {
+    if (pressione && Math.hypot(evento.clientX - pressione.x, evento.clientY - pressione.y) > 10) lascia();
+  });
+  ['pointercancel', 'pointerleave'].forEach(tipo => bacheca.addEventListener(tipo, lascia));
+  bacheca.addEventListener('pointerup', () => {
+    lascia();
+    // il tocco che chiude il tieni premuto non deve arrivare alla nota (che è già stata ridisegnata)
+    if (ignoraTocco) setTimeout(() => { ignoraTocco = false; }, 400);
+  });
+  bacheca.addEventListener('click', evento => {
+    if (!ignoraTocco) return;
+    evento.stopPropagation();
+    evento.preventDefault();
+  }, true);
+  // niente menu del browser (copia, condividi…) tenendo premuto
+  bacheca.addEventListener('contextmenu', evento => { if (evento.target.closest(SELEZIONABILI)) evento.preventDefault(); });
 
   // ----- Troppi post-it -----
   // Le note restano finché non le cancella l'utente. Oltre 100 un avviso propone di cancellarle tutte o di tenere solo
@@ -636,6 +1213,7 @@
   campoTitolo.addEventListener('keydown', evento => { if (evento.key === 'Enter') { evento.preventDefault(); campoTesto.focus(); } });
   $('nuova').addEventListener('click', nuova);
   $('fatto').addEventListener('click', chiudi);
+  foglio.append(tastoChiudi('Chiudi la nota', chiudi));
   $('aspetto').addEventListener('click', cambiaAspetto);
   $('elimina').addEventListener('click', elimina);
   velo.addEventListener('click', evento => { if (evento.target === velo) chiudi(); });
@@ -643,15 +1221,25 @@
   document.addEventListener('keydown', evento => {
     if (evento.key !== 'Escape') return;
     if (tavolozzaAperta()) { const tasto = tavolozzaSticker.hidden ? tastoEmoji : tastoSticker; apriTavolozza(); tasto.focus(); return; }
+    if (!comVelo.hidden) { chiudiComunicazione(); return; }
     if (velo.hidden && cancellazione) { esciCancellazione(); return; }
     chiudi();
   });
 
   // cambiando la finestra la bacheca si risistema (post-it o etichette)
   let attesa = 0;
-  window.addEventListener('resize', () => { clearTimeout(attesa); attesa = setTimeout(() => { if (velo.hidden) disegna(); }, 150); });
+  // anche quando compare o sparisce la barra di scorrimento della pagina, che cambia la larghezza senza ridimensionare la
+  // finestra: si guarda la larghezza della bacheca (solo la larghezza, non l'altezza che cambia a ogni disegno)
+  let larghezzaBacheca = bacheca.clientWidth;
+  new ResizeObserver(() => {
+    if (bacheca.clientWidth === larghezzaBacheca) return;
+    larghezzaBacheca = bacheca.clientWidth;
+    clearTimeout(attesa);
+    attesa = setTimeout(() => { if (velo.hidden && comVelo.hidden) disegna(); }, 150);
+  }).observe(bacheca);
   // note scritte in un'altra scheda dello stesso negozio
   window.addEventListener('storage', evento => {
+    if (evento.key === chiaveComunicazioni && comVelo.hidden) { comunicazioni = elencoComunicazioni(); togliScadute(); disegna(); return; }
     if (evento.key !== chiave(NEGOZIO) || aperta) return;
     note = elenco();
     disegna();

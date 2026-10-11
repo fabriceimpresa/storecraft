@@ -75,6 +75,7 @@ body {
   margin: 0 auto;
   padding: 2.6rem 1.5rem 3rem;   /* i post-it ben staccati dalla riga del promemoria */
   flex: 1;
+  overflow-x: clip;   /* un post-it storto (o che trema) sul bordo destro non fa comparire la barra orizzontale */
 }
 .bc-griglia {
   position: relative;
@@ -107,6 +108,8 @@ body {
 .bc-nota:hover, .bc-nota:focus-visible { transform: rotate(0deg) translateY(-3px) scale(1.02); z-index: 2; }
 .bc-nota:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 3px; }
 .bc-griglia .bc-nota { position: absolute; }
+/* tenendo premuto (telefono) non si seleziona il testo e non compare il menu del browser: si entra in cancellazione */
+:is(.bc-nota, .bc-etichetta, .bc-com) { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 
 .bc-nota-titolo {
   margin: 0 0 6px;
@@ -249,6 +252,41 @@ body {
   transition: transform .35s cubic-bezier(.2, .9, .3, 1.3), background-color .2s ease;
 }
 :root[data-interface-theme="light"] .bc-foglio { box-shadow: 0 4px 10px rgba(40, 34, 28, .3); }
+/* ✕ del foglio aperto (nota o comunicazione): cerchio appena fuori dall'angolo in alto a destra, nei colori del pulsante
+   ✕ delle pagine del negozio (--chiudi-*), con la ✕ disegnata da due tratti; resta dritto anche sul foglio storto */
+.bc-chiudi {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  z-index: 6;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--chiudi-sfondo, #d4a373);
+  color: var(--chiudi-colore, #000);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .5);
+  transform: rotate(calc(-1 * var(--giro, 0deg)));
+  transition: background .15s ease, transform .15s ease;
+}
+.bc-chiudi::before, .bc-chiudi::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 17px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.bc-chiudi::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.bc-chiudi:hover { background: var(--chiudi-sfondo-hover, #e5ba73); transform: rotate(calc(-1 * var(--giro, 0deg))) scale(1.08); }
+.bc-chiudi:focus-visible { outline: 2px solid var(--chiudi-focus, #e5ba73); outline-offset: 3px; }
+:root[data-interface-theme="light"] .bc-chiudi { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+@media (max-width: 760px) { .bc-chiudi { top: -14px; right: -10px; width: 44px; height: 44px; } }
 @keyframes bc-apri { from { opacity: 0; transform: rotate(calc(var(--giro, 0deg) * 3)) scale(.86); } }
 .bc-foglio input,
 .bc-foglio textarea {
@@ -325,7 +363,13 @@ body {
   .bc-velo { padding: 12px; }
   .bc-foglio { padding: 24px 18px 14px; }
   .bc-foglio textarea { min-height: 200px; }
-  .bc-foglio input, .bc-foglio textarea { font-size: max(16px, 1em); }
+  /* scrivendo dal telefono il testo è decisamente più grande (meno righe, ognuna alta quanto il carattere: le righe del
+     quaderno seguono la grandezza, background-size in em); il titolo più grande dei 16 px sotto cui iPhone ingrandisce */
+  .bc-foglio input { font-size: 1.35rem; }
+  .bc-foglio textarea { font-size: 2.2rem; }
+  /* sul telefono il testo dei post-it in bacheca è un poco più grande, per leggerlo bene */
+  .bc-nota-titolo { font-size: 1.05rem; }
+  .bc-nota-testo { font-size: 1.5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -550,17 +594,294 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
 :root[data-interface-theme="light"] .bc-suggerimento { color: #8a6a35; box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
 .bc-suggerimento.is-visible { opacity: 1; transform: translateY(0); }
 
+
+/* Comunicazioni ufficiali (bacheca.js): una sezione a sé in cima alla bacheca, con il titolo rosso come il timbro invece
+   del colore delle settimane; ogni comunicazione è un foglio di quaderno ad anelli, a righe, con il margine rosso:
+   bianco carta, gli anelli metallici sul bordo sinistro (forati sul foglio), l'etichetta COMUNICAZIONE UFFICIALE, il
+   titolo, il testo a mano sulle righe e la scadenza in fondo (rossa nell'ultimo giorno) */
+.bc-gruppo-com .bc-gruppo-titolo { color: #e07a6b; }
+:root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo { color: #a83228; }
+.bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(224, 122, 107, .35); }
+:root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(168, 50, 40, .3); }
+.bc-numero-com { font-weight: 700; }
+.bc-fogli { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 30px 34px; padding-left: 12px; }
+/* righe del quaderno ogni 26 px, margine rosso a 44 px dal bordo sinistro */
+.bc-com, .bc-com-foglio {
+  --riga: 26px;
+  position: relative;
+  color: #2b2620;
+  text-align: left;
+  background-color: #fdfcf6;
+  background-image:
+    linear-gradient(90deg, transparent 44px, rgba(196, 64, 54, .5) 44px, rgba(196, 64, 54, .5) 45.5px, transparent 45.5px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--riga) - 1px), rgba(64, 110, 175, .2) calc(var(--riga) - 1px), rgba(64, 110, 175, .2) var(--riga));
+  background-position: 0 0, 0 12px;
+}
+.bc-com {
+  display: flex;
+  flex-direction: column;
+  width: 330px;
+  max-width: 100%;
+  min-height: 236px;
+  padding: 12px 20px 14px 58px;
+  border: 0;
+  border-radius: 2px 4px 4px 2px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, .45);
+  transform: rotate(var(--giro, 0deg));
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.bc-com:hover { transform: rotate(var(--giro, 0deg)) translateY(-3px); box-shadow: 0 6px 12px rgba(0, 0, 0, .5); }
+:root[data-interface-theme="light"] .bc-com { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+:root[data-interface-theme="light"] .bc-com:hover { box-shadow: 0 3px 0 rgba(40, 34, 28, .25), 0 1px 3px rgba(40, 34, 28, .3); }
+.bc-com:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 4px; }
+/* anelli: un foro sul foglio e un anello metallico che esce dal bordo sinistro, ripetuti ogni 34 px */
+.bc-com-anelli {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: -12px;
+  width: 38px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='34'%3E%3Ccircle cx='25' cy='17' r='4.2' fill='%23121110'/%3E%3Cpath d='M25 15.5C15 16.5 3 16 2.5 11.5C2 7 14 6 25 9.5' fill='none' stroke='%238d8a85' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M25 15C15 16 4 15.5 3.5 11.5' fill='none' stroke='%23e9e7e2' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 38px 34px repeat-y;
+}
+:root[data-interface-theme="light"] .bc-com-anelli {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='34'%3E%3Ccircle cx='25' cy='17' r='4.2' fill='%23f7f4ee'/%3E%3Ccircle cx='25' cy='17' r='4.2' fill='none' stroke='%23c9c2b6' stroke-width='.8'/%3E%3Cpath d='M25 15.5C15 16.5 3 16 2.5 11.5C2 7 14 6 25 9.5' fill='none' stroke='%238d8a85' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M25 15C15 16 4 15.5 3.5 11.5' fill='none' stroke='%23e9e7e2' stroke-width='1' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.bc-com-etichetta {
+  align-self: flex-start;
+  margin-bottom: 4px;
+  padding: 2px 7px;
+  border: 1.5px solid rgba(47, 90, 160, .7);
+  border-radius: 3px;
+  color: #2f5aa0;
+  font: 700 0.58rem/1.4 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);   /* come un timbro */
+}
+/* sul foglio in bacheca il timbro è rosso, come un timbro d'ufficio */
+.bc-com .bc-com-etichetta { border-color: rgba(168, 50, 40, .75); color: #a83228; }
+.bc-com-titolo { margin: 0; font: 700 1rem/var(--riga) 'Plus Jakarta Sans', sans-serif; }
+.bc-com-testo {
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  font: 400 1.4rem/var(--riga) 'Caveat', cursive;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+}
+.bc-com-scadenza { margin-top: 8px; color: rgba(43, 38, 32, .6); font: 600 0.68rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .03em; }
+/* foto allegata: sul foglio in bacheca sotto il titolo, come una foto stampata appoggiata (bordo bianco, appena
+   storta); nel foglio aperto più grande, con TOGLI LA FOTO */
+.bc-com-immagine {
+  display: block;
+  width: 100%;
+  max-height: 150px;
+  margin: 6px 0 4px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 1px 3px rgba(40, 34, 28, .35);
+  transform: rotate(-1deg);
+}
+.bc-com-foto { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 8px 0 6px; }
+.bc-com-foto[hidden] { display: none; }
+.bc-com-foto img { display: block; max-width: 100%; max-height: min(240px, 30vh); border: 5px solid #fff; box-shadow: 0 1px 4px rgba(40, 34, 28, .35); }
+.bc-com-riga .bc-spazio { flex: 1; }
+.bc-allega { display: inline-flex; align-items: center; gap: 6px; }
+.bc-allega svg { width: 17px; height: 17px; }
+.bc-com-scadenza.presto { color: #a8432e; }
+@media (max-width: 760px) { .bc-fogli { padding-left: 10px; } .bc-com { width: 100%; } }
+
+/* foglio per scrivere la comunicazione: lo stesso quaderno ad anelli, più grande */
+.bc-com-foglio {
+  display: flex;
+  flex-direction: column;
+  width: min(600px, 100%);
+  max-height: 100%;
+  padding: 16px 26px 16px 64px;
+  border-radius: 2px 4px 4px 2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+  animation: bc-apri .28s cubic-bezier(.2, .9, .3, 1.1);
+}
+:root[data-interface-theme="light"] .bc-com-foglio { box-shadow: 0 4px 10px rgba(40, 34, 28, .3); }
+.bc-com-foglio .bc-com-anelli { left: -10px; }
+.bc-com-foglio > :not(textarea) { flex-shrink: 0; }   /* si accorcia solo il testo */
+:root body #comFoglio :is(input, textarea, select) { background-color: transparent !important; color: #2b2620 !important; }
+:root body #comFoglio input {
+  width: 100%;
+  padding: 0;
+  border: 0 !important;
+  outline: none;
+  font: 700 1.2rem/var(--riga) 'Plus Jakarta Sans', sans-serif;
+}
+:root body #comFoglio textarea {
+  width: 100%;
+  flex: 1 1 calc(var(--riga) * 10);   /* dieci righe, che si accorciano (fino a quattro) se il foglio non entra, es. con la foto */
+  height: calc(var(--riga) * 10);
+  min-height: calc(var(--riga) * 4);
+  padding: 0;
+  border: 0 !important;
+  outline: none;
+  resize: none;
+  font: 400 1.55rem/var(--riga) 'Caveat', cursive;
+}
+#comFoglio :is(input, textarea)::placeholder { color: rgba(43, 38, 32, .42); }
+.bc-com-riga { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 10px; font: 600 0.74rem 'Plus Jakarta Sans', sans-serif; }
+.bc-com-riga label { color: #2f5aa0; letter-spacing: .1em; text-transform: uppercase; }
+:root body #comFoglio select.bc-com-durata {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 1px solid rgba(43, 38, 32, .35) !important;
+  border-radius: 5px;
+  background-color: #fff !important;
+  font: 600 0.8rem 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+}
+.bc-com-scade { color: rgba(43, 38, 32, .65); }
+
+
+/* Commenti alle comunicazioni: piccoli post-it attaccati accanto al foglio, un poco sovrapposti al suo bordo destro, uno
+   sotto l'altro (gli ultimi tre, sopra «+ altri N»), e in fondo + COMMENTA; sul telefono vanno sotto il foglio, in fila */
+.bc-com-blocco { display: flex; align-items: flex-start; max-width: 100%; }
+.bc-com-blocco > .bc-com { flex: none; }
+.bc-com-note { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; width: 156px; margin-left: -14px; padding-top: 30px; }
+.bc-com-nota {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 10px 8px;
+  border: 0;
+  border-radius: 1px;
+  background: var(--carta, #fff3a3);
+  color: #2b2620;
+  text-align: left;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .4);
+  transform: rotate(var(--giro, 0deg));
+}
+:root[data-interface-theme="light"] .bc-com-nota { box-shadow: 0 1px 3px rgba(40, 34, 28, .35); }
+/* un pezzetto di nastro in alto */
+.bc-com-nota::before { content: ''; position: absolute; top: -6px; left: 50%; width: 38px; height: 12px; background: rgba(255, 255, 255, .5); transform: translateX(-50%) rotate(-3deg); }
+.bc-com-nota-testo { font: 400 1.15rem/1.15 'Caveat', cursive; white-space: pre-wrap; overflow-wrap: anywhere; }
+button.bc-com-nota { cursor: pointer; transition: transform .2s ease; }
+button.bc-com-nota:hover { transform: rotate(var(--giro, 0deg)) translateY(-2px); }
+button.bc-com-nota .bc-com-nota-testo { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.bc-com-nota-data { color: rgba(43, 38, 32, .55); font: 600 0.58rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .03em; }
+.bc-com-altri, .bc-com-commenta {
+  padding: 6px 10px;
+  border: 1.5px dashed var(--interface-muted, #8c857b);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--interface-muted, #8c857b);
+  font: 700 0.64rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.bc-com-altri { border-style: solid; border-color: transparent; padding-left: 2px; text-transform: none; letter-spacing: .02em; }
+.bc-com-commenta:hover, .bc-com-altri:hover { border-color: var(--interface-accent, #d4a373); color: var(--interface-accent, #d4a373); }
+.bc-com-altri:hover { border-color: transparent; }
+.bc-com-altri, .bc-com-commenta { margin-left: 20px; }   /* staccati dal bordo del foglio, che i post-it invece coprono un poco */
+.in-cancellazione .bc-com-note { opacity: .5; pointer-events: none; }
+@media (max-width: 760px) {
+  .bc-com-blocco { flex-direction: column; width: 100%; }
+  .bc-com-note { flex-direction: row; flex-wrap: wrap; align-items: center; width: 100%; margin: -8px 0 0; padding: 0 0 0 16px; }
+  .bc-com-note .bc-com-nota { width: 132px; }
+  .bc-com-altri, .bc-com-commenta { margin-left: 0; }
+}
+
+/* foglio aperto: accanto, la colonna dei commenti (tutti, con la ✕ per toglierli, e il post-it giallo per scriverne uno);
+   sul telefono sotto il foglio, e scorre tutto insieme */
+.bc-com-apertura { display: flex; align-items: flex-start; gap: 26px; max-width: 100%; max-height: 100%; }
+.bc-com-apertura .bc-com-foglio { max-height: calc(100dvh - 48px); }
+:root body #comCommenti { background: transparent !important; border: 0 !important; box-shadow: none !important; }   /* niente fondo dal tema (theme.css) */
+.bc-com-commenti { display: flex; flex-direction: column; gap: 14px; width: 250px; flex: none; max-height: calc(100dvh - 48px); overflow-y: auto; padding: 8px 6px 10px 4px; }
+.bc-com-commenti-titolo { margin: 0; color: #e07a6b;   /* rosso chiaro in tutti e due i temi: sta sul velo scuro */
+   font: 400 1.7rem/1 'Caveat', cursive; }
+.bc-com-elenco { display: flex; flex-direction: column; gap: 16px; padding-top: 6px; }
+.bc-com-elenco .bc-com-nota { padding-right: 28px; }
+.bc-com-togli {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(43, 38, 32, .12);
+  cursor: pointer;
+}
+.bc-com-togli::before, .bc-com-togli::after { content: ''; position: absolute; top: 50%; left: 50%; width: 9px; height: 1.5px; background: #2b2620; transform: translate(-50%, -50%) rotate(45deg); }
+.bc-com-togli::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.bc-com-togli:hover { background: #96382b; }
+.bc-com-togli:hover::before, .bc-com-togli:hover::after { background: #fff; }
+.bc-com-nuovo { --carta: #fff3a3; gap: 8px; margin-top: 4px; transform: rotate(-1deg); }
+:root body #comCommenti #comCommento {   /* con gli id: più forte delle regole dei campi di theme.css */
+  width: 100%;
+  min-height: 84px;
+  padding: 0;
+  border: 0 !important;
+  outline: none;
+  resize: none;
+  background-color: transparent !important;
+  color: #2b2620 !important;
+  font: 400 1.25rem/1.15 'Caveat', cursive;
+}
+.bc-com-nuovo textarea::placeholder { color: rgba(43, 38, 32, .45); }
+.bc-com-nuovo .bc-comando { align-self: flex-end; min-height: 32px; padding: 6px 12px; }
+@media (max-width: 900px) {
+  .bc-com-apertura { flex-direction: column; align-items: stretch; gap: 18px; overflow-y: auto; padding: 22px 22px 0 12px; }   /* spazio per gli anelli e la ✕ */
+  .bc-com-apertura .bc-com-foglio, .bc-com-commenti { max-height: none; overflow: visible; }
+  .bc-com-commenti { width: auto; }
+}
+/* conferma nello stile STORE // CRAFT (per cancellare le comunicazioni ufficiali), nei colori del tema */
+.bc-conferma-velo { z-index: 70; }
+.bc-conferma {
+  width: min(430px, 100%);
+  padding: 28px 26px 22px;
+  border: 1px solid var(--interface-accent, #d4a373);
+  border-radius: 8px;
+  background: var(--interface-surface, #1e1d1a);
+  color: var(--interface-text, #f4f1ea);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .6);
+  animation: bc-apri .22s cubic-bezier(.2, .9, .3, 1.1);
+}
+:root[data-interface-theme="light"] .bc-conferma { box-shadow: 0 2px 6px rgba(40, 34, 28, .35); }
+.bc-conferma h2 { margin: 0 0 10px; color: var(--interface-accent, #d4a373); font: 600 1.05rem/1.35 'Cinzel', serif; letter-spacing: .06em; }
+.bc-conferma p { margin: 0 0 22px; color: var(--interface-muted, #8c857b); font: 400 0.92rem/1.5 'Plus Jakarta Sans', sans-serif; }
+.bc-conferma-comandi { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.bc-conferma button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 5px;
+  font: 700 0.74rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.bc-conferma-no { border: 1.5px solid var(--interface-accent, #d4a373); background: transparent; color: var(--interface-accent, #d4a373); }
+.bc-conferma-no:hover { background: var(--interface-accent, #d4a373); color: var(--interface-page, #121110); }
+.bc-conferma-si { border: 1.5px solid #96382b; background: #96382b; color: #fff; }
+.bc-conferma-si:hover { filter: brightness(1.12); }
+.bc-conferma button:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
 /* Modalità cancellazione: le note tremano (come le app dell'iPhone), sfasate tra loro, e mostrano il pallino per
    selezionarle; la nota selezionata ha il pallino rosso con la spunta ed è un poco più tenue */
 @keyframes bc-trema {
   from { transform: rotate(calc(var(--giro) - 1.4deg)); }
   to { transform: rotate(calc(var(--giro) + 1.4deg)); }
 }
-.in-cancellazione :is(.bc-nota, .bc-etichetta) {
+.in-cancellazione :is(.bc-nota, .bc-etichetta, .bc-com) {
   animation: bc-trema .16s ease-in-out infinite alternate;
   animation-delay: calc(var(--i, 0) * -.05s);
 }
-.in-cancellazione :is(.bc-nota, .bc-etichetta):hover { transform: rotate(var(--giro)); }
+.in-cancellazione :is(.bc-nota, .bc-etichetta, .bc-com):hover { transform: rotate(var(--giro)); }
 .bc-seleziona { display: none; }
 .in-cancellazione .bc-seleziona {
   position: absolute;
@@ -584,4 +905,7 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
 /* nelle etichette il pallino sta a sinistra del titolo */
 .in-cancellazione .bc-etichetta { position: relative; padding-left: 40px; overflow: visible; }
 .in-cancellazione .bc-etichetta .bc-seleziona { top: 50%; left: 9px; width: 22px; height: 22px; margin-top: -11px; }
-@media (prefers-reduced-motion: reduce) { .in-cancellazione :is(.bc-nota, .bc-etichetta) { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .in-cancellazione :is(.bc-nota, .bc-etichetta, .bc-com) { animation: none; } }
+/* nei fogli delle comunicazioni il pallino sta dopo gli anelli, sull'etichetta che scende un poco */
+.in-cancellazione .bc-com { padding-top: 40px; }
+.in-cancellazione .bc-com .bc-seleziona { left: 56px; top: 10px; }
