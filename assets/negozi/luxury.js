@@ -6,6 +6,10 @@ Negozi.registra('luxury', {
   logoSplash: 'img/luxury/printlogos/whiteLXRY_BRAND.png',
   // larghezza del logo nella splash page, in px
   logoSplashLarghezza: 150,
+  // indirizzo del negozio e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI), lo stesso della dashboard
+  indirizzo: 'VIA DEL CORSO 15',
+  logoMenu: 'img/luxury/logo-lxry-orizzontale.png',
+  logoMenuLarghezza: 185,
   // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport)
   oro: '#b48b37',
   // brand prioritari nei menu BRAND: 'stella' (stella gialla ★, i brand stagionali) o 'maiuscolo' (⭐ e maiuscolo)

@@ -646,21 +646,22 @@
     box-shadow: 0 1px 2px var(--interface-shadow);
   }
 
-  /* nel look COMPATTO il pulsante HOME è come quello di TEBE: squadrato, Arial 10 px con lettere spaziate, 7 x 11 px di spazio interno, casetta più grande della scritta (14 px) */
+  /* nel look COMPATTO il pulsante HOME è come quello di TEBE: squadrato, Arial con lettere spaziate; dal 12 ottobre 2026 un
+     poco più grande (10,5 px, alto 31 px come nello STANDARD, sulla riga del marchio STORE // CRAFT) */
   :root[data-interface-look="minimal"] body:not([data-layout]) .home-mark {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 400;
     letter-spacing: .14em;
     border-radius: 0;
     gap: 6px;
-    padding: 7px 11px;
+    padding: 0 12px;
   }
 
-  /* casetta più piccola (11 px), alta come lo spazio della scritta del pulsante, così il pulsante resta alto 27 px come in TEBE */
+  /* casetta di 12 px, alta come lo spazio della scritta del pulsante */
   :root[data-interface-look="minimal"] body:not([data-layout]) .home-mark-icon {
-    width: 11px;
-    height: 11px;
+    width: 12px;
+    height: 12px;
   }
 
   /* nel look COMPATTO l'etichetta usa Arial come gli altri testi piccoli */

@@ -506,11 +506,11 @@ body {
   gap: 14px;
   margin: 0 0 1.3rem;
   color: var(--interface-muted, #8c857b);
-  font: 400 1.65rem/1.1 'Caveat', cursive;
+  font: 400 2.1rem/1.1 'Caveat', cursive;   /* più grandi dal 12 ottobre 2026 (prima 1,65rem) */
 }
 :root[data-interface-theme="light"] .bc-gruppo-titolo { color: #75582e; }
 .bc-gruppo-titolo::after { content: ''; flex: 1; height: 1px; background: var(--interface-border, #2e2b27); transform: translateY(-6px); }
-@media (max-width: 760px) { .bc-gruppo-titolo { font-size: 1.35rem; } }
+@media (max-width: 760px) { .bc-gruppo-titolo { font-size: 1.7rem; } }
 
 /* Barra di scorrimento della pagina in stile STORE // CRAFT, come la maniglia dei menu a cascata (menu-cascata.css):
    colonna nel colore del tema, maniglia oro squadrata, oro chiaro al passaggio del mouse */

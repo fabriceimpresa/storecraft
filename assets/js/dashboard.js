@@ -28,7 +28,7 @@
                     la pagina resta nella cartella) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.13 2026';
+  const VERSIONE = 'V 1.2.14 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -161,14 +161,22 @@
       fine);
     const scelta = (attributo, valore, testo) => el('button', { class: 'theme-choice', type: 'button', [attributo]: valore,
       'aria-pressed': 'false', text: testo });
-
+    // Sul telefono, dove il menu è largo (dashboard.css): a destra di PROFILO UTENTE il logo del negozio attivo al posto
+    // della sigla, e nella lista NEGOZI ogni negozio con il suo indirizzo (VIA DEL CORSO 15…) al posto del nome e a destra
+    // il suo logo (quello della dashboard, per Luxury LXRY orizzontale: logoMenu della scheda), dorato l'attivo, grigi gli
+    // altri, al posto del rettangolino «LXRY · ATTIVO» e della freccia ›. Da computer e tablet nomi, rettangolino e freccia
+    const logoMenu = (n, alt) => el('img', { class: 'system-store-logo', alt, src: n.logoMenu,
+      style: `--logo-larghezza: ${n.larghezzaLogoMenu}px` });
+    const nome = n => [el('span', { class: 'system-store-name', text: n.nome }), el('span', { class: 'system-store-indirizzo', text: n.indirizzo })];
     const negozi = Object.entries(PuntoVendita.NEGOZI).map(([id, n]) => id === negozio
       ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true },
-          el('span', { text: n.nome }), el('span', { class: 'system-store-status', text: `${n.sigla} · ATTIVO` }))
+          ...nome(n), el('span', { class: 'system-store-status', text: `${n.sigla} · ATTIVO` }),
+          logoMenu(n, `${n.nome}, attivo`))
       : el('button', { class: 'system-store-choice', type: 'button', 'aria-pressed': 'false', 'data-punto-vendita': id,
           disabled: !n.pronto, onclick: n.pronto ? () => cambiaNegozioDalMenu(id) : null },
-          el('span', { text: n.nome }),
-          n.pronto ? el('span', { 'aria-hidden': 'true', text: '›' }) : el('span', { class: 'system-menu-badge', text: 'IN ARRIVO' })));
+          ...nome(n),
+          n.pronto ? el('span', { class: 'system-store-freccia', 'aria-hidden': 'true', text: '›' }) : el('span', { class: 'system-menu-badge', text: 'IN ARRIVO' }),
+          logoMenu(n, n.nome)));
 
     return el('section', { class: 'system-menu', id: 'system-menu', 'aria-label': 'Menu di sistema', hidden: true },
       el('div', { class: 'system-menu-heading system-menu-title', id: 'system-menu-title', text: 'MENU' }),
@@ -176,7 +184,8 @@
         el('div', { class: 'system-menu-items' },
           // ︎ dopo il simbolo: iPhone lo mostra come carattere (oro, come gli altri) e non come emoji colorata
           voce('settings', '⚙︎', 'IMPOSTAZIONI', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('settings')),
-          voce('profile', '♙', 'PROFILO UTENTE', el('span', { class: 'system-store-current', text: scheda.sigla }), () => openSystemMenuView('stores')),
+          voce('profile', '♙', 'PROFILO UTENTE', el('span', { class: 'system-store-current' },
+            el('span', { class: 'system-store-sigla', text: scheda.sigla }), logoMenu(PuntoVendita.NEGOZI[negozio], scheda.nome)), () => openSystemMenuView('stores')),
           // STORE (in Coming Soon) tolta il 10 ottobre 2026: per ora non c'è
           voce('contacts', '✉︎', 'CONTATTI & CREDITS', el('span', { 'aria-hidden': 'true', text: '›' }), () => openSystemMenuView('contacts')),
           // HOME: torna alla scelta del punto vendita (solo con più di un negozio installato)
@@ -382,7 +391,7 @@
   function intestazione() {
     const header = el('header', {},
       el('button', { class: 'home-mark', type: 'button', 'aria-label': "Torna all'inizio della home", onclick: () => returnToHomeTop() },
-        casetta(), el('span', { text: 'HOME' })));
+        casetta(), el('span', { class: 'home-mark-testo', text: 'HOME' })));
     // titolo: false (TEBE e OPHILYA, come nella loro dashboard originale): niente titolo né sottotitolo, al loro posto
     // l'interruttore dei negozi in alto a sinistra (classe .solo-selettori, regole in dashboard.css)
     if (dati.intestazione.titolo === false) {

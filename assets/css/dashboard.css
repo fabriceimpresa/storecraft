@@ -25,6 +25,17 @@ body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta San
 .mobile-nav-toggle { display: none; }
 .mobile-brand-footer { display: none; }
 .system-fab { display: none; }
+/* Menu di sistema, da computer e tablet (sul telefono le regole più sotto): a destra di PROFILO UTENTE il logo dorato del
+   negozio attivo al posto della sigla; nella lista NEGOZI i nomi (su più righe quando sono di più parole, es. LUXURY /
+   OUTLET) e a destra i loghi, dorato l'attivo con l'oro del marchio STORE // CRAFT e grigi gli altri, al posto del
+   rettangolino «LXRY · ATTIVO» e della freccia › (logoMenu della scheda del negozio, dashboard.js) */
+.system-store-indirizzo, .system-store-status, .system-store-sigla, .system-store-freccia { display: none; }
+.system-store-name { width: min-content; }
+.system-store-logo { display: block; flex: none; width: calc(var(--logo-larghezza, 185px) * .36); max-width: 50%; height: auto; max-height: 16px; object-fit: contain; filter: brightness(0) invert(.5); opacity: .75; transition: opacity .16s ease; }
+.system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-logo { opacity: 1; }
+:is(.system-store-choice.is-active, .system-store-current) .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
+.system-store-current { display: flex; align-items: center; justify-content: flex-end; }
+.system-store-current .system-store-logo { width: calc(var(--logo-larghezza, 185px) * .22); max-width: none; max-height: 12px; }   /* piccolo: PROFILO UTENTE resta su una riga */
 .voce-guida { display: none; }
 
 aside { width: 245px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 34px 23px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 1000; overflow-y: auto; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -257,7 +268,8 @@ header { position: relative; border-bottom: 1px solid var(--border); padding-bot
   /* riga del logo rimasta vuota (logo salito nell'intestazione, .con-logo con logo nei contenuti): si nasconde */
   #main-content > .store-hero.is-vuota { display: none; }
 }
-.home-mark { position: fixed; top: 24px; left: calc(245px + 3rem); display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.65rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
+/* HOME: alto 31 px, con il centro sulla riga del marchio STORE // CRAFT in alto a sinistra (centro a 43,75 px dall'alto) */
+.home-mark { position: fixed; top: 28.25px; left: calc(245px + 3rem); box-sizing: border-box; height: 31px; display: inline-flex; align-items: center; gap: 0.42rem; padding: 0 0.72rem; background: #0a0908; border: 1px solid var(--accent); border-radius: 4px; color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.79rem; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease; z-index: 20; }
 
 /* Selettore CASSIERE / CREATOR (e TEBE / OPHILYA): un solo riquadro scuro arrotondato con le due voci; la voce scelta è oro. Fondo (e voce non scelta) grigio molto scuro e opaco, #24221f, invece del nero #0a0908 (dal 10 ottobre 2026).
    In STANDARD stesse misure del look COMPATTO (riquadro 4 px, pulsanti alti 29 px): cambiano solo forma e carattere */
@@ -286,7 +298,7 @@ body.cassiere-mode #main-content > div[id]:not(#tools):not(#tools-title) { displ
 body.is-scrolled .home-mark, .home-mark:hover, .home-mark:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); outline: none; }
 .home-mark:hover { background: var(--accent); color: #000000; border-color: var(--accent-hover); box-shadow: 0 0 4px rgba(229,186,115,0.5), 0 2px 5px rgba(0,0,0,0.55); transform: translateY(0) scale(1.05); }
 /* casetta disegnata (dashboard.js, casetta): alta quanto le maiuscole di HOME, al centro della scritta */
-.home-mark-icon { display: flex; width: 12px; height: 12px; }
+.home-mark-icon { display: flex; width: 13px; height: 13px; }
 .home-mark-icon svg { display: block; width: 100%; height: 100%; }
 header h1 { font-family: 'Cinzel', serif; font-size: 1.8rem; font-weight: 500; }
 header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
@@ -976,6 +988,16 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   body > .system-menu .system-setting-label { font-size: .82rem !important; margin-bottom: 11px; }
   body > .system-menu .theme-choice { min-height: 44px; font-size: .78rem !important; }
   body > .system-menu .system-store-choice { min-height: 50px; font-size: .82rem !important; }
+  /* lista NEGOZI: ogni negozio con l'indirizzo al posto del nome e a destra il suo logo (quello della dashboard, per
+     Luxury LXRY orizzontale), dorato l'attivo con l'oro del marchio STORE // CRAFT e grigi gli altri, al posto del
+     rettangolino «LXRY · ATTIVO» e della freccia ›; a destra di PROFILO UTENTE il logo dorato al posto della sigla */
+  body > .system-menu :is(.system-store-status, .system-store-sigla, .system-store-name, .system-store-freccia) { display: none; }
+  body > .system-menu .system-store-indirizzo { display: inline; }
+  body > .system-menu .system-store-logo { display: block; flex: none; width: calc(var(--logo-larghezza, 185px) * .45); max-width: 45%; height: auto; max-height: 22px; object-fit: contain; filter: brightness(0) invert(.5); opacity: .75; transition: opacity .16s ease; }
+  body > .system-menu .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-logo { opacity: 1; }
+  body > .system-menu :is(.system-store-choice.is-active, .system-store-current) .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
+  body > .system-menu .system-store-current { display: flex; align-items: center; justify-content: flex-end; }
+  body > .system-menu .system-store-current .system-store-logo { width: calc(var(--logo-larghezza, 185px) * .4); max-width: none; max-height: 18px; }
 
   /* chiuso, fuori dallo schermo, il menu non deve lasciare la sua ombra sul bordo sinistro: sparisce mentre esce */
   aside { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease; }
@@ -1178,6 +1200,11 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     right: 0.8rem;
     top: calc(64px + 12px);
   }
+  /* sul telefono HOME è un quadrato con la sola casetta, più grande (stessi bordo, ombra, colori e comportamento; nel look
+     COMPATTO squadrato come prima): la scritta resta per i lettori di schermo nell'aria-label del pulsante */
+  .home-mark { justify-content: center; width: 42px; height: 42px; padding: 0 !important; gap: 0 !important; }
+  .home-mark-testo { display: none; }
+  .home-mark .home-mark-icon { width: 18px !important; height: 18px !important; }
 }
 @media screen and (max-width: 360px) and (pointer: coarse) {
   .mobile-top-bar { padding: 0 8px; }
@@ -1406,19 +1433,23 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
    scura in alto e l'angolo in basso a destra appena sollevato (ombra corta), il numero di note e il pulsante che apre
    la bacheca a schermo intero (bacheca.html). Al passaggio del mouse il ventaglio si apre. */
 #tools .widget-bacheca { overflow: hidden; }
-/* titolo «La tua Bacheca»: il widget è speciale, quindi il titolo è nel Cinzel del marchio STORE // CRAFT e del banner
-   dell'intestazione, in oro e con le lettere spaziate, un poco più grande degli altri titoli dei widget; vale in tutti gli
-   aspetti e i temi, quindi più forte delle regole dei titoli dei widget di theme.css */
+/* titolo «La tua Bacheca»: il widget è speciale, quindi il titolo è scritto a mano come il promemoria della pagina Bacheca
+   (.bc-info: Caveat 400, 2,15rem; Google Fonts nelle dashboard e nella vetrina di Gestione pacchetti), centrato, in oro; vale in
+   tutti gli aspetti e i temi, quindi più forte delle regole dei titoli dei widget di theme.css (dal 12 ottobre 2026) */
 #tools .widget-bacheca { position: relative; }
 #tools #widget-bacheca h3.bacheca-titolo {   /* due id: più forte delle regole :root[…] body #tools .widget h3 */
-  margin-bottom: 6px;
+  justify-content: center;
+  margin: -8px 0 4px;
+  padding: 0 44px;   /* lo spazio della campanella delle note nuove, ai due lati perché il titolo resti centrato */
+  white-space: nowrap;
   color: var(--interface-accent, var(--accent)) !important;
-  font-family: 'Cinzel', serif !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  line-height: 1.3;
-  letter-spacing: .14em !important;
-  text-transform: uppercase !important;
+  font-family: 'Caveat', cursive !important;
+  font-size: 2.15rem !important;
+  font-weight: 400 !important;
+  line-height: 1.1;
+  letter-spacing: 0 !important;
+  text-align: center;
+  text-transform: none !important;
 }
 :root[data-interface-theme="light"] #tools #widget-bacheca h3.bacheca-titolo { color: #b48b37 !important; }   /* l'oro dei cartelli */
 /* avviso delle note nuove: campanella e numero, in alto a destra, rosso come il cestino della Bacheca; compare con un

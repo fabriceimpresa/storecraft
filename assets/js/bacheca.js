@@ -372,13 +372,18 @@
   // creazione): scaduta sparisce da sola dalla bacheca. Si cancellano dal foglio (ELIMINA) o con CANCELLA NOTE, sempre
   // dopo una conferma: «Sei sicuro di volerla cancellare? È una Comunicazione Ufficiale».
   const UN_GIORNO = 24 * 60 * 60 * 1000;
-  const DURATE = [[1, '1 giorno'], [3, '3 giorni'], [7, '1 settimana'], [14, '2 settimane'], [30, '1 mese'], [90, '3 mesi']];
+  // «Non scade» (durata 'mai'): in realtà scade dopo un anno, ma non si cancella da sola: alla prima apertura della Bacheca
+  // dopo l'anno si chiede se eliminarla o tenerla un altro anno (chiediRinnovi), finché la Bacheca non avrà un database
+  const DURATE = [[1, '1 giorno'], [3, '3 giorni'], [7, '1 settimana'], [14, '2 settimane'], [30, '1 mese'], [90, '3 mesi'], ['mai', 'Non scade']];
+  const UN_ANNO = 365 * 24 * 60 * 60 * 1000;
   const DURATA_INIZIALE = 7;
   // Foto delle comunicazioni: una per comunicazione, allegata dal telefono (fotocamera o galleria) o dal computer. Le foto
   // stanno in IndexedDB (database "storecraft-bacheca-foto", archivio "foto", chiave "<negozio>:<id>"), che ha molto più
   // spazio del localStorage; la comunicazione ricorda solo che ha la foto (foto: true). All'importazione una foto grande
   // si riduce: il lato più lungo al massimo LATO_FOTO px, JPEG di qualità 0,85 (qualche centinaio di KB)
   const LATO_FOTO = 1600;
+  // peso massimo di un allegato (foto, e un domani anche PDF o altri file), controllato sul file scelto prima di ridurlo
+  const LIMITE_ALLEGATO_MB = 20;
   const chiaveFoto = id => `${NEGOZIO}:${id}`;
   let databaseFoto = null;
   function apriDatabaseFoto() {
@@ -451,15 +456,18 @@
 
   // le scadute si tolgono all'apertura e poi a ogni minuto
   function togliScadute() {
-    const rimaste = comunicazioni.filter(com => com.scadenza > Date.now());
-    comunicazioni.filter(com => com.scadenza <= Date.now() && com.foto).forEach(com => togliFoto(com.id));
+    const scaduta = com => com.scadenza <= Date.now() && com.durata !== 'mai';   // quelle che non scadono si chiedono
+    const rimaste = comunicazioni.filter(com => !scaduta(com));
+    comunicazioni.filter(com => scaduta(com) && com.foto).forEach(com => togliFoto(com.id));
     if (rimaste.length === comunicazioni.length) return false;
     comunicazioni = rimaste;
     salvaComunicazioni(comunicazioni);
     return true;
   }
   togliScadute();
-  // «Scade il 18 ottobre, tra 7 giorni», «Scade domani alle 18:30», «Scade oggi alle 18:30»
+  // «Scade il 18 ottobre, tra 7 giorni», «Scade domani alle 18:30», «Scade oggi alle 18:30»; «Non scade» per le comunicazioni
+  // che non scadono
+  const scritturaCom = com => (com.durata === 'mai' ? 'Non scade' : scritturaScadenza(com.scadenza));
   function scritturaScadenza(scadenza) {
     const giorno = new Date(scadenza).toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
     const ora = new Date(scadenza).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -499,8 +507,8 @@
       el.style.setProperty('--giro', `${com.giro || 0}deg`);
       el.style.setProperty('--i', String(elementiCreati++ % 7));
       el.setAttribute('aria-label', `Apri la comunicazione ${com.titolo.trim() || 'senza titolo'}`);
-      const scade = nodo('span', 'bc-com-scadenza', scritturaScadenza(com.scadenza));
-      if (com.scadenza - Date.now() < UN_GIORNO) scade.classList.add('presto');
+      const scade = nodo('span', 'bc-com-scadenza', scritturaCom(com));
+      if (com.durata !== 'mai' && com.scadenza - Date.now() < UN_GIORNO) scade.classList.add('presto');
       el.append(nodo('span', 'bc-com-anelli'), nodo('span', 'bc-com-etichetta', 'Comunicazione ufficiale'));
       if (com.titolo.trim()) el.append(nodo('h3', 'bc-com-titolo', com.titolo.trim()));
       if (com.foto) {
@@ -543,8 +551,10 @@
   }
 
   // Conferma nello stile STORE // CRAFT, nei colori del tema: titolo in Cinzel oro, testo, ANNULLA e il pulsante rosso.
-  // Risponde true se si conferma; Esc, ANNULLA o un clic fuori rispondono false
-  function conferma({ titolo, testo, si }) {
+  // Con solo: true è un avviso, con il solo pulsante «no» (es. HO CAPITO). Risponde true se si conferma, false con ANNULLA
+  // (o il pulsante «no» scelto), null con Esc o un clic fuori (che per le
+  // cancellazioni valgono come ANNULLA)
+  function conferma({ titolo, testo, si, no: scrittaNo = 'Annulla', solo = false }) {
     return new Promise(risposta => {
       const veloConferma = nodo('div', 'bc-velo bc-conferma-velo');
       const box = nodo('div', 'bc-conferma');
@@ -553,12 +563,12 @@
       box.setAttribute('aria-labelledby', 'bcConfermaTitolo');
       const h = nodo('h2', '', titolo);
       h.id = 'bcConfermaTitolo';
-      const no = nodo('button', 'bc-conferma-no', 'Annulla');
+      const no = nodo('button', 'bc-conferma-no', scrittaNo);
       const ok = nodo('button', 'bc-conferma-si', si);
       no.type = 'button';
       ok.type = 'button';
       const comandi = nodo('div', 'bc-conferma-comandi');
-      comandi.append(no, ok);
+      comandi.append(...(solo ? [no] : [no, ok]));
       box.append(h, nodo('p', '', testo), comandi);
       veloConferma.append(box);
       const prima = document.activeElement;
@@ -566,7 +576,7 @@
       const tasti = evento => {
         if (evento.key !== 'Escape') return;
         evento.stopImmediatePropagation();
-        fine(false);
+        fine(null);
       };
       function fine(valore) {
         veloConferma.remove();
@@ -576,11 +586,34 @@
       }
       no.addEventListener('click', () => fine(false));
       ok.addEventListener('click', () => fine(true));
-      veloConferma.addEventListener('click', evento => { if (evento.target === veloConferma) fine(false); });
+      veloConferma.addEventListener('click', evento => { if (evento.target === veloConferma) fine(null); });
       window.addEventListener('keydown', tasti, true);
       document.body.append(veloConferma);
       no.focus();
     });
+  }
+  // Comunicazioni che «non scadono»: passato l'anno, alla prima apertura della Bacheca si chiede, una alla volta, se
+  // eliminarle per liberare memoria o tenerle un altro anno (da oggi); chiudendo la domanda senza scegliere (Esc, clic
+  // fuori) resta tutto com'è e si richiede alla prossima apertura. Vale finché la Bacheca non avrà un database in cloud
+  async function chiediRinnovi() {
+    for (const com of comunicazioni.filter(c => c.durata === 'mai' && c.scadenza <= Date.now())) {
+      const risposta = await conferma({
+        titolo: 'È in bacheca da un anno',
+        testo: `La comunicazione «${com.titolo.trim() || 'senza titolo'}» non scade, ma è in bacheca da un anno. `
+          + 'Vuoi eliminarla per liberare memoria, o è ancora utile e la tieni un altro anno?',
+        si: 'Elimina',
+        no: 'Tienila un altro anno'
+      });
+      if (risposta === null) continue;
+      if (risposta) {
+        if (com.foto) togliFoto(com.id);
+        comunicazioni = comunicazioni.filter(c => c.id !== com.id);
+      } else {
+        com.scadenza = Date.now() + UN_ANNO;
+      }
+      salvaComunicazioni(comunicazioni);
+      disegna();
+    }
   }
   const confermaComunicazioni = (quante, conNote = 0) => conferma({
     titolo: quante === 1 ? 'Sei sicuro di volerla cancellare?' : 'Sei sicuro di volerle cancellare?',
@@ -741,7 +774,7 @@
   let comAperta = null;
   let comSalvataggio = 0;
   const comunicazione = () => comunicazioni.find(com => com.id === comAperta);
-  const mostraScadenza = com => { comScade.textContent = scritturaScadenza(com.scadenza); };
+  const mostraScadenza = com => { comScade.textContent = scritturaCom(com); };
   function apriComunicazione(id, conCommento = false) {
     const com = comunicazioni.find(c => c.id === id);
     if (!com) return;
@@ -778,8 +811,9 @@
   comDurata.addEventListener('change', () => {
     const com = comunicazione();
     if (!com) return;
-    com.durata = Number(comDurata.value);
-    com.scadenza = com.creata + com.durata * UN_GIORNO;
+    const mai = comDurata.value === 'mai';
+    com.durata = mai ? 'mai' : Number(comDurata.value);
+    com.scadenza = mai ? com.creata + UN_ANNO : com.creata + com.durata * UN_GIORNO;
     mostraScadenza(com);
     comSalvata.textContent = salvaComunicazioni(comunicazioni) ? 'salvata' : 'non salvata: spazio del browser pieno?';
   });
@@ -835,6 +869,17 @@
     comFile.value = '';
     const com = comunicazione();
     if (!file || !com) return;
+    // oltre il limite il file non si allega: avviso nello stile STORE // CRAFT
+    if (file.size > LIMITE_ALLEGATO_MB * 1024 * 1024) {
+      const mb = (file.size / 1024 / 1024).toLocaleString('it-IT', { maximumFractionDigits: 1 });
+      await conferma({
+        titolo: 'File troppo pesante',
+        testo: `«${file.name}» pesa ${mb} MB: non è possibile allegare file oltre i ${LIMITE_ALLEGATO_MB} MB. Scegline uno più leggero.`,
+        no: 'Ho capito',
+        solo: true
+      });
+      return;
+    }
     comSalvata.textContent = 'preparo la foto…';
     try {
       const blob = await riduciFoto(file);
@@ -1284,7 +1329,7 @@
     disegna();
     setTimeout(() => {
       if (daAprire && note.some(n => n.id === daAprire)) apri(daAprire);
-      else avvisoTroppe();
+      else chiediRinnovi().then(avvisoTroppe);
     }, riduciMovimento.matches ? 0 : 900);
   });
   window.Bacheca = Object.freeze({ elenco });

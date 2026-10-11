@@ -6,6 +6,10 @@ Negozi.registra('ophilya', {
   logoSplash: 'img/ophilya/ophilyablack.png',
   // larghezza del logo nella splash page, in px
   logoSplashLarghezza: 150,
+  // indirizzo del negozio e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI), lo stesso della dashboard
+  indirizzo: 'VIA DEL CORSO 268',
+  logoMenu: 'img/ophilya/ophilyablack.png',
+  logoMenuLarghezza: 205,
   // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport): per ora come TEBE
   oro: '#cc9e25',
   // brand prioritari nei menu BRAND: 'stella' (stella gialla ★) o 'maiuscolo' (⭐ e maiuscolo, come TEBE)
