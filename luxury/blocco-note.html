@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="luxury">
+<head>
+  <meta charset="UTF-8">
+  <script src="../assets/js/negozi.js?v=20261011-45"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blocco Note · STORE // CRAFT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261011-45">
+  <!-- Blocco Note (Utilità Cassa): stile e logica comuni ai negozi, la pagina cambia solo data-negozio -->
+  <link rel="stylesheet" href="../assets/css/blocco-note.css?v=20261011-45">
+  <script src="../assets/js/theme.js?v=20261011-45"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261011-45">
+</head>
+<body data-layout="note">
+  <header class="bn-testata">
+    <div class="bn-marchio">STORE // CRAFT</div>
+    <h1 class="bn-titolo">Blocco Note</h1>
+    <a href="index.html" class="app-close-btn app-close-btn--pdf" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
+  </header>
+
+  <div class="bn-barra">
+    <span class="bn-info" id="info"></span>
+    <button type="button" class="bn-nuova" id="nuova"><span aria-hidden="true">+</span> Nuova nota</button>
+    <!-- cancella note: le note tremano e si selezionano, poi si cancellano tutte insieme -->
+    <button type="button" class="bn-cancella" id="cancella" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M9.5 7V4.8h5V7M6.5 7l1 12.2h9l1-12.2M10 10.5v5.5M14 10.5v5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="cancellaTesto">Cancella note</span></button>
+    <!-- annulla: esce dalla modalità cancellazione e toglie tutte le selezioni, senza cancellare -->
+    <button type="button" class="bn-cancella bn-annulla" id="annulla" hidden>Annulla</button>
+  </div>
+
+  <main class="bn-bacheca" id="bacheca" data-blocco-note aria-label="Le tue note"></main>
+
+  <div class="bn-velo" id="velo" hidden>
+    <div class="bn-foglio" id="foglio" role="dialog" aria-modal="true" aria-label="Nota">
+      <!-- sticker: nell'angolo in alto a destra, dove si attacca; senza sticker un'iconcina, con lo sticker lo sticker stesso -->
+      <button type="button" class="bn-sticker-tasto" id="stickerTasto" aria-expanded="false" aria-controls="stickerTavolozza" title="Sticker" aria-label="Sticker">
+        <span class="bn-sticker" id="notaSticker" aria-hidden="true"></span>
+        <svg class="bn-sticker-icona" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.5V7a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h5.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M21 12.5 12.5 21v-4.5a4 4 0 0 1 4-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 7.5v6M9 10.5h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <div class="bn-emoji bn-emoji-sticker" id="stickerTavolozza" role="dialog" aria-label="Sticker" hidden>
+        <div class="bn-emoji-titolo">Sticker</div>
+        <div class="bn-emoji-griglia" id="stickerGriglia"></div>
+        <button type="button" class="bn-togli-sticker" id="togliSticker" hidden>Togli lo sticker</button>
+      </div>
+      <input id="notaTitolo" type="text" placeholder="Titolo" autocomplete="off" aria-label="Titolo della nota">
+      <textarea id="notaTesto" placeholder="Scrivi qui…" aria-label="Testo della nota"></textarea>
+      <!-- emoji: l'iconcina a destra, sotto l'ultima riga del testo, apre la tavolozza che le mette nel testo -->
+      <div class="bn-strumenti">
+        <button type="button" class="bn-emoji-tasto" id="emojiTasto" aria-expanded="false" aria-controls="emojiTavolozza" title="Emoji" aria-label="Emoji">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="10" r="1.1" fill="currentColor"/><circle cx="15" cy="10" r="1.1" fill="currentColor"/><path d="M8.3 14c1 1.4 2.2 2 3.7 2s2.7-.6 3.7-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div class="bn-emoji" id="emojiTavolozza" role="dialog" aria-label="Emoji" hidden>
+          <div class="bn-emoji-titolo">Emoji nel testo</div>
+          <div class="bn-emoji-griglia" id="emojiGriglia"></div>
+        </div>
+      </div>
+      <div class="bn-colori" id="colori" role="group" aria-label="Colore della nota"></div>
+      <div class="bn-comandi">
+        <span class="bn-salvata" id="salvata" role="status"></span>
+        <span class="bn-spazio"></span>
+        <button type="button" class="bn-comando" id="aspetto">Cambia aspetto</button>
+        <button type="button" class="bn-comando bn-elimina" id="elimina">Elimina</button>
+        <button type="button" class="bn-comando bn-fatto" id="fatto">Fatto</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/blocco-note.js?v=20261011-45"></script>
+</body>
+</html>

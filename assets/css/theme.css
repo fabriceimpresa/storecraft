@@ -1143,3 +1143,26 @@
   :root[data-interface-theme="light"] body .modal-warning-icon { box-shadow: 0 1px 4px rgba(40, 34, 28, .3); }
   :root[data-interface-theme="light"] .widget.expanded { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }
 }
+
+/* Tema chiaro: i titoli delle schede dorate (Promo Stagionali e Allestimenti Pronti) restano oro, nell'oro dei cartelli
+   (#b48b37, come numeri e specifiche delle schede), senza il bagliore pensato per il fondo scuro */
+@media screen {
+  :root[data-interface-theme="light"] body:not([data-layout]) :is(.gold-bf-card h3, #prints-promo-carousel .card-body h3) {
+    color: #b48b37 !important;
+    text-shadow: none;
+  }
+}
+
+/* Tema chiaro: le schede dorate (Promo Stagionali e Allestimenti Pronti) hanno il bordo oro evidente come nel tema scuro
+   (oro dei cartelli, un filetto oro tenue attorno e un'ombra corta, al posto dell'alone sfumato); al passaggio del mouse
+   l'oro si fa più pieno */
+@media screen {
+  :root[data-interface-theme="light"] body:not([data-layout]) :is(.gold-bf-card, #prints-promo-carousel .carousel-card) {
+    border: 1px solid #b48b37 !important;
+    box-shadow: 0 0 0 1px rgba(180, 139, 55, .35), 0 1px 3px rgba(40, 34, 28, .2) !important;
+  }
+  :root[data-interface-theme="light"] body:not([data-layout]) :is(.gold-bf-card, #prints-promo-carousel .carousel-card):hover {
+    border-color: #9c7629 !important;
+    box-shadow: 0 0 0 2px rgba(180, 139, 55, .55), 0 2px 4px rgba(40, 34, 28, .24) !important;
+  }
+}

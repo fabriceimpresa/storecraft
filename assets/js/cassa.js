@@ -1,5 +1,7 @@
 /* Utilità Cassa, comuni a tutti i negozi: Calcola Sconto, Calcola Aliquota Sconto, Cambio Valuta, Calcola IVA,
-   Generatore QR Code. Stile in assets/css/dashboard.css (.widget); serve qrcode.js (cdnjs) per il QR.
+   Generatore QR Code, Blocco Note. Stile in assets/css/dashboard.css (.widget); serve qrcode.js (cdnjs) per il QR. Il Blocco Note è
+   uno strumento speciale: il widget mostra le ultime note e un clic apre la sua pagina a schermo intero (blocco-note.html;
+   Cassa.crea(…, { note }) ne cambia il percorso).
    Comportamento (regola presa da TEBE): su desktop e tablet lo strumento scelto si apre in un popup al centro della
    pagina, sopra un velo, e si chiude con la ✕, con Esc o toccando il velo; sul telefono gli strumenti restano pronti
    nella pagina e quello in uso si evidenzia.
@@ -114,8 +116,47 @@
           <button class="tool-btn" type="button" style="flex: 1;" data-cassa="scarica-qr">Scarica QR</button>
           <button class="tool-btn tool-btn-secondary" type="button" style="flex: 1;" data-cassa="stampa-qr">Stampa QR</button>
         </div>
+      </div>
+
+      <div class="widget widget-note" id="widget-note">
+        <h3>Blocco Note</h3>
+        <div class="note-mazzo" id="note-mazzo" aria-hidden="true"></div>
+        <p class="note-conteggio" id="note-conteggio"></p>
+        <button class="tool-btn" type="button" style="width:100%;" data-cassa="apri-note">Apri Blocco Note</button>
       </div>`;
   }
+
+  // ----- Blocco Note -----
+  // Strumento speciale: non si apre nel popup ma nella sua pagina a schermo intero (blocco-note.html del negozio,
+  // assets/js/blocco-note.js). Il widget mostra le ultime note come un piccolo mazzo di post-it, con i colori di carta
+  // di blocco-note.js, letti dalla stessa lista nel browser (localStorage, una per negozio).
+  const CARTE_NOTE = ['#fff3a3', '#ffd1dc', '#c7ecff', '#d4f5c4', '#ffd9a8', '#e6d7ff', '#ffb3a8', '#ecd08c'];
+  let paginaNote = 'blocco-note.html';
+  function leggiNote() {
+    try {
+      const note = JSON.parse(localStorage.getItem(`storecraft_blocco_note_${document.documentElement.dataset.negozio || 'luxury'}`) || '[]');
+      return Array.isArray(note) ? note : [];
+    } catch (errore) { return []; }
+  }
+  function mazzoNote() {
+    const mazzo = $('note-mazzo');
+    if (!mazzo) return;
+    const note = leggiNote().sort((a, b) => b.creata - a.creata);
+    const titolo = nota => (nota.titolo || '').trim() || (nota.testo || '').trim().split('\n')[0].slice(0, 30) || 'Nota';
+    // le ultime tre, a ventaglio; senza note tre fogli vuoti
+    const fogli = note.length ? note.slice(0, 3) : [null, null, null];
+    mazzo.replaceChildren(...fogli.map((nota, i) => {
+      const foglio = document.createElement('span');
+      foglio.className = 'note-foglio';
+      foglio.style.setProperty('--carta', nota ? CARTE_NOTE[nota.carta % CARTE_NOTE.length] : CARTE_NOTE[[0, 1, 2][i]]);
+      foglio.style.setProperty('--i', i);
+      if (nota) foglio.textContent = titolo(nota);
+      return foglio;
+    }));
+    $('note-conteggio').textContent = !note.length ? 'Post-it per promemoria, ordini e numeri utili'
+      : note.length === 1 ? '1 nota' : `${note.length} note`;
+  }
+  const apriNote = () => { location.href = paginaNote; };
 
   // ----- Calcoli -----
   function calcolaSconto() {
@@ -288,16 +329,17 @@
     etichetteValuta();
   }
 
-  function crea(elemento, { qr = '' } = {}) {
+  function crea(elemento, { qr = '', note = 'blocco-note.html' } = {}) {
     contenitore = elemento;
     qrPredefinito = qr;
+    paginaNote = note;
     contenitore.innerHTML = markup();
     $('qr-input').value = qr;
 
     // Calcoli
     const azioni = {
       sconto: calcolaSconto, aliquota: calcolaAliquota, valuta: calcolaValuta,
-      'azzera-iva': azzeraIva, 'scarica-qr': scaricaQr, 'stampa-qr': stampaQr
+      'azzera-iva': azzeraIva, 'scarica-qr': scaricaQr, 'stampa-qr': stampaQr, 'apri-note': apriNote
     };
     contenitore.querySelectorAll('[data-cassa]').forEach(b => b.addEventListener('click', () => azioni[b.dataset.cassa]()));
     contenitore.querySelectorAll('[data-aliquota]').forEach(b => b.addEventListener('click', () => impostaAliquota(b)));
@@ -312,6 +354,8 @@
     contenitore.querySelectorAll('.widget').forEach(strumento => {
       strumento.addEventListener('click', evento => {
         if (evento.target.closest('[data-cassa-chiudi]')) { evento.stopPropagation(); chiudi(); return; }
+        // il Blocco Note si apre nella sua pagina, non nel popup
+        if (strumento.id === 'widget-note') { if (!evento.target.closest('[data-cassa]')) apriNote(); return; }
         apri(strumento.id);
       });
     });
@@ -331,6 +375,10 @@
     etichetteValuta();
     generaQr();
     caricaTassi();
+    // mazzo del Blocco Note: subito, e di nuovo tornando alla dashboard o se le note cambiano in un'altra scheda
+    mazzoNote();
+    window.addEventListener('pageshow', mazzoNote);
+    window.addEventListener('storage', evento => { if (evento.key?.startsWith('storecraft_blocco_note_')) mazzoNote(); });
   }
 
   window.Cassa = Object.freeze({ crea, apri, chiudi });

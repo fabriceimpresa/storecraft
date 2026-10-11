@@ -1,0 +1,561 @@
+/* Blocco Note (Utilità Cassa, assets/js/blocco-note.js): post-it a schermo intero nella pagina blocco-note.html del
+   negozio. Colori dell'interfaccia dal tema (--interface-*), caratteri del visualizzatore PDF (Cinzel, Plus Jakarta
+   Sans) più Caveat, a mano, per il testo dei post-it. I post-it hanno colori di carta fissi, uguali nei due temi.
+   Classi bn-, per non prendere le regole generiche del tema chiaro. */
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--interface-page, #121110);
+  color: var(--interface-text, #f4f1ea);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Intestazione come il visualizzatore PDF e la cronologia: STORE // CRAFT, titolo al centro, ✕ a destra */
+.bn-testata {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 68px;
+  padding: 0.8rem 1.5rem;
+  background: var(--interface-sidebar, #181715);
+  border-bottom: 1px solid var(--interface-accent, #d4a373);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+:root[data-interface-theme="light"] .bn-testata { box-shadow: 0 1px 3px rgba(40, 34, 28, .14); }
+.bn-marchio { color: var(--interface-accent, #d4a373); font-family: 'Cinzel', serif; font-size: 1.15rem; letter-spacing: 2px; white-space: nowrap; }
+/* titolo al centro dell'intestazione, grande e ben leggibile */
+.bn-titolo {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  color: var(--interface-text, #f4f1ea);
+  font: 600 1.25rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.bn-testata .app-close-btn--pdf { position: static; flex: none; }
+:root[data-interface-theme="light"] .bn-testata .app-close-btn--pdf { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+
+/* Barra dei comandi */
+/* sulla stessa riga NUOVA NOTA a sinistra e il promemoria scritto a mano, grande, allineato a destra, staccati
+   dall'intestazione; poi le note */
+.bn-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem 1.5rem;
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 2.1rem 1.5rem 0.4rem;
+}
+/* promemoria del numero di note, scritto a mano come i post-it: «Oggi, domenica 11 ottobre, hai 12 note in bacheca!» */
+.bn-info { margin-left: auto; color: var(--interface-text, #f4f1ea); font: 400 2.15rem/1.1 'Caveat', cursive; text-align: right; }   /* a destra; NUOVA NOTA resta a sinistra */
+/* nel tema chiaro il promemoria è in un marrone dorato scuro, più caldo del nero, in tono con la pagina */
+:root[data-interface-theme="light"] .bn-info { color: #75582e; }
+/* il numero di note in grassetto: oro nel tema scuro, rosso mattone nel tema chiaro */
+.bn-numero { color: var(--interface-accent, #d4a373); font-weight: 700; }
+:root[data-interface-theme="light"] .bn-numero { color: #a8432e; }
+.bn-nuova {
+  order: -1;   /* prima del promemoria, a sinistra */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  padding: 0.65rem 1.4rem;
+  border: 1.5px solid var(--interface-accent, #d4a373);
+  border-radius: 5px;
+  background: transparent;   /* solo bordo e scritta oro */
+  color: var(--interface-accent, #d4a373);
+  font: 700 0.88rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+/* al passaggio del mouse si riempie d'oro, con la scritta scura */
+.bn-nuova:hover { background: var(--interface-accent, #d4a373); color: #121110; transform: translateY(-1px); }
+.bn-nuova span { font-size: 1.25rem; line-height: 1; }
+
+/* Bacheca: i post-it di formati diversi si incastrano in colonne, in ordine di tempo (le note più recenti in alto):
+   posizione e misure le calcola blocco-note.js (disponi), dalle variabili qui sotto */
+.bn-bacheca {
+  position: relative;
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 2.6rem 1.5rem 3rem;   /* i post-it ben staccati dalla riga del promemoria */
+  flex: 1;
+}
+.bn-griglia {
+  position: relative;
+  --bn-colonna: 180px;
+  --bn-riga: 165px;
+  --bn-spazio: 26px;
+}
+
+/* Post-it: carta colorata, inclinata un poco (--giro), con un'ombra corta; formati e dettagli diversi */
+.bn-nota {
+  --giro: 0deg;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 22px 18px 16px;
+  border: 0;
+  border-radius: 2px 2px 3px 18px / 2px 2px 3px 6px;
+  background: var(--carta);
+  color: #2b2620;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transform: rotate(var(--giro));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .35), inset 0 -18px 22px -18px rgba(0, 0, 0, .12);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+:root[data-interface-theme="light"] .bn-nota { box-shadow: 0 1px 3px rgba(40, 34, 28, .3), inset 0 -18px 22px -18px rgba(0, 0, 0, .1); }
+.bn-nota:hover, .bn-nota:focus-visible { transform: rotate(0deg) translateY(-3px) scale(1.02); z-index: 2; }
+.bn-nota:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 3px; }
+.bn-griglia .bn-nota { position: absolute; }
+
+.bn-nota-titolo {
+  margin: 0 0 6px;
+  overflow: hidden;
+  font: 700 0.95rem/1.25 'Plus Jakarta Sans', sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bn-nota-testo {
+  flex: 1;
+  margin: 0;
+  overflow: hidden;
+  font: 400 1.3rem/1.2 'Caveat', cursive;
+  white-space: pre-wrap;
+  word-break: break-word;
+  /* il testo che non entra sfuma in fondo */
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 26px), transparent);
+}
+.bn-nota-data { margin-top: 6px; color: rgba(43, 38, 32, .55); font-size: 0.66rem; letter-spacing: .04em; }
+
+/* Dettagli: nastro adesivo (in quattro versioni), angolo piegato */
+.bn-nota.nastro::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 78px;
+  height: 22px;
+  background: rgba(255, 255, 255, .55);
+  border-left: 1px dashed rgba(0, 0, 0, .08);
+  border-right: 1px dashed rgba(0, 0, 0, .08);
+  transform: translateX(-50%) rotate(-3deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .12);
+}
+.bn-nota.angolo { border-radius: 2px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 26px), calc(100% - 26px) 100%, 0 100%); }
+.bn-nota.angolo::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, .18) 0 50%, transparent 50%), var(--carta);
+  filter: brightness(.88);
+}
+/* nastro: quattro versioni (nastro-0 … nastro-3, dal seme della nota) */
+/* 1: due pezzetti di traverso sui due angoli in alto */
+.bn-nota.nastro-1::before { left: 22px; width: 58px; transform: translateX(-50%) rotate(-32deg); }
+.bn-nota.nastro-1::after {
+  content: '';
+  position: absolute;
+  top: -11px;
+  right: -7px;
+  width: 58px;
+  height: 22px;
+  background: rgba(255, 255, 255, .55);
+  border-left: 1px dashed rgba(0, 0, 0, .08);
+  border-right: 1px dashed rgba(0, 0, 0, .08);
+  transform: rotate(32deg);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .12);
+}
+/* 2: nastro decorato, a righe chiare e oro, spostato a sinistra */
+.bn-nota.nastro-2::before {
+  left: 30%;
+  width: 70px;
+  background: repeating-linear-gradient(45deg, rgba(255, 255, 255, .6) 0 6px, rgba(212, 163, 115, .45) 6px 12px);
+  transform: translateX(-50%) rotate(-9deg);
+}
+/* 3: un pezzo di traverso sull'angolo in alto a destra */
+.bn-nota.nastro-3::before { top: -2px; left: auto; right: -16px; width: 64px; transform: rotate(40deg); }
+
+/* Entrata all'apertura: i post-it cadono sulla bacheca uno dopo l'altro e si posano inclinati */
+@keyframes bn-entra {
+  0% { opacity: 0; transform: translateY(-46px) rotate(calc(var(--giro) * -4)) scale(.82); }
+  70% { opacity: 1; transform: translateY(4px) rotate(calc(var(--giro) * 1.3)) scale(1.01); }
+  100% { opacity: 1; transform: rotate(var(--giro)); }
+}
+.bn-griglia.entra .bn-nota,
+.bn-elenco.entra .bn-etichetta { animation: bn-entra .55s cubic-bezier(.2, .9, .3, 1.15) both; animation-delay: calc(var(--n) * 55ms); }
+
+/* Troppi post-it per lo schermo, o schermo stretto: etichette con il solo titolo, cliccabili */
+.bn-elenco { display: flex; flex-wrap: wrap; gap: 14px 16px; padding-top: 0.4rem; }
+.bn-etichetta {
+  --giro: 0deg;
+  max-width: 100%;
+  padding: 11px 16px 10px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--carta);
+  color: #2b2620;
+  font: 600 0.88rem 'Plus Jakarta Sans', sans-serif;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transform: rotate(var(--giro));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+  transition: transform .2s ease;
+}
+:root[data-interface-theme="light"] .bn-etichetta { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
+.bn-etichetta:hover, .bn-etichetta:focus-visible { transform: rotate(0deg) translateY(-2px); }
+.bn-etichetta:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 3px; }
+
+.bn-vuota { max-width: 460px; margin: 4rem auto; color: var(--interface-muted, #8c857b); font-size: 0.95rem; line-height: 1.6; text-align: center; }
+.bn-vuota strong { display: block; margin-bottom: 0.4rem; color: var(--interface-accent, #d4a373); font: 500 1rem 'Cinzel', serif; letter-spacing: 0.16em; text-transform: uppercase; }
+
+/* Editor: il post-it in grande, al centro sopra un velo */
+.bn-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(10, 9, 8, .7);
+  backdrop-filter: blur(3px);
+}
+.bn-velo[hidden] { display: none; }
+.bn-foglio {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 100%);
+  max-height: 100%;
+  padding: 30px 28px 18px;
+  border-radius: 2px;
+  background: var(--carta);
+  color: #2b2620;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+  transform: rotate(var(--giro, 0deg));
+  animation: bn-apri .28s cubic-bezier(.2, .9, .3, 1.1);
+  /* cambiando colore o aspetto il foglio ruota con un piccolo scatto, come un post-it riattaccato */
+  transition: transform .35s cubic-bezier(.2, .9, .3, 1.3), background-color .2s ease;
+}
+:root[data-interface-theme="light"] .bn-foglio { box-shadow: 0 4px 10px rgba(40, 34, 28, .3); }
+@keyframes bn-apri { from { opacity: 0; transform: rotate(calc(var(--giro, 0deg) * 3)) scale(.86); } }
+.bn-foglio input,
+.bn-foglio textarea {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  outline: none;
+}
+.bn-foglio input {
+  padding: 4px 0 8px;
+  border-bottom: 1px solid rgba(43, 38, 32, .2);
+  font: 700 1.25rem 'Plus Jakarta Sans', sans-serif;
+}
+.bn-foglio textarea {
+  min-height: 260px;
+  margin-top: 10px;
+  padding: 0;
+  resize: none;
+  font: 400 1.65rem/1.25 'Caveat', cursive;
+  /* righe del quaderno */
+  background-image: linear-gradient(transparent calc(1.25em - 1px), rgba(43, 38, 32, .12) 0);
+  background-size: 100% 1.25em;   /* una riga per ogni riga di testo (interlinea 1,25) */
+  background-attachment: local;
+}
+.bn-foglio input::placeholder, .bn-foglio textarea::placeholder { color: rgba(43, 38, 32, .45); }
+/* i campi restano trasparenti sulla carta anche nel tema chiaro delle pagine di Luxury (theme.css dà un fondo ai campi) */
+:root body #foglio.bn-foglio :is(input, textarea) { background-color: transparent !important; color: #2b2620 !important; }
+:root body #foglio.bn-foglio input { border-color: transparent transparent rgba(43, 38, 32, .2) !important; }
+/* colore del post-it: un pallino per carta, quello scelto con l'anello scuro */
+.bn-colori { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.bn-colore {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1.5px solid rgba(43, 38, 32, .35);
+  border-radius: 50%;
+  background: var(--carta);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(40, 34, 28, .25);
+  transition: transform .15s ease;
+}
+.bn-colore:hover { transform: scale(1.12); }
+.bn-colore[aria-pressed="true"] { border-color: #2b2620; box-shadow: 0 0 0 2px var(--carta), 0 0 0 3.5px #2b2620; }
+.bn-colore:focus-visible { outline: 2px solid #2b2620; outline-offset: 3px; }
+.bn-comandi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.bn-comandi .bn-spazio { flex: 1; }
+.bn-comando {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid rgba(43, 38, 32, .35);
+  border-radius: 5px;
+  background: transparent;
+  color: #2b2620;
+  font: 700 0.72rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.bn-comando:hover { background: rgba(43, 38, 32, .08); }
+.bn-comando.bn-fatto { border-color: #2b2620; background: #2b2620; color: #fff8e6; }
+.bn-comando.bn-fatto:hover { background: #423a31; }
+.bn-comando.bn-elimina { border-color: rgba(150, 56, 43, .5); color: #96382b; }
+.bn-comando:focus-visible { outline: 2px solid #2b2620; outline-offset: 2px; }
+.bn-salvata { color: rgba(43, 38, 32, .55); font-size: 0.7rem; }
+
+/* Telefono e finestre strette */
+@media (max-width: 760px) {
+  .bn-testata { min-height: 60px; padding: 0.6rem 0.75rem; }
+  .bn-marchio { font-size: 0.9rem; letter-spacing: 1px; }
+  .bn-titolo { position: static; transform: none; font-size: 1.1rem; }
+  .bn-info { font-size: 1.6rem; }
+  .bn-barra, .bn-bacheca { padding-left: 14px; padding-right: 14px; }
+  .bn-velo { padding: 12px; }
+  .bn-foglio { padding: 24px 18px 14px; }
+  .bn-foglio textarea { min-height: 200px; }
+  .bn-foglio input, .bn-foglio textarea { font-size: max(16px, 1em); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bn-griglia.entra .bn-nota, .bn-elenco.entra .bn-etichetta, .bn-foglio { animation: none; }
+  .bn-nota, .bn-etichetta { transition: none; }
+}
+
+/* Avviso dei troppi post-it (oltre 100): un post-it giallo con la domanda e tre scelte */
+.bn-avviso-velo { z-index: 60; }
+.bn-avviso {
+  width: min(440px, 100%);
+  padding: 26px 24px 18px;
+  border-radius: 2px;
+  background: #fff3a3;
+  color: #2b2620;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+  transform: rotate(-1deg);
+  animation: bn-apri .28s cubic-bezier(.2, .9, .3, 1.1);
+}
+:root[data-interface-theme="light"] .bn-avviso { box-shadow: 0 4px 10px rgba(40, 34, 28, .3); }
+.bn-avviso h2 { margin: 0 0 8px; font: 700 1.1rem 'Plus Jakarta Sans', sans-serif; }
+.bn-avviso p { margin: 0 0 16px; font: 400 1.45rem/1.2 'Caveat', cursive; }
+.bn-avviso-comandi { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Emoji e sticker nell'editor: iconcina a destra sopra i colori, tavolozza che si apre sopra di lei */
+.bn-strumenti { position: relative; display: flex; justify-content: flex-end; margin-top: 10px; }
+.bn-emoji-tasto {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1.5px solid rgba(43, 38, 32, .35);
+  border-radius: 50%;
+  background: transparent;
+  color: #2b2620;
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+.bn-emoji-tasto svg { width: 20px; height: 20px; }
+.bn-emoji-tasto:hover, .bn-emoji-tasto[aria-expanded="true"] { background: rgba(43, 38, 32, .1); transform: rotate(-8deg); }
+.bn-emoji-tasto:focus-visible { outline: 2px solid #2b2620; outline-offset: 2px; }
+.bn-emoji {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 5;
+  width: min(330px, 86vw);
+  padding: 10px;
+  border: 1px solid rgba(43, 38, 32, .25);
+  border-radius: 10px;
+  background: #fffdf6;
+  box-shadow: 0 4px 10px rgba(40, 34, 28, .28);
+}
+.bn-emoji[hidden] { display: none; }
+.bn-emoji-titolo { margin: 0 0 6px 4px; color: rgba(43, 38, 32, .6); font: 700 0.66rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.bn-emoji-griglia { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
+.bn-emoji-voce {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .12s ease, background .12s ease;
+}
+.bn-emoji-voce:hover, .bn-emoji-voce:focus-visible { background: rgba(43, 38, 32, .08); transform: scale(1.18); outline: none; }
+.bn-togli-sticker {
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  border: 1px solid rgba(150, 56, 43, .45);
+  border-radius: 5px;
+  background: transparent;
+  color: #96382b;
+  font: 700 0.68rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Sticker: l'emoji attaccata grande sull'angolo del post-it, inclinata come un adesivo, con il bordo bianco */
+.bn-sticker {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  font-size: 1.35rem;   /* sulla bacheca piccolo, per non coprire il titolo */
+  line-height: 1;
+  transform: rotate(12deg);
+  filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1.5px #fff) drop-shadow(0 1px 2px rgba(40, 34, 28, .35));
+  pointer-events: none;
+}
+/* nell'editor lo sticker sta dentro la sua iconcina, nell'angolo in alto a destra: senza sticker si vede l'iconcina
+   (adesivo con il +), con lo sticker lo sticker stesso, grande; un tocco apre la tavolozza degli sticker sotto di lei */
+.bn-sticker-tasto {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1.5px dashed rgba(43, 38, 32, .35);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(43, 38, 32, .7);
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+.bn-sticker-tasto:hover { background: rgba(43, 38, 32, .08); transform: rotate(8deg); }
+.bn-sticker-tasto:focus-visible { outline: 2px solid #2b2620; outline-offset: 2px; }
+.bn-sticker-icona { width: 24px; height: 24px; }
+.bn-sticker-tasto .bn-sticker { position: static; font-size: 2.6rem; }
+.bn-sticker-tasto .bn-sticker:empty { display: none; }
+.bn-sticker-tasto.ha-sticker { border-color: transparent; }
+.bn-sticker-tasto.ha-sticker:hover { background: transparent; transform: scale(1.08); }
+.bn-sticker-tasto.ha-sticker .bn-sticker-icona { display: none; }
+.bn-emoji-sticker { top: 62px; right: 10px; bottom: auto; }
+/* il titolo non passa sotto l'iconcina dello sticker */
+#foglio.bn-foglio input { padding-right: 52px; }
+.bn-nota .bn-nota-titolo { padding-right: 22px; }
+
+/* Gruppi della bacheca (molte note, o almeno 5 scritte oggi): sopra ogni gruppo una scritta a mano, «Settimana dal 5
+   all'11 ottobre» o «Solo oggi, domenica 11 ottobre, hai 5 note in bacheca», con una linea sottile che continua */
+.bn-gruppo + .bn-gruppo { margin-top: 2.4rem; }
+.bn-gruppo-titolo {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 1.3rem;
+  color: var(--interface-muted, #8c857b);
+  font: 400 1.65rem/1.1 'Caveat', cursive;
+}
+:root[data-interface-theme="light"] .bn-gruppo-titolo { color: #75582e; }
+.bn-gruppo-titolo::after { content: ''; flex: 1; height: 1px; background: var(--interface-border, #2e2b27); transform: translateY(-6px); }
+@media (max-width: 760px) { .bn-gruppo-titolo { font-size: 1.35rem; } }
+
+/* Barra di scorrimento della pagina in stile STORE // CRAFT, come la maniglia dei menu a cascata (menu-cascata.css):
+   colonna nel colore del tema, maniglia oro squadrata, oro chiaro al passaggio del mouse */
+html { scrollbar-width: auto; scrollbar-color: var(--interface-accent, #d4a373) var(--interface-sidebar, #181715); }
+html::-webkit-scrollbar { width: 14px; }
+html::-webkit-scrollbar-track { background: var(--interface-sidebar, #181715); border-left: 1px solid var(--interface-border, #2e2b27); }
+html::-webkit-scrollbar-thumb { min-height: 48px; border: 3px solid var(--interface-sidebar, #181715); border-radius: 0; background: var(--interface-accent, #d4a373); }
+html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright, #e5ba73); }
+
+/* CANCELLA NOTE: accanto a NUOVA NOTA, a contorno; in modalità cancellazione dice FINE e, con note selezionate, diventa
+   rosso pieno («Cancella 3 note») */
+.bn-cancella {
+  order: -1;   /* subito dopo NUOVA NOTA, a sinistra */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  padding: 0.65rem 1.2rem;
+  border: 1.5px solid var(--interface-muted, #8c857b);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--interface-muted, #8c857b);
+  font: 700 0.88rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.bn-cancella svg { width: 18px; height: 18px; }
+.bn-cancella:hover { border-color: #96382b; color: #96382b; }
+.bn-cancella[aria-pressed="true"] { border-color: var(--interface-text, #f4f1ea); color: var(--interface-text, #f4f1ea); }
+.bn-cancella[hidden] { display: none; }
+/* ANNULLA: accanto a «Cancella N note», a contorno, esce senza cancellare */
+.bn-annulla, .bn-annulla:hover { border-color: var(--interface-text, #f4f1ea); color: var(--interface-text, #f4f1ea); }
+.bn-annulla:hover { background: color-mix(in srgb, var(--interface-text, #f4f1ea) 10%, transparent); }
+.bn-cancella.rosso, .bn-cancella.rosso:hover { border-color: #96382b; background: #96382b; color: #fff; }
+.bn-cancella:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
+.bn-nuova:disabled { opacity: .4; cursor: default; transform: none; }
+.bn-nuova:disabled:hover { background: transparent; color: var(--interface-accent, #d4a373); }
+
+/* Modalità cancellazione: le note tremano (come le app dell'iPhone), sfasate tra loro, e mostrano il pallino per
+   selezionarle; la nota selezionata ha il pallino rosso con la spunta ed è un poco più tenue */
+@keyframes bn-trema {
+  from { transform: rotate(calc(var(--giro) - 1.4deg)); }
+  to { transform: rotate(calc(var(--giro) + 1.4deg)); }
+}
+.in-cancellazione :is(.bn-nota, .bn-etichetta) {
+  animation: bn-trema .16s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * -.05s);
+}
+.in-cancellazione :is(.bn-nota, .bn-etichetta):hover { transform: rotate(var(--giro)); }
+.bn-seleziona { display: none; }
+.in-cancellazione .bn-seleziona {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: rgba(43, 38, 32, .35);
+  box-shadow: 0 1px 3px rgba(40, 34, 28, .35);
+}
+.in-cancellazione .selezionata .bn-seleziona { background: #c0392b; }
+.in-cancellazione .selezionata .bn-seleziona::after { content: '✓'; color: #fff; font: 700 0.8rem/1 'Plus Jakarta Sans', sans-serif; }
+.in-cancellazione .selezionata { opacity: .72; }
+/* nei post-it il contenuto scende un poco, per lasciare il posto al pallino in alto a sinistra */
+.in-cancellazione .bn-nota { padding-top: 38px; }
+/* nelle etichette il pallino sta a sinistra del titolo */
+.in-cancellazione .bn-etichetta { position: relative; padding-left: 40px; overflow: visible; }
+.in-cancellazione .bn-etichetta .bn-seleziona { top: 50%; left: 9px; width: 22px; height: 22px; margin-top: -11px; }
+@media (prefers-reduced-motion: reduce) { .in-cancellazione :is(.bn-nota, .bn-etichetta) { animation: none; } }

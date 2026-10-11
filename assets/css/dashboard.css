@@ -1383,3 +1383,45 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   :root[data-interface-theme="light"] body aside { box-shadow: 2px 0 6px rgba(40, 34, 28, .22); }
   :root[data-interface-theme="light"] body.sidebar-collapsed aside { box-shadow: none; }
 }
+
+/* Blocco Note (Utilità Cassa, cassa.js): strumento speciale, con un aspetto suo. Al posto dei campi un piccolo mazzo di
+   post-it a ventaglio con i titoli delle ultime note (carta colorata, inclinata, ombra corta), il numero di note e il
+   pulsante che apre la bacheca a schermo intero (blocco-note.html). Al passaggio del mouse il ventaglio si apre. */
+#tools .widget-note { overflow: hidden; }
+.note-mazzo { position: relative; height: 104px; margin: 16px 0 10px; }
+.note-foglio {
+  position: absolute;
+  top: 6px;
+  left: calc(4% + var(--i) * 27%);
+  width: 44%;
+  height: 78px;
+  padding: 16px 9px 8px;
+  overflow: hidden;
+  border-radius: 2px 2px 2px 12px / 2px 2px 2px 5px;
+  background: var(--carta);
+  color: #2b2620;
+  font: 600 0.72rem/1.25 'Plus Jakarta Sans', sans-serif;
+  text-overflow: ellipsis;
+  transform: rotate(calc(-7deg + var(--i) * 6.5deg)) translateY(calc(var(--i) * 3px));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+  transition: transform .3s cubic-bezier(.2, .9, .3, 1.2);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+/* nastro adesivo sul foglio davanti */
+.note-foglio:last-child::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 40px;
+  height: 12px;
+  background: rgba(255, 255, 255, .55);
+  transform: translateX(-50%) rotate(-4deg);
+}
+#tools .widget-note:hover .note-foglio { transform: rotate(calc(-11deg + var(--i) * 11deg)) translateY(-4px); }
+:root[data-interface-theme="light"] .note-foglio { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
+.note-conteggio { margin: 0 0 14px; color: var(--text-muted); font-size: 0.78rem; }
+#tools .widget-note .tool-btn { margin-top: auto; }   /* in fondo, come Azzera IVA e Scarica QR dei widget accanto */
+@media (prefers-reduced-motion: reduce) { .note-foglio { transition: none; } }
