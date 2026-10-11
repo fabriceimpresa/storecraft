@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261011-70"></script>
+  <script src="assets/js/negozi.js?v=20261012-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 11 ottobre 2026 · versione 1.2.12</p>
+  <p class="aggiornamento">ultimo aggiornamento: 12 ottobre 2026 · versione 1.2.13</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -361,7 +361,7 @@
     <tr><td>Menu di sinistra</td><td><code>#sidebar-menu</code> (aside)</td><td>parte dal bordo alto e copre la barra · largo <code>min(278px, 82vw)</code> · STORE // CRAFT al centro tra bordo sinistro e ✕ (misurato sulle lettere), 39 px sotto · ✕ disegnata con due tratti CSS · titoli delle sezioni 12 px (STANDARD) / 11 px (COMPATTO), lettere 0,18em</td><td>una sezione alla volta, apertura e chiusura animate 0,26 s (<code>toggleSidebarSection</code>); MENU // IMPOSTAZIONI non c'è (vedi pulsante IMPOSTAZIONI); in Crea Cartelli niente sottosezione Promo Stagionali: le promo seguono i cartelli</td></tr>
     <tr><td>Rotella</td><td>classe <code>ruota</code> sulle sezioni con almeno 4 voci (<code>attivaRuote</code>)</td><td>riquadro alto 5 voci (voci 44 px) con scatto al centro, bordi sfumati · voce al centro ingrandita di un terzo e oro (<code>.is-centro</code>, <code>--vicino</code>) · in cima la voce guida decorativa <code>.voce-guida</code> (— Trova il tuo cartello —)</td><td>sezioni con 1–3 voci senza rotella: voci toccabili direttamente, alte almeno 48 px, staccate 6 px</td></tr>
     <tr><td>Logo del menu</td><td><code>.sidebar-bottom</code> + <code>controllaSpazioMenu</code></td><td>logo STORE // CRAFT e CRAFTED WITH STORECRAFT a circa 48 px dal fondo</td><td>sparisce solo se una sezione aperta non entra; con tutte le sezioni chiuse resta</td></tr>
-    <tr><td>Pulsante IMPOSTAZIONI</td><td><code>.system-fab</code> (<code>pulsanteImpostazioni</code>)</td><td>tondo 54 px, in basso a sinistra (10 px dal fondo, allineato a ☰), oro pieno <code>#d4a373</code> appena sfumato in tutti e due i temi, ingranaggio pieno bronzo <code>#4a3510</code> · aperto: oro più scuro, ingranaggio ruotato</td><td>sempre presente (sotto il menu di sinistra aperto); in fondo alla pagina sale 12 px sopra i pulsanti del fondo (<code>--fab-alza</code>)</td></tr>
+    <tr><td>Pulsante IMPOSTAZIONI</td><td><code>.system-fab</code> (<code>pulsanteImpostazioni</code>)</td><td>tondo 54 px, in basso a sinistra (10 px dal fondo, allineato a ☰; in Safari su iPhone un poco più verso il centro, 1,2rem dal bordo e 16 px dal fondo, come ☰ e CASSIERE / CREATOR, perché i gesti del browser ai bordi si prendono i tocchi, classe <code>.safari-ios</code>), oro pieno <code>#d4a373</code> appena sfumato in tutti e due i temi, ingranaggio pieno bronzo <code>#4a3510</code> · aperto: oro più scuro, ingranaggio ruotato</td><td>sempre presente (sotto il menu di sinistra aperto); in fondo alla pagina sale 12 px sopra i pulsanti del fondo (<code>--fab-alza</code>)</td></tr>
     <tr><td>Menu impostazioni</td><td><code>#system-menu</code> spostato nel <code>body</code> (<code>postoMenuSistema</code>)</td><td>largo quanto lo schermo (16 px ai lati), si srotola dal pulsante (0,3 s) e ne è unito (il cerchio copre l'angolo) · voci 52 px, scritte più grandi · pagina velata dietro</td><td>si chiude con il pulsante, toccando il velo o con Esc; icone come caratteri oro (<code>font-variant-emoji: text</code>, U+FE0E su ⚙ e ✉)</td></tr>
     <tr><td>Fondo pagina</td><td><code>.mobile-brand-footer</code> (<code>piedePagina</code>)</td><td>logo STORE // CRAFT 110 × 53 px sempre oro con CRAFTED WITH STORECRAFT, 48 px sopra e sotto · tre pulsanti rettangolari a contorno oro <code>.footer-btn</code>: CREDITS, CONTATTI, freccia che torna in cima</td><td>CREDITS: popup <code>.credits-dialog</code> nello stile della splash page; CONTATTI: <code>mailto:</code> con oggetto; la pagina finisce con i pulsanti e 16 px sotto</td></tr>
     <tr><td>Pulsante HOME</td><td><code>.home-mark</code> (casetta SVG <code>casetta</code>)</td><td>compare scorrendo, 12 px sotto la barra, a destra; casetta al centro della scritta (12 px STANDARD, 11 COMPATTO)</td><td>torna in cima alla pagina</td></tr>
@@ -427,7 +427,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261011-70</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261012-01</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>

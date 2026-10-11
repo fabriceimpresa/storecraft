@@ -28,11 +28,16 @@
                     la pagina resta nella cartella) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.12 2026';
+  const VERSIONE = 'V 1.2.13 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
   const negozio = document.documentElement.dataset.negozio;
+  // Safari su iPhone e iPad (non Chrome, Firefox, Edge per iOS): i gesti del browser vicino ai bordi dello schermo a volte
+  // si prendono i tocchi; con la classe .safari-ios ☰, CASSIERE / CREATOR e IMPOSTAZIONI del telefono si avvicinano un
+  // poco al centro (dashboard.css)
+  if (/iP(hone|od|ad)/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent)
+    && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent)) document.documentElement.classList.add('safari-ios');
   let dati = null;
 
   // Contenuto del negozio, caricato durante la lettura della pagina

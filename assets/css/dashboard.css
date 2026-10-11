@@ -1187,6 +1187,19 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   .mobile-top-bar .mode-btn { font-size: 0.5rem; padding: 0.3rem; }
   body .mobile-top-bar { --pulsante-barra: 54px; }
 }
+/* Safari su iPhone: i gesti del browser vicino ai bordi dello schermo a volte si prendono i tocchi, quindi ☰, CASSIERE /
+   CREATOR e IMPOSTAZIONI si avvicinano un poco al centro (classe .safari-ios su <html>, messa da dashboard.js); il piè di
+   pagina segue lo stesso margine, così IMPOSTAZIONI in fondo resta allineato a ☰ */
+@media screen and (max-width: 720px) and (pointer: coarse) {
+  :root.safari-ios .mobile-top-bar { padding: 0 1.2rem; }
+  :root.safari-ios .system-fab { left: 1.2rem; bottom: calc(max(16px, env(safe-area-inset-bottom)) + var(--fab-alza, 0px)); }
+  :root.safari-ios .mobile-footer-actions { padding-left: calc(1.2rem + 48px); padding-right: 1.2rem; }
+}
+@media screen and (max-width: 360px) and (pointer: coarse) {
+  :root.safari-ios .mobile-top-bar { padding: 0 14px; }
+  :root.safari-ios .system-fab { left: 14px; }
+  :root.safari-ios .mobile-footer-actions { padding-left: calc(14px + 48px); padding-right: 14px; }
+}
 
 /* ===== Parti della dashboard unica (dashboard.js) ===== */
 
