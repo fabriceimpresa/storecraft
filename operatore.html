@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-51"></script>
+  <script src="assets/js/negozi.js?v=20261012-53"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-51"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-53"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -213,8 +213,6 @@
     @media (min-aspect-ratio: 20/9) and (min-width: 2000px) { .frame.con-sezione[data-vista="negozi"] { width: min(2700px, 100%); } }
     @media (min-aspect-ratio: 30/9) and (min-width: 3000px) { .frame.con-sezione[data-vista="negozi"] { width: min(3400px, 100%); } }
     .menu[hidden] { display: none; }
-    /* promemoria sotto il menu, come le note // delle sezioni: piccolo, nell'oro spento della cornice */
-    .nota-browser { margin: 26px auto 0; max-width: 420px; color: var(--frame); font: 400 0.68rem/1.6 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 0.04em; text-align: center; }
     .vista[hidden] { display: none; }
     .vista { margin-top: 8px; }
     .vista iframe { display: block; width: 100%; height: 320px; border: 0; background: transparent; }
@@ -290,6 +288,16 @@
       .title { font-size: 0.64rem; letter-spacing: 0.2em; }
       .indietro { top: 14px; left: 16px; }
     }
+    /* Avviso sui pulsanti che collegano la cartella del progetto: al passaggio del mouse (e con la tastiera) un riquadro
+       sotto il pulsante dice che funziona solo in Chrome o Edge sul computer (File System Access API). Il riquadro parte dal bordo sinistro del pulsante. Stessa regola in
+       operatore.html, gestione-negozi.html, pacchetti.html e assets/css/operatore.css (pagine dei loghi ufficiali) */
+    [data-avviso] { position: relative; }
+    [data-avviso]::after { content: '// ' attr(data-avviso); position: absolute; top: calc(100% + 9px); left: 0; z-index: 30; width: max-content;
+      max-width: 270px; padding: 7px 10px; border: 1px solid #8f6a1f; border-radius: 4px; background: #0a0908; color: #d9d3c7;
+      font: 400 10.5px/1.5 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .02em; text-transform: none; text-align: left;
+      white-space: normal; pointer-events: none; opacity: 0; transform: translateY(-4px); transition: opacity .15s, transform .15s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .5); }
+    [data-avviso]:hover::after, [data-avviso]:focus-visible::after { opacity: 1; transform: none; }
   </style>
 </head>
 <body>
@@ -307,8 +315,6 @@
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
       <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
       <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
-      <!-- promemoria: gli strumenti che scrivono nella cartella del progetto usano la File System Access API -->
-      <p class="nota-browser">// solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto</p>
     </nav>
 
     <!-- Sezioni: Gestione negozi, Controllo codice e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
@@ -339,7 +345,7 @@
         <span class="step-num">1</span>
         <div>
           <p class="step-label">collega la cartella del progetto STORE // CRAFT</p>
-          <button class="btn" type="button" id="pickSource">scegli cartella progetto</button>
+          <button class="btn" type="button" id="pickSource" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">scegli cartella progetto</button>
           <p class="status" id="sourceStatus" role="status">nessuna cartella collegata</p>
         </div>
       </div>
@@ -478,9 +484,12 @@
       }
       (anima ? adatta : cambia => cambia())(() => {
         document.querySelectorAll('.vista').forEach(vista => {
+          const apertaOra = vista.hidden && vista.dataset.vista === nuova;
           vista.hidden = vista.dataset.vista !== nuova;
           const riquadro = vista.querySelector('iframe[data-src]');
-          if (!vista.hidden && riquadro && !riquadro.getAttribute('src')) riquadro.src = riquadro.dataset.src;
+          // Gestione negozi riparte ogni volta dalla sua posizione di partenza (primo negozio, rami aperti, index al
+          // centro): si ricarica a ogni apertura; le altre sezioni si caricano la prima volta e restano come le si lascia
+          if (!vista.hidden && riquadro && (!riquadro.getAttribute('src') || (apertaOra && vista.dataset.vista === 'negozi'))) riquadro.src = riquadro.dataset.src;
         });
         menu.hidden = Boolean(nuova);
         // con una sezione aperta la cornice è più larga (spazio per le pagine dei loghi); tornando al menu riprende la sua

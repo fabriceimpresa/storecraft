@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-51"></script>
+  <script src="assets/js/negozi.js?v=20261012-53"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 12 ottobre 2026 · versione 1.2.19</p>
+  <p class="aggiornamento">ultimo aggiornamento: 12 ottobre 2026 · versione 1.2.20</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -427,7 +427,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261012-51</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261012-53</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -690,7 +690,13 @@
   <table class="tipo">
     <tr><th>Voce</th><th>Regola</th></tr>
     <tr><td>Spie</td><td>verde: il modulo è attivo nella dashboard; viola: in ghost; spenta: in arrivo (Coming Soon); rossa (solo in MODULI): non associato a nessun negozio</td></tr>
-    <tr><td>MODULI</td><td>insegna dopo i negozi: il catalogo dei moduli, con le aree SORGENTI LXRY e SORGENTI TEBE (i set di partenza) e NUOVI (moduli creati da Nuovo modulo, anche non associati); sotto ogni widget le sigle dei negozi che lo usano o NON ASSOCIATO; la scheda del modulo ha le spunte dei negozi, come Gestione pacchetti</td></tr>
+    <tr><td>Sorgente e clone</td><td>moduli sorgente (scritti a codice: Luxury Outlet, TEBE e le pagine derivate, come quelle di OPHILYA con <code>storecraft-derivata</code>) con bordo ed etichetta in oro: ghost e sposta, mai modifica né elimina dalle utilità; moduli clone (creati dalle utilità, <code>storecraft-origine</code>) in azzurro: ghost, sposta, modifica (titolo, tipo, MENU SPECIALE, specifiche, miniatura) ed elimina, con doppia conferma se il clone sparisce dal catalogo</td></tr>
+    <tr><td>Regole comuni</td><td>nella colonna di index, come un menu a croce: Pannello, Selettori, Loghi, Stampa, Aspetto; la voce scelta va al centro, grande come index, e a destra si srotola il suo diagramma (un ramo per file comune, con i moduli che lo usano)</td></tr>
+    <tr><td>Temi speciali</td><td>i moduli con i pulsanti Made in Italy, Black Friday o Natale hanno sul widget le icone dei pulsanti, piccole e tonde, in basso a destra sull'anteprima; nella scheda del modulo la riga TEMI SPECIALI con icone e nomi</td></tr>
+    <tr><td>Tema e aspetto</td><td>quattro quadratini sotto il riquadro del negozio: tema scuro o chiaro, aspetto STANDARD o COMPATTO (la A); cambiano forma, fondo e caratteri dei widget come nelle dashboard; di partenza l'aspetto del negozio</td></tr>
+    <tr><td>Specifiche</td><td>il + accanto al titolo dei widget apre le specifiche di tutti, come nelle schede della dashboard; anche sul widget grande della scheda del modulo</td></tr>
+    <tr><td>Valvole</td><td>le maniglie sono come le chiavi dei tubi: stanghetta orizzontale, flusso aperto (filo pieno con la luce); verticale, flusso fermo (filo tratteggiato e spento); al passaggio del mouse la stanghetta mostra la posizione che prenderà; aprendo, i moduli si srotolano, chiudendo si riavvolgono</td></tr>
+    <tr><td>Catalogo</td><td>prima insegna, prima dei negozi e staccata da // (logo STORE // CRAFT e sotto CATALOGO): il catalogo dei moduli, con un'area per Luxury Outlet e una per TEBE (logo del negozio bianco, MODULI SORGENTE e il numero dei moduli: i set di partenza) e NUOVI (moduli creati da Nuovo modulo, anche non associati); sotto ogni widget le sigle dei negozi che lo usano o NON ASSOCIATO; la scheda del modulo ha le spunte dei negozi, come Gestione pacchetti</td></tr>
     <tr><td>Ridurre ed espandere</td><td>maniglia tonda sul raccordo di ogni area e ogni galleria, con una linea: orizzontale il ramo è aperto (il flusso prosegue), verticale è chiuso (il flusso si ferma); o un clic sul nodo; chiusa mostra una spia per modulo</td></tr>
     <tr><td>Cartella del progetto</td><td>sopra il diagramma solo il pulsante «collega la cartella del progetto»: già «✓ cartella collegata» se la pagina operatore l'ha collegata o il browser dà ancora il permesso a quella ricordata; gli esiti nella riga di stato</td></tr>
     <tr><td>Animazioni</td><td>cambiando negozio nodi, fili e widget compaiono da sinistra a destra; un ramo che si apre si srotola; niente animazioni con «riduci animazioni»</td></tr>

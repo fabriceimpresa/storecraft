@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-51"></script>
+  <script src="assets/js/negozi.js?v=20261012-53"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Controllo codice</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261012-51"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-53"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-51"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-53"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -79,7 +79,9 @@
     .spunta-esito { color: var(--ok); font-size: 15px; line-height: 1; }
     /* clone creato da Gestione pacchetti (pagina con storecraft-origine): l'etichetta clone in oro e il pulsante ✕ rimuovi;
        le pagine di partenza dei negozi non hanno il pulsante */
-    .tipo.clone { border-color: var(--oro); color: var(--oro); }
+    /* moduli sorgente in oro e cloni in azzurro, come in Gestione negozi (regola del 12 ottobre 2026) */
+    .tipo.sorgente { border-color: rgba(212, 163, 115, .55); color: var(--oro); }
+    .tipo.clone { border-color: #5fb3c9; color: #5fb3c9; }
     /* ghost: la pagina resta nel negozio ma la dashboard non la mostra (né widget né menu); riga attenuata */
     .ghost { margin-left: 8px; padding: 0 6px; border: 1px solid var(--bordo); border-radius: 3px; background: none; color: var(--tenue);
       font: 400 10px var(--mono); letter-spacing: .06em; cursor: pointer; }
@@ -358,6 +360,9 @@
         return;
       }
       if (!window.confirm(`Rimuovere il clone ${negozio}/${pagina} (copia di ${origine})?\n\nLa sua scheda esce dalla dashboard di ${Negozi.scheda(negozio)?.nome || negozio} e la pagina viene cancellata, con le immagini copiate per lui.`)) return;
+      // regola del 12 ottobre 2026: se il clone non resta in nessun altro negozio sparisce dal catalogo, e si chiede due volte
+      if (Associa.ultimoClone(Object.values(testiDashboard), origine)
+        && !window.confirm(`Ultima conferma: ${negozio}/${pagina} non resta in nessun altro negozio.\n\nRimuovendolo sparisce anche dal catalogo dei moduli. Eliminarlo definitivamente?`)) return;
       pulsante.disabled = true;
       try {
         await Associa.eliminaClone(cartella, { negozio, nome: pagina, avviso: testo => { stato.textContent = testo; } });
@@ -500,8 +505,8 @@
         link.textContent = pagina.replace('.html', '');
         tdPagina.append(link);
         const tipo = document.createElement('span');
-        tipo.className = 'tipo';
-        tipo.textContent = pagina === 'index.html' ? 'dashboard' : SERVIZIO.includes(pagina) ? 'servizio' : 'pagina';
+        tipo.className = pagina === 'index.html' || SERVIZIO.includes(pagina) ? 'tipo' : 'tipo sorgente';
+        tipo.textContent = pagina === 'index.html' ? 'dashboard' : SERVIZIO.includes(pagina) ? 'servizio' : 'sorgente';   // modulo sorgente, salvo i cloni (sotto)
         tdPagina.append(tipo);
         riga.append(tdPagina);
         try {
@@ -516,7 +521,7 @@
           const origine = Associa.clone(t);
           if (origine) {
             tipo.textContent = 'clone';
-            tipo.classList.add('clone');
+            tipo.className = 'tipo clone';
             tipo.title = `clone di ${origine}, creato da Gestione pacchetti`;
             tdPagina.append(pulsanteRimuovi(id, pagina, origine));
           }
@@ -583,7 +588,6 @@
     ['cookie', 'Sessione del browser', 'storecraft_sessione', 'comune', 'splash page alla prima apertura dopo l\'avvio del browser', 'fino alla chiusura del browser', ['assets/js/punto-vendita.js'], 'storecraft_sessione'],
     ['session', 'Menu NEGOZI riaperto', 'storecraft_menu_negozi', 'comune', 'riapre PROFILO UTENTE dopo il cambio di negozio', 'un caricamento', ['assets/js/dashboard.js'], 'storecraft_menu_negozi'],
     ['session', 'Negozio dei loghi ufficiali', 'storecraft_admin_negozio', 'comune', 'NEGOZIO scelto in Importa / Gestisci loghi ufficiali', 'la scheda', ['assets/js/admin-negozio.js'], 'storecraft_admin_negozio'],
-    ['session', 'Gestione negozi', 'gestione_negozi_negozio · gestione_negozi_chiusi', 'comune', 'negozio scelto e rami chiusi del diagramma', 'la scheda', ['gestione-negozi.html'], 'gestione_negozi_chiusi'],
     ['session', 'Guida tecnica', 'guida_negozio_anteprime', 'comune', 'negozio delle anteprime dal vivo', 'la scheda', ['guida-componenti.html'], 'guida_negozio_anteprime'],
     ['idb', 'Loghi personali', 'storecraft-loghi-personalizzati › liste', 'per negozio (chiave luxury, tebe…)', 'loghi PNG come data URL, nell\'ordine dell\'utente', 'finché non si cancellano · backup JSON da Gestisci Lista', ['assets/js/loghi-personalizzati.js'], 'storecraft-loghi-personalizzati'],
     ['idb', 'Lista di stampa', 'storecraft- / tebe- / ophilya-lista-stampa › pages', 'per negozio (un database)', 'foto dei fogli da stampare insieme in lista.pdf', '48 ore dall\'aggiunta', ['assets/js/lista-stampa.js', 'assets/negozi/luxury.js'], 'storecraft-lista-stampa'],

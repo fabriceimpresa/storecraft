@@ -291,3 +291,13 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .btn-folder.collegata { border-color: #3a9b5a; background: #3a9b5a; color: #f4f1ea; }
 .btn-folder.collegata::before { content: '✓ '; }
 .btn-folder.collegata:hover { background: #45ad66; border-color: #45ad66; }
+/* Avviso sui pulsanti che collegano la cartella del progetto: al passaggio del mouse (e con la tastiera) un riquadro
+sotto il pulsante dice che funziona solo in Chrome o Edge sul computer (File System Access API). Il riquadro parte dal bordo sinistro del pulsante. Stessa regola in
+operatore.html, gestione-negozi.html, pacchetti.html e assets/css/operatore.css (pagine dei loghi ufficiali) */
+[data-avviso] { position: relative; }
+[data-avviso]::after { content: '// ' attr(data-avviso); position: absolute; top: calc(100% + 9px); left: 0; z-index: 30; width: max-content;
+  max-width: 270px; padding: 7px 10px; border: 1px solid #8f6a1f; border-radius: 4px; background: #0a0908; color: #d9d3c7;
+  font: 400 10.5px/1.5 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .02em; text-transform: none; text-align: left;
+  white-space: normal; pointer-events: none; opacity: 0; transform: translateY(-4px); transition: opacity .15s, transform .15s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .5); }
+[data-avviso]:hover::after, [data-avviso]:focus-visible::after { opacity: 1; transform: none; }

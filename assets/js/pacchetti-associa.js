@@ -65,6 +65,14 @@
      Associa.ordine(testo, sezione)                            ordine dei widget scritto nella sezione (null: di partenza)
      Associa.impostaOrdine(testo, sezione, chiavi | null)      nuovo testo con l'ordine (null o quello di partenza: tolto)
      Associa.schedaDuplicata(testo, sezione, chiave, link, origine)  nuovo testo con la copia dopo l'originale
+     Associa.modificaScheda(testo, sezione, chiave, campi)      nuovo testo con titolo, specifiche, tipo, badge, miniature
+     Associa.modifica(progetto, { negozio, sezione, chiave, campi, miniatura })  scrive la modifica (solo i cloni)
+     Associa.derivata(html)                                    pagina sorgente da cui deriva (storecraft-derivata) o null
+     Associa.ultimoClone(testiDashboard, origine)              true se togliendo il clone sparisce dal catalogo (doppia conferma)
+
+   Regola del 12 ottobre 2026: moduli sorgente (pagine scritte a codice, di Luxury Outlet e TEBE o derivate da loro,
+   anche con storecraft-derivata) e moduli clone (pagine con storecraft-origine, create dalle utilità). Dalle utilità i
+   sorgente si mettono in ghost e si spostano, ma non si modificano né si cancellano; i cloni permettono tutto.
      Associa.duplica(progetto, { negozio, sezione, chiave })    copia la pagina (<pagina>-copia.html, un clone) e la scheda
      Associa.togliDaOrdini(testo, pagina)                      nuovo testo senza le voci della pagina negli ordini */
 (() => {
@@ -188,7 +196,9 @@
     });
     nuovo = nuovo.replace(new RegExp(`data-negozio="${da}"`, 'g'), `data-negozio="${a}"`);
     // segno d'origine nuovo (una pagina che era già un clone o un modulo di moduli/ perde i suoi: origine e file copiati)
-    nuovo = nuovo.replace(/\n?\s*<meta name="storecraft-(origine|copiati)" content="[^"]*">/g, '')
+    // (anche una pagina sorgente derivata perde il suo segno storecraft-derivata: la copia è un clone)
+    nuovo = nuovo.replace(/\n?\s*<!-- modulo sorgente, scritto a codice[^>]*-->/g, '')
+      .replace(/\n?\s*<meta name="storecraft-(origine|copiati|derivata)" content="[^"]*">/g, '')
       .replace(/(<meta charset="[^"]*">)/i, `$1\n  <meta name="storecraft-origine" content="${origine}">`);
     return { html: nuovo, risorse };
   }
@@ -788,7 +798,61 @@ Pacchetti.registra('${galleria}', {
     return { pagina: `${negozio}/${libero}`, chiave: nuovoLink };
   }
 
-  const Associa = Object.freeze({ chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
+  // ----- Modifica di un clone (Gestione negozi, scheda del modulo). Regola del 12 ottobre 2026: i moduli sorgente
+  // (pagine scritte a codice, di Luxury Outlet e TEBE o derivate da loro) non si modificano né si cancellano dalle
+  // utilità; i cloni (pagine con storecraft-origine) permettono tutto. Si cambiano i campi della scheda nella dashboard:
+  // titolo, specifiche, miniatura, tipo (la scritta in alto a destra) e badge (MENU SPECIALE) -----
+  // un campo della scheda: scritto, cambiato o (vuoto) tolto
+  function impostaCampo(testoScheda, nome, valore) {
+    const vecchio = new RegExp(`(\\s*,)?(\\s*)\\b${nome}:\\s*(?:${STRINGA_JS}|\\[[^\\]]*\\]|true|false)`);
+    const vuoto = valore === null || valore === undefined || valore === '' || (Array.isArray(valore) && !valore.length);
+    const scritto = Array.isArray(valore) ? `[${valore.map(virgolette).join(', ')}]` : virgolette(valore);
+    if (vecchio.test(testoScheda)) return testoScheda.replace(vecchio, (tutto, virgola = '', spazio) => (vuoto ? '' : `${virgola}${spazio}${nome}: ${scritto}`));
+    return vuoto ? testoScheda : testoScheda.replace(/\s*\}$/, `, ${nome}: ${scritto} }`);
+  }
+  // nuovo testo della dashboard con i campi cambiati nella scheda del modulo (campi: { titolo, specifiche, tipo,
+  // badge, miniature }; null o vuoto toglie il campo, tranne il titolo, che resta)
+  function modificaScheda(testo, id, chiave, campi) {
+    const scheda = schedaConChiave(testo, id, chiave);
+    let nuova = scheda.testo;
+    for (const [nome, valore] of Object.entries(campi)) {
+      if (nome === 'titolo' && !String(valore || '').trim()) continue;
+      nuova = impostaCampo(nuova, nome, valore);
+    }
+    return testo.slice(0, scheda.inizio) + nuova + testo.slice(scheda.fine + 1);
+  }
+  // scrive la modifica: solo per i cloni; con un file la miniatura nuova va in assets/thumbnail/<negozio>/
+  async function modifica(progetto, { negozio, sezione, chiave, campi, miniatura = null, avviso = () => {} }) {
+    const dashboard = `assets/negozi/${negozio}-dashboard.js`;
+    const testo = await (await leggi(progetto, dashboard)).text();
+    const link = campo(schedaConChiave(testo, sezione, chiave).testo, 'link');
+    const html = link ? await (await leggi(progetto, `${negozio}/${pagina(link)}`)).text() : '';
+    if (!clone(html)) throw new Error('è un modulo sorgente: si modifica solo dal codice');
+    const nuovi = { ...campi };
+    if (miniatura) {
+      const estensione = (miniatura.name.match(/\.(png|jpe?g|webp)$/i) || [, 'png'])[1].toLowerCase();
+      const file = `${nomeFile(pagina(link).replace(/\.html$/, ''))}-${Date.now().toString(36)}.${estensione}`;
+      avviso(`salvo la miniatura assets/thumbnail/${negozio}/${file}…`);
+      await scriviFile(progetto, `assets/thumbnail/${negozio}/${file}`, miniatura);
+      nuovi.miniature = [`thumbnail/${negozio}/${file}`];
+    }
+    avviso(`scrivo la scheda nella dashboard di ${negozio}…`);
+    await scriviFile(progetto, dashboard, modificaScheda(testo, sezione, chiave, nuovi));
+  }
+  // Pagina sorgente derivata da un'altra (es. le pagine di OPHILYA, scritte a codice partendo da TEBE): non è un clone e
+  // non si cancella; <meta name="storecraft-derivata" content="tebe/albero.html"> dice da quale pagina viene
+  const derivata = html => (String(html).match(/<meta name="storecraft-derivata" content="([^"]+)">/) || [])[1] || null;
+  // true se togliendo questo clone sparisce dal catalogo: nessun'altra dashboard ha un clone con la stessa origine (la
+  // scheda di ogni clone porta origine: '<cartella>/<pagina>') e non viene da un modulo nuovo di moduli/, che resta nella
+  // sua galleria. Allora si chiede conferma due volte. testi: i testi delle dashboard di tutti i negozi installati
+  function ultimoClone(testi, origine) {
+    if (!origine || origine.startsWith('moduli/')) return false;
+    // si contano le schede (anche due copie nello stesso negozio)
+    const segno = `origine: ${virgolette(origine)}`;
+    return testi.reduce((totale, testo) => totale + String(testo).split(segno).length - 1, 0) <= 1;
+  }
+
+  const Associa = Object.freeze({ modificaScheda, modifica, derivata, ultimoClone, chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();

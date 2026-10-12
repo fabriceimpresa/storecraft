@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-51"></script>
+  <script src="assets/js/negozi.js?v=20261012-53"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261012-51"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-53"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-51"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-51"></script>
+  <script src="assets/js/pacchetti.js?v=20261012-53"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-53"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261012-51"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261012-51"></script>
+  <script src="assets/js/admin-negozio.js?v=20261012-53"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-53"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -210,6 +210,16 @@
       .pulsantiera { gap: 4px 18px; }
       .gruppo-voce { font-size: 11px; letter-spacing: .12em; }
     }
+    /* Avviso sui pulsanti che collegano la cartella del progetto: al passaggio del mouse (e con la tastiera) un riquadro
+       sotto il pulsante dice che funziona solo in Chrome o Edge sul computer (File System Access API). Il riquadro parte dal bordo sinistro del pulsante. Stessa regola in
+       operatore.html, gestione-negozi.html, pacchetti.html e assets/css/operatore.css (pagine dei loghi ufficiali) */
+    [data-avviso] { position: relative; }
+    [data-avviso]::after { content: '// ' attr(data-avviso); position: absolute; top: calc(100% + 9px); left: 0; z-index: 30; width: max-content;
+      max-width: 270px; padding: 7px 10px; border: 1px solid #8f6a1f; border-radius: 4px; background: #0a0908; color: #d9d3c7;
+      font: 400 10.5px/1.5 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .02em; text-transform: none; text-align: left;
+      white-space: normal; pointer-events: none; opacity: 0; transform: translateY(-4px); transition: opacity .15s, transform .15s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .5); }
+    [data-avviso]:hover::after, [data-avviso]:focus-visible::after { opacity: 1; transform: none; }
   </style>
 </head>
 <body>
@@ -266,7 +276,7 @@
         <p class="nota-nuovo" data-per="cassa">lo strumento di partenza con il nuovo nome: una voce del catalogo, senza pagina né miniatura, da lavorare poi di codice per portarlo nella dashboard</p>
       </div>
     </div>
-    <div class="cartella" id="nm-azioni" hidden><button type="button" id="nm-collega">collega la cartella del progetto</button><button type="button" class="crea" id="nm-crea">crea modulo</button><span class="esito" id="nm-esito"></span></div>
+    <div class="cartella" id="nm-azioni" hidden><button type="button" id="nm-collega" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">collega la cartella del progetto</button><button type="button" class="crea" id="nm-crea">crea modulo</button><span class="esito" id="nm-esito"></span></div>
   </section>
 </div>
 
@@ -891,6 +901,10 @@
       // togliere un clone lo cancella: prima si chiede
       if (!voglio && negozio !== cartellaModulo
         && !window.confirm(`Togliere ${modulo.titolo} da ${Negozi.scheda(negozio)?.nome || negozio}?\n\nLa sua scheda esce dalla dashboard e il clone della pagina nella cartella ${negozio}/ viene cancellato, con le immagini copiate per lui.`)) return;
+      // regola del 12 ottobre 2026: se il clone non resta in nessun altro negozio sparisce dal catalogo, e si chiede due volte
+      if (!voglio && negozio !== cartellaModulo
+        && Associa.ultimoClone(await Promise.all(Negozi.installati.map(testoDashboard)), `${cartellaModulo}/${pagina}`)
+        && !window.confirm(`Ultima conferma: il clone di ${modulo.titolo} in ${Negozi.scheda(negozio)?.nome || negozio} non resta in nessun altro negozio.\n\nTogliendolo sparisce anche dal catalogo dei moduli. Eliminarlo definitivamente?`)) return;
       try {
         if (!progetto) await collega();
         const avviso = testo => { esito.textContent = testo; esito.className = 'esito'; };
@@ -908,6 +922,7 @@
     // cartella del progetto
     const cartella = nodo('div', 'cartella');
     const pulsante = nodo('button', progetto ? 'collegata' : '', progetto ? '✓ cartella collegata' : 'collega la cartella del progetto');
+    pulsante.dataset.avviso = 'solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto';
     pulsante.type = 'button';
     async function collega() {
       progetto = await scegliProgetto(passaggio => { esito.textContent = passaggio; esito.className = 'esito'; });
@@ -972,6 +987,8 @@
           return;
         }
         if (!window.confirm(`Eliminare ${modulo.titolo}?\n\n${notaElimina.textContent.replace(/^./, lettera => lettera.toUpperCase())}.\nNon si può annullare (solo dal commit precedente).`)) return;
+        // un modulo nuovo è un clone non associato a nessun negozio: eliminandolo sparisce dal catalogo, si chiede due volte
+        if (!window.confirm(`Ultima conferma: ${modulo.titolo} non è associato a nessun negozio.\n\nEliminandolo sparisce dal catalogo dei moduli. Eliminarlo definitivamente?`)) return;
         pulsanteElimina.disabled = true;
         try {
           const { galleriaCancellata } = await Associa.eliminaModulo(progetto, { galleria: id, modulo: { ...modulo, cartella: cartellaModulo },

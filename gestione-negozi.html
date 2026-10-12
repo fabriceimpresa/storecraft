@@ -2,18 +2,18 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-51"></script>
+  <script src="assets/js/negozi.js?v=20261012-53"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261012-51"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-53"></script>
   <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-51"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-53"></script>
   <!-- MODULI (accanto ai negozi): il catalogo dei moduli, letto dai pacchetti di Gestione pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-51"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-51"></script>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+  <script src="assets/js/pacchetti.js?v=20261012-53"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-53"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
        dashboard (index.html) e le gallerie della dashboard (le sezioni dei caroselli), ognuna con i suoi moduli in un
@@ -25,7 +25,7 @@
       --bg: #0d0c0b; --pannello: #151412; --bordo: #2a2723; --testo: #d9d3c7; --tenue: #8f877b;
       --oro: #d4a373; --oro-chiaro: #e5ba73; --oro-scuro: #8f6a1f;
       --filo: rgba(212, 163, 115, .42);
-      --verde: #3ddc6e; --ghost: #b9aef0; --rosso: #e07a5f;
+      --verde: #3ddc6e; --ghost: #b9aef0; --rosso: #e07a5f; --clone: #5fb3c9;
       --mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
       /* misure del diagramma e dei widget */
       --w-widget: 94px;
@@ -118,9 +118,24 @@
     .ramo { position: relative; display: flex; align-items: center; min-width: 0; padding: 8px 0 8px 22px; }
     .ramo::before { content: ''; position: absolute; left: 0; top: 50%; width: 22px; height: 1px; background: var(--filo); }
     .ramo::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--filo); }
+    /* anche sulla linea verticale da cui partono i rami scorre la luce, verso il basso, più tenue e più lenta di quella dei
+       fili orizzontali: il flusso prosegue dopo la valvola aperta (i rami chiusi non si vedono, e con loro la luce) */
+    @media (prefers-reduced-motion: no-preference) {
+      .ramo::after { background: linear-gradient(to bottom, transparent, rgba(229, 186, 115, .55), transparent) 0 -56px / 1px 56px no-repeat, var(--filo);
+        animation: luce-giu 3.6s linear infinite; }
+      @keyframes luce-giu { from { background-position: 0 -56px, 0 0; } to { background-position: 0 calc(100% + 56px), 0 0; } }
+      /* e sul raccordo da quella linea a ogni ramo, verso destra: il flusso alimenta tutti i moduli che vengono dopo */
+      .ramo::before { background: linear-gradient(to right, transparent, rgba(229, 186, 115, .55), transparent) -14px 0 / 14px 1px no-repeat, var(--filo);
+        animation: luce-destra 3.6s linear infinite; animation-delay: 1.2s; }
+      @keyframes luce-destra { from { background-position: -14px 0, 0 0; } 30%, to { background-position: calc(100% + 14px) 0, 0 0; } }
+    }
     .ramo:first-child::after { top: 50%; }
     .ramo:last-child::after { bottom: 50%; }
     .ramo:only-child::after { content: none; }
+    /* un solo ramo: niente bivio, quindi niente raccordo; il filo che esce dalla maniglia va dritto fino al nodo dopo,
+       senza la giuntura tra due tratti (che, arrotondati al pixel in modo diverso, si sfalsavano di un pixel) */
+    .rami > .ramo:only-child { padding-left: 0; }
+    .rami > .ramo:only-child::before { content: none; }
     /* nodo della galleria: il titolo, il numero di moduli e, se serve, i comandi dell'ordine */
     .nodo-galleria { width: 132px; min-height: 76px; padding: 10px 10px; border-color: var(--bordo); border-radius: 4px; gap: 3px; }
     .ramo[data-tipo="promo"] .nodo-galleria { border-color: var(--oro-scuro); background: radial-gradient(circle at 50% 0, #2a2218 0%, #0a0908 80%); }
@@ -153,7 +168,20 @@
       border-radius: 6px; background: #121110; color: var(--testo); font: inherit; text-align: left; cursor: pointer; scroll-snap-align: start;
       transition: border-color .2s, transform .2s, opacity .2s, box-shadow .2s; }
     .widget:hover, .widget:focus-visible { border-color: var(--oro); transform: translateY(-2px); outline: none; box-shadow: 0 4px 10px rgba(0, 0, 0, .45); }
-    .ramo[data-tipo="promo"] .widget { border-color: rgba(143, 106, 31, .7); }
+    /* Promo Stagionali come nella dashboard (.gold-bf-card): bordo oro, fondo bruno caldo con un alone oro, titolo oro;
+       un clone resta con il bordo azzurro. MENU SPECIALE (badge della scheda) è l'etichetta dorata sull'anteprima */
+    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget { border-color: #d4a373; background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%);
+      box-shadow: 0 0 8px rgba(212, 163, 115, .25); }
+    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget:hover { border-color: #e5ba73; box-shadow: 0 0 14px rgba(229, 186, 115, .45); }
+    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget.clone { border-color: var(--clone); }
+    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .w-titolo { color: #e5ba73; text-shadow: 0 0 6px rgba(212, 163, 115, .35); }
+    .w-badge { position: absolute; right: 3px; bottom: 3px; z-index: 1; padding: 0 3px; border-radius: 2px;
+      background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #000; box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+      font: 800 6.5px/1.6 var(--mono); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
+    .modulo-anteprima .w-badge { right: 6px; bottom: 6px; padding: 1px 6px; font-size: 10px; }
+    /* con MENU SPECIALE i temi speciali passano in basso a sinistra */
+    .w-badge ~ .w-temi { right: auto; left: 3px; }
+    .modulo-anteprima .w-badge ~ .w-temi { left: 6px; }
     .w-testa { display: flex; align-items: center; justify-content: space-between; padding: 5px 7px 4px; }
     .w-num { color: var(--tenue); font: 400 9.5px 'JetBrains Mono', var(--mono); }
     .w-anteprima { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9; margin: 0 5px; overflow: hidden; border-radius: 3px;
@@ -163,10 +191,45 @@
     .w-anteprima .w-icona { color: var(--tenue); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
     .w-titolo { display: block; padding: 5px 7px 7px; overflow: hidden; color: var(--testo); font: 400 10px/1.3 var(--mono); letter-spacing: .02em;
       white-space: nowrap; text-overflow: ellipsis; }
-    .w-clone { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 0 4px; border: 1px solid var(--oro); border-radius: 3px;
-      background: #0a0908; color: var(--oro); font-size: 8.5px; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
+    /* Moduli sorgente e moduli clone (regola del 12 ottobre 2026), riconoscibili a colpo d'occhio: bordo e etichetta
+       in oro i sorgente (scritti a codice: in ghost e spostati, mai modificati né cancellati dalle utilità), in azzurro
+       i cloni (creati dalle utilità: si modificano, si spostano, si cancellano) */
+    .widget.sorgente { border-color: rgba(212, 163, 115, .55); }
+    .widget.clone { border-color: rgba(95, 179, 201, .75); }
+    .widget.sorgente:hover, .widget.sorgente:focus-visible { border-color: var(--oro); }
+    .widget.clone:hover, .widget.clone:focus-visible { border-color: var(--clone); }
+    .w-tipo { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 0 4px; border: 1px solid currentColor; border-radius: 3px;
+      background: #0a0908; font-size: 8.5px; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; white-space: nowrap; }
+    .widget.sorgente .w-tipo { color: var(--oro); }
+    .widget.clone .w-tipo { color: var(--clone); }
     .widget.in-ghost .w-anteprima, .widget.in-ghost .w-titolo { opacity: .38; }
-    .widget.in-ghost { border-style: dashed; border-color: #5f5786; }
+    .widget.in-ghost { border-style: dashed; }
+    /* Temi speciali del modulo (Made in Italy, Black Friday, Natale): in sintesi sul widget le icone dei pulsanti veri,
+       piccole e tonde, in basso a destra sull'anteprima; per esteso nella scheda del modulo */
+    .w-anteprima { position: relative; }
+    .w-temi { position: absolute; right: 3px; bottom: 3px; display: flex; gap: 2px; }
+    .w-tema { display: inline-flex; flex: none; width: 14px; height: 14px; overflow: hidden; border-radius: 50%; box-shadow: 0 0 0 1px rgba(10, 9, 8, .85); }
+    .w-tema img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .w-tema.t-italia { background: #fff; box-shadow: 0 0 0 1px var(--oro); }
+    .w-tema.t-italia img { width: 70%; height: 70%; margin: 15%; object-fit: contain; }
+    .w-tema.t-blackfriday { background: #000; }
+    .w-tema.t-natale { background: #9e1b22; }
+    .modulo-anteprima .w-temi { right: 6px; bottom: 6px; gap: 4px; }
+    .modulo-anteprima .w-tema { width: 24px; height: 24px; }
+    .temi-elenco { display: inline-flex; flex-wrap: wrap; gap: 6px 16px; }
+    .tema-voce { display: inline-flex; align-items: center; gap: 7px; }
+    .tema-voce .w-tema { width: 18px; height: 18px; }
+    .legenda-moduli .l-temi { gap: 3px; }
+    .legenda-moduli .l-temi b { margin-right: 5px; color: var(--oro-chiaro); }
+    /* legenda sopra il diagramma */
+    .legenda-moduli { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; color: var(--tenue); font-size: 10.5px; letter-spacing: .04em; }
+    .legenda-moduli span { display: inline-flex; align-items: center; gap: 7px; }
+    .legenda-moduli i { width: 18px; height: 12px; border: 1px solid; border-radius: 3px; }
+    .legenda-moduli .l-sorgente i { border-color: var(--oro); }
+    .legenda-moduli .l-clone i { border-color: var(--clone); }
+    .legenda-moduli b { font-weight: 400; letter-spacing: .12em; text-transform: uppercase; }
+    .legenda-moduli .l-sorgente b { color: var(--oro); }
+    .legenda-moduli .l-clone b { color: var(--clone); }
     .widget.in-arrivo .w-anteprima, .widget.in-arrivo .w-titolo { opacity: .5; }
     /* trascinando per riordinare */
     .widget[draggable="true"] { cursor: grab; }
@@ -216,10 +279,19 @@
     .maniglia { position: absolute; top: 50%; right: -12px; z-index: 2; width: 23px; height: 23px; padding: 0; translate: 0 -50%;
       border: 1px solid var(--oro); border-radius: 50%; background: #0a0908; color: var(--oro); cursor: pointer;
       transition: background .15s, color .15s, transform .2s; }
-    .maniglia::before { content: ""; position: absolute; top: 50%; left: 50%; width: 12px; height: 2px; border-radius: 1px;
-      background: currentColor; translate: -50% -50%; transition: rotate .35s cubic-bezier(.3, 1.4, .5, 1); }
+    /* stanghetta sottile (1 px, posizionata senza traslazioni di mezzo pixel, così è netta), al centro del cerchio, che sta al centro del filo: il flusso entra
+       nella maniglia e prosegue dritto */
+    .maniglia::before { content: ""; position: absolute; top: calc(50% - .5px); left: calc(50% - 5.5px); width: 11px; height: 1px; border-radius: 1px;
+      background: currentColor; transition: rotate .32s cubic-bezier(.3, 1.2, .5, 1); }
     .maniglia[aria-expanded="false"]::before { rotate: 90deg; }
-    .maniglia:hover, .maniglia:focus-visible { background: var(--oro); color: #121110; outline: none; transform: scale(1.12); }
+    /* al passaggio del mouse (e con la tastiera) la stanghetta mostra la posizione che prenderà: da aperta (orizzontale)
+       si alza in verticale, da chiusa (verticale) si abbassa in orizzontale; il cerchio resta scuro e si accende appena */
+    .maniglia:hover, .maniglia:focus-visible { outline: none; transform: scale(1.12); border-color: var(--oro-chiaro); color: var(--oro-chiaro);
+      box-shadow: 0 0 0 3px rgba(212, 163, 115, .14), 0 0 8px rgba(212, 163, 115, .35); }
+    /* subito dopo il clic (classe appena, finché il mouse non esce) niente anteprima: la stanghetta resta nella posizione
+       nuova invece di tornare a mostrare quella opposta */
+    .maniglia[aria-expanded="true"]:not(.appena):is(:hover, :focus-visible)::before { rotate: 90deg; }
+    .maniglia[aria-expanded="false"]:not(.appena):is(:hover, :focus-visible)::before { rotate: 0deg; }
     html.incorporata .maniglia { background: #0e0d0c; }
     .riassunto { display: none; align-items: center; gap: 10px; padding: 6px 12px; border: 1px dashed var(--bordo); border-radius: 20px;
       background: #0a0908; color: var(--tenue); font: 400 10.5px var(--mono); letter-spacing: .06em; cursor: pointer; transition: border-color .2s, color .2s; }
@@ -229,6 +301,10 @@
     .riassunto .spia.ghost { box-shadow: 0 0 4px rgba(185, 174, 240, .7); }
     .riassunto .spia.arrivo { box-shadow: none; }
     .ramo.chiuso > .carosello, .ramo.chiuso > .sotto { display: none; }
+    /* valvola chiusa (come un rubinetto sul tubo): dopo la maniglia il flusso si ferma, il filo è tratteggiato e spento e la
+       luce non scorre più; riaprendo il filo torna pieno e la luce riparte dalla maniglia */
+    .ramo.chiuso > .filo, .filo.fermo { background: none; border-top: 1px dashed rgba(212, 163, 115, .3); height: 0; }
+    .ramo.chiuso > .filo::after, .filo.fermo::after { content: none; }
     .ramo.chiuso > .riassunto { display: inline-flex; }
 
     /* ----- Animazioni: entrata del diagramma (nodi e widget compaiono da sinistra, i fili si tracciano, il bus cresce
@@ -239,7 +315,6 @@
       .diagramma.entra .filo { animation: traccia .25s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3); transform-origin: left; }
       .diagramma.entra .ramo::before { animation: traccia .22s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3); transform-origin: left; }
       .diagramma.entra .ramo::after { animation: cresce .28s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3 - 40ms); transform-origin: top; }
-      .ramo.apre > .carosello, .ramo.apre > .sotto { animation: srotola .5s cubic-bezier(.2, .8, .2, 1); }
       .ramo.chiude > .riassunto { animation: compare .35s ease-out; }
       @keyframes compare { from { opacity: 0; transform: translateX(-12px) scale(.96); } }
       @keyframes traccia { from { transform: scaleX(0); } }
@@ -265,17 +340,47 @@
     .modulo-anteprima .widget .w-num { font-size: 11px; }
     .modulo-anteprima .widget .w-anteprima { margin: 0 9px; }
     .modulo-anteprima .spia { width: 11px; height: 11px; }
-    .modulo-anteprima .w-clone { top: 7px; font-size: 10px; }
+    .modulo-anteprima .w-tipo { top: 7px; font-size: 10px; }
     .info { margin: 0; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 7px 16px; font-size: 12px; }
     .info dt { color: var(--tenue); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; padding-top: 1px; }
     .info dd { margin: 0; color: var(--testo); overflow-wrap: anywhere; }
     .info dd .stato { display: inline-flex; align-items: center; gap: 8px; }
+    /* menu a cascata dello stato (scheda del modulo): lo stato attuale con la freccina oro, e sotto l'elenco con l'altro
+       valore (ghost con il pallino viola del ghost di Controllo codice, o attivo); come i menu del form in stile terminale */
+    .stato-menu { position: relative; display: inline-block; }
+    .stato-scelta { display: inline-flex; align-items: center; gap: 12px; padding: 3px 8px 3px 10px; border: 1px solid var(--bordo); border-radius: 3px;
+      background: #0a0908; color: var(--testo); font: inherit; cursor: pointer; transition: border-color .15s; }
+    .stato-scelta:hover:not(:disabled), .stato-scelta:focus-visible, .stato-menu.aperto .stato-scelta { border-color: var(--oro); outline: none; }
+    .stato-scelta:disabled { cursor: default; }
+    .stato-freccia { width: 7px; height: 7px; margin: -3px 2px 0 0; border-right: 1px solid var(--oro); border-bottom: 1px solid var(--oro);
+      transform: rotate(45deg); transition: transform .2s, margin .2s; }
+    .stato-menu.aperto .stato-freccia { margin-top: 3px; transform: rotate(-135deg); }
+    .stato-elenco { position: absolute; top: calc(100% + 4px); left: 0; z-index: 20; min-width: 100%; padding: 4px; border: 1px solid var(--oro-scuro);
+      border-radius: 3px; background: #0a0908; box-shadow: 0 6px 16px rgba(0, 0, 0, .55); }
+    .stato-elenco[hidden] { display: none; }
+    .stato-opzione { display: flex; width: 100%; padding: 5px 8px; border: 0; border-radius: 2px; background: none; color: var(--testo); font: inherit;
+      text-align: left; cursor: pointer; white-space: nowrap; }
+    .stato-opzione:hover, .stato-opzione:focus-visible { background: rgba(212, 163, 115, .12); outline: none; }
     .sposta { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; vertical-align: 1px; }
     .sposta button { width: 26px; height: 22px; padding: 0; border: 1px solid var(--bordo); border-radius: 3px; background: #0a0908; color: var(--oro);
       font: 400 12px/1 var(--mono); cursor: pointer; }
     .sposta button:hover:not(:disabled), .sposta button:focus-visible { border-color: var(--oro); outline: none; }
     .sposta button:disabled { opacity: .3; cursor: default; }
     .azioni-modulo { margin-top: 26px; }
+    /* pulsantiera delle azioni, sotto il divisorio dei dettagli: un pulsante per sezione; quello aperto è pieno */
+    .pulsantiera-azioni { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 18px; border-top: 1px solid var(--bordo); }
+    .azione-tasto { padding: 6px 14px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro); font: 400 10.5px var(--mono);
+      letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+    .azione-tasto:hover, .azione-tasto:focus-visible, .azione-tasto[aria-selected="true"] { background: var(--oro); color: #121110; outline: none; }
+    .azione-tasto.t-ghost { border-color: #9b8fd0; color: var(--ghost); }
+    .azione-tasto.t-ghost:is(:hover, :focus-visible, [aria-selected="true"]) { background: var(--ghost); color: #121110; }
+    .azione-tasto.t-modifica { border-color: var(--clone); color: var(--clone); }
+    .azione-tasto.t-modifica:is(:hover, :focus-visible, [aria-selected="true"]) { background: var(--clone); color: #121110; }
+    .azione-tasto.t-elimina { border-color: var(--rosso); color: var(--rosso); }
+    .azione-tasto.t-elimina:is(:hover, :focus-visible, [aria-selected="true"]) { background: var(--rosso); color: #121110; }
+    .azione[hidden] { display: none; }
+    /* la sezione aperta, sotto la pulsantiera */
+    .pulsantiera-azioni + .azione, .pulsantiera-azioni ~ .azione { border-top: 0; padding-top: 18px; }
     .azione { padding: 16px 0; border-top: 1px solid var(--bordo); }
     .azione h4 { margin: 0 0 8px; color: var(--oro); font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
     .azione h4::before { content: '// '; }
@@ -284,11 +389,68 @@
 
     /* ----- MODULI: l'insegna dopo i negozi (staccata da una linea sottile) apre il catalogo dei moduli: le sorgenti di
        Luxury Outlet e TEBE (i set di partenza) e i moduli nuovi, con i negozi in cui sono usati ----- */
-    .divisore { flex: none; width: 1px; height: 30px; background: var(--bordo); }
-    .insegna-moduli { color: #fff; font: 500 17px 'Cinzel', serif; letter-spacing: .32em; opacity: .35; transition: opacity .2s; }
+    /* divisorio tra il catalogo e i negozi: // come nel marchio STORE // CRAFT, nell'oro scuro della cornice */
+    .divisore { flex: none; color: var(--oro-scuro); font: 400 26px/1 'Cinzel', serif; letter-spacing: -.04em; user-select: none; }
+    /* insegna del catalogo: il logo STORE // CRAFT (bianco e tenue come le altre insegne) e sotto, piccolo, CATALOGO */
+    .insegna-moduli { height: auto; flex-direction: column; justify-content: center; gap: 5px; color: #fff; opacity: .55; transition: opacity .2s; }
+    /* logo e scritta in oro, come il nodo CATALOGO del diagramma (logo nell'oro del marchio, CATALOGO in Cinzel oro chiaro) */
+    .insegna-moduli img { max-height: 46px; opacity: 1;
+      filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); }
+    .insegna-moduli span { color: var(--oro-chiaro); font: 500 10px/1 'Cinzel', serif; letter-spacing: .16em; margin-right: -.16em; }
     .insegna-moduli:hover, .insegna-moduli:focus-visible, .insegna-moduli[aria-selected="true"] { opacity: .9; }
+    .insegna-moduli:hover img, .insegna-moduli:focus-visible img, .insegna-moduli[aria-selected="true"] img { opacity: 1; }
     .modifica-riga[hidden] { display: none; }
+    /* sorgenti di un negozio nel catalogo: la pillola un poco più larga, con sopra il logo del negozio piccolo e bianco */
+    /* ----- Colonna di index come un menu a croce: al centro, sulla linea dei fili, la voce scelta (index o una regola
+       comune), grande, con la sua maniglia; le altre voci piccole sopra e sotto, appese a un filo verticale ----- */
+    .colonna-index { position: relative; flex: none; display: flex; flex-direction: column; align-items: center; }
+    .indice-nodo { position: relative; }
+    /* la colonna risponde alla rotella (con il mouse sopra): la voce al centro ha un leggero alone oro */
+    .colonna-index:hover > .indice-nodo > .nodo { box-shadow: 0 0 0 1px rgba(212, 163, 115, .3), 0 0 14px rgba(212, 163, 115, .2); }
+    /* le voci sopra e sotto la voce al centro, appese al filo verticale (fuori dalla colonna: la colonna è alta quanto la
+       voce al centro, che così resta sulla linea dei fili) */
+    .voci { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+    .voci-sopra { bottom: 100%; }
+    .voci-sotto { top: 100%; }
+    .filo-v { display: block; flex: none; width: 1px; height: 14px; background: var(--filo); }
+    /* la scritta «regole comuni» sul filo, come un'etichetta, con un tratto di filo sotto fino alla prima regola */
+    .regole-titolo { padding-top: 3px; color: var(--tenue); font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; text-align: center; }
+    .regole-titolo::after { content: ''; display: block; width: 1px; height: 6px; margin: 4px auto 0; background: var(--filo); }
+    /* index.html quando non è al centro: piccolo come le regole, nel carattere dei file */
+    .nodo-regola.voce-index span { font: 400 10.5px 'JetBrains Mono', var(--mono); letter-spacing: .02em; text-transform: none; }
+    /* la regola al centro: grande come index, con la sua icona */
+    .nodo-regola-grande { cursor: default; }
+    .nodo-regola-grande svg { width: 34px; height: 42px; color: var(--oro); }
+    .nodo-regola { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; width: 104px; padding: 6px 8px;
+      border: 1px solid var(--bordo); border-radius: 16px; background: #0a0908; color: var(--oro-chiaro); font: 400 10px var(--mono);
+      letter-spacing: .16em; text-transform: uppercase; cursor: pointer; transition: border-color .2s, box-shadow .2s; }
+    .nodo-regola small { color: var(--tenue); font-size: 9px; letter-spacing: .06em; text-transform: none; }
+    .nodo-regola:hover, .nodo-regola:focus-visible { border-color: var(--oro); outline: none; }
+    .nodo-regola[aria-pressed="true"] { border-color: var(--oro); background: radial-gradient(circle at 50% 0, #241d14 0%, #0a0908 85%);
+      box-shadow: 0 0 0 1px rgba(212, 163, 115, .25), 0 0 10px rgba(212, 163, 115, .2); }
+    html.incorporata .nodo-regola { background: #0e0d0c; }
+    html.incorporata .nodo-regola[aria-pressed="true"] { background: radial-gradient(circle at 50% 0, #241d14 0%, #0e0d0c 85%); }
+    /* il diagramma della regola: nodo dorato del gruppo, un ramo per file (nome del file in mono) */
+    .area-regola > .nodo-area { border-color: var(--oro); box-shadow: 0 0 10px rgba(212, 163, 115, .18); }
+    .file-regola { color: var(--oro-chiaro); font: 400 11px 'JetBrains Mono', var(--mono); letter-spacing: .02em; overflow-wrap: anywhere; }
+    /* il nome del file non arriva sotto la maniglia */
+    .nodo-file-regola { padding-right: 16px; padding-left: 12px; }
+    .riassunto.aperto-sempre { display: inline-flex; }
+
+    /* area CLONI del catalogo: la pillola nell'azzurro dei cloni */
+    .area-cloni > .nodo-area { border-color: var(--clone); background: radial-gradient(circle at 50% 0, #142328 0%, #0a0908 85%); }
+    .area-cloni > .nodo-area .area-nome { color: var(--clone); }
+    .area-cloni > .nodo-area .maniglia { border-color: var(--clone); color: var(--clone); }
+    .nodo-area.con-logo { width: 124px; padding: 11px 10px 10px; gap: 4px; border-radius: 34px; }
+    .area-logo { display: block; max-width: 78px; max-height: 18px; margin-bottom: 2px; filter: brightness(0) invert(1); opacity: .9; }
+    /* MODULI SORGENTE in evidenza rispetto al numero dei moduli: Cinzel oro chiaro, più grande e marcato */
+    .nodo-area.con-logo .area-nome { color: var(--oro-chiaro); font: 600 11px/1.25 'Cinzel', serif; letter-spacing: .12em; }
     /* il nodo del catalogo: come il negozio, con il logo STORE // CRAFT in oro */
+    /* più grande del nodo di un negozio: è il totale del catalogo; titolo CATALOGO e sotto, piccolo, moduli */
+    .diagramma .nodo-catalogo { width: 168px; min-height: 150px; gap: 8px; }
+    .diagramma .nodo-catalogo img { max-width: 136px; max-height: 64px; }
+    .diagramma .nodo-catalogo .nodo-nome { font-size: 14px; letter-spacing: .2em; }
+    .diagramma .nodo-catalogo .nodo-sotto { font-size: 9px; letter-spacing: .14em; }
     .nodo-catalogo img { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: .9; }
     /* modulo non associato a nessun negozio: spia rossa */
     .spia.libero { background: var(--rosso); box-shadow: 0 0 0 2px rgba(224, 122, 95, .16), 0 0 7px rgba(224, 122, 95, .85); }
@@ -298,8 +460,19 @@
       letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; }
     .w-negozi.libero { color: var(--rosso); }
     .modulo-anteprima .w-negozi { padding: 0 12px 12px; font-size: 10.5px; }
-    .w-nuovo { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 0 4px; border: 1px solid var(--verde); border-radius: 3px;
-      background: #0a0908; color: var(--verde); font-size: 8.5px; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
+    /* campi per modificare un clone (scheda del modulo) */
+    .campi-modifica { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px 16px; align-items: center; margin: 0 0 12px; font-size: 12px; }
+    .campi-modifica label { color: var(--tenue); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .campi-modifica input[type="text"], .campi-modifica textarea { width: 100%; padding: 6px 9px; border: 1px solid var(--bordo); border-radius: 4px;
+      background: #0a0908; color: var(--testo); font: 400 12px var(--mono); }
+    .campi-modifica textarea { min-height: 70px; resize: vertical; line-height: 1.5; }
+    .campi-modifica input:focus-visible, .campi-modifica textarea:focus-visible { border-color: var(--clone); outline: none; }
+    .campi-modifica input[type="checkbox"] { justify-self: start; accent-color: var(--clone); width: 15px; height: 15px; }
+    .campi-modifica input[type="file"] { color: var(--tenue); font: 400 11px var(--mono); }
+    .comando.azzurro { border-color: var(--clone); color: var(--clone); }
+    .comando.azzurro:hover:not(:disabled), .comando.azzurro:focus-visible { background: var(--clone); color: #121110; }
+    .azione.sorgente h4 { color: var(--oro); }
+    .azione.clone h4 { color: var(--clone); }
     /* spunte dei negozi nella scheda del modulo del catalogo */
     .spunte { display: grid; gap: 8px; margin: 0 0 12px; }
     .spunte label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 12px; cursor: pointer; }
@@ -307,6 +480,74 @@
     .spunte input:disabled { cursor: default; }
     .spunte .negozio-nome { color: var(--oro-chiaro); letter-spacing: .06em; }
     .spunte .negozio-nota { color: var(--tenue); font-size: 11px; }
+
+    /* ----- Tema e aspetto dei widget: quattro quadratini sotto il riquadro del negozio (tema scuro e chiaro, aspetto
+       STANDARD e COMPATTO con la A); cambiano i widget del diagramma e della scheda del modulo come nelle dashboard ----- */
+    .colonna-negozio { position: relative; flex: none; }
+    .stile-widget { position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 7px; }
+    .stile-sep { width: 1px; height: 18px; margin: 0 4px; background: var(--bordo); }
+    .stile-q { width: 26px; height: 26px; padding: 0; border: 1px solid #4a453d; border-radius: 4px; background: #0a0908; color: var(--oro-chiaro);
+      font: 600 14px/1 'Cinzel', serif; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+    .stile-q.q-dark { background: #121110; }
+    .stile-q.q-light { background: #f8f6f1; }
+    .stile-q.q-standard { border-radius: 7px; }
+    .stile-q.q-minimal { border-radius: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 500; }
+    .stile-q:hover, .stile-q:focus-visible { border-color: var(--oro); outline: none; }
+    .stile-q[aria-pressed="true"] { border-color: var(--oro-chiaro); box-shadow: 0 0 0 1px var(--oro-chiaro), 0 0 6px rgba(229, 186, 115, .45); }
+    @media (max-width: 700px) { .stile-widget { position: static; transform: none; justify-content: center; margin-top: 12px; } }
+    /* nella scheda del modulo: i quadratini sopra il widget, e il widget come nella dashboard (la vetrina), nel suo
+       riquadro con il fondo della dashboard nel tema scelto */
+    .modulo-anteprima .stile-widget { position: static; transform: none; justify-content: flex-start; margin: 0 0 10px; }
+    .vetrina-modulo { overflow: hidden; border: 1px solid var(--bordo); border-radius: 4px; }
+    .vetrina-modulo iframe { display: block; width: 100%; height: 320px; border: 0; background: transparent; }
+    /* etichetta del tipo di modulo nei dettagli, come sui widget del diagramma: SORGENTE in oro, CLONE in azzurro */
+    .tipo-modulo { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+    .tag-modulo { padding: 0 6px; border: 1px solid currentColor; border-radius: 3px; background: #0a0908; font-size: 10px; letter-spacing: .08em;
+      line-height: 1.6; text-transform: uppercase; }
+    .tag-modulo.sorgente { color: var(--oro); }
+    .tag-modulo.clone { color: var(--clone); }
+
+    /* ----- Il + delle specifiche, come nelle schede della dashboard: accanto al titolo; aperto ruota in × e sotto il
+       titolo si apre la descrizione (le specifiche divise da |) in tutti i widget ----- */
+    .w-riga { display: flex; align-items: center; min-width: 0; }
+    .w-riga .w-titolo { flex: 1; min-width: 0; }
+    .w-piu { position: relative; flex: none; width: 16px; height: 16px; margin-right: 5px; border-radius: 50%; color: var(--oro); cursor: pointer;
+      transition: transform .3s ease, background .18s, color .18s; }
+    .w-piu::before, .w-piu::after { content: ''; position: absolute; top: calc(50% - .5px); left: calc(50% - 4px); width: 8px; height: 1px; background: currentColor; }
+    .w-piu::after { transform: rotate(90deg); }
+    .w-piu:hover, .w-piu:focus-visible { background: var(--oro); color: #121110; outline: none; }
+    body.specifiche-aperte .w-piu { transform: rotate(45deg); }
+    .w-spec { display: grid; grid-template-rows: 0fr; grid-template-columns: minmax(0, 1fr); transition: grid-template-rows .3s ease; }
+    .w-spec-testo { min-width: 0; overflow: hidden; overflow-wrap: anywhere; padding: 0 7px; color: var(--tenue); font: 400 8.5px/1.45 var(--mono); transition: padding .3s ease; }
+    .w-spec-testo i { margin: 0 4px; color: #5b554c; font-style: normal; }
+    body.specifiche-aperte .w-spec { grid-template-rows: 1fr; }
+    body.specifiche-aperte .w-spec-testo { padding-bottom: 7px; }
+    .modulo-anteprima .w-piu { width: 24px; height: 24px; margin-right: 10px; }
+    .modulo-anteprima .w-piu::before, .modulo-anteprima .w-piu::after { left: calc(50% - 5.5px); width: 11px; }
+    .modulo-anteprima .w-spec-testo { padding: 0 12px; font-size: 11px; }
+    body.specifiche-aperte .modulo-anteprima .w-spec-testo { padding-bottom: 12px; }
+
+    /* aspetto STANDARD: angoli tondi, titoli in Cinzel, il resto in Plus Jakarta Sans */
+    body[data-widget-aspetto="standard"] .widget .w-titolo { font-family: 'Cinzel', serif; font-weight: 600; letter-spacing: .04em; }
+    body[data-widget-aspetto="standard"] .widget :is(.w-num, .w-spec-testo, .w-negozi) { font-family: 'Plus Jakarta Sans', Arial, sans-serif; }
+    /* aspetto COMPATTO: squadrati, titoli in Fraunces, il resto in Arial */
+    body[data-widget-aspetto="minimal"] .widget, body[data-widget-aspetto="minimal"] .widget .w-anteprima { border-radius: 0; }
+    body[data-widget-aspetto="minimal"] .widget .w-titolo { font-family: 'Fraunces', Georgia, serif; font-weight: 400; letter-spacing: 0; }
+    body[data-widget-aspetto="minimal"] .widget :is(.w-num, .w-spec-testo, .w-negozi) { font-family: Arial, Helvetica, sans-serif; }
+    /* tema chiaro: fondo avorio, anteprima beige, titolo taupe, numero nell'oro dei cartelli, ombra corta; i bordi di
+       sorgente e clone restano (oro più scuro e azzurro); le promo dorate come nella dashboard chiara */
+    body[data-widget-tema="light"] .widget { background: #fffdfa; color: #282522; box-shadow: 0 1px 3px rgba(40, 34, 28, .24); }
+    body[data-widget-tema="light"] .widget.sorgente { border-color: rgba(173, 138, 62, .6); }
+    body[data-widget-tema="light"] .widget .w-anteprima { background: #eee8dd; }
+    body[data-widget-tema="light"] .widget .w-titolo { color: #665e54; }
+    body[data-widget-tema="light"] .widget .w-num { color: #b48b37; }
+    body[data-widget-tema="light"] .widget :is(.w-negozi, .w-spec-testo) { color: #665e54; }
+    body[data-widget-tema="light"] .widget .w-tipo { background: #fffdfa; }
+    body[data-widget-tema="light"] .widget .w-segno { color: #ad8a3e; }
+    body[data-widget-tema="light"] :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget { background: #fbf5e7; border-color: #b48b37;
+      box-shadow: 0 0 0 1px rgba(180, 139, 55, .35), 0 1px 3px rgba(40, 34, 28, .2); }
+    body[data-widget-tema="light"] :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget .w-titolo { color: #b48b37; text-shadow: none; }
+    body[data-widget-tema="light"] :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget .w-anteprima { background: #eee8dd; }
 
     /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
     html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
@@ -358,7 +599,7 @@
       .ramo { padding-left: 30px; }
       .ramo::before { width: 30px; }
       .maniglia { width: 28px; height: 28px; right: -15px; }
-      .maniglia::before { width: 15px; }
+      .maniglia::before { width: 13px; left: calc(50% - 6.5px); }
       .freccia { width: 30px; height: 30px; font-size: 18px; }
     }
     @container pagina (min-width: 2600px) {
@@ -396,7 +637,22 @@
       .modulo-anteprima .widget { --w-widget: min(300px, 100%); }
       .info { grid-template-columns: 1fr; gap: 2px; }
       .info dd { margin-bottom: 8px; }
+      /* sul telefono le regole stanno sotto index nella colonna, senza posizione assoluta */
+      .diagramma > .colonna-index { align-self: center; }
+      .voci { position: static; transform: none; }
     }
+    /* Avviso sui pulsanti che collegano la cartella del progetto: al passaggio del mouse (e con la tastiera) un riquadro
+       sotto il pulsante dice che funziona solo in Chrome o Edge sul computer (File System Access API). Il riquadro parte dal bordo sinistro del pulsante. Stessa regola in
+       operatore.html, gestione-negozi.html, pacchetti.html e assets/css/operatore.css (pagine dei loghi ufficiali) */
+    [data-avviso] { position: relative; }
+    [data-avviso]::after { content: '// ' attr(data-avviso); position: absolute; top: calc(100% + 9px); left: 0; z-index: 30; width: max-content;
+      max-width: 270px; padding: 7px 10px; border: 1px solid #8f6a1f; border-radius: 4px; background: #0a0908; color: #d9d3c7;
+      font: 400 10.5px/1.5 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .02em; text-transform: none; text-align: left;
+      white-space: normal; pointer-events: none; opacity: 0; transform: translateY(-4px); transition: opacity .15s, transform .15s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .5); }
+    [data-avviso]:hover::after, [data-avviso]:focus-visible::after { opacity: 1; transform: none; }
+    /* il pulsante sta sul bordo destro: il riquadro si allinea a destra */
+    #collega::after { left: auto; right: 0; }
   </style>
 </head>
 <body>
@@ -417,8 +673,14 @@
       <button class="lucchetto" type="button" id="modifica" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="arco" d="M8 11V7.5a4 4 0 0 1 8 0V11"/><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M12 15v2.5"/></svg><span id="modifica-testo">modalità modifica</span></button>
       <span class="modifica-nota" id="modifica-nota" hidden>trascina i moduli dentro la loro sezione per cambiarne l'ordine, poi registra</span>
     </div>
+    <!-- legenda: moduli sorgente (oro) e moduli clone (azzurro) -->
+    <div class="legenda-moduli" aria-label="Legenda dei moduli">
+      <span class="l-sorgente" tabindex="0" data-avviso="modulo sorgente, scritto a codice (Luxury Outlet, TEBE o derivato da loro): si mette in ghost e si sposta; si modifica e si cancella solo dal codice"><i></i><b>sorgente</b></span>
+      <span class="l-clone" tabindex="0" data-avviso="modulo clone, creato con le utilità dell'area operatore: si mette in ghost, si sposta, si modifica e si cancella"><i></i><b>clone</b></span>
+      <span class="l-temi" tabindex="0" data-avviso="i pulsanti dei temi speciali che il modulo ha: Made in Italy, Black Friday, Natale"><b>temi speciali</b><span class="w-tema t-italia"><img src="assets/img/luxury/madeinitaly.png" alt=""></span><span class="w-tema t-blackfriday"><img src="assets/img/luxury/tema_blackfriday_icon.png" alt=""></span><span class="w-tema t-natale"><img src="assets/img/luxury/tema_xmas_icon.png" alt=""></span></span>
+    </div>
     <div class="cartella">
-      <button class="comando" type="button" id="collega">collega la cartella del progetto</button>
+      <button class="comando" type="button" id="collega" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">collega la cartella del progetto</button>
     </div>
   </div>
 
@@ -545,15 +807,24 @@
     new Function('Dashboard', testo)({ contenuto: contenuto => { dati = contenuto; } });
     if (!dati) throw new Error(`assets/negozi/${id}-dashboard.js non ha il contenuto della dashboard`);
     const pagine = [...new Set(dati.sezioni.flatMap(s => s.schede).filter(s => s.link).map(s => pagina(s.link)))];
+    // cloni (storecraft-origine, creati dalle utilità) e pagine sorgente derivate da un'altra (storecraft-derivata)
     const cloni = new Map();
+    const derivate = new Map();
+    const testi = new Map();   // testo delle pagine: quali regole comuni usano
     await Promise.all(pagine.map(async nome => {
-      try { const origine = Associa.clone(await testoFile(`${id}/${nome}`)); if (origine) cloni.set(nome, origine); } catch { /* pagina mancante */ }
+      try {
+        const html = await testoFile(`${id}/${nome}`);
+        testi.set(nome, html);
+        const origine = Associa.clone(html);
+        if (origine) cloni.set(nome, origine);
+        else if (Associa.derivata(html)) derivate.set(nome, Associa.derivata(html));
+      } catch { /* pagina mancante */ }
     }));
     // pagine di servizio che il negozio ha davvero
     const servizio = (await Promise.all(SERVIZIO.map(async voce => {
       try { await testoFile(`${id}/${voce.file}`); return voce; } catch { return null; }
     }))).filter(Boolean);
-    negozi[id] = { testo, dati, cloni, servizio, strumenti: await strumentiCassa() };
+    negozi[id] = { testo, dati, cloni, derivate, testi, servizio, strumenti: await strumentiCassa() };
   }
 
   // Pagine di servizio dei negozi (non sono schede della dashboard: ci si arriva dal menu, dalla pulsantiera o dai widget)
@@ -588,7 +859,7 @@
   // ----- Insegne dei negozi (e, dopo, MODULI: il catalogo dei moduli) -----
   const MODULI = 'moduli';
   let negozioScelto = Negozi.installati[0];
-  try { const ricordato = sessionStorage.getItem('gestione_negozi_negozio'); if (Negozi.installati.includes(ricordato) || ricordato === MODULI) negozioScelto = ricordato; } catch { /* resta il primo */ }
+  // a ogni apertura si riparte dal primo negozio (la scelta non si ricorda tra un'apertura e l'altra)
   const insegne = document.querySelector('.insegne');
   const segnalino = insegne.querySelector('.segnalino');
   const sposta = tasto => { segnalino.style.left = `${tasto.offsetLeft}px`; segnalino.style.width = `${tasto.offsetWidth}px`; };
@@ -612,11 +883,17 @@
     tasto.addEventListener('click', () => scegli(id));
     insegne.insertBefore(tasto, segnalino);
   });
-  // MODULI: dopo i negozi, staccata da una linea sottile
+  // Catalogo dei moduli: per primo, prima dei negozi, staccato da //
   {
-    const divisore = nodo('span', 'divisore');
+    const divisore = nodo('span', 'divisore', '//');
     divisore.setAttribute('aria-hidden', 'true');
-    const tasto = nodo('button', 'insegna insegna-moduli', 'MODULI');
+    const tasto = nodo('button', 'insegna insegna-moduli');
+    const logo = nodo('img');
+    logo.src = 'assets/img/storecraftlogo.png';
+    logo.alt = '';
+    logo.style.width = '96px';
+    tasto.append(logo, nodo('span', '', 'CATALOGO'));
+    tasto.setAttribute('aria-label', 'Catalogo dei moduli');
     tasto.type = 'button';
     tasto.setAttribute('role', 'tab');
     tasto.dataset.negozio = MODULI;
@@ -624,8 +901,7 @@
     tasto.addEventListener('mouseenter', () => sposta(tasto));
     tasto.addEventListener('focus', () => sposta(tasto));
     tasto.addEventListener('click', () => scegli(MODULI));
-    insegne.insertBefore(divisore, segnalino);
-    insegne.insertBefore(tasto, segnalino);
+    insegne.prepend(tasto, divisore);
   }
   insegne.addEventListener('keydown', evento => {
     const tasti = [...insegne.querySelectorAll('.insegna')];
@@ -642,13 +918,14 @@
   });
   async function scegli(id) {
     negozioScelto = id;
-    try { sessionStorage.setItem('gestione_negozi_negozio', id); } catch { /* niente memoria */ }
     insegne.querySelectorAll('.insegna').forEach(t => {
       const sì = t.dataset.negozio === id;
       t.setAttribute('aria-selected', String(sì));
       t.tabIndex = sì ? 0 : -1;
     });
     if (scelta()) sposta(scelta());
+    // tema e aspetto dei widget: di partenza quelli del negozio (il catalogo: scuro e STANDARD)
+    stileDiPartenza(id);
     chiudiModulo(false);
     // nel catalogo niente modalità modifica: i moduli si riordinano nei negozi
     document.querySelector('.modifica-riga').hidden = id === MODULI;
@@ -689,11 +966,158 @@
   // foglio della dashboard, con l'angolo piegato e qualche riga
   const ICONA_PAGINA = '<svg viewBox="0 0 34 42" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M3 1.5h20l9 9v30H3z"/><path d="M23 1.5v9h9"/><path d="M8 18h18M8 23h18M8 28h12M8 33h15" stroke-opacity=".55"/></svg>';
 
+  // modulo clone (pagina con storecraft-origine, creata dalle utilità) o sorgente (scritto a codice: le pagine di
+  // partenza, comprese quelle derivate da un altro negozio, le stampe pronte e i moduli in arrivo)
+  const eClone = (id, scheda) => Boolean(scheda.link && negozi[id].cloni.has(pagina(scheda.link)));
+  // Temi speciali della pagina di un modulo: i pulsanti Made in Italy (modulo comune madeinitaly.js), Black Friday e
+  // Natale (le icone dei pulsanti, tema_blackfriday_icon e tema_xmas_icon); per ognuno il nome e l'icona del pulsante
+  // vero, letta dalla pagina (il negozio della pagina: Made in Italy ha la bandiera del suo negozio)
+  function temiSpeciali(html, negozio) {
+    if (!html) return [];
+    const icona = nome => ((html.match(new RegExp(`(?:\\.\\./)?(assets/img/[^"')\\s]*${nome})`)) || [])[1]) || null;
+    const temi = [];
+    if (/madeinitaly\.js/.test(html)) temi.push({ id: 'italia', nome: 'Made in Italy', icona: `assets/img/${negozio}/madeinitaly.png` });
+    if (/tema_blackfriday_icon/.test(html)) temi.push({ id: 'blackfriday', nome: 'Black Friday', icona: icona('tema_blackfriday_icon.png') });
+    if (/tema_xmas_icon/.test(html)) temi.push({ id: 'natale', nome: 'Natale', icona: icona('tema_xmas_icon.png') });
+    return temi;
+  }
+  const temiDelModulo = (id, scheda) => (scheda.link ? temiSpeciali(negozi[id]?.testi.get(pagina(scheda.link)), id) : []);
+  // in sintesi sul widget: le icone dei pulsanti, piccole e tonde, in basso a destra sull'anteprima
+  function iconeTemi(temi) {
+    if (!temi.length) return null;
+    const riga = nodo('span', 'w-temi');
+    riga.title = `temi speciali: ${temi.map(t => t.nome).join(', ')}`;
+    temi.forEach(tema => {
+      const tondo = nodo('span', `w-tema t-${tema.id}`);
+      if (tema.icona) { const img = nodo('img'); img.src = tema.icona; img.alt = ''; img.loading = 'lazy'; img.draggable = false; tondo.append(img); }
+      riga.append(tondo);
+    });
+    return riga;
+  }
+  function etichettaTipo(id, scheda) {
+    const clone = eClone(id, scheda);
+    const nome = scheda.link ? pagina(scheda.link) : null;
+    const etichetta = nodo('span', 'w-tipo', clone ? 'clone' : 'sorgente');
+    etichetta.title = clone ? `clone di ${negozi[id].cloni.get(nome)}: si modifica, si sposta, si cancella`
+      : nome && negozi[id].derivate.has(nome) ? `modulo sorgente, derivato da ${negozi[id].derivate.get(nome)}: si mette in ghost e si sposta`
+      : 'modulo sorgente: si mette in ghost e si sposta; si modifica e si cancella solo dal codice';
+    return etichetta;
+  }
+
+  // Un widget si apre con un clic (la scheda del modulo): è un elemento premibile (non un pulsante, perché dentro ha il
+  // + delle specifiche), raggiungibile con Tab e che si preme con Invio o spazio
+  function premibile(elemento) {
+    elemento.setAttribute('role', 'button');
+    elemento.tabIndex = 0;
+    elemento.addEventListener('keydown', evento => {
+      if (evento.target !== elemento || !['Enter', ' '].includes(evento.key)) return;
+      evento.preventDefault();
+      elemento.click();
+    });
+  }
+  // Il + delle specifiche, come nelle schede della dashboard: un clic su un widget qualsiasi apre le specifiche di tutti
+  // (il + ruota in ×), un altro le richiude; funziona anche sul widget grande della scheda del modulo, per vedere come si
+  // aprirà la descrizione una volta montato in un negozio
+  function specificheWidget(elemento, specifiche) {
+    if (!specifiche?.length) return;
+    const elenco = nodo('span', 'w-spec');
+    const dentro = nodo('span', 'w-spec-testo');
+    specifiche.forEach((testo, i) => { if (i) dentro.append(nodo('i', '', '|')); dentro.append(nodo('span', '', testo)); });
+    elenco.append(dentro);
+    const piu = nodo('span', 'w-piu');
+    piu.setAttribute('role', 'button');
+    piu.tabIndex = 0;
+    const aggiorna = () => {
+      const aperte = document.body.classList.contains('specifiche-aperte');
+      piu.setAttribute('aria-expanded', String(aperte));
+      piu.setAttribute('aria-label', `${aperte ? 'Nascondi' : 'Mostra'} specifiche`);
+      piu.title = `${aperte ? 'nascondi' : 'mostra'} specifiche`;
+    };
+    aggiorna();
+    const premi = evento => {
+      evento.stopPropagation();
+      evento.preventDefault();
+      document.body.classList.toggle('specifiche-aperte');
+      document.querySelectorAll('.w-piu').forEach(p => p.dispatchEvent(new Event('aggiorna')));
+    };
+    piu.addEventListener('aggiorna', aggiorna);
+    piu.addEventListener('click', premi);
+    piu.addEventListener('keydown', evento => { if (['Enter', ' '].includes(evento.key)) premi(evento); });
+    elemento.classList.add('con-specifiche');
+    // il titolo e il + sulla stessa riga, sotto la descrizione che si apre
+    const titolo = elemento.querySelector('.w-titolo');
+    if (!titolo) return;
+    const riga = nodo('span', 'w-riga');
+    titolo.replaceWith(riga);
+    riga.append(titolo, piu);
+    riga.after(elenco);
+  }
+
+  // Tema e aspetto dei widget, come nelle dashboard: quattro quadratini sotto il riquadro del negozio (tema scuro e
+  // chiaro, aspetto STANDARD e COMPATTO, la A); cambiano forma (tonda o squadrata), fondo e caratteri dei widget del
+  // diagramma e della scheda del modulo. Di partenza l'aspetto iniziale del negozio (interfaccia della sua scheda)
+  const stileWidget = { tema: 'dark', aspetto: 'standard' };
+  function applicaStile() {
+    document.body.dataset.widgetTema = stileWidget.tema;
+    document.body.dataset.widgetAspetto = stileWidget.aspetto;
+    document.querySelectorAll('.stile-widget button').forEach(pulsante => {
+      pulsante.setAttribute('aria-pressed', String(stileWidget[pulsante.dataset.chiave] === pulsante.dataset.valore));
+    });
+    // il widget della scheda del modulo (la vetrina con gli stili veri della dashboard) cambia senza ricaricarsi
+    document.querySelectorAll('.vetrina-modulo iframe').forEach(riquadro => riquadro.contentWindow?.impostaStile?.(stileWidget.tema, stileWidget.aspetto));
+  }
+  // Il widget nella scheda del modulo, esattamente come nella dashboard del negozio: la vetrina di Gestione pacchetti
+  // (pacchetto-vetrina.html, con dashboard.css, theme.css e la struttura delle schede di dashboard.js) con il solo
+  // modulo (window.anteprimaNuovoModulo, letto dalla vetrina), il suo numero nella galleria, nel tema e nell'aspetto scelti
+  function vetrinaModulo(modulo, tipo, numero) {
+    window.anteprimaNuovoModulo = { tipo, modulo };
+    const cornice = nodo('div', 'vetrina-modulo');
+    const riquadro = nodo('iframe');
+    riquadro.title = `${modulo.titolo}: il widget come nella dashboard`;
+    riquadro.src = `pacchetto-vetrina.html?anteprima=1&numero=${numero}&tema=${stileWidget.tema}&aspetto=${stileWidget.aspetto}`;
+    // alto quanto la scheda, anche quando si aprono le specifiche
+    const adatta = () => {
+      const zona = riquadro.contentDocument?.querySelector('main');
+      if (zona) riquadro.style.height = `${Math.ceil(zona.offsetHeight)}px`;
+    };
+    riquadro.addEventListener('load', () => {
+      adatta();
+      const zona = riquadro.contentDocument?.querySelector('main');
+      if (zona) new ResizeObserver(adatta).observe(zona);
+    });
+    cornice.append(riquadro);
+    return cornice;
+  }
+  function stileDiPartenza(id) {
+    const interfaccia = Negozi.scheda(id)?.interfaccia || {};
+    stileWidget.tema = interfaccia.tema === 'light' ? 'light' : 'dark';
+    stileWidget.aspetto = interfaccia.aspetto === 'minimal' ? 'minimal' : 'standard';
+    applicaStile();
+  }
+  function selettoriStile() {
+    const barra = nodo('div', 'stile-widget');
+    barra.setAttribute('aria-label', 'Aspetto dei widget');
+    [['tema', 'dark', 'tema scuro'], ['tema', 'light', 'tema chiaro'], ['aspetto', 'standard', 'aspetto STANDARD'], ['aspetto', 'minimal', 'aspetto COMPATTO']]
+      .forEach(([chiaveStile, valore, nome], i) => {
+        if (i === 2) barra.append(nodo('span', 'stile-sep'));
+        const pulsante = nodo('button', `stile-q q-${valore}`, chiaveStile === 'aspetto' ? 'A' : '');
+        pulsante.type = 'button';
+        pulsante.dataset.chiave = chiaveStile;
+        pulsante.dataset.valore = valore;
+        pulsante.title = `widget con il ${nome}`;
+        pulsante.setAttribute('aria-label', `Widget con il ${nome}`);
+        pulsante.setAttribute('aria-pressed', String(stileWidget[chiaveStile] === valore));
+        pulsante.addEventListener('click', () => { stileWidget[chiaveStile] = valore; applicaStile(); });
+        barra.append(pulsante);
+      });
+    return barra;
+  }
+
   function widget(id, sezione, scheda, numero, grande = false) {
     const stato = statoDi(scheda);
-    const elemento = nodo(grande ? 'div' : 'button', `widget in-${stato}`);
+    const elemento = nodo('div', `widget in-${stato} ${eClone(id, scheda) ? 'clone' : 'sorgente'}`);
     if (!grande) {
-      elemento.type = 'button';
+      premibile(elemento);
       elemento.draggable = modifica;   // si trascinano solo con il lucchetto aperto (modalità modifica)
       elemento.dataset.chiave = chiave(scheda);
       elemento.setAttribute('aria-label', `${scheda.titolo}, ${due(numero)}, ${stato === 'attivo' ? 'attivo' : stato === 'ghost' ? 'in ghost' : 'in arrivo'}. Apri la scheda del modulo${modifica ? '; trascinalo, o Alt e frecce, per spostarlo' : ''}`);
@@ -713,16 +1137,213 @@
       immagine.draggable = false;
       anteprima.append(immagine);
     } else anteprima.append(nodo('span', 'w-icona', scheda.prossimamente ? 'coming soon' : scheda.pdf ? 'pdf' : '—'));
-    elemento.append(testa, anteprima, nodo('span', 'w-titolo', scheda.titolo));
-    if (scheda.link && negozi[id].cloni.has(pagina(scheda.link))) {
-      const etichetta = nodo('span', 'w-clone', 'clone');
-      etichetta.title = `clone di ${negozi[id].cloni.get(pagina(scheda.link))}`;
-      elemento.append(etichetta);
-    }
+    if (scheda.badge) anteprima.append(nodo('span', 'w-badge', scheda.badge));   // MENU SPECIALE, come nella dashboard
+    const temi = iconeTemi(temiDelModulo(id, scheda));
+    if (temi) anteprima.append(temi);
+    elemento.append(testa, anteprima, nodo('span', 'w-titolo', scheda.titolo), etichettaTipo(id, scheda));
+    specificheWidget(elemento, scheda.specifiche);
     return elemento;
   }
 
+  // ----- Regole comuni centralizzate, sotto index.html: i file comuni (assets/css, assets/js) che le pagine del negozio
+  // usano, in gruppi. Ogni gruppo ha il suo diagramma: un ramo per file, con i moduli del negozio che lo usano -----
+  const REGOLE = [
+    { id: 'pannello', nome: 'Pannello', file: ['assets/css/pannello.css', 'assets/js/menu-cascata.js', 'assets/js/campi-prezzo.js', 'assets/js/testi-pronti.js', 'assets/js/fasce-prezzo.js'] },
+    { id: 'selettori', nome: 'Selettori', file: ['assets/js/selettore.js', 'assets/js/selettore-cartello.js', 'assets/js/selettore-modalita-prezzo.js', 'assets/js/selettore-numero-articoli.js', 'assets/js/second-brand-toggle.js', 'assets/js/copia-cartello.js'] },
+    { id: 'loghi', nome: 'Loghi', file: ['assets/js/logos.js', 'assets/js/loghi-personalizzati.js', 'assets/js/menu-brand-cartellini.js', 'assets/js/print-logo-colors.js', 'assets/js/print-white-logos.js'] },
+    { id: 'stampa', nome: 'Stampa', file: ['assets/js/strumenti-stampa.js', 'assets/js/stampa-ios.js', 'assets/js/cursore.js', 'assets/js/dymo-direct.js'] },
+    { id: 'aspetto', nome: 'Aspetto', file: ['assets/js/theme.js', 'assets/js/responsive.js', 'assets/js/madeinitaly.js', 'assets/css/chiudi-pagina.css', 'assets/css/torna-al-menu.css', 'assets/css/font-arial.css'] }
+  ];
+  const regoleAperte = {};   // negozio → id della regola aperta (null: lo sviluppo di index)
+  // i gruppi usati dal negozio: per ogni file le pagine dei moduli che lo usano (solo i file usati)
+  function regoleDelNegozio(id) {
+    const { testi } = negozi[id];
+    return REGOLE.map(gruppo => ({
+      ...gruppo,
+      usati: gruppo.file.map(file => ({ file, pagine: [...testi].filter(([, html]) => html.includes(file)).map(([nome]) => nome) }))
+        .filter(voce => voce.pagine.length)
+    })).filter(gruppo => gruppo.usati.length);
+  }
+  // ----- Colonna di index come un menu a croce: la voce scelta (index.html o una regola comune) sta al centro, sulla
+  // linea del diagramma, grande come index, con la sua maniglia e il suo sviluppo a destra; le altre voci, piccole,
+  // stanno sopra e sotto, appese al filo verticale. Scegliendo un'altra voce la colonna scorre: index sale, la regola
+  // scelta prende il suo posto e le sue dimensioni, con la maniglia aperta e il suo ramo che si srotola -----
+  const sviluppo = () => $('diagramma').querySelector(':scope > .rami');
+  const chiaveSviluppo = (id, voce) => (voce ? `${id}:sviluppo-regola:${voce}` : `${id}:index`);
+  const posizioniColonna = () => new Map([...document.querySelectorAll('.colonna-index [data-voce]')]
+    .map(elemento => [elemento.dataset.voce, elemento.getBoundingClientRect()]));
+  // ogni voce scivola dalla posizione (e dalla grandezza) di prima alla nuova
+  function scorriColonna(prima, veloce = false) {
+    if (riduciAnimazioni()) return;
+    document.querySelectorAll('.colonna-index [data-voce]').forEach(elemento => {
+      const da = prima.get(elemento.dataset.voce);
+      const a = elemento.getBoundingClientRect();
+      if (!da || !a.width || !a.height) return;
+      const dx = da.left - a.left, dy = da.top - a.top, sx = da.width / a.width, sy = da.height / a.height;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < .01 && Math.abs(sy - 1) < .01) return;
+      elemento.animate([
+        { transformOrigin: 'top left', transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
+        { transformOrigin: 'top left', transform: 'none' }
+      ], { duration: veloce ? 200 : 420, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+    });
+  }
+  // lo sviluppo a destra si riavvolge, la colonna cambia (e scorre), il nuovo sviluppo si srotola; veloce (con la rotella)
+  // tutto in circa un terzo del tempo, perché si passa da una voce all'altra di seguito; con un clic l'animazione piena
+  // (mentre cambia, la rotella aspetta: due scatti ravvicinati non leggono la voce di prima)
+  let colonnaInCambio = false;
+  async function cambiaSviluppo(cambia, veloce = false) {
+    colonnaInCambio = true;
+    try {
+      await riavvolgi(sviluppo(), veloce);
+      const prima = posizioniColonna();
+      cambia();
+      disegna();
+      scorriColonna(prima, veloce);
+      ritrovaManiglia();
+      srotola(sviluppo(), veloce);
+    } finally {
+      colonnaInCambio = false;
+    }
+  }
+  // sceglie una voce della colonna (null: index), che va al centro con il suo sviluppo aperto
+  function scegliVoce(id, voce, veloce = false) {
+    cambiaSviluppo(() => { regoleAperte[id] = voce; chiusi.delete(chiaveSviluppo(id, voce)); }, veloce);
+  }
+  // Rotella del mouse sulla colonna di index: solo con il mouse sopra la colonna (index e regole) la rotella non scorre la
+  // pagina ma passa da una voce all'altra (giù: la voce sotto, su: quella sopra), una voce per scatto, con l'animazione
+  // veloce; appena il mouse esce dalla colonna la rotella torna subito a scorrere la pagina, e anche oltre la prima e
+  // l'ultima voce
+  let rotellaFerma = 0;
+  window.addEventListener('wheel', evento => {
+    if (negozioScelto === MODULI || !negozi[negozioScelto] || !$('vista-modulo').hidden) return;
+    if (!evento.target.closest?.('.colonna-index')) return;
+    const verso = Math.sign(evento.deltaY);
+    if (!verso) return;
+    const id = negozioScelto;
+    const voci = [null, ...regoleDelNegozio(id).map(gruppo => gruppo.id)];
+    const dove = voci.indexOf(regoleAperte[id] ?? null) + verso;
+    if (dove < 0 || dove >= voci.length) return;   // oltre la prima o l'ultima voce scorre la pagina
+    evento.preventDefault();
+    if (colonnaInCambio || Date.now() < rotellaFerma) return;   // uno scatto alla volta, finché la colonna scorre
+    rotellaFerma = Date.now() + 260;
+    scegliVoce(id, voci[dove], true);
+  }, { passive: false });
+  // la maniglia della voce al centro: chiude o riapre il suo sviluppo
+  function alternaSviluppo(id, voce, aperto) {
+    cambiaSviluppo(() => {
+      if (aperto) chiusi.add(chiaveSviluppo(id, voce)); else chiusi.delete(chiaveSviluppo(id, voce));
+    });
+  }
+  // icona di una regola comune: tre fogli sovrapposti (un file condiviso da più pagine)
+  const ICONA_REGOLA = '<svg viewBox="0 0 34 42" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M9 9h18v28H9z"/><path d="M5.5 5.5h18" stroke-opacity=".55"/><path d="M5.5 5.5v28" stroke-opacity=".55"/><path d="M2 2h18M2 2v28" stroke-opacity=".3"/><path d="M13 17h10M13 22h10M13 27h7" stroke-opacity=".55"/></svg>';
+  function colonnaIndex(id, dashboard, gruppi, attiva, aperto) {
+    const voci = [null, ...gruppi.map(gruppo => gruppo.id)];
+    const qui = voci.indexOf(attiva ? attiva.id : null);
+    const colonna = nodo('div', 'colonna-index');
+    colonna.title = 'rotella del mouse: passa da index alle regole comuni';
+    // la voce al centro: index (la dashboard) o la regola scelta, grande come index, con la maniglia
+    const centro = nodo('div', 'indice-nodo');
+    centro.dataset.voce = attiva ? attiva.id : 'index';
+    let grande = dashboard;
+    if (attiva) {
+      grande = nodo('div', 'nodo nodo-pagina nodo-regola-grande');
+      grande.insertAdjacentHTML('afterbegin', ICONA_REGOLA);
+      grande.append(nodo('span', 'nodo-file', attiva.nome), nodo('span', 'nodo-sotto', `${attiva.usati.length} file`));
+      grande.title = attiva.usati.map(voce => voce.file).join('\n');
+    }
+    const maniglia = nodo('button', 'maniglia');
+    maniglia.type = 'button';
+    maniglia.dataset.nome = attiva ? `il diagramma della regola ${attiva.nome}` : 'lo sviluppo di index (creator, cassiere, servizio)';
+    aggiornaManiglia(maniglia, aperto);
+    maniglia.addEventListener('click', () => {
+      if (colonnaInCambio) return;   // un clic alla volta: il cambio di prima non è ancora finito
+      // la stanghetta gira subito, mentre il ramo si riavvolge; ridisegnata, la maniglia nuova è già nella posizione giusta
+      aggiornaManiglia(maniglia, !aperto);
+      if (manigliaCliccata) manigliaCliccata.aperta = !aperto;
+      alternaSviluppo(id, attiva ? attiva.id : null, aperto);
+    });
+    centro.append(grande, maniglia);
+    // le altre voci, piccole: un clic le porta al centro
+    const titolo = () => nodo('span', 'regole-titolo', 'regole comuni');
+    const piccola = voce => {
+      const gruppo = gruppi.find(g => g.id === voce);
+      const pulsante = nodo('button', `nodo-regola${voce ? '' : ' voce-index'}`);
+      pulsante.type = 'button';
+      pulsante.dataset.voce = voce || 'index';
+      if (gruppo) {
+        pulsante.append(nodo('span', '', gruppo.nome), nodo('small', '', `${gruppo.usati.length} file`));
+        pulsante.title = `regola comune ${gruppo.nome}: ${gruppo.usati.map(v => v.file.split('/').pop()).join(', ')}`;
+      } else {
+        pulsante.append(nodo('span', '', 'index.html'), nodo('small', '', 'dashboard'));
+        pulsante.title = 'torna a index: creator, cassiere, servizio';
+      }
+      pulsante.addEventListener('click', () => scegliVoce(id, voce));
+      return pulsante;
+    };
+    const sopra = voci.slice(0, qui), sotto = voci.slice(qui + 1);
+    if (sopra.length) {
+      const elenco = nodo('div', 'voci voci-sopra');
+      sopra.forEach(voce => {
+        if (voce && voce === voci[1]) elenco.append(titolo());
+        elenco.append(piccola(voce), nodo('span', 'filo-v'));
+      });
+      colonna.append(elenco);
+    }
+    colonna.append(centro);
+    if (sotto.length) {
+      const elenco = nodo('div', 'voci voci-sotto');
+      sotto.forEach(voce => {
+        elenco.append(nodo('span', 'filo-v'));
+        if (voce === voci[1]) elenco.append(titolo());
+        elenco.append(piccola(voce));
+      });
+      colonna.append(elenco);
+    }
+    return colonna;
+  }
+  // il diagramma di una regola: il nodo del gruppo e un ramo per file, con i moduli del negozio che lo usano
+  function ramoRegola(id, gruppo, scorrimenti, ritardo) {
+    const { dati } = negozi[id];
+    const rami = gruppo.usati.map(({ file, pagine }, i) => {
+      // per ogni pagina il primo modulo che la apre (le etichette hanno un modulo per layout, una sola pagina)
+      const moduli = pagine.map(nome => {
+        for (const sezione of dati.sezioni) {
+          const scheda = sezione.schede.find(s => s.link && pagina(s.link) === nome);
+          if (scheda) return { sezione, scheda };
+        }
+        return null;
+      }).filter(Boolean);
+      const elemento = nodo('li', 'ramo');
+      elemento.dataset.sezione = `regola-${gruppo.id}-${i}`;
+      elemento.dataset.stato = `${id}:regola:${file}`;
+      elemento.style.setProperty('--d', `${ritardo + 260 + i * 110}ms`);
+      const testa = nodo('div', 'nodo nodo-galleria nodo-file-regola');
+      testa.append(nodo('span', 'file-regola', file.split('/').pop()), nodo('span', 'nodo-sotto', `${moduli.length} ${moduli.length === 1 ? 'modulo' : 'moduli'}`));
+      testa.title = file;
+      const carosello = nodo('div', 'carosello');
+      const nastro = nodo('div', 'nastro');
+      nastro.setAttribute('role', 'list');
+      nastro.setAttribute('aria-label', `Moduli che usano ${file}`);
+      moduli.forEach(({ sezione, scheda }, n) => {
+        const w = widget(id, sezione, scheda, n + 1);
+        w.draggable = false;
+        w.style.setProperty('--d', `${ritardo + 400 + i * 110 + Math.min(n, 6) * 45}ms`);
+        nastro.append(w);
+      });
+      frecce(carosello, nastro, scorrimenti[elemento.dataset.sezione] || 0);
+      const filo = nodo('span', 'filo corto');
+      const riassunto = chiudibile(elemento, testa, elemento.dataset.stato, file.split('/').pop(), moduli.map(m => statoDi(m.scheda)));
+      elemento.append(testa, filo, carosello, riassunto);
+      return elemento;
+    });
+    const area = ramoArea(id, `regola-${gruppo.id}`, gruppo.nome, `${gruppo.usati.length} file comuni`, rami, ritardo,
+      gruppo.usati.flatMap(v => v.pagine).map(() => 'attivo'));
+    area.classList.add('area-regola');
+    return area;
+  }
+
   function disegna() {
+    $('diagramma').style.minHeight = '';
     if (negozioScelto === MODULI) { disegnaCatalogo(); return; }
     const id = negozioScelto;
     const { dati, cloni } = negozi[id];
@@ -750,12 +1371,35 @@
     dashboard.title = `apri la dashboard di ${nomeNegozio(id)} ↗`;
     dashboard.insertAdjacentHTML('afterbegin', ICONA_PAGINA);
     dashboard.append(nodo('span', 'nodo-file', 'index.html'), nodo('span', 'nodo-sotto', 'dashboard'));
+    // colonna di index: la dashboard, con la maniglia che apre e chiude il suo sviluppo (CREATOR, CASSIERE, SERVIZIO), e
+    // sotto le regole comuni usate dal negozio; aprendo una regola lo sviluppo di index si chiude e a destra compare il
+    // diagramma della regola
+    const gruppiRegole = regoleDelNegozio(id);
+    const regolaAperta = gruppiRegole.find(g => g.id === regoleAperte[id]) || null;
+    if (!regolaAperta) regoleAperte[id] = null;
+    // la voce al centro della colonna (index o una regola) e il suo sviluppo, aperto o chiuso con la sua maniglia
+    const aperto = !chiusi.has(chiaveSviluppo(id, regolaAperta ? regolaAperta.id : null));
+    const colonna = colonnaIndex(id, dashboard, gruppiRegole, regolaAperta, aperto);
     // le gallerie
     // tre aree del negozio, ognuna con i suoi rami: CREATOR (le gallerie dei caroselli), CASSIERE (le Utilità Cassa),
     // PAGINE DI SERVIZIO (lista e cronologia di stampa, bacheca, loghi personali, visualizzatore PDF)
     const aree = nodo('ol', 'rami');
-    aree.setAttribute('aria-label', 'Aree del negozio');
+    aree.setAttribute('aria-label', regolaAperta ? `Regola comune ${regolaAperta.nome}` : 'Aree del negozio');
     let ritardo = 520;
+    if (!aperto) {
+      // sviluppo chiuso: un riassunto, che lo riapre
+      const riassunto = nodo('button', 'riassunto aperto-sempre');
+      riassunto.type = 'button';
+      riassunto.append(nodo('span', '', regolaAperta ? `${regolaAperta.nome.toLowerCase()} · ${regolaAperta.usati.length} file · espandi ›`
+        : 'creator · cassiere · servizio · espandi ›'));
+      riassunto.addEventListener('click', () => alternaSviluppo(id, regolaAperta ? regolaAperta.id : null, false));
+      const voce = nodo('li', 'ramo');
+      voce.append(riassunto);
+      aree.append(voce);
+    } else if (regolaAperta) {
+      aree.append(ramoRegola(id, regolaAperta, scorrimenti, ritardo));
+    }
+    if (!regolaAperta && aperto) {
     const gallerie = dati.sezioni.map((sezione, i) => ramo(id, sezione, scorrimenti[sezione.id] || 0, ritardo + 260 + i * 110));
     aree.append(ramoArea(id, 'creator', 'Creator', `${dati.sezioni.length} gallerie`, gallerie, ritardo,
       dati.sezioni.flatMap(s => s.schede).map(statoDi)));
@@ -769,12 +1413,22 @@
     aree.append(ramoArea(id, 'servizio', 'Servizio', `${servizio.length} pagine`,
       [ramoSemplice(id, 'servizio', 'Pagine di servizio', `${servizio.length} pagine`, servizio.map(s => ({ titolo: s.titolo, segno: s.segno,
         href: `${id}/${s.file}`, nota: `${id}/${s.file}` })), ritardo + 260)], ritardo, servizio.map(() => 'attivo')));
-    const fili = [nodo('span', 'filo'), nodo('span', 'filo')];
+    }
+    const fili = [nodo('span', 'filo'), nodo('span', `filo${aperto ? '' : ' fermo'}`)];   // con lo sviluppo chiuso il flusso si ferma
     negozio.style.setProperty('--d', '0ms');
     fili[0].style.setProperty('--d', '160ms');
     dashboard.style.setProperty('--d', '260ms');
     fili[1].style.setProperty('--d', '400ms');
-    diagramma.append(negozio, fili[0], dashboard, fili[1], aree);
+    // sotto il riquadro del negozio i quadratini del tema e dell'aspetto dei widget
+    const colonnaNegozio = nodo('div', 'colonna-negozio');
+    colonnaNegozio.append(negozio, selettoriStile());
+    diagramma.append(colonnaNegozio, fili[0], colonna, fili[1], aree);
+    // le voci sopra e sotto escono dalla colonna (posizione assoluta): il diagramma tiene lo spazio perché la voce al
+    // centro resti all'altezza dei fili
+    const centro = colonna.querySelector('.indice-nodo');
+    const altezza = classe => colonna.querySelector(classe)?.offsetHeight || 0;
+    const spazio = Math.max(altezza('.voci-sopra'), altezza('.voci-sotto'));
+    diagramma.style.minHeight = spazio && centro.offsetHeight ? `${Math.ceil((centro.offsetHeight / 2 + spazio + 14) * 2)}px` : '';
 
     // totali
     const tutte = dati.sezioni.flatMap(s => s.schede);
@@ -786,24 +1440,121 @@
   }
 
   // ----- Rami che si chiudono e si aprono (maniglia sul raccordo, un cerchio con la linea orizzontale da aperto e verticale da chiuso, o un clic sul nodo); chiusi mostrano un riassunto
-  // con una spia per modulo. Lo stato resta in questa scheda del browser, per negozio -----
-  const CHIUSI = 'gestione_negozi_chiusi';
+  // con una spia per modulo. Lo stato vale finché si resta nella pagina: a ogni apertura tutto aperto -----
   let chiusi = new Set();
-  try { chiusi = new Set(JSON.parse(sessionStorage.getItem(CHIUSI) || '[]')); } catch { /* tutto aperto */ }
-  const salvaChiusi = () => { try { sessionStorage.setItem(CHIUSI, JSON.stringify([...chiusi])); } catch { /* niente memoria */ } };
+  // a ogni apertura tutto aperto: i rami chiusi valgono finché si resta nella pagina
+  // Animazioni dei rami (Web Animations API; niente con «riduci animazioni»): aprendo, nodi, fili e moduli si srotolano
+  // verso destra uno dopo l'altro, nell'ordine in cui stanno; chiudendo si riavvolgono al contrario, dall'ultimo
+  const riduciAnimazioni = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DA_ANIMARE = '.nodo, .filo, .widget, .riassunto, .vuota';
+  // Il ritardo di ogni pezzo dipende da dove sta: un'onda che va da sinistra a destra (SROTOLA_MS_PX millisecondi per
+  // pixel, circa un secondo da un capo all'altro del diagramma), così i moduli di una galleria si vedono srotolare uno
+  // dopo l'altro; un poco anche dall'alto in basso, come una cascata. Il riavvolgimento va al contrario, più svelto
+  // ogni pezzo esce da sotto quello prima (parte spostato a sinistra di quasi tutta la sua larghezza, un poco storto e
+  // più piccolo), scivola fuori, si raddrizza con un piccolo rimbalzo e subito parte il successivo
+  const SROTOLA_MS_PX = .62, SROTOLA_DURATA = 340, RIAVVOLGI_MS_PX = .32, RIAVVOLGI_DURATA = 190;
+  const ESCE = [
+    { opacity: 0, transform: 'translateX(-85%) rotate(-8deg) scale(.82)', transformOrigin: 'left center', offset: 0 },
+    { opacity: 1, transform: 'translateX(3%) rotate(2deg) scale(1.02)', transformOrigin: 'left center', offset: .62 },
+    { opacity: 1, transform: 'none', transformOrigin: 'left center', offset: 1 }
+  ];
+  const RIENTRA = [
+    { opacity: 1, transform: 'none', transformOrigin: 'left center' },
+    { opacity: 0, transform: 'translateX(-80%) rotate(-7deg) scale(.84)', transformOrigin: 'left center' }
+  ];
+  function pezziVisibili(contenitore) {
+    const pezzi = [...contenitore.querySelectorAll(DA_ANIMARE)].filter(p => p.offsetParent !== null);
+    const posti = pezzi.map(p => p.getBoundingClientRect());
+    const sinistra = Math.min(...posti.map(r => r.left)), destra = Math.max(...posti.map(r => r.left)), alto = Math.min(...posti.map(r => r.top));
+    return pezzi.map((pezzo, i) => ({ pezzo, x: posti[i].left - sinistra, daDestra: destra - posti[i].left, y: posti[i].top - alto }));
+  }
+  // veloce (con la rotella sulla colonna di index): tutto in circa un terzo del tempo (VELOCE)
+  const VELOCE = .35;
+  function srotola(contenitore, veloce = false) {
+    const k = veloce ? VELOCE : 1;
+    if (riduciAnimazioni() || !contenitore) return;
+    // i fili non si spostano: si tracciano dalla maniglia verso destra, dritti, così il flusso resta allineato
+    pezziVisibili(contenitore).forEach(({ pezzo, x, y }) => pezzo.animate(pezzo.classList.contains('filo') ? [
+      { transform: 'scaleX(0)', transformOrigin: 'left center' },
+      { transform: 'scaleX(1)', transformOrigin: 'left center' }
+    ] : ESCE, { duration: SROTOLA_DURATA * k, delay: (x * SROTOLA_MS_PX + y * .08) * k, easing: 'cubic-bezier(.25, .8, .3, 1)', fill: 'backwards' }));
+  }
+  function riavvolgi(contenitore, veloce = false) {
+    const k = veloce ? VELOCE : 1;
+    if (riduciAnimazioni() || !contenitore) return Promise.resolve();
+    const pezzi = pezziVisibili(contenitore);
+    const piuLontano = Math.max(0, ...pezzi.map(p => p.daDestra));
+    const fatto = Promise.all(pezzi.map(({ pezzo, daDestra }) => pezzo.animate(pezzo.classList.contains('filo') ? [
+      { transform: 'scaleX(1)', transformOrigin: 'left center' },
+      { transform: 'scaleX(0)', transformOrigin: 'left center' }
+    ] : RIENTRA, { duration: RIAVVOLGI_DURATA * k, delay: daDestra * RIAVVOLGI_MS_PX * k, easing: 'ease-in', fill: 'forwards' }).finished.catch(() => {})));
+    // al più il tempo dell'animazione (se il browser la sospende, es. scheda in secondo piano, si va avanti lo stesso)
+    return Promise.race([fatto, new Promise(fine => setTimeout(fine, (piuLontano * RIAVVOLGI_MS_PX + RIAVVOLGI_DURATA) * k + 80))]);
+  }
+  // le parti di un ramo che si aprono e si chiudono (il carosello o i rami sotto un'area)
+  const contenutoRamo = elemento => [...elemento.querySelectorAll(':scope > .carosello, :scope > .sotto')];
+
   function alterna(elemento, chiaveStato, aperto) {
     const chiudi = aperto === undefined ? !elemento.classList.contains('chiuso') : !aperto;
-    if (chiudi === elemento.classList.contains('chiuso')) return;
+    if (chiudi === elemento.classList.contains('chiuso') && !elemento.dataset.chiude) return;
+    if (elemento.dataset.chiude && !chiudi) {
+      // riaperto mentre si riavvolgeva: si ferma il riavvolgimento
+      delete elemento.dataset.chiude;
+      contenutoRamo(elemento).forEach(parte => parte.getAnimations({ subtree: true }).forEach(a => a.cancel()));
+    } else if (chiudi === elemento.classList.contains('chiuso')) return;
     if (chiudi) chiusi.add(chiaveStato); else chiusi.delete(chiaveStato);
-    salvaChiusi();
-    elemento.classList.toggle('chiuso', chiudi);
-    elemento.classList.remove('apre', 'chiude');
-    void elemento.offsetWidth;   // riparte l'animazione
-    elemento.classList.add(chiudi ? 'chiude' : 'apre');
     const maniglia = elemento.querySelector(':scope > .nodo > .maniglia');
     if (maniglia) aggiornaManiglia(maniglia, !chiudi);
-    // il carosello riaperto ricalcola le sue frecce
+    elemento.classList.remove('apre', 'chiude');
+    if (chiudi) {
+      // prima i moduli si riavvolgono, poi il ramo si chiude e compare il riassunto
+      elemento.dataset.chiude = '1';
+      Promise.all(contenutoRamo(elemento).map(riavvolgi)).then(() => {
+        if (!elemento.dataset.chiude) return;
+        delete elemento.dataset.chiude;
+        contenutoRamo(elemento).forEach(parte => parte.getAnimations({ subtree: true }).forEach(a => a.cancel()));
+        elemento.classList.add('chiuso');
+        void elemento.offsetWidth;
+        elemento.classList.add('chiude');
+      });
+      return;
+    }
+    elemento.classList.remove('chiuso');
+    // la valvola si riapre: il filo dopo la maniglia si riempie dalla maniglia in avanti
+    const filo = elemento.querySelector(':scope > .filo');
+    if (filo && !riduciAnimazioni()) filo.animate([{ transform: 'scaleX(0)', transformOrigin: 'left center' },
+      { transform: 'scaleX(1)', transformOrigin: 'left center' }], { duration: 320, easing: 'ease-out' });
+    // il carosello riaperto ricalcola le sue frecce, poi i moduli si srotolano
     elemento.querySelectorAll('.nastro').forEach(nastro => nastro.dispatchEvent(new Event('scroll')));
+    contenutoRamo(elemento).forEach(srotola);
+  }
+  // La maniglia appena cliccata: finché il mouse non esce (o il fuoco non va altrove) niente anteprima (classe appena),
+  // così la stanghetta resta nella posizione nuova. Se il diagramma si ridisegna (maniglia di index, regole), la maniglia
+  // nuova riparte dalla posizione di prima e ruota fino a quella nuova, invece di comparire già girata
+  let manigliaCliccata = null;   // { nome, aperta: com'era prima del clic }
+  document.addEventListener('click', evento => {
+    const maniglia = evento.target.closest?.('.maniglia');
+    if (!maniglia) return;
+    manigliaCliccata = { nome: maniglia.dataset.nome, aperta: maniglia.getAttribute('aria-expanded') === 'true' };
+    maniglia.classList.add('appena');
+  }, true);
+  const lasciaManiglia = evento => {
+    const maniglia = evento.target.closest?.('.maniglia');
+    if (maniglia && !maniglia.contains(evento.relatedTarget)) maniglia.classList.remove('appena');
+  };
+  document.addEventListener('pointerout', lasciaManiglia);
+  document.addEventListener('focusout', lasciaManiglia);
+  function ritrovaManiglia() {
+    if (!manigliaCliccata) return;
+    const maniglia = [...document.querySelectorAll('.maniglia')].find(m => m.dataset.nome === manigliaCliccata.nome);
+    const prima = manigliaCliccata;
+    manigliaCliccata = null;
+    if (!maniglia) return;
+    if (maniglia.matches(':hover')) maniglia.classList.add('appena');
+    const aperta = maniglia.getAttribute('aria-expanded') === 'true';
+    if (aperta === prima.aperta || riduciAnimazioni()) return;
+    maniglia.animate([{ rotate: prima.aperta ? '0deg' : '90deg' }, { rotate: aperta ? '0deg' : '90deg' }],
+      { pseudoElement: '::before', duration: 320, easing: 'cubic-bezier(.3, 1.2, .5, 1)' });
   }
   function aggiornaManiglia(maniglia, aperto) {
     // niente testo: la linea dentro il cerchio (CSS) è orizzontale da aperto, verticale da chiuso
@@ -834,12 +1585,14 @@
   }
 
   // Un'area del negozio: il nodo a pillola (CREATOR, CASSIERE, SERVIZIO) e i suoi rami
-  function ramoArea(id, area, nome, sotto, rami, ritardo, stati) {
+  function ramoArea(id, area, nome, sotto, rami, ritardo, stati, logo) {
     const elemento = nodo('li', 'ramo ramo-area');
     elemento.dataset.area = area;
     elemento.dataset.stato = `${id}:area:${area}`;
     elemento.style.setProperty('--d', `${ritardo}ms`);
     const testa = nodo('div', 'nodo nodo-area');
+    // nel catalogo le sorgenti di un negozio hanno sopra il suo logo, piccolo e bianco
+    if (logo) { const immagine = nodo('img', 'area-logo'); immagine.src = logo; immagine.alt = ''; testa.classList.add('con-logo'); testa.append(immagine); }
     testa.append(nodo('span', 'area-nome', nome), nodo('span', 'nodo-sotto', sotto));
     const elenco = nodo('ol', 'rami');
     elenco.append(...rami);
@@ -1095,10 +1848,11 @@
   });
   function apriModulo(id, sezioneId, chiaveModulo) {
     moduloAperto = { id, sezione: sezioneId, chiave: chiaveModulo };
+    azioneAperta = null;   // un modulo nuovo: la pulsantiera delle azioni riparte chiusa
     $('diagramma').hidden = true;
     $('indietro-fondo').hidden = true;
     $('vista-modulo').hidden = false;
-    const ritorno = id === MODULI ? 'catalogo dei moduli' : 'diagramma del negozio';
+    const ritorno = negozioScelto === MODULI ? 'catalogo dei moduli' : 'diagramma del negozio';
     $('torna-diagramma').textContent = `← ${ritorno}`;
     avvisaOperatore(ritorno);
     disegnaModulo();
@@ -1124,12 +1878,101 @@
   });
   // Esc nella scheda del modulo torna al diagramma (prima che arrivi alla pagina operatore, che chiuderebbe la sezione)
   window.addEventListener('keydown', evento => {
+    // Esc con il menu dello stato aperto: chiude solo il menu
+    const menuAperto = document.querySelector('.stato-menu.aperto');
+    if (evento.key === 'Escape' && menuAperto) {
+      evento.preventDefault();
+      evento.stopImmediatePropagation();
+      chiudiMenuStato(menuAperto);
+      menuAperto.querySelector('.stato-scelta').focus();
+      return;
+    }
     if (evento.key === 'Escape' && !$('vista-modulo').hidden) {
       evento.preventDefault();
       evento.stopImmediatePropagation();
       chiudiModulo();
     }
   }, true);
+
+  // Menu a cascata dello stato nella scheda del modulo: in vista lo stato attuale (pallino e scritta) con la freccina; un
+  // clic apre l'elenco con l'altro valore: ghost (pallino viola, «ghost: nascosto dalla dashboard») per un modulo
+  // visibile, attivo («attivo: si vede nella dashboard») per uno in ghost; sceglierlo scrive nella dashboard
+  const ETICHETTE_STATO = { attivo: 'attivo: si vede nella dashboard', ghost: 'ghost: nascosto dalla dashboard', arrivo: STATI.arrivo };
+  function chiudiMenuStato(menu) {
+    menu.classList.remove('aperto');
+    menu.querySelector('.stato-elenco').hidden = true;
+    menu.querySelector('.stato-scelta').setAttribute('aria-expanded', 'false');
+  }
+  document.addEventListener('click', evento => document.querySelectorAll('.stato-menu.aperto').forEach(menu => { if (!menu.contains(evento.target)) chiudiMenuStato(menu); }));
+  function menuStato(id, sezione, scheda, chiaveModulo, stato) {
+    const contenitore = nodo('span', 'stato-menu');
+    const voceStato = s => {
+      const riga = nodo('span', 'stato');
+      riga.append(nodo('span', `spia${s === 'attivo' ? '' : ` ${s}`}`), ETICHETTE_STATO[s]);
+      return riga;
+    };
+    const scelta = nodo('button', 'stato-scelta');
+    scelta.type = 'button';
+    scelta.disabled = !SCRIVIBILE;
+    scelta.setAttribute('aria-haspopup', 'listbox');
+    scelta.setAttribute('aria-expanded', 'false');
+    scelta.append(voceStato(stato), nodo('span', 'stato-freccia'));
+    // l'altro valore: in ghost si torna attivi, altrimenti (anche in arrivo) si mette in ghost
+    const altro = scheda.nascosta ? 'attivo' : 'ghost';
+    const elenco = nodo('span', 'stato-elenco');
+    elenco.setAttribute('role', 'listbox');
+    elenco.hidden = true;
+    const opzione = nodo('button', 'stato-opzione');
+    opzione.type = 'button';
+    opzione.setAttribute('role', 'option');
+    opzione.append(voceStato(altro));
+    elenco.append(opzione);
+    const apri = aperto => {
+      elenco.hidden = !aperto;
+      scelta.setAttribute('aria-expanded', String(aperto));
+      contenitore.classList.toggle('aperto', aperto);
+    };
+    scelta.addEventListener('click', () => { apri(elenco.hidden); if (!elenco.hidden) opzione.focus(); });
+    opzione.addEventListener('click', () => {
+      apri(false);
+      scriviDashboard(id, testo => Associa.impostaFantasmaScheda(testo, sezione.id, chiaveModulo, !scheda.nascosta),
+        `${scheda.titolo} ${scheda.nascosta ? 'di nuovo visibile' : 'in ghost'} nella dashboard di ${nomeNegozio(id)}`);
+    });
+    // si chiude con un clic fuori (chiudiMenuStato) o con Esc, che lo chiude prima di chiudere la scheda
+    contenitore.append(scelta, elenco);
+    return contenitore;
+  }
+
+  // Pulsantiera delle azioni della scheda del modulo: un pulsante per sezione (ghost, duplica, modifica, elimina) in fila,
+  // sotto i dettagli; le sezioni restano chiuse finché non si clicca il loro pulsante, che apre la sezione intera (titolo,
+  // descrizione e comando); un altro clic la richiude, una sezione alla volta. La sezione aperta resta quando la scheda si
+  // ridisegna (dopo un'azione)
+  let azioneAperta = null;
+  function pulsantieraAzioni(azioni) {
+    const sezioni = [...azioni.querySelectorAll(':scope > .azione')];
+    const fila = nodo('div', 'pulsantiera-azioni');
+    fila.setAttribute('role', 'tablist');
+    const pulsanti = sezioni.map((sezione, i) => {
+      const titolo = sezione.querySelector('h4')?.textContent.replace(/ modulo$/, '') || `azione ${i + 1}`;
+      const chiaveAzione = titolo.toLowerCase();
+      sezione.id = `azione-${chiaveAzione.replace(/\W+/g, '-')}`;
+      sezione.setAttribute('role', 'tabpanel');
+      const pulsante = nodo('button', `azione-tasto t-${chiaveAzione.replace(/\W+/g, '-')}`, titolo);
+      pulsante.type = 'button';
+      pulsante.setAttribute('role', 'tab');
+      pulsante.setAttribute('aria-controls', sezione.id);
+      pulsante.addEventListener('click', () => { azioneAperta = azioneAperta === chiaveAzione ? null : chiaveAzione; mostra(); });
+      fila.append(pulsante);
+      return { pulsante, sezione, chiaveAzione };
+    });
+    const mostra = () => pulsanti.forEach(({ pulsante, sezione, chiaveAzione }) => {
+      const aperta = azioneAperta === chiaveAzione;
+      pulsante.setAttribute('aria-selected', String(aperta));
+      sezione.hidden = !aperta;
+    });
+    mostra();
+    azioni.prepend(fila);
+  }
 
   function disegnaModulo() {
     if (moduloAperto.id === MODULI) { disegnaModuloCatalogo(); return; }
@@ -1158,13 +2001,14 @@
     const griglia = nodo('div', 'modulo-griglia');
     const anteprima = nodo('div', 'modulo-anteprima');
     anteprima.dataset.tipo = sezione.tipo;
-    anteprima.append(widget(id, sezione, scheda, indice + 1, true));
+    // il widget come nella pagina index del negozio (la vetrina con gli stili veri), con sopra i quadratini di tema e aspetto
+    anteprima.append(selettoriStile(), vetrinaModulo({ ...scheda, cartella: id }, sezione.tipo, indice + 1));
     const dettagli = nodo('div');
     const info = nodo('dl', 'info');
     const voce = (titolo, ...contenuto) => { info.append(nodo('dt', '', titolo)); const dd = nodo('dd'); dd.append(...contenuto); info.append(dd); return dd; };
-    const statoTesto = nodo('span', 'stato');
-    statoTesto.append(nodo('span', `spia${stato === 'attivo' ? '' : ` ${stato}`}`), STATI[stato]);
-    voce('stato', statoTesto);
+    // lo stato è un menu a cascata: lo stato attuale con la freccina; il menu ha l'altro valore (ghost, con il pallino
+    // viola del ghost di Controllo codice, o attivo) e sceglierlo mette il modulo in ghost o lo fa ricomparire
+    voce('stato', menuStato(id, sezione, scheda, chiaveModulo, stato));
     if (scheda.link) {
       const apri = nodo('a', '', `${id}/${scheda.link} ↗`);
       apri.href = `${id}/${scheda.link}`;
@@ -1200,8 +2044,27 @@
       registra.addEventListener('click', () => registraOrdine(id, sezione));
       posizione.append(' ', nodo('span', 'sospeso', 'ordine cambiato'), ' ', registra);
     }
-    voce('origine', origine ? `clone di ${origine}` : nomePagina ? 'pagina originale del negozio' : scheda.pdf ? 'stampa pronta (PDF)' : 'scheda della dashboard');
+    const derivataDa = nomePagina ? negozi[id].derivate.get(nomePagina) : null;
+    // il tipo di modulo con la sua etichetta: SORGENTE in oro o CLONE in azzurro, come sui widget del diagramma
+    const tipoModulo = nodo('span', 'tipo-modulo');
+    tipoModulo.append(nodo('span', `tag-modulo ${origine ? 'clone' : 'sorgente'}`, origine ? 'clone' : 'sorgente'),
+      origine ? 'si modifica, si sposta, si cancella' : 'si mette in ghost e si sposta; si modifica e si cancella solo dal codice');
+    voce('modulo', tipoModulo);
+    voce('origine', origine ? `clone di ${origine}` : derivataDa ? `scritto a codice, derivato da ${derivataDa}` : nomePagina ? 'pagina originale del negozio' : scheda.pdf ? 'stampa pronta (PDF)' : 'scheda della dashboard');
     if (scheda.specifiche?.length) voce('specifiche', scheda.specifiche.join(' · '));
+    // i temi speciali, per esteso: icona del pulsante e nome di ognuno
+    const temiModulo = temiDelModulo(id, scheda);
+    if (temiModulo.length) {
+      const elenco = nodo('span', 'temi-elenco');
+      temiModulo.forEach(tema => {
+        const voceTema = nodo('span', 'tema-voce');
+        const tondo = nodo('span', `w-tema t-${tema.id}`);
+        if (tema.icona) { const img = nodo('img'); img.src = tema.icona; img.alt = ''; tondo.append(img); }
+        voceTema.append(tondo, tema.nome);
+        elenco.append(voceTema);
+      });
+      voce('temi speciali', elenco);
+    }
     dettagli.append(info);
 
     // azioni: ghost, duplica, elimina
@@ -1245,6 +2108,9 @@
       ? `copia la pagina in ${id}/${nomePagina.replace(/\.html$/, '-copia.html')} (un clone, che si può cancellare) e mette il modulo in ${galleria}, subito dopo l'originale, con il titolo «${scheda.titolo} (copia)»`
       : 'si duplicano solo i moduli con una pagina: non le stampe pronte (PDF) né i moduli in arrivo', duplica);
 
+    // modifica: solo i cloni (titolo, specifiche, miniatura, tipo, MENU SPECIALE); i sorgente si modificano dal codice
+    azioni.append(bloccoModifica(id, sezione, scheda, chiaveModulo, Boolean(origine), comando));
+
     const elimina = comando('✕ elimina modulo', 'rosso');
     elimina.disabled = !SCRIVIBILE || !origine;
     elimina.addEventListener('click', async () => {
@@ -1253,6 +2119,10 @@
         return;
       }
       if (!window.confirm(`Eliminare ${scheda.titolo} da ${nomeNegozio(id)}?\n\nLa sua scheda esce dalla dashboard e il clone ${id}/${nomePagina} viene cancellato, con le immagini copiate per lui che nessun'altra pagina usa.\nNon si può annullare (solo dal commit precedente).`)) return;
+      // seconda conferma se il clone non resta in nessun altro negozio: sparisce anche dal catalogo
+      try { await Promise.all(Negozi.installati.filter(n => !negozi[n]).map(carica)); } catch { /* si controlla con i negozi letti */ }
+      if (Associa.ultimoClone(Negozi.installati.map(n => negozi[n]?.testo || ''), origine)
+        && !window.confirm(`Ultima conferma: ${scheda.titolo} non è associato a nessun altro negozio.\n\nEliminandolo sparisce anche dal catalogo dei moduli. Eliminarlo definitivamente?`)) return;
       elimina.disabled = true;
       try {
         await Associa.eliminaClone(progetto, { negozio: id, nome: nomePagina, avviso: esito });
@@ -1269,9 +2139,79 @@
     azione('elimina modulo', origine
       ? `il modulo è un clone di ${origine}: eliminandolo la scheda esce dalla dashboard e la pagina ${id}/${nomePagina} si cancella${schede.filter(s => s.link && pagina(s.link) === nomePagina).length > 1 ? ', con tutti i moduli della galleria che la aprono' : ''}`
       : 'si cancellano solo i cloni, mai i moduli originali del negozio: questo si può mettere in ghost', elimina, true);
+    // le azioni dietro una pulsantiera: GHOST · DUPLICA · MODIFICA · ELIMINA; un clic apre la sezione del pulsante
+    pulsantieraAzioni(azioni);
     dettagli.append(azioni);
     griglia.append(anteprima, dettagli);
     contenitore.append(griglia);
+  }
+
+  // Blocco «modifica» della scheda del modulo. Cloni: titolo, tipo (la scritta in alto a destra), MENU SPECIALE,
+  // specifiche (una per riga) e miniatura (un file immagine); scrive la scheda nella dashboard (Associa.modifica).
+  // Sorgente: niente campi, solo la nota (si modifica dal codice)
+  function bloccoModifica(id, sezione, scheda, chiaveModulo, clone, comando) {
+    const blocco = nodo('div', `azione ${clone ? 'clone' : 'sorgente'}`);
+    blocco.append(nodo('h4', '', 'modifica'));
+    if (!clone) {
+      blocco.append(nodo('p', '', 'modulo sorgente: titolo, specifiche, miniatura e pagina si cambiano solo dal codice (assets/negozi/'
+        + `${id}-dashboard.js e la sua pagina). dalle utilità si mette in ghost e si sposta`));
+      return blocco;
+    }
+    blocco.append(nodo('p', '', 'modulo clone: cambia i dati del suo widget nella dashboard del negozio. la pagina si modifica dal codice'));
+    const campi = nodo('div', 'campi-modifica');
+    let n = 0;
+    const riga = (etichetta, controllo) => {
+      controllo.id = `modifica-${++n}`;
+      const label = nodo('label', '', etichetta);
+      label.htmlFor = controllo.id;
+      campi.append(label, controllo);
+      return controllo;
+    };
+    const testo = (valore, massimo) => { const c = nodo('input'); c.type = 'text'; c.value = valore || ''; c.maxLength = massimo; return c; };
+    const titolo = riga('titolo', testo(scheda.titolo, 60));
+    const tipo = riga('tipo', testo(scheda.tipo, 30));
+    tipo.placeholder = 'es. CARTELLO';
+    const speciale = nodo('input');
+    speciale.type = 'checkbox';
+    speciale.checked = Boolean(scheda.badge);
+    riga('menu speciale', speciale);
+    const specifiche = nodo('textarea');
+    specifiche.value = (scheda.specifiche || []).join('\n');
+    specifiche.placeholder = 'una specifica per riga';
+    riga('specifiche', specifiche);
+    const miniatura = nodo('input');
+    miniatura.type = 'file';
+    miniatura.accept = 'image/png,image/jpeg,image/webp';
+    riga('miniatura', miniatura);
+    blocco.append(campi);
+    const salva = comando('salva le modifiche', 'azzurro');
+    salva.addEventListener('click', async () => {
+      if (!titolo.value.trim()) { esito('il titolo non può essere vuoto', 'err'); titolo.focus(); return; }
+      try { await collega(); } catch (errore) {
+        esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+        return;
+      }
+      salva.disabled = true;
+      try {
+        await Associa.modifica(progetto, { negozio: id, sezione: sezione.id, chiave: chiaveModulo, avviso: esito,
+          miniatura: miniatura.files[0] || null,
+          campi: {
+            titolo: titolo.value.trim(),
+            tipo: tipo.value.trim(),
+            badge: speciale.checked ? (scheda.badge || 'MENU SPECIALE') : null,
+            specifiche: specifiche.value.split('\n').map(s => s.trim()).filter(Boolean)
+          } });
+        await carica(id);
+        esito(`${titolo.value.trim()} modificato nella dashboard di ${nomeNegozio(id)}. ricorda il commit per pubblicarlo`, 'ok');
+        ridisegna();
+      } catch (errore) {
+        console.error(errore);
+        esito(`errore (${errore.name}): ${errore.message}`, 'err');
+        salva.disabled = false;
+      }
+    });
+    blocco.append(salva);
+    return blocco;
   }
 
   // ----- MODULI: il catalogo dei moduli -----
@@ -1280,13 +2220,13 @@
   // anche quelli non ancora associati a nessun negozio. Per ogni modulo, i negozi la cui dashboard lo usa (sua scheda o
   // clone, Associa.usato). Utilità Cassa resta fuori: gli strumenti sono comuni a tutti i negozi.
   const ASSOCIABILI = ['cartelli', 'promo', 'cartellini'];
-  const catalogo = { letto: false, testi: {} };
+  // il catalogo usa i dati di tutti i negozi (dashboard, cloni, pagine derivate), riletti a ogni apertura
+  const catalogo = { letto: false };
   async function caricaCatalogo() {
-    const testi = {};
-    await Promise.all(Negozi.installati.map(async n => { testi[n] = await testoFile(`assets/negozi/${n}-dashboard.js`); }));
-    catalogo.testi = testi;
+    await Promise.all(Negozi.installati.map(carica));
     catalogo.letto = true;
   }
+  const testoDi = n => negozi[n]?.testo || '';
   const galleriaCatalogo = id => { try { return Pacchetti.pacchetto(id); } catch (errore) { console.error(errore); return null; } };
   const gallerieCatalogo = () => Pacchetti.elenco.map(galleriaCatalogo).filter(p => p && p.tipo !== 'cassa');
   const cartellaDi = (pacchetto, modulo) => modulo.cartella || pacchetto.cartella;
@@ -1296,7 +2236,7 @@
     if (!modulo.link) return [];
     const cartella = cartellaDi(pacchetto, modulo);
     // con il link intero: le etichette (etichette.html?label=…) contano una per una
-    return Negozi.installati.filter(n => catalogo.testi[n] && Associa.usato(catalogo.testi[n], n, cartella, modulo.link));
+    return Negozi.installati.filter(n => testoDi(n) && Associa.usato(testoDi(n), n, cartella, modulo.link));
   }
   const statoCatalogo = (pacchetto, modulo) => (negoziDel(pacchetto, modulo).length ? 'attivo' : 'libero');
   const sigla = n => Negozi.scheda(n)?.sigla || n.toUpperCase();
@@ -1304,9 +2244,11 @@
   function widgetCatalogo(pacchetto, modulo, indice, numero, grande = false) {
     const usatoIn = negoziDel(pacchetto, modulo);
     const stato = usatoIn.length ? 'attivo' : 'libero';
-    const elemento = nodo(grande ? 'div' : 'button', 'widget in-attivo');
+    // i moduli dei set di partenza sono sorgente; i moduli nuovi (creati dalle utilità) sono cloni
+    const nuovo = nuovoModulo(pacchetto, modulo);
+    const elemento = nodo('div', `widget in-attivo ${nuovo ? 'clone' : 'sorgente'}`);
     if (!grande) {
-      elemento.type = 'button';
+      premibile(elemento);
       elemento.dataset.chiave = `${pacchetto.id}:${indice}`;
       elemento.setAttribute('aria-label', `${modulo.titolo}, ${usatoIn.length ? `usato in ${usatoIn.map(nomeNegozio).join(', ')}` : 'non associato a nessun negozio'}. Apri la scheda del modulo`);
     }
@@ -1324,9 +2266,18 @@
       immagine.draggable = false;
       anteprima.append(immagine);
     } else anteprima.append(nodo('span', 'w-icona', modulo.prossimamente ? 'coming soon' : modulo.pdf ? 'pdf' : '—'));
+    // temi speciali, dalla pagina del modulo nella cartella del suo negozio
+    const cartellaModulo = cartellaDi(pacchetto, modulo);
+    if (modulo.badge) anteprima.append(nodo('span', 'w-badge', modulo.badge));   // MENU SPECIALE, come nella dashboard
+    const temi = modulo.link ? iconeTemi(temiSpeciali(negozi[cartellaModulo]?.testi.get(pagina(modulo.link)), cartellaModulo)) : null;
+    if (temi) anteprima.append(temi);
     elemento.append(testa, anteprima, nodo('span', 'w-titolo', modulo.titolo),
       nodo('span', `w-negozi${usatoIn.length ? '' : ' libero'}`, usatoIn.length ? usatoIn.map(sigla).join(' · ') : 'non associato'));
-    if (nuovoModulo(pacchetto, modulo)) elemento.append(nodo('span', 'w-nuovo', 'nuovo'));
+    specificheWidget(elemento, modulo.specifiche);
+    const etichetta = nodo('span', 'w-tipo', nuovo ? 'clone · nuovo' : 'sorgente');
+    etichetta.title = nuovo ? 'modulo nuovo, creato con Nuovo modulo: un clone (si modifica e si cancella)'
+      : 'modulo sorgente: si mette in ghost e si sposta; si modifica e si cancella solo dal codice';
+    elemento.append(etichetta);
     return elemento;
   }
 
@@ -1360,6 +2311,48 @@
     return elemento;
   }
 
+  // una galleria di moduli che stanno nella dashboard di un negozio (sorgenti derivati di OPHILYA, cloni): gli stessi
+  // widget del diagramma del negozio (un clic apre la sua scheda, con ghost, modifica, elimina), con sotto il titolo da
+  // dove vengono
+  function ramoNegozioCatalogo(n, sezione, schede, titolo, chiaveRamo, scorrimento, ritardo) {
+    const elemento = nodo('li', 'ramo');
+    elemento.dataset.tipo = sezione.tipo;
+    elemento.dataset.sezione = `catalogo-${chiaveRamo}`;
+    elemento.dataset.stato = `${MODULI}:${chiaveRamo}`;
+    elemento.style.setProperty('--d', `${ritardo}ms`);
+    const galleria = nodo('div', 'nodo nodo-galleria');
+    galleria.append(nodo('span', 'galleria-nome', titolo),
+      nodo('span', 'nodo-sotto', `${schede.length} ${schede.length === 1 ? 'modulo' : 'moduli'} · ${sezione.tipo}`));
+    const carosello = nodo('div', 'carosello');
+    const nastro = nodo('div', 'nastro');
+    nastro.setAttribute('role', 'list');
+    nastro.setAttribute('aria-label', `Moduli di ${titolo}`);
+    schede.forEach((scheda, i) => {
+      const w = widget(n, sezione, scheda, i + 1);
+      w.draggable = false;
+      w.style.setProperty('--d', `${ritardo + 140 + Math.min(i, 6) * 45}ms`);
+      const nome = pagina(scheda.link);
+      const da = negozi[n].cloni.get(nome) || negozi[n].derivate.get(nome);
+      const sotto = nodo('span', 'w-negozi', da ? `${sigla(n)} · da ${da.replace(/\.html$/, '')}` : sigla(n));
+      sotto.title = da ? `${nomeNegozio(n)}: ${negozi[n].cloni.has(nome) ? 'clone' : 'derivato'} di ${da}` : nomeNegozio(n);
+      (w.querySelector('.w-riga') || w.querySelector('.w-titolo')).after(sotto);
+      nastro.append(w);
+    });
+    frecce(carosello, nastro, scorrimento);
+    const filo = nodo('span', 'filo corto');
+    filo.style.setProperty('--d', `${ritardo + 100}ms`);
+    const riassunto = chiudibile(elemento, galleria, elemento.dataset.stato, titolo, schede.map(statoDi));
+    elemento.append(galleria, filo, carosello, riassunto);
+    return elemento;
+  }
+  // i moduli con una pagina di un negozio, galleria per galleria: { sezione, schede } (per scelta: sorgenti o cloni)
+  const TIPI_CATALOGO = ['cartelli', 'promo', 'cartellini', 'etichette'];
+  function moduliDelNegozio(n, scegli) {
+    return negozi[n].dati.sezioni.filter(s => TIPI_CATALOGO.includes(s.tipo))
+      .map(sezione => ({ sezione, schede: sezione.schede.filter(s => s.link && !s.prossimamente && scegli(pagina(s.link), s)) }))
+      .filter(g => g.schede.length);
+  }
+
   function disegnaCatalogo() {
     const scorrimenti = {};
     document.querySelectorAll('.ramo').forEach(ramo => { scorrimenti[ramo.dataset.sezione] = ramo.querySelector('.nastro')?.scrollLeft || 0; });
@@ -1373,45 +2366,84 @@
     const logo = nodo('img');
     logo.src = 'assets/img/storecraftlogo.png';
     logo.alt = '';
-    radice.append(logo, nodo('span', 'nodo-nome', 'Moduli'), nodo('span', 'nodo-sotto', 'catalogo'));
+    radice.append(logo, nodo('span', 'nodo-nome', 'Catalogo'), nodo('span', 'nodo-sotto', 'moduli'));
 
     // un'area per negozio con set di partenza (le sorgenti), poi l'area dei moduli nuovi
     const aree = nodo('ol', 'rami');
     aree.setAttribute('aria-label', 'Aree del catalogo');
     let ritardo = 300;
     const negoziSorgente = [...new Set(gallerie.map(p => p.negozio).filter(Boolean))];
+    // i moduli dei set di partenza (sorgente): non i moduli aggiunti né i cloni entrati nella dashboard (hanno origine)
+    const sorgenteDelSet = v => !v.modulo.aggiunto && !v.modulo.origine;
     negoziSorgente.forEach(n => {
       const sue = gallerie.filter(p => p.negozio === n);
-      const rami = sue.map((p, i) => ramoCatalogo(p, voci(p).filter(v => !v.modulo.aggiunto), p.titolo || p.nome, p.id,
+      const rami = sue.map((p, i) => ramoCatalogo(p, voci(p).filter(sorgenteDelSet), p.titolo || p.nome, p.id,
         scorrimenti[`catalogo-${p.id}`] || 0, ritardo + 260 + i * 110));
-      const tutte = sue.flatMap(p => voci(p).filter(v => !v.modulo.aggiunto));
-      aree.append(ramoArea(MODULI, `sorgenti-${n}`, `Sorgenti ${sigla(n)}`, `${tutte.length} moduli`, rami, ritardo,
-        tutte.map(v => statoCatalogo(v.pacchetto, v.modulo))));
+      const tutte = sue.flatMap(p => voci(p).filter(sorgenteDelSet));
+      // il negozio con il suo logo, piccolo e bianco, la scritta MODULI SORGENTE e sotto il numero dei moduli
+      const scheda = Negozi.scheda(n) || {};
+      const logo = scheda.logoMenu || scheda.logoSplash;
+      aree.append(ramoArea(MODULI, `sorgenti-${n}`, logo ? 'Moduli sorgente' : `Sorgenti ${sigla(n)}`, `${tutte.length} moduli`, rami, ritardo,
+        tutte.map(v => statoCatalogo(v.pacchetto, v.modulo)), logo ? `assets/${logo}` : null));
       ritardo += 260 + sue.length * 110;
     });
-    // moduli nuovi: le gallerie create da Nuovo modulo e i moduli aggiunti ai set di partenza
+    // gli altri negozi (es. OPHILYA): i loro moduli sorgente, scritti a codice partendo da un negozio sorgente
+    // (storecraft-derivata), con il logo del negozio e MODULI SORGENTE · DA TEBE
+    let sorgentiDerivati = 0;
+    Negozi.installati.filter(n => negozi[n] && !negoziSorgente.includes(n)).forEach(n => {
+      const gruppi = moduliDelNegozio(n, nome => !negozi[n].cloni.has(nome));
+      if (!gruppi.length) return;
+      const quanti = gruppi.reduce((t, g) => t + g.schede.length, 0);
+      sorgentiDerivati += quanti;
+      const da = [...new Set(gruppi.flatMap(g => g.schede).map(s => negozi[n].derivate.get(pagina(s.link))).filter(Boolean).map(d => d.split('/')[0]))];
+      const rami = gruppi.map((g, i) => ramoNegozioCatalogo(n, g.sezione, g.schede, g.sezione.titolo.split(' // ')[0], `${n}-${g.sezione.id}`,
+        scorrimenti[`catalogo-${n}-${g.sezione.id}`] || 0, ritardo + 260 + i * 110));
+      const scheda = Negozi.scheda(n) || {};
+      const logo = scheda.logoMenu || scheda.logoSplash;
+      aree.append(ramoArea(MODULI, `sorgenti-${n}`, logo ? 'Moduli sorgente' : `Sorgenti ${sigla(n)}`,
+        `${quanti} moduli${da.length ? ` · da ${da.map(sigla).join(', ')}` : ''}`, rami, ritardo,
+        gruppi.flatMap(g => g.schede).map(statoDi), logo ? `assets/${logo}` : null));
+      ritardo += 260 + gruppi.length * 110;
+    });
+
+    // CLONI: i moduli creati dalle utilità. Nei negozi (copie fatte con duplica o moduli associati a un altro negozio;
+    // quelli che vengono da un modulo nuovo stanno con lui, qui sotto) e i moduli nuovi delle gallerie di Gestione
+    // pacchetti, anche non associati a nessun negozio
+    const ramiCloni = [];
+    let cloniNeiNegozi = 0;
+    Negozi.installati.filter(n => negozi[n]).forEach(n => {
+      moduliDelNegozio(n, nome => negozi[n].cloni.has(nome) && !negozi[n].cloni.get(nome).startsWith('moduli/')).forEach(g => {
+        cloniNeiNegozi += g.schede.length;
+        ramiCloni.push(ramoNegozioCatalogo(n, g.sezione, g.schede, `${sigla(n)} · ${g.sezione.titolo.split(' // ')[0]}`, `cloni-${n}-${g.sezione.id}`,
+          scorrimenti[`catalogo-cloni-${n}-${g.sezione.id}`] || 0, ritardo + 260 + ramiCloni.length * 110));
+      });
+    });
     const nuovi = [];
     gallerie.forEach(p => {
       const sue = voci(p).filter(v => nuovoModulo(p, v.modulo));
       if (sue.length) nuovi.push({ p, sue, titolo: p.negozio ? `${p.titolo || p.nome} · aggiunti` : (p.titolo || p.nome) });
     });
     const tuttiNuovi = nuovi.flatMap(g => g.sue);
-    const ramiNuovi = nuovi.length
-      ? nuovi.map((g, i) => ramoCatalogo(g.p, g.sue, g.titolo, `nuovi-${g.p.id}`, scorrimenti[`catalogo-nuovi-${g.p.id}`] || 0, ritardo + 260 + i * 110))
-      : [ramoCatalogo(null, [], 'In attesa', 'nuovi', 0, ritardo + 260)];
+    nuovi.forEach(g => ramiCloni.push(ramoCatalogo(g.p, g.sue, g.titolo, `nuovi-${g.p.id}`, scorrimenti[`catalogo-nuovi-${g.p.id}`] || 0,
+      ritardo + 260 + ramiCloni.length * 110)));
+    if (!ramiCloni.length) ramiCloni.push(ramoCatalogo(null, [], 'In attesa', 'cloni', 0, ritardo + 260));
     const liberi = tuttiNuovi.filter(v => statoCatalogo(v.pacchetto, v.modulo) === 'libero').length;
-    aree.append(ramoArea(MODULI, 'nuovi', 'Nuovi', liberi ? `${liberi} non associati` : `${tuttiNuovi.length} moduli`, ramiNuovi, ritardo,
-      tuttiNuovi.map(v => statoCatalogo(v.pacchetto, v.modulo))));
+    const totaleCloni = cloniNeiNegozi + tuttiNuovi.length;
+    const areaCloni = ramoArea(MODULI, 'cloni', 'Cloni', liberi ? `${totaleCloni} moduli · ${liberi} non associati` : `${totaleCloni} moduli`, ramiCloni, ritardo,
+      [...Array(cloniNeiNegozi).fill('attivo'), ...tuttiNuovi.map(v => statoCatalogo(v.pacchetto, v.modulo))]);
+    areaCloni.classList.add('area-cloni');
+    aree.append(areaCloni);
 
     const filo = nodo('span', 'filo');
     radice.style.setProperty('--d', '0ms');
     filo.style.setProperty('--d', '160ms');
-    diagramma.append(radice, filo, aree);
+    const colonnaRadice = nodo('div', 'colonna-negozio');
+    colonnaRadice.append(radice, selettoriStile());
+    diagramma.append(colonnaRadice, filo, aree);
 
     // totali
-    const sorgenti = gallerie.filter(p => p.negozio).flatMap(p => voci(p).filter(v => !v.modulo.aggiunto)).length;
-    const tuttiLiberi = gallerie.flatMap(voci).filter(v => statoCatalogo(v.pacchetto, v.modulo) === 'libero').length;
-    totali = `Moduli · ${sorgenti} sorgenti · ${tuttiNuovi.length} nuovi · ${tuttiLiberi} non associati`;
+    const sorgenti = gallerie.filter(p => p.negozio).flatMap(p => voci(p).filter(sorgenteDelSet)).length + sorgentiDerivati;
+    totali = `Catalogo · ${sorgenti} sorgenti · ${totaleCloni} cloni · ${liberi} non associati`;
     if (!attesaEsito && $('stato').className !== 'lavora') mostraTotali();
   }
 
@@ -1431,7 +2463,7 @@
     contenitore.replaceChildren();
 
     const percorso = nodo('p', 'percorso');
-    ['Moduli', nuovo ? 'Nuovi' : `Sorgenti ${sigla(pacchetto.negozio)}`, pacchetto.titolo || pacchetto.nome, modulo.titolo].forEach((parte, i) => {
+    ['Catalogo', nuovo ? 'Cloni' : `Sorgenti ${sigla(pacchetto.negozio)}`, pacchetto.titolo || pacchetto.nome, modulo.titolo].forEach((parte, i) => {
       if (i) percorso.append(nodo('i', '', '›'));
       percorso.append(i === 3 ? nodo('b', '', parte) : document.createTextNode(parte));
     });
@@ -1460,6 +2492,18 @@
     voce('origine', nuovo ? (cartellaModulo === 'moduli' ? 'nuovo modulo, in lavorazione nella cartella moduli/' : 'modulo aggiunto al set')
       : `sorgente: set di partenza di ${nomeNegozio(pacchetto.negozio)}`);
     if (modulo.specifiche?.length) voce('specifiche', modulo.specifiche.join(' · '));
+    const temiModulo = modulo.link ? temiSpeciali(negozi[cartellaModulo]?.testi.get(pagina(modulo.link)), cartellaModulo) : [];
+    if (temiModulo.length) {
+      const elenco = nodo('span', 'temi-elenco');
+      temiModulo.forEach(tema => {
+        const voceTema = nodo('span', 'tema-voce');
+        const tondo = nodo('span', `w-tema t-${tema.id}`);
+        if (tema.icona) { const img = nodo('img'); img.src = tema.icona; img.alt = ''; tondo.append(img); }
+        voceTema.append(tondo, tema.nome);
+        elenco.append(voceTema);
+      });
+      voce('temi speciali', elenco);
+    }
     dettagli.append(info);
 
     // i negozi, con le spunte
@@ -1502,12 +2546,15 @@
     }
     if (!voglio && negozio !== cartellaModulo
       && !window.confirm(`Togliere ${modulo.titolo} da ${nomeNegozio(negozio)}?\n\nLa sua scheda esce dalla dashboard e il clone della pagina nella cartella ${negozio}/ viene cancellato, con le immagini copiate per lui.`)) return;
+    // seconda conferma se il clone sparisce dal catalogo (nessun'altra copia in nessun negozio)
+    if (!voglio && negozio !== cartellaModulo
+      && Associa.ultimoClone(Negozi.installati.map(testoDi), `${cartellaModulo}/${pagina(modulo.link)}`)
+      && !window.confirm(`Ultima conferma: il clone di ${modulo.titolo} in ${nomeNegozio(negozio)} non resta in nessun altro negozio.\n\nTogliendolo sparisce anche dal catalogo dei moduli. Eliminarlo definitivamente?`)) return;
     try {
       const dati = { modulo, tipo: pacchetto.tipo, cartella: cartellaModulo, negozio, avviso: esito };
       if (voglio) await Associa.associa(progetto, dati);
       else await Associa.togli(progetto, dati);
-      delete negozi[negozio];   // il diagramma del negozio si rilegge
-      await caricaCatalogo();
+      await carica(negozio);   // il negozio si rilegge (anche il suo diagramma)
       esito(`${modulo.titolo} ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${nomeNegozio(negozio)}. ricorda il commit per pubblicarlo`, 'ok');
     } catch (errore) {
       if (errore.name === 'AbortError') esito('cartella non collegata: nessuna modifica', 'nota');
