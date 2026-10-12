@@ -26,11 +26,11 @@
      schede         [{ titolo, link | pdf, tipo, miniature: [immagine, seconda immagine facoltativa] (nella cartella
                     assets/), alt, specifiche: [...], badge, compatto, voce (nome nel menu, se diverso dal titolo),
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca),
-                    nascosta (pagina o modulo in ghost, da Gestione pagine o Gestione negozi: la scheda non si vede, né
+                    nascosta (pagina o modulo in ghost, da Controllo codice o Gestione negozi: la scheda non si vede, né
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.16 2026';
+  const VERSIONE = 'V 1.2.17 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -556,7 +556,7 @@
 
   function disegna() {
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
-    // Pagine in ghost (Gestione pagine, nascosta: true): le loro schede non si vedono, né come widget né nel menu
+    // Pagine in ghost (Controllo codice, nascosta: true): le loro schede non si vedono, né come widget né nel menu
     // laterale; una sezione che resta senza schede sparisce, e la voce Etichette DYMO se la sua pagina è in ghost
     const pagina = link => String(link || '').split('?')[0];
     // Ordine dei widget scelto in Gestione negozi (ordine: [chiavi] nella sezione; chiave: link, pdf o titolo): le schede

@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-48"></script>
-  <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Gestione pagine): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-48"></script>
+  <script src="assets/js/negozi.js?v=20261012-49"></script>
+  <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
+  <script src="assets/js/pacchetti-associa.js?v=20261012-49"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -262,6 +262,8 @@
     }
     .btn:hover:not(:disabled) { background: var(--accent); color: #121110; }
     .btn:disabled { opacity: .45; cursor: not-allowed; }
+    /* cartella del progetto collegata: il pulsante diventa verde (regola di tutte le pagine con il pulsante della cartella) */
+    .btn.collegata, .btn.collegata:hover:not(:disabled) { border-color: #3a9b5a; background: #3a9b5a; color: #f4f1ea; }
     .btn:focus-visible { outline: 1px solid var(--gold-light); outline-offset: 2px; }
 
     .status { margin: 8px 0 0; color: var(--text-muted); font-size: 12px; line-height: 1.5; }
@@ -298,8 +300,8 @@
 
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
       <button class="voce" type="button" data-vista="negozi">Gestione negozi</button>
-      <button class="voce" type="button" data-vista="struttura">Gestione pagine</button>
       <button class="voce" type="button" data-vista="pacchetti">Gestione pacchetti</button>
+      <button class="voce" type="button" data-vista="struttura">Controllo codice</button>
       <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
       <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
@@ -309,12 +311,12 @@
       <p class="nota-browser">// solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto</p>
     </nav>
 
-    <!-- Sezioni: Gestione negozi, Gestione pagine e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
+    <!-- Sezioni: Gestione negozi, Controllo codice e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
     <section class="vista" data-vista="negozi" hidden>
       <iframe data-src="gestione-negozi.html?incorporata" title="Gestione negozi"></iframe>
     </section>
     <section class="vista" data-vista="struttura" hidden>
-      <iframe data-src="schema-pagine.html?incorporata" title="Gestione pagine"></iframe>
+      <iframe data-src="schema-pagine.html?incorporata" title="Controllo codice"></iframe>
     </section>
     <section class="vista" data-vista="pacchetti" hidden>
       <iframe data-src="pacchetti.html?incorporata" title="Gestione pacchetti"></iframe>
@@ -414,7 +416,7 @@
       return window.progettoCollegato;
     };
 
-    const VISTE = { negozi: 'Gestione negozi', struttura: 'Gestione pagine', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    const VISTE = { negozi: 'Gestione negozi', struttura: 'Controllo codice', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -423,10 +425,10 @@
     const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
     let vistaAperta = null;
 
-    // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Gestione pagine,
+    // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Controllo codice,
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
-      // Gestione negozi e Gestione pagine restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
+      // Gestione negozi e Controllo codice restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
       menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
       // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
       delete VISTE.pacchetti;
@@ -498,6 +500,7 @@
       if (anima) scrivi(nuova ? VISTE[nuova] : TITOLO_MENU);
       else titolo.textContent = nuova ? VISTE[nuova] : TITOLO_MENU;
       vistaAperta = nuova;
+      segnaSottoVista(null);   // una sezione si apre sempre dalla sua vista principale
       // aperta una sezione, la tastiera parte da ← area operatore: con Tab si entra nei suoi comandi
       if (nuova && !subito) indietro.focus({ preventScroll: true });
     }
@@ -535,13 +538,28 @@
       history.pushState(null, '', location.pathname);
       apri(null).then(() => voce?.focus());
     };
-    indietro.addEventListener('click', tornaAlMenu);
+    // Gestione negozi con la scheda di un modulo aperta: il pulsante in alto (e Esc) torna al diagramma del negozio, non al
+    // menu; la sezione lo dice con un messaggio (sottoVista) e la scritta del pulsante cambia
+    let sottoVista = null;
+    const TESTO_INDIETRO = indietro.textContent;
+    const segnaSottoVista = testo => {
+      sottoVista = testo || null;
+      indietro.textContent = sottoVista ? `← ${sottoVista}` : TESTO_INDIETRO;
+    };
+    const indietroUnPasso = () => {
+      if (!sottoVista) { tornaAlMenu(); return; }
+      const riquadro = document.querySelector(`.vista[data-vista="${vistaAperta}"] iframe`);
+      riquadro?.contentWindow?.postMessage({ torna: true }, location.origin);
+    };
+    indietro.addEventListener('click', indietroUnPasso);
     document.addEventListener('keydown', evento => {
-      if (evento.key === 'Escape' && vistaAperta) { evento.preventDefault(); tornaAlMenu(); }
+      if (evento.key === 'Escape' && vistaAperta) { evento.preventDefault(); indietroUnPasso(); }
     });
-    // le pagine dei loghi nel riquadro mandano il loro Esc qui (operatore-sezione.js)
+    // le pagine dei loghi nel riquadro mandano il loro Esc qui (operatore-sezione.js); Gestione negozi la sua sotto-vista
     window.addEventListener('message', evento => {
-      if (evento.origin === location.origin && evento.data?.esc && vistaAperta) tornaAlMenu();
+      if (evento.origin !== location.origin) return;
+      if ('sottoVista' in (evento.data || {})) segnaSottoVista(evento.data.sottoVista);
+      else if (evento.data?.esc && vistaAperta) tornaAlMenu();
     });
     window.addEventListener('hashchange', () => apri(location.hash.slice(1)));
     if (VISTE[location.hash.slice(1)]) apri(location.hash.slice(1), true);
@@ -634,10 +652,14 @@
         negozi = trovati.sort((a, b) => posto(a.id) - posto(b.id) || a.id.localeCompare(b.id));
         sorgente = scelta;
         stato($('sourceStatus'), `Collegata: ${scelta.name} (${negozi.length} negozi).`, 'ok');
+        $('pickSource').textContent = '✓ cartella collegata';
+        $('pickSource').classList.add('collegata');
         mostraNegozi();
       } catch (errore) {
         sorgente = null;
         stato($('sourceStatus'), `La cartella scelta non va bene: ${errore.message}`, 'err');
+        $('pickSource').textContent = 'scegli cartella progetto';
+        $('pickSource').classList.remove('collegata');
         mostraNegozi();
       }
     });
@@ -716,7 +738,7 @@
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
-      // non Gestione pagine, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
+      // non Controllo codice, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
       const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'Storecraft Aggiornamento.html'];
       riga('// radice: splash page e area operatore ridotta: gestione pagine e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {

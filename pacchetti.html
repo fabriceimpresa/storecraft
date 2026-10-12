@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-48"></script>
+  <script src="assets/js/negozi.js?v=20261012-49"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261012-48"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-49"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-48"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-48"></script>
+  <script src="assets/js/pacchetti.js?v=20261012-49"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-49"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261012-48"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261012-48"></script>
+  <script src="assets/js/admin-negozio.js?v=20261012-49"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-49"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -106,9 +106,11 @@
     .cartella { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 20px; font-size: 12px; }
     .cartella button { padding: 7px 14px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro);
       font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
-    .cartella button:hover:not(:disabled), .cartella button.collegata { background: var(--oro); color: #121110; }
+    .cartella button:hover:not(:disabled) { background: var(--oro); color: #121110; }
+    /* cartella del progetto collegata: il pulsante «✓ cartella collegata» diventa verde (regola di tutte le pagine con il pulsante) */
+    .cartella button.collegata, .cartella button.collegata:hover:not(:disabled) { border-color: #3a9b5a; background: #3a9b5a; color: #f4f1ea; }
     .cartella button:disabled { opacity: .35; cursor: default; }
-    /* elimina modulo (solo i moduli creati da Nuovo modulo), rosso come ✕ rimuovi di Gestione pagine */
+    /* elimina modulo (solo i moduli creati da Nuovo modulo), rosso come ✕ rimuovi del Controllo codice */
     .elimina { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--bordo); }
     .elimina h4 { margin: 0 0 12px; color: #e07a5f; font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
     .elimina h4::before { content: '// '; }

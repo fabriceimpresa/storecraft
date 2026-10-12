@@ -287,7 +287,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .passo-op .folder-status.err { color: var(--op-errore); }
 .passo-op .upload-box { margin-bottom: 12px; }
 .passo-op .queue-list .empty-msg, .passo-op .logo-list .empty-msg { padding: 4px 0 0; }
-/* pulsante della cartella a cartella collegata: acceso (pieno d'oro) con la spunta */
-.btn-folder.collegata { background: var(--op-oro); color: #121110; }
+/* cartella del progetto collegata: il pulsante diventa verde (regola di tutte le pagine con «collega la cartella del progetto»: #3a9b5a, scritta chiara) */
+.btn-folder.collegata { border-color: #3a9b5a; background: #3a9b5a; color: #f4f1ea; }
 .btn-folder.collegata::before { content: '✓ '; }
-.btn-folder.collegata:hover { background: var(--op-oro-chiaro); }
+.btn-folder.collegata:hover { background: #45ad66; border-color: #45ad66; }

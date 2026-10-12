@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-48"></script>
+  <script src="assets/js/negozi.js?v=20261012-49"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261012-48"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-49"></script>
   <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-48"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-49"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
@@ -49,7 +49,7 @@
     #stato.lavora, #stato.nota { color: var(--oro-chiaro); }
     #stato.err { color: var(--rosso); }
 
-    /* insegne dei negozi, come in Gestione pagine: discrete, la scelta più chiara, il segnalino oro segue il mouse */
+    /* insegne dei negozi, come nel Controllo codice: discrete, la scelta più chiara, il segnalino oro segue il mouse */
     .insegne { position: relative; display: flex; align-items: center; gap: 34px; margin: 34px 0 22px; padding-bottom: 12px; border-bottom: 1px solid var(--bordo); }
     .insegna { display: flex; align-items: center; height: 46px; padding: 0; border: 0; background: none; cursor: pointer; }
     .insegna img { display: block; height: auto; max-height: 42px; filter: brightness(0) invert(1); opacity: .35; transition: opacity .2s; }
@@ -58,11 +58,13 @@
     .segnalino { position: absolute; bottom: -1px; left: 0; width: 0; height: 2px; background: var(--oro); transition: left .3s ease, width .3s ease; }
 
     /* barra: solo il pulsante della cartella del progetto, a destra (gli esiti delle operazioni nella riga di stato) */
-    .barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px 20px; margin-bottom: 26px; font-size: 11px; }
+    .barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; margin-bottom: 26px; font-size: 11px; }
     .cartella { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
     .comando { padding: 6px 12px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro);
       font: 400 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .15s, color .15s; }
-    .comando:hover:not(:disabled), .comando:focus-visible, .comando.collegata { background: var(--oro); color: #121110; outline: none; }
+    .comando:hover:not(:disabled), .comando:focus-visible { background: var(--oro); color: #121110; outline: none; }
+    /* cartella del progetto collegata: il pulsante «✓ cartella collegata» diventa verde */
+    .comando.collegata, .comando.collegata:hover, .comando.collegata:focus-visible { border-color: #3a9b5a; background: #3a9b5a; color: #f4f1ea; outline: none; }
     .comando:disabled { opacity: .35; cursor: default; }
     .comando.rosso { border-color: var(--rosso); color: var(--rosso); }
     .comando.rosso:hover:not(:disabled), .comando.rosso:focus-visible { background: var(--rosso); color: #121110; }
@@ -74,7 +76,7 @@
     .esito.ok { color: #8fbf7a; }
     .esito.err { color: var(--rosso); }
 
-    /* ----- Spie: verde il modulo attivo, viola (il colore del ghost di Gestione pagine) in ghost, spenta in arrivo ----- */
+    /* ----- Spie: verde il modulo attivo, viola (il colore del ghost del Controllo codice) in ghost, spenta in arrivo ----- */
     .spia { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--verde);
       box-shadow: 0 0 0 2px rgba(61, 220, 110, .16), 0 0 7px rgba(61, 220, 110, .85); }
     .spia.ghost { background: var(--ghost); box-shadow: 0 0 0 2px rgba(185, 174, 240, .16), 0 0 7px rgba(185, 174, 240, .85); }
@@ -165,6 +167,29 @@
     .widget.in-arrivo .w-anteprima, .widget.in-arrivo .w-titolo { opacity: .5; }
     /* trascinando per riordinare */
     .widget[draggable="true"] { cursor: grab; }
+
+    /* ----- Modalità modifica: il lucchetto. Chiuso (di partenza) i moduli restano fermi; aperto (oro pieno, l'arco si
+       solleva) si trascinano dentro la loro sezione e tremano appena, come le app dell'iPhone da spostare ----- */
+    .modifica-riga { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+    .lucchetto { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 9px; border: 1px solid var(--oro); border-radius: 4px;
+      background: none; color: var(--oro); font: 400 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+      transition: background .15s, color .15s; }
+    .lucchetto svg { width: 17px; height: 17px; overflow: visible; }
+    .lucchetto .arco { transform-box: fill-box; transform-origin: 0% 100%; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+    .lucchetto:hover, .lucchetto:focus-visible { background: rgba(212, 163, 115, .14); outline: none; }
+    .lucchetto[aria-pressed="true"] { background: var(--oro); color: #121110; }
+    .lucchetto[aria-pressed="true"] .arco { transform: translateY(-3px) rotate(-28deg); }
+    .modifica-nota { color: var(--oro-chiaro); font-size: 11px; letter-spacing: .04em; }
+    .modifica-nota[hidden] { display: none; }
+    /* i moduli spostabili: bordo oro tratteggiato e un leggero tremolio, sfasato da uno all'altro */
+    .diagramma.in-modifica .widget[data-chiave] { border-style: dashed; border-color: rgba(212, 163, 115, .75); }
+    .diagramma.in-modifica .nastro { background: rgba(212, 163, 115, .05); border-radius: 6px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .diagramma.in-modifica .widget[data-chiave]:not(.trascinato):not(:hover) { animation: trema .32s ease-in-out infinite alternate; }
+      .diagramma.in-modifica .widget[data-chiave]:nth-child(2n) { animation-delay: -.16s; }
+      .diagramma.in-modifica .widget[data-chiave]:nth-child(3n) { animation-duration: .36s; }
+      @keyframes trema { from { transform: rotate(-.7deg); } to { transform: rotate(.7deg); } }
+    }
     .widget.trascinato { opacity: .35; transform: none; box-shadow: none; }
     .nastro.riordina { outline: 1px dashed rgba(212, 163, 115, .5); outline-offset: 2px; border-radius: 6px; }
 
@@ -183,9 +208,14 @@
 
     /* ----- Rami che si chiudono e si aprono ----- */
     .nodo.apribile { cursor: pointer; }
-    .maniglia { position: absolute; top: 50%; right: -9px; z-index: 2; width: 17px; height: 17px; padding: 0; translate: 0 -50%;
-      border: 1px solid var(--oro); border-radius: 50%; background: #0a0908; color: var(--oro); font: 400 12px/15px var(--mono);
-      text-align: center; cursor: pointer; transition: background .15s, color .15s, transform .2s; }
+    /* maniglia sul raccordo: un cerchio con dentro una linea, come una valvola sul filo del diagramma. Linea orizzontale: il
+       flusso prosegue e il ramo è aperto; linea verticale: il flusso si ferma e il ramo è chiuso (ruota di 90° cambiando) */
+    .maniglia { position: absolute; top: 50%; right: -12px; z-index: 2; width: 23px; height: 23px; padding: 0; translate: 0 -50%;
+      border: 1px solid var(--oro); border-radius: 50%; background: #0a0908; color: var(--oro); cursor: pointer;
+      transition: background .15s, color .15s, transform .2s; }
+    .maniglia::before { content: ""; position: absolute; top: 50%; left: 50%; width: 12px; height: 2px; border-radius: 1px;
+      background: currentColor; translate: -50% -50%; transition: rotate .35s cubic-bezier(.3, 1.4, .5, 1); }
+    .maniglia[aria-expanded="false"]::before { rotate: 90deg; }
     .maniglia:hover, .maniglia:focus-visible { background: var(--oro); color: #121110; outline: none; transform: scale(1.12); }
     html.incorporata .maniglia { background: #0e0d0c; }
     .riassunto { display: none; align-items: center; gap: 10px; padding: 6px 12px; border: 1px dashed var(--bordo); border-radius: 20px;
@@ -208,12 +238,10 @@
       .diagramma.entra .ramo::after { animation: cresce .28s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3 - 40ms); transform-origin: top; }
       .ramo.apre > .carosello, .ramo.apre > .sotto { animation: srotola .5s cubic-bezier(.2, .8, .2, 1); }
       .ramo.chiude > .riassunto { animation: compare .35s ease-out; }
-      .ramo.apre > .nodo > .maniglia, .ramo.chiude > .nodo > .maniglia { animation: gira .35s ease-out; }
       @keyframes compare { from { opacity: 0; transform: translateX(-12px) scale(.96); } }
       @keyframes traccia { from { transform: scaleX(0); } }
       @keyframes cresce { from { transform: scaleY(0); } }
       @keyframes srotola { from { opacity: 0; transform: translateX(-16px); clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-      @keyframes gira { from { rotate: -180deg; } }
     }
 
     /* tasto per tornare indietro, in fondo al diagramma, al centro */
@@ -300,7 +328,8 @@
       .filo.corto { width: 26px; }
       .ramo { padding-left: 30px; }
       .ramo::before { width: 30px; }
-      .maniglia { width: 22px; height: 22px; right: -12px; font-size: 15px; line-height: 20px; }
+      .maniglia { width: 28px; height: 28px; right: -15px; }
+      .maniglia::before { width: 15px; }
       .freccia { width: 30px; height: 30px; font-size: 18px; }
     }
     @container pagina (min-width: 2600px) {
@@ -354,6 +383,11 @@
   <!-- insegne dei negozi: un diagramma alla volta -->
   <div class="insegne" role="tablist" aria-label="Negozi"><span class="segnalino"></span></div>
   <div class="barra">
+    <!-- modalità modifica: con il lucchetto aperto i moduli si trascinano per cambiare l'ordine dentro la loro sezione -->
+    <div class="modifica-riga">
+      <button class="lucchetto" type="button" id="modifica" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="arco" d="M8 11V7.5a4 4 0 0 1 8 0V11"/><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M12 15v2.5"/></svg><span id="modifica-testo">modalità modifica</span></button>
+      <span class="modifica-nota" id="modifica-nota" hidden>trascina i moduli dentro la loro sezione per cambiarne l'ordine, poi registra</span>
+    </div>
     <div class="cartella">
       <button class="comando" type="button" id="collega">collega la cartella del progetto</button>
     </div>
@@ -436,6 +470,20 @@
     $('collega').disabled = true;
     $('collega').title = 'questo browser non può collegare la cartella del progetto: per cambiare i moduli apri questa pagina in chrome o edge sul computer';
   }
+
+  // ----- Modalità modifica (lucchetto): di partenza chiusa, i moduli non si spostano; aperta si trascinano dentro la loro
+  // sezione (o Alt + ← / →, o ◀ ▶ nella scheda del modulo); il nuovo ordine si registra dal nodo della galleria -----
+  let modifica = false;
+  $('modifica').addEventListener('click', () => {
+    modifica = !modifica;
+    $('modifica').setAttribute('aria-pressed', String(modifica));
+    $('modifica').title = modifica ? 'chiudi il lucchetto: i moduli restano fermi' : 'apri il lucchetto per spostare i moduli';
+    $('modifica-testo').textContent = modifica ? 'modifica attiva' : 'modalità modifica';
+    $('modifica-nota').hidden = !modifica;
+    $('diagramma').classList.toggle('in-modifica', modifica);
+    ridisegna();
+  });
+  $('modifica').title = 'apri il lucchetto per spostare i moduli';
 
   // testo di un file: dalla cartella collegata (dopo una modifica è già quello nuovo) o dal sito
   async function testoFile(percorso) {
@@ -588,9 +636,9 @@
     const elemento = nodo(grande ? 'div' : 'button', `widget in-${stato}`);
     if (!grande) {
       elemento.type = 'button';
-      elemento.draggable = true;
+      elemento.draggable = modifica;   // si trascinano solo con il lucchetto aperto (modalità modifica)
       elemento.dataset.chiave = chiave(scheda);
-      elemento.setAttribute('aria-label', `${scheda.titolo}, ${due(numero)}, ${stato === 'attivo' ? 'attivo' : stato === 'ghost' ? 'in ghost' : 'in arrivo'}. Apri la scheda del modulo; Alt e frecce per spostarlo`);
+      elemento.setAttribute('aria-label', `${scheda.titolo}, ${due(numero)}, ${stato === 'attivo' ? 'attivo' : stato === 'ghost' ? 'in ghost' : 'in arrivo'}. Apri la scheda del modulo${modifica ? '; trascinalo, o Alt e frecce, per spostarlo' : ''}`);
       elemento.addEventListener('click', () => apriModulo(id, sezione.id, chiave(scheda)));
     }
     const testa = nodo('span', 'w-testa');
@@ -678,7 +726,7 @@
     if (!attesaEsito && $('stato').className !== 'lavora') mostraTotali();
   }
 
-  // ----- Rami che si chiudono e si aprono (maniglia − / + sul nodo, o un clic sul nodo); chiusi mostrano un riassunto
+  // ----- Rami che si chiudono e si aprono (maniglia sul raccordo, un cerchio con la linea orizzontale da aperto e verticale da chiuso, o un clic sul nodo); chiusi mostrano un riassunto
   // con una spia per modulo. Lo stato resta in questa scheda del browser, per negozio -----
   const CHIUSI = 'gestione_negozi_chiusi';
   let chiusi = new Set();
@@ -699,7 +747,7 @@
     elemento.querySelectorAll('.nastro').forEach(nastro => nastro.dispatchEvent(new Event('scroll')));
   }
   function aggiornaManiglia(maniglia, aperto) {
-    maniglia.textContent = aperto ? '−' : '+';
+    // niente testo: la linea dentro il cerchio (CSS) è orizzontale da aperto, verticale da chiuso
     maniglia.setAttribute('aria-expanded', String(aperto));
     maniglia.setAttribute('aria-label', `${aperto ? 'Riduci' : 'Espandi'} ${maniglia.dataset.nome}`);
   }
@@ -896,6 +944,7 @@
   function riordinabile(id, sezione, nastro) {
     let trascinato = null;
     nastro.addEventListener('dragstart', evento => {
+      if (!modifica) { evento.preventDefault(); return; }
       trascinato = evento.target.closest('.widget');
       if (!trascinato) return;
       evento.dataTransfer.effectAllowed = 'move';
@@ -929,7 +978,7 @@
     });
     nastro.addEventListener('keydown', evento => {
       const w = evento.target.closest('.widget');
-      if (!w || !evento.altKey || !['ArrowLeft', 'ArrowRight'].includes(evento.key)) return;
+      if (!modifica || !w || !evento.altKey || !['ArrowLeft', 'ArrowRight'].includes(evento.key)) return;
       evento.preventDefault();
       muovi(id, sezione, w.dataset.chiave, evento.key === 'ArrowLeft' ? -1 : 1);
       document.querySelector(`.ramo[data-sezione="${sezione.id}"] .widget[data-chiave="${CSS.escape(w.dataset.chiave)}"]`)?.focus();
@@ -979,11 +1028,18 @@
 
   // ----- Scheda del modulo -----
   let moduloAperto = null;   // { id, sezione (id), chiave }
+  // dentro la pagina operatore: con la scheda di un modulo aperta, il suo pulsante in alto (← diagramma del negozio) e Esc
+  // tornano al diagramma invece che al menu (la pagina operatore manda { torna: true })
+  const avvisaOperatore = sottoVista => { if (incorporata) window.parent.postMessage({ sottoVista }, location.origin); };
+  window.addEventListener('message', evento => {
+    if (evento.origin === location.origin && evento.source === window.parent && evento.data?.torna) chiudiModulo();
+  });
   function apriModulo(id, sezioneId, chiaveModulo) {
     moduloAperto = { id, sezione: sezioneId, chiave: chiaveModulo };
     $('diagramma').hidden = true;
     $('indietro-fondo').hidden = true;
     $('vista-modulo').hidden = false;
+    avvisaOperatore('diagramma del negozio');
     disegnaModulo();
     $('torna-diagramma').focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -992,6 +1048,7 @@
     if ($('vista-modulo').hidden) return;
     const aperto = moduloAperto;
     moduloAperto = null;
+    avvisaOperatore(null);
     $('vista-modulo').hidden = true;
     $('diagramma').hidden = false;
     $('indietro-fondo').hidden = false;
@@ -1068,7 +1125,8 @@
       const pulsante = nodo('button', '', segno);
       pulsante.type = 'button';
       pulsante.setAttribute('aria-label', nome);
-      pulsante.disabled = indice + passo < 0 || indice + passo >= schede.length;
+      pulsante.disabled = !modifica || indice + passo < 0 || indice + passo >= schede.length;
+      if (!modifica) pulsante.title = 'apri il lucchetto (modalità modifica) per spostarlo';
       pulsante.addEventListener('click', () => muovi(id, sezione, chiaveModulo, passo));
       comandi.append(pulsante);
     });

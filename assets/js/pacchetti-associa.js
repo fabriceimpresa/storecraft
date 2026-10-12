@@ -50,7 +50,7 @@
                                          con i layout scelti (moduli: le schede del set da tenere); nella pagina gli altri
                                          layout si nascondono e si apre su uno di quelli scelti
 
-   Ghost (Gestione pagine): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
+   Ghost (Controllo codice): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
    come widget né nel menu laterale; le sue schede hanno nascosta: true (dashboard.js le salta).
      Associa.fantasma(testoDashboard, pagina)               true se le schede che aprono la pagina sono in ghost
      Associa.impostaFantasma(testoDashboard, pagina, sì/no)  nuovo testo con tutte le schede della pagina in ghost o no
@@ -730,7 +730,7 @@ Pacchetti.registra('${galleria}', {
     return testo.replace(/^([ \t]*ordine:\s*\[)([^\]]*)(\])/gm, (tutto, prima, lista, dopo) => prima
       + [...lista.matchAll(new RegExp(STRINGA_JS, 'g'))].map(m => m[0]).filter(voce => pagina(valoreStringa(voce)) !== nome).join(', ') + dopo);
   }
-  // ghost di un solo modulo (non di tutte le schede della pagina, come Gestione pagine)
+  // ghost di un solo modulo (non di tutte le schede della pagina, come Controllo codice)
   function fantasmaScheda(testo, id, chiave) {
     return /nascosta:\s*true/.test(schedaConChiave(testo, id, chiave).testo);
   }
