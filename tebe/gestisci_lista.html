@@ -2,345 +2,26 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261012-49"></script>
+  <script src="../assets/js/negozi.js?v=20261012-50"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261012-49"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261012-49">
+  <script src="../assets/js/theme.js?v=20261012-50"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261012-50">
+  <!-- caratteri e aspetto della Cronologia di Stampa, comuni alle pagine dei loghi personali dei tre negozi -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/loghi-personali.css?v=20261012-50">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261012-49">
-  <title>Gestisci Lista Personale · TEBE</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: var(--interface-page);
-      color: var(--interface-text);
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      background: var(--interface-surface);
-      border: 1px solid var(--interface-border);
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(40, 34, 28, .24);
-    }
-
-    h1 {
-      font-size: 1.2rem;
-      font-weight: 400;
-      color: var(--interface-accent-bright);
-      border-bottom: 2px solid var(--interface-accent);
-      padding-bottom: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .backup-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .btn-backup {
-      border: none;
-      border-radius: 4px;
-      color: #fff;
-      cursor: pointer;
-      font-size: 0.78rem;
-      font-weight: 400;
-      letter-spacing: .5px;
-      padding: 9px 12px;
-    }
-
-    .btn-export { background: var(--interface-accent); color: #fffdfa; }
-    .btn-export:hover { background: var(--interface-accent-bright); }
-    .btn-import { background: var(--interface-accent); color: #fffdfa; }
-    .btn-import:hover { background: var(--interface-accent-bright); }
-    .btn-clear { background: #96382b; color: #fff; }
-    .btn-clear:hover { background: #7a2d22; }
-
-    /* LISTA LOGHI SALVATI */
-    .saved-list {
-      margin-top: 30px;
-    }
-
-    .saved-list-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .saved-list-header h2 {
-      font-size: 1.1rem;
-      font-weight: 400;
-      color: var(--interface-accent-bright);
-    }
-
-    .sort-actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .btn-sort {
-      background: var(--interface-page);
-      border: 1px solid var(--interface-accent);
-      border-radius: 3px;
-      color: var(--interface-accent-bright);
-      cursor: pointer;
-      font-size: 0.75rem;
-      padding: 6px 8px;
-    }
-
-    .btn-sort:hover,
-    .btn-sort.active {
-      background: var(--interface-accent);
-      color: #fffdfa;
-    }
-
-    .saved-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--interface-page);
-      padding: 10px 15px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      border-left: 3px solid var(--interface-accent);
-      gap: 15px;
-      transition: background 0.15s, opacity 0.15s;
-    }
-
-    .saved-item.dragging {
-      opacity: 0.4;
-    }
-
-    .saved-item.drag-over-top {
-      box-shadow: inset 0 3px 0 0 var(--interface-text);
-    }
-
-    .saved-item.drag-over-bottom {
-      box-shadow: inset 0 -3px 0 0 var(--interface-text);
-    }
-
-    .drag-handle {
-      color: var(--interface-muted);
-      cursor: grab;
-      flex-shrink: 0;
-      font-size: 1.1rem;
-      line-height: 1;
-      touch-action: none;
-      user-select: none;
-    }
-
-    .drag-handle:active { cursor: grabbing; }
-
-    .saved-item:not(.drag-enabled) .drag-handle {
-      cursor: not-allowed;
-      opacity: 0.3;
-    }
-
-    .sort-hint {
-      color: var(--interface-muted);
-      font-size: 0.72rem;
-      margin-bottom: 10px;
-    }
-
-    .saved-item-preview {
-      width: 80px;
-      height: 40px;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 3px;
-      padding: 4px;
-      flex-shrink: 0;
-      border: 1px solid var(--interface-border);
-    }
-
-    .saved-item-preview img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .saved-item-details {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .saved-item-details input {
-      padding: 4px 8px;
-      background: var(--interface-surface);
-      border: 1px solid var(--interface-border);
-      color: var(--interface-text);
-      border-radius: 3px;
-      font-size: 0.9rem;
-      width: 100%;
-      max-width: 250px;
-    }
-
-    .saved-item-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-update {
-      background: #43586b;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .btn-update:hover { background: #344654; }
-
-    .btn-delete {
-      background: #96382b;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .btn-delete:hover { background: #7a2d22; }
-
-    /* MODAL DI CONFERMA PERSONALIZZATO */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(40,37,34,0.55);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-overlay.active {
-      display: flex;
-    }
-
-    .modal-box {
-      position: relative;
-      width: 90%;
-      max-width: 420px;
-      background: var(--interface-surface);
-      border: 1px solid var(--interface-border);
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(40, 34, 28, .24);
-      padding: 30px 24px 20px;
-      text-align: center;
-    }
-
-    .modal-warning-icon {
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 52px;
-      height: 52px;
-      background-color: #96382b;
-      color: #fff;
-      border-radius: 50%;
-      font-weight: bold;
-      font-size: 1.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 1px 4px rgba(40, 34, 28, .3);
-      border: 2px solid var(--interface-surface);
-    }
-
-    .modal-message {
-      color: var(--interface-text);
-      font-size: 0.95rem;
-      margin-top: 10px;
-      margin-bottom: 22px;
-      line-height: 1.4;
-    }
-
-    .modal-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-
-    .modal-btn {
-      border: none;
-      border-radius: 4px;
-      padding: 9px 18px;
-      font-weight: bold;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-
-    .modal-btn-cancel {
-      background: var(--interface-sunken);
-      color: var(--interface-text);
-    }
-    .modal-btn-cancel:hover { background: var(--interface-border); }
-
-    .modal-btn-backup {
-      background: var(--interface-accent);
-      color: #fffdfa;
-    }
-    .modal-btn-backup:hover { background: var(--interface-accent-bright); }
-
-    .modal-btn-confirm {
-      background: #96382b;
-      color: #fff;
-    }
-    .modal-btn-confirm:hover { background: #7a2d22; }
-
-    @media screen and (max-width: 600px) and (pointer: coarse) {
-      body { padding: 64px 12px 16px; }
-      .container { padding: 16px; }
-      h1 { font-size: 1rem; letter-spacing: 1.2px; }
-      .app-close-btn { top: 10px; right: 10px; width: 44px; height: 44px; z-index: 20; }
-      .saved-list-header { align-items: flex-start; flex-direction: column; }
-      .saved-item { align-items: flex-start; flex-wrap: wrap; gap: 10px; padding: 10px; }
-      .saved-item-actions, .sort-actions, .backup-actions { flex-wrap: wrap; }
-      .saved-item-actions > *, .sort-actions > *, .backup-actions > * { min-height: 44px; }
-      .saved-item-preview { align-self: center; }
-      .modal-box { padding: 30px 16px 16px; }
-      .modal-actions .modal-btn { flex: 1 1 100%; min-height: 44px; }
-    }
-
-    .modal-btn-import-custom {
-      background: #31583e;
-      color: #fff;
-    }
-    .modal-btn-import-custom:hover { background: #264631; }
-  </style>
-  <style>
-    /* Negozio della lista, accanto al titolo (scritto da loghi-personalizzati.js) */
-    .saved-list-header h2 .list-store { white-space: nowrap; }
-  </style>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261012-49"></script>
+  <title>Gestisci Lista · TEBE</title>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261012-50"></script>
 </head>
-<body>
+<body data-layout="loghi">
 
-  <a href="index.html?store=tebe" class="app-close-btn" title="Torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
+  <header class="lp-testata">
+    <div class="lp-marchio">STORE // CRAFT</div>
+    <h1 class="lp-titolo">Gestisci Lista</h1>
+    <div class="lp-chiudi-posto">
+      <a href="index.html?store=tebe" class="app-close-btn app-close-btn--pdf" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
+    </div>
+  </header>
 
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
@@ -351,7 +32,7 @@
   </div>
 
   <div class="container">
-    <h1>Gestisci Lista Personale</h1>
+    <h2 class="lp-parte">Backup della lista</h2>
 
     <div class="backup-actions">
       <button type="button" class="btn-backup btn-export" onclick="exportCustomLogos()">⬇ ESPORTA LOGHI</button>
@@ -359,8 +40,6 @@
       <button type="button" class="btn-backup btn-clear" style="margin-left: auto;" onclick="clearCustomLogos()"><span style="font-size:1.3em;">⊘</span> CANCELLA LOGHI</button>
       <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;" onchange="importCustomLogos(this.files[0]); this.value = '';">
     </div>
-
-    <div style="margin-top: 20px; margin-bottom: 20px;"></div>
 
     <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
     <div class="saved-list">
@@ -548,7 +227,7 @@
       document.getElementById('sortChronological').classList.toggle('active', logoSortOrder === 'chronological');
 
       if (logos.length === 0) {
-        container.innerHTML = '<p style="font-size:0.8rem; color:#888;">Nessun logo personale salvato.</p>';
+        container.innerHTML = '<p class="lp-vuota">Nessun logo personale salvato.</p>';
         return;
       }
 

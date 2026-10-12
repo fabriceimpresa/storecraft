@@ -1,0 +1,285 @@
+/* Pagine dei loghi personali di ogni negozio, Genera Loghi (genera_loghi.html) e Gestisci Lista (gestisci_lista.html):
+   stile comune ai tre negozi, con i caratteri e l'aspetto della Cronologia di Stampa (Cinzel per marchio e titoli, Plus
+   Jakarta Sans per il resto) e i colori del tema (--interface-*: theme.css per Luxury, scheda del negozio per TEBE e
+   OPHILYA; i valori di riserva sono quelli scuri di Luxury). Classi lp- per le parti nuove; le altre classi restano
+   quelle della pagina, che le usa nel suo script. Dal 12 ottobre 2026 (prima Arial e colori scritti in ogni pagina). */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--interface-page, #121110);
+  color: var(--interface-text, #f4f1ea);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Intestazione come la Cronologia e il visualizzatore PDF: STORE // CRAFT a sinistra, titolo al centro, ✕ a destra */
+.lp-testata {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 68px;
+  padding: 0.8rem 1.5rem;
+  background: var(--interface-sidebar, #181715);
+  border-bottom: 1px solid var(--interface-accent, #d4a373);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+.lp-marchio { color: var(--interface-accent, #d4a373); font-family: 'Cinzel', serif; font-size: 1.15rem; letter-spacing: 2px; white-space: nowrap; }
+.lp-titolo {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  color: var(--interface-muted, #8c857b);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.lp-chiudi-posto { width: 40px; height: 40px; }
+
+/* Il riquadro della pagina */
+.container {
+  width: min(860px, calc(100% - 3rem));
+  margin: 2rem auto 3rem;
+  padding: 1.6rem 1.6rem 1.8rem;
+  border: 1px solid var(--interface-border, #2e2b27);
+  border-radius: 10px;
+  background: var(--interface-surface, #1e1d1a);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Titoli delle parti: Cinzel oro, maiuscolo e spaziato, con la linea che li segue (come i giorni della Cronologia) */
+.lp-parte,
+.saved-list-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--interface-accent, #d4a373);
+  font: 500 0.95rem 'Cinzel', serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.lp-parte { margin: 0 0 1.3rem; }
+.lp-parte::after { content: ''; flex: 1; height: 1px; background: var(--interface-border, #2e2b27); }
+.saved-list-header h2 { flex-wrap: wrap; gap: 6px 10px; }
+.saved-list-header h2 .list-store { color: var(--interface-muted, #8c857b); font-size: 0.8rem; letter-spacing: 0.14em; white-space: nowrap; }
+
+/* Zona dove trascinare l'immagine del logo */
+.upload-box {
+  margin-bottom: 1.3rem;
+  padding: 1.8rem 1rem;
+  border: 1px dashed var(--interface-accent, #d4a373);
+  border-radius: 8px;
+  background: var(--interface-control, #0a0908);
+  color: var(--interface-text, #f4f1ea);
+  font-size: 0.9rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.upload-box strong { font-weight: 600; }
+.upload-box:hover, .upload-box.dragover { border-color: var(--interface-accent-bright, #e5ba73); background: var(--interface-sidebar, #181715); }
+.upload-box input { display: none; }
+.lp-nota { margin-top: 6px; color: var(--interface-muted, #8c857b); font-size: 0.8rem; }
+
+/* Campi */
+.form-group { margin-bottom: 1rem; }
+.form-group label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--interface-muted, #8c857b);
+  font: 600 0.72rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.form-group input, .form-group select, .saved-item-details input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--interface-border, #2e2b27);
+  border-radius: 6px;
+  background: var(--interface-control, #0a0908);
+  color: var(--interface-text, #f4f1ea);
+  font: 500 0.88rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.02em;
+  transition: border-color 0.15s ease;
+}
+.form-group input:focus, .saved-item-details input:focus { outline: none; border-color: var(--interface-accent, #d4a373); }
+
+/* Anteprima del logo sul cartello */
+.preview-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+  margin-top: 1.2rem;
+  padding: 1rem;
+  border: 1px solid var(--interface-border, #2e2b27);
+  border-radius: 8px;
+  background: var(--interface-control, #0a0908);
+}
+.preview-box { text-align: center; }
+.preview-box p { margin-bottom: 0.6rem; color: var(--interface-muted, #8c857b); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.preview-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 100px;
+  padding: 10px;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.preview-card img, .saved-item-preview img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+/* Comandi: pieni d'oro (salva, esporta, importa), a contorno (ordinamento, aggiorna nome), rossi (elimina, cancella) */
+.btn-save, .btn-backup, .btn-sort, .btn-update, .btn-delete, .modal-btn {
+  min-height: 36px;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid var(--interface-accent, #d4a373);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--interface-accent, #d4a373);
+  font: 700 0.72rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, filter 0.15s ease;
+}
+.btn-save { width: 100%; min-height: 42px; margin-top: 1rem; font-size: 0.78rem; }
+.btn-save, .btn-export, .btn-import, .modal-btn-backup { background: var(--interface-accent, #d4a373); color: #121110; }
+.btn-save:hover, .btn-export:hover, .btn-import:hover, .modal-btn-backup:hover { filter: brightness(1.08); }
+.btn-sort:hover, .btn-sort.active, .btn-update:hover, .modal-btn-cancel:hover { background: var(--interface-accent, #d4a373); color: #121110; }
+.btn-clear, .btn-delete, .modal-btn-confirm { border-color: #96382b; background: #96382b; color: #fff; }
+.btn-clear:hover, .btn-delete:hover, .modal-btn-confirm:hover { filter: brightness(1.12); }
+.modal-btn-import-custom { border-color: #5f8a55; background: #5f8a55; color: #fff; }
+.modal-btn-import-custom:hover { filter: brightness(1.1); }
+:is(.btn-save, .btn-backup, .btn-sort, .btn-update, .btn-delete, .modal-btn, .upload-box):focus-visible {
+  outline: 2px solid var(--interface-accent-bright, #e5ba73);
+  outline-offset: 2px;
+}
+
+/* Gestisci Lista: esporta, importa, cancella */
+.backup-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* La lista dei loghi personali */
+.saved-list { margin-top: 2rem; }
+.saved-list-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 0.9rem; }
+.sort-actions { display: flex; gap: 6px; }
+.btn-sort { min-height: 32px; padding: 0.45rem 0.85rem; border-color: var(--interface-border, #2e2b27); border-radius: 999px; color: var(--interface-muted, #8c857b); }
+.btn-sort.active { border-color: var(--interface-accent, #d4a373); }
+/* Genera Loghi: ⚙ accanto al titolo porta a Gestisci Lista */
+.btn-manage { display: inline-flex; align-items: center; justify-content: center; width: 32px; min-height: 32px; padding: 0; border-color: var(--interface-accent, #d4a373); border-radius: 50%; color: var(--interface-accent, #d4a373); }
+.btn-manage span { font-size: 1.15rem !important; line-height: 1; }
+.btn-manage:hover { background: var(--interface-accent, #d4a373); color: #121110; }
+.sort-hint { margin-bottom: 0.8rem; color: var(--interface-muted, #8c857b); font-size: 0.76rem; }
+.lp-vuota { color: var(--interface-muted, #8c857b); font-size: 0.85rem; }
+
+.saved-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--interface-border, #2e2b27);
+  border-radius: 8px;
+  background: var(--interface-page, #121110);
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+.saved-item:hover { border-color: var(--interface-accent, #d4a373); }
+.saved-item.dragging { opacity: 0.4; }
+.saved-item.drag-over-top { box-shadow: inset 0 3px 0 0 var(--interface-accent, #d4a373); }
+.saved-item.drag-over-bottom { box-shadow: inset 0 -3px 0 0 var(--interface-accent, #d4a373); }
+.drag-handle { flex-shrink: 0; color: var(--interface-muted, #8c857b); font-size: 1.1rem; line-height: 1; cursor: grab; touch-action: none; user-select: none; }
+.drag-handle:active { cursor: grabbing; }
+.saved-item:not(.drag-enabled) .drag-handle { opacity: 0.3; cursor: not-allowed; }
+.saved-item-preview {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 42px;
+  padding: 4px;
+  border-radius: 4px;
+  background: #fff;
+}
+.saved-item-details { display: flex; flex-direction: column; flex-grow: 1; gap: 4px; }
+.saved-item-details input { max-width: 280px; padding: 0.45rem 0.65rem; font-size: 0.84rem; }
+.saved-item-actions { display: flex; gap: 8px; }
+.btn-update, .btn-delete { min-height: 32px; padding: 0.4rem 0.8rem; font-size: 0.68rem; }
+
+/* Finestra di conferma (Gestisci Lista), come l'anteprima della Cronologia */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(10, 9, 8, 0.78);
+  backdrop-filter: blur(3px);
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 34px 24px 22px;
+  border: 1px solid var(--interface-accent, #d4a373);
+  border-radius: 10px;
+  background: var(--interface-surface, #1e1d1a);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+.modal-warning-icon {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--interface-surface, #1e1d1a);
+  border-radius: 50%;
+  background: #96382b;
+  color: #fff;
+  font-size: 1.5rem;
+  transform: translateX(-50%);
+}
+.modal-message { margin: 8px 0 22px; color: var(--interface-text, #f4f1ea); font-size: 0.92rem; line-height: 1.55; }
+.modal-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+/* Tema chiaro: ombre corte e nette (regola delle ombre nel tema chiaro, 11 ottobre 2026) */
+:root[data-interface-theme="light"] .lp-testata { box-shadow: 0 1px 3px rgba(40, 34, 28, .14); }
+:root[data-interface-theme="light"] .container { box-shadow: 0 2px 6px rgba(40, 34, 28, .2); }
+:root[data-interface-theme="light"] .preview-card { box-shadow: 0 1px 3px rgba(40, 34, 28, .26); border: 1px solid var(--interface-border, #e4dccd); }
+:root[data-interface-theme="light"] .saved-item-preview { border: 1px solid var(--interface-border, #e4dccd); }
+:root[data-interface-theme="light"] .modal-box { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }
+:root[data-interface-theme="light"] .modal-overlay { background: rgba(40, 34, 28, 0.45); }
+
+/* Telefono: intestazione compatta, riquadro a tutta larghezza, comandi alti 44 px */
+@media (max-width: 760px) {
+  .lp-testata { min-height: 60px; padding: 0.6rem 0.75rem; }
+  .lp-marchio { font-size: 0.9rem; letter-spacing: 1px; }
+  .lp-titolo { position: static; transform: none; font-size: 0.85rem; }
+  .container { width: calc(100% - 24px); margin: 12px auto 24px; padding: 16px; }
+  .upload-box { padding: 1.2rem 0.8rem; }
+  .form-group input { font-size: 16px; }
+  .preview-section { flex-direction: column; gap: 14px; }
+  .preview-card { width: min(200px, 100%); }
+  .saved-list-header { flex-direction: column; align-items: flex-start; }
+  .sort-actions, .saved-item-actions, .backup-actions { flex-wrap: wrap; }
+  .saved-item { flex-wrap: wrap; align-items: flex-start; gap: 10px; padding: 10px; }
+  .saved-item-preview { align-self: center; }
+  .saved-item-actions > *, .sort-actions > *, .backup-actions > * { min-height: 44px; }
+}

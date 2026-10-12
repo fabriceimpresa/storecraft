@@ -2,271 +2,34 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261012-49"></script>
+  <script src="../assets/js/negozi.js?v=20261012-50"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CREATORE LOGHI PERSONALI</title>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261012-49">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #212529;
-      color: #fff;
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      background: #181a1d;
-      border: 1px solid #d4a373;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-    }
-
-    h1 {
-      font-size: 1.4rem;
-      color: #e5ba73;
-      border-bottom: 2px solid #d4a373;
-      padding-bottom: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .upload-box {
-      border: 2px dashed #d4a373;
-      border-radius: 6px;
-      padding: 25px;
-      text-align: center;
-      background: #26292e;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: background 0.2s, border-color 0.2s;
-    }
-
-    .upload-box.dragover {
-      background: #353b45;
-      border-color: #e5ba73;
-    }
-
-    .upload-box:hover { background: #2f333a; }
-    .upload-box input { display: none; }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #dddddd;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #4a4237;
-      border-radius: 4px;
-      background-color: #26292e;
-      color: #ffffff;
-    }
-
-    .preview-section {
-      display: flex;
-      gap: 20px;
-      margin-top: 20px;
-      background: #111214;
-      padding: 15px;
-      border-radius: 6px;
-      align-items: center;
-      justify-content: space-around;
-    }
-
-    .preview-box {
-      text-align: center;
-    }
-
-    .preview-box p {
-      font-size: 0.8rem;
-      color: #aaa;
-      margin-bottom: 8px;
-    }
-
-    .preview-card {
-      width: 200px;
-      height: 100px;
-      background: #ffffff;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-      border: 1px solid #ddd;
-    }
-
-    .preview-card img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .btn-save {
-      width: 100%;
-      background-color: #e5ba73;
-      color: #181a1d;
-      border: 1px solid #d4a373;
-      padding: 10px;
-      font-weight: bold;
-      font-size: 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-
-    .btn-save:hover { background-color: #d4a373; }
-
-    /* LISTA LOGHI SALVATI */
-    .saved-list {
-      margin-top: 30px;
-    }
-
-    .saved-list-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    .saved-list-header h2 {
-      font-size: 1rem;
-      color: #e5ba73;
-    }
-    /* Negozio della lista, accanto al titolo (scritto da loghi-personalizzati.js) */
-    .saved-list-header h2 .list-store {
-      white-space: nowrap;
-    }
-
-    .sort-actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .btn-sort {
-      background: #26292e;
-      border: 1px solid #d4a373;
-      border-radius: 3px;
-      color: #e5ba73;
-      cursor: pointer;
-      font-size: 0.75rem;
-      padding: 6px 8px;
-    }
-
-    .btn-sort:hover,
-    .btn-sort.active {
-      background: #d4a373;
-      color: #181a1d;
-    }
-
-    .saved-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #26292e;
-      padding: 10px 15px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      border-left: 3px solid #d4a373;
-      gap: 15px;
-    }
-
-    .saved-item-preview {
-      width: 80px;
-      height: 40px;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 3px;
-      padding: 4px;
-      flex-shrink: 0;
-    }
-
-    .saved-item-preview img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-
-    .saved-item-details {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .saved-item-details input {
-      padding: 4px 8px;
-      background: #181a1d;
-      border: 1px solid #4a4237;
-      color: #fff;
-      border-radius: 3px;
-      font-size: 0.9rem;
-      width: 100%;
-      max-width: 250px;
-    }
-
-    .saved-item-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-update {
-      background: #0056b3;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .btn-update:hover { background: #004085; }
-
-    .btn-delete {
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
-    .btn-delete:hover { background: #c82333; }
-
-  </style>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261012-49">
-  <script src="../assets/js/theme.js?v=20261012-49"></script>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261012-49"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261012-49">
+  <title>Genera Loghi · STORE // CRAFT</title>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261012-50">
+  <!-- caratteri e aspetto della Cronologia di Stampa, comuni alle pagine dei loghi personali dei tre negozi -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/loghi-personali.css?v=20261012-50">
+  <script src="../assets/js/theme.js?v=20261012-50"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261012-50"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261012-50">
 </head>
 <body data-layout="loghi">
 
-  <a href="index.html" class="app-close-btn" title="Torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
+  <header class="lp-testata">
+    <div class="lp-marchio">STORE // CRAFT</div>
+    <h1 class="lp-titolo">Genera Loghi</h1>
+    <div class="lp-chiudi-posto">
+      <a href="index.html" class="app-close-btn app-close-btn--pdf" title="Chiudi e torna al menu" aria-label="Chiudi e torna al menu">✕</a>
+    </div>
+  </header>
 
   <div class="container">
-    <h1>AGGIUNGI LOGO BRAND PERSONALIZZATO</h1>
+    <h2 class="lp-parte">Aggiungi un logo personale</h2>
 
     <!-- AREA UPLOAD CON DRAG AND DROPPING CORRETTO -->
     <div class="upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
       📂 <strong>Clicca o Trascina qui l'immagine del Logo</strong>
-      <p style="font-size:0.9rem; color:#aaa; margin-top:5px;">(Funziona con sfondi Bianchi o Neri)</p>
+      <p class="lp-nota">(Funziona con sfondi Bianchi o Neri)</p>
       <input type="file" id="fileInput" accept="image/*" onchange="processImage(this.files[0])">
     </div>
 
@@ -287,9 +50,7 @@
       </div>
     </div>
 
-    <button class="btn-save" id="btnSave" style="display:none;" onclick="saveCustomLogo()">💾 SALVA NEI BRAND PERSONALIZZATI</button>
-
-    <div style="margin-top: 20px;  margin-bottom: 20px;"></div>
+    <button class="btn-save" id="btnSave" style="display:none;" onclick="saveCustomLogo()">Salva nei loghi personali</button>
     <!-- ELENCO LOGHI GIÀ AGGIUNTI CON ANTEPRIMA E MODIFICA -->
     <div class="saved-list">
       <div class="saved-list-header">
@@ -453,7 +214,7 @@
       document.getElementById('sortChronological').classList.toggle('active', logoSortOrder === 'chronological');
       
       if (logos.length === 0) {
-        container.innerHTML = '<p style="font-size:0.8rem; color:#888;">Nessun logo personale salvato.</p>';
+        container.innerHTML = '<p class="lp-vuota">Nessun logo personale salvato.</p>';
         return;
       }
 
