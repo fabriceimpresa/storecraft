@@ -120,9 +120,19 @@
 
       <div class="widget widget-bacheca" id="widget-bacheca">
         <h3 class="bacheca-titolo">La tua Bacheca</h3>
-        <!-- avviso delle note nuove, ancora da leggere: campanella e numero -->
-        <span class="bacheca-avviso" id="bacheca-avviso" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span id="bacheca-avviso-numero"></span></span>
+        <!-- avvisi, in alto a destra, uno sotto l'altro: note nuove da leggere (campanella) e comunicazioni ufficiali nuove
+             (megafono), ognuno con il numero -->
+        <div class="bacheca-avvisi">
+          <span class="bacheca-avviso" id="bacheca-avviso" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span id="bacheca-avviso-numero"></span></span>
+          <span class="bacheca-avviso avviso-com" id="bacheca-avviso-com" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 10v4h3l7 4.5V5.5L6.5 10z"/><path d="M17 9a4 4 0 0 1 0 6"/><path d="M7 14l1.2 5h2.3"/></svg><span id="bacheca-avviso-com-numero"></span></span>
+        </div>
         <div class="bacheca-mazzo" id="bacheca-mazzo" aria-hidden="true"></div>
+        <!-- sempre la descrizione; le comunicazioni nuove e le note nuove da leggere; le comunicazioni recenti (2 settimane);
+             sempre il totale di note e comunicazioni -->
+        <p class="bacheca-descrizione">Post-it, Note Promemoria, Numeri Utili e Comunicazioni Ufficiali.</p>
+        <p class="bacheca-nuove" id="bacheca-nuove-com" hidden></p>
+        <p class="bacheca-nuove" id="bacheca-nuove" hidden></p>
+        <p class="bacheca-recenti" id="bacheca-recenti" hidden></p>
         <p class="bacheca-conteggio" id="bacheca-conteggio"></p>
         <button class="tool-btn" type="button" style="width:100%;" data-cassa="apri-bacheca">Apri Bacheca</button>
       </div>`;
@@ -134,6 +144,7 @@
   // di bacheca.js, letti dalla stessa lista nel browser (localStorage, una per negozio).
   const CARTE_BACHECA = ['#fff3a3', '#ffd1dc', '#c7ecff', '#d4f5c4', '#ffd9a8', '#e6d7ff', '#ffb3a8', '#ecd08c'];
   let paginaBacheca = 'bacheca.html';
+  const DUE_SETTIMANE = 14 * 24 * 60 * 60 * 1000;   // una comunicazione letta resta «recente» per 2 settimane (bacheca.js)
   function leggiNote() {
     const negozio = document.documentElement.dataset.negozio || 'luxury';
     try {
@@ -144,6 +155,13 @@
       if (prima !== null) localStorage.removeItem(vecchia);
       const note = JSON.parse(localStorage.getItem(`storecraft_bacheca_${negozio}`) || '[]');
       return Array.isArray(note) ? note : [];
+    } catch (errore) { return []; }
+  }
+  // comunicazioni ufficiali ancora in bacheca: non scadute, o che «non scadono» (durata 'mai', bacheca.js)
+  function leggiComunicazioni() {
+    try {
+      const lista = JSON.parse(localStorage.getItem(`storecraft_bacheca_comunicazioni_${document.documentElement.dataset.negozio || 'luxury'}`) || '[]');
+      return Array.isArray(lista) ? lista.filter(com => com.durata === 'mai' || com.scadenza > Date.now()) : [];
     } catch (errore) { return []; }
   }
   function mazzoBacheca() {
@@ -167,8 +185,23 @@
     avviso.hidden = !nuove;
     $('bacheca-avviso-numero').textContent = String(nuove);
     avviso.title = nuove === 1 ? '1 nota nuova' : `${nuove} note nuove`;
-    $('bacheca-conteggio').textContent = !note.length ? 'Post-it per promemoria, ordini e numeri utili'
-      : `${note.length === 1 ? '1 nota' : `${note.length} note`}${nuove ? `, ${nuove === 1 ? '1 nuova' : `${nuove} nuove`}` : ''}`;
+    // comunicazioni ufficiali: nuove finché nessuno le apre (megafono con il numero, sotto la campanella se ci sono anche
+    // note nuove); lette, «recenti» per 2 settimane dalla pubblicazione (una riga oro di promemoria); poi solo nel totale
+    const comunicazioni = leggiComunicazioni();
+    const comNuove = comunicazioni.filter(com => com.nuova).length;
+    const comRecenti = comunicazioni.filter(com => !com.nuova && Date.now() - com.creata < DUE_SETTIMANE).length;
+    const avvisoCom = $('bacheca-avviso-com');
+    avvisoCom.hidden = !comNuove;
+    $('bacheca-avviso-com-numero').textContent = String(comNuove);
+    avvisoCom.title = comNuove === 1 ? '1 comunicazione ufficiale nuova' : `${comNuove} comunicazioni ufficiali nuove`;
+    // nel corpo del widget: le novità da leggere (oltre agli avvisi), le comunicazioni recenti e sempre il totale
+    const riga = (id, testo) => { $(id).hidden = !testo; $(id).textContent = testo || ''; };
+    riga('bacheca-nuove-com', comNuove && (comNuove === 1 ? '1 nuova comunicazione ufficiale da leggere' : `${comNuove} nuove comunicazioni ufficiali da leggere`));
+    riga('bacheca-nuove', nuove && (nuove === 1 ? '1 nuova nota da leggere' : `${nuove} nuove note da leggere`));
+    riga('bacheca-recenti', comRecenti && (comRecenti === 1 ? '1 comunicazione ufficiale recente' : `${comRecenti} comunicazioni ufficiali recenti`));
+    const parti = [note.length && (note.length === 1 ? '1 nota' : `${note.length} note`),
+      comunicazioni.length && (comunicazioni.length === 1 ? '1 comunicazione' : `${comunicazioni.length} comunicazioni`)].filter(Boolean);
+    $('bacheca-conteggio').textContent = parti.length ? `In bacheca: ${parti.join(' e ')}` : 'La bacheca è vuota';
   }
   const apriBacheca = () => { location.href = paginaBacheca; };
 

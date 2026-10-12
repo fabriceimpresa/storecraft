@@ -28,7 +28,7 @@
                     la pagina resta nella cartella) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.14 2026';
+  const VERSIONE = 'V 1.2.15 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -419,35 +419,52 @@
         el('strong', { text: dati.identita[0] }), dati.identita[1] ? el('span', { text: dati.identita[1] }) : null) : null);
   }
 
-  // Note nuove della Bacheca (Utilità Cassa): quelle ancora da leggere (nuova: true, finché qualcuno non apre il
-  // post-it, bacheca.js), dalla più recente; le stesse dell'avviso sul widget (cassa.js)
-  function noteNuoveBacheca() {
+  // Novità della Bacheca (Utilità Cassa), le stesse degli avvisi del widget (cassa.js): le note ancora da leggere
+  // (nuova: true, finché qualcuno non apre il post-it), le comunicazioni ufficiali nuove (finché qualcuno non le apre) e
+  // quelle recenti (lette, nelle 2 settimane dalla pubblicazione), dalla più recente
+  const DUE_SETTIMANE = 14 * 24 * 60 * 60 * 1000;
+  function leggiBacheca(chiave) {
     const negozio = document.documentElement.dataset.negozio || 'luxury';
     try {
-      const note = JSON.parse(localStorage.getItem(`storecraft_bacheca_${negozio}`) || '[]');
-      return Array.isArray(note) ? note.filter(nota => nota.nuova).sort((a, b) => b.creata - a.creata) : [];
+      const lista = JSON.parse(localStorage.getItem(`${chiave}${negozio}`) || '[]');
+      return Array.isArray(lista) ? lista.sort((a, b) => b.creata - a.creata) : [];
     } catch (errore) { return []; }
   }
+  const noteNuoveBacheca = () => leggiBacheca('storecraft_bacheca_').filter(nota => nota.nuova);
+  const comunicazioniBacheca = () => leggiBacheca('storecraft_bacheca_comunicazioni_')
+    .filter(com => com.durata === 'mai' || com.scadenza > Date.now());
+  const comunicazioniNuove = () => comunicazioniBacheca().filter(com => com.nuova);
+  const comunicazioniRecenti = () => comunicazioniBacheca().filter(com => !com.nuova && Date.now() - com.creata < DUE_SETTIMANE);
 
   // Banner dell'intestazione: le scritte si alternano in giro, una ogni 10 secondi, quella in uscita sale e sparisce,
-  // quella nuova entra dal basso (stile in dashboard.css, .testata-centro); parte con la prima visibile. Con note nuove
-  // nella Bacheca entra nel giro, dopo ogni scritta, l'avviso NUOVI MESSAGGI IN BACHECA, nello stesso stile di Visual
-  // Merchandising Studio (un clic apre la Bacheca sul post-it da leggere), e si parte da lui
+  // quella nuova entra dal basso (stile in dashboard.css, .testata-centro); parte con la prima visibile. Con novità nella
+  // Bacheca entra nel giro, dopo ogni scritta, un avviso nello stesso stile di Visual Merchandising Studio, e si parte da
+  // lui: NUOVI MESSAGGI IN BACHECA (note nuove, o note e comunicazioni nuove insieme), NUOVA COMUNICAZIONE UFFICIALE
+  // (solo comunicazioni nuove), COMUNICAZIONI UFFICIALI RECENTI (per 2 settimane, dopo che sono state lette). Un clic
+  // apre la Bacheca sulla comunicazione nuova o sul post-it da leggere più recente, già aperti
   function alternaTestata(scritte) {
     const titolo = scritte.find(scritta => scritta.classList.contains('testata-titolo'));
     let avviso = null;
     if (titolo) {
-      avviso = el('div', { class: 'testata-titolo testata-avviso', text: 'Nuovi messaggi in bacheca', title: 'Apri il nuovo messaggio' });
-      // un clic apre la Bacheca sul post-it da leggere più recente, già aperto (bacheca.js legge ?nota=)
+      avviso = el('div', { class: 'testata-titolo testata-avviso', text: 'Nuovi messaggi in bacheca', title: 'Apri la Bacheca' });
       avviso.addEventListener('click', () => {
-        const prima = noteNuoveBacheca()[0];
-        location.href = prima ? `bacheca.html?nota=${encodeURIComponent(prima.id)}` : 'bacheca.html';
+        const com = comunicazioniNuove()[0];
+        const nota = noteNuoveBacheca()[0];
+        location.href = com ? `bacheca.html?com=${encodeURIComponent(com.id)}`
+          : nota ? `bacheca.html?nota=${encodeURIComponent(nota.id)}` : 'bacheca.html';
       });
       titolo.after(avviso);
     }
-    const giro = () => (avviso && noteNuoveBacheca().length ? scritte.flatMap(scritta => [scritta, avviso]) : scritte);
-    // al singolare con un solo messaggio da leggere
-    const scriviAvviso = () => { if (avviso) avviso.textContent = noteNuoveBacheca().length === 1 ? 'Nuovo messaggio in bacheca' : 'Nuovi messaggi in bacheca'; };
+    const testoAvviso = () => {
+      const note = noteNuoveBacheca().length;
+      const nuove = comunicazioniNuove().length;
+      if (note) return note + nuove === 1 ? 'Nuovo messaggio in bacheca' : 'Nuovi messaggi in bacheca';
+      if (nuove) return nuove === 1 ? 'Nuova comunicazione ufficiale' : 'Nuove comunicazioni ufficiali';
+      if (comunicazioniRecenti().length) return 'Comunicazioni ufficiali recenti';
+      return '';
+    };
+    const giro = () => (avviso && testoAvviso() ? scritte.flatMap(scritta => [scritta, avviso]) : scritte);
+    const scriviAvviso = () => { if (avviso) avviso.textContent = testoAvviso() || 'Nuovi messaggi in bacheca'; };
     scriviAvviso();
     let posto = giro().length > scritte.length ? 1 : 0;
     let attiva = giro()[posto];

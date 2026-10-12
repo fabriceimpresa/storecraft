@@ -1452,12 +1452,10 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   text-transform: none !important;
 }
 :root[data-interface-theme="light"] #tools #widget-bacheca h3.bacheca-titolo { color: #b48b37 !important; }   /* l'oro dei cartelli */
-/* avviso delle note nuove: campanella e numero, in alto a destra, rosso come il cestino della Bacheca; compare con un
-   piccolo scatto */
+/* avvisi, in alto a destra, uno sotto l'altro: note nuove (campanella) e comunicazioni ufficiali nuove (megafono), rossi
+   come il cestino della Bacheca, ognuno con il numero; compaiono con un piccolo scatto */
+.bacheca-avvisi { position: absolute; top: 16px; right: 16px; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
 .bacheca-avviso {
-  position: absolute;
-  top: 18px;
-  right: 18px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -1513,6 +1511,16 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 }
 #tools .widget-bacheca:hover .bacheca-foglio { transform: rotate(calc(-11deg + var(--i) * 11deg)) translateY(-4px); }
 :root[data-interface-theme="light"] .bacheca-foglio { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
+/* sotto il mazzo: la descrizione (sempre), le note nuove da leggere (in rosso, solo quando ci sono) e il totale di note e
+   comunicazioni in bacheca (sempre) */
+.bacheca-descrizione { margin: 0 0 6px; color: var(--text); font-size: 0.8rem; line-height: 1.4; }
+.bacheca-nuove { margin: 0 0 4px; color: #e07a6b; font-size: 0.78rem; font-weight: 700; }
+.bacheca-nuove[hidden] { display: none; }
+:root[data-interface-theme="light"] .bacheca-nuove { color: #a8432e; }
+/* comunicazioni ufficiali recenti (lette, nelle 2 settimane dalla pubblicazione): promemoria in oro */
+.bacheca-recenti { margin: 0 0 4px; color: var(--interface-accent, var(--accent)); font-size: 0.78rem; font-weight: 700; }
+.bacheca-recenti[hidden] { display: none; }
+:root[data-interface-theme="light"] .bacheca-recenti { color: #8a6a35; }
 .bacheca-conteggio { margin: 0 0 14px; color: var(--text-muted); font-size: 0.78rem; }
 #tools .widget-bacheca .tool-btn { margin-top: auto; }   /* in fondo, come Azzera IVA e Scarica QR dei widget accanto */
 @media (prefers-reduced-motion: reduce) { .bacheca-foglio { transition: none; } }

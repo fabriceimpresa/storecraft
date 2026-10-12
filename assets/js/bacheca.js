@@ -113,6 +113,95 @@
     tasto.addEventListener('click', azione);
     return tasto;
   }
+
+  // ----- Chi scrive -----
+  // La prima volta che su un dispositivo si interviene sulla Bacheca di un negozio (nuova nota o comunicazione, aprire una
+  // nota, cancellare, rinominare…) una finestra chiede il nome; resta nel browser, uno per negozio
+  // ("storecraft_bacheca_autore_<negozio>"), si vede in alto nell'intestazione (un clic lo cambia) e firma le note, le
+  // comunicazioni e i commenti che si scrivono (autore). Le note di prima, senza autore, restano senza firma
+  const MAX_AUTORE = 30;
+  const chiaveAutore = `storecraft_bacheca_autore_${NEGOZIO}`;
+  function autore() {
+    try { return (localStorage.getItem(chiaveAutore) || '').trim().slice(0, MAX_AUTORE); } catch (errore) { return ''; }
+  }
+  // nell'intestazione, un campo dorato con il nome (nascosto finché non c'è)
+  function mostraAutore() {
+    const nome = autore();
+    $('autore').hidden = !nome;
+    $('autoreNome').textContent = nome;
+    $('autore').setAttribute('aria-label', `${nome}: cambia utente`);
+  }
+  // la finestra del nome, nello stile delle conferme: risponde il nome salvato, o null se si annulla (Esc, clic fuori).
+  // Con più persone sullo stesso PC, un clic sul campo dorato la apre per cambiare utente: si riscrive il nome
+  function chiediNome(cambia = false) {
+    return new Promise(risposta => {
+      const veloNome = nodo('div', 'bc-velo bc-conferma-velo');
+      const box = nodo('div', 'bc-conferma');
+      box.setAttribute('role', 'dialog');
+      box.setAttribute('aria-modal', 'true');
+      box.setAttribute('aria-labelledby', 'bcNomeTitolo');
+      const h = nodo('h2', '', cambia ? 'Cambia utente' : 'Chi sei?');
+      h.id = 'bcNomeTitolo';
+      const campo = nodo('input');
+      campo.type = 'text';
+      campo.id = 'bcAutoreCampo';
+      campo.maxLength = MAX_AUTORE;
+      campo.placeholder = 'Il tuo nome';
+      campo.autocomplete = 'off';
+      campo.value = autore();
+      campo.setAttribute('aria-label', 'Il tuo nome');
+      const annulla = nodo('button', 'bc-conferma-no', 'Annulla');
+      const salva = nodo('button', 'bc-conferma-oro', 'Salva');
+      annulla.type = 'button';
+      salva.type = 'button';
+      const comandi = nodo('div', 'bc-conferma-comandi');
+      comandi.append(annulla, salva);
+      box.append(h, nodo('p', '', cambia ? 'Chi usa adesso la Bacheca? Scrivi il tuo nome: firmerà quello che scrivi da adesso.'
+        : 'Per usare la Bacheca inserisci prima il tuo nome: resterà su questo dispositivo e firmerà le note, le comunicazioni e i commenti che scrivi.'),
+        campo, comandi);
+      veloNome.append(box);
+      const prima = document.activeElement;
+      const aggiorna = () => { salva.disabled = !campo.value.trim(); };
+      aggiorna();
+      const tasti = evento => {
+        if (evento.key !== 'Escape') return;
+        evento.stopImmediatePropagation();
+        fine(null);
+      };
+      function fine(nome) {
+        veloNome.remove();
+        window.removeEventListener('keydown', tasti, true);
+        if (nome) {
+          try { localStorage.setItem(chiaveAutore, nome); } catch (errore) { /* senza localStorage il nome vale solo ora */ }
+          mostraAutore();
+        }
+        prima?.focus?.();
+        risposta(nome);
+      }
+      const conferma = () => { const nome = campo.value.trim().slice(0, MAX_AUTORE); if (nome) fine(nome); };
+      campo.addEventListener('input', aggiorna);
+      campo.addEventListener('keydown', evento => { if (evento.key === 'Enter') { evento.preventDefault(); conferma(); } });
+      annulla.addEventListener('click', () => fine(null));
+      salva.addEventListener('click', conferma);
+      veloNome.addEventListener('click', evento => { if (evento.target === veloNome) fine(null); });
+      window.addEventListener('keydown', tasti, true);
+      document.body.append(veloNome);
+      campo.focus();
+      campo.select();
+    });
+  }
+  // prima di ogni intervento: con il nome si va avanti (true); senza, si chiede il nome e poi si ripete l'azione (false)
+  function serveNome(azione) {
+    if (autore()) return true;
+    chiediNome().then(nome => { if (nome) azione(); });
+    return false;
+  }
+  // «di Marco · modificata 11 ott, 19:47»
+  const firma = (cosa, conData) => [cosa.autore && `di ${cosa.autore}`,
+    conData && `modificata ${new Date(cosa.modificata).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`]
+    .filter(Boolean).join(' · ');
+  $('autore').addEventListener('click', () => chiediNome(true));
+  mostraAutore();
   let note = elenco();
   // Comunicazioni ufficiali: una lista a parte, accanto alle note ("storecraft_bacheca_comunicazioni_<negozio>"), ognuna
   // con una scadenza; scadute spariscono da sole dalla bacheca (vedi "Comunicazioni ufficiali" più sotto)
@@ -277,14 +366,18 @@
   }
 
   function disegna() {
+    if (rinominando) return;   // si sta scrivendo il nome della sezione delle comunicazioni
     const prima = primaVolta ? new Map() : posizioni();
     const lista = ordinate();
-    // promemoria scritto a mano: Oggi, domenica 11 ottobre, hai 12 note in bacheca!
+    // promemoria scritto a mano, in alto a destra
     const oggi = new Date().toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
-    // il numero di note in grassetto (oro nel tema scuro, rosso mattone nel chiaro: .bc-numero)
-    const numero = nodo('strong', 'bc-numero', String(lista.length));
-    $('info').replaceChildren(...(!lista.length ? [`Oggi, ${oggi}, nessuna nota in bacheca.`]
-      : [`Oggi, ${oggi}, hai `, numero, ` ${scrittaNote(lista.length)} in bacheca!`]));
+    // con le comunicazioni: «Oggi, lunedì 12 ottobre, hai 3 Note e 2 Comunicazioni in bacheca!», numero e parola in rosso
+    // e con l'iniziale maiuscola (.bc-conto)
+    const conto = (n, una, tante) => nodo('strong', 'bc-conto', `${n} ${n === 1 ? una : tante}`);
+    const conti = [lista.length && conto(lista.length, 'Nota', 'Note'),
+      comunicazioni.length && conto(comunicazioni.length, 'Comunicazione', 'Comunicazioni')].filter(Boolean);
+    $('info').replaceChildren(...(!conti.length ? [`Oggi, ${oggi}, nessuna nota in bacheca.`]
+      : [`Oggi, ${oggi}, hai `, ...conti.flatMap((parte, i) => (i ? [' e ', parte] : [parte])), ' in bacheca!']));
     // le comunicazioni ufficiali in cima, in una sezione a sé (null se non ce ne sono)
     const sezioneCom = sezioneComunicazioni();
     bacheca.classList.toggle('in-cancellazione', cancellazione);
@@ -309,7 +402,8 @@
         // senza titolo il post-it mostra solo il testo (il titolo ricavato dal testo serve alle etichette)
         if (nota.sticker) el.append(nodo('span', 'bc-sticker', nota.sticker));
         if (nota.titolo.trim()) el.append(nodo('h2', 'bc-nota-titolo', nota.titolo.trim()));
-        el.append(nodo('p', 'bc-nota-testo', nota.testo), nodo('span', 'bc-nota-data', quando(nota.modificata)));
+        // in fondo la data e, se c'è, chi l'ha scritta: «12 ott · Marco»
+        el.append(nodo('p', 'bc-nota-testo', nota.testo), nodo('span', 'bc-nota-data', [quando(nota.modificata), nota.autore].filter(Boolean).join(' · ')));
         if (nota.nuova) el.append(nodo('span', 'bc-da-leggere', 'nuova'));   // ancora da leggere
       } else {
         el.textContent = nota.sticker ? `${nota.sticker} ${titoloDi(nota)}` : titoloDi(nota);
@@ -376,6 +470,7 @@
   // dopo l'anno si chiede se eliminarla o tenerla un altro anno (chiediRinnovi), finché la Bacheca non avrà un database
   const DURATE = [[1, '1 giorno'], [3, '3 giorni'], [7, '1 settimana'], [14, '2 settimane'], [30, '1 mese'], [90, '3 mesi'], ['mai', 'Non scade']];
   const UN_ANNO = 365 * 24 * 60 * 60 * 1000;
+  const DUE_SETTIMANE = 14 * 24 * 60 * 60 * 1000;   // una comunicazione letta resta «recente» per 2 settimane dalla pubblicazione
   const DURATA_INIZIALE = 7;
   // Foto delle comunicazioni: una per comunicazione, allegata dal telefono (fotocamera o galleria) o dal computer. Le foto
   // stanno in IndexedDB (database "storecraft-bacheca-foto", archivio "foto", chiave "<negozio>:<id>"), che ha molto più
@@ -487,8 +582,55 @@
     const nota = nodo(tag, 'bc-com-nota');
     nota.style.setProperty('--carta', CARTE[commento.carta % CARTE.length]);
     nota.style.setProperty('--giro', `${commento.giro || 0}deg`);
-    nota.append(nodo('span', 'bc-com-nota-testo', commento.testo), nodo('span', 'bc-com-nota-data', quandoCommento(commento.creata)));
+    nota.append(nodo('span', 'bc-com-nota-testo', commento.testo),
+      nodo('span', 'bc-com-nota-data', [commento.autore, quandoCommento(commento.creata)].filter(Boolean).join(' · ')));
     return nota;
+  }
+
+  // Nome della sezione: «Comunicazioni ufficiali» resta fisso, la parte dopo (di partenza il numero delle comunicazioni)
+  // l'utente la può cambiare con la matita accanto (es. «Staff Luxury»): Invio o un clic fuori salvano, Esc annulla,
+  // vuoto torna il numero. Nel browser, uno per negozio ("storecraft_bacheca_nome_comunicazioni_<negozio>")
+  const MAX_NOME_SEZIONE = 30;
+  const chiaveNomeSezione = `storecraft_bacheca_nome_comunicazioni_${NEGOZIO}`;
+  let rinominando = false;   // mentre si scrive il nome la bacheca non si ridisegna (il campo sparirebbe)
+  function nomeSezione() {
+    try { return (localStorage.getItem(chiaveNomeSezione) || '').slice(0, MAX_NOME_SEZIONE); } catch (errore) { return ''; }
+  }
+  function rinominaSezione(parte, matita) {
+    if (!serveNome(() => rinominaSezione(parte, matita))) return;
+    rinominando = true;
+    const campo = nodo('input', 'bc-rinomina-campo');
+    campo.type = 'text';
+    campo.id = 'bcNomeSezione';
+    campo.maxLength = MAX_NOME_SEZIONE;
+    campo.value = nomeSezione();
+    campo.placeholder = String(comunicazioni.length);
+    campo.autocomplete = 'off';
+    campo.setAttribute('aria-label', 'Nome della sezione Comunicazioni ufficiali');
+    parte.replaceWith(campo);
+    matita.hidden = true;
+    campo.focus();
+    campo.select();
+    let fatto = false;
+    const fine = salva => {
+      if (fatto) return;
+      fatto = true;
+      rinominando = false;
+      if (salva) {
+        try {
+          const nome = campo.value.trim().slice(0, MAX_NOME_SEZIONE);
+          if (nome) localStorage.setItem(chiaveNomeSezione, nome);
+          else localStorage.removeItem(chiaveNomeSezione);
+        } catch (errore) { /* senza localStorage resta il numero */ }
+      }
+      disegna();
+    };
+    campo.addEventListener('keydown', evento => {
+      if (evento.key === 'Enter') { evento.preventDefault(); fine(true); }
+      // Esc annulla solo il nome (non esce dalla cancellazione né chiude altro)
+      if (evento.key === 'Escape') { evento.preventDefault(); evento.stopPropagation(); fine(false); }
+    });
+    campo.addEventListener('blur', () => fine(true));
   }
 
   // la sezione delle comunicazioni sulla bacheca: un foglio ad anelli per comunicazione, dalla più recente
@@ -497,8 +639,15 @@
     const sezione = nodo('section', 'bc-gruppo bc-gruppo-com');
     const titolo = nodo('h2', 'bc-gruppo-titolo');
     const testo = nodo('span');
-    testo.append('Comunicazioni ufficiali ', nodo('strong', 'bc-numero-com', String(comunicazioni.length)));
-    titolo.append(testo);
+    const parte = nodo('strong', 'bc-numero-com', nomeSezione() || String(comunicazioni.length));
+    testo.append('Comunicazioni ufficiali ', parte);
+    const matita = nodo('button', 'bc-rinomina');
+    matita.type = 'button';
+    matita.title = 'Rinomina la sezione';
+    matita.setAttribute('aria-label', 'Rinomina la sezione Comunicazioni ufficiali');
+    matita.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
+    matita.addEventListener('click', () => rinominaSezione(parte, matita));
+    titolo.append(testo, matita);
     const fogli = nodo('div', 'bc-fogli');
     fogli.append(...[...comunicazioni].sort((a, b) => b.creata - a.creata).map(com => {
       const el = nodo('button', 'bc-com');
@@ -510,6 +659,9 @@
       const scade = nodo('span', 'bc-com-scadenza', scritturaCom(com));
       if (com.durata !== 'mai' && com.scadenza - Date.now() < UN_GIORNO) scade.classList.add('presto');
       el.append(nodo('span', 'bc-com-anelli'), nodo('span', 'bc-com-etichetta', 'Comunicazione ufficiale'));
+      // nuova finché nessuno la apre, poi recente per 2 settimane dalla pubblicazione (lo stesso per gli avvisi della dashboard)
+      if (com.nuova) el.append(nodo('span', 'bc-com-stato nuova', 'nuova'));
+      else if (Date.now() - com.creata < DUE_SETTIMANE) el.append(nodo('span', 'bc-com-stato recente', 'recente'));
       if (com.titolo.trim()) el.append(nodo('h3', 'bc-com-titolo', com.titolo.trim()));
       if (com.foto) {
         const foto = nodo('img', 'bc-com-immagine');
@@ -517,7 +669,8 @@
         mostraFoto(foto, com.id);
         el.append(foto);
       }
-      el.append(nodo('p', 'bc-com-testo', com.testo), scade, nodo('span', 'bc-seleziona'));
+      // in fondo la data e chi l'ha scritta («12 ott · Marco»), poi la scadenza
+      el.append(nodo('p', 'bc-com-testo', com.testo), nodo('span', 'bc-com-firma', [quando(com.modificata), com.autore].filter(Boolean).join(' · ')), scade, nodo('span', 'bc-seleziona'));
       if (selezionate.has(com.id)) el.classList.add('selezionata');
       if (cancellazione) el.setAttribute('aria-pressed', String(selezionate.has(com.id)));
       el.addEventListener('click', () => (cancellazione ? selezionaNota(com.id, el) : apriComunicazione(com.id)));
@@ -753,6 +906,7 @@
     (com.commenti ||= []).push({
       id: `k${ora.toString(36)}${Math.random().toString(36).slice(2, 6)}`,
       testo,
+      autore: autore(),
       carta: Math.floor(Math.random() * CARTE.length),
       giro: Math.round((Math.random() * 6 - 3) * 10) / 10,
       creata: ora
@@ -775,9 +929,12 @@
   let comSalvataggio = 0;
   const comunicazione = () => comunicazioni.find(com => com.id === comAperta);
   const mostraScadenza = com => { comScade.textContent = scritturaCom(com); };
-  function apriComunicazione(id, conCommento = false) {
+  function apriComunicazione(id, conCommento = false, appenaCreata = false) {
+    if (!serveNome(() => apriComunicazione(id, conCommento, appenaCreata))) return;
     const com = comunicazioni.find(c => c.id === id);
     if (!com) return;
+    // aprirla la segna come letta (da nuova diventa recente), tranne quando si apre quella appena creata per scriverla
+    if (com.nuova && !appenaCreata) { delete com.nuova; salvaComunicazioni(comunicazioni); }
     comAperta = id;
     ultimoFuocoCom = document.activeElement;
     comTitolo.value = com.titolo;
@@ -785,7 +942,7 @@
     comDurata.value = String(com.durata || DURATA_INIZIALE);
     mostraFotoFoglio(com);
     mostraScadenza(com);
-    comSalvata.textContent = com.titolo || com.testo ? `modificata ${new Date(com.modificata).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
+    comSalvata.textContent = firma(com, com.titolo || com.testo);
     comVelo.hidden = false;
     // da + COMMENTA sulla bacheca si apre già il post-it per scrivere il commento
     comCommento.value = '';
@@ -828,19 +985,22 @@
     ultimoFuocoCom?.focus?.();
   }
   function nuovaComunicazione() {
+    if (!serveNome(nuovaComunicazione)) return;
     const ora = Date.now();
     const com = {
       id: `c${ora.toString(36)}${Math.random().toString(36).slice(2, 6)}`,
       titolo: '',
       testo: '',
       durata: DURATA_INIZIALE,
+      autore: autore(),
       scadenza: ora + DURATA_INIZIALE * UN_GIORNO,
       giro: Math.round((Math.random() * 2 - 1) * 10) / 10,   // appena storto, come un foglio appeso
       creata: ora,
-      modificata: ora
+      modificata: ora,
+      nuova: true   // da leggere: l'avviso della dashboard resta finché qualcuno non la apre, poi è «recente» per 2 settimane
     };
     comunicazioni.push(com);
-    apriComunicazione(com.id);
+    apriComunicazione(com.id, false, true);
   }
   comElimina.addEventListener('click', async () => {
     const com = comunicazione();
@@ -1006,6 +1166,7 @@
   let pressione = null;
   let ignoraTocco = false;
   function entraCancellazione(id) {
+    if (!serveNome(() => entraCancellazione(id))) return;
     cancellazione = true;
     selezionate.clear();
     if (id) selezionate.add(id);
@@ -1106,6 +1267,7 @@
 
   // aprire un post-it lo segna come letto (toglie «nuova»), tranne quando si apre la nota appena creata per scriverla
   function apri(id, appenaCreata = false) {
+    if (!serveNome(() => apri(id, appenaCreata))) return;
     const nota = note.find(n => n.id === id);
     if (!nota) return;
     if (nota.nuova && !appenaCreata) { delete nota.nuova; salva(note); }
@@ -1118,7 +1280,7 @@
     foglio.style.setProperty('--giro', `${nota.giro / 3}deg`);
     campoTitolo.value = nota.titolo;
     campoTesto.value = nota.testo;
-    $('salvata').textContent = nota.titolo || nota.testo ? `modificata ${new Date(nota.modificata).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : '';
+    $('salvata').textContent = firma(nota, nota.titolo || nota.testo);   // «di Marco · modificata 11 ott, 19:47»
     velo.hidden = false;
     (nota.titolo ? campoTesto : campoTitolo).focus();
   }
@@ -1149,7 +1311,9 @@
   }
 
   function nuova() {
+    if (!serveNome(nuova)) return;
     const nota = nuovaNota(ordinate()[0]);
+    nota.autore = autore();   // firmata da chi la scrive
     note.push(nota);
     apri(nota.id, true);
   }
@@ -1324,11 +1488,13 @@
   // all'apertura, finita la caduta dei post-it, l'eventuale avviso dei troppi post-it; aperta dal banner della dashboard
   // (NUOVI MESSAGGI IN BACHECA, bacheca.html?nota=<id>) apre subito quel post-it, che così diventa letto
   const daAprire = new URLSearchParams(location.search).get('nota');
-  if (daAprire) history.replaceState(null, '', location.pathname);
+  const daAprireCom = new URLSearchParams(location.search).get('com');   // NUOVE COMUNICAZIONI UFFICIALI (bacheca.html?com=<id>)
+  if (daAprire || daAprireCom) history.replaceState(null, '', location.pathname);
   (document.fonts?.ready || Promise.resolve()).then(() => {
     disegna();
     setTimeout(() => {
       if (daAprire && note.some(n => n.id === daAprire)) apri(daAprire);
+      else if (daAprireCom && comunicazioni.some(c => c.id === daAprireCom)) apriComunicazione(daAprireCom);
       else chiediRinnovi().then(avvisoTroppe);
     }, riduciMovimento.matches ? 0 : 900);
   });

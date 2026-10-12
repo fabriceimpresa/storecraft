@@ -43,6 +43,33 @@ body {
 }
 .bc-testata .app-close-btn--pdf { position: static; flex: none; }
 :root[data-interface-theme="light"] .bc-testata .app-close-btn--pdf { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+/* chi scrive: il nome in un campo dorato nell'intestazione, a destra prima della ✕ (un clic lo cambia) */
+.bc-autore {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  max-width: 260px;
+  height: 40px;
+  margin-left: auto;
+  padding: 0 18px 0 14px;
+  border: 1px solid var(--interface-accent, #d4a373);
+  border-radius: 20px;
+  background: var(--interface-accent, #d4a373);
+  color: var(--interface-page, #121110);
+  font: 700 0.95rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .04em;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .4);
+  transition: filter .15s ease;
+}
+.bc-autore[hidden] { display: none; }
+.bc-autore:hover { filter: brightness(1.1); }
+.bc-autore:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
+.bc-autore svg { width: 20px; height: 20px; flex: none; }
+.bc-autore span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root[data-interface-theme="light"] .bc-autore { border-color: #b48b37; background: #b48b37; color: #fff; box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+@media (max-width: 760px) { .bc-autore { max-width: 130px; height: 36px; padding: 0 12px 0 10px; font-size: .84rem; } .bc-autore svg { width: 17px; height: 17px; } }
 
 /* Barra dei comandi */
 /* sulla stessa riga NUOVA NOTA a sinistra e il promemoria scritto a mano, grande, allineato a destra, staccati
@@ -604,6 +631,25 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
 .bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(212, 163, 115, .4); }
 :root[data-interface-theme="light"] .bc-gruppo-com .bc-gruppo-titolo::after { background: rgba(180, 139, 55, .4); }
 .bc-numero-com { font-weight: 700; }
+/* matita per rinominare la sezione (la parte dopo «Comunicazioni ufficiali») e il campo per scrivere il nome, nella
+   stessa scrittura a mano del titolo, sottolineato a tratteggio */
+.bc-rinomina { align-self: center; display: grid; place-items: center; flex: none; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: inherit; opacity: .55; cursor: pointer; transition: opacity .15s ease, background .15s ease; }
+.bc-rinomina:hover, .bc-rinomina:focus-visible { opacity: 1; background: color-mix(in srgb, currentColor 12%, transparent); outline: none; }
+.bc-rinomina svg { width: 17px; height: 17px; }
+.bc-rinomina[hidden] { display: none; }
+:root body #bcNomeSezione.bc-rinomina-campo {   /* con l'id: più forte delle regole dei campi di theme.css */
+  width: 14ch;
+  padding: 0;
+  border: 0 !important;
+  border-bottom: 1.5px dashed currentColor !important;
+  border-radius: 0;
+  background: transparent !important;
+  color: inherit !important;
+  font: 700 1em/1.1 'Caveat', cursive;
+  outline: none;
+  box-shadow: none !important;
+}
+#bcNomeSezione::placeholder { color: inherit; opacity: .45; }
 .bc-fogli { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 30px 34px; padding-left: 12px; }
 /* righe del quaderno ogni 26 px, margine rosso a 44 px dal bordo sinistro */
 .bc-com, .bc-com-foglio {
@@ -674,7 +720,8 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
   -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
 }
-.bc-com-scadenza { margin-top: 8px; color: rgba(43, 38, 32, .6); font: 600 0.68rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .03em; }
+.bc-com-firma { margin-top: 8px; color: rgba(43, 38, 32, .6); font: 600 0.66rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .03em; }
+.bc-com-scadenza { margin-top: 2px; color: rgba(43, 38, 32, .6); font: 600 0.68rem 'Plus Jakarta Sans', sans-serif; letter-spacing: .03em; }
 /* foto allegata: sul foglio in bacheca sotto il titolo, come una foto stampata appoggiata (bordo bianco, appena
    storta); nel foglio aperto più grande, con TOGLI LA FOTO */
 .bc-com-immagine {
@@ -890,6 +937,26 @@ button.bc-com-nota .bc-com-nota-testo { display: -webkit-box; -webkit-line-clamp
 .bc-conferma-si { border: 1.5px solid #96382b; background: #96382b; color: #fff; }
 .bc-conferma-si:hover { filter: brightness(1.12); }
 .bc-conferma button:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
+/* finestra del nome (chiediNome): il campo per scriverlo e SALVA dorato */
+:root body #bcAutoreCampo {   /* con l'id: più forte delle regole dei campi di theme.css */
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  margin: 0 0 20px;
+  padding: 0 14px;
+  border: 1px solid var(--interface-accent, #d4a373) !important;
+  border-radius: 5px;
+  background: var(--interface-page, #121110) !important;
+  color: var(--interface-text, #f4f1ea) !important;
+  font: 500 1rem 'Plus Jakarta Sans', sans-serif;
+  text-align: center;
+  outline: none;
+}
+#bcAutoreCampo:focus { box-shadow: 0 0 0 2px color-mix(in srgb, var(--interface-accent, #d4a373) 35%, transparent); }
+.bc-conferma-oro { border: 1.5px solid var(--interface-accent, #d4a373); background: var(--interface-accent, #d4a373); color: var(--interface-page, #121110); }
+.bc-conferma-oro:hover { filter: brightness(1.1); }
+.bc-conferma-oro:disabled { opacity: .45; cursor: default; filter: none; }
+:root[data-interface-theme="light"] .bc-conferma-oro { border-color: #b48b37; background: #b48b37; color: #fff; }
 /* Modalità cancellazione: le note tremano (come le app dell'iPhone), sfasate tra loro, e mostrano il pallino per
    selezionarle; la nota selezionata ha il pallino rosso con la spunta ed è un poco più tenue */
 @keyframes bc-trema {
@@ -928,3 +995,14 @@ button.bc-com-nota .bc-com-nota-testo { display: -webkit-box; -webkit-line-clamp
 /* nei fogli delle comunicazioni il pallino sta dopo gli anelli, sull'etichetta che scende un poco */
 .in-cancellazione .bc-com { padding-top: 40px; }
 .in-cancellazione .bc-com .bc-seleziona { left: 56px; top: 10px; }
+/* cambia utente (più persone sullo stesso PC): l'icona delle due frecce nel campo dorato; un clic apre la finestra per
+   riscrivere il nome */
+.bc-autore .bc-autore-cambia { width: 16px; height: 16px; opacity: .75; }
+/* stato della comunicazione, in alto a destra del foglio: NUOVA (rossa) finché nessuno la apre, poi RECENTE (oro) per 2
+   settimane dalla pubblicazione */
+.bc-com-stato { position: absolute; top: 12px; right: 12px; padding: 2px 8px; border-radius: 9px; font: 700 0.6rem/1.4 'Plus Jakarta Sans', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.bc-com-stato.nuova { background: #96382b; color: #fff; }
+.bc-com-stato.recente { background: #b48b37; color: #fff; }
+/* nel promemoria in alto, numero e parola in rosso, in grassetto: «3 Note» e «2 Comunicazioni» */
+.bc-conto { color: #e07a6b; font-weight: 700; }
+:root[data-interface-theme="light"] .bc-conto { color: #a8432e; }
