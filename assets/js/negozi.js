@@ -31,6 +31,14 @@
     document.write(html);
   }
 
+  // Temi speciali spenti per il modulo (Gestione negozi: temiSpenti nella scheda della dashboard, che li passa
+  // nell'indirizzo della pagina, ?senza-temi=italia,blackfriday,natale): i loro pulsanti non compaiono
+  const PULSANTI_TEMI = { italia: '.made-in-italy-btn', blackfriday: '.black-friday-btn', natale: '.xmas-btn' };
+  try {
+    const spenti = (new URLSearchParams(location.search).get('senza-temi') || '').split(',').map(tema => PULSANTI_TEMI[tema]).filter(Boolean);
+    if (spenti.length) scrivi(`<style>${spenti.join(', ')} { display: none !important; }</style>`);
+  } catch { /* indirizzo non leggibile: tutti i temi */ }
+
   window.Negozi = Object.freeze({
     get installati() { return installati.slice(); },
     scheda: id => (installati.includes(id) && schede[id]) || null,

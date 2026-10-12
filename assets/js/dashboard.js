@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.20 2026';
+  const VERSIONE = 'V 1.2.21 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -336,6 +336,9 @@
   function collegamento(scheda) {
     // il PDF (nella cartella assets/) arriva al visualizzatore con il percorso dalla radice del sito
     if (scheda.pdf) return 'pdf-viewer.html?file=' + encodeURIComponent(new URL(scheda.pdf, ASSETS).pathname);
+    // temi speciali spenti per questo modulo (Gestione negozi, temiSpenti nella scheda): la pagina nasconde i loro
+    // pulsanti (negozi.js legge ?senza-temi=italia,blackfriday,natale)
+    if (scheda.link && scheda.temiSpenti?.length) return `${scheda.link}${scheda.link.includes('?') ? '&' : '?'}senza-temi=${scheda.temiSpenti.join(',')}`;
     return scheda.link;
   }
 
@@ -344,7 +347,7 @@
       class: 'preview-image', src: risorsa(src), alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false,
       onerror: scheda.icona ? event => { event.currentTarget.style.display = 'none'; event.currentTarget.parentElement.querySelector('.preview-icon').style.display = 'block'; } : null
     }));
-    return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}`,
+    return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}${immagini.length > 2 ? ' tre' : ''}`,
       style: sezione.tipo === 'promo' ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
       immagini,
       scheda.icona ? el('span', { class: 'preview-icon', style: 'display:none;', text: scheda.icona }) : null,

@@ -1343,7 +1343,7 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 .store-identity strong { display: block; font-size: 12px; font-weight: 400; letter-spacing: .2em; color: var(--accent); }
 .store-identity span { display: block; margin-top: 8px; font-size: 10px; letter-spacing: .16em; color: var(--text-muted); }
 
-/* Miniature a due immagini (come in TEBE): al passaggio del mouse si alternano con una dissolvenza */
+/* Miniature a due (come in TEBE) o tre immagini: al passaggio del mouse si alternano con una dissolvenza */
 .preview.slideshow .preview-image { position: absolute; inset: 0; opacity: 0; }
 .preview.slideshow .preview-image:first-child { opacity: 1; }
 .carousel-card:hover .preview.slideshow .preview-image { animation-duration: 4.2s; animation-iteration-count: infinite; }
@@ -1351,6 +1351,14 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 .carousel-card:hover .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
 @keyframes thumbnail-fade-first { 0%, 42.86% { opacity: 1; } 50%, 92.86% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes thumbnail-fade-second { 0%, 42.86% { opacity: 0; } 50%, 92.86% { opacity: 1; } 100% { opacity: 0; } }
+/* tre immagini (Gestione negozi, campo miniature): un terzo del ciclo ciascuna, sempre con la dissolvenza */
+.carousel-card:hover .preview.slideshow.tre .preview-image { animation-duration: 6.3s; }
+.carousel-card:hover .preview.slideshow.tre .preview-image:first-child { animation-name: thumbnail-fade-tre-1; }
+.carousel-card:hover .preview.slideshow.tre .preview-image:nth-child(2) { animation-name: thumbnail-fade-tre-2; }
+.carousel-card:hover .preview.slideshow.tre .preview-image:nth-child(3) { animation-name: thumbnail-fade-tre-3; }
+@keyframes thumbnail-fade-tre-1 { 0%, 28.57% { opacity: 1; } 33.33%, 95.24% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes thumbnail-fade-tre-2 { 0%, 28.57% { opacity: 0; } 33.33%, 61.9% { opacity: 1; } 66.67%, 100% { opacity: 0; } }
+@keyframes thumbnail-fade-tre-3 { 0%, 61.9% { opacity: 0; } 66.67%, 95.24% { opacity: 1; } 100% { opacity: 0; } }
 
 /* Schede e voci non ancora disponibili per il negozio (Coming Soon): visibili ma spente */
 .carousel-card.is-soon { position: relative; pointer-events: none; cursor: default; }
@@ -1388,6 +1396,10 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   .preview.slideshow .preview-image { animation-duration: 4.2s; animation-iteration-count: infinite; }
   .preview.slideshow .preview-image:first-child { animation-name: thumbnail-fade-first; }
   .preview.slideshow .preview-image:nth-child(2) { animation-name: thumbnail-fade-second; }
+  .preview.slideshow.tre .preview-image { animation-duration: 6.3s; }
+  .preview.slideshow.tre .preview-image:first-child { animation-name: thumbnail-fade-tre-1; }
+  .preview.slideshow.tre .preview-image:nth-child(2) { animation-name: thumbnail-fade-tre-2; }
+  .preview.slideshow.tre .preview-image:nth-child(3) { animation-name: thumbnail-fade-tre-3; }
   /* sul telefono niente titolo, sottotitolo e divisorio, e niente righe dell'indirizzo e descrittiva: la pagina parte dal
      logo del negozio e sotto cominciano subito le sezioni */
   #main-content > header { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }

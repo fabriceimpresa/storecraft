@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-53"></script>
+  <script src="assets/js/negozi.js?v=20261012-55"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261012-53"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-55"></script>
   <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-53"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-55"></script>
   <!-- MODULI (accanto ai negozi): il catalogo dei moduli, letto dai pacchetti di Gestione pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-53"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-53"></script>
+  <script src="assets/js/pacchetti.js?v=20261012-55"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-55"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
@@ -327,6 +327,8 @@
     .indietro-fondo[hidden] { display: none; }
 
     /* ----- Scheda del modulo ----- */
+    /* una riga di spazio tra la barra con il lucchetto (modalità modifica) e la scheda del modulo */
+    .vista-modulo { padding-top: 22px; }
     .torna-diagramma { margin: 0 0 16px; padding: 0; border: 0; background: none; color: var(--tenue); font: 400 11.5px var(--mono); letter-spacing: .08em; cursor: pointer; }
     .torna-diagramma:hover, .torna-diagramma:focus-visible { color: var(--oro); outline: none; }
     /* percorso del modulo, come in un terminale: negozio › index.html › galleria › modulo */
@@ -506,6 +508,48 @@
       line-height: 1.6; text-transform: uppercase; }
     .tag-modulo.sorgente { color: var(--oro); }
     .tag-modulo.clone { color: var(--clone); }
+    /* campi della scheda che si cambiano con il lucchetto aperto: tipo e specifiche (con il pulsantino del divisorio |),
+       galleria (menu e riquadro di conferma dello spostamento), temi speciali (un clic li accende o li spegne) */
+    .campo-inline { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; width: 100%; }
+    .campo-inline input, .galleria-menu select { min-width: 0; padding: 4px 8px; border: 1px solid var(--bordo); border-radius: 3px; background: #0a0908;
+      color: var(--testo); font: 400 12px var(--mono); }
+    .campo-inline input { flex: 1 1 200px; max-width: 420px; }
+    .campo-specifiche input { max-width: 560px; }
+    .campo-inline input:focus-visible, .galleria-menu select:focus-visible { border-color: var(--oro); outline: none; }
+    .divisorio { width: 26px; height: 26px; padding: 0; border: 1px solid var(--oro); border-radius: 3px; background: none; color: var(--oro);
+      font: 400 14px/1 var(--mono); cursor: pointer; }
+    .divisorio:hover, .divisorio:focus-visible { background: var(--oro); color: #121110; outline: none; }
+    .galleria-menu { position: relative; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+    .galleria-menu select { cursor: pointer; }
+    .conferma-sposta { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border: 1px solid var(--oro-scuro); border-radius: 4px;
+      background: #0a0908; box-shadow: 0 6px 16px rgba(0, 0, 0, .5); }
+    .conferma-sposta[hidden] { display: none; }
+    .conferma-domanda b { color: var(--oro-chiaro); font-weight: 400; }
+    .conferma-comandi { display: flex; gap: 8px; }
+    .comando.pieno { background: var(--oro); color: #121110; }
+    button.tema-voce { padding: 3px 9px 3px 4px; border: 1px solid var(--bordo); border-radius: 14px; background: none; color: var(--testo); font: inherit;
+      cursor: pointer; transition: border-color .15s; }
+    button.tema-voce:hover:not(:disabled), button.tema-voce:focus-visible { border-color: var(--oro); outline: none; }
+    .tema-voce.spento { color: var(--tenue); }
+    .tema-voce.spento .w-tema, .w-tema.spento { opacity: .35; filter: grayscale(1); }
+    .tema-stato { margin-left: 4px; color: var(--tenue); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    /* campo MINIATURE: gli scatti (1-3) in fila, ognuno in un riquadro 16:9 come nella dashboard, con la sua misura; con il
+       lucchetto aperto i pulsanti 1 2 3 (quanti scatti), carica o cambia immagine e salva */
+    .miniature-campo { display: flex; flex-direction: column; gap: 10px; }
+    .miniature-numero { display: flex; align-items: center; gap: 6px; color: var(--tenue); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
+    .miniature-numero span { margin-right: 4px; }
+    .miniature-numero .stile-q { width: 24px; height: 24px; font: 400 12px var(--mono); }
+    .miniature-scatti { display: flex; flex-wrap: wrap; gap: 12px; }
+    .miniatura-scatto { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 170px; }
+    .miniatura-nome { color: var(--tenue); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+    .miniatura-cornice { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+      border: 1px solid var(--bordo); border-radius: 4px; background: radial-gradient(circle, #1f1d1a 0%, #0a0908 100%); }
+    .miniatura-cornice img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; }
+    .miniatura-vuota { color: var(--tenue); font-size: 22px; }
+    .miniatura-misura { color: var(--testo); font-size: 11px; }
+    .miniature-info { margin: 0; color: var(--tenue); font-size: 11px; line-height: 1.55; }
+    .miniature-avviso { color: var(--rosso); }
+    .miniature-campo > .comando { align-self: flex-start; }
 
     /* ----- Il + delle specifiche, come nelle schede della dashboard: accanto al titolo; aperto ruota in × e sotto il
        titolo si apre la descrizione (le specifiche divise da |) in tutti i widget ----- */
@@ -765,15 +809,17 @@
   // ----- Modalità modifica (lucchetto): di partenza chiusa, i moduli non si spostano; aperta si trascinano dentro la loro
   // sezione (o Alt + ← / →, o ◀ ▶ nella scheda del modulo); il nuovo ordine si registra dal nodo della galleria -----
   let modifica = false;
-  $('modifica').addEventListener('click', () => {
-    modifica = !modifica;
+  // apre o chiude il lucchetto (di partenza chiuso: la pagina si ricarica a ogni apertura della sezione)
+  function impostaModifica(aperto) {
+    modifica = aperto;
     $('modifica').setAttribute('aria-pressed', String(modifica));
     $('modifica').title = modifica ? 'chiudi il lucchetto: i moduli restano fermi' : 'apri il lucchetto per spostare i moduli';
     $('modifica-testo').textContent = modifica ? 'modifica attiva' : 'modalità modifica';
     $('modifica-nota').hidden = !modifica;
     $('diagramma').classList.toggle('in-modifica', modifica);
     ridisegna();
-  });
+  }
+  $('modifica').addEventListener('click', () => impostaModifica(!modifica));
   $('modifica').title = 'apri il lucchetto per spostare i moduli';
 
   // testo di un file: dalla cartella collegata (dopo una modifica è già quello nuovo) o dal sito
@@ -981,14 +1027,16 @@
     if (/tema_xmas_icon/.test(html)) temi.push({ id: 'natale', nome: 'Natale', icona: icona('tema_xmas_icon.png') });
     return temi;
   }
-  const temiDelModulo = (id, scheda) => (scheda.link ? temiSpeciali(negozi[id]?.testi.get(pagina(scheda.link)), id) : []);
+  // (con spento: i temi spenti per questo modulo in Gestione negozi, temiSpenti nella scheda)
+  const temiDelModulo = (id, scheda) => (scheda.link ? temiSpeciali(negozi[id]?.testi.get(pagina(scheda.link)), id) : [])
+    .map(tema => ({ ...tema, spento: Boolean(scheda.temiSpenti?.includes(tema.id)) }));
   // in sintesi sul widget: le icone dei pulsanti, piccole e tonde, in basso a destra sull'anteprima
   function iconeTemi(temi) {
     if (!temi.length) return null;
     const riga = nodo('span', 'w-temi');
-    riga.title = `temi speciali: ${temi.map(t => t.nome).join(', ')}`;
+    riga.title = `temi speciali: ${temi.map(t => `${t.nome}${t.spento ? ' (spento)' : ''}`).join(', ')}`;
     temi.forEach(tema => {
-      const tondo = nodo('span', `w-tema t-${tema.id}`);
+      const tondo = nodo('span', `w-tema t-${tema.id}${tema.spento ? ' spento' : ''}`);
       if (tema.icona) { const img = nodo('img'); img.src = tema.icona; img.alt = ''; img.loading = 'lazy'; img.draggable = false; tondo.append(img); }
       riga.append(tondo);
     });
@@ -1904,7 +1952,7 @@
     menu.querySelector('.stato-scelta').setAttribute('aria-expanded', 'false');
   }
   document.addEventListener('click', evento => document.querySelectorAll('.stato-menu.aperto').forEach(menu => { if (!menu.contains(evento.target)) chiudiMenuStato(menu); }));
-  function menuStato(id, sezione, scheda, chiaveModulo, stato) {
+  function menuStato(id, sezione, scheda, chiaveModulo, stato, sorgente = false) {
     const contenitore = nodo('span', 'stato-menu');
     const voceStato = s => {
       const riga = nodo('span', 'stato');
@@ -1913,7 +1961,9 @@
     };
     const scelta = nodo('button', 'stato-scelta');
     scelta.type = 'button';
-    scelta.disabled = !SCRIVIBILE;
+    // si cambia solo in modalità modifica (lucchetto aperto)
+    scelta.disabled = !SCRIVIBILE || !modifica;
+    if (!modifica) scelta.title = 'apri il lucchetto (modalità modifica) per cambiare lo stato';
     scelta.setAttribute('aria-haspopup', 'listbox');
     scelta.setAttribute('aria-expanded', 'false');
     scelta.append(voceStato(stato), nodo('span', 'stato-freccia'));
@@ -1935,11 +1985,224 @@
     scelta.addEventListener('click', () => { apri(elenco.hidden); if (!elenco.hidden) opzione.focus(); });
     opzione.addEventListener('click', () => {
       apri(false);
-      scriviDashboard(id, testo => Associa.impostaFantasmaScheda(testo, sezione.id, chiaveModulo, !scheda.nascosta),
+      scriviModulo(id, scheda, sorgente, testo => Associa.impostaFantasmaScheda(testo, sezione.id, chiaveModulo, !scheda.nascosta),
         `${scheda.titolo} ${scheda.nascosta ? 'di nuovo visibile' : 'in ghost'} nella dashboard di ${nomeNegozio(id)}`);
     });
     // si chiude con un clic fuori (chiudiMenuStato) o con Esc, che lo chiude prima di chiudere la scheda
     contenitore.append(scelta, elenco);
+    return contenitore;
+  }
+
+  // Scrive una modifica della scheda di un modulo. Per un modulo sorgente prima avvisa che si sta modificando un modulo
+  // sorgente e chiede se procedere. Il lucchetto resta aperto per altre modifiche: lo richiude l'utente (e riparte chiuso
+  // a ogni apertura della pagina o della sezione)
+  const confermaSorgente = (id, scheda, sorgente) => !sorgente || window.confirm(`Stai per modificare un modulo sorgente: ${scheda.titolo} (${nomeNegozio(id)}).\n\n`
+    + 'I moduli sorgente sono scritti a codice: la modifica cambia la sua scheda nella dashboard del negozio. Procedere?');
+  async function scriviModulo(id, scheda, sorgente, cambia, fatto) {
+    if (!confermaSorgente(id, scheda, sorgente)) return false;
+    return scriviDashboard(id, cambia, fatto);
+  }
+
+  // Campo MINIATURE della scheda del modulo: le anteprime degli scatti della scheda (1, 2 o 3: nella dashboard si alternano
+  // con una dissolvenza al passaggio del mouse), con la misura di ognuno; con il lucchetto aperto si sceglie quanti
+  // scatti, si carica l'immagine di ogni scatto (con le misure consigliate, quelle dello scatto 1) e si salva: i file nuovi
+  // in assets/thumbnail/<negozio>/ e l'elenco nella scheda della dashboard. Per sorgente e cloni (sorgente: con l'avviso)
+  const MISURA_CONSIGLIATA = { larghezza: 1200, altezza: 675 };
+  function campoMiniature(id, sezione, scheda, chiaveModulo, sorgente) {
+    const campo = nodo('div', 'miniature-campo');
+    const attuali = (scheda.miniature || []).slice(0, 3);
+    let scatti = Math.max(1, attuali.length);
+    const nuovi = [null, null, null];   // i file scelti per gli scatti
+    const misure = [null, null, null];  // { larghezza, altezza } di ogni scatto mostrato
+    const riga = nodo('div', 'miniature-scatti');
+    const info = nodo('p', 'miniature-info');
+    const nomeBase = scheda.link ? pagina(scheda.link).replace(/\.html$/, '') : scheda.titolo;
+    let scelta = null, salva = null;
+    const aggiornaInfo = () => {
+      const base = misure[0] || MISURA_CONSIGLIATA;
+      info.replaceChildren(`consigliato: ${base.larghezza} × ${base.altezza} px${misure[0] ? ' (come lo scatto 1)' : ''} a 96 dpi, PNG o JPG fino a circa 500 KB; `
+        + 'nella dashboard l\'immagine si vede intera in un riquadro 16:9; con 2 o 3 scatti si alternano con una dissolvenza al passaggio del mouse');
+      // proporzioni diverse dallo scatto 1: un avviso
+      const diverse = misure.slice(1, scatti).some(m => m && misure[0] && Math.abs(m.larghezza / m.altezza - misure[0].larghezza / misure[0].altezza) > .03);
+      if (diverse) info.append(nodo('span', 'miniature-avviso', ' · attenzione: uno scatto ha proporzioni diverse dallo scatto 1'));
+      if (salva) {
+        const cambiato = scatti !== attuali.length || nuovi.slice(0, scatti).some(Boolean);
+        const completi = [...Array(scatti).keys()].every(i => nuovi[i] || attuali[i]);
+        salva.disabled = !SCRIVIBILE || !cambiato || !completi;
+      }
+    };
+    const disegna = () => {
+      riga.replaceChildren();
+      for (let i = 0; i < scatti; i++) {
+        const slot = nodo('div', 'miniatura-scatto');
+        const cornice = nodo('div', 'miniatura-cornice');
+        const sorgenteImg = nuovi[i] ? URL.createObjectURL(nuovi[i]) : attuali[i] ? `assets/${attuali[i]}` : null;
+        const testo = nodo('span', 'miniatura-misura', sorgenteImg ? '…' : 'da caricare');
+        if (sorgenteImg) {
+          const img = nodo('img');
+          img.alt = `scatto ${i + 1}`;
+          img.addEventListener('load', () => {
+            misure[i] = { larghezza: img.naturalWidth, altezza: img.naturalHeight };
+            testo.textContent = `${img.naturalWidth} × ${img.naturalHeight} px${nuovi[i] ? ' · nuovo' : ''}`;
+            aggiornaInfo();
+          });
+          img.src = sorgenteImg;
+          cornice.append(img);
+        } else cornice.append(nodo('span', 'miniatura-vuota', '+'));
+        slot.append(nodo('span', 'miniatura-nome', `scatto ${i + 1}`), cornice, testo);
+        if (modifica) {
+          const file = nodo('input');
+          file.type = 'file';
+          file.accept = 'image/png,image/jpeg,image/webp';
+          file.hidden = true;
+          const carica = nodo('button', 'collegamento forte', sorgenteImg ? 'cambia immagine' : 'carica immagine');
+          carica.type = 'button';
+          carica.disabled = !SCRIVIBILE;
+          carica.addEventListener('click', () => file.click());
+          file.addEventListener('change', () => { if (file.files[0]) { nuovi[i] = file.files[0]; misure[i] = null; disegna(); } });
+          slot.append(carica, file);
+        }
+        riga.append(slot);
+      }
+      if (scelta) scelta.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.scatti) === scatti)));
+      aggiornaInfo();
+    };
+    if (modifica) {
+      // quanti scatti: 1, 2 o 3
+      scelta = nodo('div', 'miniature-numero');
+      scelta.append(nodo('span', '', 'scatti'));
+      [1, 2, 3].forEach(n => {
+        const pulsante = nodo('button', 'stile-q', String(n));
+        pulsante.type = 'button';
+        pulsante.dataset.scatti = n;
+        pulsante.setAttribute('aria-label', `${n} ${n === 1 ? 'scatto' : 'scatti'}`);
+        pulsante.addEventListener('click', () => { scatti = n; disegna(); });
+        scelta.append(pulsante);
+      });
+      salva = nodo('button', 'comando', 'salva miniature');
+      salva.type = 'button';
+      salva.addEventListener('click', async () => {
+        if (!confermaSorgente(id, scheda, sorgente)) return;
+        try { await collega(); } catch (errore) {
+          esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+          return;
+        }
+        salva.disabled = true;
+        try {
+          const percorsi = [];
+          for (let i = 0; i < scatti; i++) {
+            if (nuovi[i]) { esito(`salvo lo scatto ${i + 1}…`); percorsi.push(await Associa.scriviMiniatura(progetto, id, nomeBase, nuovi[i])); }
+            else percorsi.push(attuali[i]);
+          }
+          await scriviDashboard(id, testo => Associa.modificaScheda(testo, sezione.id, chiaveModulo, { miniature: percorsi }),
+            `miniature di ${scheda.titolo} salvate (${scatti} ${scatti === 1 ? 'scatto' : 'scatti'})`);
+        } catch (errore) {
+          console.error(errore);
+          esito(`errore (${errore.name}): ${errore.message}`, 'err');
+          salva.disabled = false;
+        }
+      });
+    }
+    campo.append(...(scelta ? [scelta] : []), riga, info, ...(salva ? [salva] : []));
+    disegna();
+    return campo;
+  }
+
+  // ----- Campi della scheda del modulo che si cambiano in modalità modifica (lucchetto aperto) -----
+  // un campo di testo con SALVA (spento finché non cambia; Invio salva)
+  function campoModifica(valore, massimo, esempio, salva) {
+    const campo = nodo('span', 'campo-inline');
+    const input = nodo('input');
+    input.type = 'text';
+    input.value = valore;
+    input.maxLength = massimo;
+    input.placeholder = esempio;
+    const pulsante = nodo('button', 'collegamento forte', 'salva');
+    pulsante.type = 'button';
+    pulsante.disabled = true;
+    input.addEventListener('input', () => { pulsante.disabled = !SCRIVIBILE || input.value.trim() === valore; });
+    const conferma = () => { if (!pulsante.disabled) { pulsante.disabled = true; salva(input.value.trim()); } };
+    pulsante.addEventListener('click', conferma);
+    input.addEventListener('keydown', evento => { if (evento.key === 'Enter') { evento.preventDefault(); conferma(); } });
+    campo.append(input, pulsante);
+    return campo;
+  }
+  // le specifiche in un campo solo, divise dal divisorio | delle descrizioni della dashboard; il pulsantino | lo inserisce
+  // dove sta il cursore (anche nel testo scritto a mano); salvando si dividono sul | e diventano l'elenco della scheda
+  function campoSpecifiche(valori, salva) {
+    const iniziale = valori.join(' | ');
+    const campo = nodo('span', 'campo-inline campo-specifiche');
+    const input = nodo('input');
+    input.type = 'text';
+    input.value = iniziale;
+    input.placeholder = 'es. Brand | Prezzo | Sconto';
+    const divisorio = nodo('button', 'divisorio', '|');
+    divisorio.type = 'button';
+    divisorio.title = 'inserisci il divisorio | tra due specifiche';
+    divisorio.setAttribute('aria-label', 'Inserisci il divisorio tra due specifiche');
+    const pulsante = nodo('button', 'collegamento forte', 'salva');
+    pulsante.type = 'button';
+    pulsante.disabled = true;
+    const aggiorna = () => { pulsante.disabled = !SCRIVIBILE || input.value.trim() === iniziale; };
+    input.addEventListener('input', aggiorna);
+    divisorio.addEventListener('click', () => {
+      const inizio = input.selectionStart ?? input.value.length, fine = input.selectionEnd ?? inizio;
+      input.value = `${input.value.slice(0, inizio).replace(/\s+$/, '')} | ${input.value.slice(fine).replace(/^\s+/, '')}`;
+      const posto = input.value.indexOf(' | ', Math.max(0, inizio - 2)) + 3;
+      input.focus();
+      input.setSelectionRange(posto, posto);
+      aggiorna();
+    });
+    const conferma = () => {
+      if (pulsante.disabled) return;
+      pulsante.disabled = true;
+      salva(input.value.split('|').map(testo => testo.trim()).filter(Boolean));
+    };
+    pulsante.addEventListener('click', conferma);
+    input.addEventListener('keydown', evento => { if (evento.key === 'Enter') { evento.preventDefault(); conferma(); } });
+    campo.append(input, divisorio, pulsante);
+    return campo;
+  }
+  // la galleria: un menu con le gallerie del negozio dove il modulo può stare (pagine: cartelli, promo e cartellini tra
+  // loro; etichette con etichette; stampe con stampe); scegliendone una compare un piccolo riquadro di conferma
+  // «Sposta modulo … in galleria …?» con ANNULLA e SPOSTA; spostato, la scheda resta aperta nella galleria nuova
+  const famiglia = tipo => (['cartelli', 'promo', 'cartellini'].includes(tipo) ? 'pagine' : tipo);
+  function menuGalleria(id, sezione, scheda, chiaveModulo, sorgente = false) {
+    const contenitore = nodo('span', 'galleria-menu');
+    const menu = nodo('select');
+    menu.setAttribute('aria-label', 'Galleria del modulo');
+    negozi[id].dati.sezioni.filter(s => famiglia(s.tipo) === famiglia(sezione.tipo)).forEach(s => {
+      const voce = nodo('option', '', `${s.titolo.split(' // ')[0]} (${s.tipo})`);
+      voce.value = s.id;
+      voce.selected = s.id === sezione.id;
+      menu.append(voce);
+    });
+    menu.disabled = !SCRIVIBILE;
+    const riquadro = nodo('span', 'conferma-sposta');
+    riquadro.hidden = true;
+    menu.addEventListener('change', () => {
+      const arrivo = negozi[id].dati.sezioni.find(s => s.id === menu.value);
+      if (!arrivo || arrivo.id === sezione.id) { riquadro.hidden = true; return; }
+      const annulla = nodo('button', 'comando', 'annulla');
+      const sposta = nodo('button', 'comando pieno', 'sposta');
+      annulla.type = sposta.type = 'button';
+      const domanda = nodo('span', 'conferma-domanda');
+      domanda.append('Sposta modulo ', nodo('b', '', scheda.titolo), ' in galleria ', nodo('b', '', arrivo.titolo.split(' // ')[0]), '?');
+      const comandi = nodo('span', 'conferma-comandi');
+      comandi.append(annulla, sposta);
+      riquadro.replaceChildren(domanda, comandi);
+      riquadro.hidden = false;
+      annulla.addEventListener('click', () => { menu.value = sezione.id; riquadro.hidden = true; menu.focus(); });
+      sposta.addEventListener('click', async () => {
+        sposta.disabled = annulla.disabled = true;
+        moduloAperto.sezione = arrivo.id;   // la scheda resta aperta, nella galleria nuova
+        const ok = await scriviModulo(id, scheda, sorgente, testo => Associa.spostaScheda(testo, sezione.id, chiaveModulo, arrivo.id),
+          `${scheda.titolo} spostato in ${arrivo.titolo.split(' // ')[0]}`);
+        if (!ok) { moduloAperto.sezione = sezione.id; ridisegna(); }
+      });
+      sposta.focus();
+    });
+    contenitore.append(menu, riquadro);
     return contenitore;
   }
 
@@ -2008,7 +2271,7 @@
     const voce = (titolo, ...contenuto) => { info.append(nodo('dt', '', titolo)); const dd = nodo('dd'); dd.append(...contenuto); info.append(dd); return dd; };
     // lo stato è un menu a cascata: lo stato attuale con la freccina; il menu ha l'altro valore (ghost, con il pallino
     // viola del ghost di Controllo codice, o attivo) e sceglierlo mette il modulo in ghost o lo fa ricomparire
-    voce('stato', menuStato(id, sezione, scheda, chiaveModulo, stato));
+    voce('stato', menuStato(id, sezione, scheda, chiaveModulo, stato, !origine));
     if (scheda.link) {
       const apri = nodo('a', '', `${id}/${scheda.link} ↗`);
       apri.href = `${id}/${scheda.link}`;
@@ -2022,8 +2285,14 @@
       apri.rel = 'noopener';
       voce('pdf', apri);
     }
-    if (scheda.tipo) voce('tipo', scheda.tipo);
-    voce('galleria', `${sezione.titolo} (${sezione.tipo})`);
+    // In modalità modifica (lucchetto aperto) alcuni campi si cambiano, per tutti i moduli, sorgente e cloni: stato, tipo,
+    // galleria, posizione, specifiche e temi speciali (accesi o spenti); scrivono la scheda nella dashboard, non la pagina
+    // (un modulo sorgente: prima l'avviso; scriviModulo)
+    const scriviCampi = (campi, fatto) => scriviModulo(id, scheda, !origine, testo => Associa.modificaScheda(testo, sezione.id, chiaveModulo, campi), fatto);
+    if (modifica) voce('tipo', campoModifica(scheda.tipo || '', 30, 'es. CARTELLO', valore => scriviCampi({ tipo: valore }, `tipo di ${scheda.titolo}: ${valore || 'nessuno'}`)));
+    else if (scheda.tipo) voce('tipo', scheda.tipo);
+    if (modifica) voce('galleria', menuGalleria(id, sezione, scheda, chiaveModulo, !origine));
+    else voce('galleria', `${sezione.titolo} (${sezione.tipo})`);
     // posizione nel carosello, con i comandi per spostarlo
     const posizione = voce('posizione', `${due(indice + 1)} di ${due(schede.length)}`);
     const comandi = nodo('span', 'sposta');
@@ -2048,23 +2317,36 @@
     // il tipo di modulo con la sua etichetta: SORGENTE in oro o CLONE in azzurro, come sui widget del diagramma
     const tipoModulo = nodo('span', 'tipo-modulo');
     tipoModulo.append(nodo('span', `tag-modulo ${origine ? 'clone' : 'sorgente'}`, origine ? 'clone' : 'sorgente'),
-      origine ? 'si modifica, si sposta, si cancella' : 'si mette in ghost e si sposta; si modifica e si cancella solo dal codice');
+      origine ? 'si modifica tutto, si sposta, si cancella' : 'con il lucchetto aperto si cambiano stato, tipo, galleria, posizione, specifiche, temi e miniature; il resto e la cancellazione solo dal codice');
     voce('modulo', tipoModulo);
     voce('origine', origine ? `clone di ${origine}` : derivataDa ? `scritto a codice, derivato da ${derivataDa}` : nomePagina ? 'pagina originale del negozio' : scheda.pdf ? 'stampa pronta (PDF)' : 'scheda della dashboard');
-    if (scheda.specifiche?.length) voce('specifiche', scheda.specifiche.join(' · '));
-    // i temi speciali, per esteso: icona del pulsante e nome di ognuno
+    if (modifica) voce('specifiche', campoSpecifiche(scheda.specifiche || [], valori => scriviCampi({ specifiche: valori }, `specifiche di ${scheda.titolo} salvate`)));
+    else if (scheda.specifiche?.length) voce('specifiche', scheda.specifiche.join(' | '));
+    // i temi speciali, per esteso: icona del pulsante e nome di ognuno; uno spento è attenuato. In modalità modifica ogni
+    // tema si accende o si spegne con un clic (temiSpenti nella scheda: la dashboard apre la pagina con ?senza-temi=…)
     const temiModulo = temiDelModulo(id, scheda);
     if (temiModulo.length) {
       const elenco = nodo('span', 'temi-elenco');
+      const spenti = scheda.temiSpenti || [];
       temiModulo.forEach(tema => {
-        const voceTema = nodo('span', 'tema-voce');
+        const voceTema = nodo(modifica ? 'button' : 'span', `tema-voce${tema.spento ? ' spento' : ''}`);
         const tondo = nodo('span', `w-tema t-${tema.id}`);
         if (tema.icona) { const img = nodo('img'); img.src = tema.icona; img.alt = ''; tondo.append(img); }
-        voceTema.append(tondo, tema.nome);
+        voceTema.append(tondo, tema.nome, tema.spento ? nodo('span', 'tema-stato', 'spento') : '');
+        if (modifica) {
+          voceTema.type = 'button';
+          voceTema.disabled = !SCRIVIBILE;
+          voceTema.setAttribute('aria-pressed', String(!tema.spento));
+          voceTema.title = tema.spento ? `riaccendi ${tema.nome}: il pulsante torna nella pagina` : `spegni ${tema.nome}: il pulsante non compare nella pagina`;
+          voceTema.addEventListener('click', () => scriviCampi({ temiSpenti: tema.spento ? spenti.filter(t => t !== tema.id) : [...spenti, tema.id] },
+            `${tema.nome} ${tema.spento ? 'riacceso' : 'spento'} in ${scheda.titolo}`));
+        }
         elenco.append(voceTema);
       });
       voce('temi speciali', elenco);
     }
+    // le miniature della scheda (1, 2 o 3 scatti): anteprime e misure; con il lucchetto aperto si cambiano
+    if (scheda.link || scheda.miniature?.length) voce('miniature', campoMiniature(id, sezione, scheda, chiaveModulo, !origine));
     dettagli.append(info);
 
     // azioni: ghost, duplica, elimina
@@ -2108,7 +2390,7 @@
       ? `copia la pagina in ${id}/${nomePagina.replace(/\.html$/, '-copia.html')} (un clone, che si può cancellare) e mette il modulo in ${galleria}, subito dopo l'originale, con il titolo «${scheda.titolo} (copia)»`
       : 'si duplicano solo i moduli con una pagina: non le stampe pronte (PDF) né i moduli in arrivo', duplica);
 
-    // modifica: solo i cloni (titolo, specifiche, miniatura, tipo, MENU SPECIALE); i sorgente si modificano dal codice
+    // modifica: solo i cloni (titolo, MENU SPECIALE); gli altri campi nei dettagli, con il lucchetto aperto
     azioni.append(bloccoModifica(id, sezione, scheda, chiaveModulo, Boolean(origine), comando));
 
     const elimina = comando('✕ elimina modulo', 'rosso');
@@ -2145,19 +2427,19 @@
     griglia.append(anteprima, dettagli);
     contenitore.append(griglia);
   }
-
-  // Blocco «modifica» della scheda del modulo. Cloni: titolo, tipo (la scritta in alto a destra), MENU SPECIALE,
-  // specifiche (una per riga) e miniatura (un file immagine); scrive la scheda nella dashboard (Associa.modifica).
+  // Blocco «modifica» della scheda del modulo (il resto dei campi, per tutti i moduli, si cambia nei dettagli con il
+  // lucchetto aperto: stato, tipo, galleria, posizione, specifiche, temi, miniature). Cloni: in più titolo e MENU SPECIALE
+  // (scrive la scheda nella dashboard, Associa.modifica). Sorgente: solo la nota (il resto dal codice)
   // Sorgente: niente campi, solo la nota (si modifica dal codice)
   function bloccoModifica(id, sezione, scheda, chiaveModulo, clone, comando) {
     const blocco = nodo('div', `azione ${clone ? 'clone' : 'sorgente'}`);
     blocco.append(nodo('h4', '', 'modifica'));
     if (!clone) {
-      blocco.append(nodo('p', '', 'modulo sorgente: titolo, specifiche, miniatura e pagina si cambiano solo dal codice (assets/negozi/'
-        + `${id}-dashboard.js e la sua pagina). dalle utilità si mette in ghost e si sposta`));
+      blocco.append(nodo('p', '', 'modulo sorgente: con il lucchetto aperto si cambiano nei dettagli stato, tipo, galleria, posizione, specifiche, temi speciali e miniature; titolo e pagina solo dal codice (assets/negozi/'
+        + `${id}-dashboard.js e la sua pagina)`));
       return blocco;
     }
-    blocco.append(nodo('p', '', 'modulo clone: cambia i dati del suo widget nella dashboard del negozio. la pagina si modifica dal codice'));
+    blocco.append(nodo('p', '', 'modulo clone: oltre ai campi dei dettagli (lucchetto aperto, anche le miniature) cambia titolo e MENU SPECIALE del suo widget nella dashboard. la pagina si modifica dal codice'));
     const campi = nodo('div', 'campi-modifica');
     let n = 0;
     const riga = (etichetta, controllo) => {
@@ -2169,20 +2451,10 @@
     };
     const testo = (valore, massimo) => { const c = nodo('input'); c.type = 'text'; c.value = valore || ''; c.maxLength = massimo; return c; };
     const titolo = riga('titolo', testo(scheda.titolo, 60));
-    const tipo = riga('tipo', testo(scheda.tipo, 30));
-    tipo.placeholder = 'es. CARTELLO';
     const speciale = nodo('input');
     speciale.type = 'checkbox';
     speciale.checked = Boolean(scheda.badge);
     riga('menu speciale', speciale);
-    const specifiche = nodo('textarea');
-    specifiche.value = (scheda.specifiche || []).join('\n');
-    specifiche.placeholder = 'una specifica per riga';
-    riga('specifiche', specifiche);
-    const miniatura = nodo('input');
-    miniatura.type = 'file';
-    miniatura.accept = 'image/png,image/jpeg,image/webp';
-    riga('miniatura', miniatura);
     blocco.append(campi);
     const salva = comando('salva le modifiche', 'azzurro');
     salva.addEventListener('click', async () => {
@@ -2194,12 +2466,9 @@
       salva.disabled = true;
       try {
         await Associa.modifica(progetto, { negozio: id, sezione: sezione.id, chiave: chiaveModulo, avviso: esito,
-          miniatura: miniatura.files[0] || null,
           campi: {
             titolo: titolo.value.trim(),
-            tipo: tipo.value.trim(),
-            badge: speciale.checked ? (scheda.badge || 'MENU SPECIALE') : null,
-            specifiche: specifiche.value.split('\n').map(s => s.trim()).filter(Boolean)
+            badge: speciale.checked ? (scheda.badge || 'MENU SPECIALE') : null
           } });
         await carica(id);
         esito(`${titolo.value.trim()} modificato nella dashboard di ${nomeNegozio(id)}. ricorda il commit per pubblicarlo`, 'ok');

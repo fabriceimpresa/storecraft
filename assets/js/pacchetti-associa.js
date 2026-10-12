@@ -67,6 +67,8 @@
      Associa.schedaDuplicata(testo, sezione, chiave, link, origine)  nuovo testo con la copia dopo l'originale
      Associa.modificaScheda(testo, sezione, chiave, campi)      nuovo testo con titolo, specifiche, tipo, badge, miniature
      Associa.modifica(progetto, { negozio, sezione, chiave, campi, miniatura })  scrive la modifica (solo i cloni)
+     Associa.spostaScheda(testo, sezione, chiave, altraSezione)  nuovo testo con il modulo in fondo a un'altra galleria
+     Associa.scriviMiniatura(progetto, negozio, nome, file)   salva un'immagine tra le miniature del negozio, dà il percorso
      Associa.derivata(html)                                    pagina sorgente da cui deriva (storecraft-derivata) o null
      Associa.ultimoClone(testiDashboard, origine)              true se togliendo il clone sparisce dal catalogo (doppia conferma)
 
@@ -821,6 +823,37 @@ Pacchetti.registra('${galleria}', {
     }
     return testo.slice(0, scheda.inizio) + nuova + testo.slice(scheda.fine + 1);
   }
+  // Sposta la scheda di un modulo in un'altra galleria del negozio (in fondo): esce dalla galleria di partenza e dal suo
+  // ordine, ed entra in fondo a quella d'arrivo (e al suo ordine, se ne ha uno). Vale per sorgente e cloni: cambia solo
+  // la dashboard, non la pagina
+  function spostaScheda(testo, da, chiave, a) {
+    const scheda = schedaConChiave(testo, da, chiave);
+    let nuovo = togliOggetto(testo, scheda);
+    const vociDa = ordine(nuovo, da);
+    if (vociDa) nuovo = impostaOrdine(nuovo, da, vociDa.filter(voce => voce !== chiave));
+    const { elenco } = sezioneConId(nuovo, a);
+    const esistenti = schede(nuovo, elenco);
+    if (esistenti.length) {
+      const ultima = esistenti[esistenti.length - 1];
+      const rientro = nuovo.slice(nuovo.lastIndexOf('\n', ultima.inizio) + 1, ultima.inizio);
+      nuovo = `${nuovo.slice(0, ultima.fine + 1)},\n${rientro}${scheda.testo}${nuovo.slice(ultima.fine + 1)}`;
+    } else {
+      const riga = nuovo.lastIndexOf('\n', elenco.fine);
+      nuovo = `${nuovo.slice(0, elenco.inizio + 1)}\n        ${scheda.testo}\n${nuovo.slice(riga + 1, elenco.fine)}${nuovo.slice(elenco.fine)}`;
+    }
+    const vociA = ordine(nuovo, a);
+    if (vociA) nuovo = impostaOrdine(nuovo, a, [...vociA, chiave]);
+    return nuovo;
+  }
+  // Salva un'immagine (un File) tra le miniature del negozio: assets/thumbnail/<negozio>/<nome>-<marca>.<estensione>;
+  // restituisce il percorso per la scheda (thumbnail/<negozio>/…). Campo miniature della scheda del modulo in Gestione
+  // negozi, per sorgente e cloni (la pagina non cambia)
+  async function scriviMiniatura(progetto, negozio, nome, file) {
+    const estensione = (file.name.match(/\.(png|jpe?g|webp)$/i) || [, 'png'])[1].toLowerCase();
+    const nuovo = `${nomeFile(nome)}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}.${estensione}`;
+    await scriviFile(progetto, `assets/thumbnail/${negozio}/${nuovo}`, file);
+    return `thumbnail/${negozio}/${nuovo}`;
+  }
   // scrive la modifica: solo per i cloni; con un file la miniatura nuova va in assets/thumbnail/<negozio>/
   async function modifica(progetto, { negozio, sezione, chiave, campi, miniatura = null, avviso = () => {} }) {
     const dashboard = `assets/negozi/${negozio}-dashboard.js`;
@@ -852,7 +885,7 @@ Pacchetti.registra('${galleria}', {
     return testi.reduce((totale, testo) => totale + String(testo).split(segno).length - 1, 0) <= 1;
   }
 
-  const Associa = Object.freeze({ modificaScheda, modifica, derivata, ultimoClone, chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
+  const Associa = Object.freeze({ scriviMiniatura, spostaScheda, modificaScheda, modifica, derivata, ultimoClone, chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();
