@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-50"></script>
+  <script src="assets/js/negozi.js?v=20261012-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 12 ottobre 2026 · versione 1.2.18</p>
+  <p class="aggiornamento">ultimo aggiornamento: 12 ottobre 2026 · versione 1.2.19</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -427,7 +427,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261012-50</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261012-51</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -447,7 +447,7 @@
     <tr><td>Loghi</td><td>Genera Loghi e Gestisci Lista: i loghi personali del negozio</td></tr>
     <tr><td>Pagine di servizio</td><td>Lista di Stampa e visualizzatore PDF, usate dalle altre pagine</td></tr>
   </table>
-  <p class="nota">Quali pagine usano quali moduli, negozio per negozio: pagina Controllo codice dell'area operatore (lettura dal vivo).</p>
+  <p class="nota">Quali pagine usano quali moduli, negozio per negozio: pagina Controllo codice dell'area operatore (lettura dal vivo). Sotto, la tabella Archivi dei dati riassume dove si conservano i dati (localStorage, cookie, sessionStorage, IndexedDB, file del progetto, servizi esterni) e verifica a ogni apertura che ogni chiave sia ancora nel codice.</p>
 
   <!-- ================================================================ -->
   <h2 id="tipo-cartello">Cartello</h2>
@@ -689,7 +689,8 @@
   <p>Area operatore › <strong>Gestione negozi</strong> (<code>gestione-negozi.html</code>, prima voce del menu): per il negozio scelto con le insegne, un diagramma di tutto il negozio che si sviluppa da sinistra a destra: il negozio, la sua dashboard (<code>index.html</code>) e tre aree, CREATOR (le gallerie dei caroselli, ognuna con i suoi moduli in un piccolo carosello), CASSIERE (gli strumenti di Utilità Cassa) e SERVIZIO (lista e cronologia di stampa, bacheca, loghi personali, visualizzatore PDF).</p>
   <table class="tipo">
     <tr><th>Voce</th><th>Regola</th></tr>
-    <tr><td>Spie</td><td>verde: il modulo è attivo nella dashboard; viola: in ghost; spenta: in arrivo (Coming Soon)</td></tr>
+    <tr><td>Spie</td><td>verde: il modulo è attivo nella dashboard; viola: in ghost; spenta: in arrivo (Coming Soon); rossa (solo in MODULI): non associato a nessun negozio</td></tr>
+    <tr><td>MODULI</td><td>insegna dopo i negozi: il catalogo dei moduli, con le aree SORGENTI LXRY e SORGENTI TEBE (i set di partenza) e NUOVI (moduli creati da Nuovo modulo, anche non associati); sotto ogni widget le sigle dei negozi che lo usano o NON ASSOCIATO; la scheda del modulo ha le spunte dei negozi, come Gestione pacchetti</td></tr>
     <tr><td>Ridurre ed espandere</td><td>maniglia tonda sul raccordo di ogni area e ogni galleria, con una linea: orizzontale il ramo è aperto (il flusso prosegue), verticale è chiuso (il flusso si ferma); o un clic sul nodo; chiusa mostra una spia per modulo</td></tr>
     <tr><td>Cartella del progetto</td><td>sopra il diagramma solo il pulsante «collega la cartella del progetto»: già «✓ cartella collegata» se la pagina operatore l'ha collegata o il browser dà ancora il permesso a quella ricordata; gli esiti nella riga di stato</td></tr>
     <tr><td>Animazioni</td><td>cambiando negozio nodi, fili e widget compaiono da sinistra a destra; un ramo che si apre si srotola; niente animazioni con «riduci animazioni»</td></tr>

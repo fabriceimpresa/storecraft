@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-50"></script>
+  <script src="assets/js/negozi.js?v=20261012-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261012-50"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-51"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-50"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-50"></script>
+  <script src="assets/js/pacchetti.js?v=20261012-51"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-51"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261012-50"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261012-50"></script>
+  <script src="assets/js/admin-negozio.js?v=20261012-51"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-51"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -858,7 +858,8 @@
       associati.length = 0;
       for (const negozio of Negozi.installati) {
         const testo = await testoDashboard(negozio);
-        const usato = associabile && Associa.usato(testo, negozio, cartellaModulo, pagina);
+        // con il link intero: le etichette (etichette.html?label=…) contano una per una
+        const usato = associabile && Associa.usato(testo, negozio, cartellaModulo, modulo.link);
         if (usato) associati.push(negozio);
         const riga = nodo('label', 'negozio');
         const spunta = nodo('input');

@@ -2,14 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-50"></script>
+  <script src="assets/js/negozi.js?v=20261012-51"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261012-50"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-51"></script>
   <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-50"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-51"></script>
+  <!-- MODULI (accanto ai negozi): il catalogo dei moduli, letto dai pacchetti di Gestione pacchetti -->
+  <script src="assets/js/pacchetti.js?v=20261012-51"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-51"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
@@ -279,6 +282,32 @@
     .azione.pericolo h4 { color: var(--rosso); }
     .azione p { margin: 0 0 12px; color: var(--tenue); font-size: 11.5px; line-height: 1.6; }
 
+    /* ----- MODULI: l'insegna dopo i negozi (staccata da una linea sottile) apre il catalogo dei moduli: le sorgenti di
+       Luxury Outlet e TEBE (i set di partenza) e i moduli nuovi, con i negozi in cui sono usati ----- */
+    .divisore { flex: none; width: 1px; height: 30px; background: var(--bordo); }
+    .insegna-moduli { color: #fff; font: 500 17px 'Cinzel', serif; letter-spacing: .32em; opacity: .35; transition: opacity .2s; }
+    .insegna-moduli:hover, .insegna-moduli:focus-visible, .insegna-moduli[aria-selected="true"] { opacity: .9; }
+    .modifica-riga[hidden] { display: none; }
+    /* il nodo del catalogo: come il negozio, con il logo STORE // CRAFT in oro */
+    .nodo-catalogo img { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: .9; }
+    /* modulo non associato a nessun negozio: spia rossa */
+    .spia.libero { background: var(--rosso); box-shadow: 0 0 0 2px rgba(224, 122, 95, .16), 0 0 7px rgba(224, 122, 95, .85); }
+    .riassunto .spia.libero { box-shadow: 0 0 4px rgba(224, 122, 95, .7); }
+    /* sotto il titolo del widget: i negozi che lo usano (sigle), o «non associato» in rosso */
+    .w-negozi { display: block; margin-top: -4px; padding: 0 7px 7px; overflow: hidden; color: var(--tenue); font: 400 8.5px var(--mono);
+      letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; }
+    .w-negozi.libero { color: var(--rosso); }
+    .modulo-anteprima .w-negozi { padding: 0 12px 12px; font-size: 10.5px; }
+    .w-nuovo { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 0 4px; border: 1px solid var(--verde); border-radius: 3px;
+      background: #0a0908; color: var(--verde); font-size: 8.5px; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
+    /* spunte dei negozi nella scheda del modulo del catalogo */
+    .spunte { display: grid; gap: 8px; margin: 0 0 12px; }
+    .spunte label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 12px; cursor: pointer; }
+    .spunte input { accent-color: var(--oro); width: 15px; height: 15px; margin: 0; align-self: center; cursor: pointer; }
+    .spunte input:disabled { cursor: default; }
+    .spunte .negozio-nome { color: var(--oro-chiaro); letter-spacing: .06em; }
+    .spunte .negozio-nota { color: var(--tenue); font-size: 11px; }
+
     /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
     html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
     html.incorporata .pagina { max-width: none; padding: 0; }
@@ -451,7 +480,7 @@
     try {
       await collega();
       esito(`cartella del progetto collegata: ${progetto.name}`, 'ok');
-      await carica(negozioScelto);
+      if (negozioScelto === MODULI) await caricaCatalogo(); else await carica(negozioScelto);
       disegna();
     } catch (errore) {
       if (errore.name === 'AbortError') esito('cartella non collegata', 'nota');
@@ -556,9 +585,10 @@
   const statoDi = scheda => (scheda.prossimamente ? 'arrivo' : scheda.nascosta ? 'ghost' : 'attivo');
   const STATI = { attivo: 'attivo: si vede nella dashboard', ghost: 'in ghost: nascosto nella dashboard, la pagina resta', arrivo: 'in arrivo (Coming Soon): scheda spenta' };
 
-  // ----- Insegne dei negozi -----
+  // ----- Insegne dei negozi (e, dopo, MODULI: il catalogo dei moduli) -----
+  const MODULI = 'moduli';
   let negozioScelto = Negozi.installati[0];
-  try { const ricordato = sessionStorage.getItem('gestione_negozi_negozio'); if (Negozi.installati.includes(ricordato)) negozioScelto = ricordato; } catch { /* resta il primo */ }
+  try { const ricordato = sessionStorage.getItem('gestione_negozi_negozio'); if (Negozi.installati.includes(ricordato) || ricordato === MODULI) negozioScelto = ricordato; } catch { /* resta il primo */ }
   const insegne = document.querySelector('.insegne');
   const segnalino = insegne.querySelector('.segnalino');
   const sposta = tasto => { segnalino.style.left = `${tasto.offsetLeft}px`; segnalino.style.width = `${tasto.offsetWidth}px`; };
@@ -582,6 +612,21 @@
     tasto.addEventListener('click', () => scegli(id));
     insegne.insertBefore(tasto, segnalino);
   });
+  // MODULI: dopo i negozi, staccata da una linea sottile
+  {
+    const divisore = nodo('span', 'divisore');
+    divisore.setAttribute('aria-hidden', 'true');
+    const tasto = nodo('button', 'insegna insegna-moduli', 'MODULI');
+    tasto.type = 'button';
+    tasto.setAttribute('role', 'tab');
+    tasto.dataset.negozio = MODULI;
+    tasto.title = 'catalogo dei moduli: le sorgenti di Luxury Outlet e TEBE e i moduli nuovi, anche non associati a un negozio';
+    tasto.addEventListener('mouseenter', () => sposta(tasto));
+    tasto.addEventListener('focus', () => sposta(tasto));
+    tasto.addEventListener('click', () => scegli(MODULI));
+    insegne.insertBefore(divisore, segnalino);
+    insegne.insertBefore(tasto, segnalino);
+  }
   insegne.addEventListener('keydown', evento => {
     const tasti = [...insegne.querySelectorAll('.insegna')];
     const ora = tasti.indexOf(document.activeElement);
@@ -605,7 +650,20 @@
     });
     if (scelta()) sposta(scelta());
     chiudiModulo(false);
-    if (!negozi[id]) {
+    // nel catalogo niente modalità modifica: i moduli si riordinano nei negozi
+    document.querySelector('.modifica-riga').hidden = id === MODULI;
+    $('diagramma').setAttribute('aria-label', id === MODULI ? 'Catalogo dei moduli' : 'Diagramma del negozio');
+    if (id === MODULI) {
+      if (!catalogo.letto) {
+        $('stato').textContent = 'Lettura in corso…';
+        try { await caricaCatalogo(); } catch (errore) {
+          console.error(errore);
+          $('stato').textContent = `catalogo dei moduli non letto (${errore.message})`;
+          $('diagramma').replaceChildren();
+          return;
+        }
+      }
+    } else if (!negozi[id]) {
       $('stato').textContent = 'Lettura in corso…';
       try { await carica(id); } catch (errore) {
         console.error(errore);
@@ -665,6 +723,7 @@
   }
 
   function disegna() {
+    if (negozioScelto === MODULI) { disegnaCatalogo(); return; }
     const id = negozioScelto;
     const { dati, cloni } = negozi[id];
     const scheda = Negozi.scheda(id) || {};
@@ -1039,7 +1098,9 @@
     $('diagramma').hidden = true;
     $('indietro-fondo').hidden = true;
     $('vista-modulo').hidden = false;
-    avvisaOperatore('diagramma del negozio');
+    const ritorno = id === MODULI ? 'catalogo dei moduli' : 'diagramma del negozio';
+    $('torna-diagramma').textContent = `← ${ritorno}`;
+    avvisaOperatore(ritorno);
     disegnaModulo();
     $('torna-diagramma').focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -1071,6 +1132,7 @@
   }, true);
 
   function disegnaModulo() {
+    if (moduloAperto.id === MODULI) { disegnaModuloCatalogo(); return; }
     const { id, sezione: sezioneId, chiave: chiaveModulo } = moduloAperto;
     const { dati, cloni } = negozi[id];
     const sezione = dati.sezioni.find(s => s.id === sezioneId);
@@ -1210,6 +1272,248 @@
     dettagli.append(azioni);
     griglia.append(anteprima, dettagli);
     contenitore.append(griglia);
+  }
+
+  // ----- MODULI: il catalogo dei moduli -----
+  // Le gallerie sono i pacchetti di Gestione pacchetti (assets/pacchetti/): i set di partenza di un negozio (sorgenti,
+  // le schede lette dalla sua dashboard) e i moduli nuovi (gallerie create da Nuovo modulo e moduli aggiunti ai set),
+  // anche quelli non ancora associati a nessun negozio. Per ogni modulo, i negozi la cui dashboard lo usa (sua scheda o
+  // clone, Associa.usato). Utilità Cassa resta fuori: gli strumenti sono comuni a tutti i negozi.
+  const ASSOCIABILI = ['cartelli', 'promo', 'cartellini'];
+  const catalogo = { letto: false, testi: {} };
+  async function caricaCatalogo() {
+    const testi = {};
+    await Promise.all(Negozi.installati.map(async n => { testi[n] = await testoFile(`assets/negozi/${n}-dashboard.js`); }));
+    catalogo.testi = testi;
+    catalogo.letto = true;
+  }
+  const galleriaCatalogo = id => { try { return Pacchetti.pacchetto(id); } catch (errore) { console.error(errore); return null; } };
+  const gallerieCatalogo = () => Pacchetti.elenco.map(galleriaCatalogo).filter(p => p && p.tipo !== 'cassa');
+  const cartellaDi = (pacchetto, modulo) => modulo.cartella || pacchetto.cartella;
+  const nuovoModulo = (pacchetto, modulo) => !pacchetto.negozio || Boolean(modulo.aggiunto);
+  // i negozi che usano il modulo (la sua scheda nella dashboard, o un suo clone)
+  function negoziDel(pacchetto, modulo) {
+    if (!modulo.link) return [];
+    const cartella = cartellaDi(pacchetto, modulo);
+    // con il link intero: le etichette (etichette.html?label=…) contano una per una
+    return Negozi.installati.filter(n => catalogo.testi[n] && Associa.usato(catalogo.testi[n], n, cartella, modulo.link));
+  }
+  const statoCatalogo = (pacchetto, modulo) => (negoziDel(pacchetto, modulo).length ? 'attivo' : 'libero');
+  const sigla = n => Negozi.scheda(n)?.sigla || n.toUpperCase();
+
+  function widgetCatalogo(pacchetto, modulo, indice, numero, grande = false) {
+    const usatoIn = negoziDel(pacchetto, modulo);
+    const stato = usatoIn.length ? 'attivo' : 'libero';
+    const elemento = nodo(grande ? 'div' : 'button', 'widget in-attivo');
+    if (!grande) {
+      elemento.type = 'button';
+      elemento.dataset.chiave = `${pacchetto.id}:${indice}`;
+      elemento.setAttribute('aria-label', `${modulo.titolo}, ${usatoIn.length ? `usato in ${usatoIn.map(nomeNegozio).join(', ')}` : 'non associato a nessun negozio'}. Apri la scheda del modulo`);
+    }
+    const testa = nodo('span', 'w-testa');
+    const spia = nodo('span', `spia${stato === 'attivo' ? '' : ' libero'}`);
+    spia.title = usatoIn.length ? `usato in ${usatoIn.map(nomeNegozio).join(', ')}` : 'non associato: non è in nessuna dashboard';
+    testa.append(nodo('span', 'w-num', due(numero)), spia);
+    const anteprima = nodo('span', 'w-anteprima');
+    const miniatura = (modulo.miniature || [])[0];
+    if (miniatura) {
+      const immagine = nodo('img');
+      immagine.src = `assets/${miniatura}`;
+      immagine.alt = '';
+      immagine.loading = 'lazy';
+      immagine.draggable = false;
+      anteprima.append(immagine);
+    } else anteprima.append(nodo('span', 'w-icona', modulo.prossimamente ? 'coming soon' : modulo.pdf ? 'pdf' : '—'));
+    elemento.append(testa, anteprima, nodo('span', 'w-titolo', modulo.titolo),
+      nodo('span', `w-negozi${usatoIn.length ? '' : ' libero'}`, usatoIn.length ? usatoIn.map(sigla).join(' · ') : 'non associato'));
+    if (nuovoModulo(pacchetto, modulo)) elemento.append(nodo('span', 'w-nuovo', 'nuovo'));
+    return elemento;
+  }
+
+  // una galleria del catalogo: il nodo con il titolo e i suoi moduli in un piccolo carosello
+  function ramoCatalogo(pacchetto, voci, titolo, chiaveRamo, scorrimento, ritardo) {
+    const elemento = nodo('li', 'ramo');
+    elemento.dataset.tipo = pacchetto?.tipo || '';
+    elemento.dataset.sezione = `catalogo-${chiaveRamo}`;
+    elemento.dataset.stato = `${MODULI}:${chiaveRamo}`;
+    elemento.style.setProperty('--d', `${ritardo}ms`);
+    const galleria = nodo('div', 'nodo nodo-galleria');
+    galleria.append(nodo('span', 'galleria-nome', titolo),
+      nodo('span', 'nodo-sotto', `${voci.length} ${voci.length === 1 ? 'modulo' : 'moduli'}${pacchetto ? ` · ${pacchetto.tipo}` : ''}`));
+    if (pacchetto) galleria.title = pacchetto.nome;
+    const carosello = nodo('div', 'carosello');
+    const nastro = nodo('div', 'nastro');
+    nastro.setAttribute('role', 'list');
+    nastro.setAttribute('aria-label', `Moduli di ${titolo}`);
+    voci.forEach(({ pacchetto: p, modulo, indice }, i) => {
+      const w = widgetCatalogo(p, modulo, indice, i + 1);
+      w.style.setProperty('--d', `${ritardo + 140 + Math.min(i, 6) * 45}ms`);
+      w.addEventListener('click', () => apriModulo(MODULI, elemento.dataset.sezione, `${p.id}:${indice}`));
+      nastro.append(w);
+    });
+    if (!voci.length) nastro.append(nodo('span', 'vuota', 'nessun modulo'));
+    frecce(carosello, nastro, scorrimento);
+    const filo = nodo('span', 'filo corto');
+    filo.style.setProperty('--d', `${ritardo + 100}ms`);
+    const riassunto = chiudibile(elemento, galleria, elemento.dataset.stato, titolo, voci.map(v => statoCatalogo(v.pacchetto, v.modulo)));
+    elemento.append(galleria, filo, carosello, riassunto);
+    return elemento;
+  }
+
+  function disegnaCatalogo() {
+    const scorrimenti = {};
+    document.querySelectorAll('.ramo').forEach(ramo => { scorrimenti[ramo.dataset.sezione] = ramo.querySelector('.nastro')?.scrollLeft || 0; });
+    const diagramma = $('diagramma');
+    diagramma.replaceChildren();
+    const gallerie = gallerieCatalogo();
+    const voci = pacchetto => pacchetto.moduli.map((modulo, indice) => ({ pacchetto, modulo, indice }));
+
+    // il catalogo: logo STORE // CRAFT in oro, come il nodo del negozio
+    const radice = nodo('div', 'nodo nodo-negozio nodo-catalogo');
+    const logo = nodo('img');
+    logo.src = 'assets/img/storecraftlogo.png';
+    logo.alt = '';
+    radice.append(logo, nodo('span', 'nodo-nome', 'Moduli'), nodo('span', 'nodo-sotto', 'catalogo'));
+
+    // un'area per negozio con set di partenza (le sorgenti), poi l'area dei moduli nuovi
+    const aree = nodo('ol', 'rami');
+    aree.setAttribute('aria-label', 'Aree del catalogo');
+    let ritardo = 300;
+    const negoziSorgente = [...new Set(gallerie.map(p => p.negozio).filter(Boolean))];
+    negoziSorgente.forEach(n => {
+      const sue = gallerie.filter(p => p.negozio === n);
+      const rami = sue.map((p, i) => ramoCatalogo(p, voci(p).filter(v => !v.modulo.aggiunto), p.titolo || p.nome, p.id,
+        scorrimenti[`catalogo-${p.id}`] || 0, ritardo + 260 + i * 110));
+      const tutte = sue.flatMap(p => voci(p).filter(v => !v.modulo.aggiunto));
+      aree.append(ramoArea(MODULI, `sorgenti-${n}`, `Sorgenti ${sigla(n)}`, `${tutte.length} moduli`, rami, ritardo,
+        tutte.map(v => statoCatalogo(v.pacchetto, v.modulo))));
+      ritardo += 260 + sue.length * 110;
+    });
+    // moduli nuovi: le gallerie create da Nuovo modulo e i moduli aggiunti ai set di partenza
+    const nuovi = [];
+    gallerie.forEach(p => {
+      const sue = voci(p).filter(v => nuovoModulo(p, v.modulo));
+      if (sue.length) nuovi.push({ p, sue, titolo: p.negozio ? `${p.titolo || p.nome} · aggiunti` : (p.titolo || p.nome) });
+    });
+    const tuttiNuovi = nuovi.flatMap(g => g.sue);
+    const ramiNuovi = nuovi.length
+      ? nuovi.map((g, i) => ramoCatalogo(g.p, g.sue, g.titolo, `nuovi-${g.p.id}`, scorrimenti[`catalogo-nuovi-${g.p.id}`] || 0, ritardo + 260 + i * 110))
+      : [ramoCatalogo(null, [], 'In attesa', 'nuovi', 0, ritardo + 260)];
+    const liberi = tuttiNuovi.filter(v => statoCatalogo(v.pacchetto, v.modulo) === 'libero').length;
+    aree.append(ramoArea(MODULI, 'nuovi', 'Nuovi', liberi ? `${liberi} non associati` : `${tuttiNuovi.length} moduli`, ramiNuovi, ritardo,
+      tuttiNuovi.map(v => statoCatalogo(v.pacchetto, v.modulo))));
+
+    const filo = nodo('span', 'filo');
+    radice.style.setProperty('--d', '0ms');
+    filo.style.setProperty('--d', '160ms');
+    diagramma.append(radice, filo, aree);
+
+    // totali
+    const sorgenti = gallerie.filter(p => p.negozio).flatMap(p => voci(p).filter(v => !v.modulo.aggiunto)).length;
+    const tuttiLiberi = gallerie.flatMap(voci).filter(v => statoCatalogo(v.pacchetto, v.modulo) === 'libero').length;
+    totali = `Moduli · ${sorgenti} sorgenti · ${tuttiNuovi.length} nuovi · ${tuttiLiberi} non associati`;
+    if (!attesaEsito && $('stato').className !== 'lavora') mostraTotali();
+  }
+
+  // Scheda di un modulo del catalogo: il widget in grande, dove sta, e i negozi con le spunte (come in Gestione
+  // pacchetti: spuntando il modulo entra nella dashboard del negozio, se serve come clone; togliendo la spunta a un
+  // clone il clone si cancella)
+  function disegnaModuloCatalogo() {
+    const [idGalleria, n] = moduloAperto.chiave.split(':');
+    const pacchetto = galleriaCatalogo(idGalleria);
+    const indice = Number(n);
+    const modulo = pacchetto?.moduli[indice];
+    if (!modulo) { chiudiModulo(false); return; }
+    const cartellaModulo = cartellaDi(pacchetto, modulo);
+    const nuovo = nuovoModulo(pacchetto, modulo);
+    const usatoIn = negoziDel(pacchetto, modulo);
+    const contenitore = $('modulo');
+    contenitore.replaceChildren();
+
+    const percorso = nodo('p', 'percorso');
+    ['Moduli', nuovo ? 'Nuovi' : `Sorgenti ${sigla(pacchetto.negozio)}`, pacchetto.titolo || pacchetto.nome, modulo.titolo].forEach((parte, i) => {
+      if (i) percorso.append(nodo('i', '', '›'));
+      percorso.append(i === 3 ? nodo('b', '', parte) : document.createTextNode(parte));
+    });
+    contenitore.append(percorso);
+
+    const griglia = nodo('div', 'modulo-griglia');
+    const anteprima = nodo('div', 'modulo-anteprima');
+    anteprima.dataset.tipo = pacchetto.tipo;
+    anteprima.append(widgetCatalogo(pacchetto, modulo, indice, indice + 1, true));
+    const dettagli = nodo('div');
+    const info = nodo('dl', 'info');
+    const voce = (titolo, ...contenuto) => { info.append(nodo('dt', '', titolo)); const dd = nodo('dd'); dd.append(...contenuto); info.append(dd); return dd; };
+    const statoTesto = nodo('span', 'stato');
+    statoTesto.append(nodo('span', `spia${usatoIn.length ? '' : ' libero'}`),
+      usatoIn.length ? `usato in ${usatoIn.map(nomeNegozio).join(', ')}` : 'non associato: non è in nessuna dashboard');
+    voce('stato', statoTesto);
+    if (modulo.link) {
+      const apri = nodo('a', '', `${cartellaModulo}/${modulo.link} ↗`);
+      apri.href = `${cartellaModulo}/${modulo.link}`;
+      apri.target = '_blank';
+      apri.rel = 'noopener';
+      voce('pagina', apri);
+    }
+    if (modulo.tipo) voce('tipo', modulo.tipo);
+    voce('galleria', `${pacchetto.nome} (${pacchetto.tipo})`);
+    voce('origine', nuovo ? (cartellaModulo === 'moduli' ? 'nuovo modulo, in lavorazione nella cartella moduli/' : 'modulo aggiunto al set')
+      : `sorgente: set di partenza di ${nomeNegozio(pacchetto.negozio)}`);
+    if (modulo.specifiche?.length) voce('specifiche', modulo.specifiche.join(' · '));
+    dettagli.append(info);
+
+    // i negozi, con le spunte
+    const azioni = nodo('div', 'azioni-modulo');
+    const blocco = nodo('div', 'azione');
+    const associabile = ASSOCIABILI.includes(pacchetto.tipo) && Boolean(modulo.link) && !modulo.prossimamente;
+    const spunte = nodo('div', 'spunte');
+    Negozi.installati.forEach(negozio => {
+      const usato = usatoIn.includes(negozio);
+      // il negozio del set di partenza resta: il set legge le sue schede da quella dashboard (non per i moduli aggiunti)
+      const partenza = negozio === pacchetto.negozio && !modulo.aggiunto;
+      const riga = nodo('label');
+      const spunta = nodo('input');
+      spunta.type = 'checkbox';
+      spunta.checked = usato;
+      spunta.disabled = !associabile || partenza || !SCRIVIBILE;
+      const nota = !associabile ? 'non associabile da qui'
+        : partenza ? 'set di partenza: il modulo resta nella sua dashboard'
+        : usato ? (negozio === cartellaModulo ? 'nella dashboard' : 'clone nella cartella del negozio: togliendo la spunta si cancella')
+        : (negozio === cartellaModulo ? 'spuntando: scheda nella dashboard' : `spuntando: clone in ${negozio}/ e scheda nella dashboard`);
+      riga.append(spunta, nodo('span', 'negozio-nome', nomeNegozio(negozio)), nodo('span', 'negozio-nota', nota));
+      spunta.addEventListener('change', () => associaCatalogo(pacchetto, modulo, cartellaModulo, negozio, spunta));
+      spunte.append(riga);
+    });
+    blocco.append(nodo('h4', '', 'negozi'),
+      nodo('p', '', associabile ? 'spunta un negozio per mettere il modulo nella sua dashboard (scrive nella cartella del progetto collegata, poi commit)'
+        : 'etichette DYMO e moduli senza pagina per ora non si associano da qui'), spunte);
+    azioni.append(blocco);
+    dettagli.append(azioni);
+    griglia.append(anteprima, dettagli);
+    contenitore.append(griglia);
+  }
+
+  async function associaCatalogo(pacchetto, modulo, cartellaModulo, negozio, spunta) {
+    const voglio = spunta.checked;
+    spunta.checked = !voglio;   // finché non è scritto
+    try { await collega(); } catch (errore) {
+      esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+      return;
+    }
+    if (!voglio && negozio !== cartellaModulo
+      && !window.confirm(`Togliere ${modulo.titolo} da ${nomeNegozio(negozio)}?\n\nLa sua scheda esce dalla dashboard e il clone della pagina nella cartella ${negozio}/ viene cancellato, con le immagini copiate per lui.`)) return;
+    try {
+      const dati = { modulo, tipo: pacchetto.tipo, cartella: cartellaModulo, negozio, avviso: esito };
+      if (voglio) await Associa.associa(progetto, dati);
+      else await Associa.togli(progetto, dati);
+      delete negozi[negozio];   // il diagramma del negozio si rilegge
+      await caricaCatalogo();
+      esito(`${modulo.titolo} ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${nomeNegozio(negozio)}. ricorda il commit per pubblicarlo`, 'ok');
+    } catch (errore) {
+      if (errore.name === 'AbortError') esito('cartella non collegata: nessuna modifica', 'nota');
+      else { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+    }
+    ridisegna();
   }
 
   // si parte dal negozio ricordato in questa scheda del browser (o dal primo)

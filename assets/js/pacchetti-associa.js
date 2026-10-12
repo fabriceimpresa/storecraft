@@ -17,7 +17,9 @@
    cartellini). Le funzioni sul testo non toccano i file: le usa anche la prova da riga di comando.
 
    Uso (testo):
-     Associa.usato(testoDashboard, negozio, cartella, pagina)      true se la dashboard usa il modulo (sua scheda o copia)
+     Associa.usato(testoDashboard, negozio, cartella, pagina)      true se la dashboard usa il modulo (sua scheda o copia);
+                                         pagina senza parametri: anche le schede con i parametri (etichette.html?label=…);
+                                         il link intero di un modulo (con ?label=…): solo quella scheda
      Associa.aggiungiScheda(testoDashboard, tipo, scheda)          nuovo testo con la scheda in fondo alla sezione
      Associa.togliScheda(testoDashboard, negozio, cartella, pagina) nuovo testo senza la scheda del modulo
      Associa.adattaPagina(html, da, a, origine)                    { html, risorse: [{ cartella, file }] } da copiare
@@ -119,9 +121,13 @@
     return elenco;
   }
 
-  const suaScheda = (scheda, negozio, cartella, nome) =>
-    (negozio === cartella && new RegExp(`link:\\s*'${nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`).test(scheda.testo))
-    || scheda.testo.includes(`origine: '${cartella}/${nome}'`);
+  // nome della pagina (es. etichette.html): vale anche la scheda con i parametri nel link (etichette.html?label=…);
+  // link con i parametri (es. etichette.html?label=lastchance): solo la scheda con quel link, così ogni etichetta conta da sé
+  const suaScheda = (scheda, negozio, cartella, nome) => {
+    const fine = nome.includes('?') ? "'" : "(?:'|\\?)";
+    const link = new RegExp(`link:\\s*'${nome.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${fine}`);
+    return (negozio === cartella && link.test(scheda.testo)) || scheda.testo.includes(`origine: '${cartella}/${pagina(nome)}'`);
+  };
 
   function trovaScheda(testo, negozio, cartella, nome) {
     for (const voce of sezioni(testo)) {
