@@ -8,6 +8,7 @@ Negozi.registra('luxury', {
   logoSplashLarghezza: 150,
   // indirizzo del negozio e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI), lo stesso della dashboard
   indirizzo: 'VIA DEL CORSO 15',
+  indirizzoBreve: 'CORSO 15',   // nel menu da computer, più stretto
   logoMenu: 'img/luxury/logo-lxry-orizzontale.png',
   logoMenuLarghezza: 185,
   // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport)

@@ -2,16 +2,16 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-36"></script>
-  <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Gestione negozi): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-36"></script>
+  <script src="assets/js/negozi.js?v=20261012-48"></script>
+  <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Gestione pagine): Associa.scegliProgetto -->
+  <script src="assets/js/pacchetti-associa.js?v=20261012-48"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
   <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
        e splash page. Nella copia per un cliente (installati.js con copiaCliente) mostra solo Importa e Gestisci loghi
        ufficiali, per aggiornare i menu BRAND di quel cliente senza toccare il progetto madre. Raccoglie l'importazione e la gestione dei loghi ufficiali
-       (logoimport.html, logogestione.html), la guida tecnica (guida-componenti.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
+       (logoimport.html, logogestione.html), la guida tecnica (guida-componenti.html), i negozi con il loro diagramma (gestione-negozi.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
        Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
@@ -193,7 +193,25 @@
     .indietro[hidden] { display: none; }
 
     .frame { overflow: hidden; }
+    /* solo Gestione negozi: la cornice cambia larghezza con un accenno di animazione, rapido, quando si apre; mentre la
+       finestra cambia misura, con un movimento lento e graduale (classe dilata). Le altre sezioni senza animazione, come prima */
+    @media (prefers-reduced-motion: no-preference) {
+      .frame[data-vista="negozi"] { transition: width .18s ease-out; }
+      /* Gestione negozi, mentre la finestra si stringe o si allarga: la cornice si espande piano, gradualmente */
+      .frame.dilata { transition: width .55s cubic-bezier(.2, .8, .2, 1); }
+    }
     .frame.con-sezione { width: min(1120px, 100%); }
+    /* Gestione negozi: la cornice un poco più larga, così nei caroselli del diagramma entrano almeno cinque widget */
+    .frame.con-sezione[data-vista="negozi"] { width: min(1440px, 100%); }
+    /* Gestione negozi: niente logo, per dare spazio al diagramma; il titolo con la sua grandezza e i suoi spazi di sempre */
+    .frame[data-vista="negozi"] .brand { display: none; }
+    /* monitor 16:9 grandi (1920 e 2560 px): un po' di spazio in più */
+    @media (min-width: 1800px) { .frame.con-sezione[data-vista="negozi"] { width: min(1780px, 100%); } }
+    @media (min-width: 2400px) { .frame.con-sezione[data-vista="negozi"] { width: min(2300px, 100%); } }
+    /* schermi ultra larghi (finestra 21:9, es. 2560 × 1080 o 3440 × 1440, e 32:9, es. 3840 × 1080 o 5120 × 1440): la cornice di
+       Gestione negozi si allarga ancora parecchio prima di fermarsi; sotto i 1800 px di finestra resta a 1440 px */
+    @media (min-aspect-ratio: 20/9) and (min-width: 2000px) { .frame.con-sezione[data-vista="negozi"] { width: min(2700px, 100%); } }
+    @media (min-aspect-ratio: 30/9) and (min-width: 3000px) { .frame.con-sezione[data-vista="negozi"] { width: min(3400px, 100%); } }
     .menu[hidden] { display: none; }
     /* promemoria sotto il menu, come le note // delle sezioni: piccolo, nell'oro spento della cornice */
     .nota-browser { margin: 26px auto 0; max-width: 420px; color: var(--frame); font: 400 0.68rem/1.6 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: 0.04em; text-align: center; }
@@ -279,7 +297,8 @@
     <h1 class="title" id="titolo">Area operatore</h1>
 
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
-      <button class="voce" type="button" data-vista="struttura">Gestione negozi</button>
+      <button class="voce" type="button" data-vista="negozi">Gestione negozi</button>
+      <button class="voce" type="button" data-vista="struttura">Gestione pagine</button>
       <button class="voce" type="button" data-vista="pacchetti">Gestione pacchetti</button>
       <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
       <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
@@ -290,9 +309,12 @@
       <p class="nota-browser">// solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto</p>
     </nav>
 
-    <!-- Sezioni: Gestione negozi e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
+    <!-- Sezioni: Gestione negozi, Gestione pagine e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
+    <section class="vista" data-vista="negozi" hidden>
+      <iframe data-src="gestione-negozi.html?incorporata" title="Gestione negozi"></iframe>
+    </section>
     <section class="vista" data-vista="struttura" hidden>
-      <iframe data-src="schema-pagine.html?incorporata" title="Gestione negozi"></iframe>
+      <iframe data-src="schema-pagine.html?incorporata" title="Gestione pagine"></iframe>
     </section>
     <section class="vista" data-vista="pacchetti" hidden>
       <iframe data-src="pacchetti.html?incorporata" title="Gestione pacchetti"></iframe>
@@ -306,7 +328,7 @@
 
     <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Prepara copia per un cliente">
       <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
-        le schede dei negozi, con installati.js scritto per loro, e quest'area ridotta: gestione negozi (con il ghost delle pagine) e loghi ufficiali
+        le schede dei negozi, con installati.js scritto per loro, e quest'area ridotta: gestione negozi e gestione pagine (ghost, ordine e copie dei moduli) e loghi ufficiali
         (importa e gestisci), per aggiornare i menu BRAND del cliente. Restano fuori Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
         di lavoro, le pagine di prova _*, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
@@ -349,7 +371,7 @@
 
   <script>
     // ----- Viste delle sezioni dentro la cornice -----
-    // #struttura, #pacchetti, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    // #negozi, #struttura, #pacchetti, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
     // Cartella del progetto collegata per scrivere (Gestione pacchetti): la sceglie questa pagina, come Prepara copia, e
     // le sezioni nel riquadro la usano (window.parent.collegaProgetto); resta collegata finché la pagina è aperta
     window.progettoCollegato = null;
@@ -370,6 +392,14 @@
         };
       } catch { fatto(null); }
     });
+    // senza chiedere niente: la cartella già collegata, o quella ricordata se il browser dà ancora il permesso di
+    // modificare i file (le sezioni la usano all'apertura, così il pulsante è già «✓ cartella collegata»); null altrimenti
+    window.progettoSenzaChiedere = async () => {
+      if (window.progettoCollegato) return window.progettoCollegato;
+      const ricordata = await cartellaRicordata('leggi');
+      if (ricordata && await ricordata.queryPermission({ mode: 'readwrite' }).catch(() => 'denied') === 'granted') window.progettoCollegato = ricordata;
+      return window.progettoCollegato;
+    };
     window.collegaProgetto = async (passaggio = () => {}) => {
       if (window.progettoCollegato) return window.progettoCollegato;
       const ricordata = await cartellaRicordata('leggi');
@@ -384,7 +414,7 @@
       return window.progettoCollegato;
     };
 
-    const VISTE = { struttura: 'Gestione negozi', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    const VISTE = { negozi: 'Gestione negozi', struttura: 'Gestione pagine', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -393,10 +423,10 @@
     const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
     let vistaAperta = null;
 
-    // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Gestione negozi,
+    // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Gestione pagine,
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
-      // Gestione negozi resta (anche nella copia si mettono e tolgono le pagine in ghost)
+      // Gestione negozi e Gestione pagine restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
       menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
       // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
       delete VISTE.pacchetti;
@@ -439,6 +469,11 @@
           Promise.all(voci.map(voce => voce.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-6px)' }],
             { duration: 200, delay: voce.dataset.vista === nuova ? 120 : 0, easing: 'ease-in', fill: 'forwards' }).finished))]);
       }
+      // aperta subito (indirizzo con #sezione): la cornice è già larga, senza la transizione della larghezza
+      if (subito) {
+        cornice.style.transition = 'none';
+        requestAnimationFrame(() => requestAnimationFrame(() => { cornice.style.transition = ''; }));
+      }
       (anima ? adatta : cambia => cambia())(() => {
         document.querySelectorAll('.vista').forEach(vista => {
           vista.hidden = vista.dataset.vista !== nuova;
@@ -448,6 +483,7 @@
         menu.hidden = Boolean(nuova);
         // con una sezione aperta la cornice è più larga (spazio per le pagine dei loghi); tornando al menu riprende la sua
         cornice.classList.toggle('con-sezione', Boolean(nuova));
+        if (nuova) cornice.dataset.vista = nuova; else delete cornice.dataset.vista;
         cornice.style.width = '';
         indietro.hidden = !nuova;
       });
@@ -510,6 +546,24 @@
     window.addEventListener('hashchange', () => apri(location.hash.slice(1)));
     if (VISTE[location.hash.slice(1)]) apri(location.hash.slice(1), true);
 
+    // cambiando la finestra la cornice torna alla sua larghezza (la larghezza in più data a una sezione si ricalcola: le
+    // sezioni nel riquadro rimandano le loro misure), così stringendo e riallargando la finestra la cornice si riallarga
+    let attesaFinestra = 0, attesaDilata = 0;
+    window.addEventListener('resize', () => {
+      // Gestione negozi: mentre la finestra cambia misura la cornice si espande piano (dilata), poi torna l'accenno rapido
+      if (vistaAperta === 'negozi') {
+        cornice.classList.add('dilata');
+        clearTimeout(attesaDilata);
+        attesaDilata = setTimeout(() => cornice.classList.remove('dilata'), 900);
+      }
+      clearTimeout(attesaFinestra);
+      attesaFinestra = setTimeout(() => {
+        if (!cornice.style.width) return;
+        cornice.style.width = '';
+        document.querySelectorAll('.vista:not([hidden]) iframe').forEach(riquadro => riquadro.contentWindow?.dispatchEvent(new Event('resize')));
+      }, 150);
+    });
+
     // le pagine dei loghi comunicano la loro altezza (operatore-sezione.js): riquadro e cornice si adattano
     window.addEventListener('message', evento => {
       if (evento.origin !== location.origin || !evento.data?.sezioneOperatore) return;
@@ -517,7 +571,8 @@
         if (riquadro.contentWindow !== evento.source) return;
         // contenuto più largo del riquadro: la cornice si allarga quanto serve (fino alla finestra) invece di mostrare barre
         const piuLargo = (evento.data.larghezza || 0) - riquadro.clientWidth;
-        if (piuLargo > 0 && !riquadro.closest('.vista').hidden) cornice.style.width = `min(${cornice.offsetWidth + piuLargo + 8}px, 100%)`;
+        // (non Gestione negozi: il suo diagramma si adatta da solo alla cornice, i caroselli scorrono)
+        if (piuLargo > 0 && !riquadro.closest('.vista').hidden && vistaAperta !== 'negozi') cornice.style.width = `min(${cornice.offsetWidth + piuLargo + 8}px, 100%)`;
         const altezza = `${Math.max(120, evento.data.altezza)}px`;
         if (riquadro.style.height === altezza) return;
         if (riquadro.closest('.vista').hidden) riquadro.style.height = altezza;
@@ -661,9 +716,9 @@
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
-      // non Gestione negozi, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
+      // non Gestione pagine, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
       const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'Storecraft Aggiornamento.html'];
-      riga('// radice: splash page e area operatore ridotta: gestione negozi e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
+      riga('// radice: splash page e area operatore ridotta: gestione pagine e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
         await copiaFile(voce, destinazione, nome);

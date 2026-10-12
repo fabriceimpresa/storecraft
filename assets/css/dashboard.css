@@ -25,12 +25,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta San
 .mobile-nav-toggle { display: none; }
 .mobile-brand-footer { display: none; }
 .system-fab { display: none; }
-/* Menu di sistema, da computer e tablet (sul telefono le regole più sotto): a destra di PROFILO UTENTE il logo dorato del
-   negozio attivo al posto della sigla; nella lista NEGOZI i nomi (su più righe quando sono di più parole, es. LUXURY /
-   OUTLET) e a destra i loghi, dorato l'attivo con l'oro del marchio STORE // CRAFT e grigi gli altri, al posto del
-   rettangolino «LXRY · ATTIVO» e della freccia › (logoMenu della scheda del negozio, dashboard.js) */
-.system-store-indirizzo, .system-store-status, .system-store-sigla, .system-store-freccia { display: none; }
-.system-store-name { width: min-content; }
+/* Menu di sistema, da computer e tablet come sul telefono (le regole del telefono più sotto): a destra di PROFILO UTENTE il
+   logo dorato del negozio attivo al posto della sigla; nella lista NEGOZI per ogni negozio l'indirizzo (VIA DEL CORSO 15…)
+   al posto del nome e a destra il logo, dorato l'attivo con l'oro del marchio STORE // CRAFT e grigi gli altri, al posto
+   del rettangolino «LXRY · ATTIVO» e della freccia › (indirizzo e logoMenu della scheda del negozio, dashboard.js) */
+.system-store-name, .system-store-status, .system-store-sigla, .system-store-freccia { display: none; }
+.system-store-indirizzo { display: none; }   /* da computer l'indirizzo breve, «CORSO 15»; sul telefono quello intero */
+.system-store-indirizzo-breve { white-space: nowrap; }
 .system-store-logo { display: block; flex: none; width: calc(var(--logo-larghezza, 185px) * .36); max-width: 50%; height: auto; max-height: 16px; object-fit: contain; filter: brightness(0) invert(.5); opacity: .75; transition: opacity .16s ease; }
 .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-logo { opacity: 1; }
 :is(.system-store-choice.is-active, .system-store-current) .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
@@ -993,6 +994,7 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
      rettangolino «LXRY · ATTIVO» e della freccia ›; a destra di PROFILO UTENTE il logo dorato al posto della sigla */
   body > .system-menu :is(.system-store-status, .system-store-sigla, .system-store-name, .system-store-freccia) { display: none; }
   body > .system-menu .system-store-indirizzo { display: inline; }
+  body > .system-menu .system-store-indirizzo-breve { display: none; }
   body > .system-menu .system-store-logo { display: block; flex: none; width: calc(var(--logo-larghezza, 185px) * .45); max-width: 45%; height: auto; max-height: 22px; object-fit: contain; filter: brightness(0) invert(.5); opacity: .75; transition: opacity .16s ease; }
   body > .system-menu .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-logo { opacity: 1; }
   body > .system-menu :is(.system-store-choice.is-active, .system-store-current) .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
@@ -1432,29 +1434,48 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
    post-it a ventaglio con i titoli delle ultime note: post-it classici, quadrati, con la fascia adesiva un poco più
    scura in alto e l'angolo in basso a destra appena sollevato (ombra corta), il numero di note e il pulsante che apre
    la bacheca a schermo intero (bacheca.html). Al passaggio del mouse il ventaglio si apre. */
-#tools .widget-bacheca { overflow: hidden; }
-/* titolo «La tua Bacheca»: il widget è speciale, quindi il titolo è scritto a mano come il promemoria della pagina Bacheca
-   (.bc-info: Caveat 400, 2,15rem; Google Fonts nelle dashboard e nella vetrina di Gestione pacchetti), centrato, in oro; vale in
-   tutti gli aspetti e i temi, quindi più forte delle regole dei titoli dei widget di theme.css (dal 12 ottobre 2026) */
-#tools .widget-bacheca { position: relative; }
+/* il widget è speciale: dorato come le schede delle Promo Stagionali (bordo oro, fondo bruno caldo, alone oro che si
+   accende al passaggio del mouse; nel tema chiaro bordo oro dei cartelli con un filetto attorno e un'ombra corta) */
+#tools #widget-bacheca {
+  overflow: hidden;
+  border: 1px solid var(--gold-border, #d4a373) !important;
+  background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%) !important;
+  box-shadow: 0 0 15px rgba(212, 163, 115, .25);
+}
+#tools #widget-bacheca:hover { border-color: var(--gold, #e5ba73) !important; box-shadow: 0 0 25px rgba(229, 186, 115, .45); }
+:root[data-interface-theme="light"] #tools #widget-bacheca {
+  border-color: #b48b37 !important;
+  background: var(--interface-surface) !important;
+  box-shadow: 0 0 0 1px rgba(180, 139, 55, .35), 0 1px 3px rgba(40, 34, 28, .2);
+}
+:root[data-interface-theme="light"] #tools #widget-bacheca:hover { border-color: #9c7629 !important; box-shadow: 0 0 0 2px rgba(180, 139, 55, .55), 0 2px 4px rgba(40, 34, 28, .24); }
+/* titolo «LA TUA BACHECA» nello stile di STORE // CRAFT: Cinzel in oro, maiuscolo e spaziato, al centro tra due linee
+   sottili come la scritta del banner in alto; vale in tutti gli aspetti e i temi, quindi più forte delle regole dei
+   titoli dei widget di theme.css (dal 12 ottobre 2026, dopo le prove con i caratteri scritti a mano) */
 #tools #widget-bacheca h3.bacheca-titolo {   /* due id: più forte delle regole :root[…] body #tools .widget h3 */
   justify-content: center;
-  margin: -8px 0 4px;
-  padding: 0 44px;   /* lo spazio della campanella delle note nuove, ai due lati perché il titolo resti centrato */
+  gap: 14px;
+  margin: 0 0 16px;
+  padding: 0;
   white-space: nowrap;
   color: var(--interface-accent, var(--accent)) !important;
-  font-family: 'Caveat', cursive !important;
-  font-size: 2.15rem !important;
-  font-weight: 400 !important;
-  line-height: 1.1;
-  letter-spacing: 0 !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3;
+  letter-spacing: .2em !important;
   text-align: center;
-  text-transform: none !important;
+  text-transform: uppercase !important;
 }
+#tools #widget-bacheca h3.bacheca-titolo::before,
+#tools #widget-bacheca h3.bacheca-titolo::after { content: ''; flex: 1; max-width: 42px; height: 1px; background: currentColor; opacity: .45; }
+#tools #widget-bacheca h3.bacheca-titolo::after { margin-left: -.2em; }   /* la spaziatura dopo l'ultima lettera non allontana la linea */
 :root[data-interface-theme="light"] #tools #widget-bacheca h3.bacheca-titolo { color: #b48b37 !important; }   /* l'oro dei cartelli */
+/* la vetrina dei post-it, con gli avvisi sul suo angolo in alto a destra */
+.bacheca-vetrina { position: relative; }
 /* avvisi, in alto a destra, uno sotto l'altro: note nuove (campanella) e comunicazioni ufficiali nuove (megafono), rossi
    come il cestino della Bacheca, ognuno con il numero; compaiono con un piccolo scatto */
-.bacheca-avvisi { position: absolute; top: 16px; right: 16px; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.bacheca-avvisi { position: absolute; top: 8px; right: 8px; z-index: 1; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
 .bacheca-avviso {
   display: inline-flex;
   align-items: center;
@@ -1475,7 +1496,7 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 @keyframes bacheca-campanella { 0%, 60%, 100% { transform: rotate(0); } 15% { transform: rotate(16deg); } 30% { transform: rotate(-14deg); } 45% { transform: rotate(8deg); } }
 @media (prefers-reduced-motion: reduce) { .bacheca-avviso, .bacheca-avviso svg { animation: none; } }
 /* fondo come le anteprime delle schede (.preview): scuro nel tema scuro, beige del menu laterale nel chiaro */
-.bacheca-mazzo { position: relative; height: 128px; margin: 16px 0 12px; overflow: hidden; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; }
+.bacheca-mazzo { position: relative; height: 128px; margin: 0; overflow: hidden; background: #0a0908; border: 1px solid var(--border); border-radius: 4px; }
 :root[data-interface-theme="light"] .bacheca-mazzo { background: var(--interface-sidebar); }
 .bacheca-foglio {
   position: absolute;
@@ -1511,16 +1532,38 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 }
 #tools .widget-bacheca:hover .bacheca-foglio { transform: rotate(calc(-11deg + var(--i) * 11deg)) translateY(-4px); }
 :root[data-interface-theme="light"] .bacheca-foglio { box-shadow: 0 1px 3px rgba(40, 34, 28, .3); }
-/* sotto il mazzo: la descrizione (sempre), le note nuove da leggere (in rosso, solo quando ci sono) e il totale di note e
-   comunicazioni in bacheca (sempre) */
-.bacheca-descrizione { margin: 0 0 6px; color: var(--text); font-size: 0.8rem; line-height: 1.4; }
-.bacheca-nuove { margin: 0 0 4px; color: #e07a6b; font-size: 0.78rem; font-weight: 700; }
-.bacheca-nuove[hidden] { display: none; }
+/* sotto la vetrina, ben spaziati: la descrizione (sempre, al centro), le novità come piccole righe con la puntina rossa (testo rosso
+   le comunicazioni e le note nuove da leggere, oro le comunicazioni recenti; il riquadro sparisce quando non ce ne sono)
+   e in fondo al widget, staccato da una linea oro sottile, il totale di note e comunicazioni (sempre) */
+.bacheca-descrizione { margin: 16px 0; color: var(--text-muted); font-size: 0.8rem; line-height: 1.45; text-align: center; }
+.bacheca-stato { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 0 0 16px; }
+.bacheca-stato:not(:has(p:not([hidden]))) { display: none; }
+.bacheca-nuove, .bacheca-recenti { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 0.8rem; font-weight: 700; }
+/* davanti a ogni riga una puntina rossa, come quelle che fermavano i post-it: testa lucida con il riflesso e l'ago */
+.bacheca-nuove::before, .bacheca-recenti::before {
+  content: '';
+  flex: none;
+  width: 13px;
+  height: 15px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='16' viewBox='0 0 14 16'%3E%3Cdefs%3E%3CradialGradient id='g' cx='.35' cy='.3' r='.75'%3E%3Cstop offset='0' stop-color='%23ff9a8a'/%3E%3Cstop offset='.45' stop-color='%23d0392b'/%3E%3Cstop offset='1' stop-color='%237d1a12'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M6.3 9.5h1.4L7.2 15.6h-.4z' fill='%23a9a49c'/%3E%3Ccircle cx='7' cy='6' r='5' fill='url(%23g)'/%3E%3C/svg%3E") center / contain no-repeat;
+  transform: rotate(-12deg);
+}
+.bacheca-nuove { color: #e07a6b; }
 :root[data-interface-theme="light"] .bacheca-nuove { color: #a8432e; }
-/* comunicazioni ufficiali recenti (lette, nelle 2 settimane dalla pubblicazione): promemoria in oro */
-.bacheca-recenti { margin: 0 0 4px; color: var(--interface-accent, var(--accent)); font-size: 0.78rem; font-weight: 700; }
-.bacheca-recenti[hidden] { display: none; }
+.bacheca-recenti { color: var(--interface-accent, var(--accent)); }
 :root[data-interface-theme="light"] .bacheca-recenti { color: #8a6a35; }
-.bacheca-conteggio { margin: 0 0 14px; color: var(--text-muted); font-size: 0.78rem; }
-#tools .widget-bacheca .tool-btn { margin-top: auto; }   /* in fondo, come Azzera IVA e Scarica QR dei widget accanto */
+:is(.bacheca-nuove, .bacheca-recenti)[hidden] { display: none; }
+.bacheca-conteggio {
+  margin: auto 0 0;   /* in fondo al widget */
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--interface-accent, var(--accent)) 30%, transparent);
+  color: var(--interface-accent, var(--accent));
+  font: 600 0.72rem 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+:root[data-interface-theme="light"] .bacheca-conteggio { color: #8a6a35; border-top-color: rgba(180, 139, 55, .35); }
+#tools .widget-bacheca { cursor: pointer; }   /* tutto il widget apre la Bacheca */
+#tools .widget-bacheca:focus-visible { outline: 2px solid var(--interface-accent-bright, var(--gold)); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .bacheca-foglio { transition: none; } }

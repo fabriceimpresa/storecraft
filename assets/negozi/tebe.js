@@ -8,6 +8,7 @@ Negozi.registra('tebe', {
   logoSplashLarghezza: 132,
   // indirizzo del negozio e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI), lo stesso della dashboard
   indirizzo: 'VIA DEL CORSO 269',
+  indirizzoBreve: 'CORSO 269',   // nel menu da computer, più stretto
   logoMenu: 'img/tebe/tebeblack.png',
   logoMenuLarghezza: 205,
   // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport)

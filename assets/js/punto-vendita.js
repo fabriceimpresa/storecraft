@@ -28,6 +28,7 @@
       larghezzaLogo: scheda.logoSplashLarghezza || 150,
       // indirizzo e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI della dashboard); senza, nome e logo della splash
       indirizzo: scheda.indirizzo || scheda.nome,
+      indirizzoBreve: scheda.indirizzoBreve || scheda.indirizzo || scheda.nome,
       logoMenu: new URL(`assets/${scheda.logoMenu || scheda.logoSplash}`, RADICE).href,
       larghezzaLogoMenu: scheda.logoMenuLarghezza || scheda.logoSplashLarghezza || 150,
       pronto: true

@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-36"></script>
+  <script src="assets/js/negozi.js?v=20261012-48"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261012-36"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261012-48"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-36"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-36"></script>
+  <script src="assets/js/pacchetti.js?v=20261012-48"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261012-48"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261012-36"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261012-36"></script>
+  <script src="assets/js/admin-negozio.js?v=20261012-48"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261012-48"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -34,8 +34,9 @@
     h1 { margin: 0; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
     h1::before { content: '> '; color: var(--oro); }
     p { margin: 0; }
-    /* totali del catalogo: piccola casella nera al centro, in fondo alla pagina, con il testo verde da terminale */
-    .riga-stato { width: fit-content; margin: 64px auto 0; padding: 6px 12px; background: #0a0908; border: 1px solid var(--bordo);
+    /* totali del catalogo: piccola casella nera al centro, sulla riga subito sotto il titolo (dal 12 ottobre 2026; prima in fondo alla
+       pagina), con il testo verde da terminale */
+    .riga-stato { width: fit-content; margin: 0 auto 22px; padding: 6px 12px; background: #0a0908; border: 1px solid var(--bordo);
       border-radius: 4px; font: 400 11px/1.6 'JetBrains Mono', var(--mono); letter-spacing: .1em; text-transform: uppercase; }
     #stato { color: #8fbf7a; }
 
@@ -107,7 +108,7 @@
       font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
     .cartella button:hover:not(:disabled), .cartella button.collegata { background: var(--oro); color: #121110; }
     .cartella button:disabled { opacity: .35; cursor: default; }
-    /* elimina modulo (solo i moduli creati da Nuovo modulo), rosso come ✕ rimuovi di Gestione negozi */
+    /* elimina modulo (solo i moduli creati da Nuovo modulo), rosso come ✕ rimuovi di Gestione pagine */
     .elimina { margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--bordo); }
     .elimina h4 { margin: 0 0 12px; color: #e07a5f; font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
     .elimina h4::before { content: '// '; }
@@ -122,8 +123,8 @@
     .esito.ok { color: #8fbf7a; }
     .esito.err { color: #e07a5f; }
 
-    /* + nuovo modulo, sotto la pulsantiera a destra */
-    .azioni { display: flex; justify-content: flex-end; margin: 14px 0 -24px; }
+    /* + nuovo modulo, sotto la pulsantiera a sinistra */
+    .azioni { display: flex; justify-content: flex-start; align-items: center; gap: 12px; margin: 38px 0 -12px; }   /* equidistante: 38 px sopra (dalla pulsantiera) e 38 sotto (al primo carosello, che ha 50 px sopra) */
     .nuovo, .cartella .crea { padding: 7px 14px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro);
       font: 400 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
     .nuovo:hover, .nuovo:focus-visible, .cartella .crea:hover:not(:disabled) { background: var(--oro); color: #121110; outline: none; }
@@ -194,7 +195,7 @@
     html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
     html.incorporata .pagina { max-width: none; padding: 0; }
     html.incorporata .torna, html.incorporata header.testa { display: none; }
-    html.incorporata .pulsantiera { margin-top: 16px; }   /* un poco di respiro sotto il titolo della cornice */
+    html.incorporata .riga-stato { margin-top: 8px; }   /* un poco di respiro sotto il titolo della cornice */
 
     @media (max-width: 700px) {
       .pagina { padding: 14px 14px 40px; }
@@ -217,11 +218,13 @@
     <h1>Gestione pacchetti</h1>
   </header>
   <div class="catalogo-vista" id="vista-catalogo">
+    <!-- totali del catalogo, sulla riga subito sotto il titolo -->
+    <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
     <!-- pulsantiera: un gruppo di pacchetti alla volta -->
     <nav class="pulsantiera" role="tablist" aria-label="Gruppi di pacchetti"></nav>
+    <!-- + nuovo modulo, a sinistra -->
     <div class="azioni"><button class="nuovo" type="button" id="apri-nuovo">+ nuovo modulo</button></div>
     <div id="catalogo"></div>
-    <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
   </div>
   <section class="scheda-modulo" id="vista-modulo" hidden aria-label="Scheda del modulo">
     <button class="torna-catalogo" type="button" id="torna-catalogo">← tutti i pacchetti</button>

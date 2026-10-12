@@ -8,6 +8,7 @@ Negozi.registra('ophilya', {
   logoSplashLarghezza: 150,
   // indirizzo del negozio e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI), lo stesso della dashboard
   indirizzo: 'VIA DEL CORSO 268',
+  indirizzoBreve: 'CORSO 268',   // nel menu da computer, più stretto
   logoMenu: 'img/ophilya/ophilyablack.png',
   logoMenuLarghezza: 205,
   // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport): per ora come TEBE

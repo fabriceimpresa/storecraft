@@ -50,10 +50,21 @@
                                          con i layout scelti (moduli: le schede del set da tenere); nella pagina gli altri
                                          layout si nascondono e si apre su uno di quelli scelti
 
-   Ghost (Gestione negozi): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
+   Ghost (Gestione pagine): una pagina in ghost resta nella cartella del negozio ma la sua dashboard non la mostra, né
    come widget né nel menu laterale; le sue schede hanno nascosta: true (dashboard.js le salta).
      Associa.fantasma(testoDashboard, pagina)               true se le schede che aprono la pagina sono in ghost
-     Associa.impostaFantasma(testoDashboard, pagina, sì/no)  nuovo testo con tutte le schede della pagina in ghost o no */
+     Associa.impostaFantasma(testoDashboard, pagina, sì/no)  nuovo testo con tutte le schede della pagina in ghost o no
+
+   Gestione negozi: un modulo alla volta, nella sua galleria (sezione della dashboard, per id; scheda per chiave: link,
+   pdf o titolo).
+     Associa.chiaveScheda(testoScheda)                        la chiave di una scheda
+     Associa.fantasmaScheda(testo, sezione, chiave)            true se quel modulo è in ghost
+     Associa.impostaFantasmaScheda(testo, sezione, chiave, sì/no)  nuovo testo con il solo modulo in ghost o no
+     Associa.ordine(testo, sezione)                            ordine dei widget scritto nella sezione (null: di partenza)
+     Associa.impostaOrdine(testo, sezione, chiavi | null)      nuovo testo con l'ordine (null o quello di partenza: tolto)
+     Associa.schedaDuplicata(testo, sezione, chiave, link, origine)  nuovo testo con la copia dopo l'originale
+     Associa.duplica(progetto, { negozio, sezione, chiave })    copia la pagina (<pagina>-copia.html, un clone) e la scheda
+     Associa.togliDaOrdini(testo, pagina)                      nuovo testo senza le voci della pagina negli ordini */
 (() => {
   const RISORSE = ['img', 'logos', 'thumbnail', 'pdf', 'foto'];
   const virgolette = valore => `'${String(valore).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
@@ -372,10 +383,12 @@
     let testo = await (await leggi(progetto, dashboard)).text();
     // la scheda del clone: quella che apre il clone (il suo nome di file nella cartella del negozio), non la pagina di
     // partenza, che può stare nella stessa cartella (moduli creati da Nuovo modulo)
-    const scheda = trovaScheda(testo, negozio, negozio, nome);
-    if (scheda) {
+    // (tutte quelle che lo aprono: un clone di etichette ne ha una per layout), e la sua voce nell'ordine dei widget
+    if (schedeDellaPagina(testo, nome).length) {
       avviso(`tolgo la scheda dalla dashboard di ${negozio}…`);
-      testo = togliScheda(testo, negozio, negozio, nome);
+      let scheda;
+      while ((scheda = schedeDellaPagina(testo, nome)[0])) testo = togliOggetto(testo, scheda);
+      testo = togliDaOrdini(testo, nome);
       await scriviFile(progetto, dashboard, testo);
     }
     avviso(`cancello ${negozio}/${nome}…`);
@@ -665,7 +678,111 @@ Pacchetti.registra('${galleria}', {
     return testo;
   }
 
-  const Associa = Object.freeze({ rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
+  // ----- Gestione negozi: i moduli di una galleria della dashboard (sezione) uno alla volta -----
+  // Ogni scheda si riconosce dalla sua chiave: il collegamento (link, con l'eventuale ?label=…), il PDF o il titolo.
+  // Ordine dei widget: ordine: [chiavi] nella sezione (dashboard.js mette le schede in quell'ordine, quelle non elencate
+  // in fondo); senza ordine vale quello di partenza, cioè la sequenza delle schede nel file (per i negozi modello
+  // l'ordine originale, per gli altri quello in cui i moduli sono stati aggiunti).
+  const STRINGA_JS = `'(?:[^'\\\\]|\\\\.)*'|"(?:[^"\\\\]|\\\\.)*"`;
+  const valoreStringa = scritta => scritta.slice(1, -1).replace(/\\(.)/g, '$1');
+  function campo(testoScheda, nome) {
+    const trovato = testoScheda.match(new RegExp(`(?:^|[\\s{,])${nome}:\\s*(${STRINGA_JS})`));
+    return trovato ? valoreStringa(trovato[1]) : null;
+  }
+  const chiaveScheda = testoScheda => campo(testoScheda, 'link') || campo(testoScheda, 'pdf') || campo(testoScheda, 'titolo');
+  // la sezione con quell'id: { inizio, fine } dell'oggetto { … } e l'elenco delle sue schede
+  function sezioneConId(testo, id) {
+    const posizione = testo.search(new RegExp(`\\bid:\\s*'${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`));
+    if (posizione < 0) throw new Error(`nella dashboard non c'è la galleria ${id}`);
+    const inizio = testo.lastIndexOf('{', posizione);
+    const fine = chiusura(testo, inizio);
+    const aperta = testo.indexOf('schede: [', inizio) + 'schede: '.length;
+    if (aperta < 'schede: '.length || aperta > fine) throw new Error(`la galleria ${id} non ha schede`);
+    return { inizio, fine, elenco: { inizio: aperta, fine: chiusura(testo, aperta) } };
+  }
+  function schedaConChiave(testo, id, chiave) {
+    const trovata = schede(testo, sezioneConId(testo, id).elenco).find(scheda => chiaveScheda(scheda.testo) === chiave);
+    if (!trovata) throw new Error(`il modulo ${chiave} non è nella galleria ${id}`);
+    return trovata;
+  }
+  // ordine scritto nella sezione (null: quello di partenza)
+  const RIGA_ORDINE = /\n[ \t]*ordine:\s*\[[^\]]*\],?[^\n]*/;
+  function ordine(testo, id) {
+    const { inizio, fine } = sezioneConId(testo, id);
+    const riga = testo.slice(inizio, fine).match(/\n[ \t]*ordine:\s*\[([^\]]*)\]/);
+    return riga ? [...riga[1].matchAll(new RegExp(STRINGA_JS, 'g'))].map(m => valoreStringa(m[0])) : null;
+  }
+  // nuovo testo con l'ordine dei widget della sezione (chiavi; null o l'ordine di partenza: si toglie)
+  function impostaOrdine(testo, id, chiavi) {
+    const { inizio, fine, elenco } = sezioneConId(testo, id);
+    const partenza = schede(testo, elenco).map(scheda => chiaveScheda(scheda.testo));
+    let corpo = testo.slice(inizio, fine + 1).replace(RIGA_ORDINE, '');
+    if (chiavi && chiavi.join('\n') !== partenza.join('\n')) {
+      const posto = corpo.indexOf('schede: [');
+      const riga = corpo.lastIndexOf('\n', posto) + 1;
+      const rientro = corpo.slice(riga, posto);
+      corpo = `${corpo.slice(0, riga)}${rientro}ordine: [${chiavi.map(virgolette).join(', ')}],   // ordine dei widget scelto in Gestione negozi (senza: quello di partenza)\n${corpo.slice(riga)}`;
+    }
+    return testo.slice(0, inizio) + corpo + testo.slice(fine + 1);
+  }
+  // toglie dagli ordini le voci di una pagina (cancellata)
+  function togliDaOrdini(testo, nome) {
+    return testo.replace(/^([ \t]*ordine:\s*\[)([^\]]*)(\])/gm, (tutto, prima, lista, dopo) => prima
+      + [...lista.matchAll(new RegExp(STRINGA_JS, 'g'))].map(m => m[0]).filter(voce => pagina(valoreStringa(voce)) !== nome).join(', ') + dopo);
+  }
+  // ghost di un solo modulo (non di tutte le schede della pagina, come Gestione pagine)
+  function fantasmaScheda(testo, id, chiave) {
+    return /nascosta:\s*true/.test(schedaConChiave(testo, id, chiave).testo);
+  }
+  function impostaFantasmaScheda(testo, id, chiave, nascosta) {
+    const scheda = schedaConChiave(testo, id, chiave);
+    const senza = scheda.testo.replace(/,\s*nascosta:\s*true/, '');
+    const nuova = nascosta ? senza.replace(/\s*\}$/, ', nascosta: true }') : senza;
+    return testo.slice(0, scheda.inizio) + nuova + testo.slice(scheda.fine + 1);
+  }
+  // Duplica un modulo nello stesso negozio e nella stessa galleria: la pagina si copia nella cartella del negozio
+  // (<pagina>-copia.html, un clone con storecraft-origine: si può cancellare) e la scheda entra subito dopo l'originale,
+  // con il titolo «… (copia)», non in ghost; se la galleria ha un ordine, la copia ci entra dopo l'originale.
+  // { testo, scheda } sul testo; duplica() scrive i file
+  function schedaDuplicata(testo, id, chiave, link, origine) {
+    const scheda = schedaConChiave(testo, id, chiave);
+    const titolo = campo(scheda.testo, 'titolo') || 'Modulo';
+    let nuova = scheda.testo.replace(/,\s*nascosta:\s*true/, '').replace(/,\s*origine:\s*'(?:[^'\\]|\\.)*'/, '')
+      .replace(new RegExp(`(link:\\s*)(${STRINGA_JS})`), (tutto, prima) => `${prima}${virgolette(link)}`)
+      .replace(new RegExp(`(titolo:\\s*)(${STRINGA_JS})`), (tutto, prima) => `${prima}${virgolette(`${titolo} (copia)`)}`)
+      .replace(/\s*\}$/, `, origine: ${virgolette(origine)} }`);
+    const rientro = testo.slice(testo.lastIndexOf('\n', scheda.inizio) + 1, scheda.inizio);
+    let nuovo = `${testo.slice(0, scheda.fine + 1)},\n${rientro}${nuova}${testo.slice(scheda.fine + 1)}`;
+    const voci = ordine(nuovo, id);
+    if (voci) {
+      const dopo = voci.indexOf(chiave);
+      voci.splice(dopo < 0 ? voci.length : dopo + 1, 0, link);
+      nuovo = impostaOrdine(nuovo, id, voci);
+    }
+    return nuovo;
+  }
+  async function duplica(progetto, { negozio, sezione, chiave, avviso = () => {} }) {
+    const dashboard = `assets/negozi/${negozio}-dashboard.js`;
+    const testo = await (await leggi(progetto, dashboard)).text();
+    const link = campo(schedaConChiave(testo, sezione, chiave).testo, 'link');
+    if (!link) throw new Error('si duplicano solo i moduli con una pagina (non i PDF né quelli in arrivo)');
+    const nome = pagina(link);
+    let libero = nome.replace(/\.html$/, '-copia.html');
+    for (let n = 2; await esiste(progetto, `${negozio}/${libero}`); n++) libero = nome.replace(/\.html$/, `-copia-${n}.html`);
+    avviso(`copio ${negozio}/${nome} in ${negozio}/${libero}…`);
+    const sorgente = await (await leggi(progetto, `${negozio}/${nome}`)).text();
+    // stesso negozio: niente risorse da copiare (l'elenco dei file copiati è vuoto)
+    const { html } = adattaPagina(sorgente, negozio, negozio, `${negozio}/${nome}`);
+    await scriviFile(progetto, `${negozio}/${libero}`, html
+      .replace(/<title>([^<]*)<\/title>/i, (tutto, titolo) => `<title>${titolo} (copia)</title>`)
+      .replace(/(<meta name="storecraft-origine" content="[^"]*">)/, '$1\n  <meta name="storecraft-copiati" content="">'));
+    const nuovoLink = libero + (link.includes('?') ? `?${link.split('?')[1]}` : '');
+    avviso(`aggiungo la copia alla galleria ${sezione} di ${negozio}…`);
+    await scriviFile(progetto, dashboard, schedaDuplicata(testo, sezione, chiave, nuovoLink, `${negozio}/${nome}`));
+    return { pagina: `${negozio}/${libero}`, chiave: nuovoLink };
+  }
+
+  const Associa = Object.freeze({ chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();

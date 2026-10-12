@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <script src="assets/js/negozi.js?v=20261012-48"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gestione negozi</title>
+  <link rel="icon" href="assets/img/favicon-32.png">
+  <script src="assets/js/operatore-sezione.js?v=20261012-48"></script>
+  <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
+  <script src="assets/js/pacchetti-associa.js?v=20261012-48"></script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
+       dashboard (index.html) e le gallerie della dashboard (le sezioni dei caroselli), ognuna con i suoi moduli in un
+       piccolo carosello. Un clic su un modulo apre la sua scheda: ghost, duplica nella stessa galleria, elimina (solo i
+       cloni), sposta. I moduli si riordinano anche trascinandoli nel carosello; l'ordine si registra nella dashboard
+       (ordine: [...] della sezione) e si può tornare a quello di partenza. Scrive solo nella cartella del progetto
+       collegata (Chrome / Edge sul computer). Si apre dentro la cornice della pagina operatore (?incorporata) o da sola. */
+    :root {
+      --bg: #0d0c0b; --pannello: #151412; --bordo: #2a2723; --testo: #d9d3c7; --tenue: #8f877b;
+      --oro: #d4a373; --oro-chiaro: #e5ba73; --oro-scuro: #8f6a1f;
+      --filo: rgba(212, 163, 115, .42);
+      --verde: #3ddc6e; --ghost: #b9aef0; --rosso: #e07a5f;
+      --mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+      /* misure del diagramma e dei widget */
+      --w-widget: 94px;
+      --spazio-widget: 10px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--testo); font: 300 13px/1.65 var(--mono); letter-spacing: .01em; }
+    a { color: var(--oro); }
+    p { margin: 0; }
+    .pagina { max-width: 1440px; margin: 0 auto; padding: 18px 20px 60px; }
+    .torna { display: inline-block; margin-bottom: 14px; color: var(--tenue); font-size: 11.5px; letter-spacing: .08em; text-decoration: none; }
+    .torna:hover { color: var(--oro); }
+    /* niente logo, per dare spazio al diagramma: il titolo, poi i totali e i negozi */
+    header.testa { display: flex; align-items: center; gap: 22px; padding: 0 0 20px; margin-bottom: 42px; border-bottom: 1px solid var(--bordo); }
+    header.testa img { display: none; }
+    header.testa img { width: 104px; filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: .9; }
+    h1 { margin: 0; color: var(--oro-chiaro); font: 400 14px var(--mono); letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
+    h1::before { content: '> '; color: var(--oro); }
+
+    /* totali del negozio scelto: piccola casella nera al centro, come in Gestione pacchetti */
+    .riga-stato { width: fit-content; max-width: 100%; margin: 0 auto 6px; padding: 6px 12px; background: #0a0908; border: 1px solid var(--bordo);
+      border-radius: 4px; font: 400 11px/1.6 'JetBrains Mono', var(--mono); letter-spacing: .1em; text-transform: uppercase; text-align: center; }
+    #stato { color: #8fbf7a; }
+    #stato.lavora, #stato.nota { color: var(--oro-chiaro); }
+    #stato.err { color: var(--rosso); }
+
+    /* insegne dei negozi, come in Gestione pagine: discrete, la scelta più chiara, il segnalino oro segue il mouse */
+    .insegne { position: relative; display: flex; align-items: center; gap: 34px; margin: 34px 0 22px; padding-bottom: 12px; border-bottom: 1px solid var(--bordo); }
+    .insegna { display: flex; align-items: center; height: 46px; padding: 0; border: 0; background: none; cursor: pointer; }
+    .insegna img { display: block; height: auto; max-height: 42px; filter: brightness(0) invert(1); opacity: .35; transition: opacity .2s; }
+    .insegna:hover img, .insegna:focus-visible img, .insegna[aria-selected="true"] img { opacity: .9; }
+    .insegna:focus-visible { outline: none; }
+    .segnalino { position: absolute; bottom: -1px; left: 0; width: 0; height: 2px; background: var(--oro); transition: left .3s ease, width .3s ease; }
+
+    /* barra: solo il pulsante della cartella del progetto, a destra (gli esiti delle operazioni nella riga di stato) */
+    .barra { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px 20px; margin-bottom: 26px; font-size: 11px; }
+    .cartella { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+    .comando { padding: 6px 12px; border: 1px solid var(--oro); border-radius: 4px; background: none; color: var(--oro);
+      font: 400 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .15s, color .15s; }
+    .comando:hover:not(:disabled), .comando:focus-visible, .comando.collegata { background: var(--oro); color: #121110; outline: none; }
+    .comando:disabled { opacity: .35; cursor: default; }
+    .comando.rosso { border-color: var(--rosso); color: var(--rosso); }
+    .comando.rosso:hover:not(:disabled), .comando.rosso:focus-visible { background: var(--rosso); color: #121110; }
+    .comando.ghost { border-color: #9b8fd0; color: var(--ghost); }
+    .comando.ghost:hover:not(:disabled), .comando.ghost:focus-visible { background: var(--ghost); color: #121110; }
+    .esito { color: var(--tenue); font-size: 11px; }
+    .esito::before { content: '$ '; color: var(--oro); }
+    .esito:empty::before { content: none; }
+    .esito.ok { color: #8fbf7a; }
+    .esito.err { color: var(--rosso); }
+
+    /* ----- Spie: verde il modulo attivo, viola (il colore del ghost di Gestione pagine) in ghost, spenta in arrivo ----- */
+    .spia { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--verde);
+      box-shadow: 0 0 0 2px rgba(61, 220, 110, .16), 0 0 7px rgba(61, 220, 110, .85); }
+    .spia.ghost { background: var(--ghost); box-shadow: 0 0 0 2px rgba(185, 174, 240, .16), 0 0 7px rgba(185, 174, 240, .85); }
+    .spia.arrivo { background: none; border: 1px solid #5d5850; box-shadow: none; }
+    @media (prefers-reduced-motion: no-preference) {
+      .spia:not(.arrivo) { animation: respira 2.6s ease-in-out infinite; }
+      @keyframes respira { 50% { opacity: .55; } }
+    }
+
+    /* ----- Diagramma: negozio → index.html → gallerie, da sinistra a destra ----- */
+    .diagramma { display: flex; align-items: center; min-width: 0; }
+    .diagramma[hidden], .vista-modulo[hidden] { display: none; }
+    .nodo { position: relative; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+      border: 1px solid var(--oro-scuro); background: #0a0908; text-align: center; }
+    .nodo-sotto { color: var(--tenue); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    /* il negozio: cornice doppia come la splash page, logo bianco */
+    .nodo-negozio { width: 132px; min-height: 124px; padding: 18px 10px; }
+    .nodo-negozio::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(143, 106, 31, .35); pointer-events: none; }
+    .nodo-negozio img { display: block; max-width: 104px; max-height: 40px; filter: brightness(0) invert(1); opacity: .88; }
+    .nodo-negozio .nodo-nome { color: var(--oro-chiaro); font: 500 10.5px 'Cinzel', serif; letter-spacing: .16em; }
+    /* la dashboard: un foglio con l'angolo piegato, sotto index.html */
+    .nodo-pagina { width: 92px; padding: 14px 6px 12px; border-radius: 6px; text-decoration: none; transition: border-color .2s, box-shadow .2s; }
+    .nodo-pagina:hover, .nodo-pagina:focus-visible { border-color: var(--oro); box-shadow: 0 0 0 1px rgba(212, 163, 115, .25); outline: none; }
+    .nodo-pagina svg { width: 34px; height: 42px; color: var(--oro); }
+    .nodo-file { color: var(--oro-chiaro); font: 400 11.5px 'JetBrains Mono', var(--mono); letter-spacing: .02em; }
+    /* fili: linea oro sottile con una luce che scorre verso destra */
+    .filo { position: relative; flex: none; width: 26px; height: 1px; background: var(--filo); overflow: hidden; }
+    .filo::after { content: ''; position: absolute; top: 0; left: -40%; width: 40%; height: 1px; background: linear-gradient(90deg, transparent, var(--oro-chiaro), transparent); }
+    @media (prefers-reduced-motion: no-preference) {
+      .filo::after { animation: luce 2.8s linear infinite; }
+      @keyframes luce { to { left: 100%; } }
+    }
+    .filo.corto { width: 18px; }
+    /* le gallerie: una per riga, appese a una linea verticale (il bus) */
+    .rami { flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; }
+    .ramo { position: relative; display: flex; align-items: center; min-width: 0; padding: 8px 0 8px 22px; }
+    .ramo::before { content: ''; position: absolute; left: 0; top: 50%; width: 22px; height: 1px; background: var(--filo); }
+    .ramo::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--filo); }
+    .ramo:first-child::after { top: 50%; }
+    .ramo:last-child::after { bottom: 50%; }
+    .ramo:only-child::after { content: none; }
+    /* nodo della galleria: il titolo, il numero di moduli e, se serve, i comandi dell'ordine */
+    .nodo-galleria { width: 132px; min-height: 76px; padding: 10px 10px; border-color: var(--bordo); border-radius: 4px; gap: 3px; }
+    .ramo[data-tipo="promo"] .nodo-galleria { border-color: var(--oro-scuro); background: radial-gradient(circle at 50% 0, #2a2218 0%, #0a0908 80%); }
+    .galleria-nome { color: var(--oro-chiaro); font: 500 11.5px 'Cinzel', serif; letter-spacing: .1em; text-transform: uppercase; line-height: 1.35; }
+    .galleria-comandi { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 8px; margin-top: 4px; }
+    .galleria-comandi:empty { display: none; }
+    .collegamento { padding: 0; border: 0; background: none; color: var(--tenue); font: 400 10px var(--mono); letter-spacing: .04em;
+      text-decoration: underline; cursor: pointer; }
+    .collegamento:hover:not(:disabled), .collegamento:focus-visible { color: var(--oro-chiaro); outline: none; }
+    .collegamento.forte { color: var(--oro-chiaro); }
+    .collegamento:disabled { opacity: .4; cursor: default; }
+    .sospeso { color: var(--oro); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* piccolo carosello dei moduli: il nastro scorre di lato (barra nascosta), frecce ‹ › se non entrano tutti */
+    .carosello { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
+    .nastro { display: flex; gap: var(--spazio-widget); flex: 0 1 auto; min-width: 0; padding: 4px 2px; overflow-x: auto; scroll-snap-type: x mandatory;
+      scroll-behavior: smooth; scrollbar-width: none; }
+    .nastro::-webkit-scrollbar { display: none; }
+    .freccia { position: absolute; top: 50%; z-index: 2; translate: 0 -50%; width: 24px; height: 24px; padding: 0; border: 1px solid var(--oro); border-radius: 50%; background: #0a0908; color: var(--oro);
+      font: 400 15px/1 var(--mono); cursor: pointer; transition: background .15s, color .15s, opacity .2s; }
+    .freccia:hover:not(:disabled), .freccia:focus-visible { background: var(--oro); color: #121110; outline: none; }
+    .freccia:disabled { opacity: 0; pointer-events: none; }
+    .freccia.prima { left: 2px; }
+    .freccia.dopo { right: auto; }
+    .carosello:not(.scorre) .freccia { visibility: hidden; }
+    .vuota { color: var(--tenue); font-size: 11px; }
+
+    /* ----- Widget del modulo, in piccolo (e in grande nella sua scheda) ----- */
+    .widget { position: relative; flex: none; display: flex; flex-direction: column; width: var(--w-widget); padding: 0; border: 1px solid var(--bordo);
+      border-radius: 6px; background: #121110; color: var(--testo); font: inherit; text-align: left; cursor: pointer; scroll-snap-align: start;
+      transition: border-color .2s, transform .2s, opacity .2s, box-shadow .2s; }
+    .widget:hover, .widget:focus-visible { border-color: var(--oro); transform: translateY(-2px); outline: none; box-shadow: 0 4px 10px rgba(0, 0, 0, .45); }
+    .ramo[data-tipo="promo"] .widget { border-color: rgba(143, 106, 31, .7); }
+    .w-testa { display: flex; align-items: center; justify-content: space-between; padding: 5px 7px 4px; }
+    .w-num { color: var(--tenue); font: 400 9.5px 'JetBrains Mono', var(--mono); }
+    .w-anteprima { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9; margin: 0 5px; overflow: hidden; border-radius: 3px;
+      background: radial-gradient(circle, #1f1d1a 0%, #0a0908 100%); }
+    .ramo[data-tipo="promo"] .w-anteprima, .modulo-anteprima[data-tipo="promo"] .w-anteprima { background: radial-gradient(circle, #2a2218 0%, #0a0908 100%); }
+    .w-anteprima img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; }
+    .w-anteprima .w-icona { color: var(--tenue); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+    .w-titolo { display: block; padding: 5px 7px 7px; overflow: hidden; color: var(--testo); font: 400 10px/1.3 var(--mono); letter-spacing: .02em;
+      white-space: nowrap; text-overflow: ellipsis; }
+    .w-clone { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); padding: 0 4px; border: 1px solid var(--oro); border-radius: 3px;
+      background: #0a0908; color: var(--oro); font-size: 8.5px; letter-spacing: .08em; line-height: 1.5; text-transform: uppercase; }
+    .widget.in-ghost .w-anteprima, .widget.in-ghost .w-titolo { opacity: .38; }
+    .widget.in-ghost { border-style: dashed; border-color: #5f5786; }
+    .widget.in-arrivo .w-anteprima, .widget.in-arrivo .w-titolo { opacity: .5; }
+    /* trascinando per riordinare */
+    .widget[draggable="true"] { cursor: grab; }
+    .widget.trascinato { opacity: .35; transform: none; box-shadow: none; }
+    .nastro.riordina { outline: 1px dashed rgba(212, 163, 115, .5); outline-offset: 2px; border-radius: 6px; }
+
+    /* ----- Aree del negozio: nodo a pillola (CREATOR, CASSIERE, SERVIZIO) con i suoi rami ----- */
+    .nodo-area { width: 104px; min-height: 58px; padding: 9px 8px; border-color: var(--oro); border-radius: 29px; gap: 2px;
+      background: radial-gradient(circle at 50% 0, #241d14 0%, #0a0908 85%); }
+    .area-nome { color: var(--oro-chiaro); font: 400 10.5px var(--mono); letter-spacing: .22em; text-transform: uppercase; }
+    .ramo-area { padding-top: 12px; padding-bottom: 12px; }
+    .sotto { flex: 1; min-width: 0; }
+    .ramo-area > .nodo { flex: none; }
+    /* widget senza anteprima (strumenti di cassa, pagine di servizio): un segno grande al posto della miniatura */
+    .w-segno { color: var(--oro); font: 400 17px 'JetBrains Mono', var(--mono); letter-spacing: .02em; }
+    .widget.semplice { cursor: default; text-decoration: none; }
+    a.widget.semplice { cursor: pointer; }
+    div.widget.semplice:hover { transform: none; border-color: var(--bordo); box-shadow: none; }
+
+    /* ----- Rami che si chiudono e si aprono ----- */
+    .nodo.apribile { cursor: pointer; }
+    .maniglia { position: absolute; top: 50%; right: -9px; z-index: 2; width: 17px; height: 17px; padding: 0; translate: 0 -50%;
+      border: 1px solid var(--oro); border-radius: 50%; background: #0a0908; color: var(--oro); font: 400 12px/15px var(--mono);
+      text-align: center; cursor: pointer; transition: background .15s, color .15s, transform .2s; }
+    .maniglia:hover, .maniglia:focus-visible { background: var(--oro); color: #121110; outline: none; transform: scale(1.12); }
+    html.incorporata .maniglia { background: #0e0d0c; }
+    .riassunto { display: none; align-items: center; gap: 10px; padding: 6px 12px; border: 1px dashed var(--bordo); border-radius: 20px;
+      background: #0a0908; color: var(--tenue); font: 400 10.5px var(--mono); letter-spacing: .06em; cursor: pointer; transition: border-color .2s, color .2s; }
+    .riassunto:hover, .riassunto:focus-visible { border-color: var(--oro); color: var(--oro-chiaro); outline: none; }
+    .riassunto .punti { display: flex; flex-wrap: wrap; gap: 4px; max-width: 220px; }
+    .riassunto .spia { width: 6px; height: 6px; animation: none; box-shadow: 0 0 4px rgba(61, 220, 110, .7); }
+    .riassunto .spia.ghost { box-shadow: 0 0 4px rgba(185, 174, 240, .7); }
+    .riassunto .spia.arrivo { box-shadow: none; }
+    .ramo.chiuso > .carosello, .ramo.chiuso > .sotto { display: none; }
+    .ramo.chiuso > .riassunto { display: inline-flex; }
+
+    /* ----- Animazioni: entrata del diagramma (nodi e widget compaiono da sinistra, i fili si tracciano, il bus cresce
+       dall'alto), ramo che si apre (si srotola verso destra) o si chiude (il riassunto compare) ----- */
+    @media (prefers-reduced-motion: no-preference) {
+      .diagramma.entra .nodo, .diagramma.entra .widget, .diagramma.entra .riassunto {
+        animation: compare .3s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--d, 0ms) * .3); }
+      .diagramma.entra .filo { animation: traccia .25s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3); transform-origin: left; }
+      .diagramma.entra .ramo::before { animation: traccia .22s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3); transform-origin: left; }
+      .diagramma.entra .ramo::after { animation: cresce .28s ease-out backwards; animation-delay: calc(var(--d, 0ms) * .3 - 40ms); transform-origin: top; }
+      .ramo.apre > .carosello, .ramo.apre > .sotto { animation: srotola .5s cubic-bezier(.2, .8, .2, 1); }
+      .ramo.chiude > .riassunto { animation: compare .35s ease-out; }
+      .ramo.apre > .nodo > .maniglia, .ramo.chiude > .nodo > .maniglia { animation: gira .35s ease-out; }
+      @keyframes compare { from { opacity: 0; transform: translateX(-12px) scale(.96); } }
+      @keyframes traccia { from { transform: scaleX(0); } }
+      @keyframes cresce { from { transform: scaleY(0); } }
+      @keyframes srotola { from { opacity: 0; transform: translateX(-16px); clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+      @keyframes gira { from { rotate: -180deg; } }
+    }
+
+    /* tasto per tornare indietro, in fondo al diagramma, al centro */
+    .indietro-fondo { display: flex; justify-content: center; margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--bordo); }
+    .indietro-fondo[hidden] { display: none; }
+
+    /* ----- Scheda del modulo ----- */
+    .torna-diagramma { margin: 0 0 16px; padding: 0; border: 0; background: none; color: var(--tenue); font: 400 11.5px var(--mono); letter-spacing: .08em; cursor: pointer; }
+    .torna-diagramma:hover, .torna-diagramma:focus-visible { color: var(--oro); outline: none; }
+    /* percorso del modulo, come in un terminale: negozio › index.html › galleria › modulo */
+    .percorso { margin: 0 0 22px; color: var(--tenue); font: 400 11.5px 'JetBrains Mono', var(--mono); letter-spacing: .02em; }
+    .percorso b { color: var(--oro-chiaro); font-weight: 400; }
+    .percorso i { color: var(--oro-scuro); font-style: normal; margin: 0 6px; }
+    .modulo-griglia { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 32px; align-items: start; }
+    .modulo-anteprima .widget { --w-widget: 300px; cursor: default; transform: none; box-shadow: none; }
+    .modulo-anteprima .widget .w-titolo { padding: 9px 12px 12px; font-size: 13px; }
+    .modulo-anteprima .widget .w-testa { padding: 9px 12px 7px; }
+    .modulo-anteprima .widget .w-num { font-size: 11px; }
+    .modulo-anteprima .widget .w-anteprima { margin: 0 9px; }
+    .modulo-anteprima .spia { width: 11px; height: 11px; }
+    .modulo-anteprima .w-clone { top: 7px; font-size: 10px; }
+    .info { margin: 0; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 7px 16px; font-size: 12px; }
+    .info dt { color: var(--tenue); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; padding-top: 1px; }
+    .info dd { margin: 0; color: var(--testo); overflow-wrap: anywhere; }
+    .info dd .stato { display: inline-flex; align-items: center; gap: 8px; }
+    .sposta { display: inline-flex; align-items: center; gap: 8px; margin-left: 12px; vertical-align: 1px; }
+    .sposta button { width: 26px; height: 22px; padding: 0; border: 1px solid var(--bordo); border-radius: 3px; background: #0a0908; color: var(--oro);
+      font: 400 12px/1 var(--mono); cursor: pointer; }
+    .sposta button:hover:not(:disabled), .sposta button:focus-visible { border-color: var(--oro); outline: none; }
+    .sposta button:disabled { opacity: .3; cursor: default; }
+    .azioni-modulo { margin-top: 26px; }
+    .azione { padding: 16px 0; border-top: 1px solid var(--bordo); }
+    .azione h4 { margin: 0 0 8px; color: var(--oro); font: 400 11px var(--mono); letter-spacing: .24em; text-transform: uppercase; }
+    .azione h4::before { content: '// '; }
+    .azione.pericolo h4 { color: var(--rosso); }
+    .azione p { margin: 0 0 12px; color: var(--tenue); font-size: 11.5px; line-height: 1.6; }
+
+    /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
+    html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
+    html.incorporata .pagina { max-width: none; padding: 0; }
+    html.incorporata .torna, html.incorporata header.testa { display: none; }
+    html.incorporata .riga-stato { margin-top: 8px; }
+    html.incorporata .nodo, html.incorporata .freccia { background: #0e0d0c; }
+
+    /* Schermi ultra larghi (21:9 e 32:9): la pagina aperta da sola si allarga come la cornice della pagina operatore, e
+       quando la pagina (non la finestra) è così larga il diagramma si ingrandisce parecchio: widget, nodi, fili e scritte
+       (oltre 1700 px e oltre 2600 px di pagina). Negli altri casi restano le misure di sempre */
+    @media (min-width: 1800px) { .pagina { max-width: 1780px; } }
+    @media (min-width: 2400px) { .pagina { max-width: 2300px; } }
+    @media (min-aspect-ratio: 20/9) and (min-width: 2000px) { .pagina { max-width: 2700px; } }
+    @media (min-aspect-ratio: 30/9) and (min-width: 3000px) { .pagina { max-width: 3400px; } }
+    .pagina { container: pagina / inline-size; }
+    /* i widget crescono senza scatti con la larghezza della pagina (cqi: centesimi della sua larghezza): 94 px fino a
+       circa 1100 px di pagina, poi in proporzione, fino a 196 px sugli schermi 32:9; il titolo con loro */
+    .diagramma { --w-widget: clamp(100px, calc(7.6cqi + 16px), 220px); }
+    .diagramma .w-titolo { font-size: clamp(10px, calc(.3cqi + 7px), 15px); }
+    @media (prefers-reduced-motion: no-preference) { .pagina { transition: max-width .55s cubic-bezier(.2, .8, .2, 1); } }
+    /* un poco più grandi già da 1400 px di pagina (monitor 16:9 grandi) */
+    @container pagina (min-width: 1400px) {
+      .diagramma { --spazio-widget: 12px; }
+      .nodo-negozio { width: 150px; }
+      .nodo-galleria { width: 146px; }
+      .filo { width: 32px; }
+    }
+    @container pagina (min-width: 1700px) {
+      .diagramma { --spazio-widget: 14px; }
+      .diagramma .w-titolo { padding: 7px 9px 9px; }
+      .diagramma .w-num { font-size: 11px; }
+      .diagramma .w-testa { padding: 7px 9px 5px; }
+      .diagramma .spia { width: 10px; height: 10px; }
+      .diagramma .w-segno { font-size: 24px; }
+      .nodo-negozio { width: 200px; min-height: 180px; }
+      .nodo-negozio img { max-width: 160px; max-height: 58px; }
+      .nodo-negozio .nodo-nome { font-size: 13px; }
+      .nodo-pagina { width: 132px; }
+      .nodo-pagina svg { width: 44px; height: 54px; }
+      .nodo-file { font-size: 14px; }
+      .nodo-sotto { font-size: 11.5px; }
+      .nodo-area { width: 150px; min-height: 72px; border-radius: 36px; }
+      .area-nome { font-size: 13px; }
+      .nodo-galleria { width: 190px; min-height: 96px; }
+      .galleria-nome { font-size: 14.5px; }
+      .filo { width: 44px; }
+      .filo.corto { width: 26px; }
+      .ramo { padding-left: 30px; }
+      .ramo::before { width: 30px; }
+      .maniglia { width: 22px; height: 22px; right: -12px; font-size: 15px; line-height: 20px; }
+      .freccia { width: 30px; height: 30px; font-size: 18px; }
+    }
+    @container pagina (min-width: 2600px) {
+      .diagramma { --spazio-widget: 16px; }
+      .diagramma .w-segno { font-size: 30px; }
+      .nodo-negozio { width: 240px; min-height: 210px; }
+      .nodo-negozio img { max-width: 190px; max-height: 70px; }
+      .nodo-pagina { width: 156px; }
+      .nodo-area { width: 176px; }
+      .nodo-galleria { width: 220px; }
+      .galleria-nome { font-size: 16px; }
+      .filo { width: 56px; }
+    }
+
+    /* Telefono: il diagramma si sviluppa dall'alto in basso (negozio, index.html, gallerie una sotto l'altra) */
+    @media (max-width: 700px) {
+      .pagina { padding: 14px 14px 40px; }
+      header.testa { gap: 16px; margin-bottom: 26px; }
+      header.testa img { width: 72px; }
+      h1 { font-size: 12px; letter-spacing: .16em; }
+      .insegne { gap: 22px; margin: 26px 0 18px; }
+      .insegna { height: 34px; }
+      .insegna img { max-height: 26px; max-width: 28vw; }
+      .diagramma { flex-direction: column; align-items: stretch; }
+      .diagramma > .nodo { align-self: center; }
+      .diagramma > .filo { align-self: center; width: 1px; height: 26px; }
+      .diagramma > .filo::after { content: none; }
+      .ramo { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 0 10px 18px; }
+      .ramo::before { top: 34px; width: 18px; }
+      .ramo:first-child::after { top: 34px; }
+      .ramo:last-child::after { bottom: auto; height: 34px; }
+      .nodo-galleria { width: auto; min-height: 0; flex-direction: row; flex-wrap: wrap; justify-content: space-between; text-align: left; }
+      .ramo > .filo { display: none; }
+      .modulo-griglia { grid-template-columns: 1fr; gap: 22px; }
+      .modulo-anteprima .widget { --w-widget: min(300px, 100%); }
+      .info { grid-template-columns: 1fr; gap: 2px; }
+      .info dd { margin-bottom: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="pagina">
+  <a class="torna" href="operatore.html#negozi">← Area operatore</a>
+  <header class="testa">
+    <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
+    <h1>Gestione negozi</h1>
+  </header>
+
+  <!-- totali del negozio scelto, sulla riga subito sotto il titolo -->
+  <p class="riga-stato"><span id="stato">Lettura in corso…</span></p>
+  <!-- insegne dei negozi: un diagramma alla volta -->
+  <div class="insegne" role="tablist" aria-label="Negozi"><span class="segnalino"></span></div>
+  <div class="barra">
+    <div class="cartella">
+      <button class="comando" type="button" id="collega">collega la cartella del progetto</button>
+    </div>
+  </div>
+
+  <div class="diagramma" id="diagramma" aria-label="Diagramma del negozio"></div>
+  <!-- in fondo al diagramma: torna all'area operatore (dentro la pagina operatore chiude la sezione, come ← area operatore) -->
+  <div class="indietro-fondo" id="indietro-fondo"><button class="comando" type="button" id="torna-operatore">← torna all'area operatore</button></div>
+  <section class="vista-modulo" id="vista-modulo" hidden aria-label="Scheda del modulo">
+    <button class="torna-diagramma" type="button" id="torna-diagramma">← diagramma del negozio</button>
+    <div id="modulo"></div>
+  </section>
+</div>
+
+<script>
+  // Negozi modello: per loro l'ordine di partenza è quello originale del negozio; per gli altri la sequenza in cui i
+  // moduli sono stati aggiunti. In tutti e due i casi è l'ordine delle schede nel file della dashboard
+  const MODELLI = ['luxury', 'tebe', 'ophilya'];
+  const $ = id => document.getElementById(id);
+  const nodo = (tag, classe, testo) => {
+    const elemento = document.createElement(tag);
+    if (classe) elemento.className = classe;
+    if (testo !== undefined) elemento.textContent = testo;
+    return elemento;
+  };
+  const due = n => String(n).padStart(2, '0');
+  const pagina = link => String(link || '').split('?')[0];
+  const chiave = scheda => scheda.link || scheda.pdf || scheda.titolo;
+  const nomeNegozio = id => Negozi.scheda(id)?.nome || id;
+
+  // ----- Cartella del progetto (per scrivere): dalla pagina operatore, o scelta qui -----
+  const incorporata = document.documentElement.classList.contains('incorporata');
+  const operatore = incorporata && typeof window.parent.collegaProgetto === 'function' ? window.parent : null;
+  const SCRIVIBILE = typeof (operatore || window).showDirectoryPicker === 'function';
+  let progetto = operatore?.progettoCollegato || null;
+  // Esiti delle operazioni: nella riga di stato (oro mentre lavora, verde fatto, rosso errore), poi tornano i totali
+  let totali = '';
+  let attesaEsito = 0;
+  function esito(testo, classe = '') {
+    clearTimeout(attesaEsito);
+    $('stato').textContent = testo;
+    $('stato').className = classe || 'lavora';
+    if (classe) attesaEsito = setTimeout(mostraTotali, classe === 'err' ? 12000 : 7000);
+  }
+  function mostraTotali() {
+    clearTimeout(attesaEsito);
+    attesaEsito = 0;
+    $('stato').textContent = totali;
+    $('stato').className = '';
+  }
+  function segnaCollegata() {
+    $('collega').textContent = '✓ cartella collegata';
+    $('collega').classList.add('collegata');
+  }
+  async function collega() {
+    if (!progetto) progetto = operatore ? await operatore.collegaProgetto(esito) : await Associa.scegliProgetto(esito);
+    segnaCollegata();
+    return progetto;
+  }
+  $('collega').addEventListener('click', async () => {
+    try {
+      await collega();
+      esito(`cartella del progetto collegata: ${progetto.name}`, 'ok');
+      await carica(negozioScelto);
+      disegna();
+    } catch (errore) {
+      if (errore.name === 'AbortError') esito('cartella non collegata', 'nota');
+      else { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+    }
+  });
+  if (progetto) segnaCollegata();
+  // come nelle altre sezioni dell'area operatore: se la cartella è già collegata (o il browser dà ancora il permesso a
+  // quella ricordata) il pulsante è subito «✓ cartella collegata»; altrimenti un clic la collega
+  else if (operatore?.progettoSenzaChiedere) operatore.progettoSenzaChiedere().then(cartella => {
+    if (!cartella || progetto) return;
+    progetto = cartella;
+    segnaCollegata();
+  }).catch(() => {});
+  if (!SCRIVIBILE) {
+    $('collega').disabled = true;
+    $('collega').title = 'questo browser non può collegare la cartella del progetto: per cambiare i moduli apri questa pagina in chrome o edge sul computer';
+  }
+
+  // testo di un file: dalla cartella collegata (dopo una modifica è già quello nuovo) o dal sito
+  async function testoFile(percorso) {
+    if (progetto) {
+      let cartella = progetto;
+      const parti = percorso.split('/');
+      for (const parte of parti.slice(0, -1)) cartella = await cartella.getDirectoryHandle(parte);
+      return (await (await cartella.getFileHandle(parti.at(-1))).getFile()).text();
+    }
+    const risposta = await fetch(percorso, { cache: 'no-store' });
+    if (!risposta.ok) throw new Error(`${percorso}: ${risposta.status}`);
+    return risposta.text();
+  }
+  async function scriviFile(percorso, contenuto) {
+    let cartella = progetto;
+    const parti = percorso.split('/');
+    for (const parte of parti.slice(0, -1)) cartella = await cartella.getDirectoryHandle(parte);
+    const scrittura = await (await cartella.getFileHandle(parti.at(-1))).createWritable();
+    await scrittura.write(contenuto);
+    await scrittura.close();
+  }
+
+  // ----- Dati dei negozi: la dashboard (testo e contenuto) e quali pagine sono cloni -----
+  const negozi = {};      // id → { testo, dati, cloni: Map(pagina → origine) }
+  const sospesi = {};     // id → { sezione → [chiavi] }: ordini cambiati e non ancora registrati
+  async function carica(id) {
+    const testo = await testoFile(`assets/negozi/${id}-dashboard.js`);
+    let dati = null;
+    // il file chiama Dashboard.contenuto({...}): qui lo si raccoglie, senza la dashboard
+    new Function('Dashboard', testo)({ contenuto: contenuto => { dati = contenuto; } });
+    if (!dati) throw new Error(`assets/negozi/${id}-dashboard.js non ha il contenuto della dashboard`);
+    const pagine = [...new Set(dati.sezioni.flatMap(s => s.schede).filter(s => s.link).map(s => pagina(s.link)))];
+    const cloni = new Map();
+    await Promise.all(pagine.map(async nome => {
+      try { const origine = Associa.clone(await testoFile(`${id}/${nome}`)); if (origine) cloni.set(nome, origine); } catch { /* pagina mancante */ }
+    }));
+    // pagine di servizio che il negozio ha davvero
+    const servizio = (await Promise.all(SERVIZIO.map(async voce => {
+      try { await testoFile(`${id}/${voce.file}`); return voce; } catch { return null; }
+    }))).filter(Boolean);
+    negozi[id] = { testo, dati, cloni, servizio, strumenti: await strumentiCassa() };
+  }
+
+  // Pagine di servizio dei negozi (non sono schede della dashboard: ci si arriva dal menu, dalla pulsantiera o dai widget)
+  const SERVIZIO = [
+    { file: 'lista-stampa.html', titolo: 'Lista di Stampa', segno: '⎙' },
+    { file: 'cronologia-stampa.html', titolo: 'Cronologia', segno: '⟲' },
+    { file: 'bacheca.html', titolo: 'Bacheca', segno: '✎' },
+    { file: 'genera_loghi.html', titolo: 'Genera Loghi', segno: '✦' },
+    { file: 'gestisci_lista.html', titolo: 'Loghi Personali', segno: '☰' },
+    { file: 'pdf-viewer.html', titolo: 'Visualizzatore PDF', segno: 'PDF' }
+  ];
+  // Strumenti di cassa, letti da assets/js/cassa.js (id del widget e titolo), comuni a tutti i negozi
+  const SEGNI_CASSA = { 'widget-sconto': '%', 'widget-aliquota': '÷', 'widget-valuta': '€ ⇄ $', 'widget-iva': 'IVA', 'widget-qrcode': 'QR', 'widget-bacheca': '✎' };
+  let strumentiLetti = null;
+  function strumentiCassa() {
+    strumentiLetti = strumentiLetti || testoFile('assets/js/cassa.js').then(testo =>
+      [...testo.matchAll(/id="(widget-[\w-]+)"[^>]*>[\s\S]*?<h3[^>]*>([^<]+)<\/h3>/g)].map(([, id, titolo]) => ({ id, titolo: titolo.trim(), segno: SEGNI_CASSA[id] || '◇' })))
+      .catch(() => []);
+    return strumentiLetti;
+  }
+
+  // le schede di una galleria nell'ordine scelto (ancora da registrare, scritto nella dashboard o di partenza)
+  function ordinate(id, sezione, conSospesi = true) {
+    const chiavi = (conSospesi && sospesi[id]?.[sezione.id]) || sezione.ordine;
+    if (!Array.isArray(chiavi)) return sezione.schede.slice();
+    const posto = (scheda, i) => { const n = chiavi.indexOf(chiave(scheda)); return n < 0 ? chiavi.length + i : n; };
+    return sezione.schede.map((scheda, i) => [scheda, posto(scheda, i)]).sort((a, b) => a[1] - b[1]).map(([scheda]) => scheda);
+  }
+  const statoDi = scheda => (scheda.prossimamente ? 'arrivo' : scheda.nascosta ? 'ghost' : 'attivo');
+  const STATI = { attivo: 'attivo: si vede nella dashboard', ghost: 'in ghost: nascosto nella dashboard, la pagina resta', arrivo: 'in arrivo (Coming Soon): scheda spenta' };
+
+  // ----- Insegne dei negozi -----
+  let negozioScelto = Negozi.installati[0];
+  try { const ricordato = sessionStorage.getItem('gestione_negozi_negozio'); if (Negozi.installati.includes(ricordato)) negozioScelto = ricordato; } catch { /* resta il primo */ }
+  const insegne = document.querySelector('.insegne');
+  const segnalino = insegne.querySelector('.segnalino');
+  const sposta = tasto => { segnalino.style.left = `${tasto.offsetLeft}px`; segnalino.style.width = `${tasto.offsetWidth}px`; };
+  const scelta = () => insegne.querySelector('[aria-selected="true"]');
+  insegne.addEventListener('mouseleave', () => scelta() && sposta(scelta()));
+  Negozi.installati.forEach(id => {
+    const scheda = Negozi.scheda(id) || {};
+    const tasto = nodo('button', 'insegna');
+    tasto.type = 'button';
+    tasto.setAttribute('role', 'tab');
+    tasto.dataset.negozio = id;
+    if (scheda.logoSplash) {
+      const logo = nodo('img');
+      logo.src = `assets/${scheda.logoSplash}`;
+      logo.alt = scheda.nome || id;
+      logo.style.width = `${Math.round((scheda.logoSplashLarghezza || 140) * .8)}px`;
+      tasto.append(logo);
+    } else tasto.textContent = scheda.nome || id;
+    tasto.addEventListener('mouseenter', () => sposta(tasto));
+    tasto.addEventListener('focus', () => sposta(tasto));
+    tasto.addEventListener('click', () => scegli(id));
+    insegne.insertBefore(tasto, segnalino);
+  });
+  insegne.addEventListener('keydown', evento => {
+    const tasti = [...insegne.querySelectorAll('.insegna')];
+    const ora = tasti.indexOf(document.activeElement);
+    const passi = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    let dove = null;
+    if (evento.key in passi) dove = (ora + passi[evento.key] + tasti.length) % tasti.length;
+    else if (evento.key === 'Home') dove = 0;
+    else if (evento.key === 'End') dove = tasti.length - 1;
+    if (dove === null || ora < 0) return;
+    evento.preventDefault();
+    tasti[dove].click();
+    tasti[dove].focus();
+  });
+  async function scegli(id) {
+    negozioScelto = id;
+    try { sessionStorage.setItem('gestione_negozi_negozio', id); } catch { /* niente memoria */ }
+    insegne.querySelectorAll('.insegna').forEach(t => {
+      const sì = t.dataset.negozio === id;
+      t.setAttribute('aria-selected', String(sì));
+      t.tabIndex = sì ? 0 : -1;
+    });
+    if (scelta()) sposta(scelta());
+    chiudiModulo(false);
+    if (!negozi[id]) {
+      $('stato').textContent = 'Lettura in corso…';
+      try { await carica(id); } catch (errore) {
+        console.error(errore);
+        $('stato').textContent = `${nomeNegozio(id)}: dashboard non letta (${errore.message})`;
+        $('diagramma').replaceChildren();
+        return;
+      }
+    }
+    if (id !== negozioScelto) return;
+    // entrata animata: i nodi e i fili compaiono da sinistra a destra, ramo dopo ramo (solo cambiando negozio, non a
+    // ogni ridisegno)
+    const diagramma = $('diagramma');
+    clearTimeout(entrata);
+    diagramma.classList.remove('entra');
+    void diagramma.offsetWidth;
+    diagramma.classList.add('entra');
+    disegna();
+    entrata = setTimeout(() => diagramma.classList.remove('entra'), 1600);
+  }
+  let entrata = 0;
+
+  // ----- Diagramma -----
+  // foglio della dashboard, con l'angolo piegato e qualche riga
+  const ICONA_PAGINA = '<svg viewBox="0 0 34 42" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M3 1.5h20l9 9v30H3z"/><path d="M23 1.5v9h9"/><path d="M8 18h18M8 23h18M8 28h12M8 33h15" stroke-opacity=".55"/></svg>';
+
+  function widget(id, sezione, scheda, numero, grande = false) {
+    const stato = statoDi(scheda);
+    const elemento = nodo(grande ? 'div' : 'button', `widget in-${stato}`);
+    if (!grande) {
+      elemento.type = 'button';
+      elemento.draggable = true;
+      elemento.dataset.chiave = chiave(scheda);
+      elemento.setAttribute('aria-label', `${scheda.titolo}, ${due(numero)}, ${stato === 'attivo' ? 'attivo' : stato === 'ghost' ? 'in ghost' : 'in arrivo'}. Apri la scheda del modulo; Alt e frecce per spostarlo`);
+      elemento.addEventListener('click', () => apriModulo(id, sezione.id, chiave(scheda)));
+    }
+    const testa = nodo('span', 'w-testa');
+    const spia = nodo('span', `spia${stato === 'attivo' ? '' : ` ${stato}`}`);
+    spia.title = STATI[stato];
+    testa.append(nodo('span', 'w-num', due(numero)), spia);
+    const anteprima = nodo('span', 'w-anteprima');
+    const miniatura = (scheda.miniature || [])[0];
+    if (miniatura) {
+      const immagine = nodo('img');
+      immagine.src = `assets/${miniatura}`;
+      immagine.alt = '';
+      immagine.loading = 'lazy';
+      immagine.draggable = false;
+      anteprima.append(immagine);
+    } else anteprima.append(nodo('span', 'w-icona', scheda.prossimamente ? 'coming soon' : scheda.pdf ? 'pdf' : '—'));
+    elemento.append(testa, anteprima, nodo('span', 'w-titolo', scheda.titolo));
+    if (scheda.link && negozi[id].cloni.has(pagina(scheda.link))) {
+      const etichetta = nodo('span', 'w-clone', 'clone');
+      etichetta.title = `clone di ${negozi[id].cloni.get(pagina(scheda.link))}`;
+      elemento.append(etichetta);
+    }
+    return elemento;
+  }
+
+  function disegna() {
+    const id = negozioScelto;
+    const { dati, cloni } = negozi[id];
+    const scheda = Negozi.scheda(id) || {};
+    // posizione dei caroselli: si ritrova dopo il ridisegno
+    const scorrimenti = {};
+    document.querySelectorAll('.ramo').forEach(ramo => { scorrimenti[ramo.dataset.sezione] = ramo.querySelector('.nastro')?.scrollLeft || 0; });
+    const diagramma = $('diagramma');
+    diagramma.replaceChildren();
+
+    // il negozio
+    const negozio = nodo('div', 'nodo nodo-negozio');
+    if (scheda.logoMenu || scheda.logoSplash) {
+      const logo = nodo('img');
+      logo.src = `assets/${scheda.logoMenu || scheda.logoSplash}`;
+      logo.alt = '';
+      negozio.append(logo);
+    }
+    negozio.append(nodo('span', 'nodo-nome', scheda.nome || id), nodo('span', 'nodo-sotto', scheda.indirizzo || ''));
+    // la dashboard
+    const dashboard = nodo('a', 'nodo nodo-pagina');
+    dashboard.href = `${id}/index.html`;
+    dashboard.target = '_blank';
+    dashboard.rel = 'noopener';
+    dashboard.title = `apri la dashboard di ${nomeNegozio(id)} ↗`;
+    dashboard.insertAdjacentHTML('afterbegin', ICONA_PAGINA);
+    dashboard.append(nodo('span', 'nodo-file', 'index.html'), nodo('span', 'nodo-sotto', 'dashboard'));
+    // le gallerie
+    // tre aree del negozio, ognuna con i suoi rami: CREATOR (le gallerie dei caroselli), CASSIERE (le Utilità Cassa),
+    // PAGINE DI SERVIZIO (lista e cronologia di stampa, bacheca, loghi personali, visualizzatore PDF)
+    const aree = nodo('ol', 'rami');
+    aree.setAttribute('aria-label', 'Aree del negozio');
+    let ritardo = 520;
+    const gallerie = dati.sezioni.map((sezione, i) => ramo(id, sezione, scorrimenti[sezione.id] || 0, ritardo + 260 + i * 110));
+    aree.append(ramoArea(id, 'creator', 'Creator', `${dati.sezioni.length} gallerie`, gallerie, ritardo,
+      dati.sezioni.flatMap(s => s.schede).map(statoDi)));
+    ritardo += 260 + dati.sezioni.length * 110;
+    const cassa = negozi[id].strumenti;
+    aree.append(ramoArea(id, 'cassiere', 'Cassiere', dati.cassa === 'solo-cassiere' ? 'solo in cassiere' : 'sempre visibili',
+      [ramoSemplice(id, 'cassa', 'Utilità Cassa', `${cassa.length} strumenti`, cassa.map(s => ({ titolo: s.titolo, segno: s.segno,
+        nota: `strumento di cassa (${s.id}, assets/js/cassa.js): uguale in tutti i negozi` })), ritardo + 260)], ritardo, cassa.map(() => 'attivo')));
+    ritardo += 480;
+    const servizio = negozi[id].servizio;
+    aree.append(ramoArea(id, 'servizio', 'Servizio', `${servizio.length} pagine`,
+      [ramoSemplice(id, 'servizio', 'Pagine di servizio', `${servizio.length} pagine`, servizio.map(s => ({ titolo: s.titolo, segno: s.segno,
+        href: `${id}/${s.file}`, nota: `${id}/${s.file}` })), ritardo + 260)], ritardo, servizio.map(() => 'attivo')));
+    const fili = [nodo('span', 'filo'), nodo('span', 'filo')];
+    negozio.style.setProperty('--d', '0ms');
+    fili[0].style.setProperty('--d', '160ms');
+    dashboard.style.setProperty('--d', '260ms');
+    fili[1].style.setProperty('--d', '400ms');
+    diagramma.append(negozio, fili[0], dashboard, fili[1], aree);
+
+    // totali
+    const tutte = dati.sezioni.flatMap(s => s.schede);
+    const quanti = stato => tutte.filter(s => statoDi(s) === stato).length;
+    const nCloni = tutte.filter(s => s.link && cloni.has(pagina(s.link))).length;
+    totali = `${scheda.nome || id} · ${dati.sezioni.length} gallerie · ${tutte.length} moduli · ${quanti('attivo')} attivi`
+      + `${quanti('ghost') ? ` · ${quanti('ghost')} in ghost` : ''}${quanti('arrivo') ? ` · ${quanti('arrivo')} in arrivo` : ''}${nCloni ? ` · ${nCloni} ${nCloni === 1 ? 'clone' : 'cloni'}` : ''}`;
+    if (!attesaEsito && $('stato').className !== 'lavora') mostraTotali();
+  }
+
+  // ----- Rami che si chiudono e si aprono (maniglia − / + sul nodo, o un clic sul nodo); chiusi mostrano un riassunto
+  // con una spia per modulo. Lo stato resta in questa scheda del browser, per negozio -----
+  const CHIUSI = 'gestione_negozi_chiusi';
+  let chiusi = new Set();
+  try { chiusi = new Set(JSON.parse(sessionStorage.getItem(CHIUSI) || '[]')); } catch { /* tutto aperto */ }
+  const salvaChiusi = () => { try { sessionStorage.setItem(CHIUSI, JSON.stringify([...chiusi])); } catch { /* niente memoria */ } };
+  function alterna(elemento, chiaveStato, aperto) {
+    const chiudi = aperto === undefined ? !elemento.classList.contains('chiuso') : !aperto;
+    if (chiudi === elemento.classList.contains('chiuso')) return;
+    if (chiudi) chiusi.add(chiaveStato); else chiusi.delete(chiaveStato);
+    salvaChiusi();
+    elemento.classList.toggle('chiuso', chiudi);
+    elemento.classList.remove('apre', 'chiude');
+    void elemento.offsetWidth;   // riparte l'animazione
+    elemento.classList.add(chiudi ? 'chiude' : 'apre');
+    const maniglia = elemento.querySelector(':scope > .nodo > .maniglia');
+    if (maniglia) aggiornaManiglia(maniglia, !chiudi);
+    // il carosello riaperto ricalcola le sue frecce
+    elemento.querySelectorAll('.nastro').forEach(nastro => nastro.dispatchEvent(new Event('scroll')));
+  }
+  function aggiornaManiglia(maniglia, aperto) {
+    maniglia.textContent = aperto ? '−' : '+';
+    maniglia.setAttribute('aria-expanded', String(aperto));
+    maniglia.setAttribute('aria-label', `${aperto ? 'Riduci' : 'Espandi'} ${maniglia.dataset.nome}`);
+  }
+  // rende chiudibile un ramo: la maniglia sul nodo, il clic sul nodo (non sui suoi comandi) e il riassunto chiuso
+  function chiudibile(elemento, nodoRamo, chiaveStato, nome, stati) {
+    const maniglia = nodo('button', 'maniglia');
+    maniglia.type = 'button';
+    maniglia.dataset.nome = nome;
+    const aperto = !chiusi.has(chiaveStato);
+    elemento.classList.toggle('chiuso', !aperto);
+    aggiornaManiglia(maniglia, aperto);
+    maniglia.addEventListener('click', evento => { evento.stopPropagation(); alterna(elemento, chiaveStato); });
+    nodoRamo.append(maniglia);
+    nodoRamo.classList.add('apribile');
+    nodoRamo.addEventListener('click', evento => { if (!evento.target.closest('button, a')) alterna(elemento, chiaveStato); });
+    // riassunto del ramo chiuso: una spia per modulo (al massimo 24) e quanti sono
+    const riassunto = nodo('button', 'riassunto');
+    riassunto.type = 'button';
+    riassunto.setAttribute('aria-label', `Espandi ${nome}`);
+    const punti = nodo('span', 'punti');
+    stati.slice(0, 24).forEach(stato => punti.append(nodo('span', `spia${stato === 'attivo' ? '' : ` ${stato}`}`)));
+    riassunto.append(punti, nodo('span', '', `${stati.length}${stati.length > 24 ? ' (+)' : ''} · espandi ›`));
+    riassunto.addEventListener('click', () => alterna(elemento, chiaveStato, true));
+    return riassunto;
+  }
+
+  // Un'area del negozio: il nodo a pillola (CREATOR, CASSIERE, SERVIZIO) e i suoi rami
+  function ramoArea(id, area, nome, sotto, rami, ritardo, stati) {
+    const elemento = nodo('li', 'ramo ramo-area');
+    elemento.dataset.area = area;
+    elemento.dataset.stato = `${id}:area:${area}`;
+    elemento.style.setProperty('--d', `${ritardo}ms`);
+    const testa = nodo('div', 'nodo nodo-area');
+    testa.append(nodo('span', 'area-nome', nome), nodo('span', 'nodo-sotto', sotto));
+    const elenco = nodo('ol', 'rami');
+    elenco.append(...rami);
+    const sottoRami = nodo('div', 'sotto');
+    sottoRami.append(elenco);
+    const filo = nodo('span', 'filo corto');
+    filo.style.setProperty('--d', `${ritardo + 120}ms`);
+    const riassunto = chiudibile(elemento, testa, elemento.dataset.stato, `area ${nome}`, stati);
+    elemento.append(testa, filo, sottoRami, riassunto);
+    return elemento;
+  }
+
+  // Una galleria senza riordino né scheda del modulo (strumenti di cassa, pagine di servizio): widget con un segno
+  function ramoSemplice(id, chiaveRamo, titolo, sotto, voci, ritardo) {
+    const elemento = nodo('li', 'ramo');
+    elemento.dataset.tipo = chiaveRamo;
+    elemento.dataset.sezione = chiaveRamo;
+    elemento.dataset.stato = `${id}:${chiaveRamo}`;
+    elemento.style.setProperty('--d', `${ritardo}ms`);
+    const testa = nodo('div', 'nodo nodo-galleria');
+    testa.append(nodo('span', 'galleria-nome', titolo), nodo('span', 'nodo-sotto', sotto));
+    const carosello = nodo('div', 'carosello');
+    const nastro = nodo('div', 'nastro');
+    nastro.setAttribute('role', 'list');
+    voci.forEach((voce, i) => {
+      const w = nodo(voce.href ? 'a' : 'div', 'widget in-attivo semplice');
+      w.setAttribute('role', 'listitem');
+      w.title = voce.nota;
+      w.style.setProperty('--d', `${ritardo + 140 + Math.min(i, 6) * 45}ms`);
+      if (voce.href) { w.href = voce.href; w.target = '_blank'; w.rel = 'noopener'; }
+      const testaW = nodo('span', 'w-testa');
+      testaW.append(nodo('span', 'w-num', due(i + 1)), nodo('span', 'spia'));
+      const anteprima = nodo('span', 'w-anteprima');
+      anteprima.append(nodo('span', 'w-segno', voce.segno));
+      w.append(testaW, anteprima, nodo('span', 'w-titolo', voce.titolo));
+      nastro.append(w);
+    });
+    frecce(carosello, nastro, 0);
+    const filo = nodo('span', 'filo corto');
+    filo.style.setProperty('--d', `${ritardo + 100}ms`);
+    const riassunto = chiudibile(elemento, testa, elemento.dataset.stato, titolo, voci.map(() => 'attivo'));
+    elemento.append(testa, filo, carosello, riassunto);
+    return elemento;
+  }
+
+  // frecce ‹ › di un piccolo carosello (nascoste se i widget entrano tutti)
+  function frecce(carosello, nastro, scorrimento) {
+    const prima = nodo('button', 'freccia prima', '‹');
+    const dopo = nodo('button', 'freccia dopo', '›');
+    prima.type = dopo.type = 'button';
+    prima.setAttribute('aria-label', 'Moduli precedenti');
+    dopo.setAttribute('aria-label', 'Moduli successivi');
+    // un passo: i widget interi che si vedono
+    const passo = () => {
+      const spazio = parseFloat(getComputedStyle(nastro).columnGap) || 10;
+      const largo = (nastro.querySelector('.widget')?.offsetWidth || 94) + spazio;
+      return Math.max(1, Math.floor((nastro.clientWidth + spazio) / largo)) * largo;
+    };
+    prima.addEventListener('click', () => nastro.scrollBy({ left: -passo() }));
+    dopo.addEventListener('click', () => nastro.scrollBy({ left: passo() }));
+    // il nastro largo quanti widget interi entrano nello spazio (niente widget tagliati a metà); la freccia › sul suo bordo destro
+    const misura = () => {
+      const spazio = parseFloat(getComputedStyle(nastro).columnGap) || 10;
+      const largo = (nastro.querySelector('.widget')?.offsetWidth || 94) + spazio;
+      const widget = nastro.querySelectorAll('.widget').length;
+      if (!widget || !carosello.clientWidth) { aggiorna(); return; }
+      const quanti = Math.max(1, Math.floor((carosello.clientWidth - 4 + spazio) / largo));
+      const larghezza = Math.min(quanti, widget) * largo - spazio + 4;
+      nastro.style.width = `${larghezza}px`;
+      dopo.style.left = `${larghezza - 10}px`;
+      aggiorna();
+    };
+    const aggiorna = () => {
+      carosello.classList.toggle('scorre', nastro.scrollWidth > nastro.clientWidth + 2);
+      prima.disabled = nastro.scrollLeft <= 2;
+      dopo.disabled = nastro.scrollLeft + nastro.clientWidth >= nastro.scrollWidth - 2;
+    };
+    nastro.addEventListener('scroll', aggiorna, { passive: true });
+    // si rimisura quando cambia lo spazio del carosello e quando cambiano i widget (pagina più o meno larga: misure più grandi o più piccole)
+    const osserva = new ResizeObserver(misura);
+    osserva.observe(carosello);
+    const primo = nastro.querySelector(".widget");
+    if (primo) osserva.observe(primo);
+    carosello.append(prima, nastro, dopo);
+    requestAnimationFrame(() => {
+      nastro.style.scrollBehavior = 'auto';
+      nastro.scrollLeft = scorrimento;
+      nastro.style.scrollBehavior = '';
+      misura();
+    });
+  }
+
+  function ramo(id, sezione, scorrimento, ritardo = 0) {
+    const elemento = nodo('li', 'ramo');
+    elemento.dataset.tipo = sezione.tipo;
+    elemento.dataset.sezione = sezione.id;
+    elemento.dataset.stato = `${id}:${sezione.id}`;
+    elemento.style.setProperty('--d', `${ritardo}ms`);
+    const schede = ordinate(id, sezione);
+    // nodo della galleria
+    const galleria = nodo('div', 'nodo nodo-galleria');
+    galleria.append(nodo('span', 'galleria-nome', sezione.titolo.split(' // ')[0]),
+      nodo('span', 'nodo-sotto', `${schede.length} ${schede.length === 1 ? 'modulo' : 'moduli'} · ${sezione.tipo}`));
+    galleria.title = sezione.titolo;
+    galleria.append(comandiOrdine(id, sezione));
+    // il carosello dei moduli
+    const carosello = nodo('div', 'carosello');
+    const nastro = nodo('div', 'nastro');
+    nastro.setAttribute('role', 'list');
+    nastro.setAttribute('aria-label', `Moduli di ${sezione.titolo}`);
+    schede.forEach((scheda, i) => {
+      const w = widget(id, sezione, scheda, i + 1);
+      w.style.setProperty('--d', `${ritardo + 140 + Math.min(i, 6) * 45}ms`);
+      nastro.append(w);
+    });
+    if (!schede.length) nastro.append(nodo('span', 'vuota', 'nessun modulo'));
+    frecce(carosello, nastro, scorrimento);
+    riordinabile(id, sezione, nastro);
+    const filo = nodo('span', 'filo corto');
+    filo.style.setProperty('--d', `${ritardo + 100}ms`);
+    const riassunto = chiudibile(elemento, galleria, elemento.dataset.stato, sezione.titolo.split(' // ')[0], schede.map(statoDi));
+    elemento.append(galleria, filo, carosello, riassunto);
+    return elemento;
+  }
+
+  // comandi dell'ordine nel nodo della galleria: registra / annulla un ordine cambiato, o torna a quello di partenza
+  function comandiOrdine(id, sezione) {
+    const comandi = nodo('span', 'galleria-comandi');
+    if (sospesi[id]?.[sezione.id]) {
+      comandi.append(nodo('span', 'sospeso', 'ordine cambiato'));
+      const registra = nodo('button', 'collegamento forte', 'registra');
+      registra.type = 'button';
+      registra.disabled = !SCRIVIBILE;
+      registra.title = 'scrivi il nuovo ordine nella dashboard del negozio';
+      registra.addEventListener('click', () => registraOrdine(id, sezione));
+      const annulla = nodo('button', 'collegamento', 'annulla');
+      annulla.type = 'button';
+      annulla.addEventListener('click', () => { delete sospesi[id][sezione.id]; ridisegna(); });
+      comandi.append(registra, annulla);
+    } else if (Array.isArray(sezione.ordine)) {
+      const partenza = nodo('button', 'collegamento', '↺ ordine di partenza');
+      partenza.type = 'button';
+      partenza.disabled = !SCRIVIBILE;
+      partenza.title = MODELLI.includes(id) ? 'torna all\'ordine originale del negozio modello' : 'torna alla sequenza in cui i moduli sono stati aggiunti al negozio';
+      partenza.addEventListener('click', () => ordineDiPartenza(id, sezione));
+      comandi.append(partenza);
+    }
+    return comandi;
+  }
+
+  // un ordine cambiato (trascinando o con i comandi): resta da registrare; se torna quello scritto non c'è più niente da fare
+  function cambiaOrdine(id, sezione, chiavi) {
+    const scritto = ordinate(id, sezione, false).map(chiave);
+    sospesi[id] = sospesi[id] || {};
+    if (chiavi.join('\n') === scritto.join('\n')) delete sospesi[id][sezione.id];
+    else sospesi[id][sezione.id] = chiavi;
+  }
+  const ridisegna = () => { disegna(); if (!$('vista-modulo').hidden && moduloAperto) disegnaModulo(); };
+
+  // Riordinare trascinando i widget nel loro carosello (con il mouse); da tastiera Alt + ← / → sul widget
+  function riordinabile(id, sezione, nastro) {
+    let trascinato = null;
+    nastro.addEventListener('dragstart', evento => {
+      trascinato = evento.target.closest('.widget');
+      if (!trascinato) return;
+      evento.dataTransfer.effectAllowed = 'move';
+      evento.dataTransfer.setData('text/plain', trascinato.dataset.chiave);
+      requestAnimationFrame(() => { trascinato?.classList.add('trascinato'); nastro.classList.add('riordina'); });
+    });
+    nastro.addEventListener('dragover', evento => {
+      if (!trascinato || trascinato.parentNode !== nastro) return;
+      evento.preventDefault();
+      // vicino ai bordi il nastro scorre da solo
+      const bordi = nastro.getBoundingClientRect();
+      if (evento.clientX < bordi.left + 30) nastro.scrollLeft -= 8;
+      else if (evento.clientX > bordi.right - 30) nastro.scrollLeft += 8;
+      const prossimo = [...nastro.querySelectorAll('.widget:not(.trascinato)')].find(w => {
+        const r = w.getBoundingClientRect();
+        return evento.clientX < r.left + r.width / 2;
+      });
+      if (prossimo) { if (trascinato.nextElementSibling !== prossimo) nastro.insertBefore(trascinato, prossimo); }
+      else if (nastro.lastElementChild !== trascinato) nastro.append(trascinato);
+    });
+    nastro.addEventListener('drop', evento => evento.preventDefault());
+    nastro.addEventListener('dragend', () => {
+      if (!trascinato) return;
+      trascinato.classList.remove('trascinato');
+      nastro.classList.remove('riordina');
+      const spostato = trascinato.dataset.chiave;
+      trascinato = null;
+      cambiaOrdine(id, sezione, [...nastro.querySelectorAll('.widget')].map(w => w.dataset.chiave));
+      ridisegna();
+      document.querySelector(`.ramo[data-sezione="${sezione.id}"] .widget[data-chiave="${CSS.escape(spostato)}"]`)?.focus({ preventScroll: true });
+    });
+    nastro.addEventListener('keydown', evento => {
+      const w = evento.target.closest('.widget');
+      if (!w || !evento.altKey || !['ArrowLeft', 'ArrowRight'].includes(evento.key)) return;
+      evento.preventDefault();
+      muovi(id, sezione, w.dataset.chiave, evento.key === 'ArrowLeft' ? -1 : 1);
+      document.querySelector(`.ramo[data-sezione="${sezione.id}"] .widget[data-chiave="${CSS.escape(w.dataset.chiave)}"]`)?.focus();
+    });
+  }
+  function muovi(id, sezione, chiaveModulo, passo) {
+    const chiavi = ordinate(id, sezione).map(chiave);
+    const da = chiavi.indexOf(chiaveModulo), a = da + passo;
+    if (da < 0 || a < 0 || a >= chiavi.length) return;
+    [chiavi[da], chiavi[a]] = [chiavi[a], chiavi[da]];
+    cambiaOrdine(id, sezione, chiavi);
+    ridisegna();
+  }
+
+  // ----- Scrittura nella dashboard del negozio -----
+  // cambia(testo) → nuovo testo; poi si rilegge il negozio e si ridisegna
+  async function scriviDashboard(id, cambia, fatto) {
+    try { await collega(); } catch (errore) {
+      if (errore.name === 'AbortError') esito('cartella non collegata: nessuna modifica', 'nota');
+      else { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+      return false;
+    }
+    try {
+      const file = `assets/negozi/${id}-dashboard.js`;
+      await scriviFile(file, cambia(await testoFile(file)));
+      await carica(id);
+      esito(`${fatto}. ricorda il commit per pubblicarlo`, 'ok');
+      ridisegna();
+      return true;
+    } catch (errore) {
+      console.error(errore);
+      esito(`errore (${errore.name}): ${errore.message}`, 'err');
+      return false;
+    }
+  }
+  async function registraOrdine(id, sezione) {
+    const chiavi = sospesi[id]?.[sezione.id];
+    if (!chiavi) return;
+    const ok = await scriviDashboard(id, testo => Associa.impostaOrdine(testo, sezione.id, chiavi),
+      `nuovo ordine di ${sezione.titolo.split(' // ')[0]} registrato nella dashboard di ${nomeNegozio(id)}`);
+    if (ok) { delete sospesi[id][sezione.id]; ridisegna(); }
+  }
+  function ordineDiPartenza(id, sezione) {
+    scriviDashboard(id, testo => Associa.impostaOrdine(testo, sezione.id, null),
+      `${sezione.titolo.split(' // ')[0]} di ${nomeNegozio(id)} di nuovo nell'ordine di partenza`);
+  }
+
+  // ----- Scheda del modulo -----
+  let moduloAperto = null;   // { id, sezione (id), chiave }
+  function apriModulo(id, sezioneId, chiaveModulo) {
+    moduloAperto = { id, sezione: sezioneId, chiave: chiaveModulo };
+    $('diagramma').hidden = true;
+    $('indietro-fondo').hidden = true;
+    $('vista-modulo').hidden = false;
+    disegnaModulo();
+    $('torna-diagramma').focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  }
+  function chiudiModulo(fuoco = true) {
+    if ($('vista-modulo').hidden) return;
+    const aperto = moduloAperto;
+    moduloAperto = null;
+    $('vista-modulo').hidden = true;
+    $('diagramma').hidden = false;
+    $('indietro-fondo').hidden = false;
+    $('modulo').replaceChildren();
+    if (fuoco && aperto) document.querySelector(`.ramo[data-sezione="${aperto.sezione}"] .widget[data-chiave="${CSS.escape(aperto.chiave)}"]`)?.focus();
+  }
+  $('torna-diagramma').addEventListener('click', () => chiudiModulo());
+  // ← torna all'area operatore: dentro la pagina operatore chiude la sezione (come Esc), da sola apre la pagina operatore
+  $('torna-operatore').addEventListener('click', () => {
+    if (incorporata) window.parent.postMessage({ esc: true }, location.origin);
+    else location.href = 'operatore.html';
+  });
+  // Esc nella scheda del modulo torna al diagramma (prima che arrivi alla pagina operatore, che chiuderebbe la sezione)
+  window.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape' && !$('vista-modulo').hidden) {
+      evento.preventDefault();
+      evento.stopImmediatePropagation();
+      chiudiModulo();
+    }
+  }, true);
+
+  function disegnaModulo() {
+    const { id, sezione: sezioneId, chiave: chiaveModulo } = moduloAperto;
+    const { dati, cloni } = negozi[id];
+    const sezione = dati.sezioni.find(s => s.id === sezioneId);
+    const schede = sezione ? ordinate(id, sezione) : [];
+    const indice = schede.findIndex(s => chiave(s) === chiaveModulo);
+    if (indice < 0) { chiudiModulo(false); return; }   // il modulo non c'è più (eliminato)
+    const scheda = schede[indice];
+    const stato = statoDi(scheda);
+    const nomePagina = scheda.link ? pagina(scheda.link) : null;
+    const origine = nomePagina ? cloni.get(nomePagina) : null;
+    const galleria = sezione.titolo.split(' // ')[0];
+    const contenitore = $('modulo');
+    contenitore.replaceChildren();
+
+    // percorso: negozio › index.html › galleria › modulo
+    const percorso = nodo('p', 'percorso');
+    [nomeNegozio(id), 'index.html', galleria, scheda.titolo].forEach((parte, i) => {
+      if (i) percorso.append(nodo('i', '', '›'));
+      percorso.append(i === 3 ? nodo('b', '', parte) : document.createTextNode(parte));
+    });
+    contenitore.append(percorso);
+
+    const griglia = nodo('div', 'modulo-griglia');
+    const anteprima = nodo('div', 'modulo-anteprima');
+    anteprima.dataset.tipo = sezione.tipo;
+    anteprima.append(widget(id, sezione, scheda, indice + 1, true));
+    const dettagli = nodo('div');
+    const info = nodo('dl', 'info');
+    const voce = (titolo, ...contenuto) => { info.append(nodo('dt', '', titolo)); const dd = nodo('dd'); dd.append(...contenuto); info.append(dd); return dd; };
+    const statoTesto = nodo('span', 'stato');
+    statoTesto.append(nodo('span', `spia${stato === 'attivo' ? '' : ` ${stato}`}`), STATI[stato]);
+    voce('stato', statoTesto);
+    if (scheda.link) {
+      const apri = nodo('a', '', `${id}/${scheda.link} ↗`);
+      apri.href = `${id}/${scheda.link}`;
+      apri.target = '_blank';
+      apri.rel = 'noopener';
+      voce('pagina', apri);
+    } else if (scheda.pdf) {
+      const apri = nodo('a', '', `assets/${scheda.pdf} ↗`);
+      apri.href = `assets/${scheda.pdf}`;
+      apri.target = '_blank';
+      apri.rel = 'noopener';
+      voce('pdf', apri);
+    }
+    if (scheda.tipo) voce('tipo', scheda.tipo);
+    voce('galleria', `${sezione.titolo} (${sezione.tipo})`);
+    // posizione nel carosello, con i comandi per spostarlo
+    const posizione = voce('posizione', `${due(indice + 1)} di ${due(schede.length)}`);
+    const comandi = nodo('span', 'sposta');
+    [['◀', -1, 'Sposta a sinistra'], ['▶', 1, 'Sposta a destra']].forEach(([segno, passo, nome]) => {
+      const pulsante = nodo('button', '', segno);
+      pulsante.type = 'button';
+      pulsante.setAttribute('aria-label', nome);
+      pulsante.disabled = indice + passo < 0 || indice + passo >= schede.length;
+      pulsante.addEventListener('click', () => muovi(id, sezione, chiaveModulo, passo));
+      comandi.append(pulsante);
+    });
+    posizione.append(comandi);
+    if (sospesi[id]?.[sezione.id]) {
+      const registra = nodo('button', 'collegamento forte', 'registra l\'ordine');
+      registra.type = 'button';
+      registra.disabled = !SCRIVIBILE;
+      registra.addEventListener('click', () => registraOrdine(id, sezione));
+      posizione.append(' ', nodo('span', 'sospeso', 'ordine cambiato'), ' ', registra);
+    }
+    voce('origine', origine ? `clone di ${origine}` : nomePagina ? 'pagina originale del negozio' : scheda.pdf ? 'stampa pronta (PDF)' : 'scheda della dashboard');
+    if (scheda.specifiche?.length) voce('specifiche', scheda.specifiche.join(' · '));
+    dettagli.append(info);
+
+    // azioni: ghost, duplica, elimina
+    const azioni = nodo('div', 'azioni-modulo');
+    const azione = (titolo, testo, pulsante, pericolo = false) => {
+      const blocco = nodo('div', `azione${pericolo ? ' pericolo' : ''}`);
+      blocco.append(nodo('h4', '', titolo), nodo('p', '', testo), pulsante);
+      azioni.append(blocco);
+    };
+    const comando = (testo, classe = '') => { const p = nodo('button', `comando ${classe}`.trim(), testo); p.type = 'button'; p.disabled = !SCRIVIBILE; return p; };
+
+    const inGhost = stato === 'ghost';
+    const ghost = comando(inGhost ? 'ghost · mostra' : 'ghost', 'ghost');
+    ghost.addEventListener('click', () => scriviDashboard(id, testo => Associa.impostaFantasmaScheda(testo, sezione.id, chiaveModulo, !inGhost),
+      `${scheda.titolo} ${inGhost ? 'di nuovo visibile' : 'in ghost'} nella dashboard di ${nomeNegozio(id)}`));
+    azione('ghost', inGhost ? 'il modulo è nascosto nella dashboard (né widget né voce del menu); la pagina resta nella cartella. un clic per farlo ricomparire'
+      : 'nasconde il modulo nella dashboard del negozio, né widget né voce del menu, senza cancellare la pagina: serve quando ci si lavora e i clienti non devono usarlo', ghost);
+
+    const duplicabile = Boolean(scheda.link) && !scheda.prossimamente;
+    const duplica = comando('⧉ duplica');
+    duplica.disabled = !SCRIVIBILE || !duplicabile;
+    duplica.addEventListener('click', async () => {
+      try { await collega(); } catch (errore) {
+        esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+        return;
+      }
+      duplica.disabled = true;
+      try {
+        const copia = await Associa.duplica(progetto, { negozio: id, sezione: sezione.id, chiave: chiaveModulo, avviso: esito });
+        await carica(id);
+        esito(`creata la copia ${copia.pagina} in ${galleria}, subito dopo l'originale. ricorda il commit per pubblicarlo`, 'ok');
+        apriModulo(id, sezione.id, copia.chiave);
+        disegna();
+      } catch (errore) {
+        console.error(errore);
+        esito(`errore (${errore.name}): ${errore.message}`, 'err');
+        duplica.disabled = false;
+      }
+    });
+    azione('duplica', duplicabile
+      ? `copia la pagina in ${id}/${nomePagina.replace(/\.html$/, '-copia.html')} (un clone, che si può cancellare) e mette il modulo in ${galleria}, subito dopo l'originale, con il titolo «${scheda.titolo} (copia)»`
+      : 'si duplicano solo i moduli con una pagina: non le stampe pronte (PDF) né i moduli in arrivo', duplica);
+
+    const elimina = comando('✕ elimina modulo', 'rosso');
+    elimina.disabled = !SCRIVIBILE || !origine;
+    elimina.addEventListener('click', async () => {
+      try { await collega(); } catch (errore) {
+        esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+        return;
+      }
+      if (!window.confirm(`Eliminare ${scheda.titolo} da ${nomeNegozio(id)}?\n\nLa sua scheda esce dalla dashboard e il clone ${id}/${nomePagina} viene cancellato, con le immagini copiate per lui che nessun'altra pagina usa.\nNon si può annullare (solo dal commit precedente).`)) return;
+      elimina.disabled = true;
+      try {
+        await Associa.eliminaClone(progetto, { negozio: id, nome: nomePagina, avviso: esito });
+        await carica(id);
+        esito(`eliminato ${scheda.titolo} (${id}/${nomePagina}). ricorda il commit per pubblicarlo`, 'ok');
+        chiudiModulo(false);
+        disegna();
+      } catch (errore) {
+        console.error(errore);
+        esito(`errore (${errore.name}): ${errore.message}`, 'err');
+        elimina.disabled = false;
+      }
+    });
+    azione('elimina modulo', origine
+      ? `il modulo è un clone di ${origine}: eliminandolo la scheda esce dalla dashboard e la pagina ${id}/${nomePagina} si cancella${schede.filter(s => s.link && pagina(s.link) === nomePagina).length > 1 ? ', con tutti i moduli della galleria che la aprono' : ''}`
+      : 'si cancellano solo i cloni, mai i moduli originali del negozio: questo si può mettere in ghost', elimina, true);
+    dettagli.append(azioni);
+    griglia.append(anteprima, dettagli);
+    contenitore.append(griglia);
+  }
+
+  // si parte dal negozio ricordato in questa scheda del browser (o dal primo)
+  scegli(negozioScelto);
+  window.addEventListener('load', () => scelta() && sposta(scelta()));
+  window.addEventListener('resize', () => scelta() && sposta(scelta()));
+</script>
+</body>
+</html>

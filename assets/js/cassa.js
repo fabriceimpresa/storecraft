@@ -118,23 +118,27 @@
         </div>
       </div>
 
-      <div class="widget widget-bacheca" id="widget-bacheca">
+      <!-- tutto il widget apre la Bacheca (clic, o Invio da tastiera): niente pulsante APRI BACHECA (tolto il 12 ottobre 2026) -->
+      <div class="widget widget-bacheca" id="widget-bacheca" role="link" tabindex="0" aria-label="Apri la Bacheca">
         <h3 class="bacheca-titolo">La tua Bacheca</h3>
-        <!-- avvisi, in alto a destra, uno sotto l'altro: note nuove da leggere (campanella) e comunicazioni ufficiali nuove
-             (megafono), ognuno con il numero -->
-        <div class="bacheca-avvisi">
-          <span class="bacheca-avviso" id="bacheca-avviso" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span id="bacheca-avviso-numero"></span></span>
-          <span class="bacheca-avviso avviso-com" id="bacheca-avviso-com" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 10v4h3l7 4.5V5.5L6.5 10z"/><path d="M17 9a4 4 0 0 1 0 6"/><path d="M7 14l1.2 5h2.3"/></svg><span id="bacheca-avviso-com-numero"></span></span>
+        <!-- la vetrina: i post-it a ventaglio e, sul suo angolo in alto a destra, uno sotto l'altro, gli avvisi delle note
+             nuove da leggere (campanella) e delle comunicazioni ufficiali nuove (megafono), ognuno con il numero -->
+        <div class="bacheca-vetrina">
+          <div class="bacheca-mazzo" id="bacheca-mazzo" aria-hidden="true"></div>
+          <div class="bacheca-avvisi">
+            <span class="bacheca-avviso" id="bacheca-avviso" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span id="bacheca-avviso-numero"></span></span>
+            <span class="bacheca-avviso avviso-com" id="bacheca-avviso-com" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 10v4h3l7 4.5V5.5L6.5 10z"/><path d="M17 9a4 4 0 0 1 0 6"/><path d="M7 14l1.2 5h2.3"/></svg><span id="bacheca-avviso-com-numero"></span></span>
+          </div>
         </div>
-        <div class="bacheca-mazzo" id="bacheca-mazzo" aria-hidden="true"></div>
-        <!-- sempre la descrizione; le comunicazioni nuove e le note nuove da leggere; le comunicazioni recenti (2 settimane);
-             sempre il totale di note e comunicazioni -->
+        <!-- sotto: la descrizione (sempre), le novità (comunicazioni e note nuove da leggere, comunicazioni recenti: solo
+             quando ci sono) e in fondo, staccato da una linea, il totale di note e comunicazioni (sempre) -->
         <p class="bacheca-descrizione">Post-it, Note Promemoria, Numeri Utili e Comunicazioni Ufficiali.</p>
-        <p class="bacheca-nuove" id="bacheca-nuove-com" hidden></p>
-        <p class="bacheca-nuove" id="bacheca-nuove" hidden></p>
-        <p class="bacheca-recenti" id="bacheca-recenti" hidden></p>
+        <div class="bacheca-stato">
+          <p class="bacheca-nuove" id="bacheca-nuove-com" hidden></p>
+          <p class="bacheca-nuove" id="bacheca-nuove" hidden></p>
+          <p class="bacheca-recenti" id="bacheca-recenti" hidden></p>
+        </div>
         <p class="bacheca-conteggio" id="bacheca-conteggio"></p>
-        <button class="tool-btn" type="button" style="width:100%;" data-cassa="apri-bacheca">Apri Bacheca</button>
       </div>`;
   }
 
@@ -386,7 +390,7 @@
     // Calcoli
     const azioni = {
       sconto: calcolaSconto, aliquota: calcolaAliquota, valuta: calcolaValuta,
-      'azzera-iva': azzeraIva, 'scarica-qr': scaricaQr, 'stampa-qr': stampaQr, 'apri-bacheca': apriBacheca
+      'azzera-iva': azzeraIva, 'scarica-qr': scaricaQr, 'stampa-qr': stampaQr
     };
     contenitore.querySelectorAll('[data-cassa]').forEach(b => b.addEventListener('click', () => azioni[b.dataset.cassa]()));
     contenitore.querySelectorAll('[data-aliquota]').forEach(b => b.addEventListener('click', () => impostaAliquota(b)));
@@ -402,9 +406,13 @@
       strumento.addEventListener('click', evento => {
         if (evento.target.closest('[data-cassa-chiudi]')) { evento.stopPropagation(); chiudi(); return; }
         // la Bacheca si apre nella sua pagina, non nel popup
-        if (strumento.id === 'widget-bacheca') { if (!evento.target.closest('[data-cassa]')) apriBacheca(); return; }
+        if (strumento.id === 'widget-bacheca') { apriBacheca(); return; }
         apri(strumento.id);
       });
+    });
+    // la Bacheca anche da tastiera: Invio o spazio sul widget
+    $('widget-bacheca')?.addEventListener('keydown', evento => {
+      if (evento.key === 'Enter' || evento.key === ' ') { evento.preventDefault(); apriBacheca(); }
     });
     contenitore.addEventListener('click', evento => { if (evento.target === contenitore) chiudi(); });
     document.addEventListener('keydown', evento => { if (evento.key === 'Escape') chiudi(); });

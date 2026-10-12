@@ -17,18 +17,20 @@
      qr             collegamento iniziale del Generatore QR
      cassa          'sempre' oppure 'solo-cassiere' (Utilità Cassa solo in modalità CASSIERE)
      etichette      pagina delle etichette DYMO per la voce del menu laterale
-     sezioni        [{ id, carosello, titolo, tipo, schede, voceMenu, stella, righe }] (righe: 1 mette i cartelli su una riga sola)
+     sezioni        [{ id, carosello, titolo, tipo, schede, voceMenu, stella, righe, ordine }] (righe: 1 mette i cartelli su una riga sola;
+                    ordine: [link, pdf o titolo delle schede], l'ordine dei widget scelto in Gestione negozi: senza, quello
+                    delle schede nel file)
                     tipo: 'cartelli' (due righe; menu CREA CARTELLI), 'promo' (schede dorate; sottosezione PROMO
                     STAGIONALI), 'cartellini' (menu CARTELLINI), 'etichette' (schede DYMO), 'stampe' (PDF con Apri &
                     Stampa; menu STAMPE PRONTE con la voce voceMenu)
      schede         [{ titolo, link | pdf, tipo, miniature: [immagine, seconda immagine facoltativa] (nella cartella
                     assets/), alt, specifiche: [...], badge, compatto, voce (nome nel menu, se diverso dal titolo),
                     prossimamente (Coming Soon: scheda spenta, non nel menu), icona (emoji se la miniatura manca),
-                    nascosta (pagina in ghost, da Gestione negozi: la scheda non si vede, né come widget né nel menu;
-                    la pagina resta nella cartella) }] */
+                    nascosta (pagina o modulo in ghost, da Gestione pagine o Gestione negozi: la scheda non si vede, né
+                    come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.15 2026';
+  const VERSIONE = 'V 1.2.16 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -167,7 +169,8 @@
     // altri, al posto del rettangolino «LXRY · ATTIVO» e della freccia ›. Da computer e tablet nomi, rettangolino e freccia
     const logoMenu = (n, alt) => el('img', { class: 'system-store-logo', alt, src: n.logoMenu,
       style: `--logo-larghezza: ${n.larghezzaLogoMenu}px` });
-    const nome = n => [el('span', { class: 'system-store-name', text: n.nome }), el('span', { class: 'system-store-indirizzo', text: n.indirizzo })];
+    const nome = n => [el('span', { class: 'system-store-name', text: n.nome }), el('span', { class: 'system-store-indirizzo', text: n.indirizzo }),
+      el('span', { class: 'system-store-indirizzo-breve', text: n.indirizzoBreve })];   // da computer, «CORSO 15»
     const negozi = Object.entries(PuntoVendita.NEGOZI).map(([id, n]) => id === negozio
       ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true },
           ...nome(n), el('span', { class: 'system-store-status', text: `${n.sigla} · ATTIVO` }),
@@ -553,9 +556,16 @@
 
   function disegna() {
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
-    // Pagine in ghost (Gestione negozi, nascosta: true): le loro schede non si vedono, né come widget né nel menu
+    // Pagine in ghost (Gestione pagine, nascosta: true): le loro schede non si vedono, né come widget né nel menu
     // laterale; una sezione che resta senza schede sparisce, e la voce Etichette DYMO se la sua pagina è in ghost
     const pagina = link => String(link || '').split('?')[0];
+    // Ordine dei widget scelto in Gestione negozi (ordine: [chiavi] nella sezione; chiave: link, pdf o titolo): le schede
+    // elencate in quell'ordine, le altre dopo, nell'ordine del file (senza ordine, quello di partenza)
+    dati.sezioni.forEach(s => {
+      if (!Array.isArray(s.ordine)) return;
+      const posto = (scheda, i) => { const n = s.ordine.indexOf(scheda.link || scheda.pdf || scheda.titolo); return n < 0 ? s.ordine.length + i : n; };
+      s.schede = s.schede.map((scheda, i) => [scheda, posto(scheda, i)]).sort((a, b) => a[1] - b[1]).map(([scheda]) => scheda);
+    });
     const fantasmi = new Set(dati.sezioni.flatMap(s => s.schede).filter(s => s.nascosta && s.link).map(s => pagina(s.link)));
     dati.sezioni.forEach(s => { s.schede = s.schede.filter(scheda => !scheda.nascosta); });
     dati.sezioni = dati.sezioni.filter(s => s.schede.length);
