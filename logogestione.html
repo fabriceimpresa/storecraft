@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261012-55"></script>
+<script src="assets/js/negozi.js?v=20261013-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261012-55">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261013-01">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261012-55">
-  <script src="assets/js/operatore-sezione.js?v=20261012-55"></script>
-  <script src="assets/js/admin-negozio.js?v=20261012-55"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261013-01">
+  <script src="assets/js/operatore-sezione.js?v=20261013-01"></script>
+  <script src="assets/js/admin-negozio.js?v=20261013-01"></script>
 </head>
 <body>
 
@@ -79,6 +79,11 @@
     return typeof window.showDirectoryPicker === 'function';
   }
 
+  // dentro la pagina operatore la cartella del progetto è quella condivisa da tutte le sezioni: collegata una volta sola
+  // (anche da un'altra sezione), o ricordata con il permesso ancora valido, il pulsante è subito «cartella collegata»
+  const operatore = window.parent !== window && typeof window.parent.collegaProgetto === 'function' ? window.parent : null;
+  const scegliCartella = passaggio => (operatore ? operatore.collegaProgetto(passaggio) : AdminNegozio.scegliProgetto(passaggio));
+
   async function connectProjectFolder() {
     if (!fsaSupported()) {
       alert('Questa funzione richiede Chrome o Edge su desktop (File System Access API non disponibile in questo browser).');
@@ -87,7 +92,7 @@
     try {
       // cartella del progetto STORECRAFT (controllata), poi le sottocartelle del negozio: assets/logos/<negozio> e
       // assets/img/<negozio>/printlogos
-      projectDirHandle = await AdminNegozio.scegliProgetto(passaggio => {
+      projectDirHandle = await scegliCartella(passaggio => {
         folderStatus.textContent = passaggio;
         folderStatus.className = 'folder-status';
       });
@@ -111,6 +116,9 @@
       folderStatus.className = 'folder-status err';
     }
   }
+
+  // all'apertura: la cartella già collegata nella pagina operatore (o ricordata con il permesso valido) si usa subito
+  operatore?.progettoSenzaChiedere?.().then(cartella => { if (cartella && !projectDirHandle) connectProjectFolder(); }).catch(() => {});
 
   async function openStoreFolders() {
     ({ logos: logosDirHandle, printlogos: printlogosDirHandle } = await AdminNegozio.cartelle(projectDirHandle));

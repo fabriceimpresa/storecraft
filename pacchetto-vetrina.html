@@ -13,19 +13,19 @@
     radice.dataset.interfaceTheme = parametri.get('tema') === 'light' ? 'light' : 'dark';
     radice.dataset.interfaceLook = parametri.get('aspetto') === 'minimal' ? 'minimal' : 'standard';
   </script>
-  <script src="assets/js/negozi.js?v=20261012-55"></script>
+  <script src="assets/js/negozi.js?v=20261013-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Vetrina del pacchetto</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261012-55">
-  <script src="assets/js/caroselli.js?v=20261012-55"></script>
-  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261012-55">
-  <link rel="stylesheet" href="assets/css/theme.css?v=20261012-55">
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261013-01">
+  <script src="assets/js/caroselli.js?v=20261013-01"></script>
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261013-01">
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261013-01">
   <!-- Utilità Cassa: gli strumenti veri della dashboard (cassa.js, con qrcode.js per il QR) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="assets/js/cassa.js?v=20261012-55"></script>
-  <script src="assets/js/pacchetti.js?v=20261012-55"></script>
+  <script src="assets/js/cassa.js?v=20261013-01"></script>
+  <script src="assets/js/pacchetti.js?v=20261013-01"></script>
   <script>
     // il file del pacchetto scelto, durante la lettura della pagina
     if (parametri.get('pacchetto')) Pacchetti.carica([parametri.get('pacchetto')]);
@@ -46,6 +46,27 @@
     html.solo-modulo .carousel-arrow { display: none !important; }
     html.solo-modulo .carousel-container { overflow: hidden !important; scrollbar-width: none; }
     html.solo-modulo .carousel-container::-webkit-scrollbar { display: none; }
+    /* Gestione pacchetti (catalogo e scheda del modulo): moduli sorgente e moduli clone, come in Gestione negozi: bordo
+       ed etichetta SORGENTE in oro, CLONE in azzurro, accanto al numero (le schede dorate tengono il loro bordo oro, i cloni no) */
+    .carousel-card.modulo-sorgente { border-color: rgba(212, 163, 115, .55) !important; }
+    .carousel-card.modulo-sorgente.gold-bf-card { border-color: var(--gold-border) !important; }
+    .carousel-card.modulo-clone { border-color: rgba(95, 179, 201, .75) !important; }
+    .carousel-card.modulo-sorgente:hover { border-color: var(--accent) !important; }
+    .carousel-card.modulo-clone:hover { border-color: #5fb3c9 !important; }
+    .card-top .tag-modulo { align-self: center; margin-right: auto; padding: 0 6px; border: 1px solid currentColor; border-radius: 3px; background: #0a0908;
+      font: 400 9px/1.6 'JetBrains Mono', monospace; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+    .modulo-sorgente .tag-modulo { color: #d4a373; }
+    .modulo-clone .tag-modulo { color: #5fb3c9; }
+    :root[data-interface-theme="light"] .carousel-card.modulo-sorgente { border-color: rgba(173, 138, 62, .6) !important; }
+    :root[data-interface-theme="light"] .carousel-card.modulo-sorgente.gold-bf-card { border-color: #b48b37 !important; }
+    :root[data-interface-theme="light"] .card-top .tag-modulo { background: #fffdfa; }
+    :root[data-interface-theme="light"] .modulo-sorgente .tag-modulo { color: #ad8a3e; }
+    :root[data-interface-theme="light"] .modulo-clone .tag-modulo { color: #3d8ea3; }
+    /* Utilità Cassa nel catalogo: il comando che apre la scheda del modulo (lo strumento resta vivo) */
+    .apri-scheda-modulo { position: absolute; top: 8px; right: 8px; z-index: 2; padding: 1px 7px; border: 1px solid #d4a373; border-radius: 3px;
+      background: #0a0908; color: #d4a373; font: 400 10px/1.6 'JetBrains Mono', monospace; letter-spacing: .06em; cursor: pointer; }
+    .apri-scheda-modulo:hover, .apri-scheda-modulo:focus-visible { background: #d4a373; color: #121110; outline: none; }
+    :root[data-interface-theme="light"] .apri-scheda-modulo { background: #fffdfa; border-color: #b48b37; color: #8f6a1f; }
   </style>
 </head>
 <body>
@@ -88,18 +109,25 @@
         class: 'preview-image', src: src.startsWith('data:') ? src : `assets/${src}`, alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false
       }));
       return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}${immagini.length > 2 ? ' tre' : ''}`,
-        style: (scheda.stile ? scheda.stile === 'dorata' : pacchetto.tipo === 'promo') ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
+        style: scheda.stile === 'dorata' ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
         immagini, scheda.badge ? el('span', { class: 'card-badge', text: scheda.badge }) : null);
     }
+
+    // Gestione pacchetti: modulo sorgente (scritto a codice: le schede dei set di partenza) o clone (creato dalle utilità:
+    // moduli di una galleria nuova, aggiunti a un set, schede con origine nella dashboard), come in Gestione negozi;
+    // non nell'anteprima (Nuovo modulo, scheda del modulo di Gestione negozi), che mostra il widget come nella dashboard
+    const marca = !anteprimaModulo && pacchetto?.tipo !== 'cassa';
+    const eClone = s => !pacchetto.negozio || Boolean(s.aggiunto || s.origine);
 
     function scheda(s, numero) {
       const cima = el('div', { class: 'card-top' },
         el('span', { class: 'number', text: due(numero) }),
+        marca ? el('span', { class: `tag-modulo`, text: eClone(s) ? 'clone' : 'sorgente' }) : null,
         s.tipo ? el('span', { class: 'card-type', text: s.tipo }) : null);
       const titolo = el('h3', { class: s.compatto ? 'compact-title' : false, text: s.titolo });
-      // scheda dorata: quella delle promo, o di un modulo con stile: 'dorata' (Nuovo modulo); stile: 'normale' la toglie
-      const dorata = s.stile ? s.stile === 'dorata' : pacchetto.tipo === 'promo';
-      const classi = `carousel-card${dorata ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
+      // scheda dorata: la decide il modulo (stile: 'dorata'), non la galleria, come nella dashboard
+      const dorata = s.stile === 'dorata';
+      const classi = `carousel-card${dorata ? ' gold-bf-card' : ''}${marca ? (eClone(s) ? ' modulo-clone' : ' modulo-sorgente') : ''}${s.prossimamente ? ' is-soon' : ''}`;
       const specifiche = s.specifiche?.length
         ? el('div', { class: 'card-desc' }, el('div', {}, el('p', {}, el('span', { class: 'spec-list' },
             s.specifiche.flatMap((testo, i) => [i ? ' ' : null, el('span', { class: 'spec', text: testo })])))))
@@ -149,7 +177,8 @@
       // ogni modulo con il suo nome, nell'ordine del pacchetto: il primo di uno strumento è lo strumento vero, un clone dello
       // stesso strumento (Nuovo modulo) è una sua copia da vedere, senza id, da lavorare poi di codice
       const usati = new Set();
-      pacchetto.moduli.forEach(modulo => {
+      pacchetto.moduli.forEach((modulo, indice) => {
+        if (soloModulo !== null && indice !== soloModulo) return;   // scheda del modulo: solo il suo strumento
         const originale = originali.find(widget => widget.id === modulo.strumento);
         if (!originale) return;
         let widget = originale;
@@ -157,10 +186,18 @@
           widget = originale.cloneNode(true);
           widget.removeAttribute('id');
           widget.querySelectorAll('[id]').forEach(elemento => elemento.removeAttribute('id'));
+          // il comando «scheda ›» dell'originale si copia senza la sua funzione: via, la copia ha il suo
+          widget.querySelectorAll('.apri-scheda-modulo').forEach(comando => comando.remove());
         }
         usati.add(modulo.strumento);
         widget.style.display = '';
         widget.querySelector('h3').textContent = modulo.titolo;
+        // nel catalogo: lo strumento resta vivo (un clic lo usa), la sua scheda del modulo si apre da «scheda ›»
+        if (apriScheda) {
+          widget.style.position = 'relative';
+          widget.append(el('button', { type: 'button', class: 'apri-scheda-modulo', text: 'scheda ›', 'aria-label': `Apri la scheda del modulo ${modulo.titolo}`,
+            onclick: evento => { evento.preventDefault(); evento.stopPropagation(); window.parent.apriModulo(pacchetto.id, indice); } }));
+        }
         strumenti.append(widget);
       });
     } else if (pacchetto) {

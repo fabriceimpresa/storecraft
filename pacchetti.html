@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-55"></script>
+  <script src="assets/js/negozi.js?v=20261013-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261012-55"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261013-01"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-55"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-55"></script>
+  <script src="assets/js/pacchetti.js?v=20261013-01"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261013-01"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261012-55"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261012-55"></script>
+  <script src="assets/js/admin-negozio.js?v=20261013-01"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261013-01"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -503,6 +503,10 @@
   const SCRIVIBILE = typeof (operatore || window).showDirectoryPicker === 'function';
   const scegliProgetto = passaggio => (operatore ? operatore.collegaProgetto(passaggio) : AdminNegozio.scegliProgetto(passaggio));
   let progetto = null;   // cartella del progetto collegata (per scrivere)
+  // come nelle altre sezioni: la cartella già collegata nella pagina operatore, o quella ricordata se il browser dà ancora
+  // il permesso, senza chiedere niente (i pulsanti sono subito «✓ cartella collegata»)
+  if (operatore?.progettoCollegato) progetto = operatore.progettoCollegato;
+  else operatore?.progettoSenzaChiedere?.().then(cartella => { if (cartella && !progetto) progetto = cartella; }).catch(() => {});
   let vetrinaModulo = null;
 
   const nodo = (tag, classe, testo) => {
@@ -594,8 +598,8 @@
     const pacchetto = Pacchetti.pacchetto(id);
     const sorgente = pacchetto.moduli[Number(indice)];
     const dorata = document.querySelector('#nm-stile [aria-pressed="true"]').dataset.valore === 'dorata';
-    // tipo: quello della galleria esistente; per una nuova galleria di cartelli lo decide lo stile (dorata: promo)
-    const tipo = galleriaScelta.id ? galleriaScelta.tipo : galleriaScelta.famiglia === 'cartelli' ? (dorata ? 'promo' : 'cartelli') : galleriaScelta.famiglia;
+    // tipo: quello della galleria esistente, o della famiglia per una nuova (lo stile non lo cambia: è del modulo)
+    const tipo = galleriaScelta.id ? galleriaScelta.tipo : galleriaScelta.famiglia;
     const nome = document.getElementById('nm-nome').value.trim() || 'Nuovo modulo';
     const specifiche = document.getElementById('nm-note').value.split('\n').map(riga => riga.trim()).filter(Boolean);
     // tipo: la voce del menu, o quello scritto con «altro…»
@@ -603,8 +607,8 @@
     const tipoScritto = sceltaTipo === ALTRO_TIPO ? document.getElementById('nm-tipo').value.trim().toUpperCase() : sceltaTipo;
     const scheda = sorgente.strumento ? { titolo: nome, strumento: sorgente.strumento } : { titolo: nome, tipo: tipoScritto || sorgente.tipo,
       alt: `Anteprima ${nome}`, ...(specifiche.length ? { specifiche } : {}), ...(document.getElementById('nm-menu').checked ? { badge: 'MENU SPECIALE' } : {}) };
-    // stile diverso da quello della galleria (es. dorato in Outlet): il modulo porta il suo (scheda dorata o normale)
-    if (galleriaScelta.famiglia === 'cartelli' && dorata !== (tipo === 'promo')) scheda.stile = dorata ? 'dorata' : 'normale';
+    // scheda dorata: lo stile è del modulo, in qualunque galleria stia (regola del 13 ottobre 2026)
+    if (STILE_LIBERO.includes(galleriaScelta.famiglia) && dorata) scheda.stile = 'dorata';
     return { pacchetto, sorgente: { cartella: sorgente.cartella || pacchetto.cartella, link: sorgente.link, strumento: sorgente.strumento }, tipo, nome, scheda };
   }
 
@@ -720,7 +724,8 @@
   // etichette: i layout spuntati del set scelto
   const layoutScelti = () => [...document.querySelectorAll('#nm-layout [data-layout]:checked')].map(s => Pacchetti.pacchetto(galleriaScelta.id).moduli[Number(s.value)]);
 
-  // dal modulo di partenza: tipo, note, MENU SPECIALE; lo stile lo decide la galleria (solo una nuova di cartelli lo lascia scegliere)
+  // dal modulo di partenza: tipo, note, MENU SPECIALE; lo stile (normale o dorato) si sceglie per cartelli e cartellini
+  const STILE_LIBERO = ['cartelli', 'cartellini'];
   function presetNuovo() {
     if (galleriaScelta.famiglia === 'etichette') return;
     const [id, indice] = document.getElementById('nm-sorgente').value.split(':');
@@ -728,9 +733,9 @@
     impostaTipo(m.tipo || '');
     document.getElementById('nm-note').value = (m.specifiche || []).join('\n');
     document.getElementById('nm-menu').checked = Boolean(m.badge);
-    // lo stile si sceglie per tutti i cartelli; parte da quello della galleria (o, per una nuova, del modulo di partenza)
-    const libero = galleriaScelta.famiglia === 'cartelli';
-    const stile = (galleriaScelta.id ? galleriaScelta.tipo : p.tipo) === 'promo' && libero ? 'dorata' : 'normale';
+    // lo stile si sceglie per cartelli e cartellini; parte da quello del modulo di partenza (non dalla galleria)
+    const libero = STILE_LIBERO.includes(galleriaScelta.famiglia);
+    const stile = libero && m.stile === 'dorata' ? 'dorata' : 'normale';
     document.querySelectorAll('#nm-stile button').forEach(b => {
       b.setAttribute('aria-pressed', String(b.dataset.valore === stile));
       b.disabled = !libero && b.dataset.valore !== stile;
@@ -738,6 +743,12 @@
   }
 
   function apriNuovo() {
+    // la cartella già collegata (pagina operatore, o in questa pagina): il pulsante è subito «✓ cartella collegata»
+    if (!progetto && operatore?.progettoCollegato) progetto = operatore.progettoCollegato;
+    if (progetto) {
+      document.getElementById('nm-collega').textContent = '✓ cartella collegata';
+      document.getElementById('nm-collega').classList.add('collegata');
+    }
     document.getElementById('vista-catalogo').hidden = true;
     document.getElementById('vista-nuovo').hidden = false;
     if (!document.getElementById('nm-tipi').options.length) {
@@ -816,7 +827,7 @@
       const { blob } = await miniaturaNuovoModulo(dati.nome);
       const { galleria, pagina } = await Associa.creaModulo(progetto, { sorgente: dati.sorgente, nome: dati.nome, scheda: dati.scheda,
         tipo: dati.tipo, galleria: galleriaScelta.id, miniatura: blob, avviso });
-      avviso(`creato: ${pagina} nella galleria ${galleria}. per metterlo in un negozio usa le spunte della sua scheda. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
+      avviso(`creato: ${pagina || dati.nome} nella galleria ${galleria}. per metterlo in un negozio usa le spunte della sua scheda. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
       setTimeout(() => location.reload(), 1200);
     } catch (errore) {
       console.error(errore);

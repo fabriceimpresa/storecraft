@@ -343,10 +343,8 @@
     const nome = pagina(modulo.link);
     if (usato(testo, a, da, nome)) return;
     const scheda = { ...modulo };
-    // un modulo con il suo stile va nella sezione di quello stile: dorato nelle promo, normale nei cartelli
-    if (modulo.stile === 'dorata') tipo = 'promo';
-    else if (modulo.stile === 'normale' && tipo === 'promo') tipo = 'cartelli';
-    delete scheda.stile;
+    // lo stile dorato è del modulo (stile: 'dorata'), non della galleria: la scheda lo porta con sé in qualunque sezione
+    // vada (regola del 13 ottobre 2026); la sezione è quella del tipo della galleria
     delete scheda.aggiunto;
     delete scheda.prossimamente;
     delete scheda.cartella;   // cartella del modulo nelle gallerie: nella dashboard il collegamento è dalla cartella del negozio
@@ -491,9 +489,11 @@ Pacchetti.registra('${galleria}', {
 `);
       const elenco = 'assets/pacchetti/elenco.js';
       const testo = await (await leggi(progetto, elenco)).text();
-      const inizio = testo.indexOf('installa([') + 'installa('.length;
-      const fine = chiusura(testo, inizio);
-      await scriviFile(progetto, elenco, `${testo.slice(0, fine)}, '${galleria}'${testo.slice(fine)}`);
+      // in testa all'elenco: la galleria nuova è la prima del suo gruppo in Gestione pacchetti (una voce rimasta con lo stesso
+      // nome, di una galleria cancellata a mano, si toglie: non si ripete)
+      const pulito = togliDaElenco(testo, galleria);
+      const inizio = pulito.indexOf('installa([') + 'installa(['.length;
+      await scriviFile(progetto, elenco, `${pulito.slice(0, inizio)}'${galleria}', ${pulito.slice(inizio)}`);
     }
     return { galleria, pagina: percorso };
   }

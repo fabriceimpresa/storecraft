@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-55"></script>
+  <script src="assets/js/negozi.js?v=20261013-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261012-55"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261013-01"></script>
   <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-55"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261013-01"></script>
   <!-- MODULI (accanto ai negozi): il catalogo dei moduli, letto dai pacchetti di Gestione pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261012-55"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261012-55"></script>
+  <script src="assets/js/pacchetti.js?v=20261013-01"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261013-01"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
@@ -168,13 +168,14 @@
       border-radius: 6px; background: #121110; color: var(--testo); font: inherit; text-align: left; cursor: pointer; scroll-snap-align: start;
       transition: border-color .2s, transform .2s, opacity .2s, box-shadow .2s; }
     .widget:hover, .widget:focus-visible { border-color: var(--oro); transform: translateY(-2px); outline: none; box-shadow: 0 4px 10px rgba(0, 0, 0, .45); }
-    /* Promo Stagionali come nella dashboard (.gold-bf-card): bordo oro, fondo bruno caldo con un alone oro, titolo oro;
+    /* Promo Stagionali come nella dashboard (.gold-bf-card): bordo oro, fondo bruno caldo con un alone oro, titolo oro (classe
+       dorata: i moduli con stile: 'dorata', in qualunque galleria stiano);
        un clone resta con il bordo azzurro. MENU SPECIALE (badge della scheda) è l'etichetta dorata sull'anteprima */
-    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget { border-color: #d4a373; background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%);
+    .widget.dorata:is(.sorgente, .clone) { border-color: #d4a373; background: linear-gradient(145deg, #1f1a14 0%, #2a2218 100%);
       box-shadow: 0 0 8px rgba(212, 163, 115, .25); }
-    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget:hover { border-color: #e5ba73; box-shadow: 0 0 14px rgba(229, 186, 115, .45); }
-    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget.clone { border-color: var(--clone); }
-    :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .w-titolo { color: #e5ba73; text-shadow: 0 0 6px rgba(212, 163, 115, .35); }
+    .widget.dorata:is(.sorgente, .clone):hover { border-color: #e5ba73; box-shadow: 0 0 14px rgba(229, 186, 115, .45); }
+    .widget.dorata.clone { border-color: var(--clone); }
+    .widget.dorata .w-titolo { color: #e5ba73; text-shadow: 0 0 6px rgba(212, 163, 115, .35); }
     .w-badge { position: absolute; right: 3px; bottom: 3px; z-index: 1; padding: 0 3px; border-radius: 2px;
       background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #000; box-shadow: 0 1px 2px rgba(0, 0, 0, .5);
       font: 800 6.5px/1.6 var(--mono); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; pointer-events: none; }
@@ -186,7 +187,7 @@
     .w-num { color: var(--tenue); font: 400 9.5px 'JetBrains Mono', var(--mono); }
     .w-anteprima { display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 9; margin: 0 5px; overflow: hidden; border-radius: 3px;
       background: radial-gradient(circle, #1f1d1a 0%, #0a0908 100%); }
-    .ramo[data-tipo="promo"] .w-anteprima, .modulo-anteprima[data-tipo="promo"] .w-anteprima { background: radial-gradient(circle, #2a2218 0%, #0a0908 100%); }
+    .widget.dorata .w-anteprima { background: radial-gradient(circle, #2a2218 0%, #0a0908 100%); }
     .w-anteprima img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; }
     .w-anteprima .w-icona { color: var(--tenue); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
     .w-titolo { display: block; padding: 5px 7px 7px; overflow: hidden; color: var(--testo); font: 400 10px/1.3 var(--mono); letter-spacing: .02em;
@@ -486,8 +487,11 @@
     /* ----- Tema e aspetto dei widget: quattro quadratini sotto il riquadro del negozio (tema scuro e chiaro, aspetto
        STANDARD e COMPATTO con la A); cambiano i widget del diagramma e della scheda del modulo come nelle dashboard ----- */
     .colonna-negozio { position: relative; flex: none; }
-    .stile-widget { position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 7px; }
-    .stile-sep { width: 1px; height: 18px; margin: 0 4px; background: var(--bordo); }
+    /* larghi al massimo quanto il riquadro del negozio (132 px), che sta sul bordo sinistro del diagramma: se sporgono,
+       il primo quadratino resta tagliato; da 1400 px di pagina, con il riquadro più largo, tornano più distanziati */
+    .stile-widget { position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 5px; }
+    .stile-sep { width: 1px; height: 18px; margin: 0 1px; background: var(--bordo); }
+    @container pagina (min-width: 1400px) { .stile-widget { gap: 7px; } .stile-sep { margin: 0 4px; } }
     .stile-q { width: 26px; height: 26px; padding: 0; border: 1px solid #4a453d; border-radius: 4px; background: #0a0908; color: var(--oro-chiaro);
       font: 600 14px/1 'Cinzel', serif; cursor: pointer; transition: border-color .15s, box-shadow .15s; }
     .stile-q.q-dark { background: #121110; }
@@ -519,6 +523,17 @@
     .divisorio { width: 26px; height: 26px; padding: 0; border: 1px solid var(--oro); border-radius: 3px; background: none; color: var(--oro);
       font: 400 14px/1 var(--mono); cursor: pointer; }
     .divisorio:hover, .divisorio:focus-visible { background: var(--oro); color: #121110; outline: none; }
+    /* stile del widget: in vista il pallino (oro se dorato), con il lucchetto aperto due pulsanti normale / dorato */
+    .campo-stile { display: inline-flex; align-items: center; gap: 8px; }
+    .stile-segno { width: 9px; height: 9px; border: 1px solid var(--tenue); border-radius: 50%; }
+    .stile-segno.dorato { border-color: #e5ba73; background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c); box-shadow: 0 0 5px rgba(212, 163, 115, .55); }
+    .scelta-stile { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--bordo); border-radius: 4px; background: #0a0908; }
+    .stile-voce { min-width: 78px; padding: 4px 10px; border: 1px solid transparent; border-radius: 3px; background: none; color: var(--tenue);
+      font: 400 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+    .stile-voce:hover:not(:disabled), .stile-voce:focus-visible { color: var(--oro-chiaro); border-color: var(--oro-scuro); outline: none; }
+    .stile-voce[aria-pressed="true"] { background: var(--oro); color: #121110; }
+    .stile-voce.dorato[aria-pressed="true"] { background: linear-gradient(135deg, #b88d4c, #f4e3c9, #b88d4c, #e5ba73); color: #121110; }
+    .stile-voce:disabled { cursor: default; }
     .galleria-menu { position: relative; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 8px; }
     .galleria-menu select { cursor: pointer; }
     .conferma-sposta { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border: 1px solid var(--oro-scuro); border-radius: 4px;
@@ -587,11 +602,14 @@
     body[data-widget-tema="light"] .widget .w-num { color: #b48b37; }
     body[data-widget-tema="light"] .widget :is(.w-negozi, .w-spec-testo) { color: #665e54; }
     body[data-widget-tema="light"] .widget .w-tipo { background: #fffdfa; }
+    /* l'etichetta SORGENTE sul widget chiaro: oro scuro, altrimenti sul fondo avorio non si legge (CLONE resta azzurro, più scuro) */
+    body[data-widget-tema="light"] .widget.sorgente .w-tipo { color: #8a6418; }
+    body[data-widget-tema="light"] .widget.clone .w-tipo { color: #2f7f93; }
     body[data-widget-tema="light"] .widget .w-segno { color: #ad8a3e; }
-    body[data-widget-tema="light"] :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget { background: #fbf5e7; border-color: #b48b37;
+    body[data-widget-tema="light"] .widget.dorata { background: #fbf5e7; border-color: #b48b37;
       box-shadow: 0 0 0 1px rgba(180, 139, 55, .35), 0 1px 3px rgba(40, 34, 28, .2); }
-    body[data-widget-tema="light"] :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget .w-titolo { color: #b48b37; text-shadow: none; }
-    body[data-widget-tema="light"] :is(.ramo[data-tipo="promo"], .modulo-anteprima[data-tipo="promo"]) .widget .w-anteprima { background: #eee8dd; }
+    body[data-widget-tema="light"] .widget.dorata .w-titolo { color: #b48b37; text-shadow: none; }
+    body[data-widget-tema="light"] .widget.dorata .w-anteprima { background: #eee8dd; }
 
     /* Dentro la pagina operatore (?incorporata, operatore-sezione.js): niente intestazione propria né fondo */
     html.incorporata, html.incorporata body { overflow: hidden; background: transparent; }
@@ -819,7 +837,21 @@
     $('diagramma').classList.toggle('in-modifica', modifica);
     ridisegna();
   }
-  $('modifica').addEventListener('click', () => impostaModifica(!modifica));
+  // aprendo il lucchetto con la cartella non ancora collegata si apre subito la finestra per sceglierla (il clic sul
+  // lucchetto vale per Chrome, che apre la finestra solo subito dopo un clic); chiusa senza scegliere, il lucchetto si
+  // apre lo stesso, con l'avviso che le modifiche non si possono salvare
+  $('modifica').addEventListener('click', async () => {
+    if (modifica || progetto || !SCRIVIBILE) { impostaModifica(!modifica); return; }
+    try {
+      await collega();
+      esito(`cartella del progetto collegata: ${progetto.name}`, 'ok');
+      if (negozioScelto === MODULI) await caricaCatalogo(); else await carica(negozioScelto);
+    } catch (errore) {
+      if (errore.name === 'AbortError') esito('cartella non collegata: le modifiche non si possono salvare', 'nota');
+      else { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+    }
+    impostaModifica(true);
+  });
   $('modifica').title = 'apri il lucchetto per spostare i moduli';
 
   // testo di un file: dalla cartella collegata (dopo una modifica è già quello nuovo) o dal sito
@@ -1161,9 +1193,12 @@
     return barra;
   }
 
+  // widget dorato (come le Promo Stagionali): lo decide il modulo (stile: 'dorata'), non la galleria, come nella dashboard
+  const dorato = scheda => scheda.stile === 'dorata';
+
   function widget(id, sezione, scheda, numero, grande = false) {
     const stato = statoDi(scheda);
-    const elemento = nodo('div', `widget in-${stato} ${eClone(id, scheda) ? 'clone' : 'sorgente'}`);
+    const elemento = nodo('div', `widget in-${stato} ${eClone(id, scheda) ? 'clone' : 'sorgente'}${dorato(scheda) ? ' dorata' : ''}`);
     if (!grande) {
       premibile(elemento);
       elemento.draggable = modifica;   // si trascinano solo con il lucchetto aperto (modalità modifica)
@@ -1999,8 +2034,18 @@
   const confermaSorgente = (id, scheda, sorgente) => !sorgente || window.confirm(`Stai per modificare un modulo sorgente: ${scheda.titolo} (${nomeNegozio(id)}).\n\n`
     + 'I moduli sorgente sono scritti a codice: la modifica cambia la sua scheda nella dashboard del negozio. Procedere?');
   async function scriviModulo(id, scheda, sorgente, cambia, fatto) {
+    // prima la cartella: Chrome apre la finestra di scelta solo subito dopo il clic, e la conferma del sorgente in mezzo
+    // gli farebbe perdere il clic («clicca di nuovo il pulsante»)
+    if (!await cartellaPronta()) return false;
     if (!confermaSorgente(id, scheda, sorgente)) return false;
     return scriviDashboard(id, cambia, fatto);
+  }
+  async function cartellaPronta() {
+    try { await collega(); return true; } catch (errore) {
+      if (errore.name === 'AbortError') esito('cartella non collegata: nessuna modifica', 'nota');
+      else { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+      return false;
+    }
   }
 
   // Campo MINIATURE della scheda del modulo: le anteprime degli scatti della scheda (1, 2 o 3: nella dashboard si alternano
@@ -2082,11 +2127,9 @@
       salva = nodo('button', 'comando', 'salva miniature');
       salva.type = 'button';
       salva.addEventListener('click', async () => {
+        // prima la cartella, poi la conferma del sorgente (come scriviModulo)
+        if (!await cartellaPronta()) return;
         if (!confermaSorgente(id, scheda, sorgente)) return;
-        try { await collega(); } catch (errore) {
-          esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
-          return;
-        }
         salva.disabled = true;
         try {
           const percorsi = [];
@@ -2125,6 +2168,29 @@
     pulsante.addEventListener('click', conferma);
     input.addEventListener('keydown', evento => { if (evento.key === 'Enter') { evento.preventDefault(); conferma(); } });
     campo.append(input, pulsante);
+    return campo;
+  }
+  // lo stile del widget: in vista «normale» o «dorato» (con il pallino oro); con il lucchetto aperto due pulsanti, NORMALE e
+  // DORATO, e un clic sull'altro scrive la scheda (salva(true) per dorato)
+  function campoStile(scheda, salva) {
+    const dorato = scheda.stile === 'dorata';
+    const campo = nodo('span', 'campo-stile');
+    if (!modifica) {
+      campo.append(nodo('span', `stile-segno${dorato ? ' dorato' : ''}`), dorato ? 'dorato, come le Promo Stagionali' : 'normale');
+      return campo;
+    }
+    const scelta = nodo('span', 'scelta-stile');
+    scelta.setAttribute('role', 'group');
+    scelta.setAttribute('aria-label', 'Stile del widget');
+    [[false, 'normale'], [true, 'dorato']].forEach(([valore, testo]) => {
+      const pulsante = nodo('button', `stile-voce${valore ? ' dorato' : ''}`, testo);
+      pulsante.type = 'button';
+      pulsante.setAttribute('aria-pressed', String(valore === dorato));
+      pulsante.disabled = !SCRIVIBILE;
+      pulsante.addEventListener('click', () => { if (valore !== dorato) salva(valore); });
+      scelta.append(pulsante);
+    });
+    campo.append(scelta);
     return campo;
   }
   // le specifiche in un campo solo, divise dal divisorio | delle descrizioni della dashboard; il pulsantino | lo inserisce
@@ -2291,6 +2357,10 @@
     const scriviCampi = (campi, fatto) => scriviModulo(id, scheda, !origine, testo => Associa.modificaScheda(testo, sezione.id, chiaveModulo, campi), fatto);
     if (modifica) voce('tipo', campoModifica(scheda.tipo || '', 30, 'es. CARTELLO', valore => scriviCampi({ tipo: valore }, `tipo di ${scheda.titolo}: ${valore || 'nessuno'}`)));
     else if (scheda.tipo) voce('tipo', scheda.tipo);
+    // stile del widget (cartelli, promo e cartellini): normale o dorato come le Promo Stagionali. È del widget, non della
+    // galleria (stile: 'dorata' nella scheda; normale: niente stile); con il lucchetto aperto si cambia con i due pulsanti
+    if (ASSOCIABILI.includes(sezione.tipo)) voce('stile', campoStile(scheda, dorata => scriviCampi({ stile: dorata ? 'dorata' : null },
+      `${scheda.titolo}: widget ${dorata ? 'dorato' : 'normale'} nella dashboard di ${nomeNegozio(id)}`)));
     if (modifica) voce('galleria', menuGalleria(id, sezione, scheda, chiaveModulo, !origine));
     else voce('galleria', `${sezione.titolo} (${sezione.tipo})`);
     // posizione nel carosello, con i comandi per spostarlo
@@ -2317,7 +2387,7 @@
     // il tipo di modulo con la sua etichetta: SORGENTE in oro o CLONE in azzurro, come sui widget del diagramma
     const tipoModulo = nodo('span', 'tipo-modulo');
     tipoModulo.append(nodo('span', `tag-modulo ${origine ? 'clone' : 'sorgente'}`, origine ? 'clone' : 'sorgente'),
-      origine ? 'si modifica tutto, si sposta, si cancella' : 'con il lucchetto aperto si cambiano stato, tipo, galleria, posizione, specifiche, temi e miniature; il resto e la cancellazione solo dal codice');
+      origine ? 'si modifica tutto, si sposta, si cancella' : 'con il lucchetto aperto si cambiano stato, tipo, stile, galleria, posizione, specifiche, temi e miniature; il resto e la cancellazione solo dal codice');
     voce('modulo', tipoModulo);
     voce('origine', origine ? `clone di ${origine}` : derivataDa ? `scritto a codice, derivato da ${derivataDa}` : nomePagina ? 'pagina originale del negozio' : scheda.pdf ? 'stampa pronta (PDF)' : 'scheda della dashboard');
     if (modifica) voce('specifiche', campoSpecifiche(scheda.specifiche || [], valori => scriviCampi({ specifiche: valori }, `specifiche di ${scheda.titolo} salvate`)));
@@ -2435,7 +2505,7 @@
     const blocco = nodo('div', `azione ${clone ? 'clone' : 'sorgente'}`);
     blocco.append(nodo('h4', '', 'modifica'));
     if (!clone) {
-      blocco.append(nodo('p', '', 'modulo sorgente: con il lucchetto aperto si cambiano nei dettagli stato, tipo, galleria, posizione, specifiche, temi speciali e miniature; titolo e pagina solo dal codice (assets/negozi/'
+      blocco.append(nodo('p', '', 'modulo sorgente: con il lucchetto aperto si cambiano nei dettagli stato, tipo, stile, galleria, posizione, specifiche, temi speciali e miniature; titolo e pagina solo dal codice (assets/negozi/'
         + `${id}-dashboard.js e la sua pagina)`));
       return blocco;
     }
@@ -2515,7 +2585,7 @@
     const stato = usatoIn.length ? 'attivo' : 'libero';
     // i moduli dei set di partenza sono sorgente; i moduli nuovi (creati dalle utilità) sono cloni
     const nuovo = nuovoModulo(pacchetto, modulo);
-    const elemento = nodo('div', `widget in-attivo ${nuovo ? 'clone' : 'sorgente'}`);
+    const elemento = nodo('div', `widget in-attivo ${nuovo ? 'clone' : 'sorgente'}${dorato(modulo) ? ' dorata' : ''}`);
     if (!grande) {
       premibile(elemento);
       elemento.dataset.chiave = `${pacchetto.id}:${indice}`;

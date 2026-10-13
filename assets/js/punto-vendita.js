@@ -31,6 +31,8 @@
       indirizzoBreve: scheda.indirizzoBreve || scheda.indirizzo || scheda.nome,
       logoMenu: new URL(`assets/${scheda.logoMenu || scheda.logoSplash}`, RADICE).href,
       larghezzaLogoMenu: scheda.logoMenuLarghezza || scheda.logoSplashLarghezza || 150,
+      // logo del riquadro del negozio nella lista NEGOZI (senza: quello del menu)
+      logoNegozi: new URL(`assets/${scheda.logoNegozi || scheda.logoMenu || scheda.logoSplash}`, RADICE).href,
       pronto: true
     })];
   })));

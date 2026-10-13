@@ -11,6 +11,8 @@ Negozi.registra('luxury', {
   indirizzoBreve: 'CORSO 15',   // nel menu da computer, più stretto
   logoMenu: 'img/luxury/logo-lxry-orizzontale.png',
   logoMenuLarghezza: 185,
+  // logo del riquadro del negozio nella lista NEGOZI del menu di sistema (senza: logoMenu): qui LUXURY OUTLET su due righe
+  logoNegozi: 'img/luxury/logo-dashboard.png',
   // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport)
   oro: '#b48b37',
   // brand prioritari nei menu BRAND: 'stella' (stella gialla ★, i brand stagionali) o 'maiuscolo' (⭐ e maiuscolo)

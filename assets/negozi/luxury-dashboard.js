@@ -33,14 +33,15 @@ Dashboard.contenuto({
     },
     {
       id: 'seasonal-promo-section', carosello: 'seasonal-promo-carousel', titolo: 'Promo Stagionali', tipo: 'promo',
+      // schede dorate: le decide stile: 'dorata' di ogni scheda, non la galleria (regola del 13 ottobre 2026)
       schede: [
-        { titolo: 'Promo Multibrand ✦', voce: 'Promo Multibrand', link: 'promo_multibrand.html', tipo: 'FASCE COLORE', miniature: ['thumbnail/luxury/promomultibrand.png'],
+        { titolo: 'Promo Multibrand ✦', voce: 'Promo Multibrand', link: 'promo_multibrand.html', tipo: 'FASCE COLORE', miniature: ['thumbnail/luxury/promomultibrand.png'], stile: 'dorata',
           alt: 'Anteprima Promo Multibrand', badge: 'MENU SPECIALE', specifiche: ['50% + 50%', 'Fasce Colore', 'Testo Libero', 'I Miei Loghi'] },
-        { titolo: 'Black Friday ✦', voce: 'Black Friday', link: 'blackfriday.html', tipo: 'BLACK FRIDAY', miniature: ['thumbnail/luxury/blackfriday.png'],
+        { titolo: 'Black Friday ✦', voce: 'Black Friday', link: 'blackfriday.html', tipo: 'BLACK FRIDAY', miniature: ['thumbnail/luxury/blackfriday.png'], stile: 'dorata',
           alt: 'Anteprima Black Friday', badge: 'ALTO IMPATTO', specifiche: ['Brand', 'I Miei Loghi', 'Descrizione', 'Doppio Prezzo', 'Sconto'] },
-        { titolo: 'Black Friday Lips ✦', voce: 'Black Friday Lips', link: 'blackfridaylips.html', tipo: 'BLACK FRIDAY', miniature: ['thumbnail/luxury/blackfridaylips.png'],
+        { titolo: 'Black Friday Lips ✦', voce: 'Black Friday Lips', link: 'blackfridaylips.html', tipo: 'BLACK FRIDAY', miniature: ['thumbnail/luxury/blackfridaylips.png'], stile: 'dorata',
           alt: 'Anteprima Black Friday Lips', badge: 'ALTO IMPATTO', specifiche: ['Grafica Lips', 'Prezzo'] },
-        { titolo: 'Xmas Ball ✦', voce: 'Xmas Ball', link: 'xmas_ball.html', tipo: 'CHRISTMAS', miniature: ['thumbnail/luxury/xmasball.png'],
+        { titolo: 'Xmas Ball ✦', voce: 'Xmas Ball', link: 'xmas_ball.html', tipo: 'CHRISTMAS', miniature: ['thumbnail/luxury/xmasball.png'], stile: 'dorata',
           alt: 'Anteprima Xmas Ball', badge: 'MENU SPECIALE', specifiche: ['Brand', 'I Miei Loghi', 'Colore Palla', 'Doppio Prezzo', 'Sconto'] }
       ]
     },

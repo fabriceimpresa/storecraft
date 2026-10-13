@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261012-55"></script>
+  <script src="assets/js/negozi.js?v=20261013-01"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261012-55"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261013-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -408,14 +408,22 @@
       if (ricordata && await ricordata.queryPermission({ mode: 'readwrite' }).catch(() => 'denied') === 'granted') window.progettoCollegato = ricordata;
       return window.progettoCollegato;
     };
+    // la richiesta di permesso sulla cartella ricordata consuma il clic: se non va a buon fine, Chrome non aprirebbe più
+    // la finestra di scelta («clicca di nuovo») e al clic dopo si ripeterebbe tutto. Rifiutata una volta, i clic dopo
+    // aprono direttamente la finestra di scelta della cartella
+    let ricordataRifiutata = false;
     window.collegaProgetto = async (passaggio = () => {}) => {
       if (window.progettoCollegato) return window.progettoCollegato;
-      const ricordata = await cartellaRicordata('leggi');
+      const ricordata = ricordataRifiutata ? null : await cartellaRicordata('leggi');
       if (ricordata) {
         passaggio(`cartella "${ricordata.name}" già collegata: chiedo il permesso di modificare i file («Modifica file»)…`);
-        let permesso = await ricordata.queryPermission({ mode: 'readwrite' });
+        let permesso = await ricordata.queryPermission({ mode: 'readwrite' }).catch(() => 'denied');
         if (permesso !== 'granted') permesso = await ricordata.requestPermission({ mode: 'readwrite' }).catch(() => 'denied');
         if (permesso === 'granted') return (window.progettoCollegato = ricordata);
+        ricordataRifiutata = true;
+        // il clic è stato usato dalla richiesta di permesso: la finestra di scelta si apre al prossimo clic
+        if (navigator.userActivation && !navigator.userActivation.isActive)
+          throw new Error(`Chrome non ha dato il permesso sulla cartella ricordata "${ricordata.name}": clicca di nuovo il pulsante e scegli la cartella STORECRAFT nella finestra`);
       }
       window.progettoCollegato = await Associa.scegliProgetto(passaggio);
       await cartellaRicordata(window.progettoCollegato);
@@ -468,6 +476,8 @@
     async function apri(nome, subito = false) {
       const nuova = VISTE[nome] ? nome : null;
       if (nuova === vistaAperta) return;
+      // Prepara copia: la cartella del progetto già collegata (o ricordata con il permesso valido) è subito il passo 1
+      if (nuova === 'copia') window.progettoSenzaChiedere().then(c => { if (c && !sorgente && !inCorso) usaSorgente(c); }).catch(() => {});
       const voci = [...menu.querySelectorAll('.voce')];
       const anima = !subito && !piano.matches;
       if (nuova && anima) {
@@ -634,6 +644,8 @@
     // 1. Cartella del progetto: deve contenere index.html e assets/negozi/installati.js
     $('pickSource').addEventListener('click', async () => {
       if (inCorso) return;
+      // la cartella già collegata in un'altra sezione (o ricordata): si usa quella, senza chiederla di nuovo
+      if (!sorgente && window.progettoCollegato) { await usaSorgente(window.progettoCollegato); return; }
       let scelta;
       try {
         scelta = await window.showDirectoryPicker({ id: 'storecraft-progetto', mode: 'read' });
@@ -641,6 +653,10 @@
         if (errore.name !== 'AbortError') stato($('sourceStatus'), `Cartella non collegata: ${errore.message}`, 'err');
         return;
       }
+      await usaSorgente(scelta);
+    });
+    // la cartella del progetto per la copia: controllata, con i negozi dalle schede
+    async function usaSorgente(scelta) {
       try {
         const assets = await cartella(scelta, 'assets');
         const schede = assets && await cartella(assets, 'negozi');
@@ -671,7 +687,7 @@
         $('pickSource').classList.remove('collegata');
         mostraNegozi();
       }
-    });
+    }
 
     // 2. Caselle dei negozi
     function mostraNegozi() {

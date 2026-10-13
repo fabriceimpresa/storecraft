@@ -25,16 +25,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta San
 .mobile-nav-toggle { display: none; }
 .mobile-brand-footer { display: none; }
 .system-fab { display: none; }
-/* Menu di sistema, da computer e tablet come sul telefono (le regole del telefono più sotto): a destra di PROFILO UTENTE il
-   logo dorato del negozio attivo al posto della sigla; nella lista NEGOZI per ogni negozio l'indirizzo (VIA DEL CORSO 15…)
-   al posto del nome e a destra il logo, dorato l'attivo con l'oro del marchio STORE // CRAFT e grigi gli altri, al posto
-   del rettangolino «LXRY · ATTIVO» e della freccia › (indirizzo e logoMenu della scheda del negozio, dashboard.js) */
-.system-store-name, .system-store-status, .system-store-sigla, .system-store-freccia { display: none; }
-.system-store-indirizzo { display: none; }   /* da computer l'indirizzo breve, «CORSO 15»; sul telefono quello intero */
-.system-store-indirizzo-breve { white-space: nowrap; }
+/* Menu di sistema: a destra di PROFILO UTENTE il logo dorato del negozio attivo (logoMenu della scheda) al posto della
+   sigla. La lista NEGOZI (riquadri con logo e indirizzo) sta in theme.css */
+.system-store-sigla { display: none; }
 .system-store-logo { display: block; flex: none; width: calc(var(--logo-larghezza, 185px) * .36); max-width: 50%; height: auto; max-height: 16px; object-fit: contain; filter: brightness(0) invert(.5); opacity: .75; transition: opacity .16s ease; }
-.system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-logo { opacity: 1; }
-:is(.system-store-choice.is-active, .system-store-current) .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
+.system-store-current .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
 .system-store-current { display: flex; align-items: center; justify-content: flex-end; }
 .system-store-current .system-store-logo { width: calc(var(--logo-larghezza, 185px) * .22); max-width: none; max-height: 12px; }   /* piccolo: PROFILO UTENTE resta su una riga */
 .voce-guida { display: none; }
@@ -988,16 +983,15 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   body > .system-menu .system-credits { font-size: .86rem !important; }
   body > .system-menu .system-setting-label { font-size: .82rem !important; margin-bottom: 11px; }
   body > .system-menu .theme-choice { min-height: 44px; font-size: .78rem !important; }
-  body > .system-menu .system-store-choice { min-height: 50px; font-size: .82rem !important; }
-  /* lista NEGOZI: ogni negozio con l'indirizzo al posto del nome e a destra il suo logo (quello della dashboard, per
-     Luxury LXRY orizzontale), dorato l'attivo con l'oro del marchio STORE // CRAFT e grigi gli altri, al posto del
-     rettangolino «LXRY · ATTIVO» e della freccia ›; a destra di PROFILO UTENTE il logo dorato al posto della sigla */
-  body > .system-menu :is(.system-store-status, .system-store-sigla, .system-store-name, .system-store-freccia) { display: none; }
-  body > .system-menu .system-store-indirizzo { display: inline; }
-  body > .system-menu .system-store-indirizzo-breve { display: none; }
+  /* lista NEGOZI: i riquadri più grandi (logo, indirizzo, ATTIVO) */
+  body > .system-menu .system-store-list { --logo-lato: 62px; gap: 12px; }
+  body > .system-menu .system-store-choice { min-height: 108px; gap: 11px; }
+  body > .system-menu .system-store-via { font-size: .7rem; }
+  body > .system-menu .system-store-attivo { top: 9px; right: 10px; font-size: .56rem; }
+  /* a destra di PROFILO UTENTE il logo dorato al posto della sigla */
+  body > .system-menu .system-store-sigla { display: none; }
   body > .system-menu .system-store-logo { display: block; flex: none; width: calc(var(--logo-larghezza, 185px) * .45); max-width: 45%; height: auto; max-height: 22px; object-fit: contain; filter: brightness(0) invert(.5); opacity: .75; transition: opacity .16s ease; }
-  body > .system-menu .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-logo { opacity: 1; }
-  body > .system-menu :is(.system-store-choice.is-active, .system-store-current) .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
+  body > .system-menu .system-store-current .system-store-logo { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); opacity: 1; }
   body > .system-menu .system-store-current { display: flex; align-items: center; justify-content: flex-end; }
   body > .system-menu .system-store-current .system-store-logo { width: calc(var(--logo-larghezza, 185px) * .4); max-width: none; max-height: 18px; }
 

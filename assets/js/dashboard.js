@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.21 2026';
+  const VERSIONE = 'V 1.2.22 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -169,17 +169,22 @@
     // altri, al posto del rettangolino «LXRY · ATTIVO» e della freccia ›. Da computer e tablet nomi, rettangolino e freccia
     const logoMenu = (n, alt) => el('img', { class: 'system-store-logo', alt, src: n.logoMenu,
       style: `--logo-larghezza: ${n.larghezzaLogoMenu}px` });
-    const nome = n => [el('span', { class: 'system-store-name', text: n.nome }), el('span', { class: 'system-store-indirizzo', text: n.indirizzo }),
-      el('span', { class: 'system-store-indirizzo-breve', text: n.indirizzoBreve })];   // da computer, «CORSO 15»
+    // Lista NEGOZI (dal 13 ottobre 2026): ogni negozio è un riquadro-pulsante con la cornice sottile e il filetto interno,
+    // come la splash page in piccolo; dentro, al centro, il logo (logoNegozi della scheda: per Luxury LUXURY OUTLET) e sotto
+    // l'indirizzo. Il logo ha la grandezza che gli dà lo stesso peso degli altri: stessa area, letta dalle sue proporzioni
+    // (--logo-fattore, 1 / √(larghezza / altezza)), così un logo su due righe e uno lungo e basso si equilibrano.
+    // Attivo: cornice e logo oro e la scritta ATTIVO; gli altri grigi, oro al passaggio del mouse; spento: IN ARRIVO
+    const marchio = n => el('img', { class: 'system-store-marchio', alt: '', src: n.logoNegozi,
+      onload: evento => { const img = evento.currentTarget; if (img.naturalHeight) img.style.setProperty('--logo-fattore', Math.sqrt(img.naturalHeight / img.naturalWidth).toFixed(3)); } });
+    const riquadro = (n, ...altro) => [el('span', { class: 'system-store-cornice', 'aria-hidden': 'true' }), marchio(n),
+      el('span', { class: 'system-store-via', text: n.indirizzo }), ...altro];
     const negozi = Object.entries(PuntoVendita.NEGOZI).map(([id, n]) => id === negozio
-      ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true },
-          ...nome(n), el('span', { class: 'system-store-status', text: `${n.sigla} · ATTIVO` }),
-          logoMenu(n, `${n.nome}, attivo`))
+      ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true, 'aria-label': `${n.nome}, ${n.indirizzo}: negozio attivo` },
+          ...riquadro(n, el('span', { class: 'system-store-attivo', text: 'ATTIVO' })))
       : el('button', { class: 'system-store-choice', type: 'button', 'aria-pressed': 'false', 'data-punto-vendita': id,
+          'aria-label': `${n.nome}, ${n.indirizzo}${n.pronto ? ': apri la sua dashboard' : ': in arrivo'}`,
           disabled: !n.pronto, onclick: n.pronto ? () => cambiaNegozioDalMenu(id) : null },
-          ...nome(n),
-          n.pronto ? el('span', { class: 'system-store-freccia', 'aria-hidden': 'true', text: '›' }) : el('span', { class: 'system-menu-badge', text: 'IN ARRIVO' }),
-          logoMenu(n, n.nome)));
+          ...riquadro(n, n.pronto ? null : el('span', { class: 'system-store-attivo in-arrivo', text: 'IN ARRIVO' }))));
 
     return el('section', { class: 'system-menu', id: 'system-menu', 'aria-label': 'Menu di sistema', hidden: true },
       el('div', { class: 'system-menu-heading system-menu-title', id: 'system-menu-title', text: 'MENU' }),
@@ -342,13 +347,17 @@
     return scheda.link;
   }
 
+  // scheda dorata (come le Promo Stagionali): la decide la scheda, stile: 'dorata', in qualunque sezione stia, non la galleria
+  // (regola del 13 ottobre 2026)
+  const dorata = s => s.stile === 'dorata';
+
   function anteprima(scheda, sezione) {
     const immagini = (scheda.miniature || []).map((src, i) => el('img', {
       class: 'preview-image', src: risorsa(src), alt: i === 0 ? (scheda.alt || scheda.titolo) : '', 'aria-hidden': i ? 'true' : false,
       onerror: scheda.icona ? event => { event.currentTarget.style.display = 'none'; event.currentTarget.parentElement.querySelector('.preview-icon').style.display = 'block'; } : null
     }));
     return el('div', { class: `preview${immagini.length > 1 ? ' slideshow' : ''}${immagini.length > 2 ? ' tre' : ''}`,
-      style: sezione.tipo === 'promo' ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
+      style: dorata(scheda) ? 'background: radial-gradient(circle, #2a2218 0%, #0a0908 100%);' : false },
       immagini,
       scheda.icona ? el('span', { class: 'preview-icon', style: 'display:none;', text: scheda.icona }) : null,
       scheda.badge ? el('span', { class: 'card-badge', text: scheda.badge }) : null);
@@ -359,7 +368,7 @@
       el('span', { class: 'number', text: due(numero) }),
       s.tipo ? el('span', { class: 'card-type', text: s.tipo }) : null);
     const titolo = el('h3', { class: s.compatto ? 'compact-title' : false, text: s.titolo });
-    const classi = `carousel-card${sezione.tipo === 'promo' ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
+    const classi = `carousel-card${dorata(s) ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
 
     if (sezione.tipo === 'stampe') {
       const href = collegamento(s);

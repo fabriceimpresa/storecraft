@@ -66,7 +66,11 @@
     const { negozio, sezione } = pacchetto.origine;
     const trovata = dashboard[negozio]?.sezioni?.find(voce => voce.id === sezione);
     if (!trovata) throw new Error(`Sezione ${sezione} non trovata in assets/negozi/${negozio}-dashboard.js (pacchetto ${pacchetto.id})`);
-    const schede = trovata.schede.map(scheda => ({ ...scheda }));
+    // un modulo aggiunto (pagina in moduli/) spuntato nel negozio del set ha nella dashboard il suo clone (origine
+    // moduli/<pagina>): non si ripete, resta solo il modulo aggiunto
+    const cloniAggiunti = new Set((pacchetto.aggiunti || []).filter(m => m.link && (m.cartella || pacchetto.cartella) !== negozio)
+      .map(m => `${m.cartella || pacchetto.cartella}/${m.link.split('?')[0]}`));
+    const schede = trovata.schede.filter(scheda => !cloniAggiunti.has(scheda.origine)).map(scheda => ({ ...scheda }));
     // i moduli aggiunti; quelli che intanto sono entrati nella dashboard del negozio (spunta nella loro scheda) non si
     // ripetono: la loro scheda della dashboard resta un modulo aggiunto (spunta del negozio non bloccata)
     const aggiunti = [];
