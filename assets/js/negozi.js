@@ -61,6 +61,8 @@
   });
 
   scrivi(`<script src="${new URL(`installati.js${versione}`, cartella).href}"><\/script>`);
+  // Bacheca dimostrativa (per mostrarla a un cliente): solo con ?demo nell'indirizzo, dopo le schede dei negozi
+  if (/[?&]demo(=|&|$)/.test(location.search)) scrivi(`<script src="${new URL(`bacheca-demo.js${versione}`, script.src).href}"><\/script>`);
 
   // Icona di STORE // CRAFT (S in Cinzel, oro scuro, su fondo bianco), la stessa in tutte le pagine di tutti i negozi:
   // nella scheda del browser (32 o 512 px) e, su iPhone e iPad, sulla schermata Home.

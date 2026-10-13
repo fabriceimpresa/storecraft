@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.22 2026';
+  const VERSIONE = 'V 1.2.23 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -173,14 +173,15 @@
     // come la splash page in piccolo; dentro, al centro, il logo (logoNegozi della scheda: per Luxury LUXURY OUTLET) e sotto
     // l'indirizzo. Il logo ha la grandezza che gli dà lo stesso peso degli altri: stessa area, letta dalle sue proporzioni
     // (--logo-fattore, 1 / √(larghezza / altezza)), così un logo su due righe e uno lungo e basso si equilibrano.
-    // Attivo: cornice e logo oro e la scritta ATTIVO; gli altri grigi, oro al passaggio del mouse; spento: IN ARRIVO
+    // Attivo: cornice e logo oro e un pallino verde che pulsa in alto a destra; gli altri grigi, oro al passaggio del mouse;
+    // spento: IN ARRIVO
     const marchio = n => el('img', { class: 'system-store-marchio', alt: '', src: n.logoNegozi,
       onload: evento => { const img = evento.currentTarget; if (img.naturalHeight) img.style.setProperty('--logo-fattore', Math.sqrt(img.naturalHeight / img.naturalWidth).toFixed(3)); } });
     const riquadro = (n, ...altro) => [el('span', { class: 'system-store-cornice', 'aria-hidden': 'true' }), marchio(n),
-      el('span', { class: 'system-store-via', text: n.indirizzo }), ...altro];
+      el('span', { class: 'system-store-via', text: n.indirizzoBreve }), ...altro];   // breve: «CORSO 15»
     const negozi = Object.entries(PuntoVendita.NEGOZI).map(([id, n]) => id === negozio
       ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true, 'aria-label': `${n.nome}, ${n.indirizzo}: negozio attivo` },
-          ...riquadro(n, el('span', { class: 'system-store-attivo', text: 'ATTIVO' })))
+          ...riquadro(n, el('span', { class: 'system-store-attivo', 'aria-hidden': 'true' })))
       : el('button', { class: 'system-store-choice', type: 'button', 'aria-pressed': 'false', 'data-punto-vendita': id,
           'aria-label': `${n.nome}, ${n.indirizzo}${n.pronto ? ': apri la sua dashboard' : ': in arrivo'}`,
           disabled: !n.pronto, onclick: n.pronto ? () => cambiaNegozioDalMenu(id) : null },
