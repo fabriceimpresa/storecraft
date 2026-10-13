@@ -123,6 +123,7 @@
   // ore di negozio (9:30 - 19:30) di un giorno, a caso
   const orario = (giorno, caso) => giorno + (9.5 + caso() * 10) * 60 * 60 * 1000;
 
+  const foto = [];   // le foto salvate ora: aperta la Bacheca, quando sono pronte la pagina si ricarica (una volta) per mostrarle
   negozi.forEach((n, indice) => {
     try { if (localStorage.getItem(chiaveDemo(n))) return; } catch { return; }
     const caso = generatore(20261013 + indice * 97);
@@ -175,7 +176,8 @@
     scrivi(chiaveCom(n), leggi(chiaveCom(n)).filter(c => c.id !== id).concat(comunicazione));
     try { localStorage.setItem(chiaveDemo(n), String(ora)); } catch { /* niente */ }
     // la foto, nell'archivio delle foto della Bacheca
-    fetch(FOTO).then(r => r.blob()).then(blob => archivioFoto(archivio => archivio.put(blob, `${n}:${id}`)))
-      .catch(errore => console.error('Foto della bacheca demo non salvata.', errore));
+    foto.push(fetch(FOTO).then(r => r.blob()).then(blob => archivioFoto(archivio => archivio.put(blob, `${n}:${id}`)))
+      .catch(errore => console.error('Foto della bacheca demo non salvata.', errore)));
   });
+  if (foto.length) Promise.all(foto).then(() => { if (document.querySelector('[data-bacheca]')) location.reload(); });
 })();
