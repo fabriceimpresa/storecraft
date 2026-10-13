@@ -267,6 +267,9 @@
       soon.textContent = 'IN ARRIVO';
       button.append(soon);
     });
+    // «demo»: Luxury Outlet diventa il punto vendita di oggi (altrimenti la dashboard rimanda qui), poi la sua dashboard
+    // con ?demo, che carica la Bacheca dimostrativa
+    document.getElementById('demo-bacheca')?.addEventListener('click', () => PuntoVendita.ricorda('luxury'));
   </script>
 </body>
 </html>
