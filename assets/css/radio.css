@@ -1,4 +1,4 @@
-/* Radio della dashboard (prima bozza, 14 ottobre 2026; vedi assets/js/radio.js): il riquadro di data e ora si ribalta
+/* Radio della dashboard (dal 14 ottobre 2026, definitiva in Luxury Outlet; vedi assets/js/radio.js): il riquadro di data e ora si ribalta
    all'indietro e dietro c'è una piccola radio vintage, pulita e minimal, alta quanto il riquadro. Solo da desktop e
    tablet, come data e ora; con «riduci animazioni» si gira senza movimento. */
 .orologio-radio { display: inline-flex; align-items: center; gap: 8px; perspective: 900px; }

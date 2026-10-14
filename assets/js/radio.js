@@ -1,4 +1,4 @@
-/* Radio di STORE // CRAFT (prima bozza, 14 ottobre 2026), in due forme:
+/* Radio di STORE // CRAFT (dal 14 ottobre 2026, definitiva in Luxury Outlet dalla versione 1.2.29), in due forme:
    - nella dashboard, dietro data e ora: il riquadro dell'intestazione si ribalta all'indietro, come una carta, con il
      pulsantino tondo accanto, e dietro c'è una piccola radio vintage, pulita e minimal: levetta di accensione con la
      spia, finestra della scala con le tacche, l'ago e il nome della stazione retroilluminato, manopola delle stazioni e
