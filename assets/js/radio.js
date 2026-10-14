@@ -17,9 +17,22 @@
    La musica in un negozio richiede il permesso per la musica d'ambiente (SIAE e diritti connessi), a carico del negozio:
    la radio fornisce solo il lettore. */
 (() => {
-  // in ordine sulla scala, dalle più classiche alle più moderne (18 stazioni, verificate il 14 ottobre 2026)
+  // in ordine sulla scala (27 stazioni, verificate il 14 ottobre 2026): prima le radio italiane più ascoltate
+  // e le radio di Roma, poi i generi, dalle più classiche alle più moderne. Radio Deejay, Radio Italia e RAM
+  // Power trasmettono solo in HLS (.m3u8): suonano in Chrome, Edge e Safari, non in Firefox
   const STAZIONI = [
+    { nome: 'RTL 102.5', breve: 'RTL 102.5', url: 'https://streamingv2.shoutcast.com/rtl-1025' },
+    { nome: 'Radio Deejay', breve: 'Radio Deejay', url: 'https://4c4b867c89244861ac216426883d1ad0.msvdn.net/radiodeejay/radiodeejay/master_ma.m3u8' },
+    { nome: 'RDS · 100% Grandi Successi', breve: 'RDS', url: 'https://icstream.rds.radio/rds' },
+    { nome: 'Radio Italia · solo musica italiana', breve: 'Radio Italia', url: 'https://radioitaliasmi.akamaized.net/hls/live/2093120/RISMI/master.m3u8' },
+    { nome: 'Rai Radio 1', breve: 'Rai Radio 1', url: 'https://icestreaming.rai.it/1.mp3' },
+    { nome: 'Radio 105', breve: 'Radio 105', url: 'https://icy.unitedradio.it/Radio105.mp3' },
+    { nome: 'Radio Kiss Kiss', breve: 'Kiss Kiss', url: 'https://ice07.fluidstream.net/KissKiss.mp3' },
+    { nome: 'Virgin Radio Italia', breve: 'Virgin Radio', url: 'https://icy.unitedradio.it/Virgin.mp3' },
+    { nome: 'R101', breve: 'R101', url: 'https://icecast.unitedradio.it/r101' },
     { nome: 'Radio Monte Carlo', breve: 'Monte Carlo', url: 'https://icy.unitedradio.it/RMC.aac' },
+    { nome: 'Radio Rock 106.6 · Roma', breve: 'Radio Rock', url: 'https://rrock.fluidstream.eu/radiorock.aac' },
+    { nome: 'RAM Power 102.7 · Roma', breve: 'RAM Power', url: 'https://stream.ram.radio/audio/ram.stream_aac64/chunklist.m3u8' },
     { nome: 'Crooners · Sinatra, Dean Martin, Tony Bennett', breve: 'Crooners', url: 'https://stream.ella-radio.de/ella-sinatra-style/mp3-192/' },
     { nome: 'Swing & Big Band', breve: 'Swing', url: 'https://stream.ella-radio.de/ella-swing-and-bigband/mp3-192/' },
     { nome: 'Anni 50 · Elvis e il rock and roll', breve: 'Anni 50', url: 'https://drive.uber.radio/uber/boomerang1950s/icecast.audio' },
@@ -31,11 +44,9 @@
     { nome: 'Heart 90s', breve: 'Anni 90', url: 'https://media-ssl.musicradio.com/Heart90sMP3' },
     { nome: 'Heart 00s', breve: 'Anni 2000', url: 'https://media-ssl.musicradio.com/Heart00sMP3' },
     { nome: 'Dance Revival · disco e dance anni 70, 80 e 90', breve: 'Dance Revival', url: 'https://cast1.torontocast.com:4560/stream' },
-    { nome: 'Capital · le hit di oggi', breve: 'Hit di oggi', url: 'https://media-ssl.musicradio.com/CapitalUKMP3' },
-    { nome: 'Radio 105', breve: 'Radio 105', url: 'https://icy.unitedradio.it/Radio105.mp3' },
+    { nome: 'Capital · le hit del momento', breve: 'Hits', url: 'https://media-ssl.musicradio.com/CapitalUKMP3' },
     { nome: 'Heart Dance', breve: 'Dance', url: 'https://media-ssl.musicradio.com/HeartDanceMP3' },
-    { nome: 'Virgin Radio Italia', breve: 'Rock', url: 'https://icy.unitedradio.it/Virgin.mp3' },
-    { nome: 'Smooth Country', breve: 'Country', url: 'https://media-ssl.musicradio.com/SmoothCountryMP3' },
+    { nome: 'America\'s Country · country americano', breve: 'Country', url: 'https://ais-sa2.cdnstream1.com/1976_128.mp3' },
     { nome: 'France Musique Opéra · tutta l\'opera', breve: 'Opera', url: 'https://icecast.radiofrance.fr/francemusiqueopera-hifi.aac' }
   ];
   const LARGHEZZA_RADIO = 300;   // px della faccia radio (l'orologio è largo come CASSIERE / CREATOR)
@@ -108,6 +119,13 @@
         if (m.acceso && subito) m.suona(); else { m.quandoCambia(); m.annuncia(); }
       },
       sintonizza() { if (m.acceso) m.suona(); },
+      // va direttamente a una stazione (dalla scala); subito = false mentre si trascina l'ago
+      vaiA(indice, subito = true) {
+        if (indice === m.stazione) return;
+        m.stazione = indice;
+        m.salva();
+        if (m.acceso && subito) m.suona(); else { m.quandoCambia(); m.annuncia(); }
+      },
       cambiaVolume(delta) {
         m.volume = Math.min(100, Math.max(0, m.volume + delta));
         m.audio.volume = m.volume / 100;
@@ -140,6 +158,36 @@
       if (m.acceso && m.stato === 'bloccata') m.suona(); else m.accendi(!m.acceso);
     });
     giraManopola(sintonia, (passo, trascina) => m.stazioneDopo(passo, !trascina), true, () => m.sintonizza());
+    // la scala con l'ago rosso: tenendo premuto e trascinando a destra o a sinistra l'ago segue il mouse e le stazioni
+    // scorrono avanti e indietro (la radio si sintonizza al rilascio); un clic sulla scala va alla stazione di quel punto.
+    // L'ago va dall'8% al 92% della scala, come in disegna
+    const stazioneDa = evento => {
+      const r = scala.getBoundingClientRect();
+      const quota = ((evento.clientX - r.left) / r.width * 100 - 8) / 84;
+      return Math.min(STAZIONI.length - 1, Math.max(0, Math.round(quota * (STAZIONI.length - 1))));
+    };
+    let presa = null;
+    scala.addEventListener('pointerdown', evento => {
+      if (evento.button !== 0) return;
+      presa = { x: evento.clientX, mossa: false, partenza: m.stazione };
+      scala.setPointerCapture(evento.pointerId);
+      scala.classList.add('trascina');
+    });
+    scala.addEventListener('pointermove', evento => {
+      if (!presa) return;
+      if (!presa.mossa && Math.abs(evento.clientX - presa.x) < 4) return;
+      presa.mossa = true;
+      m.vaiA(stazioneDa(evento), false);
+    });
+    const lascia = evento => {
+      if (!presa) return;
+      if (!presa.mossa) m.vaiA(stazioneDa(evento));
+      else if (m.stazione !== presa.partenza || m.stato !== 'in-onda') m.sintonizza();
+      presa = null;
+      scala.classList.remove('trascina');
+    };
+    scala.addEventListener('pointerup', lascia);
+    scala.addEventListener('pointercancel', lascia);
     giraManopola(regola, delta => m.cambiaVolume(delta), false);
     // disegna lo stato attuale (chiamata dal motore a ogni cambio)
     const disegna = radio => {
