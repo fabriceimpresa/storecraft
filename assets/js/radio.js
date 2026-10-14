@@ -17,18 +17,26 @@
    La musica in un negozio richiede il permesso per la musica d'ambiente (SIAE e diritti connessi), a carico del negozio:
    la radio fornisce solo il lettore. */
 (() => {
+  // in ordine sulla scala, dalle più classiche alle più moderne (18 stazioni, verificate il 14 ottobre 2026)
   const STAZIONI = [
     { nome: 'Radio Monte Carlo', breve: 'Monte Carlo', url: 'https://icy.unitedradio.it/RMC.aac' },
-    { nome: 'Ella Radio · Sinatra Style', breve: 'Sinatra Style', url: 'https://stream.ella-radio.de/ella-sinatra-style/mp3-192/' },
-    { nome: 'Ella Radio · Swing & Big Band', breve: 'Swing', url: 'https://stream.ella-radio.de/ella-swing-and-bigband/mp3-192/' },
+    { nome: 'Crooners · Sinatra, Dean Martin, Tony Bennett', breve: 'Crooners', url: 'https://stream.ella-radio.de/ella-sinatra-style/mp3-192/' },
+    { nome: 'Swing & Big Band', breve: 'Swing', url: 'https://stream.ella-radio.de/ella-swing-and-bigband/mp3-192/' },
+    { nome: 'Anni 50 · Elvis e il rock and roll', breve: 'Anni 50', url: 'https://drive.uber.radio/uber/boomerang1950s/icecast.audio' },
     { nome: 'Smooth Soul', breve: 'Smooth Soul', url: 'https://media-ice.musicradio.com/SmoothSoulMP3' },
-    { nome: 'Ella Radio · Smooth Bossa Nova', breve: 'Bossa Nova', url: 'https://stream.ella-radio.de/ella-smooth-bossa-nova/mp3-192/' },
+    { nome: 'Smooth Bossa Nova', breve: 'Bossa Nova', url: 'https://stream.ella-radio.de/ella-smooth-bossa-nova/mp3-192/' },
     { nome: 'Radio Swiss Jazz', breve: 'Jazz', url: 'https://stream.srg-ssr.ch/srgssr/rsj/aac/192' },
+    { nome: 'Heart 70s', breve: 'Anni 70', url: 'https://media-ssl.musicradio.com/Heart70sMP3' },
     { nome: 'Heart 80s', breve: 'Anni 80', url: 'https://media-ssl.musicradio.com/Heart80sMP3' },
     { nome: 'Heart 90s', breve: 'Anni 90', url: 'https://media-ssl.musicradio.com/Heart90sMP3' },
     { nome: 'Heart 00s', breve: 'Anni 2000', url: 'https://media-ssl.musicradio.com/Heart00sMP3' },
+    { nome: 'Dance Revival · disco e dance anni 70, 80 e 90', breve: 'Dance Revival', url: 'https://cast1.torontocast.com:4560/stream' },
+    { nome: 'Capital · le hit di oggi', breve: 'Hit di oggi', url: 'https://media-ssl.musicradio.com/CapitalUKMP3' },
+    { nome: 'Radio 105', breve: 'Radio 105', url: 'https://icy.unitedradio.it/Radio105.mp3' },
+    { nome: 'Heart Dance', breve: 'Dance', url: 'https://media-ssl.musicradio.com/HeartDanceMP3' },
     { nome: 'Virgin Radio Italia', breve: 'Rock', url: 'https://icy.unitedradio.it/Virgin.mp3' },
-    { nome: 'Classical Radio · Verdi', breve: 'Opera · Verdi', url: 'https://drive.uber.radio/uber/crverdi/icecast.audio' }
+    { nome: 'Smooth Country', breve: 'Country', url: 'https://media-ssl.musicradio.com/SmoothCountryMP3' },
+    { nome: 'France Musique Opéra · tutta l\'opera', breve: 'Opera', url: 'https://icecast.radiofrance.fr/francemusiqueopera-hifi.aac' }
   ];
   const LARGHEZZA_RADIO = 300;   // px della faccia radio (l'orologio è largo come CASSIERE / CREATOR)
   const INATTIVITA = 6000;       // ms senza il mouse sopra (né la tastiera dentro) prima che la radio si contragga
@@ -93,11 +101,13 @@
         if (on) m.suona();
         else { m.audio.pause(); m.audio.removeAttribute('src'); m.audio.load(); m.segnale(''); }
       },
-      stazioneDopo(passo) {
+      // subito = false mentre si trascina la manopola: la scala segue gli scatti, la radio si sintonizza al rilascio
+      stazioneDopo(passo, subito = true) {
         m.stazione = (m.stazione + passo + STAZIONI.length) % STAZIONI.length;
         m.salva();
-        if (m.acceso) m.suona(); else { m.quandoCambia(); m.annuncia(); }
+        if (m.acceso && subito) m.suona(); else { m.quandoCambia(); m.annuncia(); }
       },
+      sintonizza() { if (m.acceso) m.suona(); },
       cambiaVolume(delta) {
         m.volume = Math.min(100, Math.max(0, m.volume + delta));
         m.audio.volume = m.volume / 100;
@@ -129,7 +139,7 @@
       // spenta da sola (bloccata dal browser): il clic la riprende invece di spegnerla
       if (m.acceso && m.stato === 'bloccata') m.suona(); else m.accendi(!m.acceso);
     });
-    giraManopola(sintonia, passo => m.stazioneDopo(passo), true);
+    giraManopola(sintonia, (passo, trascina) => m.stazioneDopo(passo, !trascina), true, () => m.sintonizza());
     giraManopola(regola, delta => m.cambiaVolume(delta), false);
     // disegna lo stato attuale (chiamata dal motore a ogni cambio)
     const disegna = radio => {
@@ -158,7 +168,10 @@
   // le manopole: si girano trascinando su e giù (il volume anche a destra e a sinistra), con la rotella, con le frecce;
   // la manopola delle stazioni anche con un clic; il volume con un clic a destra sale, a sinistra scende (VOLUME_CLIC)
   const VOLUME_CLIC = 10;
-  function giraManopola(manopola, passo, aScatti) {
+  // manopola delle stazioni (aScatti): tenendo premuto e trascinando, su o a destra avanti, giù o a sinistra indietro,
+  // le stazioni scorrono veloci, uno scatto ogni SCATTO px; la radio si sintonizza solo al rilascio (fineTrascina)
+  const SCATTO = 9;
+  function giraManopola(manopola, passo, aScatti, fineTrascina = () => {}) {
     // clic o trascinamento: finché il mouse premuto si sposta meno di SOGLIA px è ancora un clic (la mano che trema non
     // gira la manopola); oltre, si trascina e il clic non conta più
     const SOGLIA = 4;
@@ -169,7 +182,7 @@
     });
     manopola.addEventListener('pointermove', evento => {
       if (partenza === null) return;
-      let delta = partenza - evento.clientY + (aScatti ? 0 : evento.clientX - partenzaX);
+      let delta = partenza - evento.clientY + evento.clientX - partenzaX;
       partenza = evento.clientY;
       partenzaX = evento.clientX;
       if (!trascinata) {
@@ -178,10 +191,11 @@
         trascinata = true;
         delta = mossa;   // il primo tratto, trattenuto finché era un clic, conta tutto
       }
-      if (aScatti) { accumulo += delta; while (Math.abs(accumulo) >= 18) { passo(Math.sign(accumulo)); accumulo -= Math.sign(accumulo) * 18; } }
+      if (aScatti) { accumulo += delta; while (Math.abs(accumulo) >= SCATTO) { passo(Math.sign(accumulo), true); accumulo -= Math.sign(accumulo) * SCATTO; } }
       else passo(delta * .6);
     });
     manopola.addEventListener('pointerup', evento => {
+      if (trascinata && aScatti) fineTrascina();
       if (!trascinata) {
         if (aScatti) passo(1);
         else {
@@ -191,7 +205,7 @@
       }
       partenza = null;
     });
-    manopola.addEventListener('pointercancel', () => { partenza = null; });
+    manopola.addEventListener('pointercancel', () => { if (trascinata && aScatti) fineTrascina(); partenza = null; });
     manopola.addEventListener('wheel', evento => { evento.preventDefault(); passo(aScatti ? -Math.sign(evento.deltaY) : -Math.sign(evento.deltaY) * 5); }, { passive: false });
     manopola.addEventListener('keydown', evento => {
       const verso = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1 }[evento.key];
@@ -260,8 +274,8 @@
       fronte.inert = girato;
       retro.inert = !girato;
       gira.replaceChildren(svg(girato ? ICONA_OROLOGIO : ICONA_RADIO));
-      gira.setAttribute('aria-label', girato ? 'Torna a orologio' : 'Ascolta la radio');
-      gira.dataset.suggerimento = girato ? 'Torna a orologio' : 'Ascolta la radio';
+      gira.setAttribute('aria-label', girato ? 'Torna a orologio' : 'Passa a radio');
+      gira.dataset.suggerimento = girato ? 'Torna a orologio' : 'Passa a radio';
       m.salva();
     };
     gira.addEventListener('click', () => mostra(m.faccia === 'radio' ? 'orologio' : 'radio'));

@@ -23,13 +23,6 @@
 .or-retro .radio-manopola { transition: width .35s ease, margin .35s ease, opacity .25s ease, transform .2s, box-shadow .2s; }
 .orologio-radio.compatta .or-retro .radio-manopola { width: 0; margin-left: -8px; opacity: 0; pointer-events: none; }
 .orologio-radio.senza-animazione .or-retro, .orologio-radio.senza-animazione .or-retro .radio-manopola { transition: none; }
-/* con la radio girata e aperta l'elemento a sinistra (la radio e il pulsantino) è molto più largo di CASSIERE / CREATOR
-   (contratta torna larga come l'orologio, e il banner torna al centro del contenuto):
-   il banner si centra nello spazio libero tra i due, non sul contenuto, così ha lo stesso respiro ai due lati e, mentre
-   la carta si gira e cambia larghezza, scivola con lei (controllaBanner in dashboard.js misura lo stesso spazio) */
-@media screen and (min-width: 721px) {
-  #main-content > header.solo-selettori.con-logo:has(.orologio-radio.girato:not(.compatta)) { grid-template-columns: auto minmax(0, 1fr) auto; }
-}
 
 /* il pulsantino che gira la carta: tondo, a contorno oro, l'icona della faccia che c'è dietro */
 .or-gira {

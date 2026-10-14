@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.29 2026';
+  const VERSIONE = 'V 1.2.30 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -584,10 +584,8 @@
         && !['fixed', 'absolute'].includes(getComputedStyle(figlio).position));
       const larghezze = lati.map(figlio => figlio.getBoundingClientRect().width);
       const serve = Math.max(0, ...[...banner.children].map(scritta => scritta.scrollWidth));
-      // con la radio girata (radio.css) il banner sta al centro dello spazio libero tra i lati, altrimenti al centro del contenuto
-      const libero = testata.querySelector('.orologio-radio.girato:not(.compatta)')
-        ? interno - larghezze.reduce((somma, larghezza) => somma + larghezza, 0) - 2 * RESPIRO
-        : interno - 2 * (Math.max(0, ...larghezze) + RESPIRO);
+      // il banner resta al centro del contenuto, anche con la radio aperta (decisione del 14 ottobre 2026)
+      const libero = interno - 2 * (Math.max(0, ...larghezze) + RESPIRO);
       banner.classList.toggle('is-nascosto', serve > libero);
     };
     new ResizeObserver(misura).observe(testata);
