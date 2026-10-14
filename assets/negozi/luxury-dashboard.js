@@ -2,7 +2,9 @@
 Dashboard.contenuto({
   intestazione: {
     titolo: false,  // come TEBE: niente titolo, banner al centro dell'intestazione
-    dataOra: true   // a sinistra, al posto dell'interruttore dei negozi di TEBE, data e ora del giorno
+    dataOra: true,  // a sinistra, al posto dell'interruttore dei negozi di TEBE, data e ora del giorno
+    radio: true,    // dietro data e ora una piccola radio vintage: il pulsantino accanto gira il riquadro (assets/js/radio.js)
+    meteo: true     // città e tempo di adesso nel banner (ogni 5 minuti) e, scritti dal cursore, in data e ora (assets/js/meteo.js)
   },
   logo: { src: 'img/luxury/logo-lxry-orizzontale.png', larghezza: 185, alt: 'LUXURY OUTLET' },
   identita: ['VIA DEL CORSO 15', 'OUTLET MULTI BRAND · LINEA LXRY'],

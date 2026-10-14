@@ -61,6 +61,14 @@
   });
 
   scrivi(`<script src="${new URL(`installati.js${versione}`, cartella).href}"><\/script>`);
+  // Radio accesa in questa scheda del browser (radio.js): nelle pagine del negozio la mini radio fluttuante riparte sulla
+  // stessa stazione (nella dashboard c'è la radio grande, che la carica da sé; non nei riquadri dell'area operatore)
+  try {
+    if (negozio && window.top === window && sessionStorage.getItem(`storecraft_radio_acceso_${negozio}`) === '1') {
+      scrivi(`<link rel="stylesheet" href="${new URL(`../css/radio.css${versione}`, script.src).href}">`);
+      scrivi(`<script src="${new URL(`radio.js${versione}`, script.src).href}" data-mini="${negozio}"><\/script>`);
+    }
+  } catch { /* sessionStorage spento: niente mini radio */ }
   // Bacheca dimostrativa (per mostrarla a un cliente): solo con ?demo nell'indirizzo, dopo le schede dei negozi
   if (/[?&]demo(=|&|$)/.test(location.search)) scrivi(`<script src="${new URL(`bacheca-demo.js${versione}`, script.src).href}"><\/script>`);
 

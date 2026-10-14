@@ -1,0 +1,245 @@
+/* Radio della dashboard (prima bozza, 14 ottobre 2026; vedi assets/js/radio.js): il riquadro di data e ora si ribalta
+   all'indietro e dietro c'è una piccola radio vintage, pulita e minimal, alta quanto il riquadro. Solo da desktop e
+   tablet, come data e ora; con «riduci animazioni» si gira senza movimento. */
+.orologio-radio { display: inline-flex; align-items: center; gap: 8px; perspective: 900px; }
+.or-carta {
+  position: relative;
+  width: var(--larghezza-fronte, auto);
+  transform-style: preserve-3d;
+  transition: transform .7s cubic-bezier(.3, 1.25, .5, 1), width .45s cubic-bezier(.2, .8, .2, 1);
+}
+.orologio-radio.girato .or-carta { width: var(--larghezza-retro, 300px); transform: rotateX(-180deg); }
+.or-faccia { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.or-fronte { position: relative; display: inline-flex; }
+.or-retro { position: absolute; top: 0; left: 0; width: var(--larghezza-retro, 300px); height: 100%; transform: rotateX(180deg); }
+/* dentro la carta l'orologio non è più fisso: segue la carta */
+.or-fronte .orologio-testata { position: static; }
+.orologio-radio.senza-animazione .or-carta { transition: none; }
+/* radio contratta (radio.js, dopo un po' che nessuno la usa): larga come l'orologio, con la sola levetta e la scala;
+   le manopole si stringono e spariscono, e tornano con il mouse sopra o con la tastiera */
+.or-retro { transition: width .45s cubic-bezier(.2, .8, .2, 1); }
+.orologio-radio.girato.compatta .or-carta,
+.orologio-radio.compatta .or-retro { width: var(--larghezza-fronte, 185px); }
+.or-retro .radio-manopola { transition: width .35s ease, margin .35s ease, opacity .25s ease, transform .2s, box-shadow .2s; }
+.orologio-radio.compatta .or-retro .radio-manopola { width: 0; margin-left: -8px; opacity: 0; pointer-events: none; }
+.orologio-radio.senza-animazione .or-retro, .orologio-radio.senza-animazione .or-retro .radio-manopola { transition: none; }
+/* con la radio girata e aperta l'elemento a sinistra (la radio e il pulsantino) è molto più largo di CASSIERE / CREATOR
+   (contratta torna larga come l'orologio, e il banner torna al centro del contenuto):
+   il banner si centra nello spazio libero tra i due, non sul contenuto, così ha lo stesso respiro ai due lati e, mentre
+   la carta si gira e cambia larghezza, scivola con lei (controllaBanner in dashboard.js misura lo stesso spazio) */
+@media screen and (min-width: 721px) {
+  #main-content > header.solo-selettori.con-logo:has(.orologio-radio.girato:not(.compatta)) { grid-template-columns: auto minmax(0, 1fr) auto; }
+}
+
+/* il pulsantino che gira la carta: tondo, a contorno oro, l'icona della faccia che c'è dietro */
+.or-gira {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 30px; height: 30px; padding: 0; border: 1px solid var(--accent); border-radius: 50%;
+  background: transparent; color: var(--accent); cursor: pointer;
+  transition: background .2s, color .2s, transform .2s;
+}
+.or-gira svg { width: 20px; height: 20px; }
+.or-gira:hover, .or-gira:focus-visible { background: var(--accent); color: #121110; outline: none; transform: rotate(-12deg); }
+
+/* ----- la radio ----- */
+.radio-vintage {
+  display: flex; align-items: center; gap: 8px; box-sizing: border-box; height: 100%; padding: 0 8px 0 7px;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: linear-gradient(180deg, #27241f 0%, #1a1815 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+/* levetta di accensione retrò su una piastrina, con la spia: un cursore cromato che scorre solo su e giù in una
+   scanalatura (giù spenta, su accesa), con le righine per la presa */
+.radio-accensione { display: flex; align-items: center; gap: 5px; }
+.radio-leva {
+  position: relative; flex: none; width: 16px; height: 30px; padding: 0; border: 1px solid #0d0c0b; border-radius: 4px;
+  background: linear-gradient(180deg, #3a352e, #1c1a17); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 2px rgba(0, 0, 0, .5); cursor: pointer;
+}
+.radio-leva::before {   /* la scanalatura */
+  content: ''; position: absolute; left: 50%; top: 5px; bottom: 5px; width: 3px; margin-left: -1.5px; border-radius: 2px;
+  background: #0b0a09; box-shadow: inset 0 1px 2px rgba(0, 0, 0, .9);
+}
+.radio-leva-asta {   /* il cursore cromato */
+  position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 3px;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 2px, rgba(0, 0, 0, .28) 2px 3px) center / 6px 6px no-repeat,
+    linear-gradient(180deg, #fbf7ef 0%, #cfc8bb 50%, #8f897f 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .9);
+  transform: translateY(6px); transition: transform .22s cubic-bezier(.3, 1.6, .5, 1);
+}
+.radio-vintage.accesa .radio-leva-asta { transform: translateY(-6px); }
+.radio-leva:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
+.radio-spia { width: 6px; height: 6px; border-radius: 50%; background: #4a2620; box-shadow: inset 0 1px 1px rgba(0, 0, 0, .6); transition: background .2s, box-shadow .2s; }
+.radio-vintage.accesa .radio-spia { background: #e2553c; box-shadow: 0 0 6px rgba(226, 85, 60, .9); }
+.radio-vintage[data-segnale="sintonizzo"] .radio-spia { animation: radio-lampeggia .7s ease-in-out infinite alternate; }
+.radio-vintage[data-segnale="assente"] .radio-spia { background: #d99a2b; box-shadow: 0 0 6px rgba(217, 154, 43, .8); animation: radio-lampeggia 1.4s ease-in-out infinite alternate; }
+
+/* finestra della scala: tacche, ago rosso e nome della stazione retroilluminato */
+.radio-scala {
+  position: relative; flex: 1; align-self: center; height: 27px; overflow: hidden; border-radius: 3px;
+  background: radial-gradient(ellipse at 50% 120%, #2f2414 0%, #17120b 70%);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .8), 0 0 0 1px #0c0a07;
+  filter: saturate(.6) brightness(.72); transition: filter .4s;
+}
+.radio-vintage.accesa .radio-scala { filter: none; }
+.radio-tacche {
+  position: absolute; top: 3px; left: 6%; right: 6%; height: 5px;
+  background:
+    repeating-linear-gradient(90deg, rgba(217, 165, 74, .75) 0 1px, transparent 1px 25%) top / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, rgba(217, 165, 74, .4) 0 1px, transparent 1px 5%) top / 100% 3px no-repeat;
+}
+.radio-ago {
+  position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; border-radius: 1px; background: #d24a33;
+  box-shadow: 0 0 4px rgba(210, 74, 51, .7); transition: left .5s cubic-bezier(.3, 1.3, .5, 1);
+}
+.radio-nome {
+  position: absolute; left: 0; right: 0; bottom: 2px; text-align: center; color: #d9a54a;
+  font: 600 9.5px/1.2 'Cinzel', serif; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
+  text-shadow: 0 0 6px rgba(217, 165, 74, .55);
+}
+.radio-vintage[data-segnale="sintonizzo"] .radio-nome { animation: radio-lampeggia .9s ease-in-out infinite alternate; }
+
+/* manopole in bachelite, con la zigrinatura sul bordo e il segno oro */
+.radio-manopola {
+  position: relative; flex: none; width: 23px; height: 23px; border-radius: 50%; touch-action: none;
+  background: repeating-conic-gradient(#3e3832 0 8deg, #16140f 8deg 16deg);   /* la zigrinatura del bordo */
+  box-shadow: 0 0 0 1px #0d0c0a, 0 2px 3px rgba(0, 0, 0, .55);
+}
+.radio-sintonia { cursor: pointer; }
+.radio-volume { cursor: pointer; margin-left: 3px; }   /* un poco più staccata dalla manopola delle stazioni */
+/* manopole equidistanti: tra le due manopole e tra il volume e il bordo destro della radio lo stesso spazio, 11 px
+   (contratta, senza manopole, torna il margine di prima) */
+.or-retro .radio-vintage { padding-right: 11px; transition: padding .35s ease; }
+.orologio-radio.compatta .or-retro .radio-vintage { padding-right: 8px; }
+/* la presa del volume, invisibile: allarga di qualche pixel la zona che si può cliccare o trascinare (a sinistra scende,
+   a destra sale) */
+.radio-manopola-presa { position: absolute; top: -6px; bottom: -6px; left: -4px; right: -7px; border-radius: 8px; }
+.radio-manopola::before {   /* il cappuccio liscio in bachelite, al centro */
+  content: ''; position: absolute; inset: 3px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #57504a 0%, #2a2622 55%, #171512 100%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.radio-manopola-segno { position: absolute; inset: 0; transform: rotate(var(--giro, 0deg)); transition: transform .25s cubic-bezier(.3, 1.4, .5, 1); }
+.radio-manopola-segno::after { content: ''; position: absolute; top: 5px; left: 50%; width: 2px; height: 6px; margin-left: -1px; border-radius: 1px; background: var(--accent); }
+.radio-manopola:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; }
+
+/* al passaggio del mouse (e con la tastiera) levetta e manopole si animano come il pulsantino che gira la carta:
+   si riempiono d'oro; le manopole si inclinano anche appena, la levetta no (va solo su e giù) */
+.radio-leva, .radio-manopola { transition: transform .2s, box-shadow .2s, background .2s, border-color .2s; }
+.radio-manopola::before { transition: background .2s; }
+.radio-manopola-segno::after { transition: background .2s; }
+.radio-leva:hover, .radio-leva:focus-visible {
+  border-color: #8f6a1f; background: linear-gradient(180deg, #e5ba73, var(--accent, #d4a373));
+}
+.radio-leva:hover::before, .radio-leva:focus-visible::before { background: #5a4214; }
+.radio-manopola:hover, .radio-manopola:focus-visible { transform: rotate(-12deg); box-shadow: 0 0 0 1px var(--accent, #d4a373), 0 2px 3px rgba(0, 0, 0, .55); }
+.radio-manopola:hover::before, .radio-manopola:focus-visible::before {
+  background: radial-gradient(circle at 35% 30%, #f4dca6 0%, var(--accent, #d4a373) 55%, #a9802f 100%);
+}
+.radio-manopola:hover .radio-manopola-segno::after, .radio-manopola:focus-visible .radio-manopola-segno::after { background: #121110; }
+@media (prefers-reduced-motion: reduce) { .radio-leva:hover, .radio-leva:focus-visible, .radio-manopola:hover, .radio-manopola:focus-visible { transform: none; } }
+
+@keyframes radio-lampeggia { from { opacity: 1; } to { opacity: .35; } }
+
+/* tema chiaro: piastra avorio, scala crema con tacche brune, manopole dorate (sotto); ombre corte */
+:root[data-interface-theme="light"] .radio-vintage { background: linear-gradient(180deg, #fffdf8, #f4ecdc); border-color: #d9c8a2; box-shadow: 0 1px 2px rgba(40, 34, 28, .25); }
+:root[data-interface-theme="light"] .radio-scala { background: radial-gradient(ellipse at 50% 120%, #f7ecd2 0%, #ecdcb8 75%); box-shadow: inset 0 1px 2px rgba(80, 60, 30, .35), 0 0 0 1px #cdb88c; filter: saturate(.7) brightness(.94); }
+:root[data-interface-theme="light"] .radio-vintage.accesa .radio-scala { filter: none; }
+:root[data-interface-theme="light"] .radio-tacche {
+  background:
+    repeating-linear-gradient(90deg, rgba(110, 80, 32, .8) 0 1px, transparent 1px 25%) top / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, rgba(110, 80, 32, .45) 0 1px, transparent 1px 5%) top / 100% 3px no-repeat;
+}
+:root[data-interface-theme="light"] .radio-nome { color: #6b4c1c; text-shadow: none; }
+/* tema chiaro: la piastrina della levetta crema e bronzo chiaro invece che quasi nera, con la scanalatura bruna */
+:root[data-interface-theme="light"] .radio-leva {
+  border-color: #a88d5c; background: linear-gradient(180deg, #efe4cc, #cdb88c);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 1px 2px rgba(40, 34, 28, .3);
+}
+:root[data-interface-theme="light"] .radio-leva::before { background: #5c4a2c; box-shadow: inset 0 1px 2px rgba(40, 28, 10, .6); }
+:root[data-interface-theme="light"] .radio-leva:hover, :root[data-interface-theme="light"] .radio-leva:focus-visible {
+  border-color: #8f6a1f; background: linear-gradient(180deg, #e5ba73, var(--accent, #d4a373));
+}
+:root[data-interface-theme="light"] .radio-leva:hover::before, :root[data-interface-theme="light"] .radio-leva:focus-visible::before { background: #5a4214; }
+/* tema chiaro: manopole dorate invece che in bachelite nera (zigrinatura oro, cappuccio oro lucido, segno bruno, ombra
+   corta); al passaggio del mouse il cappuccio si schiarisce e il filo attorno diventa oro scuro */
+:root[data-interface-theme="light"] .radio-manopola {
+  background: repeating-conic-gradient(#d8b36a 0 8deg, #a57b2c 8deg 16deg);
+  box-shadow: 0 0 0 1px #8f6a1f, 0 1px 2px rgba(40, 34, 28, .35);
+}
+:root[data-interface-theme="light"] .radio-manopola::before {
+  background: radial-gradient(circle at 35% 30%, #f8e7bd 0%, #dcb36b 50%, #a9802f 100%);
+  box-shadow: 0 0 0 1px rgba(110, 80, 25, .45), inset 0 1px 0 rgba(255, 255, 255, .55);
+}
+:root[data-interface-theme="light"] .radio-manopola-segno::after { background: #4a3410; }
+:root[data-interface-theme="light"] .radio-manopola:hover, :root[data-interface-theme="light"] .radio-manopola:focus-visible {
+  box-shadow: 0 0 0 1px #6b4c1c, 0 1px 3px rgba(40, 34, 28, .38);
+}
+:root[data-interface-theme="light"] .radio-manopola:hover::before, :root[data-interface-theme="light"] .radio-manopola:focus-visible::before {
+  background: radial-gradient(circle at 35% 30%, #fff6dc 0%, #e8c47e 50%, #b48b37 100%);
+}
+:root[data-interface-theme="light"] .or-gira:hover, :root[data-interface-theme="light"] .or-gira:focus-visible { color: #fffdfa; }
+
+/* aspetto COMPATTO: forme squadrate, come il resto della dashboard */
+:root[data-interface-look="minimal"] .radio-vintage,
+:root[data-interface-look="minimal"] .radio-scala,
+:root[data-interface-look="minimal"] .or-gira { border-radius: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .or-carta, .radio-ago, .radio-manopola-segno, .radio-leva-asta { transition: none; }
+  .radio-vintage .radio-spia, .radio-vintage .radio-nome { animation: none !important; }
+}
+/* ----- la mini radio fluttuante, nelle altre pagine del negozio (radio.js, Radio.mini) -----
+   in basso a destra, sopra il riquadro «Torna al Menu Principale» (la distanza la calcola radio.js), larga 230 px, con le
+   ombre corte del tema chiaro; nascosta in stampa */
+.radio-mini {
+  position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 900; width: 230px; height: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.radio-mini[hidden] { display: none; }
+:root[data-interface-theme="light"] .radio-mini { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+.radio-vintage[data-segnale="bloccata"] .radio-nome { animation: radio-lampeggia .9s ease-in-out infinite alternate; font-size: 8.5px; letter-spacing: .1em; }
+@media print { .radio-mini { display: none !important; } }
+
+/* sul telefono data e ora non ci sono, e nemmeno la radio */
+@media screen and (max-width: 760px) and (pointer: coarse) { .orologio-radio, .radio-mini { display: none !important; } }
+
+/* ----- riquadri di aiuto dei comandi (interruttore, manopole, pulsantino), nello stile STORE // CRAFT: fondo scuro,
+   bordo oro, scritta chiara in maiuscolo, piccola e discreta come i fumetti delle schede; nel tema chiaro
+   avorio con la scritta scura e un'ombra corta. Compaiono al passaggio del mouse e con la tastiera: sotto il comando
+   nell'intestazione della dashboard, sopra nella mini radio (che sta in fondo alla pagina) ----- */
+.orologio-radio { position: relative; z-index: 40; }
+:is(.radio-leva, .radio-manopola, .or-gira)[data-suggerimento]::after {
+  content: attr(data-suggerimento);
+  position: absolute; left: 50%; top: calc(100% + 8px); z-index: 50;
+  padding: 4px 8px; border: 1px solid var(--accent, #d4a373); border-radius: 4px;
+  background: #1e1d1a; color: #f4f1ea; box-shadow: 0 3px 8px rgba(0, 0, 0, .5);
+  font: 500 9.5px/1.2 'Plus Jakarta Sans', Arial, sans-serif; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap;
+  opacity: 0; transform: translate(-50%, 4px); transition: opacity .15s ease, transform .15s ease; pointer-events: none;
+}
+:is(.radio-leva, .radio-manopola, .or-gira)[data-suggerimento]:is(:hover, :focus-visible)::after { opacity: 1; transform: translate(-50%, 0); }
+/* nella mini radio sopra il comando, e il pulsantino non c'è */
+.radio-mini :is(.radio-leva, .radio-manopola)[data-suggerimento]::after { top: auto; bottom: calc(100% + 8px); transform: translate(-50%, -4px); }
+.radio-mini :is(.radio-leva, .radio-manopola)[data-suggerimento]:is(:hover, :focus-visible)::after { transform: translate(-50%, 0); }
+/* la manopola del volume e il pulsantino stanno sul bordo destro: il riquadro si allinea a destra */
+:is(.radio-volume, .or-gira)[data-suggerimento]::after, .radio-mini .radio-sintonia[data-suggerimento]::after { left: auto; right: -6px; transform: translate(0, 4px); }
+:is(.radio-volume, .or-gira)[data-suggerimento]:is(:hover, :focus-visible)::after, .radio-mini .radio-sintonia[data-suggerimento]:is(:hover, :focus-visible)::after { transform: translate(0, 0); }
+:root[data-interface-theme="light"] :is(.radio-leva, .radio-manopola, .or-gira)[data-suggerimento]::after {
+  background: #fffdfa; color: #282522; border-color: #b48b37; box-shadow: 0 1px 3px rgba(40, 34, 28, .38);
+}
+:root[data-interface-look="minimal"] :is(.radio-leva, .radio-manopola, .or-gira)[data-suggerimento]::after { border-radius: 0; }
+@media (prefers-reduced-motion: reduce) { :is(.radio-leva, .radio-manopola, .or-gira)[data-suggerimento]::after { transition: none; } }
+/* il riquadro di aiuto del volume: «Volume 60%» e in fondo l'altoparlante, con le onde che crescono con il volume
+   (data-livello: 0 muto, 1, 2, 3 onde), oro come la scritta della scala; è un'immagine di sfondo del riquadro, a destra
+   della scritta, così sta centrata sulle lettere maiuscole */
+:root .radio-volume[data-suggerimento][data-livello]::after { padding-right: 29px; background-repeat: no-repeat; background-size: 15px 12px; background-position: right 8px center; }
+.radio-volume[data-livello="0"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23d4a373'/%3E%3Cpath d='M10 4l4 4M14 4l-4 4' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.radio-volume[data-livello="1"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23d4a373'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.radio-volume[data-livello="2"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23d4a373'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M11.4 2.7a4.7 4.7 0 0 1 0 6.6' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.radio-volume[data-livello="3"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23d4a373'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M11.4 2.7a4.7 4.7 0 0 1 0 6.6' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M13.2 1.1a7 7 0 0 1 0 9.8' fill='none' stroke='%23d4a373' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+:root[data-interface-theme="light"] .radio-volume[data-livello="0"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b48b37'/%3E%3Cpath d='M10 4l4 4M14 4l-4 4' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+:root[data-interface-theme="light"] .radio-volume[data-livello="1"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b48b37'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+:root[data-interface-theme="light"] .radio-volume[data-livello="2"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b48b37'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M11.4 2.7a4.7 4.7 0 0 1 0 6.6' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+:root[data-interface-theme="light"] .radio-volume[data-livello="3"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b48b37'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M11.4 2.7a4.7 4.7 0 0 1 0 6.6' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M13.2 1.1a7 7 0 0 1 0 9.8' fill='none' stroke='%23b48b37' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.radio-mini .radio-sintonia[data-suggerimento]::after { transform: translate(0, -4px); }
+.radio-mini .radio-sintonia[data-suggerimento]:is(:hover, :focus-visible)::after { transform: translate(0, 0); }

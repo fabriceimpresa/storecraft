@@ -974,6 +974,12 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
     box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .55), 0 2px 5px rgba(0, 0, 0, .3);
   }
   body > .system-menu .system-menu-title { font-size: .95rem !important; margin-bottom: 22px; }
+  /* le modifiche del 14 ottobre 2026 al menu (divisorio sopra ← Indietro, spazi uguali, lista NEGOZI a righe) valgono solo
+     da computer e tablet: sul telefono il menu resta com'era */
+  body > .system-menu .system-menu-footer { margin-top: 12px; border-top: 1px solid var(--interface-border); }
+  body > .system-menu .system-menu-footer::before { content: none; }
+  body > .system-menu .system-menu-view[data-system-view="settings"] .system-menu-footer { margin-top: 20px; }
+  body > .system-menu .system-menu-view[data-system-view="home"] { padding-bottom: 3px; }
   body > .system-menu .system-menu-item { min-height: 52px; font-size: .86rem !important; }
   body > .system-menu .system-menu-icon { flex-basis: 26px; font-size: 1.3rem; }
   body > .system-menu .system-menu-item-label { gap: 12px; }
@@ -983,10 +989,23 @@ header p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.3rem; }
   body > .system-menu .system-credits { font-size: .86rem !important; }
   body > .system-menu .system-setting-label { font-size: .82rem !important; margin-bottom: 11px; }
   body > .system-menu .theme-choice { min-height: 44px; font-size: .78rem !important; }
-  /* lista NEGOZI: i riquadri più grandi (logo, indirizzo, ATTIVO) */
+  /* lista NEGOZI sul telefono, come prima del 14 ottobre 2026: ogni negozio è un riquadro grande con la cornice, il logo
+     al centro e sotto l'indirizzo; il riquadro del logo di computer e tablet (.system-store-scatola) qui non fa scatola */
   body > .system-menu .system-store-list { --logo-lato: 62px; gap: 12px; }
-  body > .system-menu .system-store-choice { min-height: 108px; gap: 11px; }
-  body > .system-menu .system-store-via { font-size: .7rem; }
+  body > .system-menu .system-store-choice {
+    position: relative; flex-direction: column; justify-content: center; gap: 11px; min-height: 108px; padding: 18px 12px 15px;
+    border: 1px solid var(--interface-border); border-radius: 6px; background: var(--interface-surface);
+    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  body > .system-menu .system-store-scatola { display: contents; }
+  body > .system-menu .system-store-cornice { inset: 4px; }
+  body > .system-menu .system-store-marchio { order: 1; max-width: 78%; height: calc(var(--logo-lato) * var(--logo-radice, .35)); }
+  body > .system-menu .system-store-via { display: block; order: 2; flex: none; min-width: 0; text-align: center; font-size: .7rem; letter-spacing: .18em; }
+  body > .system-menu .system-store-choice.is-active { border-color: var(--interface-accent); }
+  body > .system-menu .system-store-choice.is-active .system-store-via { color: var(--interface-text); }
+  :root[data-interface-theme="light"] body > .system-menu .system-store-choice:not(.is-active) .system-store-via { color: #bdb6ab; }
+  body > .system-menu .system-store-choice:not(:disabled):is(:hover, :focus-visible) { border-color: var(--interface-accent); transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0, 0, 0, .35); }
+  :root[data-interface-theme="light"] body > .system-menu .system-store-choice:not(:disabled):is(:hover, :focus-visible) { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
   body > .system-menu .system-store-attivo:not(.in-arrivo) { top: 12px; right: 12px; width: 9px; height: 9px; }
   body > .system-menu .system-store-attivo.in-arrivo { top: 10px; right: 11px; font-size: .56rem; }
   /* a destra di PROFILO UTENTE il logo dorato al posto della sigla */
@@ -1296,6 +1315,27 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
   .testata-avviso { cursor: pointer; }
   .testata-avviso:hover { color: var(--interface-accent-bright, var(--gold)); }
   .testata-avviso:not(.is-visibile) { pointer-events: none; }
+  /* indirizzo e descrizione nel banner (14 ottobre 2026): stessi caratteri delle altre scritte, Cinzel 500 in maiuscolo con
+     le lettere spaziate; l'indirizzo in oro, la descrizione più piccola in bianco (scura nel tema chiaro), come città e
+     valore del meteo */
+  #main-content > header.solo-selettori .testata-centro .store-identity strong {
+    font-family: 'Cinzel', serif; font-size: 14px; font-weight: 500; letter-spacing: .32em; color: var(--interface-accent, var(--accent));
+    margin-right: -.32em;   /* la spaziatura dopo l'ultima lettera non sposta la scritta dal centro */
+  }
+  #main-content > header.solo-selettori .testata-centro .store-identity span {
+    margin-top: 4px; margin-right: -.26em; font-family: 'Cinzel', serif; font-size: 10px; font-weight: 500; letter-spacing: .26em; color: #fff;
+  }
+  :root[data-interface-theme="light"] #main-content > header.solo-selettori .testata-centro .store-identity span { color: #282522; }
+  /* meteo e radio in onda (dashboard.js): la prima parte in oro, il valore in bianco (nel tema chiaro scuro), come data e ora */
+  .testata-titolo .testata-valore { color: #fff; }
+  :root[data-interface-theme="light"] .testata-titolo .testata-valore { color: #282522; }
+  /* il cursore a triangolino che cancella e riscrive il riquadro di data e ora (meteo: true): il triangolo dei fogli,
+     nel colore del negozio, sopra il punto in cui si scrive; largo zero, così non sposta le lettere */
+  #main-content > header.con-logo .orologio-testata .orologio-cursore { position: relative; align-self: stretch; width: 0; margin-left: -0.35rem; }
+  #main-content > header.con-logo .orologio-testata .orologio-cursore::before {
+    content: ''; position: absolute; top: 1px; left: 1px; transform: translateX(-50%);
+    border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 6px solid var(--cursore-colore, #b48b37);
+  }
 }
 .testata-centro { display: none; }   /* sul telefono indirizzo e descrizione stanno nella riga del logo, nascosti */
 .orologio-testata { display: none; }   /* data e ora solo da desktop e tablet (regole sopra) */

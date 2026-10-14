@@ -879,6 +879,10 @@
   min-width: 0;
   padding: 3px;
 }
+/* prima vista (le quattro voci): tra l'ultima voce e il bordo basso del menu lo stesso spazio che c'è tra il divisorio
+   sotto il titolo e la prima voce, 23 px (12 del menu + 11 della vista; dal 14 ottobre 2026). Sul telefono il menu ha
+   in fondo lo spazio del pulsante IMPOSTAZIONI, che gli copre l'angolo, e resta com'è */
+.system-menu-view[data-system-view="home"] { padding-bottom: 11px; }
 
 .system-menu-title {
   margin-bottom: 20px;
@@ -978,11 +982,23 @@
 }
 
 .system-menu-footer {
+  position: relative;
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
+  margin-top: 23px;   /* come sopra: 20 px sotto il titolo + 3 px della vista; il contenuto sta in mezzo ai due divisori */
   padding-top: 10px;
-  border-top: 1px solid var(--interface-border);
+}
+/* il divisorio sopra ← Indietro: uguale a quello sotto il titolo (dal 14 ottobre 2026), grigio appena visibile e sfumato
+   ai due capi, non più la linea piena larga quanto il menu */
+.system-menu-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 6px;
+  right: 6px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--interface-muted) 45%, transparent) 20%,
+    color-mix(in srgb, var(--interface-muted) 45%, transparent) 80%, transparent);
 }
 
 .system-menu-back {
@@ -1025,29 +1041,40 @@
 .theme-choice:hover, .theme-choice:focus-visible { background: var(--interface-surface); border-color: transparent; box-shadow: inset 2px 0 var(--interface-accent); color: var(--interface-text); outline: none; }
 .theme-choice.is-selected { background: var(--interface-accent); color: #fffdfa; border-color: var(--interface-accent); }
 :root[data-interface-theme="dark"] .theme-choice.is-selected { color: #121110; }
-.system-menu-view[data-system-view="settings"] .system-menu-footer { margin-top: 20px; }
 
 /* Lista NEGOZI del menu di sistema (dal 13 ottobre 2026): ogni negozio è un riquadro-pulsante, come la cornice della
    splash page in piccolo: cornice sottile con un filetto interno, al centro il logo del negozio (logoNegozi della scheda,
-   grande quanto gli dà lo stesso peso degli altri: --logo-fattore da dashboard.js) e sotto l'indirizzo, piccolo e spaziato.
+   grande quanto gli dà lo stesso peso degli altri: --logo-fattore da dashboard.js); dal 14 ottobre 2026 solo il logo, senza
+   indirizzo, in riquadri più bassi.
    Attivo: cornice e logo oro e in alto a destra, dentro il riquadro, un pallino verde che pulsa piano; gli altri grigi, al passaggio del mouse cornice oro, logo chiaro e
    il riquadro si alza appena. Stesso disegno da computer, tablet e telefono (sul telefono più grande, dashboard.css) */
-.system-store-list { display: grid; gap: 10px; --logo-lato: 54px; }
+.system-store-list { display: grid; gap: 8px; --logo-lato: 56px; }
+/* da computer e tablet (dal 14 ottobre 2026) tre pulsanti con il solo logo, senza indirizzo (che resta nel nome
+   accessibile): il riquadro è .system-store-scatola, l'indirizzo .system-store-via è nascosto (lo mostra la vista telefono,
+   in dashboard.css, dove il negozio è il riquadro grande di prima con il logo e sotto l'indirizzo) */
 .system-store-choice {
-  position: relative;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--interface-muted);
+  text-align: center;
+}
+.system-store-scatola {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
-  width: 100%;
-  min-height: 98px;
-  padding: 18px 12px 15px;
+  min-height: 62px;
+  padding: 12px;
   border: 1px solid var(--interface-border);
   border-radius: 6px;
   background: var(--interface-surface);
-  color: var(--interface-muted);
-  text-align: center;
   transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease, background .18s ease;
 }
 /* il filetto interno della cornice, più tenue */
@@ -1064,17 +1091,21 @@
   display: block;
   width: auto;
   height: calc(var(--logo-lato) * var(--logo-fattore, .35));
-  max-width: 78%;
+  max-width: 82%;
   object-fit: contain;
   filter: brightness(0) invert(.66);
   transition: filter .18s ease;
 }
 .system-store-via {
+  display: none;
+  flex: 0 0 68px;
   color: var(--interface-muted);
   font: 400 .57rem/1.2 var(--interface-font);
-  letter-spacing: .18em;
+  letter-spacing: .16em;
+  text-align: left;
   text-transform: uppercase;
   white-space: nowrap;
+  transition: color .18s ease;
 }
 /* il negozio attivo: un pallino verde in alto a destra, dentro il riquadro, che pulsa piano (come le spie dei moduli
    attivi di Gestione negozi); un negozio non pronto ha invece la scritta IN ARRIVO */
@@ -1106,32 +1137,33 @@
   letter-spacing: .16em;
 }
 /* il negozio attivo */
-.system-store-choice.is-active { border-color: var(--interface-accent); cursor: default; }
+.system-store-choice.is-active { cursor: default; }
+.system-store-choice.is-active .system-store-scatola { border-color: var(--interface-accent); }
 .system-store-choice.is-active .system-store-cornice { border-color: var(--interface-accent); opacity: .4; }
 .system-store-choice.is-active .system-store-marchio { filter: brightness(0) saturate(100%) invert(73%) sepia(29%) saturate(836%) hue-rotate(352deg) brightness(91%) contrast(87%); }
-.system-store-choice.is-active .system-store-via { color: var(--interface-text); }
-/* un negozio che si apre: al passaggio del mouse (e con la tastiera) cornice oro, logo chiaro, si alza appena */
+.system-store-choice.is-active .system-store-via { color: var(--interface-accent); }
+/* un negozio che si apre: al passaggio del mouse (e con la tastiera) cornice oro, logo chiaro, il riquadro si alza appena */
 .system-store-choice:not(:disabled) { cursor: pointer; }
-.system-store-choice:not(:disabled):is(:hover, :focus-visible) {
+.system-store-choice:not(:disabled):is(:hover, :focus-visible) { outline: none; }
+.system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-scatola {
   border-color: var(--interface-accent);
   transform: translateY(-1px);
   box-shadow: 0 3px 8px rgba(0, 0, 0, .35);
-  outline: none;
 }
 .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-cornice { border-color: var(--interface-accent); opacity: .35; }
 .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-marchio { filter: brightness(0) invert(.92); }
-.system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-via { color: var(--interface-text); }
 .system-store-choice:not(.is-active):disabled { opacity: .55; }
 /* tema chiaro: logo grigio caldo, al passaggio del mouse scuro; ombra corta e netta */
 :root[data-interface-theme="light"] .system-store-marchio { filter: brightness(0) invert(.6); }
 /* l'indirizzo dei negozi non attivi più tenue del loro logo grigio (il logo resta il segno principale) */
 .system-store-choice:not(.is-active) .system-store-via { color: #6c665d; }
-:root[data-interface-theme="light"] .system-store-choice:not(.is-active) .system-store-via { color: #bdb6ab; }
+:root[data-interface-theme="light"] .system-store-choice:not(.is-active) .system-store-via { color: #a69e92; }
 .system-store-choice:not(.is-active):not(:disabled):is(:hover, :focus-visible) .system-store-via { color: var(--interface-text); }
+:root[data-interface-theme="light"] .system-store-choice.is-active .system-store-via { color: #b48b37; }
 :root[data-interface-theme="light"] .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-marchio { filter: brightness(0) invert(.16); }
-:root[data-interface-theme="light"] .system-store-choice:not(:disabled):is(:hover, :focus-visible) { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
+:root[data-interface-theme="light"] .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-scatola { box-shadow: 0 1px 3px rgba(40, 34, 28, .38); }
 :root[data-interface-theme="light"] .system-store-choice.is-active .system-store-marchio { filter: brightness(0) saturate(100%) invert(56%) sepia(52%) saturate(560%) hue-rotate(5deg) brightness(92%) contrast(88%); }
-@media (prefers-reduced-motion: reduce) { .system-store-choice:not(:disabled):is(:hover, :focus-visible) { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .system-store-choice:not(:disabled):is(:hover, :focus-visible) .system-store-scatola { transform: none; } }
 
 .system-menu-toggle {
   width: 100%;

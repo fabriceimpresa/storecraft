@@ -1,3 +1,4 @@
+@import url('input-affix.css?v=20261014-01');
 /*
  * Pannello standard degli editor (Crea Cartelli e Cartellini), comune a tutti i negozi.
  * I colori sono del negozio della pagina, nella sua scheda (assets/negozi/<negozio>.css: --pannello-*); qui i valori
@@ -477,94 +478,8 @@
 
 .btn-print:hover { background: #7a2d22; }
 
-/* Campo con un simbolo fisso (€ davanti ai prezzi, % dopo lo sconto) che l'utente non deve scrivere,
-   ed eventualmente le frecce ▲▼ per aumentare e diminuire il numero (come il campo percentuale di TEBE). */
-.input-affix {
-  display: flex;
-  align-items: stretch;
-  border: 1px solid var(--pannello-bordo);
-  border-radius: 4px;
-  background: var(--pannello-campo);
-  overflow: hidden;
-}
-
-.input-affix:focus-within {
-  border-color: var(--pannello-oro);
-  box-shadow: 0 0 4px var(--pannello-alone);
-}
-
-.form-group .input-affix input {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  -moz-appearance: textfield;
-}
-
-.form-group .input-affix input:focus { box-shadow: none; }
-
-.input-affix input::-webkit-outer-spin-button,
-.input-affix input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Simbolo in un riquadro a parte, come nelle Utilità Cassa (.input-prefix della dashboard): 0,7rem ai lati, una
-   linea lo separa dal campo, simbolo oro in grassetto. Il fondo è quello del riquadro della freccia dei menu
-   (--pannello-riquadro: grigio scuro nel tema scuro, beige nel chiaro), quindi segue tema e negozio.
-   Grandezza e interlinea uguali alle cifre del campo, così il simbolo sta sulla loro stessa linea.
-   Arial ha solo il normale e il grassetto: nel tema scuro (valori di riserva) il simbolo è un poco meno marcato,
-   carattere normale con un contorno sottile; nel tema chiaro grassetto pieno (--pannello-simbolo-peso: 700 e
-   --pannello-simbolo-tratto: 0 nelle schede di TEBE e OPHILYA, theme.css per Luxury). */
-.input-affix .affix {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 0.7rem;
-  background: var(--pannello-riquadro);
-  color: var(--pannello-oro);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 0.82rem;
-  line-height: normal;
-  font-weight: var(--pannello-simbolo-peso, 400);
-  -webkit-text-stroke: var(--pannello-simbolo-tratto, 0.45px) currentColor;
-  pointer-events: none;
-}
-
-.input-affix .affix:first-child { border-right: 1px solid var(--pannello-bordo); }
-/* il % dopo il campo resta senza riquadro (accanto ci sono le frecce ▲▼, che hanno già il loro), in fondo al campo,
-   un poco staccato dalle frecce */
-.input-affix input + .affix { padding: 0 0.75rem 0 0.45rem; background: none; }
-
-/* il % ha il grigio del valore di esempio del campo vuoto (lo stesso colore per tutti e due, --pannello-segnaposto-campo:
-   il grigio dei browser, #757575): ricorda che sul cartello ci sarà, senza disturbare le cifre */
-.input-affix input[data-percentuale]::placeholder { color: var(--pannello-segnaposto-campo, #757575); opacity: 1; }
-.input-affix input[data-percentuale] + .affix { color: var(--pannello-segnaposto-campo, #757575); }
-
-.input-affix .stepper {
-  flex: 0 0 1.6rem;   /* larga come il riquadro della freccia dei menu (.preset-select::after) */
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid var(--pannello-bordo);
-}
-
-.input-affix .stepper button {
-  flex: 1;
-  padding: 0;
-  border: none;
-  border-bottom: 1px solid var(--pannello-bordo);
-  background: var(--pannello-riquadro);
-  color: var(--pannello-oro);
-  font-size: 0.5rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.input-affix .stepper button:last-child { border-bottom: none; }
-.input-affix .stepper button:hover { background: var(--pannello-riquadro-hover); }
+/* Il campo con un simbolo fisso o le frecce ▲▼ (.input-affix) sta in input-affix.css, importato in cima a questo file:
+   lo usano anche le etichette DYMO, che non hanno il pannello standard. */
 
 @media print {
   .sidebar { display: none !important; }

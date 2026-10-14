@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.27 2026';
+  const VERSIONE = 'V 1.2.28 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -170,16 +170,26 @@
     const logoMenu = (n, alt) => el('img', { class: 'system-store-logo', alt, src: n.logoMenu,
       style: `--logo-larghezza: ${n.larghezzaLogoMenu}px` });
     // Lista NEGOZI (dal 13 ottobre 2026): ogni negozio è un riquadro-pulsante con la cornice sottile e il filetto interno,
-    // come la splash page in piccolo; dentro, al centro, il logo (logoNegozi della scheda: per Luxury LUXURY OUTLET) e sotto
-    // l'indirizzo. Il logo ha la grandezza che gli dà lo stesso peso degli altri: stessa area, letta dalle sue proporzioni
-    // (--logo-fattore, 1 / √(larghezza / altezza)), così un logo su due righe e uno lungo e basso si equilibrano.
+    // come la splash page in piccolo; dentro, al centro, solo il logo (logoNegozi della scheda: per Luxury LUXURY OUTLET;
+    // l'indirizzo breve sta prima del riquadro, fuori, vedi sotto). Il logo ha la grandezza che gli dà lo stesso peso degli altri: stessa area, letta dalle sue proporzioni
+    // (--logo-fattore, (altezza / larghezza) elevato a 0,75: dal 14 ottobre 2026 i loghi lunghi e bassi, come TEBE e
+    // OPHILYA, un poco più piccoli di prima rispetto al logo su due righe di Luxury, che resta grande uguale; sul telefono
+    // resta la radice quadrata di prima, --logo-radice).
     // Attivo: cornice e logo oro e un pallino verde che pulsa in alto a destra; gli altri grigi, oro al passaggio del mouse;
     // spento: IN ARRIVO
     const marchio = n => el('img', { class: 'system-store-marchio', alt: '', src: n.logoNegozi,
-      onload: evento => { const img = evento.currentTarget; if (img.naturalHeight) img.style.setProperty('--logo-fattore', Math.sqrt(img.naturalHeight / img.naturalWidth).toFixed(3)); } });
-    const riquadro = (n, ...altro) => [el('span', { class: 'system-store-cornice', 'aria-hidden': 'true' }), marchio(n),
-      el('span', { class: 'system-store-via', text: n.indirizzoBreve }), ...altro];   // breve: «CORSO 15»
-    const negozi = Object.entries(PuntoVendita.NEGOZI).map(([id, n]) => id === negozio
+      onload: evento => { const img = evento.currentTarget; if (img.naturalHeight) img.style.setProperty('--logo-fattore', Math.pow(img.naturalHeight / img.naturalWidth, .75).toFixed(3)); img.style.setProperty('--logo-radice', Math.sqrt(img.naturalHeight / img.naturalWidth).toFixed(3)); } });
+    // dal 14 ottobre 2026: a sinistra, fuori dal riquadro, l'indirizzo breve (CORSO 15), poi il riquadro con il logo
+    const riquadro = (n, ...altro) => [el('span', { class: 'system-store-via', text: n.indirizzoBreve }),
+      el('span', { class: 'system-store-scatola' }, el('span', { class: 'system-store-cornice', 'aria-hidden': 'true' }), marchio(n), ...altro)];
+    // ordine (dal 14 ottobre 2026): in cima il negozio attivo, poi gli altri dal più vicino a lui nell'elenco dei negozi
+    // installati; a pari distanza prima quello che viene dopo (Luxury: LXRY, TEBE, OPHILYA; TEBE: TEBE, OPHILYA, LXRY;
+    // OPHILYA: OPHILYA, TEBE, LXRY)
+    const elenco = Object.keys(PuntoVendita.NEGOZI);
+    const qui = elenco.indexOf(negozio);
+    const distanza = id => { const d = elenco.indexOf(id) - qui; return d === 0 ? -1 : Math.abs(d) * 2 - (d > 0 ? 1 : 0); };
+    const ordinati = Object.entries(PuntoVendita.NEGOZI).sort(([a], [b]) => distanza(a) - distanza(b));
+    const negozi = ordinati.map(([id, n]) => id === negozio
       ? el('button', { class: 'system-store-choice is-active', type: 'button', 'aria-pressed': 'true', disabled: true, 'aria-label': `${n.nome}, ${n.indirizzo}: negozio attivo` },
           ...riquadro(n, el('span', { class: 'system-store-attivo', 'aria-hidden': 'true' })))
       : el('button', { class: 'system-store-choice', type: 'button', 'aria-pressed': 'false', 'data-punto-vendita': id,
@@ -457,7 +467,9 @@
   // Bacheca entra nel giro, dopo ogni scritta, un avviso nello stesso stile di Visual Merchandising Studio, e si parte da
   // lui: NUOVI MESSAGGI IN BACHECA (note nuove, o note e comunicazioni nuove insieme), NUOVA COMUNICAZIONE UFFICIALE
   // (solo comunicazioni nuove), COMUNICAZIONI UFFICIALI RECENTI (per 2 settimane, dopo che sono state lette). Un clic
-  // apre la Bacheca sulla comunicazione nuova o sul post-it da leggere più recente, già aperti
+  // apre la Bacheca sulla comunicazione nuova o sul post-it da leggere più recente, già aperti.
+  // Con la radio accesa (radio.js, evento storecraft:radio) entra nel giro anche la scritta IN ONDA · <stazione>, nello
+  // stesso stile, dopo le altre; accendendo la radio, o cambiando stazione, compare subito
   function alternaTestata(scritte) {
     const titolo = scritte.find(scritta => scritta.classList.contains('testata-titolo'));
     let avviso = null;
@@ -479,20 +491,37 @@
       if (comunicazioniRecenti().length) return 'Comunicazioni ufficiali recenti';
       return '';
     };
-    const giro = () => (avviso && testoAvviso() ? scritte.flatMap(scritta => [scritta, avviso]) : scritte);
+    // la stazione in onda (solo dove c'è il banner con il titolo: la radio sta nella stessa intestazione)
+    let radio = null;
+    let inOnda = null;
+    // il meteo (meteo.js, evento storecraft:meteo): la città in oro, gradi e tempo in bianco, come data e ora
+    let meteoScritta = null;
+    if (titolo) {
+      inOnda = el('div', { class: 'testata-titolo testata-radio' });
+      meteoScritta = el('div', { class: 'testata-titolo testata-meteo' });
+      (avviso || titolo).after(inOnda, meteoScritta);
+      window.addEventListener('storecraft:meteo', evento => {
+        const meteo = evento.detail;
+        meteoScritta.replaceChildren(el('span', { text: meteo.citta }), el('span', { class: 'testata-valore', text: `${meteo.temperatura}° · ${meteo.descrizione}` }));
+        meteoScritta.setAttribute('aria-label', `Meteo: ${meteo.citta}, ${meteo.temperatura} gradi, ${meteo.descrizione}`);
+      });
+    }
+    const radioInOnda = () => Boolean(inOnda && radio?.acceso && !['bloccata', 'assente'].includes(radio.stato));
+    // il meteo entra nel giro solo ogni tanto (OGNI_METEO), non a ogni giro: la prima volta subito, poi dopo 5 minuti
+    const OGNI_METEO = 5 * 60 * 1000;
+    let ultimoMeteo = 0;
+    const meteoDovuto = () => Boolean(meteoScritta?.childElementCount) && Date.now() - ultimoMeteo >= OGNI_METEO;
+    const base = () => [...scritte, ...(radioInOnda() ? [inOnda] : []), ...(meteoDovuto() ? [meteoScritta] : [])];
+    const giro = () => (avviso && testoAvviso() ? base().flatMap(scritta => [scritta, avviso]) : base());
     const scriviAvviso = () => { if (avviso) avviso.textContent = testoAvviso() || 'Nuovi messaggi in bacheca'; };
     scriviAvviso();
-    let posto = giro().length > scritte.length ? 1 : 0;
+    let posto = avviso && testoAvviso() ? 1 : 0;
     let attiva = giro()[posto];
-    [...scritte, avviso].filter(Boolean).forEach(scritta => {
+    [...scritte, avviso, inOnda, meteoScritta].filter(Boolean).forEach(scritta => {
       scritta.classList.remove('is-visibile', 'is-sotto', 'is-sopra');
       scritta.classList.add(scritta === attiva ? 'is-visibile' : 'is-sotto');
     });
-    setInterval(() => {
-      const elenco = giro();
-      posto = (posto + 1) % elenco.length;
-      const prossima = elenco[posto];
-      if (prossima === avviso) scriviAvviso();
+    const passaA = prossima => {
       if (prossima === attiva) return;
       attiva.classList.replace('is-visibile', 'is-sopra');
       prossima.classList.remove('is-sotto');
@@ -506,7 +535,39 @@
         uscita.classList.remove('senza-animazione');
       }, 900);
       attiva = prossima;
-    }, 10 * 1000);
+    };
+    let timer = null;
+    const avanza = () => {
+      const elenco = giro();
+      posto = (posto + 1) % elenco.length;
+      const prossima = elenco[posto];
+      if (prossima === avviso) scriviAvviso();
+      if (prossima === meteoScritta) ultimoMeteo = Date.now();
+      passaA(prossima);
+    };
+    const riparti = () => { clearInterval(timer); timer = setInterval(avanza, 10 * 1000); };
+    riparti();
+    if (inOnda) {
+      window.addEventListener('storecraft:radio', evento => {
+        const prima = radioInOnda() ? radio.stazione : null;
+        radio = evento.detail;
+        if (radioInOnda()) {
+          inOnda.replaceChildren(el('span', { text: 'In onda' }), el('span', { class: 'testata-valore', text: radio.stazione }));
+          inOnda.setAttribute('aria-label', `In onda: ${radio.nome}`);
+          // radio appena accesa o stazione cambiata: la scritta compare subito, e il giro riparte da lei
+          if (prima !== radio.stazione) {
+            passaA(inOnda);
+            posto = giro().indexOf(inOnda);
+            riparti();
+          }
+        } else if (attiva === inOnda) {
+          // radio spenta mentre la sua scritta è in vista: si torna alla prima scritta
+          posto = 0;
+          passaA(giro()[0]);
+          riparti();
+        }
+      });
+    }
   }
 
   // Banner dell'intestazione, da desktop e tablet: si vede solo se la scritta più larga entra tutta tra i due elementi ai
@@ -521,11 +582,17 @@
       // gli elementi ai lati, nel flusso dell'intestazione (non il pulsante HOME, fisso)
       const lati = [...testata.children].filter(figlio => figlio !== banner && figlio.offsetWidth
         && !['fixed', 'absolute'].includes(getComputedStyle(figlio).position));
-      const lato = Math.max(0, ...lati.map(figlio => figlio.getBoundingClientRect().width));
+      const larghezze = lati.map(figlio => figlio.getBoundingClientRect().width);
       const serve = Math.max(0, ...[...banner.children].map(scritta => scritta.scrollWidth));
-      banner.classList.toggle('is-nascosto', serve > interno - 2 * (lato + RESPIRO));
+      // con la radio girata (radio.css) il banner sta al centro dello spazio libero tra i lati, altrimenti al centro del contenuto
+      const libero = testata.querySelector('.orologio-radio.girato:not(.compatta)')
+        ? interno - larghezze.reduce((somma, larghezza) => somma + larghezza, 0) - 2 * RESPIRO
+        : interno - 2 * (Math.max(0, ...larghezze) + RESPIRO);
+      banner.classList.toggle('is-nascosto', serve > libero);
     };
     new ResizeObserver(misura).observe(testata);
+    // anche quando cambia la larghezza degli elementi ai lati (es. l'orologio che si gira e diventa la radio)
+    [...testata.children].filter(figlio => figlio !== banner).forEach(figlio => new ResizeObserver(misura).observe(figlio));
     document.fonts?.ready.then(misura);
     new MutationObserver(misura).observe(document.documentElement,
       { attributes: true, attributeFilter: ['data-interface-look'] });
@@ -673,7 +740,8 @@
         const testo = el('span', { class: 'mode-btn' });
         const orologio = el('div', { class: 'mode-switcher orologio-testata', role: 'timer', 'aria-label': 'Data e ora' }, testo);
         riquadroLogo.append(orologio);
-        const scrivi = () => {
+        let inMeteo = false;   // il riquadro mostra il meteo (sotto): l'ora non lo riscrive
+        const nodiOra = () => {
           const ora = new Date();
           const giorno = ora.toLocaleDateString('it-IT', { weekday: 'short' }).replace('.', '');
           const mese = ora.toLocaleDateString('it-IT', { month: 'short' }).replace('.', '');
@@ -683,12 +751,86 @@
           const battito = el('span', { class: 'orologio-battito', text: ':', 'aria-hidden': 'true' });
           battito.style.animationDelay = `-${Date.now() % 1000}ms`;
           // la data in oro, l'ora in bianco (nel tema chiaro scura), divise da un puntino tenue
-          testo.replaceChildren(el('span', { class: 'orologio-data', text: `${giorno} ${ora.getDate()} ${mese}`.toUpperCase() }),
+          return [el('span', { class: 'orologio-data', text: `${giorno} ${ora.getDate()} ${mese}`.toUpperCase() }),
             el('span', { class: 'orologio-punto', text: '·' }),
-            el('span', { class: 'orologio-ora', 'aria-label': `${ore}:${minuti}` }, ore, battito, minuti));
+            el('span', { class: 'orologio-ora', 'aria-label': `${ore}:${minuti}` }, ore, battito, minuti)];
+        };
+        const scrivi = () => {
+          if (!inMeteo) testo.replaceChildren(...nodiOra());
           setTimeout(scrivi, 60000 - (Date.now() % 60000) + 50);
         };
         scrivi();
+        // meteo: true nell'intestazione: ogni minuto il cursore a triangolino (quello dei fogli, nel colore del negozio)
+        // cancella data e ora lettera per lettera e scrive il meteo, la città in oro e il valore in bianco come data e
+        // ora; dopo qualche secondo lo cancella e riscrive data e ora. Non sul telefono, non con la radio girata, non
+        // con la pagina nascosta; con «riduci animazioni» il meteo prende il posto dell'ora senza scrittura
+        if (dati.intestazione.meteo) {
+          let meteo = null;
+          window.addEventListener('storecraft:meteo', evento => { meteo = evento.detail; });
+          const attendi = ms => new Promise(fatto => setTimeout(fatto, ms));
+          const pezziDi = nodi => nodi.filter(nodo => !nodo.classList?.contains('orologio-cursore'))
+            .map(nodo => ({ testo: nodo.textContent, classe: nodo.className || '' })).filter(pezzo => pezzo.testo);
+          const lunghezza = pezzi => pezzi.reduce((somma, pezzo) => somma + pezzo.testo.length, 0);
+          const disegna = (pezzi, quanti, cursore = true) => {
+            let resto = quanti;
+            const nodi = [];
+            for (const pezzo of pezzi) {
+              if (resto <= 0) break;
+              const parte = pezzo.testo.slice(0, resto);
+              resto -= parte.length;
+              nodi.push(el('span', { class: pezzo.classe, text: parte }));
+            }
+            if (cursore) nodi.push(el('span', { class: 'orologio-cursore', 'aria-hidden': 'true' }));
+            testo.replaceChildren(...nodi);
+          };
+          const batti = async (pezzi, da, a, passo) => {
+            for (let quanti = da; quanti !== a; quanti += Math.sign(a - da)) { disegna(pezzi, quanti); await attendi(passo); }
+            disegna(pezzi, a);
+          };
+          // il testo del meteo che entra nel riquadro: città · gradi e tempo, poi senza il tempo, poi la città accorciata
+          const pezziMeteo = () => {
+            const citta = meteo.citta.toUpperCase();
+            const gradi = `${meteo.temperatura}°`;
+            const prove = [[citta, `${gradi} ${meteo.breve}`.toUpperCase().trim()], [citta, gradi]];
+            for (let taglio = citta.length - 1; taglio > 3; taglio--) prove.push([`${citta.slice(0, taglio).trim()}.`, gradi]);
+            const prova = orologio.cloneNode(true);
+            prova.style.cssText = 'position: absolute; visibility: hidden; min-width: 0;';
+            orologio.after(prova);
+            const scelta = prove.find(([nome, valore]) => {
+              prova.firstChild.replaceChildren(el('span', { class: 'orologio-data', text: nome }), el('span', { class: 'orologio-punto', text: '·' }),
+                el('span', { class: 'orologio-ora', text: valore }));
+              return prova.offsetWidth <= orologio.offsetWidth;
+            }) || prove[prove.length - 1];
+            prova.remove();
+            return [{ testo: scelta[0], classe: 'orologio-data' }, { testo: '·', classe: 'orologio-punto' }, { testo: scelta[1], classe: 'orologio-ora' }];
+          };
+          const riduci = matchMedia('(prefers-reduced-motion: reduce)');
+          const ciclo = async () => {
+            if (!meteo || inMeteo || document.hidden || phoneViewQuery.matches || orologio.closest('.orologio-radio.girato')) return;
+            inMeteo = true;
+            orologio.setAttribute('aria-label', `Meteo: ${meteo.citta}, ${meteo.temperatura} gradi, ${meteo.descrizione}`);
+            const scritta = pezziMeteo();
+            if (riduci.matches) {
+              disegna(scritta, lunghezza(scritta), false);
+              await attendi(8000);
+            } else {
+              const prima = pezziDi([...testo.children]);
+              await batti(prima, lunghezza(prima), 0, 30);
+              await attendi(250);
+              await batti(scritta, 0, lunghezza(scritta), 65);
+              await attendi(8000);
+              await batti(scritta, lunghezza(scritta), 0, 30);
+              await attendi(250);
+              const ora = pezziDi(nodiOra());
+              await batti(ora, 0, lunghezza(ora), 65);
+              await attendi(400);
+            }
+            testo.replaceChildren(...nodiOra());
+            orologio.setAttribute('aria-label', 'Data e ora');
+            inMeteo = false;
+          };
+          setTimeout(() => { ciclo(); setInterval(ciclo, 60 * 1000); }, 12 * 1000);
+        }
         // largo come il selettore CASSIERE / CREATOR, che cambia con l'aspetto
         const pareggia = () => {
           orologio.style.minWidth = '';
@@ -699,7 +841,16 @@
         new MutationObserver(pareggia).observe(document.documentElement,
           { attributes: true, attributeFilter: ['data-interface-look', 'data-interface-theme'] });
         requestAnimationFrame(pareggia);
+        // radio: true nell'intestazione: dietro l'orologio una piccola radio vintage (assets/js/radio.js, caricato solo qui)
+        if (dati.intestazione.radio) {
+          document.head.append(el('link', { rel: 'stylesheet', href: risorsa(`css/radio.css${versioneFile}`) }));
+          const modulo = el('script', { src: risorsa(`js/radio.js${versioneFile}`) });
+          modulo.addEventListener('load', () => window.Radio?.monta(orologio, { negozio }));
+          document.head.append(modulo);
+        }
       }
+      // meteo: true nell'intestazione: città e tempo di adesso nel banner e nel riquadro di data e ora (assets/js/meteo.js)
+      if (dati.intestazione.meteo) document.head.append(el('script', { src: risorsa(`js/meteo.js${versioneFile}`) }));
       const titoloBanner = el('div', { class: 'testata-titolo', text: 'Visual Merchandising Studio' });
       const banner = el('div', { class: 'testata-centro', 'aria-live': 'off' }, titoloBanner);
       testataLogo.append(riquadroLogo, banner);
