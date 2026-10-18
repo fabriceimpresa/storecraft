@@ -155,7 +155,7 @@ try {
   # Radice: la splash page e l'area operatore ridotta (operatore, schema-pagine con il ghost delle pagine, logoimport,
   # logogestione: con copiaCliente in installati.js la pagina operatore mostra solo quelle sezioni); non Gestione
   # pacchetti, la Guida tecnica, il piano e le pagine di prova (_*)
-  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html') -notcontains $_.Name } | ForEach-Object {
+  Get-ChildItem -LiteralPath $root -File -Filter '*.html' | Where-Object { $_.Name -notlike '_*' -and $_.Name -ne 'Storecraft Aggiornamento.html' -and @('guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html') -notcontains $_.Name } | ForEach-Object {
     Copia $_.FullName (Join-Path $destinazione $_.Name)
   }
 

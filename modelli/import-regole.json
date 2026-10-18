@@ -1,0 +1,462 @@
+{
+  "nome": "Regole di Import layout",
+  "versione": 1,
+  "aggiornate": "2026-10-18",
+  "descrizione": "Regole per trasformare un file Photoshop (.psd) con un foglio A4 di due cartelli in una pagina di generazione di cartelli di STORE // CRAFT, costruita con i moduli comuni. Le usano la pagina import-layout.html (area operatore), la skill di Claude e, domani, l'app SaaS. Le funzioni che le applicano stanno in import-layout.html; qui ci sono i dati e la descrizione di ogni regola, così si possono riscrivere in qualunque linguaggio.",
+  "file": {
+    "regola": "Foglio A4 verticale (210 × 297 mm, meglio a 300 dpi). I due cartelli sono i gruppi cartello-superiore e cartello-inferiore; i livelli si chiamano con i nomi dei componenti del menu di sinistra (vedi livelli); i testi restano livelli di testo modificabili. Un livello di grafica fissa in tutti e due i cartelli (es. footer) va nel gruppo del suo cartello.",
+    "cartelli": {
+      "cartello-superiore": "Cartello superiore",
+      "cartello-inferiore": "Cartello inferiore"
+    }
+  },
+  "livelli": {
+    "regola": "Ogni livello, per nome, ha il suo modulo comune e il blocco del pannello (1 selettori e pulsanti, 2 brand e claim, 3 campi del cartello, 4 stampa; null = grafica della pagina). foglio: elemento di tutto il foglio, non di un cartello. campo: nome del campo per il confronto con le pagine esistenti. nomeAllineamento: nome della riga nel controllo dell'allineamento. Quando nasce un modulo comune per un campo nuovo, si aggiunge qui.",
+    "elenco": {
+      "riquadro-brand": {
+        "breve": "riquadro del brand",
+        "comando": "riquadro del brand (red-box)",
+        "file": "grafica della pagina, contiene il logo",
+        "blocco": 2,
+        "nomeAllineamento": "riquadro del brand"
+      },
+      "logo-brand": {
+        "breve": "BRAND · Loghi Personali",
+        "comando": "BRAND · Loghi Personali",
+        "file": "logos.js · loghi-personalizzati.js",
+        "blocco": 2,
+        "campo": "brand",
+        "nomeAllineamento": "logo del brand"
+      },
+      "logo-brand-2": {
+        "breve": "+ AGGIUNGI 2° BRAND",
+        "comando": "+ AGGIUNGI 2° BRAND · BRAND 2 · Loghi Personali 2",
+        "file": "second-brand-toggle.js · logos.js",
+        "blocco": 1,
+        "campo": "2° brand"
+      },
+      "claim-sx": {
+        "breve": "Claim Sinistro",
+        "comando": "Claim Sinistro (#leftClaim)",
+        "file": "pannello.css",
+        "blocco": 2,
+        "campo": "claim sx",
+        "nomeAllineamento": "claim sinistro"
+      },
+      "claim-dx": {
+        "breve": "Claim Destro",
+        "comando": "Claim Destro (#rightClaim)",
+        "file": "pannello.css",
+        "blocco": 2,
+        "campo": "claim dx",
+        "nomeAllineamento": "claim destro"
+      },
+      "descrizione": {
+        "breve": "TESTI PRONTI · Testo Libero",
+        "comando": "TESTI PRONTI · Testo Libero",
+        "file": "testi-pronti.js",
+        "blocco": 3,
+        "campo": "descrizione"
+      },
+      "prezzo-originario": {
+        "breve": "Prezzo Originario",
+        "comando": "Prezzo Originario (€ fisso, due decimali)",
+        "file": "campi-prezzo.js · data-prezzo",
+        "blocco": 3,
+        "campo": "prezzo originario"
+      },
+      "percentuale": {
+        "breve": "Sconto",
+        "comando": "Sconto (da 1 a 99, % fisso, ▲▼)",
+        "file": "campi-prezzo.js · data-percentuale",
+        "blocco": 3,
+        "campo": "sconto"
+      },
+      "sbarra": {
+        "breve": "barra del prezzo originario",
+        "comando": "barra del prezzo originario: compare con lui",
+        "file": "grafica della pagina",
+        "blocco": 3
+      },
+      "prezzo-finale": {
+        "breve": "Prezzo Finale",
+        "comando": "Prezzo Finale (€ fisso, due decimali)",
+        "file": "campi-prezzo.js · data-prezzo",
+        "blocco": 3,
+        "campo": "prezzo finale",
+        "nomeAllineamento": "riga del prezzo finale"
+      },
+      "footer": {
+        "breve": "grafica in fondo",
+        "comando": "grafica fissa in fondo al cartello",
+        "file": "immagine della pagina (png)",
+        "blocco": null,
+        "nomeAllineamento": "footer"
+      },
+      "background": {
+        "breve": "fondo del foglio",
+        "comando": "fondo del foglio",
+        "file": "stile della pagina",
+        "blocco": null,
+        "foglio": true
+      },
+      "tratteggio-ritaglio": {
+        "breve": "linea di taglio",
+        "comando": "linea di taglio tra i due cartelli",
+        "file": "stile della pagina (anche in stampa)",
+        "blocco": null,
+        "foglio": true
+      }
+    },
+    "alias": {
+      "sconto": "percentuale",
+      "logo-brand-1": "logo-brand",
+      "riquadro-brand-1": "riquadro-brand",
+      "sfondo": "background",
+      "linea-taglio": "tratteggio-ritaglio",
+      "testo-libero": "descrizione"
+    }
+  },
+  "lettura": {
+    "regole": [
+      "Il file si legge sempre da capo: a ogni conversione si rilegge dal disco, anche se è lo stesso file e anche se è già stato letto; mai conclusioni da letture precedenti.",
+      "Nomi: minuscolo, spazi e trattini bassi diventano trattini; poi nome esatto, alias, nome con numero in fondo (descrizione-2: campo descrizione, numero 2), nomi che cominciano con background o sfondo (fondo del foglio); infine il nome più vicino, con distanza di scrittura fino a distanzaNomi (due lettere scambiate contano 1) e solo per nomi lunghi almeno lunghezzaMinima: letto, ma segnalato da verificare.",
+      "Gruppi: un gruppo con il nome di un cartello porta il suo cartello ai livelli che contiene; un gruppo con il nome di un livello (es. riquadro-brand, con dentro la forma riquadro-brand e il logo logo-brand) li raccoglie; il nome scritto male del gruppo si segnala sui suoi livelli.",
+      "Cartello di un livello fuori dai gruppi: quello della sua posizione, rispetto alla linea di taglio (centro del livello sopra o sotto); segnalato da verificare.",
+      "Linea di taglio: il centro del livello tratteggio-ritaglio; senza, metà foglio.",
+      "Misure: mm = pixel / dpi × 25,4; dpi dalla risoluzione del file; se il file non la dice e il foglio ha le proporzioni dell'A4, dpi = lato lungo in pixel / (297 / 25,4); altrimenti 300. Posizione: x dal bordo sinistro del foglio, y dal bordo alto del proprio cartello (il cartello inferiore parte dalla linea di taglio).",
+      "Testi: grandezza in pt = grandezza del carattere × scala verticale della trasformazione del testo × 72 / dpi; interlinea allo stesso modo (auto se non è impostata); spaziatura in millesimi di em (tracking di Photoshop); colore, allineamento, grassetto e corsivo finti, maiuscolo dal primo stile del testo.",
+      "Forme: colore del riempimento, angoli (dritti o arrotondati con il raggio), rotazione (dall'angolo del lato più lungo del tracciato, se il riquadro di partenza non è più valido), traccia (spessore in mm, tratteggiata, colore).",
+      "Immagini: si esportano come png."
+    ],
+    "distanzaNomi": 2,
+    "lunghezzaMinima": 5,
+    "font": {
+      "regola": "Nome PostScript del font nel .psd → file in assets/fonts/; un font non elencato si cerca come <nome>.otf e <nome>.ttf.",
+      "elenco": {
+        "BodoniStd": "BodoniStd.otf",
+        "BodoniStd-Italic": "BodoniStd-Italic.otf",
+        "BodoniStd-BoldItalic": "BodoniStd-BoldItalic.otf",
+        "Space-Invaders": "space_invaders.ttf",
+        "ArialMT": "Arial.ttf",
+        "Arial-BoldMT": "Arial Bold.ttf"
+      }
+    }
+  },
+  "stessaGrafica": {
+    "regola": "Due livelli immagine con lo stesso nome nei due cartelli, la stessa misura e i pixel quasi uguali sono la stessa grafica: un elemento solo, un solo png, non segnalato (anche se uno è fuori dal suo gruppo). Confronto sul colore pesato per la trasparenza (colore × alfa / 255, più l'alfa): copiando un livello Photoshop ricalcola qualche pixel, soprattutto sul bordo trasparente. Uguali se la differenza media è sotto mediaMassima e i valori che differiscono più di scartoPixel sono meno della frazione pixelLontaniMassimi.",
+    "mediaMassima": 2,
+    "scartoPixel": 40,
+    "pixelLontaniMassimi": 0.005
+  },
+  "confronto": {
+    "regola": "Somiglianza con una pagina esistente = campi in comune / (campi del file ∪ campi sempre presenti nella pagina). I campi opzionali della pagina (accesi da un pulsante, es. il 2° brand) contano come in comune se il file li ha, ma non pesano se non li ha. Il campo articoli c'è quando il file ha una descrizione o un prezzo finale numerati da 2 in su. Un formato diverso dal foglio A4 con due cartelli indipendenti moltiplica per fattoreFormato. Si mostrano le tre pagine più simili e la Nuova Base Comune; la partenza proposta è la più simile se arriva alla soglia, altrimenti la Nuova Base Comune; l'operatore la può sempre cambiare prima di procedere. Quando nasce una pagina di cartelli, si aggiunge a pagine.",
+    "soglia": 0.6,
+    "fattoreFormato": 0.85,
+    "nomeArticoli": "più articoli",
+    "pagine": [
+      {
+        "pagina": "luxury/cartelli_semplici.html",
+        "nome": "Cartello Semplice",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "prezzo-finale"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ]
+      },
+      {
+        "pagina": "luxury/cartelli_outlet.html",
+        "nome": "Outlet",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "prezzo-originario",
+          "percentuale",
+          "prezzo-finale"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ]
+      },
+      {
+        "pagina": "luxury/cartelli_outletmulti.html",
+        "nome": "Outlet Multi",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "prezzo-originario",
+          "percentuale",
+          "prezzo-finale",
+          "articoli"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ]
+      },
+      {
+        "pagina": "luxury/cartelli_multireferenza.html",
+        "nome": "Multi Brand",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "prezzo-finale",
+          "articoli"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ]
+      },
+      {
+        "pagina": "luxury/cartellopercentuale.html",
+        "nome": "Percentuale",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "percentuale"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ]
+      },
+      {
+        "pagina": "luxury/cartello_banco.html",
+        "nome": "Paletto 15x10",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "prezzo-originario",
+          "percentuale",
+          "prezzo-finale"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ],
+        "formato": "cartelli 148 × 104 mm"
+      },
+      {
+        "pagina": "luxury/cartelli_lastchance.html",
+        "nome": "Last Chance",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "claim-sx",
+          "claim-dx",
+          "descrizione",
+          "prezzo-finale"
+        ],
+        "opzionali": [
+          "logo-brand"
+        ]
+      },
+      {
+        "pagina": "luxury/magazzino.html",
+        "nome": "Magazzino",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "descrizione"
+        ],
+        "opzionali": [
+          "logo-brand-2"
+        ]
+      },
+      {
+        "pagina": "luxury/blackfriday.html",
+        "nome": "Black Friday",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "prezzo-finale"
+        ],
+        "opzionali": [
+          "descrizione",
+          "prezzo-originario",
+          "percentuale"
+        ]
+      },
+      {
+        "pagina": "luxury/blackfridaylips.html",
+        "nome": "Black Friday Lips",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "prezzo-finale"
+        ]
+      },
+      {
+        "pagina": "luxury/xmas_ball.html",
+        "nome": "Xmas Ball",
+        "negozio": "Luxury Outlet",
+        "campi": [
+          "logo-brand",
+          "prezzo-finale"
+        ],
+        "opzionali": [
+          "prezzo-originario",
+          "percentuale"
+        ]
+      },
+      {
+        "pagina": "tebe/cartelli_semplici.html",
+        "nome": "Cartello Semplice",
+        "negozio": "TEBE",
+        "campi": [
+          "descrizione",
+          "prezzo-finale"
+        ],
+        "formato": "in morsa: fronte e retro"
+      },
+      {
+        "pagina": "tebe/cartelli_sale.html",
+        "nome": "Cartello Sale",
+        "negozio": "TEBE",
+        "campi": [
+          "descrizione",
+          "prezzo-originario",
+          "percentuale",
+          "prezzo-finale"
+        ],
+        "formato": "in morsa: fronte e retro"
+      },
+      {
+        "pagina": "tebe/cartelli_brand.html",
+        "nome": "Cartello Brand",
+        "negozio": "TEBE",
+        "campi": [
+          "logo-brand",
+          "descrizione",
+          "prezzo-originario",
+          "percentuale",
+          "prezzo-finale"
+        ],
+        "formato": "in morsa: fronte e retro"
+      },
+      {
+        "pagina": "tebe/cartellopercentuale.html",
+        "nome": "Percentuale",
+        "negozio": "TEBE",
+        "campi": [
+          "descrizione",
+          "percentuale"
+        ],
+        "opzionali": [
+          "logo-brand"
+        ],
+        "formato": "in morsa: fronte e retro"
+      }
+    ],
+    "base": {
+      "pagina": "modelli/cartello-base.html",
+      "nome": "Nuova Base Comune",
+      "negozio": "solo struttura standard"
+    }
+  },
+  "allineamento": {
+    "regola": "I due cartelli coincidono, ognuno nella sua metà del foglio: misure dalla metà esatta del foglio se la linea di taglio è entro 1 mm dalla metà, altrimenti dalla linea di taglio. Si confrontano: gli elementi presenti in tutti e due (angolo in alto a sinistra; per i testi il centro, perché il contenuto cambia), il logo rispetto al riquadro del brand, la riga centrale (unione di descrizione, prezzo originario, barra e sconto: il centro), i margini del contenuto dai bordi della propria metà di foglio. Allineati entro tolleranzaMm. Spostamento comune: se almeno tre elementi e tutti si spostano della stessa misura (entro la tolleranza), è il cartello intero che è spostato. Con delle differenze, ALLINEA CARTELLI sposta gli elementi del cartello inferiore sulla posizione dei loro gemelli del superiore (la riga centrale tutta insieme, sul centro della riga del superiore); ANNULLA torna alle posizioni del file.",
+    "tolleranzaMm": 0.3,
+    "elementi": [
+      "claim-sx",
+      "claim-dx",
+      "riquadro-brand",
+      "logo-brand",
+      "prezzo-finale",
+      "footer"
+    ],
+    "rigaCentrale": [
+      "descrizione",
+      "prezzo-originario",
+      "sbarra",
+      "percentuale"
+    ],
+    "metaFoglioEntroMm": 1
+  },
+  "pannello": {
+    "regola": "Il pannello della pagina generata: i quattro blocchi con i moduli dei livelli trovati, più i moduli della struttura, secondo quando: dueCartelli (il file ha due cartelli), doppiaCifraEDescrizione (il file ha prezzo originario o sconto e anche una descrizione), sempre. Un blocco che resta vuoto si toglie.",
+    "blocchi": {
+      "1": "selettori e pulsanti",
+      "2": "brand e claim",
+      "3": "campi del cartello",
+      "4": "stampa"
+    },
+    "struttura": [
+      {
+        "blocco": 1,
+        "comando": "CARTELLO SUPERIORE / INFERIORE",
+        "file": "selettore-cartello.js",
+        "quando": "dueCartelli"
+      },
+      {
+        "blocco": 1,
+        "comando": "DOPPIA CIFRA / DESCRIZIONE ARTICOLO",
+        "file": "selettore-modalita-prezzo.js",
+        "quando": "doppiaCifraEDescrizione"
+      },
+      {
+        "blocco": 4,
+        "comando": "COPIA SU ALTRO CARTELLO",
+        "file": "copia-cartello.js",
+        "quando": "dueCartelli"
+      },
+      {
+        "blocco": 4,
+        "comando": "Impostazioni di Stampa · STAMPA",
+        "file": "pannello.css · strumenti-stampa.js",
+        "quando": "sempre"
+      }
+    ]
+  },
+  "avvisi": {
+    "regola": "Ogni elemento da verificare (giallo) o senza modulo (rosso) compare, appena finita la conversione, nel riquadro DA VERIFICARE sopra la mappa, con il motivo e cosa fare. inizio: come comincia la nota dell'elemento.",
+    "elenco": [
+      {
+        "inizio": "nome scritto",
+        "motivo": "il nome del livello non è scritto esattamente come il componente: la pagina l'ha riconosciuto lo stesso",
+        "cosaFare": "correggi il nome del livello nel .psd e rifai l'import"
+      },
+      {
+        "inizio": "gruppo «",
+        "motivo": "il nome del gruppo non è scritto esattamente come il componente: la pagina l'ha riconosciuto lo stesso",
+        "cosaFare": "correggi il nome del gruppo nel .psd e rifai l'import"
+      },
+      {
+        "inizio": "fuori dal gruppo",
+        "motivo": "il livello non sta nel gruppo di un cartello: è stato assegnato al cartello della sua posizione",
+        "cosaFare": "sposta il livello nel gruppo cartello-superiore o cartello-inferiore"
+      },
+      {
+        "inizio": "font ",
+        "motivo": "il font del testo non c'è in assets/fonts/: la pagina non lo potrà mostrare né stampare",
+        "cosaFare": "aggiungi il file del font in assets/fonts/"
+      },
+      {
+        "inizio": "nessun modulo",
+        "motivo": "il nome del livello non corrisponde a nessun componente del menu di sinistra",
+        "cosaFare": "rinomina il livello con il nome di un componente, oppure, nel prossimo passo, abbinalo a un modulo o chiedi un modulo nuovo"
+      },
+      {
+        "inizio": "livello nascosto",
+        "motivo": "il livello è nascosto nel .psd",
+        "cosaFare": "mostralo nel .psd, oppure toglilo se non serve"
+      }
+    ]
+  }
+}

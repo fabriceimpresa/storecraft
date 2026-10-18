@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script src="assets/js/negozi.js?v=20261018-01"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+<title>IMPORT LAYOUT (uso interno)</title>
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261018-01">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261018-01">
+  <script src="assets/js/operatore-sezione.js?v=20261018-01"></script>
+  <!-- lettura del file Photoshop nel browser (ag-psd; non è su cdnjs: jsDelivr, versione fissata) -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-psd@31.0.2/dist/bundle.js"></script>
+  <!-- generatore della pagina (dai dati letti alla pagina di cartelli sulla Nuova Base Comune) -->
+  <script src="modelli/import-genera.js?v=20261018-01"></script>
+  <!--
+    Import layout (area operatore): dal file Photoshop originale (.psd) alla nuova pagina di generazione di cartelli.
+    Passo 1 (questa versione): si sceglie il .psd, la conversione legge foglio, cartelli e livelli (nomi dei componenti del
+    menu di sinistra: riquadro-brand, logo-brand, claim-sx, descrizione, prezzo-finale…), ne ricava misure in mm, font,
+    grandezze, spaziature, colori e allineamenti e abbina a ogni livello il suo modulo comune; si vedono l'anteprima del
+    foglio e una scheda per cartello con il riepilogo. Il file si legge solo nel browser: non si carica da nessuna parte.
+    Prossimi passi: pagina generata, cambio del modulo abbinato o richiesta di un modulo nuovo, conferma (galleria,
+    negozio; il modulo nasce come modulo import e, rivisto insieme, diventa sorgente).
+  -->
+<style>
+  /* aperta da sola: solo le linee dorate sopra e sotto, niente bordi ai lati, e la pagina più larga */
+  .container { width: min(1500px, 100%); padding-left: 20px; padding-right: 20px; border-left-color: transparent; border-right-color: transparent; }
+  .container::before { border-left-color: transparent; border-right-color: transparent; }
+  .passo-op .upload-box { margin-bottom: 10px; }
+
+  /* sezioni finite: si richiudono a una riga (titolo e riassunto), per guadagnare spazio in verticale; la freccia sul
+     divisorio sotto la sezione la riapre (e la richiude) */
+  .passo-op { position: relative; }
+  .passo-op.chiuso { padding: 12px 0 14px; }
+  .passo-op.chiuso > div > :not(.passo-titolo) { display: none; }
+  .passo-op.chiuso .passo-titolo { margin-bottom: 0; }
+  .passo-titolo .riassunto { margin-left: 6px; color: var(--op-ok); font-size: 11.5px; }
+  .passo-op:not(.chiuso) .riassunto { display: none; }
+  .riapri { position: absolute; left: 50%; bottom: -12px; z-index: 3; display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; margin-left: -12px; padding: 0; border: 1px solid var(--op-oro); border-radius: 50%; background: var(--op-bg);
+    color: var(--op-oro-chiaro); cursor: pointer; transition: background .15s, color .15s; }
+  html.incorporata .riapri { background: #171513; }
+  .riapri[hidden] { display: none; }
+  .riapri:hover, .riapri:focus-visible { background: var(--op-oro); color: #fff; }   /* al passaggio: pieno d'oro con la freccia bianca */
+  .riapri svg { width: 13px; height: 13px; transition: transform .2s; }
+  .riapri[aria-expanded="true"] svg { transform: rotate(180deg); }
+  @media (prefers-reduced-motion: reduce) { .riapri svg { transition: none; } }
+  .file-scelto { color: var(--op-ok); font-size: 12px; }
+  .file-scelto.err { color: var(--op-errore); }
+  .file-scelto.vuoto { color: var(--op-tenue); }
+  .file-scelto::before { content: '$ '; color: var(--op-oro); }
+
+  /* registro della conversione: finestra nera da terminale, come Prepara copia */
+  .registro { max-height: 220px; margin-top: 12px; padding: 10px 12px; overflow-y: auto; border: 1px solid var(--op-bordo);
+    border-radius: 4px; background: #0a0908; font: 400 11.5px/1.7 'IBM Plex Mono', ui-monospace, monospace; }
+  .registro:empty { display: none; }
+  .registro p { color: var(--op-testo); white-space: pre-wrap; }
+  .registro p.comando { color: var(--op-oro-chiaro); }
+  .registro p.comando::before { content: '> '; }
+  .registro p.ok { color: var(--op-ok); }
+  .registro p.avviso { color: var(--op-oro); }
+  .registro p.err { color: var(--op-errore); }
+  .registro p.nota { color: var(--op-tenue); }
+
+  /* ---- risultato a diagramma: nodi e fili, come Gestione negozi ---- */
+  .risultato[hidden] { display: none; }
+  .titoletto { margin: 4px 0 12px; color: var(--op-testo); font-size: 12.5px; letter-spacing: .04em; }
+  .titoletto::before { content: '$ '; color: var(--op-oro); }
+  .titoletto span { color: var(--op-tenue); font-size: 11px; }
+  .diagramma { position: relative; }
+  .percento { justify-self: end; color: var(--op-tenue); font-size: 11px; }
+  .scelto .percento { color: var(--op-oro-chiaro); }
+  .barra { grid-column: 1 / -1; }
+  .fili { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .fili path { fill: none; stroke-width: 1.3; opacity: .55; transition: opacity .15s, stroke-width .15s; }
+  .fili path.ok { stroke: #3a9b5a; }
+  .fili path.forse { stroke: var(--op-oro); }
+  .fili path.manca { stroke: var(--op-errore); stroke-dasharray: 4 4; }
+  .fili path.tenue { stroke: #4a453e; opacity: .7; }
+  .fili path.scelto { stroke: var(--op-oro-chiaro); stroke-width: 2; opacity: .95; }
+  .fili path.acceso { opacity: 1; stroke-width: 2.4; }
+  .diagramma.con-acceso .fili path:not(.acceso) { opacity: .1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .fili path.traccia { animation: traccia .7s ease-out both; }
+    @keyframes traccia { from { stroke-dashoffset: var(--lungo); } to { stroke-dashoffset: 0; } }
+  }
+  .spia { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 50%; }
+  .spia.ok { background: #3a9b5a; box-shadow: 0 0 6px rgba(58, 155, 90, .7); }
+  .spia.forse { background: var(--op-oro); box-shadow: 0 0 6px rgba(212, 163, 115, .7); }
+  .spia.manca { background: var(--op-errore); box-shadow: 0 0 6px rgba(224, 122, 95, .7); }
+
+  /* confronto: il .psd a sinistra, le pagine più simili e la base comune a destra */
+  .confronto { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 0 90px; align-items: center; margin-bottom: 34px; }
+  .nodo-psd { padding: 8px; border: 1px solid var(--op-oro); border-radius: 4px; background: var(--op-fondo); text-align: center; }
+  .nodo-psd canvas { display: block; width: 100%; height: auto; margin-bottom: 6px; background: #fff; }
+  .nodo-psd p { color: var(--op-oro-chiaro); font-size: 10.5px; word-break: break-all; }
+  .modelli { display: flex; flex-direction: column; gap: 8px; }
+  .nodo-modello { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 5px 14px; align-items: center; padding: 8px 12px;
+    border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
+  .nodo-modello.scelto { border-color: var(--op-oro); background: rgba(212, 163, 115, .07); }
+  .nodo-modello { cursor: pointer; transition: border-color .15s, background .15s; }
+  .nodo-modello:hover { border-color: #6d665c; }
+  .nodo-modello.base { border-style: dashed; }
+  .nodo-modello .proposta { margin-left: 8px; color: var(--op-tenue); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .nodo-modello .etichetta[hidden] { display: none; }
+  .nodo-modello .nome { color: var(--op-testo); font-size: 12px; }
+  .nodo-modello.scelto .nome { color: var(--op-oro-chiaro); }
+  .nodo-modello .nome small { margin-left: 6px; color: var(--op-tenue); font-size: 10.5px; }
+  .nodo-modello .etichetta { margin-left: 8px; padding: 1px 6px; border-radius: 2px; background: var(--op-oro); color: #121110; font-size: 9.5px; letter-spacing: .1em; }
+  .barra { position: relative; height: 6px; border-radius: 3px; background: #24221f; overflow: hidden; }
+  .barra i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: #6d665c; }
+  .scelto .barra i { background: var(--op-oro); }
+  .differenze { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; }
+  .differenze span { padding: 0 5px; border: 1px solid var(--op-bordo); border-radius: 2px; font-size: 10px; }
+  .differenze .piu { color: var(--op-errore); }
+  .differenze .meno { color: var(--op-tenue); }
+  .differenze .nota-f { color: var(--op-oro); }
+
+  /* allineamento dei due cartelli: sovrapposti a sinistra, scarti a destra */
+  .allineamento { display: grid; grid-template-columns: minmax(290px, 1.15fr) minmax(0, 1fr); gap: 0 48px; align-items: start; margin-bottom: 34px; }
+  .area-al { position: absolute; pointer-events: none; transition: background .12s; }
+  .area-al.sup { border: 1px solid #3a9b5a; }
+  .area-al.inf { border: 1px dashed #d08a3c; }
+  .area-al.inf.uguale { border-color: transparent; }
+  .area-al.acceso { background: rgba(212, 163, 115, .22); }
+  .legenda-al { display: flex; align-items: center; gap: 6px; margin-top: 8px; color: var(--op-tenue); font-size: 10.5px; }
+  .legenda-al .lg { display: inline-block; width: 16px; height: 9px; margin-left: 8px; }
+  .legenda-al .lg:first-child { margin-left: 0; }
+  .legenda-al .lg.sup { border: 1px solid #3a9b5a; }
+  .legenda-al .lg.inf { border: 1px dashed #d08a3c; }
+  .esito-al { margin-bottom: 10px; font-size: 12px; }
+  .esito-al.ok { color: var(--op-ok); }
+  .esito-al.forse { color: var(--op-oro); }
+  .righe-al { display: flex; flex-direction: column; }
+  .riga-al { display: grid; grid-template-columns: 7px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 5px 4px;
+    border-top: 1px solid var(--op-bordo); font-size: 11.5px; }
+  .riga-al:last-child { border-bottom: 1px solid var(--op-bordo); }
+  .riga-al:hover { background: rgba(212, 163, 115, .05); }
+  .riga-al .nome { color: var(--op-testo); }
+  .riga-al .scarto { color: var(--op-oro); text-align: right; }
+  .riga-al .scarto.ok { color: var(--op-ok); }
+  .riga-al .scarto small { display: block; color: var(--op-tenue); font-size: 9.5px; }
+  .azione-al { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 14px; }
+  .azione-al .nota-al { color: var(--op-tenue); font-size: 11px; }
+  .azione-al .nota-al::before { content: '// '; color: var(--op-oro); }
+  .azione-al .fatto-al { color: var(--op-ok); font-size: 12px; }
+  .azione-al .annulla, .sposta-al .annulla { border-color: var(--op-bordo); color: var(--op-tenue); }
+  .sposta-al { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--op-bordo); }
+  .riga-sposta { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 11.5px; }
+  .riga-sposta .nome { width: 150px; color: var(--op-testo); }
+  .tasto-sposta { width: 30px; height: 28px; border: 1px solid var(--op-oro); border-radius: 3px; background: transparent; color: var(--op-oro-chiaro);
+    font: 400 11px var(--op-mono); cursor: pointer; transition: background .15s, color .15s; }
+  .tasto-sposta:hover { background: var(--op-oro); color: #121110; }
+  .riga-sposta .valore { min-width: 120px; color: var(--op-tenue); }
+  .riga-sposta .valore.cambiato { color: var(--op-oro); }
+  .azione-al .annulla:hover, .sposta-al .annulla:hover { background: var(--op-bordo); color: var(--op-testo); }
+  @media (max-width: 980px) { .allineamento { grid-template-columns: 1fr; gap: 16px; } }
+
+  /* da verificare: gli elementi in giallo o in rosso, con il motivo e cosa fare, subito visibili */
+  .avvisi { margin-bottom: 18px; padding: 10px 14px 12px; border: 1px solid rgba(212, 163, 115, .55); border-radius: 4px; background: rgba(212, 163, 115, .06); }
+  .avvisi[hidden] { display: none; }
+  .avvisi h3 { margin-bottom: 6px; color: var(--op-oro-chiaro); font: 400 11px var(--op-mono); letter-spacing: .12em; text-transform: uppercase; }
+  .avviso { display: grid; grid-template-columns: 7px 140px 150px minmax(0, 1fr); gap: 2px 12px; align-items: baseline; width: 100%; padding: 6px 2px;
+    border: 0; border-top: 1px solid var(--op-bordo); background: none; color: var(--op-testo); font: 400 11.5px/1.5 var(--op-mono); text-align: left; cursor: pointer; }
+  .avviso:hover { background: rgba(212, 163, 115, .06); }
+  .avviso .spia { align-self: center; }
+  .avviso .dove { color: var(--op-tenue); }
+  .avviso .chi { color: var(--op-oro-chiaro); }
+  .avviso .motivo { color: var(--op-testo); }
+  .avviso .fare { grid-column: 4; color: var(--op-ok); }
+  .avviso .fare::before { content: '→ '; }
+  .avviso .nota-file { grid-column: 4; color: var(--op-tenue); font-size: 10.5px; }
+
+  /* GENERA LA PAGINA e l'anteprima della pagina generata */
+  .genera-riga { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--op-bordo); }
+  .genera-riga .nota-al { color: var(--op-tenue); font-size: 11px; }
+  .genera-riga .nota-al::before { content: '// '; color: var(--op-oro); }
+  .passo-op[hidden] { display: none; }
+  .comandi-anteprima { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 14px; }
+  .comandi-anteprima button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
+  .stato-anteprima { color: var(--op-tenue); font-size: 11px; }
+  .stato-anteprima.err { color: var(--op-errore); }
+  .cornice-anteprima { position: relative; overflow: hidden; border: 1px solid var(--op-bordo); border-radius: 4px; background: #212529; }
+  .cornice-anteprima iframe { display: block; width: 1280px; height: 1180px; border: 0; transform-origin: 0 0; }
+
+  /* ritocchi nella pagina generata: elemento selezionato e piccoli spostamenti */
+  .ritocchi { margin-bottom: 14px; padding: 10px 12px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
+  .ritocchi-vuoto { color: var(--op-tenue); font-size: 11.5px; }
+  .ritocchi-comandi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .ritocchi-comandi[hidden] { display: none; }
+  .ritocchi-nome { min-width: 230px; color: var(--op-oro-chiaro); font-size: 12px; }
+  .ritocchi-nome small { color: var(--op-tenue); font-size: 10.5px; }
+  .ritocchi-valore { min-width: 140px; color: var(--op-tenue); font-size: 11.5px; }
+  .ritocchi-valore.cambiato { color: var(--op-oro); }
+  .ritocchi-due { display: inline-flex; align-items: center; gap: 6px; color: var(--op-testo); font-size: 11.5px; cursor: pointer; }
+  .ritocchi-due input { accent-color: #d4a373; }
+  .ritocchi-comandi .annulla { border-color: var(--op-bordo); color: var(--op-tenue); }
+  .ritocchi-comandi .annulla:hover { background: var(--op-bordo); color: var(--op-testo); }
+  .ritocchi-cartello { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; color: var(--op-tenue); font-size: 11px; }
+  .ritocchi-cartello button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
+  .ritocchi-due[hidden] { display: none; }
+  .ritocchi-nota { margin-top: 8px; color: var(--op-tenue); font-size: 10.5px; }
+  .link-tenue { border: 0; background: none; color: var(--op-oro); font: inherit; text-decoration: underline; cursor: pointer; }
+  .link-tenue[hidden] { display: none; }
+
+  /* linguette dei cartelli */
+  .linguette { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .linguette button { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid var(--op-bordo); border-radius: 3px;
+    background: var(--op-riquadro); color: var(--op-tenue); font: 400 11px var(--op-mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+  .linguette button:hover { color: var(--op-oro-chiaro); border-color: var(--op-oro); }
+  .linguette button[aria-selected="true"] { color: var(--op-oro-chiaro); border-color: var(--op-oro); background: rgba(212, 163, 115, .1); }
+  /* la lucina: accesa, verde, nella linguetta scelta; spenta nelle altre (lo stato del cartello resta nel suggerimento) */
+  .linguette button .spia { background: #4a453e; box-shadow: none; }
+  .linguette button[aria-selected="true"] .spia { background: #3a9b5a; box-shadow: 0 0 6px rgba(58, 155, 90, .7); }
+
+  /* mappa del cartello: cartello con i numeri · livelli · blocchi del pannello con i moduli */
+  .mappa { display: grid; grid-template-columns: minmax(290px, 1.15fr) 220px minmax(0, 1fr); gap: 0 64px; align-items: start; }
+  .col-titolo { margin-bottom: 8px; color: var(--op-tenue); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; }
+  .cartello { position: relative; border: 1px solid var(--op-bordo); background: #fff; }
+  .cartello canvas { display: block; width: 100%; height: auto; }
+  .segno { position: absolute; display: flex; align-items: center; justify-content: center; width: 17px; height: 17px; margin: -8.5px 0 0 -8.5px;
+    border: 1px solid #fff; border-radius: 50%; color: #fff; font: 400 9.5px var(--op-mono); cursor: pointer; z-index: 2; }
+  .segno.ok { background: #3a9b5a; } .segno.forse { background: #b9874e; } .segno.manca { background: #c0563c; }
+  .area { position: absolute; border: 1px dashed transparent; pointer-events: none; }
+  .area.acceso { border-color: #3a9b5a; background: rgba(58, 155, 90, .14); }
+  .livelli, .blocchi-m { display: flex; flex-direction: column; gap: 6px; }
+  .liv { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border: 1px solid var(--op-bordo); border-radius: 4px;
+    background: var(--op-fondo); color: var(--op-testo); font: 400 11.5px var(--op-mono); text-align: left; cursor: pointer; }
+  .liv .num { flex: none; width: 17px; color: var(--op-tenue); font-size: 10px; }
+  .liv .nome { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .liv:hover, .liv.acceso { border-color: var(--op-oro); }
+  .liv.scelto { border-color: var(--op-oro-chiaro); background: rgba(212, 163, 115, .1); }
+  .blocco-m { padding: 8px 10px 10px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
+  .blocco-m h3 { margin-bottom: 6px; color: var(--op-oro-chiaro); font: 400 10.5px var(--op-mono); letter-spacing: .1em; text-transform: uppercase; }
+  .blocco-m h3 span { color: var(--op-tenue); }
+  .blocco-m.grafica { border-style: dashed; }
+  .moduli-b { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }   /* uno sotto l'altro: ogni filo arriva libero */
+  .mod { padding: 4px 8px; border: 1px solid #3a3631; border-radius: 3px; background: var(--op-riquadro); color: var(--op-testo); font-size: 11px; }
+  .mod small { display: block; color: var(--op-tenue); font-size: 9.5px; }
+  .mod.struttura { border-style: dashed; color: var(--op-tenue); }
+  .mod.altro { opacity: .38; }
+  .mod.acceso { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
+  .vuoto-b { color: var(--op-tenue); font-size: 10.5px; }
+
+  /* dettagli dell'elemento scelto: compaiono con un clic */
+  .dettagli { margin-top: 20px; padding: 12px 14px; border: 1px solid var(--op-bordo); border-radius: 4px; background: #0a0908; }
+  .dettagli[hidden] { display: none; }
+  .dettagli h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--op-oro-chiaro); font: 400 12px var(--op-mono); }
+  .dettagli dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 16px; font-size: 11.5px; }
+  .dettagli dt { color: var(--op-tenue); }
+  .dettagli dd { color: var(--op-testo); }
+  .campione { display: inline-block; width: 10px; height: 10px; margin: 0 5px -1px 0; border: 1px solid var(--op-bordo); }
+  .dettagli .nota { grid-column: 1 / -1; color: var(--op-oro); }
+  .dettagli .nota::before { content: '// '; }
+  .didascalia { margin-top: 10px; color: var(--op-tenue); font-size: 11px; }
+  .didascalia::before { content: '// '; color: var(--op-oro); }
+
+  @media (max-width: 980px) {
+    .mappa { grid-template-columns: 1fr; gap: 18px; }
+    .confronto { grid-template-columns: 1fr; gap: 14px; }
+    .nodo-psd { max-width: 160px; }
+    .fili { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <a href="operatore.html" class="app-close-btn" title="Torna all'area operatore" aria-label="Chiudi e torna all'area operatore">✕</a>
+
+  <div class="container">
+    <h1>Import layout</h1>
+    <p class="subtitle">dal file photoshop originale (.psd) alla nuova pagina di generazione di cartelli. la conversione legge il foglio, i due cartelli e i livelli, chiamati con i nomi dei componenti del menu di sinistra (riquadro-brand, logo-brand, claim-sx, descrizione, prezzo-finale…), e abbina a ognuno il suo modulo comune. il file resta sul computer: si legge solo nel browser</p>
+
+    <div class="passi-op">
+      <section class="passo-op" id="passo1">
+        <button type="button" class="riapri" hidden aria-expanded="true" aria-label="Riapri la sezione"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="passo-num">1</span>
+        <div>
+          <p class="passo-titolo">file photoshop da importare <span class="riassunto"></span></p>
+          <p class="passo-nota">foglio a4 con i due cartelli, livelli con i nomi dei componenti</p>
+          <div class="upload-box" id="zonaFile" role="button" tabindex="0" aria-label="Scegli il file .psd">
+            <strong>trascina qui il file .psd, o clicca per sceglierlo</strong>
+            <input type="file" id="inputFile" accept=".psd,image/vnd.adobe.photoshop">
+          </div>
+          <p class="file-scelto vuoto" id="fileScelto">nessun file scelto</p>
+        </div>
+      </section>
+
+      <section class="passo-op" id="passo2">
+        <button type="button" class="riapri" hidden aria-expanded="true" aria-label="Riapri la sezione"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="passo-num">2</span>
+        <div>
+          <p class="passo-titolo">conversione <span class="riassunto"></span></p>
+          <button type="button" class="btn-folder" id="avvia" disabled>avvia conversione</button>
+          <div class="registro" id="registro" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="passo-op risultato" id="risultato" hidden>
+        <span class="passo-num">3</span>
+        <div>
+          <p class="passo-titolo">risultato</p>
+          <p class="passo-nota">la pagina che nasce da qui è un modulo import: rivista insieme, diventa modulo sorgente</p>
+          <canvas id="tela" hidden></canvas>
+
+          <p class="titoletto">pagina di partenza <span>· somiglianza con le pagine esistenti</span></p>
+          <p class="passo-nota">la pagina esistente più simile, se supera il 60%; altrimenti la nuova base comune (modelli/cartello-base.html, sola struttura standard). clicca un'altra voce per cambiare la partenza</p>
+          <div class="diagramma confronto" id="confronto"></div>
+
+          <p class="titoletto solo-allineamento">allineamento dei due cartelli <span>· ognuno nella sua metà del foglio</span></p>
+          <p class="passo-nota solo-allineamento">claim, riquadro del brand e logo nel riquadro, riga della descrizione o del doppio prezzo, prezzo finale, footer e margini dai bordi devono coincidere (tolleranza 0,3 mm). con delle differenze, allinea cartelli porta il cartello inferiore sulla posizione del superiore; per tenerli diversi, ▲ ▼ spostano l'impaginato di un cartello. passa sopra una riga per trovarla sul cartello</p>
+          <div class="allineamento" id="allineamento"></div>
+
+          <p class="titoletto">mappa dei cartelli <span>· livello del .psd → modulo comune del pannello</span></p>
+          <div class="avvisi" id="avvisi" hidden></div>
+          <div class="linguette" id="linguette" role="tablist" aria-label="Cartelli del foglio"></div>
+          <div class="diagramma mappa" id="mappa"></div>
+          <div class="dettagli" id="dettagli" hidden></div>
+          <p class="didascalia">passa sopra un numero, un livello o un modulo per seguire il filo; clicca per i valori dell'elemento</p>
+          <div class="genera-riga">
+            <button type="button" class="btn-folder" id="genera">genera la pagina</button>
+            <span class="nota-al">costruisce la pagina dai dati letti: posizioni, font e colori del .psd, moduli comuni nel pannello</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="passo-op" id="passo4" hidden>
+        <span class="passo-num">4</span>
+        <div>
+          <p class="passo-titolo">pagina generata</p>
+          <p class="passo-nota">anteprima dal vivo: il pannello funziona. la pagina non è ancora salvata nel progetto</p>
+          <div class="comandi-anteprima">
+            <button type="button" class="btn-folder" id="sovrapponi" aria-pressed="false">sovrapponi il .psd</button>
+            <button type="button" class="btn-folder" id="tuttaFinestra">apri a tutta finestra ↗</button>
+            <span class="stato-anteprima" id="statoAnteprima"></span>
+          </div>
+          <div class="ritocchi" id="ritocchi">
+            <p class="ritocchi-vuoto" id="ritocchiVuoto">// clicca un elemento del cartello nell'anteprima per selezionarlo e spostarlo di poco, o una zona vuota del cartello per spostarlo tutto</p>
+            <div class="ritocchi-comandi" id="ritocchiComandi" hidden>
+              <span class="ritocchi-nome" id="ritocchiNome"></span>
+              <button type="button" class="tasto-sposta" data-verso="su" aria-label="Più su">▲</button>
+              <button type="button" class="tasto-sposta" data-verso="giu" aria-label="Più giù">▼</button>
+              <button type="button" class="tasto-sposta" data-verso="sinistra" aria-label="Più a sinistra">◀</button>
+              <button type="button" class="tasto-sposta" data-verso="destra" aria-label="Più a destra">▶</button>
+              <span class="ritocchi-valore" id="ritocchiValore"></span>
+              <label class="ritocchi-due"><input type="checkbox" id="ritocchiDue" checked> nei due cartelli</label>
+              <button type="button" class="btn-folder annulla" id="azzeraElemento">azzera elemento</button>
+              <button type="button" class="btn-folder annulla" id="deseleziona">deseleziona</button>
+            </div>
+            <p class="ritocchi-cartello">sposta tutto il cartello, con il foglio A4 e la linea di taglio fermi:
+              <button type="button" class="btn-folder" data-cartello="1">cartello superiore</button>
+              <button type="button" class="btn-folder" data-cartello="2">cartello inferiore</button>
+            </p>
+            <p class="ritocchi-nota">0,5 mm a clic, 0,1 mm con Maiuscolo; anche con le frecce della tastiera · <button type="button" class="link-tenue" id="azzeraTutti" hidden>azzera tutti i ritocchi</button></p>
+          </div>
+          <div class="cornice-anteprima" id="corniceAnteprima"><iframe id="anteprima" title="Anteprima della pagina generata"></iframe></div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+<script>
+(() => {
+  // Regole (nomi dei livelli, moduli comuni, font, pagine per il confronto, soglie): nel file modelli/import-regole.json,
+  // condiviso con la skill di Claude e con l'app SaaS. Qui solo le funzioni che le applicano.
+  let REGOLE, MODULI, ALIAS, CARTELLI, FONT_NOTI, MODELLI, BASE, SOGLIA, NOMI_CAMPI, BREVE, TOLLERANZA, RIGA_CENTRALE, NOMI_AL;
+  const regolePronte = fetch('modelli/import-regole.json', { cache: 'no-store' })
+    .then(risposta => { if (!risposta.ok) throw new Error(`regole non lette (${risposta.status})`); return risposta.json(); })
+    .then(r => {
+      REGOLE = r;
+      MODULI = r.livelli.elenco;
+      ALIAS = r.livelli.alias;
+      CARTELLI = r.file.cartelli;
+      FONT_NOTI = r.lettura.font.elenco;
+      MODELLI = r.confronto.pagine;
+      BASE = r.confronto.base;
+      SOGLIA = r.confronto.soglia;
+      BREVE = Object.fromEntries(Object.entries(MODULI).map(([k, m]) => [k, m.breve]));
+      NOMI_CAMPI = Object.fromEntries(Object.entries(MODULI).filter(([, m]) => m.campo).map(([k, m]) => [k, m.campo]));
+      NOMI_CAMPI.articoli = r.confronto.nomeArticoli;
+      NOMI_AL = Object.fromEntries(Object.entries(MODULI).filter(([, m]) => m.nomeAllineamento).map(([k, m]) => [k, m.nomeAllineamento]));
+      TOLLERANZA = r.allineamento.tolleranzaMm;
+      RIGA_CENTRALE = r.allineamento.rigaCentrale;
+    });
+  const ALLINEAMENTO = { left: 'sinistra', center: 'centro', right: 'destra', 'justify-left': 'giustificato', 'justify-center': 'giustificato', 'justify-right': 'giustificato', 'justify-all': 'giustificato' };
+
+  const $ = id => document.getElementById(id);
+  const el = (tag, classe, testo) => {
+    const nodo = document.createElement(tag);
+    if (classe) nodo.className = classe;
+    if (testo != null) nodo.textContent = testo;
+    return nodo;
+  };
+  const numero = (n, dec = 1) => n.toLocaleString('it-IT', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  const esa = c => '#' + [c.r, c.g, c.b].map(v => Math.round(v <= 1 && (c.r <= 1 && c.g <= 1 && c.b <= 1) ? v * 255 : v).toString(16).padStart(2, '0')).join('').toUpperCase();
+
+  let file = null;
+  // collegamento al file sul disco (Chrome ed Edge: File System Access API): a ogni conversione il file si rilegge da capo,
+  // anche se è lo stesso file e anche se è già stato convertito, così una versione salvata di nuovo si legge sempre
+  let maniglia = null;
+  let risultato = null;
+
+  // ---- passo 1: scelta del file ----
+  const zona = $('zonaFile');
+  const input = $('inputFile');
+  // sezioni [1] e [2]: finita una sezione si richiude a una riga, con il riassunto; la freccia la riapre e la richiude
+  function chiudiPasso(id, riassunto) {
+    const passo = $(id);
+    passo.querySelector('.riassunto').textContent = riassunto;
+    passo.classList.add('chiuso');
+    const freccia = passo.querySelector('.riapri');
+    freccia.hidden = false;
+    freccia.setAttribute('aria-expanded', 'false');
+    freccia.setAttribute('aria-label', 'Riapri la sezione');
+  }
+  function apriPasso(id) {
+    const passo = $(id);
+    passo.classList.remove('chiuso');
+    const freccia = passo.querySelector('.riapri');
+    freccia.setAttribute('aria-expanded', 'true');
+    freccia.setAttribute('aria-label', 'Richiudi la sezione');
+  }
+  document.querySelectorAll('.riapri').forEach(freccia => freccia.addEventListener('click', () => {
+    const passo = freccia.closest('.passo-op');
+    const chiuso = passo.classList.toggle('chiuso');
+    freccia.setAttribute('aria-expanded', String(!chiuso));
+    freccia.setAttribute('aria-label', chiuso ? 'Riapri la sezione' : 'Richiudi la sezione');
+    if (risultato) ['confronto', 'mappa'].forEach(d => $(d).ridisegna && requestAnimationFrame(() => $(d).ridisegna()));
+  }));
+
+  function scegli(nuovo, collegamento = null) {
+    if (!nuovo) return;
+    if (!/\.psd$/i.test(nuovo.name)) {
+      $('fileScelto').textContent = `«${nuovo.name}» non è un file .psd`;
+      $('fileScelto').className = 'file-scelto err';
+      return;
+    }
+    file = nuovo;
+    maniglia = collegamento;
+    $('fileScelto').textContent = `${nuovo.name} · ${numero(nuovo.size / 1048576)} MB`;
+    $('fileScelto').className = 'file-scelto';
+    $('avvia').disabled = false;
+    chiudiPasso('passo1', `· ${nuovo.name} · ${numero(nuovo.size / 1048576)} MB`);
+    apriPasso('passo2');   // un file nuovo: la conversione si rifà, AVVIA CONVERSIONE in vista
+  }
+  // scelta del file: con il collegamento al file dove il browser lo permette, altrimenti il campo file del browser
+  async function apriScelta() {
+    if (!window.showOpenFilePicker) { input.click(); return; }
+    try {
+      const [collegamento] = await showOpenFilePicker({ types: [{ description: 'File Photoshop', accept: { 'image/vnd.adobe.photoshop': ['.psd'] } }], excludeAcceptAllOption: false });
+      scegli(await collegamento.getFile(), collegamento);
+    } catch (errore) {
+      if (errore.name !== 'AbortError') input.click();
+    }
+  }
+  zona.addEventListener('click', apriScelta);
+  zona.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); apriScelta(); } });
+  input.addEventListener('change', () => { scegli(input.files[0]); input.value = ''; });
+  zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('dragover'); });
+  zona.addEventListener('dragleave', () => zona.classList.remove('dragover'));
+  zona.addEventListener('drop', e => {
+    e.preventDefault();
+    zona.classList.remove('dragover');
+    const voce = e.dataTransfer.items && e.dataTransfer.items[0];
+    const trascinato = e.dataTransfer.files[0];
+    // il collegamento al file trascinato va chiesto subito, durante l'evento
+    const richiesta = voce && voce.kind === 'file' && voce.getAsFileSystemHandle ? voce.getAsFileSystemHandle() : null;
+    if (!richiesta) { scegli(trascinato); return; }
+    richiesta.then(async collegamento => {
+      if (collegamento && collegamento.kind === 'file') scegli(await collegamento.getFile(), collegamento);
+      else scegli(trascinato);
+    }).catch(() => scegli(trascinato));
+  });
+
+  // ---- registro ----
+  const registro = $('registro');
+  const riga = (testo, tipo = '') => {
+    registro.append(el('p', tipo, testo));
+    registro.scrollTop = registro.scrollHeight;
+  };
+
+  // ---- riconoscimento dei nomi dei livelli ----
+  const normalizza = s => String(s || '').toLowerCase().trim().replace(/[\s_]+/g, '-');
+  function distanza(a, b) {
+    const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
+    for (let j = 1; j <= b.length; j++) d[0][j] = j;
+    for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      // lettere scambiate (riqaudro → riquadro) contano come un errore solo
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
+    return d[a.length][b.length];
+  }
+  // { chiave, numero, corretto } — corretto: il nome scritto nel file, se non è esatto
+  function riconosci(nome, elenco) {
+    const n = normalizza(nome);
+    if (elenco[n]) return { chiave: n };
+    if (ALIAS[n] && elenco[ALIAS[n]]) return { chiave: ALIAS[n] };
+    const conNumero = n.match(/^(.*?)-(\d+)$/);
+    if (conNumero && elenco[conNumero[1]]) return { chiave: conNumero[1], numero: +conNumero[2] };
+    if (elenco === MODULI && /^(background|sfondo)/.test(n)) return { chiave: 'background' };
+    let migliore = null;
+    for (const chiave of Object.keys(elenco)) {
+      const d = distanza(n, chiave);
+      if (d <= REGOLE.lettura.distanzaNomi && chiave.length >= REGOLE.lettura.lunghezzaMinima && (!migliore || d < migliore.d)) migliore = { chiave, d };
+    }
+    return migliore ? { chiave: migliore.chiave, corretto: nome } : null;
+  }
+
+  // ---- lettura del file ----
+  function dpiDi(psd) {
+    const r = psd.imageResources && psd.imageResources.resolutionInfo;
+    let dpi = r && r.horizontalResolution;
+    if (dpi && r.horizontalResolutionUnit === 'PPCM') dpi *= 2.54;
+    if (dpi && dpi >= 30) return { dpi, stimata: false };
+    // senza risoluzione nel file: un foglio con le proporzioni dell'A4 è un A4 (lato lungo 297 mm)
+    const lungo = Math.max(psd.width, psd.height), corto = Math.min(psd.width, psd.height);
+    if (Math.abs(lungo / corto - 297 / 210) < .01) return { dpi: lungo / (297 / 25.4), stimata: true };
+    return { dpi: 300, stimata: true };
+  }
+
+  function stileTesto(testo) {
+    const primo = (testo.styleRuns && testo.styleRuns[0] && testo.styleRuns[0].style) || {};
+    const stile = Object.assign({}, testo.style || {}, primo);
+    const paragrafo = Object.assign({}, testo.paragraphStyle || {}, (testo.paragraphStyleRuns && testo.paragraphStyleRuns[0] && testo.paragraphStyleRuns[0].style) || {});
+    const t = testo.transform || [1, 0, 0, 1, 0, 0];
+    const scala = Math.hypot(t[2], t[3]) || 1;
+    return { stile, paragrafo, scala };
+  }
+
+  // un elemento: livello del file con il suo modulo, le misure in mm (x dal bordo sinistro del foglio, y dal bordo alto
+  // del suo cartello) e i valori letti
+  function elemento(livello, contesto, misure) {
+    const { mm, taglio } = misure;
+    const larg = livello.right - livello.left, alt = livello.bottom - livello.top;
+    const riconosciuto = riconosci(livello.name, MODULI);
+    const e = {
+      livello, nome: livello.name, chiave: riconosciuto ? riconosciuto.chiave : null, numero: riconosciuto && riconosciuto.numero,
+      note: [], stato: 'ok',
+      px: { x: livello.left, y: livello.top, w: larg, h: alt },
+      pxOriginale: { x: livello.left, y: livello.top },
+      mm: { x: mm(livello.left), w: mm(larg), h: mm(alt) }
+    };
+    if (riconosciuto && riconosciuto.corretto) {
+      e.note.push(`nome scritto «${riconosciuto.corretto}»: letto come ${riconosciuto.chiave}`);
+      e.stato = 'forse';
+    }
+    if (contesto.gruppoCorretto) {
+      e.note.push(contesto.gruppoCorretto);
+      e.stato = 'forse';
+    }
+    if (!e.chiave) {
+      e.note.push('nessun modulo per questo nome: da assegnare (o da costruire come modulo nuovo)');
+      e.stato = 'manca';
+    }
+    if (livello.hidden) e.note.push('livello nascosto nel file');
+    // cartello: quello del gruppo, oppure per la posizione (livello fuori dai gruppi dei cartelli)
+    const modulo = e.chiave && MODULI[e.chiave];
+    if (modulo && modulo.foglio) e.cartello = 'foglio';
+    else if (contesto.cartello) e.cartello = contesto.cartello;
+    else {
+      const centro = livello.top + alt / 2;
+      e.cartello = centro < taglio ? 'cartello-superiore' : 'cartello-inferiore';
+      e.note.push(`fuori dal gruppo dei cartelli: assegnato al ${CARTELLI[e.cartello].toLowerCase()} per la posizione`);
+      if (e.stato === 'ok') e.stato = 'forse';
+    }
+    const origine = e.cartello === 'cartello-inferiore' ? misure.meta : 0;
+    e.mm.y = mm(livello.top - origine);
+    e.mmOriginale = { x: e.mm.x, y: e.mm.y };
+
+    // valori: testo, forma o immagine
+    if (livello.text) {
+      const { stile, paragrafo, scala } = stileTesto(livello.text);
+      const pt = v => v * scala * 72 / misure.dpi;
+      e.tipo = 'testo';
+      e.testo = String(livello.text.text || '').replace(/\r\n?|\u0003/g, '\n').replace(/\n$/, '');
+      e.font = (stile.font && stile.font.name) || '?';
+      e.pt = stile.fontSize ? pt(stile.fontSize) : null;
+      e.interlinea = stile.autoLeading === false && stile.leading ? pt(stile.leading) : null;
+      e.spaziatura = stile.tracking || 0;
+      e.colore = stile.fillColor ? esa(stile.fillColor) : null;
+      e.allineamento = ALLINEAMENTO[paragrafo.justification] || paragrafo.justification || 'sinistra';
+      e.grassettoFinto = !!stile.fauxBold;
+      e.corsivoFinto = !!stile.fauxItalic;
+      e.maiuscolo = stile.fontCaps === 2 || stile.fontCaps === 'all caps';
+    } else if (livello.vectorFill || livello.vectorOrigination || livello.vectorMask) {
+      e.tipo = 'forma';
+      const riempimento = livello.vectorFill;
+      if (riempimento && riempimento.color) e.colore = esa(riempimento.color);
+      const tratto = livello.vectorStroke;
+      if (tratto && tratto.strokeEnabled !== false && tratto.lineWidth) {
+        e.tratto = { spessore: tratto.lineWidth.value, unita: tratto.lineWidth.units, tratteggio: (tratto.lineDashSet || []).length > 0,
+          colore: tratto.content && tratto.content.color ? esa(tratto.content.color) : null };
+      }
+      const origini = (livello.vectorOrigination && livello.vectorOrigination.keyDescriptorList) || [];
+      const forma = origini[0];
+      if (forma) {
+        const raggi = forma.keyOriginRRectRadii;
+        const r = raggi && [raggi.topLeft, raggi.topRight, raggi.bottomLeft, raggi.bottomRight].map(v => (v && v.value) || 0);
+        e.angoli = r && r.some(v => v > 0) ? `arrotondati ${numero(mm(Math.max(...r)))} mm` : 'dritti';
+        // forma ruotata: angolo dai vertici del riquadro di partenza
+        const vertici = forma.keyOriginBoxCorners;
+        if (vertici && vertici.rectangleCornerA && vertici.rectangleCornerB) {
+          const a = vertici.rectangleCornerA, b = vertici.rectangleCornerB;
+          const gradi = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
+          if (Math.abs(gradi) > .5) e.rotazione = gradi;
+        }
+      }
+      // forma ruotata dopo averla disegnata (il riquadro di partenza non è più valido): angolo del lato più lungo del tracciato
+      if (e.rotazione == null && livello.vectorMask && livello.vectorMask.paths && livello.vectorMask.paths[0]) {
+        const nodi = livello.vectorMask.paths[0].knots || [];
+        if (nodi.length === 4) {
+          const p = nodi.map(n => ({ x: n.points[2], y: n.points[3] }));
+          let lato = null;
+          for (let k = 0; k < 4; k++) {
+            const a = p[k], b = p[(k + 1) % 4], lungo = Math.hypot(b.x - a.x, b.y - a.y);
+            if (!lato || lungo > lato.lungo) lato = { lungo, gradi: Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI };
+          }
+          let gradi = lato.gradi;
+          if (gradi > 90) gradi -= 180;
+          if (gradi < -90) gradi += 180;
+          if (Math.abs(gradi) > .5 && Math.abs(Math.abs(gradi) - 90) > .5) e.rotazione = gradi;
+        }
+      }
+      if (e.tratto && /pixel/i.test(e.tratto.unita || '')) { e.tratto.spessore = mm(e.tratto.spessore); e.tratto.unita = 'mm'; }
+    } else {
+      e.tipo = 'immagine';
+    }
+    return e;
+  }
+
+  function raccogli(psd, misure) {
+    const elementi = [];
+    const visita = (livelli, contesto) => {
+      for (const livello of livelli || []) {
+        if (livello.children) {
+          const comeCartello = riconosci(livello.name, CARTELLI);
+          if (comeCartello && !contesto.cartello) {
+            const nota = comeCartello.corretto ? `gruppo «${comeCartello.corretto}»: letto come ${comeCartello.chiave}` : null;
+            visita(livello.children, Object.assign({}, contesto, { cartello: comeCartello.chiave, gruppoCorretto: nota || contesto.gruppoCorretto }));
+            continue;
+          }
+          const comeModulo = riconosci(livello.name, MODULI);
+          const nota = comeModulo && comeModulo.corretto ? `gruppo «${comeModulo.corretto}»: letto come ${comeModulo.chiave}` : null;
+          visita(livello.children, Object.assign({}, contesto, { gruppo: comeModulo ? comeModulo.chiave : livello.name, gruppoCorretto: nota || contesto.gruppoCorretto }));
+          continue;
+        }
+        elementi.push(elemento(livello, contesto, misure));
+      }
+    };
+    visita(psd.children, {});
+    return elementi;
+  }
+
+  // due livelli immagine sono la stessa grafica se hanno la stessa misura e i pixel quasi uguali: copiando un livello
+  // Photoshop può ricalcolare qualche pixel di pochi punti (es. i due footer del file di prova: al massimo 13 su 255)
+  function pixel(canvas) {
+    return canvas && canvas.width && canvas.height ? canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data : null;
+  }
+  // confronto sul colore come si vede, pesato per la trasparenza (sul bordo trasparente un pixel quasi invisibile può
+  // cambiare colore di molto senza che si veda); qualche pixel isolato diverso è tollerato
+  function stessiPixel(a, b) {
+    if (!a.canvas || !b.canvas || a.canvas.width !== b.canvas.width || a.canvas.height !== b.canvas.height) return false;
+    const pa = pixel(a.canvas), pb = pixel(b.canvas);
+    let somma = 0, lontani = 0;
+    for (let k = 0; k < pa.length; k += 4) {
+      const aa = pa[k + 3], ab = pb[k + 3];
+      for (let c = 0; c < 3; c++) {
+        const d = Math.abs(pa[k + c] * aa - pb[k + c] * ab) / 255;
+        somma += d;
+        if (d > REGOLE.stessaGrafica.scartoPixel) lontani++;
+      }
+      const d = Math.abs(aa - ab);
+      somma += d;
+      if (d > REGOLE.stessaGrafica.scartoPixel) lontani++;
+    }
+    return somma / pa.length < REGOLE.stessaGrafica.mediaMassima && lontani / pa.length < REGOLE.stessaGrafica.pixelLontaniMassimi;
+  }
+
+
+  // la stessa grafica (stesso nome e stessi pixel, quasi) in tutti e due i cartelli è un elemento solo, con un solo png:
+  // il livello fuori dal suo gruppo, uguale a quello dell'altro cartello, non va segnalato
+  function stessaGrafica(elementi) {
+    const immagini = elementi.filter(e => e.tipo === 'immagine' && e.chiave && (e.cartello === 'cartello-superiore' || e.cartello === 'cartello-inferiore'));
+    immagini.forEach(e => {
+      const gemello = immagini.find(o => o !== e && o.cartello !== e.cartello && o.chiave === e.chiave && stessiPixel(o.livello, e.livello));
+      if (!gemello) return;
+      e.gemello = gemello;
+      const altro = CARTELLI[gemello.cartello].toLowerCase();
+      const fuori = e.note.findIndex(n => n.startsWith('fuori dal gruppo'));
+      if (fuori >= 0) e.note.splice(fuori, 1);
+      e.note.push(`stessa grafica del ${altro}: un solo file png${fuori >= 0 ? ' (il livello è fuori dal gruppo: assegnato per la posizione)' : ''}`);
+      if (e.stato === 'forse' && !e.note.some(n => /letto come|font|nascosto/.test(n))) e.stato = 'ok';
+    });
+  }
+
+  // l'anteprima: l'immagine completa salvata nel file (Photoshop con «massimizza compatibilità»), altrimenti i livelli
+  // disegnati uno sull'altro
+  function disegnaAnteprima(psd) {
+    const tela = $('tela');
+    const scala = Math.min(1, 1200 / psd.height);
+    tela.width = Math.round(psd.width * scala);
+    tela.height = Math.round(psd.height * scala);
+    const ctx = tela.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, tela.width, tela.height);
+    if (psd.canvas) {
+      ctx.drawImage(psd.canvas, 0, 0, tela.width, tela.height);
+      return true;
+    }
+    const disegna = livelli => (livelli || []).forEach(l => {
+      if (l.hidden) return;
+      if (l.children) return disegna(l.children);
+      if (l.canvas) {
+        ctx.globalAlpha = l.opacity == null ? 1 : l.opacity;
+        ctx.drawImage(l.canvas, l.left * scala, l.top * scala, l.canvas.width * scala, l.canvas.height * scala);
+      }
+    });
+    disegna(psd.children);
+    ctx.globalAlpha = 1;
+    return false;
+  }
+
+  // ---- font: il file c'è in assets/fonts/? ----
+  async function cercaFont(nome) {
+    const candidati = FONT_NOTI[nome] ? [FONT_NOTI[nome]] : [`${nome}.otf`, `${nome}.ttf`];
+    for (const nomeFile of candidati) {
+      try {
+        // richiesta normale (GET), non HEAD: il server locale di Avvia server.bat risponde 500 alle richieste HEAD
+        const risposta = await fetch(`assets/fonts/${encodeURIComponent(nomeFile)}`, { cache: 'no-store' });
+        if (risposta.ok) return nomeFile;
+      } catch { /* non trovato */ }
+    }
+    return null;
+  }
+
+  // ---- passo 2: conversione ----
+  $('avvia').addEventListener('click', converti);
+  async function converti() {
+    if (!file) return;
+    const avvia = $('avvia');
+    avvia.disabled = true;
+    registro.replaceChildren();
+    $('risultato').hidden = true;
+    $('passo4').hidden = true;
+    paginaGenerata = null;
+    selezionato = null;
+    riga(`import-layout ${file.name}`, 'comando');
+    try {
+      await regolePronte;
+      if (!window.agPsd) throw new Error('la libreria per leggere i .psd (ag-psd) non si è caricata: serve la rete');
+      // sempre da capo: il file si rilegge dal disco a ogni conversione, mai da una lettura di prima
+      if (maniglia) file = await maniglia.getFile();
+      const salvato = new Date(file.lastModified).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      riga(`lettura da capo del file · ${numero(file.size / 1048576)} MB · salvato il ${salvato}${maniglia ? ' · riletto dal disco' : ''}`);
+      let dati;
+      try {
+        dati = await file.arrayBuffer();
+      } catch (errore) {
+        // senza collegamento (altri browser): il file cambiato dopo averlo scelto non si può più leggere
+        throw new Error('il file è cambiato dopo averlo scelto: sceglilo di nuovo (in Chrome o Edge si rilegge da solo)');
+      }
+      $('fileScelto').textContent = `${file.name} · ${numero(file.size / 1048576)} MB`;
+      $('passo1').querySelector('.riassunto').textContent = `· ${file.name} · ${numero(file.size / 1048576)} MB · salvato il ${salvato}`;
+      const psd = agPsd.readPsd(dati, { skipThumbnail: true });
+      const { dpi, stimata } = dpiDi(psd);
+      const mm = px => px / dpi * 25.4;
+      const larghezzaMm = mm(psd.width), altezzaMm = mm(psd.height);
+      const a4 = Math.abs(larghezzaMm - 210) < 1.5 && Math.abs(altezzaMm - 297) < 1.5;
+      riga(`documento ${psd.width} × ${psd.height} px · ${Math.round(dpi)} dpi${stimata ? ' (stimati: il file non li dice)' : ''} · ${numero(larghezzaMm)} × ${numero(altezzaMm)} mm${a4 ? ' · A4' : ''}`, a4 ? 'ok' : 'avviso');
+      if (!a4) riga('il foglio non è un A4 verticale: le misure restano quelle del file', 'avviso');
+
+      // linea di taglio: il livello tratteggio-ritaglio, altrimenti metà foglio
+      let taglio = psd.height / 2, taglioDalFile = false;
+      const cerca = livelli => {
+        for (const l of livelli || []) {
+          if (l.children) { if (cerca(l.children)) return true; continue; }
+          const r = riconosci(l.name, MODULI);
+          if (r && r.chiave === 'tratteggio-ritaglio') { taglio = (l.top + l.bottom) / 2; taglioDalFile = true; return true; }
+        }
+        return false;
+      };
+      cerca(psd.children);
+      riga(`linea di taglio a ${numero(mm(taglio))} mm${taglioDalFile ? ' (livello tratteggio-ritaglio)' : ' (metà foglio: nel file non c\'è)'}`);
+
+      // i cartelli si misurano dalla metà esatta del foglio, se la linea di taglio è entro 1 mm dalla metà (ognuno nella
+      // sua metà: anche la pagina generata ha due metà esatte); altrimenti dalla linea di taglio
+      const meta = Math.abs(mm(taglio) - mm(psd.height / 2)) < REGOLE.allineamento.metaFoglioEntroMm ? psd.height / 2 : taglio;
+      if (meta !== taglio) riga(`cartelli misurati dalla metà del foglio, ${numero(mm(meta))} mm`, 'nota');
+      const elementi = raccogli(psd, { mm, dpi, taglio, meta });
+      stessaGrafica(elementi);
+      const gruppi = new Set(elementi.map(e => e.cartello));
+      const cartelli = Object.keys(CARTELLI).filter(c => gruppi.has(c));
+      riga(`${cartelli.length} cartell${cartelli.length === 1 ? 'o' : 'i'}: ${cartelli.map(c => CARTELLI[c].toLowerCase()).join(', ') || 'nessuno'}`, cartelli.length ? 'ok' : 'err');
+      const conti = { ok: 0, forse: 0, manca: 0 };
+      elementi.forEach(e => conti[e.stato]++);
+      riga(`${elementi.length} livelli letti · ${conti.ok} abbinati · ${conti.forse} da verificare · ${conti.manca} senza modulo`, conti.manca ? 'err' : conti.forse ? 'avviso' : 'ok');
+      elementi.filter(e => e.note.length && e.stato !== 'ok').forEach(e => e.note.forEach(n => riga(`${e.nome}: ${n}`, e.stato === 'manca' ? 'err' : 'avviso')));
+
+      // font usati e file in assets/fonts/
+      const font = [...new Set(elementi.filter(e => e.font).map(e => e.font))];
+      const fileFont = {};
+      for (const nome of font) {
+        fileFont[nome] = await cercaFont(nome);
+        riga(fileFont[nome] ? `font ${nome} → assets/fonts/${fileFont[nome]}` : `font ${nome}: non c'è in assets/fonts/, da aggiungere`, fileFont[nome] ? 'ok' : 'err');
+      }
+      elementi.forEach(e => {
+        if (e.font && !fileFont[e.font]) {
+          e.note.push(`font ${e.font} da aggiungere in assets/fonts/`);
+          if (e.stato === 'ok') e.stato = 'forse';
+        }
+      });
+
+      const completa = disegnaAnteprima(psd);
+      riga(completa ? 'anteprima: immagine completa del file' : 'anteprima: livelli disegnati uno sull\'altro (il file non ha l\'immagine completa)', completa ? 'nota' : 'avviso');
+      const allineamento = calcolaAllineamento(elementi, mm, meta, psd);
+      if (allineamento) {
+        const fuori = allineamento.righe.filter(r => !r.allineata);
+        if (allineamento.allineati) riga('allineamento: i due cartelli coincidono', 'ok');
+        else if (allineamento.comune) riga(`allineamento: il cartello inferiore è spostato di ${numero(Math.abs(allineamento.comune))} mm ${allineamento.comune < 0 ? 'in alto' : 'in basso'} · ${fuori.length} righe da verificare`, 'avviso');
+        else riga(`allineamento: ${fuori.length} righe non coincidono`, 'avviso');
+      }
+      risultato = { psd, elementi, cartelli, fileFont, mm, dpi, taglio, meta, allineamento, allineato: false, ritocchi: {}, ritocchiCartello: {} };
+      mostra();
+      riga('conversione completata · prossimo passo: la pagina generata', 'ok');
+      chiudiPasso('passo2', `· ${elementi.length} livelli · ${elementi.filter(e => e.stato === 'ok').length} abbinati${elementi.some(e => e.stato !== 'ok') ? ` · ${elementi.filter(e => e.stato !== 'ok').length} da verificare` : ''}${allineamento && !allineamento.allineati ? ' · cartelli da allineare' : ''}`);
+    } catch (errore) {
+      console.error(errore);
+      riga(`errore: ${errore.message || errore}`, 'err');
+    } finally {
+      avvia.disabled = false;
+    }
+  }
+
+  // ---- passo 3: risultato a diagramma (nodi e fili) ----
+
+  const STATI = { ok: 'abbinato', forse: 'da verificare', manca: 'senza modulo' };
+  const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function campiDelFile(elementi) {
+    const campi = new Set();
+    elementi.forEach(e => {
+      if (e.chiave && NOMI_CAMPI[e.chiave]) campi.add(e.chiave);
+      if (e.numero >= 2 && (e.chiave === 'descrizione' || e.chiave === 'prezzo-finale')) campi.add('articoli');
+    });
+    return campi;
+  }
+
+  // somiglianza: campi in comune diviso tutti i campi (del file e quelli sempre presenti nella pagina)
+  function confronta(campi) {
+    return MODELLI.map(m => {
+      const sempre = new Set(m.campi), tutti = new Set([...m.campi, ...(m.opzionali || [])]);
+      const comuni = [...campi].filter(c => tutti.has(c)).length;
+      const unione = new Set([...campi, ...sempre]).size;
+      let punteggio = unione ? comuni / unione : 0;
+      if (m.formato) punteggio *= REGOLE.confronto.fattoreFormato;
+      return { m, punteggio, piu: [...campi].filter(c => !tutti.has(c)), meno: [...sempre].filter(c => !campi.has(c)) };
+    }).sort((a, b) => b.punteggio - a.punteggio);
+  }
+
+  // fili: curve dal bordo destro (o dal centro) del primo nodo al bordo sinistro del secondo, in un svg sopra il diagramma
+  const SVG = 'http://www.w3.org/2000/svg';
+  function tela(contenitore) {
+    let svg = contenitore.querySelector(':scope > svg.fili');
+    if (!svg) { svg = document.createElementNS(SVG, 'svg'); svg.setAttribute('class', 'fili'); svg.setAttribute('aria-hidden', 'true'); contenitore.prepend(svg); }
+    svg.replaceChildren();
+    return svg;
+  }
+  function filo(svg, contenitore, da, a, classi, dati = {}, dalCentro = false, anima = false) {
+    const base = contenitore.getBoundingClientRect(), r0 = da.getBoundingClientRect(), r1 = a.getBoundingClientRect();
+    if (!r0.width || !r1.width) return;
+    const x0 = (dalCentro ? r0.left + r0.width / 2 : r0.right) - base.left, y0 = r0.top + r0.height / 2 - base.top;
+    const x1 = r1.left - base.left, y1 = r1.top + r1.height / 2 - base.top;
+    const dx = Math.max(24, (x1 - x0) / 2);
+    const p = document.createElementNS(SVG, 'path');
+    p.setAttribute('d', `M${x0} ${y0} C${x0 + dx} ${y0}, ${x1 - dx} ${y1}, ${x1} ${y1}`);
+    p.setAttribute('class', classi);
+    Object.entries(dati).forEach(([k, v]) => { p.dataset[k] = v; });
+    svg.append(p);
+    if (anima && !piano.matches && !/manca/.test(classi)) {
+      const lungo = p.getTotalLength();
+      p.style.strokeDasharray = lungo;
+      p.style.setProperty('--lungo', lungo);
+      p.classList.add('traccia');
+    }
+  }
+
+  let linguettaAperta = null, scelto = null, primaVolta = true;
+  function mostra() {
+    const { elementi, cartelli } = risultato;
+    $('risultato').hidden = false;
+    primaVolta = true;
+    disegnaConfronto();
+    disegnaAllineamento();
+
+    const linguette = $('linguette');
+    linguette.replaceChildren();
+    const voci = [...cartelli];
+    if (elementi.some(e => e.cartello === 'foglio')) voci.push('foglio');
+    voci.forEach(voce => {
+      const suoi = elementi.filter(e => e.cartello === voce);
+      const peggiore = suoi.some(e => e.stato === 'manca') ? 'manca' : suoi.some(e => e.stato === 'forse') ? 'forse' : 'ok';
+      const b = el('button');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.dataset.voce = voce;
+      b.title = `${voce === 'foglio' ? 'Foglio' : CARTELLI[voce]}: ${STATI[peggiore]}`;
+      b.append(el('span', `spia ${peggiore}`), document.createTextNode(`${voce === 'foglio' ? 'Foglio' : CARTELLI[voce]} · ${suoi.length}`));
+      b.addEventListener('click', () => apriLinguetta(voce));
+      linguette.append(b);
+    });
+    linguette.onkeydown = evento => {
+      const tasti = [...linguette.querySelectorAll('button')];
+      const ora = tasti.indexOf(document.activeElement);
+      const passo = { ArrowRight: 1, ArrowLeft: -1 }[evento.key];
+      if (passo == null || ora < 0) return;
+      evento.preventDefault();
+      const prossimo = tasti[(ora + passo + tasti.length) % tasti.length];
+      prossimo.focus();
+      apriLinguetta(prossimo.dataset.voce);
+    };
+    apriLinguetta(voci[0]);
+    disegnaAvvisi();
+  }
+
+  // DA VERIFICARE: subito a schermo ogni elemento giallo o rosso, con il motivo e cosa fare (avvisi del file delle regole);
+  // un clic apre il suo cartello e i suoi valori
+  function disegnaAvvisi() {
+    const box = $('avvisi');
+    box.replaceChildren();
+    const ordine = { 'cartello-superiore': 0, 'cartello-inferiore': 1, foglio: 2 };
+    const daVedere = risultato.elementi.map((e, i) => ({ e, i })).filter(({ e }) => e.stato !== 'ok')
+      .sort((a, b) => ordine[a.e.cartello] - ordine[b.e.cartello] || a.e.px.y - b.e.px.y);
+    box.hidden = !daVedere.length;
+    if (!daVedere.length) return;
+    box.append(el('h3', '', `da verificare · ${daVedere.length}`));
+    daVedere.forEach(({ e, i }) => {
+      const riga = el('button', 'avviso');
+      riga.type = 'button';
+      riga.append(el('span', `spia ${e.stato}`), el('span', 'dove', e.cartello === 'foglio' ? 'Foglio' : CARTELLI[e.cartello]), el('span', 'chi', e.nome));
+      const spiegate = e.note.map(n => ({ n, a: REGOLE.avvisi.elenco.find(a => n.startsWith(a.inizio)) })).filter(x => x.a);
+      if (!spiegate.length) riga.append(el('span', 'motivo', e.note.join(' · ') || STATI[e.stato]));
+      spiegate.forEach(({ n, a }, k) => {
+        if (k) riga.append(el('span'), el('span'), el('span'), el('span'));
+        riga.append(el('span', 'motivo', a.motivo));
+        riga.append(el('span'), el('span'), el('span'), el('span', 'nota-file', n));
+        riga.append(el('span'), el('span'), el('span'), el('span', 'fare', a.cosaFare));
+      });
+      riga.addEventListener('click', () => {
+        if (e.cartello !== linguettaAperta) apriLinguetta(e.cartello);
+        mostraDettagli(i);
+        $('mappa').scrollIntoView({ block: 'start', behavior: piano.matches ? 'auto' : 'smooth' });
+      });
+      box.append(riga);
+    });
+  }
+
+  // ---- confronto: .psd → pagine più simili e nuova base comune ----
+  // La partenza proposta è la pagina più simile sopra la soglia (altrimenti la nuova base comune); l'operatore la può
+  // cambiare con un clic su un'altra pagina o sulla nuova base comune, prima di procedere
+  function disegnaConfronto() {
+    const { elementi } = risultato;
+    const classifica = confronta(campiDelFile(elementi)).slice(0, 3);
+    const migliore = classifica[0] && classifica[0].punteggio >= SOGLIA ? classifica[0] : null;
+    const proposta = migliore ? migliore.m.pagina : BASE.pagina;
+    risultato.proposta = proposta;
+    risultato.partenza = proposta;
+    const box = $('confronto');
+    box.replaceChildren();
+
+    const nodoPsd = el('div', 'nodo-psd');
+    const mini = document.createElement('canvas');
+    const sorgente = $('tela');
+    mini.width = 174;
+    mini.height = Math.round(174 * sorgente.height / sorgente.width);
+    mini.getContext('2d').drawImage(sorgente, 0, 0, mini.width, mini.height);
+    nodoPsd.append(mini, el('p', '', file.name));
+
+    const lista = el('div', 'modelli');
+    lista.setAttribute('role', 'radiogroup');
+    lista.setAttribute('aria-label', 'Pagina di partenza');
+    const nodi = [...classifica, { m: BASE }].map(r => nodoModello(r, r.m.pagina === proposta));
+    lista.append(...nodi);
+    box.append(nodoPsd, lista);
+
+    const fili = (anima = false) => {
+      const svg = tela(box);
+      nodi.forEach(n => filo(svg, box, nodoPsd, n, n.dataset.pagina === risultato.partenza ? 'scelto' : 'tenue', {}, false, anima));
+    };
+    const scegli = pagina => {
+      risultato.partenza = pagina;
+      nodi.forEach(n => {
+        const si = n.dataset.pagina === pagina;
+        n.classList.toggle('scelto', si);
+        n.setAttribute('aria-checked', String(si));
+        n.querySelector('.etichetta').hidden = !si;
+      });
+      fili();
+    };
+    nodi.forEach(n => {
+      n.addEventListener('click', () => scegli(n.dataset.pagina));
+      n.addEventListener('keydown', e => {
+        const ora = nodi.indexOf(n), passo = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (passo != null) { e.preventDefault(); const prossimo = nodi[(ora + passo + nodi.length) % nodi.length]; prossimo.focus(); scegli(prossimo.dataset.pagina); }
+        else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); scegli(n.dataset.pagina); }
+      });
+    });
+    scegli(proposta);
+    requestAnimationFrame(() => fili(primaVolta));
+    box.ridisegna = () => fili();
+  }
+
+  function nodoModello(r, eProposta) {
+    const base = r.m === BASE;
+    const n = el('div', `nodo-modello${base ? ' base' : ''}`);
+    n.dataset.pagina = r.m.pagina;
+    n.tabIndex = 0;
+    n.setAttribute('role', 'radio');
+    const nome = el('div', 'nome', r.m.nome);
+    nome.append(el('small', '', `${r.m.negozio}${base ? '' : ' · ' + r.m.pagina}`));
+    const etichetta = el('span', 'etichetta', 'PARTENZA');
+    etichetta.hidden = true;
+    nome.append(etichetta);
+    if (eProposta) nome.append(el('span', 'proposta', 'proposta'));
+    n.append(nome, el('div', 'percento', base ? (eProposta ? `nessuna sopra il ${SOGLIA * 100}%` : 'sempre disponibile') : `${Math.round(r.punteggio * 100)}%`));
+    if (!base) {
+      const barra = el('div', 'barra');
+      const pieno = el('i');
+      pieno.style.width = `${Math.round(r.punteggio * 100)}%`;
+      barra.append(pieno);
+      n.append(barra);
+    }
+    const diff = el('div', 'differenze');
+    if (base) diff.append(el('span', 'meno', 'nuova pagina dalla sola struttura standard: si aggiungono solo i moduli dei livelli trovati'));
+    else {
+      if (!r.piu.length && !r.meno.length) diff.append(el('span', 'meno', 'stessi campi'));
+      r.piu.forEach(c => diff.append(el('span', 'piu', `+ ${NOMI_CAMPI[c]}`)));
+      r.meno.forEach(c => diff.append(el('span', 'meno', `− ${NOMI_CAMPI[c]}`)));
+      if (r.m.formato) diff.append(el('span', 'nota-f', r.m.formato));
+    }
+    n.append(diff);
+    n.title = base ? 'clicca per partire dalla nuova base comune' : 'clicca per partire da questa pagina · + nel file ma non nella pagina · − nella pagina ma non nel file';
+    return n;
+  }
+
+  // ---- allineamento dei due cartelli ----
+  // Regola: i due cartelli coincidono, ognuno nella sua metà del foglio: claim, riquadro del brand e logo nel riquadro,
+  // riga della descrizione o del doppio prezzo con lo sconto, riga del prezzo finale, footer, margini dai bordi.
+  // Misure in mm dal bordo alto del proprio cartello (e dal bordo sinistro del foglio); tolleranza 0,3 mm.
+  function unione(lista) {
+    if (!lista.length) return null;
+    const x0 = Math.min(...lista.map(e => e.mm.x)), y0 = Math.min(...lista.map(e => e.mm.y));
+    const x1 = Math.max(...lista.map(e => e.mm.x + e.mm.w)), y1 = Math.max(...lista.map(e => e.mm.y + e.mm.h));
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  function calcolaAllineamento(elementi, mm, meta, psd) {
+    const di = c => elementi.filter(e => e.cartello === c && e.chiave);
+    const sup = di('cartello-superiore'), inf = di('cartello-inferiore');
+    if (!sup.length || !inf.length) return null;
+    const trova = (lista, k) => lista.find(e => e.chiave === k && !e.numero);
+    const righe = [];
+    // elementi presenti in tutti e due: posizione dell'angolo in alto a sinistra (i testi: il centro, il contenuto cambia)
+    REGOLE.allineamento.elementi.forEach(k => {
+      const a = trova(sup, k), b = trova(inf, k);
+      if (!a || !b) return;
+      const centro = a.tipo === 'testo';
+      const ax = centro ? a.mm.x + a.mm.w / 2 : a.mm.x, bx = centro ? b.mm.x + b.mm.w / 2 : b.mm.x;
+      const ay = centro ? a.mm.y + a.mm.h / 2 : a.mm.y, by = centro ? b.mm.y + b.mm.h / 2 : b.mm.y;
+      righe.push({ k, nome: NOMI_AL[k], sup: a.mm, inf: b.mm, dx: bx - ax, dy: by - ay, elementi: [a, b], cartello: true });
+    });
+    // il logo dentro il riquadro: posizione rispetto al riquadro
+    const ra = trova(sup, 'riquadro-brand'), rb = trova(inf, 'riquadro-brand'), la = trova(sup, 'logo-brand'), lb = trova(inf, 'logo-brand');
+    if (ra && rb && la && lb) righe.push({ k: 'logo-nel-riquadro', nome: 'logo nel riquadro', dx: (lb.mm.x - rb.mm.x) - (la.mm.x - ra.mm.x),
+      dy: (lb.mm.y - rb.mm.y) - (la.mm.y - ra.mm.y), elementi: [la, lb] });
+    // riga centrale: descrizione o doppio prezzo con lo sconto (contenuti diversi: si confronta il centro della riga)
+    const ca = unione(sup.filter(e => RIGA_CENTRALE.includes(e.chiave))), cb = unione(inf.filter(e => RIGA_CENTRALE.includes(e.chiave)));
+    if (ca && cb) righe.push({ k: 'riga-centrale', nome: 'riga descrizione / doppio prezzo', sup: ca, inf: cb,
+      dx: (cb.x + cb.w / 2) - (ca.x + ca.w / 2), dy: (cb.y + cb.h / 2) - (ca.y + ca.h / 2), riga: true, cartello: true });
+    // margini dai bordi: il contenuto del cartello rispetto ai bordi della sua metà di foglio
+    const altezza = { 'cartello-superiore': mm(meta), 'cartello-inferiore': mm(psd.height - meta) };
+    const larghezza = mm(psd.width);
+    const ma = unione(sup), mb = unione(inf);
+    const margini = [
+      ['margine alto', ma.y, mb.y],
+      ['margine basso', altezza['cartello-superiore'] - (ma.y + ma.h), altezza['cartello-inferiore'] - (mb.y + mb.h)],
+      ['margine sinistro', ma.x, mb.x],
+      ['margine destro', larghezza - (ma.x + ma.w), larghezza - (mb.x + mb.w)]
+    ].map(([nome, a, b]) => ({ k: nome, nome, a, b, dx: 0, dy: b - a, margine: true }));
+    // spostamento comune: tutti gli elementi di tutti e due i cartelli spostati della stessa misura
+    const dy = righe.filter(r => r.cartello && !r.riga).map(r => r.dy).sort((a, b) => a - b);
+    const mediana = dy.length ? dy[Math.floor(dy.length / 2)] : 0;
+    const comune = dy.length >= 3 && Math.abs(mediana) > TOLLERANZA && dy.every(v => Math.abs(v - mediana) <= TOLLERANZA) ? mediana : 0;
+    const tutte = [...righe, ...margini];
+    tutte.forEach(r => { r.scarto = Math.max(Math.abs(r.dx), Math.abs(r.dy)); r.allineata = r.scarto <= TOLLERANZA; });
+    return { righe: tutte, comune, allineati: tutte.every(r => r.allineata) };
+  }
+
+  // un cartello ridisegnato dai suoi livelli, ognuno nella sua posizione attuale (dopo ALLINEA CARTELLI quella nuova),
+  // su un canvas con la scala s dell'anteprima e l'origine y0 (in pixel del foglio)
+  function disegnaLivelli(ctx, voce, s, y0, trasparenza = 1) {
+    ctx.globalAlpha = trasparenza;
+    risultato.elementi.forEach(e => {
+      if (e.cartello !== voce || e.livello.hidden || !e.livello.canvas) return;
+      ctx.drawImage(e.livello.canvas, e.px.x * s, (e.px.y - y0) * s, e.livello.canvas.width * s, e.livello.canvas.height * s);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  // ALLINEA CARTELLI: gli elementi del cartello inferiore vanno sulla posizione dei loro gemelli del superiore (la riga
+  // centrale tutta insieme, sul centro della riga del superiore); ANNULLA li riporta dove erano nel file
+  function sposta(e, dx, dy) {
+    const px = v => v * risultato.dpi / 25.4;
+    e.mm.x += dx; e.mm.y += dy;
+    e.px.x += px(dx); e.px.y += px(dy);
+  }
+  function allineaCartelli() {
+    const { elementi, allineamento } = risultato;
+    const spostati = new Set();
+    allineamento.righe.forEach(r => {
+      if (r.allineata || !r.cartello) return;
+      const daSpostare = r.riga ? elementi.filter(e => e.cartello === 'cartello-inferiore' && RIGA_CENTRALE.includes(e.chiave)) : [r.elementi[1]];
+      daSpostare.forEach(e => { if (!spostati.has(e)) { sposta(e, -r.dx, -r.dy); spostati.add(e); } });
+    });
+    spostati.forEach(e => {
+      const dx = e.mm.x - e.mmOriginale.x, dy = e.mm.y - e.mmOriginale.y;
+      const parti = [Math.abs(dy) > .05 ? `y ${segnoMm(dy)}` : null, Math.abs(dx) > .05 ? `x ${segnoMm(dx)}` : null].filter(Boolean);
+      e.note = e.note.filter(n => !n.startsWith('spostato per allineare'));
+      e.note.push(`spostato per allineare i cartelli: ${parti.join(' · ')}`);
+    });
+    risultato.allineato = true;
+    risultato.spostati = spostati.size;
+    aggiornaDopoAllineamento();
+    riga(`allinea cartelli: ${spostati.size} elementi del cartello inferiore spostati sulla posizione del superiore`, 'ok');
+  }
+  function annullaAllineamento() {
+    azzeraCartello('cartello-inferiore');
+  }
+
+  // SPOSTA L'IMPAGINATO di un cartello: tutti i suoi elementi un poco più su o più giù (ogni stampante ha le sue piccole
+  // differenze di bordo): così i due cartelli si possono anche tenere volutamente diversi nel foglio A4
+  const PASSO_MM = .5, PASSO_FINE_MM = .1;
+  function spostaCartello(voce, dy) {
+    risultato.elementi.filter(e => e.cartello === voce).forEach(e => sposta(e, 0, dy));
+    aggiornaDopoAllineamento();
+  }
+  function azzeraCartello(voce) {
+    risultato.elementi.filter(e => e.cartello === voce && e.mmOriginale).forEach(e => {
+      e.mm.x = e.mmOriginale.x; e.mm.y = e.mmOriginale.y;
+      e.px.x = e.pxOriginale.x; e.px.y = e.pxOriginale.y;
+      e.note = e.note.filter(n => !n.startsWith('spostato per allineare'));
+    });
+    if (voce === 'cartello-inferiore') risultato.allineato = false;
+    aggiornaDopoAllineamento();
+    riga(`${CARTELLI[voce].toLowerCase()}: posizioni del file`, 'nota');
+  }
+  // di quanto è spostato in verticale l'impaginato di un cartello rispetto al file (il valore più frequente)
+  function spostamentoDi(voce) {
+    const dy = risultato.elementi.filter(e => e.cartello === voce && e.mmOriginale).map(e => Math.round((e.mm.y - e.mmOriginale.y) * 100) / 100).sort((a, b) => a - b);
+    return dy.length ? dy[Math.floor(dy.length / 2)] : 0;
+  }
+  // (con un margine di un centesimo di pixel: su e giù dello stesso passo tornano al file)
+  const cambiato = voce => risultato.elementi.some(e => e.cartello === voce && e.pxOriginale && (Math.abs(e.px.x - e.pxOriginale.x) > .01 || Math.abs(e.px.y - e.pxOriginale.y) > .01));
+
+  function aggiornaDopoAllineamento() {
+    const { elementi, mm, meta, psd } = risultato;
+    risultato.allineamento = calcolaAllineamento(elementi, mm, meta, psd);
+    disegnaAllineamento();
+    if (linguettaAperta) apriLinguetta(linguettaAperta);
+    if (paginaGenerata) generaPagina();
+  }
+
+  const segnoMm = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${numero(Math.abs(v))} mm`;
+  function disegnaAllineamento() {
+    const box = $('allineamento');
+    const al = risultato.allineamento;
+    box.replaceChildren();
+    box.parentElement.querySelectorAll('.solo-allineamento').forEach(n => { n.hidden = !al; });
+    if (!al) return;
+    const { psd, meta, elementi } = risultato;
+
+    // a sinistra: il cartello superiore con sopra, in trasparenza, l'inferiore; i riquadri dei due elementi uno sull'altro
+    const col1 = el('div');
+    col1.append(el('p', 'col-titolo', 'superiore + inferiore sovrapposti'));
+    const sovrapposti = el('div', 'cartello');
+    const sorgente = $('tela'), s = sorgente.width / psd.width;
+    const altSup = meta, altInf = psd.height - meta, alt = Math.max(altSup, altInf);
+    const c = document.createElement('canvas');
+    c.width = sorgente.width;
+    c.height = Math.round(alt * s);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    if (cambiato('cartello-superiore')) disegnaLivelli(ctx, 'cartello-superiore', s, 0);
+    else ctx.drawImage(sorgente, 0, 0, sorgente.width, altSup * s, 0, 0, c.width, altSup * s);
+    disegnaLivelli(ctx, 'cartello-inferiore', s, meta, .4);
+    sovrapposti.append(c);
+    const altezzaMm = alt / psd.height * risultato.mm(psd.height);
+    const larghezzaMm = risultato.mm(psd.width);
+    const riquadro = (r, classe, k) => {
+      const d = el('div', `area-al ${classe}`);
+      d.dataset.k = k;
+      Object.assign(d.style, { left: `${r.x / larghezzaMm * 100}%`, top: `${r.y / altezzaMm * 100}%`, width: `${r.w / larghezzaMm * 100}%`, height: `${r.h / altezzaMm * 100}%` });
+      return d;
+    };
+    al.righe.filter(r => r.sup && r.inf).forEach(r => sovrapposti.append(riquadro(r.sup, 'sup', r.k), riquadro(r.inf, `inf${r.allineata ? ' uguale' : ''}`, r.k)));
+    col1.append(sovrapposti);
+    const legenda = el('p', 'legenda-al');
+    legenda.append(el('span', 'lg sup'), document.createTextNode('superiore'), el('span', 'lg inf'), document.createTextNode('inferiore, in trasparenza'));
+    col1.append(legenda);
+
+    // a destra: le righe con lo scarto
+    const col2 = el('div');
+    col2.append(el('p', 'col-titolo', 'elementi e margini · scarto dell\'inferiore'));
+    const esito = el('p', `esito-al ${al.allineati ? 'ok' : 'forse'}`);
+    if (al.allineati) esito.textContent = risultato.allineato ? `i due cartelli coincidono: allineati, ${risultato.spostati} elementi del cartello inferiore spostati` : 'i due cartelli coincidono';
+    else if (al.comune) esito.textContent = `il cartello inferiore è spostato di ${numero(Math.abs(al.comune))} mm ${al.comune < 0 ? 'in alto' : 'in basso'}, tutto insieme`;
+    else esito.textContent = 'i due cartelli non coincidono';
+    col2.append(esito);
+    const lista = el('div', 'righe-al');
+    al.righe.forEach(r => {
+      const riga = el('div', 'riga-al');
+      riga.dataset.k = r.k;
+      riga.append(el('span', `spia ${r.allineata ? 'ok' : 'forse'}`), el('span', 'nome', r.nome));
+      let valore;
+      if (r.allineata) valore = el('span', 'scarto ok', '✔ coincide');
+      else if (r.margine) valore = el('span', 'scarto', `${numero(r.a)} / ${numero(r.b)} mm`);
+      else {
+        const parti = [];
+        if (Math.abs(r.dy) > TOLLERANZA) parti.push(`y ${segnoMm(r.dy)}`);
+        if (Math.abs(r.dx) > TOLLERANZA) parti.push(`x ${segnoMm(r.dx)}`);
+        valore = el('span', 'scarto', parti.join(' · '));
+        if (al.comune && r.cartello && !r.riga && Math.abs(r.dy - al.comune) <= TOLLERANZA && Math.abs(r.dx) <= TOLLERANZA) valore.append(el('small', '', 'con tutto il cartello'));
+      }
+      riga.append(valore);
+      const accendi = si => box.querySelectorAll(`[data-k="${r.k}"]`).forEach(n => n.classList.toggle('acceso', si));
+      riga.addEventListener('mouseenter', () => accendi(true));
+      riga.addEventListener('mouseleave', () => accendi(false));
+      lista.append(riga);
+    });
+    col2.append(lista);
+
+    // irregolarità: subito il pulsante per sistemarle; dopo, ANNULLA per tornare alle posizioni del file
+    const azione = el('div', 'azione-al');
+    if (!al.allineati) {
+      const allinea = el('button', 'btn-folder', 'allinea cartelli');
+      allinea.type = 'button';
+      allinea.addEventListener('click', allineaCartelli);
+      azione.append(allinea, el('span', 'nota-al', 'sposta gli elementi del cartello inferiore sulla posizione di quelli del superiore'));
+    } else if (risultato.allineato) {
+      const annulla = el('button', 'btn-folder annulla', 'annulla');
+      annulla.type = 'button';
+      annulla.addEventListener('click', annullaAllineamento);
+      azione.append(el('span', 'fatto-al', '✔ cartelli allineati'), annulla);
+    }
+    if (azione.childNodes.length) col2.append(azione);
+
+    const comandi = el('div', 'sposta-al');
+    comandi.append(el('p', 'col-titolo', 'sposta l\'impaginato di un cartello · per le piccole differenze di bordo delle stampanti'));
+    ['cartello-superiore', 'cartello-inferiore'].forEach(voce => {
+      const riga = el('div', 'riga-sposta');
+      riga.append(el('span', 'nome', CARTELLI[voce]));
+      const tasto = (testo, verso, etichetta) => {
+        const b = el('button', 'tasto-sposta', testo);
+        b.type = 'button';
+        b.title = `${etichetta} di ${numero(PASSO_MM)} mm (con Maiuscolo ${numero(PASSO_FINE_MM)} mm)`;
+        b.setAttribute('aria-label', `${CARTELLI[voce]}: ${etichetta}`);
+        b.addEventListener('click', evento => spostaCartello(voce, verso * (evento.shiftKey ? PASSO_FINE_MM : PASSO_MM)));
+        return b;
+      };
+      const dy = spostamentoDi(voce);
+      riga.append(tasto('▲', -1, 'più su'), tasto('▼', 1, 'più giù'),
+        el('span', `valore${Math.abs(dy) > .005 ? ' cambiato' : ''}`, Math.abs(dy) > .005 ? `${segnoMm(dy)} dal file` : 'come nel file'));
+      if (cambiato(voce)) {
+        const azzera = el('button', 'btn-folder annulla', 'azzera');
+        azzera.type = 'button';
+        azzera.addEventListener('click', () => azzeraCartello(voce));
+        riga.append(azzera);
+      }
+      comandi.append(riga);
+    });
+    col2.append(comandi);
+    box.append(col1, col2);
+  }
+
+  // ---- mappa del cartello: cartello con i numeri → livelli → blocchi del pannello con i moduli ----
+  function moduliPagina() {
+    const { elementi, cartelli } = risultato;
+    const chiavi = new Set(elementi.map(e => e.chiave).filter(Boolean));
+    const blocchi = { 1: [], 2: [], 3: [], 4: [], g: [], x: [] };
+    const quando = {
+      sempre: true,
+      dueCartelli: cartelli.length === 2,
+      doppiaCifraEDescrizione: (chiavi.has('prezzo-originario') || chiavi.has('percentuale')) && chiavi.has('descrizione')
+    };
+    const struttura = REGOLE.pannello.struttura.filter(m => quando[m.quando]);
+    struttura.filter(m => m.blocco === 1).forEach(m => blocchi[1].push({ testo: m.comando, file: m.file, struttura: true }));
+    Object.keys(MODULI).forEach(k => { if (chiavi.has(k)) blocchi[MODULI[k].blocco || 'g'].push({ k, testo: BREVE[k], file: MODULI[k].file }); });
+    struttura.filter(m => m.blocco !== 1).forEach(m => blocchi[m.blocco].push({ testo: m.comando, file: m.file, struttura: true }));
+    if (elementi.some(e => !e.chiave)) blocchi.x.push({ k: 'x', testo: 'da assegnare', file: 'o modulo nuovo da costruire' });
+    return blocchi;
+  }
+
+  function apriLinguetta(voce) {
+    linguettaAperta = voce;
+    scelto = null;
+    $('dettagli').hidden = true;
+    $('linguette').querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.voce === voce)));
+    const { psd, elementi, meta } = risultato;
+    const mappa = $('mappa');
+    mappa.replaceChildren();
+    const suoi = elementi.map((e, i) => ({ e, i })).filter(({ e }) => e.cartello === voce)
+      .sort((a, b) => a.e.px.y - b.e.px.y || a.e.px.x - b.e.px.x);
+
+    // colonna 1: il cartello, ritagliato dall'anteprima, con un numero su ogni elemento
+    const y0 = voce === 'cartello-inferiore' ? meta : 0;
+    const y1 = voce === 'cartello-superiore' ? meta : psd.height;
+    const col1 = el('div');
+    col1.append(el('p', 'col-titolo', voce === 'foglio' ? 'foglio' : CARTELLI[voce].toLowerCase()));
+    const cartello = el('div', 'cartello');
+    const sorgente = $('tela'), s = sorgente.width / psd.width;
+    const ritaglio = document.createElement('canvas');
+    ritaglio.width = sorgente.width;
+    ritaglio.height = Math.round((y1 - y0) * s);
+    const ctxR = ritaglio.getContext('2d');
+    if (voce !== 'foglio' && cambiato(voce)) {
+      ctxR.fillStyle = '#fff';
+      ctxR.fillRect(0, 0, ritaglio.width, ritaglio.height);
+      disegnaLivelli(ctxR, voce, s, y0);
+    } else ctxR.drawImage(sorgente, 0, y0 * s, sorgente.width, (y1 - y0) * s, 0, 0, ritaglio.width, ritaglio.height);
+    cartello.append(ritaglio);
+    const segni = {};
+    suoi.forEach(({ e, i }, n) => {
+      const pos = (v, tot) => `${Math.min(100, Math.max(0, v / tot * 100))}%`;
+      const area = el('div', 'area');
+      area.dataset.i = i;
+      Object.assign(area.style, { left: pos(e.px.x, psd.width), top: pos(e.px.y - y0, y1 - y0), width: pos(Math.max(e.px.w, 4), psd.width), height: pos(Math.max(e.px.h, 4), y1 - y0) });
+      const segno = el('button', `segno ${e.stato}`, String(n + 1));
+      segno.type = 'button';
+      segno.dataset.i = i;
+      segno.title = `${e.nome} · ${STATI[e.stato]}`;
+      Object.assign(segno.style, { left: pos(e.px.x + e.px.w / 2, psd.width), top: pos(e.px.y - y0 + e.px.h / 2, y1 - y0) });
+      cartello.append(area, segno);
+      segni[i] = segno;
+    });
+    col1.append(cartello);
+
+    // colonna 2: i livelli del .psd
+    const col2 = el('div');
+    col2.append(el('p', 'col-titolo', 'livelli del .psd'));
+    const livelli = el('div', 'livelli');
+    const liv = {};
+    suoi.forEach(({ e, i }, n) => {
+      const b = el('button', 'liv');
+      b.type = 'button';
+      b.dataset.i = i;
+      b.title = STATI[e.stato];
+      b.append(el('span', 'num', String(n + 1)), el('span', 'nome', e.nome), el('span', `spia ${e.stato}`));
+      livelli.append(b);
+      liv[i] = b;
+    });
+    col2.append(livelli);
+
+    // colonna 3: i quattro blocchi del pannello, la grafica della pagina e i livelli senza modulo
+    const col3 = el('div');
+    col3.append(el('p', 'col-titolo', 'pannello della pagina · moduli comuni'));
+    const blocchi = moduliPagina();
+    const delCartello = new Set(suoi.map(({ e }) => e.chiave || 'x'));
+    const titoli = { 1: 'selettori e pulsanti', 2: 'brand e claim', 3: 'campi del cartello', 4: 'stampa', g: 'grafica della pagina', x: 'senza modulo' };
+    const mod = {};
+    const contenitore = el('div', 'blocchi-m');
+    [1, 2, 3, 4, 'g', 'x'].forEach(b => {
+      if ((b === 'g' || b === 'x') && !blocchi[b].length) return;
+      const box = el('div', `blocco-m${b === 'g' || b === 'x' ? ' grafica' : ''}`);
+      const h = el('h3', '', typeof b === 'number' ? `blocco ${b} ` : '');
+      h.append(el('span', '', `· ${titoli[b]}`));
+      box.append(h);
+      const chip = el('div', 'moduli-b');
+      if (!blocchi[b].length) chip.append(el('span', 'vuoto-b', 'vuoto: il blocco si toglie'));
+      blocchi[b].forEach(m => {
+        const c = el('div', `mod${m.struttura ? ' struttura' : ''}${!m.struttura && !delCartello.has(m.k) ? ' altro' : ''}`, m.testo);
+        c.append(el('small', '', m.struttura ? `struttura · ${m.file}` : m.file));
+        if (m.k) { c.dataset.k = m.k; mod[m.k] = c; }
+        if (!m.struttura && !delCartello.has(m.k)) c.title = 'nella pagina, non in questo cartello';
+        chip.append(c);
+      });
+      box.append(chip);
+      contenitore.append(box);
+    });
+    col3.append(contenitore);
+    mappa.append(col1, col2, col3);
+
+    // fili: numero → livello → modulo
+    const fili = () => {
+      const svg = tela(mappa);
+      suoi.forEach(({ e, i }) => {
+        filo(svg, mappa, segni[i], liv[i], e.stato, { i }, true, primaVolta);
+        const arrivo = mod[e.chiave || 'x'];
+        if (arrivo) filo(svg, mappa, liv[i], arrivo, e.stato, { i }, false, primaVolta);
+      });
+      primaVolta = false;
+    };
+    requestAnimationFrame(fili);
+    mappa.ridisegna = fili;
+
+    // seguire il filo: passando sopra (o con la tastiera) un numero, un livello o un modulo si accende il percorso
+    const accendi = (indici, si) => {
+      mappa.classList.toggle('con-acceso', si);
+      indici.forEach(i => mappa.querySelectorAll(`[data-i="${i}"]`).forEach(n => n.classList.toggle('acceso', si)));
+      indici.forEach(i => { const k = elementi[i].chiave || 'x'; if (mod[k]) mod[k].classList.toggle('acceso', si); });
+    };
+    mappa.querySelectorAll('.segno, .liv').forEach(n => {
+      const i = +n.dataset.i;
+      ['mouseenter', 'focus'].forEach(t => n.addEventListener(t, () => accendi([i], true)));
+      ['mouseleave', 'blur'].forEach(t => n.addEventListener(t, () => accendi([i], false)));
+      n.addEventListener('click', () => mostraDettagli(i));
+    });
+    Object.entries(mod).forEach(([k, c]) => {
+      const indici = suoi.filter(({ e }) => (e.chiave || 'x') === k).map(({ i }) => i);
+      c.addEventListener('mouseenter', () => accendi(indici, true));
+      c.addEventListener('mouseleave', () => accendi(indici, false));
+    });
+  }
+
+  // valori dell'elemento scelto
+  function mostraDettagli(i) {
+    const e = risultato.elementi[i];
+    scelto = i;
+    $('mappa').querySelectorAll('.liv').forEach(b => b.classList.toggle('scelto', +b.dataset.i === i));
+    const box = $('dettagli');
+    box.replaceChildren();
+    const h = el('h3');
+    h.append(el('span', `spia ${e.stato}`), document.createTextNode(`${e.nome} · ${e.tipo} · ${STATI[e.stato]}`));
+    const dl = el('dl');
+    const voce = (nome, ...valore) => { const dd = el('dd'); valore.forEach(v => dd.append(v)); dl.append(el('dt', '', nome), dd); };
+    const colore = c => { const s = el('span', 'campione'); s.style.background = c; return s; };
+    if (e.tipo === 'testo') {
+      voce('testo', `«${e.testo.replace(/\n/g, ' ↵ ')}»`);
+      voce('font', `${e.font}${risultato.fileFont[e.font] ? ' → assets/fonts/' + risultato.fileFont[e.font] : ' (da aggiungere in assets/fonts/)'}`);
+      voce('grandezza', e.pt ? `${numero(e.pt)} pt` : '?');
+      voce('spaziatura', `${e.spaziatura} (${numero(e.spaziatura / 1000, 3)} em)`);
+      voce('interlinea', e.interlinea ? `${numero(e.interlinea)} pt` : 'auto');
+      voce('allineamento', e.allineamento);
+      const stile = [e.grassettoFinto && 'grassetto finto', e.corsivoFinto && 'corsivo finto', e.maiuscolo && 'maiuscolo'].filter(Boolean);
+      if (stile.length) voce('stile', stile.join(' · '));
+      if (e.colore) voce('colore', colore(e.colore), e.colore);
+    } else if (e.tipo === 'forma') {
+      if (e.colore) voce('colore', colore(e.colore), e.colore);
+      if (e.angoli) voce('angoli', e.angoli);
+      if (e.rotazione) voce('rotazione', `${numero(e.rotazione)}°`);
+      if (e.tratto) voce('traccia', `${numero(e.tratto.spessore, 2)} ${e.tratto.unita || ''}${e.tratto.tratteggio ? ' · tratteggiata' : ''}${e.tratto.colore ? ' · ' + e.tratto.colore : ''}`);
+    } else {
+      voce('immagine', e.livello.canvas ? `${e.livello.canvas.width} × ${e.livello.canvas.height} px · si esporterà come png` : 'si esporterà come png');
+    }
+    voce('posizione', `x ${numero(e.mm.x)} · y ${numero(e.mm.y)} mm`);
+    voce('misure', `${numero(e.mm.w)} × ${numero(e.mm.h)} mm`);
+    const m = e.chiave && MODULI[e.chiave];
+    voce('modulo', m ? `${m.comando}${m.blocco ? ' · blocco ' + m.blocco : ''}` : 'nessuno: da assegnare');
+    if (m) voce('file', m.file);
+    e.note.forEach(n => dl.append(el('dd', 'nota', n)));
+    box.append(h, dl);
+    box.hidden = false;
+  }
+
+  // i fili seguono il diagramma quando cambia misura (finestra, caratteri caricati)
+  const osserva = new ResizeObserver(() => ['confronto', 'mappa'].forEach(id => { const d = $(id); if (d.ridisegna) d.ridisegna(); }));
+  osserva.observe($('confronto'));
+  osserva.observe($('mappa'));
+
+  // ---- passo 4: pagina generata, anteprima dal vivo ----
+  let paginaGenerata = null;
+  const baseModelli = () => `${location.href.replace(/[^/]*$/, '')}modelli/`;
+  async function generaPagina() {
+    const stato = $('statoAnteprima');
+    try {
+      const base = await (await fetch('modelli/cartello-base.html', { cache: 'no-store' })).text();
+      const immagini = {};
+      risultato.elementi.forEach(e => { if (e.tipo === 'immagine' && e.chiave && e.livello.canvas && !immagini[e.chiave]) immagini[e.chiave] = e.livello.canvas.toDataURL('image/png'); });
+      const nome = file.name.replace(/\.psd$/i, '');
+      paginaGenerata = ImportGenera.pagina(risultato, { base, nome, negozio: 'luxury', immagini });
+      // nell'anteprima i percorsi ../assets/ partono dalla cartella modelli/
+      const anteprima = paginaGenerata.replace('<head>', `<head>\n  <base href="${baseModelli()}">`);
+      const riquadro = $('anteprima');
+      riquadro.onload = () => { adattaAnteprima(); preparaRitocchi(); if ($('sovrapponi').getAttribute('aria-pressed') === 'true') sovrapponi(true); };
+      riquadro.srcdoc = anteprima;
+      $('passo4').hidden = false;
+      stato.className = 'stato-anteprima';
+      stato.textContent = `generata alle ${new Date().toLocaleTimeString('it-IT')} · partenza: Nuova Base Comune con i moduli comuni${risultato.allineato ? ' · cartelli allineati' : ''}`;
+      riga(`pagina generata · ${nome}`, 'ok');
+    } catch (errore) {
+      console.error(errore);
+      $('passo4').hidden = false;
+      stato.className = 'stato-anteprima err';
+      stato.textContent = `errore: ${errore.message || errore}`;
+    }
+  }
+  $('genera').addEventListener('click', async () => { await generaPagina(); $('passo4').scrollIntoView({ block: 'start', behavior: piano.matches ? 'auto' : 'smooth' }); });
+  // l'anteprima è larga come una finestra (1280 px) e rimpicciolita per stare nella pagina
+  function adattaAnteprima() {
+    const cornice = $('corniceAnteprima'), riquadro = $('anteprima');
+    const scala = Math.min(1, cornice.clientWidth / 1280);
+    riquadro.style.transform = `scale(${scala})`;
+    cornice.style.height = `${Math.ceil(1180 * scala)}px`;
+  }
+  new ResizeObserver(adattaAnteprima).observe($('corniceAnteprima'));
+  // sovrapponi il .psd: l'immagine originale in trasparenza sopra il foglio generato, per vedere dove non combacia
+  function sovrapponi(si) {
+    const doc = $('anteprima').contentDocument;
+    const foglio = doc && doc.getElementById('printSheet');
+    if (!foglio) return;
+    let img = doc.getElementById('psdSopra');
+    if (si && !img) {
+      img = doc.createElement('img');
+      img.id = 'psdSopra';
+      img.alt = '';
+      Object.assign(img.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', opacity: '.45', pointerEvents: 'none', zIndex: '50', mixBlendMode: 'multiply' });
+      img.src = $('tela').toDataURL('image/jpeg', .85);
+      foglio.append(img);
+    }
+    if (img) img.hidden = !si;
+  }
+  $('sovrapponi').addEventListener('click', () => {
+    const b = $('sovrapponi'), si = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', String(si));
+    sovrapponi(si);
+  });
+  $('tuttaFinestra').addEventListener('click', () => {
+    if (!paginaGenerata) return;
+    const finestra = window.open('', '_blank');
+    if (!finestra) return;
+    finestra.document.open();
+    finestra.document.write(paginaGenerata.replace('<head>', `<head>\n  <base href="${baseModelli()}">`));
+    finestra.document.close();
+  });
+
+  // ---- ritocchi: un elemento della pagina generata si seleziona con un clic e si sposta di poco ----
+  // Lo spostamento vale per il cartello dell'elemento o, con «nei due cartelli», per tutti e due; resta in
+  // risultato.ritocchi e il generatore lo aggiunge alla posizione, così resta anche rigenerando la pagina.
+  // Nell'anteprima si vede subito: lo spostamento dopo l'ultima generazione con la proprietà translate dell'elemento.
+  let selezionato = null;          // { n, k } cartello (1, 2) e chiave dell'elemento; k '*' = tutto il cartello
+  // elementi di un cartello (per spostarlo tutto): le chiavi dei suoi elementi, non quelle del foglio
+  const chiaviCartello = n => [...new Set(risultato.elementi.filter(e => e.cartello === (n === 1 ? 'cartello-superiore' : 'cartello-inferiore') && e.chiave).map(e => e.chiave))]
+    .concat(risultato.elementi.some(e => e.chiave === 'descrizione') ? ['descrizione'] : [], risultato.elementi.some(e => e.chiave === 'prezzo-originario') ? ['prezzo-originario', 'sbarra', 'percentuale'] : [])
+    .filter((k, i, a) => a.indexOf(k) === i && MODULI[k] && !MODULI[k].foglio);
+  let generati = {};               // ritocchi al momento dell'ultima generazione
+  const NOMI_EL = () => Object.fromEntries(Object.entries(MODULI).map(([k, m]) => [k, m.nomeAllineamento || m.breve]));
+  const ritoccoDi = (n, k) => (((risultato.ritocchi || {})[n] || {})[k]) || { x: 0, y: 0 };
+  const chiaveDi = nodo => [...nodo.classList].find(c => c.startsWith('el-'))?.slice(3);
+  function nodiDi(doc, n, k) {
+    const card = doc.getElementById('card' + n);
+    return card ? [...card.querySelectorAll('.el-' + k)] : [];
+  }
+  function mostraRitocchi() {
+    const doc = $('anteprima').contentDocument;
+    if (!doc) return;
+    doc.querySelectorAll('.sel-import').forEach(n => n.classList.remove('sel-import'));
+    const comandi = $('ritocchiComandi');
+    comandi.hidden = !selezionato;
+    $('ritocchiVuoto').hidden = !!selezionato;
+    $('azzeraTutti').hidden = !Object.values(risultato.ritocchi || {}).some(c => Object.values(c).some(t => t.x || t.y));
+    // spostamento dopo l'ultima generazione, nell'anteprima
+    [1, 2].forEach(n => Object.keys(MODULI).forEach(k => {
+      const ora = ritoccoDi(n, k), prima = ((generati[n] || {})[k]) || { x: 0, y: 0 };
+      // il logo dentro il riquadro si sposta già con il riquadro
+      const conRiquadro = k === 'logo-brand' ? ritoccoDi(n, 'riquadro-brand') : { x: 0, y: 0 };
+      const primaRiquadro = k === 'logo-brand' ? (((generati[n] || {})['riquadro-brand']) || { x: 0, y: 0 }) : { x: 0, y: 0 };
+      const dx = (ora.x - prima.x) - (conRiquadro.x - primaRiquadro.x), dy = (ora.y - prima.y) - (conRiquadro.y - primaRiquadro.y);
+      nodiDi(doc, n, k).forEach(nodo => { nodo.style.translate = dx || dy ? `${dx}mm ${dy}mm` : ''; });
+    }));
+    document.querySelectorAll('.ritocchi-cartello button').forEach(b => b.setAttribute('aria-pressed', String(!!selezionato && selezionato.k === '*' && +b.dataset.cartello === selezionato.n)));
+    if (!selezionato) return;
+    const { n, k } = selezionato;
+    const tutto = k === '*';
+    $('ritocchiDue').closest('label').hidden = tutto;
+    $('azzeraElemento').textContent = tutto ? 'azzera cartello' : 'azzera elemento';
+    if (tutto) doc.getElementById('card' + n)?.classList.add('sel-import');
+    else nodiDi(doc, n, k).forEach(nodo => nodo.classList.add('sel-import'));
+    const nome = $('ritocchiNome');
+    nome.replaceChildren(document.createTextNode(tutto ? 'tutto il cartello' : (NOMI_EL()[k] || k)), document.createTextNode(' '), el('small', '', `· ${n === 1 ? 'cartello superiore' : 'cartello inferiore'}`));
+    const t = tutto ? ((risultato.ritocchiCartello || {})[n] || { x: 0, y: 0 }) : ritoccoDi(n, k), valore = $('ritocchiValore');
+    valore.textContent = t.x || t.y ? [t.y ? `y ${segnoMm(t.y)}` : null, t.x ? `x ${segnoMm(t.x)}` : null].filter(Boolean).join(' · ') : 'come nel .psd';
+    valore.classList.toggle('cambiato', !!(t.x || t.y));
+  }
+  function ritocca(dx, dy) {
+    if (!selezionato) return;
+    const { n, k } = selezionato;
+    risultato.ritocchi = risultato.ritocchi || {};
+    const tutto = k === '*';
+    const cartelli = tutto || !$('ritocchiDue').checked ? [n] : [1, 2];
+    // il riquadro del brand porta con sé il logo che contiene; tutto il cartello: tutti i suoi elementi
+    const chiavi = tutto ? chiaviCartello(n) : k === 'riquadro-brand' && MODULI['logo-brand'] ? [k, 'logo-brand'] : [k];
+    if (tutto) {
+      const c = ((risultato.ritocchiCartello = risultato.ritocchiCartello || {})[n] = risultato.ritocchiCartello[n] || { x: 0, y: 0 });
+      c.x = Math.round((c.x + dx) * 100) / 100;
+      c.y = Math.round((c.y + dy) * 100) / 100;
+    }
+    cartelli.forEach(c => chiavi.forEach(ch => {
+      const t = ((risultato.ritocchi[c] = risultato.ritocchi[c] || {})[ch] = risultato.ritocchi[c][ch] || { x: 0, y: 0 });
+      t.x = Math.round((t.x + dx) * 100) / 100;
+      t.y = Math.round((t.y + dy) * 100) / 100;
+    }));
+    mostraRitocchi();
+  }
+  const VERSI = { su: [0, -1], giu: [0, 1], sinistra: [-1, 0], destra: [1, 0] };
+  const passoDi = evento => evento.shiftKey ? .1 : .5;
+  document.querySelectorAll('#ritocchiComandi .tasto-sposta').forEach(b => b.addEventListener('click', evento => {
+    const [x, y] = VERSI[b.dataset.verso];
+    ritocca(x * passoDi(evento), y * passoDi(evento));
+  }));
+  $('azzeraElemento').addEventListener('click', () => {
+    if (!selezionato) return;
+    const { n, k } = selezionato;
+    if (k === '*') {
+      const c = (risultato.ritocchiCartello || {})[n];
+      if (c) { ritocca(-c.x, -c.y); risultato.ritocchiCartello[n] = { x: 0, y: 0 }; mostraRitocchi(); }
+      return;
+    }
+    const cartelli = $('ritocchiDue').checked ? [1, 2] : [n];
+    const chiavi = k === 'riquadro-brand' ? [k, 'logo-brand'] : [k];
+    cartelli.forEach(c => chiavi.forEach(ch => { if (risultato.ritocchi && risultato.ritocchi[c]) delete risultato.ritocchi[c][ch]; }));
+    mostraRitocchi();
+  });
+  $('azzeraTutti').addEventListener('click', () => { risultato.ritocchi = {}; risultato.ritocchiCartello = {}; mostraRitocchi(); });
+  document.querySelectorAll('.ritocchi-cartello button').forEach(b => b.addEventListener('click', () => {
+    selezionato = { n: +b.dataset.cartello, k: '*' };
+    mostraRitocchi();
+  }));
+  $('deseleziona').addEventListener('click', () => { selezionato = null; mostraRitocchi(); });
+  // frecce della tastiera: con un elemento selezionato, nella pagina e nell'anteprima
+  const frecce = evento => {
+    if (!selezionato || /input|select|textarea/i.test((evento.target.tagName || ''))) return;
+    const verso = { ArrowUp: 'su', ArrowDown: 'giu', ArrowLeft: 'sinistra', ArrowRight: 'destra' }[evento.key];
+    if (evento.key === 'Escape') { selezionato = null; mostraRitocchi(); return; }
+    if (!verso) return;
+    evento.preventDefault();
+    const [x, y] = VERSI[verso];
+    ritocca(x * passoDi(evento), y * passoDi(evento));
+  };
+  document.addEventListener('keydown', frecce);
+  // l'anteprima appena caricata: stile della selezione, clic sugli elementi, frecce
+  function preparaRitocchi() {
+    const doc = $('anteprima').contentDocument;
+    if (!doc) return;
+    generati = structuredClone(risultato.ritocchi || {});
+    const stile = doc.createElement('style');
+    stile.textContent = '.card, .card .elemento, .card .el-logo-brand { cursor: pointer; } .card.sel-import { outline-offset: -1px; } .sel-import { outline: 1.5px solid #3a9b5a !important; outline-offset: .8mm; } @media print { .sel-import { outline: 0 !important; } }';
+    doc.head.append(stile);
+    doc.addEventListener('click', evento => {
+      const nodo = evento.target.closest('.card .el-logo-brand, .card .elemento');
+      const cartello = evento.target.closest('.card');
+      if (!nodo && cartello) { selezionato = { n: +cartello.id.replace('card', ''), k: '*' }; mostraRitocchi(); return; }
+      if (!nodo) return;
+      const k = chiaveDi(nodo), n = +nodo.closest('.card').id.replace('card', '');
+      if (!k) return;
+      selezionato = { n, k };
+      mostraRitocchi();
+    });
+    doc.addEventListener('keydown', frecce);
+    mostraRitocchi();
+  }
+
+  // per le prove: la pagina si può pilotare da un'altra pagina dello stesso sito
+  window.ImportLayout = { scegli, converti, generaPagina, seleziona: (n, k) => { selezionato = { n, k }; mostraRitocchi(); }, ritocca, get risultato() { return risultato; }, get pagina() { return paginaGenerata; } };
+})();
+</script>
+</body>
+</html>

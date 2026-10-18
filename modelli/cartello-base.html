@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="luxury">
+<head>
+  <meta charset="UTF-8">
+  <script src="../assets/js/negozi.js?v=20261018-01"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cartello base</title>
+  <!--
+    Pagina base comune dei cartelli (Import layout, area operatore): la sola struttura standard di una pagina di cartelli,
+    senza grafica. Si usa come partenza quando il file .psd importato non somiglia abbastanza a nessuna pagina esistente.
+    Foglio A4 con due cartelli che sono le due metà esatte del foglio (210 × 148,5 mm): gli elementi del .psd si
+    posizionano dentro il loro cartello in mm (position: absolute), così qualunque layout ci entra.
+    Pannello nei quattro blocchi: 1 selettore CARTELLO SUPERIORE / INFERIORE; 2 e 3 vuoti (si riempiono con i moduli
+    comuni dei livelli trovati, ai segni «IMPORT»: un blocco che resta vuoto si toglie); 4 COPIA SU ALTRO CARTELLO,
+    Impostazioni di Stampa e tasto di stampa. Con la pulsantiera di strumenti-stampa.js, il cursore, la vista telefono
+    (responsive.js) e il PDF a misura da iPhone e iPad (stampa-ios.js).
+    I moduli aggiunti si registrano in CAMPI (stato iniziale, pannello, foglio): il resto della pagina non cambia.
+  -->
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261018-01">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261018-01">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261018-01"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261018-01">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261018-01">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261018-01">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261018-01">
+  <!-- IMPORT: file comuni dei moduli aggiunti (loghi, testi pronti…) -->
+  <style>
+    /* IMPORT: @font-face dei font del .psd (file in ../assets/fonts/) */
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
+
+    /* FOGLIO A4: due cartelli, le due metà esatte del foglio */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 297mm;
+      flex-shrink: 0;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .6);
+      overflow: hidden;
+    }
+
+    .card {
+      position: relative;
+      width: 210mm;
+      height: 148.5mm;
+      overflow: hidden;
+    }
+
+    .card.disabled { display: none !important; }
+
+    /* gli elementi del cartello: posizione e misure in mm, dal bordo sinistro del foglio e dal bordo alto del cartello */
+    .card .elemento { position: absolute; }
+
+    /* cartello ancora vuoto: solo a schermo, una scritta tenue al centro (in stampa resta bianco) */
+    .card-vuota {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c9c4bb;
+      font: 400 12px/1.4 Arial, sans-serif;
+      letter-spacing: .12em;
+      text-align: center;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .card:has(.elemento) .card-vuota { display: none; }
+
+    /* LINEA TRATTEGGIATA PER IL RITAGLIO, al centro esatto del foglio */
+    .cut-line {
+      position: absolute;
+      top: 50%;
+      left: 10mm;
+      right: 10mm;
+      border-top: 1px dashed #ccc;
+      transform: translateY(-50%);
+      z-index: 10;
+      pointer-events: none;
+    }
+    .print-sheet.single-mode .cut-line { display: none; }
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .sidebar, .floating-nav-box, .card-vuota { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 0 auto !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261018-01">
+  <script defer src="../assets/js/menu-cascata.js?v=20261018-01"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261018-01">
+  <script defer src="../assets/js/responsive.js?v=20261018-01"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261018-01"></script>
+  <script src="../assets/js/theme.js?v=20261018-01"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261018-01">
+</head>
+<body data-layout="cartelli">
+
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
+
+  <!-- IMPORT: pulsanti dei temi speciali (Made in Italy, Black Friday, Natale), se servono -->
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Cartello base</h2>
+
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div id="cardSelector" data-selettore-cartello></div>
+        <!-- IMPORT: altri selettori e pulsanti (modalità, + AGGIUNGI 2° BRAND…) -->
+      </div>
+
+      <!-- Blocco 2: brand (ufficiali e personali) e claim laterali -->
+      <div class="panel-block" id="blocco2" hidden>
+        <!-- IMPORT: BRAND, Loghi Personali, Claim Sinistro e Destro -->
+      </div>
+
+      <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
+      <div class="panel-block" id="blocco3" hidden>
+        <!-- IMPORT: TESTI PRONTI e Testo Libero, prezzi -->
+      </div>
+
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <div id="linkCardsRow" data-copia-cartello data-checkbox-id="linkCards" data-on-change="setLinkedCards"></div>
+
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="card-vuota">cartello superiore<br>210 × 148,5 mm</div>
+      <!-- IMPORT: elementi del cartello superiore -->
+    </div>
+
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="card-vuota">cartello inferiore<br>210 × 148,5 mm</div>
+      <!-- IMPORT: elementi del cartello inferiore -->
+    </div>
+  </div>
+
+  <!-- IMPORT: moduli comuni da caricare prima dello script della pagina (testi-pronti.js, second-brand-toggle.js…) -->
+  <script src="../assets/js/selettore.js?v=20261018-01"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261018-01"></script>
+
+  <script>
+    // Campi del cartello: ogni modulo aggiunto si registra qui con
+    //   { stato: { campo: valore di partenza }, pannello(stato), foglio(stato, card, cardIndex), cursore: [regole] }
+    // pannello riporta nei campi i valori del cartello scelto, foglio disegna il cartello.
+    const CAMPI = [];
+    // IMPORT: registrazione dei campi
+
+    // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
+    function createCardState() {
+      return Object.assign({}, ...CAMPI.map(campo => structuredClone(campo.stato || {})));
+    }
+
+    const cards = { 1: createCardState(), 2: createCardState() };
+    let currentCard = 1;
+    let sheetMode = 'double';
+    let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
+
+    // Con la casella spuntata (e il foglio intero) ogni modifica vale per tutti e due i cartelli.
+    function setField(field, value) {
+      const targets = linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+      targets.forEach(cardIndex => { cards[cardIndex][field] = value; });
+    }
+
+    function onFieldInput(field, value) {
+      setField(field, value);
+      renderCards();
+    }
+
+    // Riporta nel pannello i valori del cartello scelto.
+    function syncPanel() {
+      const state = cards[currentCard];
+      CAMPI.forEach(campo => campo.pannello && campo.pannello(state));
+      SelettoreCartello.setActive('selectCard' + currentCard);
+      document.getElementById('linkCards').checked = linkedCards;
+      document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    function selectCard(cardIndex) {
+      if (sheetMode === 'single' && cardIndex === 2) return;
+      currentCard = cardIndex;
+      syncPanel();
+    }
+
+    // Spuntando la casella i valori del cartello in modifica vanno anche sull'altro;
+    // togliendo la spunta il cartello sovrascritto torna ai valori che aveva prima.
+    let overwrittenCard = null;   // { cardIndex, state } salvato alla spunta
+
+    function setLinkedCards(isLinked) {
+      linkedCards = isLinked;
+      if (isLinked) {
+        const otherCard = currentCard === 1 ? 2 : 1;
+        overwrittenCard = { cardIndex: otherCard, state: structuredClone(cards[otherCard]) };
+        cards[otherCard] = structuredClone(cards[currentCard]);
+      } else if (overwrittenCard) {
+        cards[overwrittenCard.cardIndex] = overwrittenCard.state;
+        overwrittenCard = null;
+      }
+      renderCards();
+      syncPanel();
+    }
+
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore.
+    function setSheetMode(mode) {
+      sheetMode = mode;
+      const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
+      const sheet = document.getElementById('printSheet');
+      document.getElementById('card2').classList.toggle('disabled', isSingle);
+      sheet.classList.toggle('single-mode', isSingle);
+      sheet.classList.toggle('double-mode', !isSingle);
+      SelettoreCartello.setLowerDisabled(isSingle);
+      document.getElementById('sheetModeSelect').value = mode;
+      if (isSingle && currentCard === 2) currentCard = 1;
+      syncPanel();
+    }
+
+    function renderCard(cardIndex) {
+      const card = document.getElementById('card' + cardIndex);
+      CAMPI.forEach(campo => campo.foglio && campo.foglio(cards[cardIndex], card, cardIndex));
+    }
+
+    function renderCards() {
+      renderCard(1);
+      renderCard(2);
+    }
+
+    // i blocchi 2 e 3 si vedono solo se hanno dei campi
+    ['blocco2', 'blocco3'].forEach(id => {
+      const blocco = document.getElementById(id);
+      blocco.hidden = !blocco.querySelector('.form-group, .form-row, [data-selettore]');
+    });
+
+    function avvia() {
+      syncPanel();
+      renderCards();
+    }
+    // IMPORT: avvio dopo i dati che servono (es. LoghiPersonalizzati.pronto.then(avvia))
+    window.onload = avvia;
+  </script>
+  <script src="../assets/js/cursore.js?v=20261018-01"></script>
+
+  <script>
+    // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
+    const activeCard = () => document.getElementById('card' + currentCard);
+    const inActiveCard = selector => () => activeCard().querySelector(selector);
+    const cardOf = target => target.closest('.card');
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: cardOf,
+      obstacles: target => cardOf(target).querySelectorAll('.elemento'),
+      rules: [
+        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
+        ...CAMPI.flatMap(campo => campo.cursore || [])
+      ]
+    });
+  </script>
+  <script src="../assets/js/copia-cartello.js?v=20261018-01"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261018-01"></script>
+</body>
+</html>

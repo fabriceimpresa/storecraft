@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261014-04"></script>
+  <script src="assets/js/negozi.js?v=20261018-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 14 ottobre 2026 · versione 1.2.31</p>
+  <p class="aggiornamento">ultimo aggiornamento: 18 ottobre 2026 · versione 1.2.32</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -430,7 +430,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261014-04</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261018-01</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -585,7 +585,7 @@
   <!-- ================================================================ -->
   <h2 id="nuova-pagina">Nuova pagina</h2>
   <ol class="passi">
-    <li>Si parte dalla pagina più simile dello stesso tipo, nella cartella del negozio (<code>luxury/</code>, <code>tebe/</code>…).</li>
+    <li>Si parte dalla pagina più simile dello stesso tipo, nella cartella del negozio (<code>luxury/</code>, <code>tebe/</code>…); dal file Photoshop originale, vedi Creation Engine › Import layout.</li>
     <li>Sul tag <code>&lt;html&gt;</code> <code>data-negozio="…"</code>; nel <code>&lt;head&gt;</code> per primo <code>negozi.js</code>, poi (TEBE e OPHILYA) <code>theme.js</code>, <code>chiudi-pagina.css</code>, <code>torna-al-menu.css</code>, <code>pannello.css</code> prima dello <code>&lt;style&gt;</code> della pagina.</li>
     <li>File comuni con la versione corrente (<code>?v=</code>, vedi Basi › Versioni e cache), quelli del negozio con <code>../assets/img/&lt;negozio&gt;/</code>.</li>
     <li>Pannello nei quattro blocchi <code>.panel-block</code>, con il commento <code>&lt;!-- Blocco N --&gt;</code>; un blocco vuoto si omette.</li>
@@ -676,6 +676,35 @@
     <tr><td>Ultimo modulo di una galleria</td><td>eliminandolo si cancella anche la galleria creata qui (<code>galleria-&lt;n&gt;.js</code> e la sua voce in <code>elenco.js</code>); un set di partenza resta, senza l'elenco degli aggiunti</td></tr>
     <tr><td>Modulo in una dashboard</td><td>non si elimina: la nota dice in quali dashboard è e il clic su «✕ elimina modulo» apre un avviso che spiega che è in uso e che prima si tolgono le spunte dei negozi</td></tr>
   </table>
+
+  <!-- ================================================================ -->
+  <h2 id="ce-import">Creation Engine · Import layout</h2>
+  <p>Dal 18 ottobre 2026, voce dell'area operatore dopo Gestione pacchetti (<code>import-layout.html</code>, <code>#layout</code>; solo nel progetto madre, non nelle copie per i clienti). Crea una pagina di cartelli <strong>dal file Photoshop originale</strong> (<code>.psd</code>), invece che da un <code>.jpg</code> e dalla descrizione a voce di misure e colori. Il file si legge solo nel browser (libreria <code>ag-psd</code> da jsDelivr, eccezione voluta a cdnjs) e non si carica da nessuna parte.</p>
+  <ol class="passi">
+    <li>Nel <code>.psd</code>: foglio A4, i due cartelli come gruppi <code>cartello-superiore</code> e <code>cartello-inferiore</code>, i livelli con i nomi dei componenti del menu di sinistra (tabella sotto), i testi come livelli di testo modificabili.</li>
+    <li>A ogni conversione il file si rilegge da capo dal disco, anche se è lo stesso (in Chrome ed Edge): si legge sempre l'ultima versione salvata.</li>
+    <li>Le sezioni finite si richiudono a una riga con il riassunto; la freccia dorata sul divisorio le riapre.</li>
+    <li>[1] Si sceglie il file (trascinato o con un clic), [2] AVVIA CONVERSIONE: il registro dice documento, dpi, misure, linea di taglio, cartelli, livelli abbinati e da verificare, font trovati in <code>assets/fonts/</code>.</li>
+    <li>[3] Risultato a <strong>diagramma con nodi e fili</strong>. <strong>Pagina di partenza</strong>: il <code>.psd</code> collegato alle tre pagine di cartelli più simili (percentuale, barra, + campi in più nel file, − campi in meno) e alla base comune; il filo oro va alla partenza: di proposta la più simile sopra il 60%, altrimenti la <strong>Nuova Base Comune</strong>; con un clic su un'altra voce l'operatore cambia la partenza prima di procedere (elenco delle pagine in <code>MODELLI</code>). La stessa grafica nei due cartelli (es. il footer) è un elemento solo, con un solo png.</li>
+    <li><strong>Da verificare</strong>: se qualcosa è giallo o rosso, sopra la mappa un riquadro lo elenca con il motivo e cosa fare (es. correggi il nome del gruppo nel <code>.psd</code> e rifai l'import); un clic apre l'elemento.</li>
+    <li><strong>Mappa dei cartelli</strong>, una linguetta per cartello: il cartello con un numero su ogni elemento → i livelli del <code>.psd</code> → i quattro blocchi del pannello con i moduli comuni; fili verdi (abbinato), oro (da verificare), rossi tratteggiati (senza modulo). Passando sopra un pezzo il suo percorso si accende; un clic apre i valori dell'elemento (font, pt, spaziatura, interlinea, allineamento, colore, mm…).</li>
+    <li><strong>Allineamento dei due cartelli</strong>: devono coincidere, ognuno nella sua metà del foglio (claim, riquadro e logo nel riquadro, riga descrizione o doppio prezzo, prezzo finale, footer, margini; 0,3 mm). Il superiore con sopra, in trasparenza, l'inferiore, e accanto lo scarto di ogni riga. Con delle differenze, ALLINEA CARTELLI porta gli elementi del cartello inferiore sulla posizione del superiore (ANNULLA torna alle posizioni del file); per tenerli diversi, ▲ ▼ spostano l'impaginato di un cartello di 0,5 mm (0,1 mm con Maiuscolo), con AZZERA.</li>
+    <li><strong>Base comune</strong> (<code>modelli/cartello-base.html</code>): sola struttura standard, due cartelli di 210 × 148,5 mm con gli elementi in mm, segni <code>IMPORT:</code> dove si inseriscono i moduli, registrati in <code>CAMPI</code>.</li>
+    <li>GENERA LA PAGINA apre [4] PAGINA GENERATA: l'anteprima dal vivo, con il pannello che funziona, SOVRAPPONI IL .PSD e APRI A TUTTA FINESTRA. Un clic su un elemento lo seleziona e ▲ ▼ ◀ ▶ (o le frecce) lo spostano di 0,5 mm (0,1 con Maiuscolo), nei due cartelli o in uno solo; un clic in una zona vuota del cartello sposta tutto il cartello, con il foglio e la linea di taglio fermi. La scrive <code>modelli/import-genera.js</code> sulla Nuova Base Comune: elementi in mm come nel <code>.psd</code>, ancorati secondo l'allineamento, font, grandezze e colori del <code>.psd</code>, moduli comuni nel pannello.</li>
+    <li><strong>Da fare</strong> (prossimi passi): le scelte per il logo del <code>.psd</code> (logo ufficiale, grafica fissa o tutte e due), i temi speciali; il cambio del modulo abbinato o la richiesta di un modulo nuovo per un campo nuovo; la conferma con galleria e negozio. La pagina nasce come <strong>modulo import</strong> e, rivista insieme a codice, diventa modulo sorgente.</li>
+  </ol>
+  <table class="tipo">
+    <tr><th>Livello del .psd</th><th>Modulo comune (blocco del pannello)</th></tr>
+    <tr><td><code>riquadro-brand</code> (gruppo con la forma e <code>logo-brand</code>)</td><td>riquadro del brand; il logo: BRAND e Loghi Personali, <code>logos.js</code>, <code>loghi-personalizzati.js</code> (2)</td></tr>
+    <tr><td><code>logo-brand-2</code></td><td>+ AGGIUNGI 2° BRAND, <code>second-brand-toggle.js</code> (1)</td></tr>
+    <tr><td><code>claim-sx</code>, <code>claim-dx</code></td><td>Claim Sinistro e Destro (2)</td></tr>
+    <tr><td><code>descrizione</code> (<code>descrizione-1</code>, <code>-2</code>…)</td><td>TESTI PRONTI e Testo Libero, <code>testi-pronti.js</code> (3)</td></tr>
+    <tr><td><code>prezzo-originario</code>, <code>percentuale</code>, <code>prezzo-finale</code></td><td>Prezzo Originario, Sconto, Prezzo Finale, <code>campi-prezzo.js</code> (3)</td></tr>
+    <tr><td><code>sbarra</code></td><td>barra del prezzo originario, compare con lui (grafica della pagina)</td></tr>
+    <tr><td><code>footer</code>, <code>background-…</code>, <code>tratteggio-ritaglio</code></td><td>grafica fissa del cartello, fondo del foglio, linea di taglio</td></tr>
+    <tr><td>due cartelli; prezzo originario e descrizione</td><td>CARTELLO SUPERIORE / INFERIORE e COPIA SU ALTRO CARTELLO (1, 4); DOPPIA CIFRA / DESCRIZIONE ARTICOLO, <code>selettore-modalita-prezzo.js</code> (1)</td></tr>
+  </table>
+  <p>I nomi si riconoscono anche con piccoli errori (es. <code>riqaudro-brand</code>, segnalato da verificare); un livello fuori dai gruppi va al cartello della sua posizione. Le regole (nomi dei livelli, moduli, font, pagine del confronto, soglie, allineamento) stanno in <code>modelli/import-regole.json</code>, condiviso con la skill di Claude e con l'app SaaS: quando nasce un modulo comune per un campo nuovo o una pagina di cartelli, si aggiorna lì.</p>
 
   <!-- ================================================================ -->
   <h2 id="ce-negozi">Creation Engine · Associare ai negozi</h2>
@@ -798,7 +827,7 @@
       { id: 'parte-negozi', nome: 'Negozi', sezioni: { 'scheda-negozio': 'Scheda del negozio', negozi: 'Colori', esclusivi: 'Moduli esclusivi',
         loghi: 'Loghi ufficiali e personali' } },
       { id: 'parte-creation', nome: 'Creation Engine', sezioni: { 'ce-panoramica': 'Panoramica', 'ce-gallerie': 'Gallerie e moduli',
-        'ce-nuovo': 'Nuovo modulo', 'ce-negozi': 'Associare ai negozi', 'ce-gestione-negozi': 'Gestione negozi', 'ce-ghost': 'Ghost', 'ce-file': 'File e cartelle' } },
+        'ce-nuovo': 'Nuovo modulo', 'ce-import': 'Import layout', 'ce-negozi': 'Associare ai negozi', 'ce-gestione-negozi': 'Gestione negozi', 'ce-ghost': 'Ghost', 'ce-file': 'File e cartelle' } },
       { id: 'ricette', nome: 'Come si fa', sezioni: { 'nuova-pagina': 'Nuova pagina', 'aggiungi-tipo': 'Tipo di pagina in un negozio',
         'nuovo-negozio': 'Nuovo negozio', 'copia-cliente': 'Copia per un cliente', 'foto-guida': 'Foto della guida' } }
     ];

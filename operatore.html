@@ -2,9 +2,9 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261014-04"></script>
+  <script src="assets/js/negozi.js?v=20261018-01"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261014-04"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261018-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -205,6 +205,10 @@
     .frame.con-sezione[data-vista="negozi"] { width: min(1440px, 100%); }
     /* Gestione negozi: niente logo, per dare spazio al diagramma; il titolo con la sua grandezza e i suoi spazi di sempre */
     .frame[data-vista="negozi"] .brand { display: none; }
+    /* Import layout: solo le linee dorate sopra e sotto (niente bordi ai lati) e la cornice più larga, con meno margine ai
+       lati, così le anteprime del diagramma vengono più grandi */
+    .frame[data-vista="layout"], .frame[data-vista="layout"]::before { border-left-color: transparent; border-right-color: transparent; }
+    .frame.con-sezione[data-vista="layout"] { width: min(1500px, 100%); padding-left: 20px; padding-right: 20px; }
     /* monitor 16:9 grandi (1920 e 2560 px): un po' di spazio in più */
     @media (min-width: 1800px) { .frame.con-sezione[data-vista="negozi"] { width: min(1780px, 100%); } }
     @media (min-width: 2400px) { .frame.con-sezione[data-vista="negozi"] { width: min(2300px, 100%); } }
@@ -309,6 +313,7 @@
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
       <button class="voce" type="button" data-vista="negozi">Gestione negozi</button>
       <button class="voce" type="button" data-vista="pacchetti">Gestione pacchetti</button>
+      <button class="voce" type="button" data-vista="layout">Import layout</button>
       <button class="voce" type="button" data-vista="struttura">Controllo codice</button>
       <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
       <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
@@ -326,6 +331,9 @@
     </section>
     <section class="vista" data-vista="pacchetti" hidden>
       <iframe data-src="pacchetti.html?incorporata" title="Gestione pacchetti"></iframe>
+    </section>
+    <section class="vista" data-vista="layout" hidden>
+      <iframe data-src="import-layout.html?incorporata" title="Import layout"></iframe>
     </section>
     <section class="vista" data-vista="importa" hidden>
       <iframe data-src="logoimport.html?incorporata" title="Importa loghi ufficiali"></iframe>
@@ -379,7 +387,7 @@
 
   <script>
     // ----- Viste delle sezioni dentro la cornice -----
-    // #negozi, #struttura, #pacchetti, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    // #negozi, #struttura, #pacchetti, #layout, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
     // Cartella del progetto collegata per scrivere (Gestione pacchetti): la sceglie questa pagina, come Prepara copia, e
     // le sezioni nel riquadro la usano (window.parent.collegaProgetto); resta collegata finché la pagina è aperta
     window.progettoCollegato = null;
@@ -430,7 +438,7 @@
       return window.progettoCollegato;
     };
 
-    const VISTE = { negozi: 'Gestione negozi', struttura: 'Controllo codice', pacchetti: 'Gestione pacchetti', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    const VISTE = { negozi: 'Gestione negozi', struttura: 'Controllo codice', pacchetti: 'Gestione pacchetti', layout: 'Import layout', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -443,9 +451,10 @@
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
       // Gestione negozi e Controllo codice restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
-      menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
+      menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="layout"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
       // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
       delete VISTE.pacchetti;
+      delete VISTE.layout;
       delete VISTE.copia;
     }
 
@@ -764,7 +773,7 @@
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
       // non Controllo codice, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'Storecraft Aggiornamento.html'];
+      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html', 'Storecraft Aggiornamento.html'];
       riga('// radice: splash page e area operatore ridotta: gestione pagine e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
