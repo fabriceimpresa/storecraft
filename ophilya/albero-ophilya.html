@@ -53,28 +53,25 @@
       box-shadow: 0 2px 6px rgba(40, 34, 28, .24);
     }
 
-    /* Cartellini OPHILYA: misure da Photoshop a 300 dpi (1971,53 × 990,16 px). Due cartellini, ciascuno centrato
-       nella sua metà dell'A4, con la linea di taglio tratteggiata a metà foglio (come nei Paletti) */
+    /* Cartellino OPHILYA da 192 × 98 mm, piegato a soffietto come i cartelli in morsa di TEBE: fronte e retro
+       attaccati al centro dell'A4 (la piega cade a metà foglio); il retro è ruotato di 180° e, piegato, si legge dritto */
     .tree-sign {
       position: absolute;
-      left: 21.54mm;
-      width: 166.92mm;
-      height: 83.83mm;
+      left: 9mm;
+      width: 192mm;
+      height: 98mm;
       overflow: hidden;
       border: 0.25mm solid #8f8983;
       background: #fff;
       text-align: center;
     }
 
-    .tree-sign:nth-child(1) { top: 32.34mm; }
-    .tree-sign:nth-child(2) { top: 180.84mm; }
-
-    .cut-line {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      border-top: 0.2mm dashed #aaa;
+    .tree-sign:nth-child(1) { top: 50.5mm; }
+    .tree-sign:nth-child(2) {
+      top: 148.5mm;
+      /* la linea della piega è il bordo inferiore del fronte: niente doppia linea */
+      border-bottom: none;
+      transform: rotate(180deg);
     }
 
     .sign-description {
@@ -102,9 +99,10 @@
       white-space: nowrap;
     }
 
+    /* logo alla stessa distanza dal bordo alto di prima (fondo del logo a 63,11 mm dall'alto) */
     .sign-logo {
       position: absolute;
-      bottom: 20.72mm;
+      bottom: 34.89mm;
       left: 50%;
       /* logo OPHILYA oro, un poco più grande del logo TEBE di Albero Accessori */
       width: 31mm;
@@ -177,14 +175,11 @@
     <section class="controls" aria-labelledby="pageTitle">
       <h1 id="pageTitle">Albero Accessori</h1>
 
-      <!-- Blocco 1: selettori e pulsanti -->
-      <div class="panel-block">
-        <div id="cardSelector" data-selettore-cartello></div>
-      </div>
+      <!-- Blocco 1 omesso: fronte e retro dello stesso cartellino, niente CARTELLO SUPERIORE / INFERIORE -->
 
       <!-- Blocco 2 omesso: il cartellino non ha brand né claim -->
 
-      <!-- Blocco 3: campi del cartellino scelto (testo e prezzo) -->
+      <!-- Blocco 3: campi del cartellino (testo e prezzo, uguali su fronte e retro) -->
       <div class="panel-block">
         <div class="form-group">
           <label class="section-label" for="descPreset">TESTI PRONTI</label>
@@ -205,43 +200,36 @@
 
       <!-- Blocco 4: stampa -->
       <div class="panel-block">
-        <button class="btn-print" id="printBtn" type="button" onclick="window.print()">STAMPA CARTELLI</button>
+        <button class="btn-print" id="printBtn" type="button" onclick="window.print()">STAMPA CARTELLO</button>
       </div>
     </section>
   </aside>
 
   <main class="preview-area">
-    <div class="print-sheet" aria-label="Anteprima del foglio A4 con due cartelli">
-      <section class="tree-sign" aria-label="Cartello 1">
+    <div class="print-sheet" aria-label="Anteprima del foglio A4 con il cartellino, fronte e retro">
+      <section class="tree-sign" aria-label="Fronte">
         <div class="sign-description" id="descriptionPreview0">Foulard</div>
         <div class="sign-price" id="pricePreview0">€ 10,00</div>
         <img class="sign-logo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA">
       </section>
-      <section class="tree-sign" aria-label="Cartello 2">
+      <section class="tree-sign" aria-label="Retro">
         <div class="sign-description" id="descriptionPreview1">Foulard</div>
         <div class="sign-price" id="pricePreview1">€ 10,00</div>
         <img class="sign-logo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA">
       </section>
-      <div class="cut-line" aria-hidden="true"></div>
     </div>
   </main>
 
   <script src="../assets/js/testi-pronti.js?v=20261019-03"></script>
-  <script src="../assets/js/selettore.js?v=20261019-03"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261019-03"></script>
   <script>
-    const signs = [
-      { description: 'Foulard', price: '10,00' },
-      { description: 'Foulard', price: '10,00' }
-    ];
-    let activeSign = 0;
-
+    // Fronte e retro mostrano lo stesso testo e lo stesso prezzo (il retro è ruotato di 180° nel foglio).
     function updateActiveSign() {
-      const sign = signs[activeSign];
-      sign.description = document.getElementById('descriptionInput').value;
-      sign.price = document.getElementById('priceInput').value;
-      document.getElementById(`descriptionPreview${activeSign}`).textContent = sign.description;
-      document.getElementById(`pricePreview${activeSign}`).textContent = `€ ${sign.price}`;
+      const description = document.getElementById('descriptionInput').value;
+      const price = document.getElementById('priceInput').value;
+      for (const i of [0, 1]) {
+        document.getElementById(`descriptionPreview${i}`).textContent = description;
+        document.getElementById(`pricePreview${i}`).textContent = `€ ${price}`;
+      }
     }
 
     // Testi Pronti (lo stesso menu di Cartellini TEBE: articoli e testi promo) scrive il testo nel campo libero.
@@ -250,35 +238,20 @@
       if (preset) document.getElementById('descriptionInput').value = preset;
       updateActiveSign();
     }
-
-    function selectSign(index) {
-      updateActiveSign();
-      activeSign = index;
-      SelettoreCartello.setActive('selectCard' + (index + 1));
-      document.getElementById('descriptionInput').value = signs[index].description;
-      document.getElementById('descPreset').value = '';
-      document.getElementById('priceInput').value = signs[index].price;
-    }
-
-    // Selettore comune CARTELLO SUPERIORE / INFERIORE (selettore-cartello.js): 1 = cartellino in alto, 2 = in basso.
-    function selectCard(cardIndex) {
-      selectSign(cardIndex - 1);
-    }
   </script>
   <script src="../assets/js/cursore.js?v=20261019-03"></script>
   <script>
-    // Cursore: sopra il cartellino scelto con i pulsanti 1-2, sopra o di lato a testo e prezzo quando si usano i campi.
-    const activeTreeSign = () => document.querySelectorAll('.tree-sign')[activeSign];
+    // Cursore: sul fronte, sopra o di lato a testo e prezzo quando si usano i campi.
+    const frontSign = () => document.querySelector('.tree-sign');
 
     Cursore.create({
       panel: '.controls',
       watch: '.print-sheet',
-      scope: activeTreeSign,
-      obstacles: () => activeTreeSign()?.querySelectorAll('.sign-description, .sign-price, .sign-logo') || [],
+      scope: frontSign,
+      obstacles: () => frontSign()?.querySelectorAll('.sign-description, .sign-price, .sign-logo') || [],
       rules: [
-        { controls: '#selectCard1, #selectCard2', target: activeTreeSign, placement: 'above' },
-        { controls: '#descPreset, #descriptionInput', target: () => document.getElementById(`descriptionPreview${activeSign}`) },
-        { controls: '#priceInput', target: () => document.getElementById(`pricePreview${activeSign}`) }
+        { controls: '#descPreset, #descriptionInput', target: () => document.getElementById('descriptionPreview0') },
+        { controls: '#priceInput', target: () => document.getElementById('pricePreview0') }
       ]
     });
   </script>

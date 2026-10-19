@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 19 ottobre 2026 · versione 1.2.41</p>
+  <p class="aggiornamento">ultimo aggiornamento: 19 ottobre 2026 · versione 1.2.42</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -459,7 +459,7 @@
   <table class="tipo">
     <tr><th>Voce</th><th>Dettaglio</th></tr>
     <tr><td>Pagine</td><td>Luxury: <code>cartelli_semplici</code>, <code>cartelli_outlet</code>, <code>cartelli_outletmulti</code>, <code>cartelli_multireferenza</code>, <code>cartellopercentuale</code>, <code>cartelli_lastchance</code>, <code>cartello_banco</code> (Paletto 15x10), <code>magazzino</code> · TEBE: <code>cartelli_semplici</code>, <code>cartelli_sale</code>, <code>cartelli_brand</code>, <code>cartellopercentuale</code>, <code>cartelli_multiarticolo</code>, <code>albero</code>, <code>paletto</code>, <code>paletto18x12</code>, <code>cornici10x15</code>, <code>cornice21x27</code> · OPHILYA: <code>albero-ophilya</code>, <code>paletto-ophilya</code>, <code>paletto18x12-ophilya</code></td></tr>
-    <tr><td>Foglio</td><td>A4 verticale, <code>#printSheet</code> (o <code>.print-sheet</code>, <code>#a4Sheet</code>); due cartelli <code>#card1</code> / <code>#card2</code> (TEBE <code>#cardTop</code> / <code>#cardBottom</code>); con 1 CARTELLO solo il superiore. Cartelli in morsa di TEBE: le due metà sono fronte e retro dello stesso cartello</td></tr>
+    <tr><td>Foglio</td><td>A4 verticale, <code>#printSheet</code> (o <code>.print-sheet</code>, <code>#a4Sheet</code>); due cartelli <code>#card1</code> / <code>#card2</code> (TEBE <code>#cardTop</code> / <code>#cardBottom</code>); con 1 CARTELLO solo il superiore. Cartelli in morsa di TEBE: le due metà sono fronte e retro dello stesso cartello. Albero di OPHILYA: cartellino da 192 × 98 mm piegato a soffietto, fronte e retro attaccati al centro del foglio, il retro ruotato di 180°</td></tr>
     <tr><td>Pannello</td><td>i quattro blocchi: 1 selettori (CARTELLO SUPERIORE / INFERIORE, modalità, numero di articoli, + AGGIUNGI 2° BRAND) · 2 BRAND, Loghi Personali, claim · 3 TESTI PRONTI, Testo Libero, prezzi · 4 COPIA SU ALTRO CARTELLO, Impostazioni di Stampa, STAMPA CARTELLI</td></tr>
     <tr><td>Moduli</td><td><code>pannello.css</code>, <code>selettore.js</code> e selettori pronti, <code>copia-cartello.js</code>, <code>second-brand-toggle.js</code>, <code>testi-pronti.js</code>, <code>fasce-prezzo.js</code>, <code>campi-prezzo.js</code>, <code>logos.js</code> + <code>elenco.js</code> del negozio, <code>loghi-personalizzati.js</code>, <code>print-logo-colors.js</code>, <code>cursore.js</code>, <code>strumenti-stampa.js</code>, <code>stampa-ios.js</code>, <code>responsive.js</code> (<code>data-layout="cartelli"</code>), <code>madeinitaly.js</code></td></tr>
     <tr><td>Stato</td><td>un oggetto per cartello (<code>cards[1]</code>, <code>cards[2]</code>): un solo gruppo di campi modifica il cartello scelto</td></tr>
