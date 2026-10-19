@@ -132,7 +132,7 @@
     "distanzaNomi": 2,
     "lunghezzaMinima": 5,
     "font": {
-      "regola": "Nome PostScript del font nel .psd → file in assets/fonts/; un font non elencato si cerca come <nome>.otf e <nome>.ttf.",
+      "regola": "Nome PostScript del font nel .psd → file in assets/fonts/; un font non elencato si cerca come <nome>.otf e <nome>.ttf. catalogo: i font del progetto che si possono scegliere modificando un testo (nome, file in assets/fonts/, etichetta del menu); quando si aggiunge un font in assets/fonts/, si aggiunge qui.",
       "elenco": {
         "BodoniStd": "BodoniStd.otf",
         "BodoniStd-Italic": "BodoniStd-Italic.otf",
@@ -140,7 +140,79 @@
         "Space-Invaders": "space_invaders.ttf",
         "ArialMT": "Arial.ttf",
         "Arial-BoldMT": "Arial Bold.ttf"
-      }
+      },
+      "catalogo": [
+        {
+          "nome": "BodoniStd",
+          "file": "BodoniStd.otf",
+          "etichetta": "Bodoni Std Roman"
+        },
+        {
+          "nome": "BodoniStd-Italic",
+          "file": "BodoniStd-Italic.otf",
+          "etichetta": "Bodoni Std Italic"
+        },
+        {
+          "nome": "BodoniStd-BoldItalic",
+          "file": "BodoniStd-BoldItalic.otf",
+          "etichetta": "Bodoni Std Bold Italic"
+        },
+        {
+          "nome": "ArialMT",
+          "file": "Arial.ttf",
+          "etichetta": "Arial"
+        },
+        {
+          "nome": "Arial-BoldMT",
+          "file": "Arial Bold.ttf",
+          "etichetta": "Arial Bold"
+        },
+        {
+          "nome": "Arial-ItalicMT",
+          "file": "Arial Italic.ttf",
+          "etichetta": "Arial Italic"
+        },
+        {
+          "nome": "Arial-BoldItalicMT",
+          "file": "Arial Bold Italic.ttf",
+          "etichetta": "Arial Bold Italic"
+        },
+        {
+          "nome": "Castoro-Regular",
+          "file": "Castoro-Regular.ttf",
+          "etichetta": "Castoro"
+        },
+        {
+          "nome": "Castoro-Italic",
+          "file": "Castoro-Italic.ttf",
+          "etichetta": "Castoro Italic"
+        },
+        {
+          "nome": "FranklinGothic",
+          "file": "Franklin Gothic.ttf",
+          "etichetta": "Franklin Gothic"
+        },
+        {
+          "nome": "MachineStd-Medium",
+          "file": "MachineStd-Medium.otf",
+          "etichetta": "Machine Std Medium"
+        },
+        {
+          "nome": "MachineStd-Bold",
+          "file": "MachineStd-Bold.otf",
+          "etichetta": "Machine Std Bold"
+        },
+        {
+          "nome": "NevisBold",
+          "file": "Nevis Bold.ttf",
+          "etichetta": "Nevis Bold"
+        },
+        {
+          "nome": "Space-Invaders",
+          "file": "space_invaders.ttf",
+          "etichetta": "Space Invaders"
+        }
+      ]
     }
   },
   "stessaGrafica": {

@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.32 2026';
+  const VERSIONE = 'V 1.2.33 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -439,7 +439,7 @@
   function logoNegozio() {
     if (!dati.logo) return null;
     return el('div', { class: 'store-hero' },
-      el('img', { class: 'store-logo', src: risorsa(dati.logo.src), alt: dati.logo.alt || Negozi.corrente().nome,
+      el('img', { class: `store-logo${Negozi.corrente()?.logoAColori || dati.logo.aColori ? ' a-colori' : ''}`, src: risorsa(dati.logo.src), alt: dati.logo.alt || Negozi.corrente().nome,
         style: dati.logo.larghezza ? `--store-logo-larghezza: ${dati.logo.larghezza}px` : false }),
       dati.identita ? el('div', { class: 'store-identity' },
         el('strong', { text: dati.identita[0] }), dati.identita[1] ? el('span', { text: dati.identita[1] }) : null) : null);

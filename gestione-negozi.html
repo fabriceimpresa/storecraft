@@ -2,17 +2,21 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261018-01"></script>
+  <script src="assets/js/negozi.js?v=20261019-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione negozi</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261018-01"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
   <!-- scrivere nella dashboard del negozio (ghost, ordine, copia ed eliminazione dei cloni) con la cartella del progetto collegata -->
-  <script src="assets/js/pacchetti-associa.js?v=20261018-01"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261019-01"></script>
   <!-- MODULI (accanto ai negozi): il catalogo dei moduli, letto dai pacchetti di Gestione pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261018-01"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261018-01"></script>
+  <script src="assets/js/pacchetti.js?v=20261019-01"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261019-01"></script>
+  <!-- + NUOVO NEGOZIO: il percorso a domande per aprire un negozio clone, con l'anteprima dal vivo della sua dashboard -->
+  <link rel="stylesheet" href="assets/css/nuovo-negozio.css?v=20261019-01">
+  <script src="assets/js/logo-negozio.js?v=20261019-01"></script>
+  <script src="assets/js/nuovo-negozio.js?v=20261019-01"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione negozi (area operatore). Per il negozio scelto con le insegne, un diagramma orizzontale: il negozio, la sua
@@ -395,6 +399,88 @@
     /* divisorio tra il catalogo e i negozi: // come nel marchio STORE // CRAFT, nell'oro scuro della cornice */
     .divisore { flex: none; color: var(--oro-scuro); font: 400 26px/1 'Cinzel', serif; letter-spacing: -.04em; user-select: none; }
     /* insegna del catalogo: il logo STORE // CRAFT (bianco e tenue come le altre insegne) e sotto, piccolo, CATALOGO */
+    /* negozio nuovo ancora con il logo di STORE // CRAFT (nessun logo suo): come l'insegna del catalogo, il logo e sotto il
+       nome del negozio in Cinzel */
+    .insegna-predefinita { height: auto; flex-direction: column; justify-content: center; gap: 5px; }
+    .insegna-predefinita img { max-height: 34px; }
+    .insegna-predefinita span { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; opacity: .45;
+      font: 500 10px/1 'Cinzel', serif; letter-spacing: .16em; margin-right: -.16em; transition: opacity .2s; }
+    .insegna-predefinita:hover span, .insegna-predefinita:focus-visible span, .insegna-predefinita[aria-selected="true"] span { opacity: .9; }
+    /* con tanti negozi le insegne si rimpiccioliscono per stare su una riga (--scala-insegne, da adattaInsegne) */
+    .insegne { --scala-insegne: 1; }
+    .insegne .insegna:not(.insegna-moduli) img { width: calc(var(--larghezza-insegna, 112px) * var(--scala-insegne)) !important; }
+    .insegne .insegna-predefinita span { font-size: calc(10px * max(var(--scala-insegne), .8)); }
+    /* + AGGIUNGI MODULO: pulsante tondo dorato in alto a sinistra del primo widget di una galleria; al passaggio del
+       mouse si riempie d'oro, il + gira e compare «+ aggiungi modulo» */
+    .aggiungi-modulo { position: absolute; top: -9px; left: -9px; z-index: 6; display: grid; place-items: center; width: 24px; height: 24px; padding: 0;
+      border: 1px solid var(--oro); border-radius: 50%; background: var(--bg); color: var(--oro); cursor: pointer;
+      box-shadow: 0 0 0 3px var(--bg); transition: background .22s, color .22s, transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .22s; }
+    .aggiungi-modulo svg { width: 12px; height: 12px; transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+    .aggiungi-modulo:hover, .aggiungi-modulo:focus-visible { background: var(--oro); color: #121110; transform: scale(1.15); outline: none;
+      box-shadow: 0 0 0 3px var(--bg), 0 0 14px rgba(212, 163, 115, .55); animation: aggiungi-pulsa 1.2s ease-in-out infinite; }
+    .aggiungi-modulo:hover svg, .aggiungi-modulo:focus-visible svg { transform: rotate(90deg); }
+    .aggiungi-modulo::after { content: '+ aggiungi modulo'; position: absolute; left: calc(100% + 8px); top: 50%; transform: translate(-4px, -50%); padding: 3px 9px;
+      background: #0a0908; border: 1px solid var(--oro); color: var(--oro-chiaro); font: 400 10px var(--mono); letter-spacing: .1em; white-space: nowrap;
+      text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; }
+    .aggiungi-modulo:hover::after, .aggiungi-modulo:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
+    @keyframes aggiungi-pulsa { 50% { box-shadow: 0 0 0 3px var(--bg), 0 0 22px rgba(212, 163, 115, .8); } }
+    @media (prefers-reduced-motion: reduce) { .aggiungi-modulo, .aggiungi-modulo svg { transition: none; animation: none !important; } }
+    /* la finestra per scegliere il modulo: il catalogo dei moduli adatti alla galleria, in un carosello */
+    .scegli-modulo { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 16px; background: rgba(5, 5, 5, .72); }
+    .scegli-modulo .finestra { box-sizing: border-box; width: min(980px, 100%); padding: 22px 24px 20px; background: var(--bg); border: 1px solid var(--oro-scuro);
+      box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px rgba(143, 106, 31, .45), 0 20px 50px rgba(0, 0, 0, .6); animation: scegli-entra .28s cubic-bezier(.2, .8, .2, 1); }
+    @keyframes scegli-entra { from { opacity: 0; transform: translateY(10px) scale(.98); } }
+    .scegli-modulo h3 { margin: 0 0 4px; color: var(--oro-chiaro); font: 500 15px 'Cinzel', serif; letter-spacing: .24em; text-transform: uppercase; }
+    .scegli-modulo .sotto { margin: 0 0 14px; color: var(--tenue); font-size: 11.5px; }
+    .scegli-modulo .filtri { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .scegli-modulo .filtri button { padding: 4px 11px; background: none; border: 1px solid var(--bordo); border-radius: 12px; color: var(--tenue); font: 400 10.5px var(--mono);
+      letter-spacing: .06em; cursor: pointer; }
+    .scegli-modulo .filtri button[aria-pressed="true"] { border-color: var(--oro); color: var(--oro-chiaro); background: rgba(212, 163, 115, .1); }
+    .scegli-modulo .striscia { position: relative; display: flex; align-items: center; gap: 8px; }
+    .scegli-modulo .nastro-scelta { display: flex; gap: 12px; flex: 1; min-width: 0; padding: 6px 2px 10px; overflow-x: auto; scroll-snap-type: x mandatory;
+      scrollbar-width: thin; scrollbar-color: var(--oro) #1a1816; }
+    .scegli-modulo .freccia-scelta { flex: none; width: 30px; height: 30px; border: 1px solid var(--oro); border-radius: 50%; background: none; color: var(--oro); cursor: pointer; }
+    .scegli-modulo .freccia-scelta:hover { background: var(--oro); color: #121110; }
+    .scelta-modulo { flex: none; display: flex; flex-direction: column; gap: 6px; width: 168px; padding: 9px; text-align: left; scroll-snap-align: start; cursor: pointer;
+      background: #0a0908; border: 1px solid var(--bordo); border-radius: 6px; color: var(--testo); font: inherit; transition: border-color .2s, transform .2s, box-shadow .2s; }
+    .scelta-modulo:hover:not(:disabled) { border-color: rgba(212, 163, 115, .7); transform: translateY(-2px); }
+    .scelta-modulo[aria-pressed="true"] { border-color: var(--oro); box-shadow: 0 0 0 1px var(--oro), 0 0 16px rgba(212, 163, 115, .3); }
+    .scelta-modulo.dorata { background: radial-gradient(circle at 50% 0, #241d14 0%, #0a0908 80%); border-color: rgba(212, 163, 115, .55); }
+    .scelta-modulo:disabled { opacity: .4; cursor: default; }
+    .scelta-modulo .anteprima-scelta { aspect-ratio: 16 / 9; display: grid; place-items: center; overflow: hidden; background: #121110; border-radius: 3px; }
+    .scelta-modulo .anteprima-scelta img { max-width: 100%; max-height: 100%; }
+    .scelta-modulo b { overflow: hidden; color: var(--oro-chiaro); font: 600 11px 'Cinzel', serif; letter-spacing: .06em; text-overflow: ellipsis; white-space: nowrap; }
+    .scelta-modulo small { color: var(--tenue); font-size: 9.5px; letter-spacing: .04em; line-height: 1.4; }
+    .scelta-modulo .gia { color: var(--verde); }
+    .scegli-modulo .vuota-scelta { padding: 26px 0; color: var(--tenue); font-size: 12px; }
+    .scegli-modulo .piede { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--bordo); }
+    .scegli-modulo .piede .nota-scelta { flex: 1; color: var(--tenue); font-size: 11px; line-height: 1.5; }
+    .scegli-modulo .piede button { padding: 8px 18px; font: 400 11px var(--mono); letter-spacing: .1em; text-transform: lowercase; cursor: pointer; }
+    .scegli-modulo .annulla-scelta { background: none; border: 1px solid var(--bordo); color: var(--tenue); }
+    .scegli-modulo .conferma-scelta { background: var(--oro); border: 1px solid var(--oro); color: #121110; }
+    .scegli-modulo .conferma-scelta:disabled { opacity: .35; cursor: default; }
+    /* + NUOVO NEGOZIO, dopo le insegne dei negozi */
+    .insegna-nuovo { flex: none; height: 34px; padding: 0 14px; border: 1px dashed rgba(212, 163, 115, .55); border-radius: 17px; background: none;
+      color: var(--oro); font: 400 11px var(--mono); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: all .2s; }
+    .insegna-nuovo:hover, .insegna-nuovo:focus-visible { border-style: solid; border-color: var(--oro); background: rgba(212, 163, 115, .1); color: var(--oro-chiaro); outline: none; }
+    /* negozio clone: etichetta CLONE azzurra sul riquadro del negozio e, con il lucchetto aperto, i suoi comandi */
+    .nodo-negozio.negozio-clone { border-color: var(--clone); }
+    .tag-negozio { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 1px 8px; background: var(--bg); border: 1px solid var(--clone);
+      color: var(--clone); font-size: 9px; letter-spacing: .18em; }
+    .comandi-negozio { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; width: 100%; }
+    .comandi-negozio button { padding: 6px 8px; background: none; border: 1px solid var(--bordo); color: var(--tenue); font: 400 10px var(--mono);
+      letter-spacing: .1em; text-transform: lowercase; cursor: pointer; }
+    .comandi-negozio button:hover:not(:disabled) { border-color: var(--clone); color: var(--clone); }
+    .comandi-negozio button.rosso:hover:not(:disabled) { border-color: var(--rosso); color: var(--rosso); }
+    .comandi-negozio button:disabled { opacity: .4; cursor: default; }
+    .modifica-negozio { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding: 16px; background: rgba(5, 5, 5, .7); }
+    .modifica-negozio form { width: min(440px, 100%); padding: 22px; background: var(--bg); border: 1px solid var(--clone); box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px rgba(95, 179, 201, .4); }
+    .modifica-negozio h3 { margin: 0 0 14px; color: var(--clone); font: 500 14px 'Cinzel', serif; letter-spacing: .2em; text-transform: uppercase; }
+    .modifica-negozio label { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; color: var(--tenue); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+    .modifica-negozio input[type="text"] { padding: 8px 10px; background: #0a0908; border: 1px solid var(--bordo); color: var(--testo); font: 400 12.5px var(--mono); text-transform: uppercase; }
+    .modifica-negozio input:focus { outline: none; border-color: var(--clone); }
+    .modifica-negozio .comandi { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+    .vista-nuovo[hidden], .barra[hidden], .insegne[hidden] { display: none !important; }
     .insegna-moduli { height: auto; flex-direction: column; justify-content: center; gap: 5px; color: #fff; opacity: .55; transition: opacity .2s; }
     /* logo e scritta in oro, come il nodo CATALOGO del diagramma (logo nell'oro del marchio, CATALOGO in Cinzel oro chiaro) */
     .insegna-moduli img { max-height: 46px; opacity: 1;
@@ -431,6 +517,14 @@
     .nodo-regola:hover, .nodo-regola:focus-visible { border-color: var(--oro); outline: none; }
     .nodo-regola[aria-pressed="true"] { border-color: var(--oro); background: radial-gradient(circle at 50% 0, #241d14 0%, #0a0908 85%);
       box-shadow: 0 0 0 1px rgba(212, 163, 115, .25), 0 0 10px rgba(212, 163, 115, .2); }
+    /* catalogo: le aree piccole sopra e sotto quella scelta, con il logo del negozio piccolo e bianco */
+    .nodo-area-piccola { width: 116px; padding: 7px 8px 6px; }
+    .nodo-area-piccola .area-logo { max-width: 64px; max-height: 13px; margin-bottom: 3px; }
+    .nodo-area-piccola.area-cloni { border-color: rgba(95, 179, 201, .5); }
+    .nodo-area-piccola.area-cloni span { color: var(--clone); }
+    .colonna-catalogo .indice-nodo.area-cloni > .nodo-area { border-color: var(--clone); background: radial-gradient(circle at 50% 0, #142328 0%, #0a0908 85%); }
+    .colonna-catalogo .indice-nodo.area-cloni > .nodo-area .area-nome { color: var(--clone); }
+    .colonna-catalogo .indice-nodo.area-cloni > .maniglia { border-color: var(--clone); color: var(--clone); }
     html.incorporata .nodo-regola { background: #0e0d0c; }
     html.incorporata .nodo-regola[aria-pressed="true"] { background: radial-gradient(circle at 50% 0, #241d14 0%, #0e0d0c 85%); }
     /* il diagramma della regola: nodo dorato del gruppo, un ramo per file (nome del file in mono) */
@@ -749,6 +843,8 @@
   <div class="diagramma" id="diagramma" aria-label="Diagramma del negozio"></div>
   <!-- in fondo al diagramma: torna all'area operatore (dentro la pagina operatore chiude la sezione, come ← area operatore) -->
   <div class="indietro-fondo" id="indietro-fondo"><button class="comando" type="button" id="torna-operatore">← torna all'area operatore</button></div>
+  <!-- + NUOVO NEGOZIO: il percorso a domande (assets/js/nuovo-negozio.js) al posto del diagramma -->
+  <section class="vista-nuovo" id="vista-nuovo" hidden aria-label="Apri un nuovo negozio"></section>
   <section class="vista-modulo" id="vista-modulo" hidden aria-label="Scheda del modulo">
     <button class="torna-diagramma" type="button" id="torna-diagramma">← diagramma del negozio</button>
     <div id="modulo"></div>
@@ -860,7 +956,7 @@
       let cartella = progetto;
       const parti = percorso.split('/');
       for (const parte of parti.slice(0, -1)) cartella = await cartella.getDirectoryHandle(parte);
-      return (await (await cartella.getFileHandle(parti.at(-1))).getFile()).text();
+      return (await Associa.istantanea(await cartella.getFileHandle(parti.at(-1)))).text();
     }
     const risposta = await fetch(percorso, { cache: 'no-store' });
     if (!risposta.ok) throw new Error(`${percorso}: ${risposta.status}`);
@@ -953,14 +1049,63 @@
       const logo = nodo('img');
       logo.src = `assets/${scheda.logoSplash}`;
       logo.alt = scheda.nome || id;
-      logo.style.width = `${Math.round((scheda.logoSplashLarghezza || 140) * .8)}px`;
+      // la larghezza di partenza; con tanti negozi si rimpicciolisce (adattaInsegne)
+      tasto.style.setProperty('--larghezza-insegna', `${Math.round((scheda.logoSplashLarghezza || 140) * .8)}px`);
       tasto.append(logo);
+      // ancora con il logo di STORE // CRAFT (negozio nuovo senza logo suo): sotto il nome del negozio, come il catalogo
+      if (scheda.logoSplash === 'img/storecraftlogo.png') {
+        tasto.classList.add('insegna-predefinita');
+        tasto.style.setProperty('--larghezza-insegna', '78px');
+        logo.alt = '';
+        tasto.setAttribute('aria-label', scheda.nome || id);
+        tasto.append(nodo('span', '', scheda.nome || id));
+      }
     } else tasto.textContent = scheda.nome || id;
     tasto.addEventListener('mouseenter', () => sposta(tasto));
     tasto.addEventListener('focus', () => sposta(tasto));
     tasto.addEventListener('click', () => scegli(id));
     insegne.insertBefore(tasto, segnalino);
   });
+  // + NUOVO NEGOZIO: dopo le insegne dei negozi; apre il percorso a domande al posto del diagramma
+  {
+    const tasto = nodo('button', 'insegna-nuovo', '+ nuovo negozio');
+    tasto.type = 'button';
+    tasto.title = 'apri un nuovo negozio: tipo, nome, logo, aspetto e gallerie, con l\'anteprima dal vivo';
+    tasto.addEventListener('click', apriNuovo);
+    insegne.insertBefore(tasto, segnalino);
+  }
+  function apriNuovo() {
+    chiudiModulo(false);
+    $('diagramma').hidden = true;
+    $('indietro-fondo').hidden = true;
+    document.querySelector('.barra').hidden = true;
+    insegne.hidden = true;
+    const vista = $('vista-nuovo');
+    vista.hidden = false;
+    avvisaOperatore('diagramma dei negozi');
+    NuovoNegozio.apri({
+      contenitore: vista,
+      collega,
+      alChiudi: chiudiNuovo,
+      // aperto il negozio: la pagina si rilegge (l'elenco dei negozi installati è cambiato) e mostra il suo diagramma
+      alFatto: nuovo => {
+        try { sessionStorage.setItem('storecraft_gestione_negozio', nuovo); } catch { /* si riparte dal primo */ }
+        location.reload();
+      }
+    });
+    window.scrollTo(0, 0);
+  }
+  function chiudiNuovo() {
+    const vista = $('vista-nuovo');
+    if (vista.hidden) return;
+    vista.hidden = true;
+    vista.replaceChildren();
+    avvisaOperatore(null);
+    $('diagramma').hidden = false;
+    $('indietro-fondo').hidden = false;
+    document.querySelector('.barra').hidden = false;
+    insegne.hidden = false;
+  }
   // Catalogo dei moduli: per primo, prima dei negozi, staccato da //
   {
     const divisore = nodo('span', 'divisore', '//');
@@ -981,6 +1126,21 @@
     tasto.addEventListener('click', () => scegli(MODULI));
     insegne.prepend(tasto, divisore);
   }
+  // Con tanti negozi le insegne devono stare su una riga: se non entrano, i loghi dei negozi si rimpiccioliscono quanto
+  // serve (non sotto la metà) e lo spazio tra loro si stringe
+  function adattaInsegne() {
+    insegne.style.setProperty('--scala-insegne', '1');
+    insegne.style.gap = '';
+    const disponibile = insegne.clientWidth;
+    const usato = () => [...insegne.children].filter(e => !e.classList.contains('segnalino')).reduce((t, e) => t + e.offsetWidth, 0)
+      + parseFloat(getComputedStyle(insegne).columnGap || 0) * (insegne.children.length - 2);
+    if (usato() <= disponibile) return;
+    insegne.style.gap = '20px';
+    for (let scala = .95; scala >= .5 && usato() > disponibile; scala -= .05) insegne.style.setProperty('--scala-insegne', scala.toFixed(2));
+    if (scelta()) sposta(scelta());
+  }
+  window.addEventListener('resize', adattaInsegne);
+  window.addEventListener('load', adattaInsegne);
   insegne.addEventListener('keydown', evento => {
     const tasti = [...insegne.querySelectorAll('.insegna')];
     const ora = tasti.indexOf(document.activeElement);
@@ -1298,10 +1458,20 @@
   // l'ultima voce
   let rotellaFerma = 0;
   window.addEventListener('wheel', evento => {
-    if (negozioScelto === MODULI || !negozi[negozioScelto] || !$('vista-modulo').hidden) return;
-    if (!evento.target.closest?.('.colonna-index')) return;
+    if (!$('vista-modulo').hidden || !evento.target.closest?.('.colonna-index')) return;
     const verso = Math.sign(evento.deltaY);
     if (!verso) return;
+    // nel catalogo: da un'area all'altra
+    if (negozioScelto === MODULI) {
+      const dove = areeCatalogo.indexOf(areaCatalogo ?? areeCatalogo[0]) + verso;
+      if (dove < 0 || dove >= areeCatalogo.length) return;
+      evento.preventDefault();
+      if (colonnaInCambio || Date.now() < rotellaFerma) return;
+      rotellaFerma = Date.now() + 260;
+      scegliArea(areeCatalogo[dove], true);
+      return;
+    }
+    if (!negozi[negozioScelto]) return;
     const id = negozioScelto;
     const voci = [null, ...regoleDelNegozio(id).map(gruppo => gruppo.id)];
     const dove = voci.indexOf(regoleAperte[id] ?? null) + verso;
@@ -1446,6 +1616,13 @@
       negozio.append(logo);
     }
     negozio.append(nodo('span', 'nodo-nome', scheda.nome || id), nodo('span', 'nodo-sotto', scheda.indirizzo || ''));
+    // negozio clone (creato con + NUOVO NEGOZIO): etichetta CLONE e, con il lucchetto aperto, modifica, rendi sorgente, elimina
+    if (scheda.clone) {
+      negozio.classList.add('negozio-clone');
+      const tag = nodo('span', 'tag-negozio', 'CLONE');
+      tag.title = `negozio clone${scheda.modello ? ` (modello ${scheda.modello})` : ''}: si modifica, si rende sorgente e si cancella da qui, con il lucchetto aperto`;
+      negozio.append(tag);
+    }
     // la dashboard
     const dashboard = nodo('a', 'nodo nodo-pagina');
     dashboard.href = `${id}/index.html`;
@@ -1505,6 +1682,7 @@
     // sotto il riquadro del negozio i quadratini del tema e dell'aspetto dei widget
     const colonnaNegozio = nodo('div', 'colonna-negozio');
     colonnaNegozio.append(negozio, selettoriStile());
+    if (scheda.clone && modifica) colonnaNegozio.append(comandiNegozio(id, scheda));
     diagramma.append(colonnaNegozio, fili[0], colonna, fili[1], aree);
     // le voci sopra e sotto escono dalla colonna (posizione assoluta): il diagramma tiene lo spazio perché la voce al
     // centro resti all'altezza dei fili
@@ -1520,6 +1698,90 @@
     totali = `${scheda.nome || id} · ${dati.sezioni.length} gallerie · ${tutte.length} moduli · ${quanti('attivo')} attivi`
       + `${quanti('ghost') ? ` · ${quanti('ghost')} in ghost` : ''}${quanti('arrivo') ? ` · ${quanti('arrivo')} in arrivo` : ''}${nCloni ? ` · ${nCloni} ${nCloni === 1 ? 'clone' : 'cloni'}` : ''}`;
     if (!attesaEsito && $('stato').className !== 'lavora') mostraTotali();
+  }
+
+  // ----- Negozio clone: modifica (nome, indirizzo, indirizzo breve, descrizione breve, logo; la sigla segue il nome), rendi sorgente, elimina (con doppia conferma:
+  // si porta via la cartella del negozio con le sue pagine, le sue risorse, la scheda e la voce in installati.js) -----
+  function comandiNegozio(id, scheda) {
+    const box = nodo('div', 'comandi-negozio');
+    const comando = (testo, classe, azione) => { const b = nodo('button', classe, testo); b.type = 'button'; b.disabled = !SCRIVIBILE; b.addEventListener('click', azione); box.append(b); };
+    const pronto = async () => {
+      try { await collega(); return true; } catch (errore) {
+        esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+        return false;
+      }
+    };
+    comando('modifica negozio', '', async () => { if (await pronto()) modificaNegozio(id, scheda); });
+    comando('rendi sorgente', '', async () => {
+      if (!await pronto()) return;
+      if (!window.confirm(`Rendere sorgente ${scheda.nome}?
+
+Da negozio clone diventa negozio sorgente, come Luxury Outlet e TEBE: da qui non si modifica e non si cancella più, solo dal codice.`)) return;
+      try {
+        await Associa.rendiSorgenteNegozio(progetto, { negozio: id });
+        esito(`${scheda.nome} ora è un negozio sorgente. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
+        ricarica(id);
+      } catch (errore) { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+    });
+    comando('✕ elimina negozio', 'rosso', async () => {
+      if (!await pronto()) return;
+      if (!window.confirm(`Eliminare il negozio ${scheda.nome}?
+
+Si cancellano la cartella ${id}/ con tutte le sue pagine (anche i moduli clone), le sue risorse (assets/img, logos, thumbnail… /${id}/), la scheda e la voce in installati.js.`)) return;
+      if (!window.confirm(`Ultima conferma: ${scheda.nome} sparisce dalla splash page, dai menu e da Gestione negozi, con tutti i suoi file.
+
+Non si può annullare (solo dal commit precedente). Eliminarlo definitivamente?`)) return;
+      try {
+        await Associa.eliminaNegozio(progetto, { negozio: id, avviso: esito });
+        esito(`${scheda.nome} eliminato. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
+        ricarica(null);
+      } catch (errore) { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+    });
+    return box;
+  }
+  // la pagina si rilegge (schede e negozi installati sono cambiati), sul negozio indicato
+  function ricarica(id) {
+    try { if (id) sessionStorage.setItem('storecraft_gestione_negozio', id); else sessionStorage.removeItem('storecraft_gestione_negozio'); } catch { /* si riparte dal primo */ }
+    setTimeout(() => location.reload(), 900);
+  }
+  function modificaNegozio(id, scheda) {
+    const velo = nodo('div', 'modifica-negozio');
+    const form = nodo('form');
+    form.append(nodo('h3', '', `modifica ${scheda.nome}`));
+    const identita = negozi[id]?.dati.identita || [];
+    const campo = (etichetta, valore, massimo) => {
+      const l = nodo('label', '', etichetta);
+      const input = nodo('input'); input.type = 'text'; input.value = valore || ''; input.maxLength = massimo;
+      l.append(input); form.append(l); return input;
+    };
+    const nome = campo('nome', scheda.nome, 40), indirizzo = campo('indirizzo', scheda.indirizzo, 40),
+      breve = campo('indirizzo breve (menu dei negozi)', scheda.indirizzoBreve, 24), descrizione = campo('descrizione breve (banner della dashboard)', identita[1], 50);
+    const l = nodo('label', '', 'logo (png, svg, webp, jpg: vuoto lascia quello di adesso)');
+    const logo = nodo('input'); logo.type = 'file'; logo.accept = 'image/png,image/svg+xml,image/webp,image/jpeg';
+    l.append(logo); form.append(l);
+    const comandi = nodo('div', 'comandi');
+    const annulla = nodo('button', 'comando', 'annulla'); annulla.type = 'button';
+    const salva = nodo('button', 'comando', 'salva'); salva.type = 'submit';
+    comandi.append(annulla, salva); form.append(comandi);
+    velo.append(form);
+    document.body.append(velo);
+    nome.focus();
+    const chiudi = () => velo.remove();
+    annulla.addEventListener('click', chiudi);
+    velo.addEventListener('click', e => { if (e.target === velo) chiudi(); });
+    velo.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); chiudi(); } });
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!nome.value.trim()) { nome.focus(); return; }
+      salva.disabled = true;
+      try {
+        await Associa.modificaNegozio(progetto, { negozio: id, nome: nome.value.trim().toUpperCase(),
+          indirizzo: indirizzo.value.trim().toUpperCase(), indirizzoBreve: breve.value.trim().toUpperCase(), descrizione: descrizione.value.trim().toUpperCase(), logoFile: logo.files[0] || null, logoNome: logo.files[0]?.name || '' });
+        chiudi();
+        esito(`${nome.value.trim().toUpperCase()} aggiornato. ricorda il commit per pubblicarlo. rileggo…`, 'ok');
+        ricarica(id);
+      } catch (errore) { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); salva.disabled = false; }
+    });
   }
 
   // ----- Rami che si chiudono e si aprono (maniglia sul raccordo, un cerchio con la linea orizzontale da aperto e verticale da chiuso, o un clic sul nodo); chiusi mostrano un riassunto
@@ -1793,12 +2055,155 @@
     });
     if (!schede.length) nastro.append(nodo('span', 'vuota', 'nessun modulo'));
     frecce(carosello, nastro, scorrimento);
+    // + aggiungi modulo, in alto a sinistra del primo widget (cartelli, promo e cartellini: le gallerie che si associano)
+    if (['cartelli', 'promo', 'cartellini'].includes(sezione.tipo)) {
+      const piu = nodo('button', 'aggiungi-modulo');
+      piu.type = 'button';
+      piu.setAttribute('aria-label', `Aggiungi un modulo a ${sezione.titolo.split(' // ')[0]}`);
+      piu.insertAdjacentHTML('afterbegin', '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>');
+      piu.addEventListener('click', evento => { evento.stopPropagation(); scegliModulo(id, sezione); });
+      carosello.prepend(piu);
+    }
     riordinabile(id, sezione, nastro);
     const filo = nodo('span', 'filo corto');
     filo.style.setProperty('--d', `${ritardo + 100}ms`);
     const riassunto = chiudibile(elemento, galleria, elemento.dataset.stato, sezione.titolo.split(' // ')[0], schede.map(statoDi));
     elemento.append(galleria, filo, carosello, riassunto);
     return elemento;
+  }
+
+  // ----- + AGGIUNGI MODULO: i moduli del catalogo adatti alla galleria (cartelli e promo tra loro, cartellini con
+  // cartellini), da tutte le gallerie di Gestione pacchetti, in un carosello; scelto, entra nella galleria come le spunte
+  // (Associa.associa: in un altro negozio come clone); un modulo import con il logo del .psd passa dalla sua domanda -----
+  function moduliPerGalleria(id, sezione) {
+    const tipi = sezione.tipo === 'cartellini' ? ['cartellini'] : ['cartelli', 'promo'];
+    const voci = [];
+    gallerieCatalogo().filter(p => tipi.includes(p.tipo)).forEach(p => p.moduli.forEach(modulo => {
+      // i cloni già entrati in una dashboard (origine) li rappresenta il loro modulo di partenza
+      if (!modulo.link || modulo.prossimamente || modulo.origine) return;
+      const cartella = cartellaDi(p, modulo);
+      if (!cartella) return;
+      voci.push({ pacchetto: p, modulo, cartella, gia: Associa.usato(testoDi(id), id, cartella, modulo.link) });
+    }));
+    return voci;
+  }
+  function scegliModulo(id, sezione) {
+    const voci = moduliPerGalleria(id, sezione);
+    const galleria = sezione.titolo.split(' // ')[0];
+    const velo = nodo('div', 'scegli-modulo');
+    const finestra = nodo('div', 'finestra');
+    finestra.setAttribute('role', 'dialog');
+    finestra.setAttribute('aria-modal', 'true');
+    finestra.setAttribute('aria-label', `Aggiungi un modulo a ${galleria}`);
+    finestra.append(nodo('h3', '', '+ aggiungi modulo'),
+      nodo('p', 'sotto', `// in «${galleria}» di ${nomeNegozio(id)}: scorri i moduli del catalogo e scegline uno. Da un altro negozio entra come clone, nella cartella ${id}/`));
+    // filtri: tutti o una galleria del catalogo
+    const filtri = nodo('div', 'filtri');
+    const gruppi = [...new Map(voci.map(v => [v.pacchetto.id, v.pacchetto])).values()];
+    let filtro = null, scelta = null;
+    const nastro = nodo('div', 'nastro-scelta');
+    nastro.setAttribute('role', 'listbox');
+    const conferma = nodo('button', 'conferma-scelta', 'aggiungi');
+    conferma.type = 'button';
+    conferma.disabled = true;
+    const nota = nodo('p', 'nota-scelta', 'scegli un modulo');
+    const etichettaDi = p => (p.negozio ? `${p.titolo || p.nome} · ${sigla(p.negozio)}` : `${p.titolo || p.nome} · nuovo`);
+    const disegnaVoci = () => {
+      nastro.replaceChildren();
+      const mostrate = voci.filter(v => !filtro || v.pacchetto.id === filtro);
+      if (!mostrate.length) nastro.append(nodo('p', 'vuota-scelta', 'nessun modulo in questa galleria del catalogo'));
+      mostrate.forEach(voce => {
+        const { modulo, pacchetto } = voce;
+        const carta = nodo('button', `scelta-modulo${modulo.stile === 'dorata' ? ' dorata' : ''}`);
+        carta.type = 'button';
+        carta.setAttribute('role', 'option');
+        carta.disabled = voce.gia;
+        carta.setAttribute('aria-pressed', String(scelta === voce));
+        const anteprima = nodo('span', 'anteprima-scelta');
+        const miniatura = (modulo.miniature || [])[0];
+        if (miniatura) { const img = nodo('img'); img.src = `assets/${miniatura}`; img.alt = ''; img.loading = 'lazy'; anteprima.append(img); }
+        else anteprima.append(nodo('small', '', '—'));
+        carta.append(anteprima, nodo('b', '', modulo.titolo), nodo('small', voce.gia ? 'gia' : '', voce.gia ? '✓ già in questo negozio' : etichettaDi(pacchetto)));
+        carta.title = `${modulo.titolo}: ${voce.cartella}/${pagina(modulo.link)}`;
+        carta.addEventListener('click', () => {
+          scelta = voce;
+          nastro.querySelectorAll('.scelta-modulo').forEach(c => c.setAttribute('aria-pressed', String(c === carta)));
+          conferma.disabled = !SCRIVIBILE;
+          nota.textContent = voce.cartella === id ? `${modulo.titolo}: la sua pagina è già nella cartella ${id}/, entra nella galleria`
+            : `${modulo.titolo}: la pagina ${voce.cartella}/${pagina(modulo.link)} si copia in ${id}/ (un clone) ed entra in fondo a «${galleria}»`;
+        });
+        nastro.append(carta);
+      });
+    };
+    const filtroB = (testo, valore) => {
+      const b = nodo('button', '', testo);
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(filtro === valore));
+      b.addEventListener('click', () => { filtro = valore; filtri.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); disegnaVoci(); nastro.scrollLeft = 0; });
+      filtri.append(b);
+    };
+    filtroB(`tutti · ${voci.length}`, null);
+    gruppi.forEach(p => filtroB(etichettaDi(p), p.id));
+    disegnaVoci();
+    // il carosello: frecce e rotella (giù va avanti)
+    const striscia = nodo('div', 'striscia');
+    const freccia = (testo, verso) => { const b = nodo('button', 'freccia-scelta', testo); b.type = 'button'; b.setAttribute('aria-label', verso < 0 ? 'Moduli precedenti' : 'Moduli successivi');
+      b.addEventListener('click', () => nastro.scrollBy({ left: verso * nastro.clientWidth * .8, behavior: 'smooth' })); return b; };
+    nastro.addEventListener('wheel', evento => { if (Math.abs(evento.deltaY) > Math.abs(evento.deltaX)) { evento.preventDefault(); nastro.scrollLeft += evento.deltaY; } }, { passive: false });
+    striscia.append(freccia('‹', -1), nastro, freccia('›', 1));
+    const annulla = nodo('button', 'annulla-scelta', 'annulla');
+    annulla.type = 'button';
+    const piede = nodo('div', 'piede');
+    piede.append(nota, annulla, conferma);
+    finestra.append(filtri, striscia, piede);
+    velo.append(finestra);
+    document.body.append(velo);
+    // dentro la pagina operatore (riquadro alto quanto il contenuto) la finestra va nella parte che si vede
+    try {
+      const riquadro = window.frameElement?.getBoundingClientRect();
+      if (riquadro) finestra.style.marginTop = `${Math.max(16, -riquadro.top + 40)}px`;
+      else finestra.style.marginTop = '8vh';
+    } catch { finestra.style.marginTop = '8vh'; }
+    const chiudi = () => { velo.remove(); document.removeEventListener('keydown', tasti, true); };
+    const tasti = evento => { if (evento.key === 'Escape') { evento.preventDefault(); evento.stopImmediatePropagation(); chiudi(); } };
+    document.addEventListener('keydown', tasti, true);
+    annulla.addEventListener('click', chiudi);
+    velo.addEventListener('click', evento => { if (evento.target === velo) chiudi(); });
+    (nastro.querySelector('.scelta-modulo:not(:disabled)') || annulla).focus();
+    conferma.addEventListener('click', async () => {
+      if (!scelta) return;
+      try { await collega(); } catch (errore) {
+        nota.textContent = errore.name === 'AbortError' ? 'cartella del progetto non collegata: nessuna modifica' : `errore: ${errore.message}`;
+        return;
+      }
+      const { modulo, pacchetto, cartella } = scelta;
+      const dati = { modulo, tipo: pacchetto.tipo, cartella, negozio: id, sezione: sezione.id, avviso: esito };
+      conferma.disabled = true;
+      try {
+        // un modulo import con il logo del .psd: la domanda sul logo (la galleria è già scelta)
+        let logo = null;
+        if (cartella !== id) {
+          const html = await testoFile(`${cartella}/${pagina(modulo.link)}`).catch(() => '');
+          if (/<meta name="storecraft-import"/.test(html) && /-grafiche\/logo-brand\.png/.test(html)) {
+            chiudi();
+            const scelte = await Associa.chiediAssociazione({ progetto, ...dati, nomeNegozio: nomeNegozio(id), sezione: sezione.id });
+            if (!scelte) { esito('annullato: nessuna modifica', 'nota'); return; }
+            logo = scelte.logo;
+            dati.sezione = scelte.sezione;
+            dati.nuovaGalleria = scelte.nuovaGalleria;
+          }
+        }
+        if (velo.isConnected) chiudi();
+        await Associa.associa(progetto, { ...dati, logo });
+        await carica(id);
+        esito(`${modulo.titolo} aggiunto a ${galleria} di ${nomeNegozio(id)}. ricorda il commit per pubblicarlo`, 'ok');
+        disegna();
+      } catch (errore) {
+        console.error(errore);
+        esito(`errore (${errore.name}): ${errore.message}`, 'err');
+        conferma.disabled = false;
+      }
+    });
   }
 
   // comandi dell'ordine nel nodo della galleria: registra / annulla un ordine cambiato, o torna a quello di partenza
@@ -1927,7 +2332,7 @@
   // tornano al diagramma invece che al menu (la pagina operatore manda { torna: true })
   const avvisaOperatore = sottoVista => { if (incorporata) window.parent.postMessage({ sottoVista }, location.origin); };
   window.addEventListener('message', evento => {
-    if (evento.origin === location.origin && evento.source === window.parent && evento.data?.torna) chiudiModulo();
+    if (evento.origin === location.origin && evento.source === window.parent && evento.data?.torna) { chiudiModulo(); chiudiNuovo(); }
   });
   function apriModulo(id, sezioneId, chiaveModulo) {
     moduloAperto = { id, sezione: sezioneId, chiave: chiaveModulo };
@@ -2463,6 +2868,26 @@
     // modifica: solo i cloni (titolo, MENU SPECIALE); gli altri campi nei dettagli, con il lucchetto aperto
     azioni.append(bloccoModifica(id, sezione, scheda, chiaveModulo, Boolean(origine), comando));
 
+    // sorgente: un modulo clone diventa sorgente (la pagina dice da quale deriva, storecraft-derivata): da qui non si
+    // cancella più, si cambia dal codice
+    const sorgenteB = comando('rendi sorgente');
+    sorgenteB.disabled = !SCRIVIBILE || !origine;
+    sorgenteB.addEventListener('click', async () => {
+      try { await collega(); } catch (errore) {
+        esito(errore.name === 'AbortError' ? 'cartella non collegata: nessuna modifica' : `errore (${errore.name}): ${errore.message}`, errore.name === 'AbortError' ? 'nota' : 'err');
+        return;
+      }
+      if (!window.confirm(`Rendere sorgente ${scheda.titolo}?\n\nLa pagina ${id}/${nomePagina} non è più un clone di ${origine}: diventa un modulo sorgente derivato da lui e da qui non si cancella più.`)) return;
+      try {
+        await Associa.rendiSorgenteModulo(progetto, { negozio: id, nome: nomePagina });
+        await carica(id);
+        esito(`${scheda.titolo} ora è un modulo sorgente (derivato da ${origine}). ricorda il commit per pubblicarlo`, 'ok');
+        disegna(); disegnaModulo();
+      } catch (errore) { console.error(errore); esito(`errore (${errore.name}): ${errore.message}`, 'err'); }
+    });
+    azione('sorgente', origine ? `il modulo è un clone di ${origine}: rendendolo sorgente la pagina perde il segno del clone e prende quello del modulo da cui deriva; da qui non si cancella più`
+      : 'il modulo è già sorgente', sorgenteB);
+
     const elimina = comando('✕ elimina modulo', 'rosso');
     elimina.disabled = !SCRIVIBILE || !origine;
     elimina.addEventListener('click', async () => {
@@ -2692,6 +3117,62 @@
       .filter(g => g.schede.length);
   }
 
+  // ----- Colonna a croce del catalogo: le aree (moduli sorgente di ogni negozio, cloni) come index e le regole comuni
+  // nel diagramma di un negozio. Al centro l'area scelta, grande, con la sua maniglia (chiude e riapre le sue gallerie);
+  // le altre piccole sopra e sotto, appese al filo verticale: un clic, o la rotella con il mouse sopra la colonna, la
+  // porta al centro -----
+  let areaCatalogo = null;   // chiave dell'area al centro (null: la prima)
+  let areeCatalogo = [];     // chiavi delle aree, nell'ordine della colonna
+  function scegliArea(chiave, veloce = false) {
+    cambiaSviluppo(() => { areaCatalogo = chiave; chiusi.delete(`${MODULI}:area:${chiave}`); }, veloce);
+  }
+  function colonnaCatalogo(elencoAree, scelta, aperta, chiaveArea) {
+    const qui = elencoAree.indexOf(scelta);
+    const colonna = nodo('div', 'colonna-index colonna-catalogo');
+    colonna.title = 'rotella del mouse: passa da un\'area all\'altra';
+    const centro = nodo('div', 'indice-nodo');
+    centro.dataset.voce = scelta.chiave;
+    const grande = nodo('div', `nodo nodo-area${scelta.logo ? ' con-logo' : ''}`);
+    if (scelta.logo) { const immagine = nodo('img', 'area-logo'); immagine.src = scelta.logo; immagine.alt = ''; grande.append(immagine); }
+    grande.append(nodo('span', 'area-nome', scelta.nome), nodo('span', 'nodo-sotto', scelta.sotto));
+    if (scelta.classe) centro.classList.add(scelta.classe);
+    const maniglia = nodo('button', 'maniglia');
+    maniglia.type = 'button';
+    maniglia.dataset.nome = `le gallerie dell'area ${scelta.chiave === 'cloni' ? 'Cloni' : `moduli sorgente di ${nomeNegozio(scelta.negozio)}`}`;
+    aggiornaManiglia(maniglia, aperta);
+    maniglia.addEventListener('click', () => {
+      if (colonnaInCambio) return;
+      aggiornaManiglia(maniglia, !aperta);
+      if (manigliaCliccata) manigliaCliccata.aperta = !aperta;
+      cambiaSviluppo(() => { if (aperta) chiusi.add(chiaveArea); else chiusi.delete(chiaveArea); });
+    });
+    centro.append(grande, maniglia);
+    const piccola = area => {
+      const pulsante = nodo('button', `nodo-regola nodo-area-piccola${area.classe ? ` ${area.classe}` : ''}`);
+      pulsante.type = 'button';
+      pulsante.dataset.voce = area.chiave;
+      if (area.logo) { const immagine = nodo('img', 'area-logo'); immagine.src = area.logo; immagine.alt = ''; pulsante.append(immagine); }
+      pulsante.append(nodo('span', '', area.logo ? area.nome : area.nome), nodo('small', '', area.sotto));
+      pulsante.title = area.chiave === 'cloni' ? 'apri l\'area dei cloni' : `apri i moduli sorgente di ${nomeNegozio(area.negozio)}`;
+      pulsante.setAttribute('aria-label', pulsante.title);
+      pulsante.addEventListener('click', () => scegliArea(area.chiave));
+      return pulsante;
+    };
+    const sopra = elencoAree.slice(0, qui), sotto = elencoAree.slice(qui + 1);
+    if (sopra.length) {
+      const elenco = nodo('div', 'voci voci-sopra');
+      sopra.forEach(area => elenco.append(piccola(area), nodo('span', 'filo-v')));
+      colonna.append(elenco);
+    }
+    colonna.append(centro);
+    if (sotto.length) {
+      const elenco = nodo('div', 'voci voci-sotto');
+      sotto.forEach(area => elenco.append(nodo('span', 'filo-v'), piccola(area)));
+      colonna.append(elenco);
+    }
+    return colonna;
+  }
+
   function disegnaCatalogo() {
     const scorrimenti = {};
     document.querySelectorAll('.ramo').forEach(ramo => { scorrimenti[ramo.dataset.sezione] = ramo.querySelector('.nastro')?.scrollLeft || 0; });
@@ -2707,24 +3188,25 @@
     logo.alt = '';
     radice.append(logo, nodo('span', 'nodo-nome', 'Catalogo'), nodo('span', 'nodo-sotto', 'moduli'));
 
-    // un'area per negozio con set di partenza (le sorgenti), poi l'area dei moduli nuovi
-    const aree = nodo('ol', 'rami');
-    aree.setAttribute('aria-label', 'Aree del catalogo');
-    let ritardo = 300;
+    // un'area per negozio con set di partenza (le sorgenti), poi gli altri negozi e l'area dei cloni. Dal 19 ottobre 2026
+    // le aree non si aprono tutte insieme: stanno in una colonna a croce, come index e le regole comuni nel diagramma di
+    // un negozio (al centro l'area scelta, con le sue gallerie a destra; le altre piccole sopra e sotto, con un clic o la
+    // rotella del mouse sopra la colonna). Qui si raccolgono: { chiave, nome, sotto, logo, classe, rami(ritardo), stati }
+    const elencoAree = [];
+    const ritardo = 300;
     const negoziSorgente = [...new Set(gallerie.map(p => p.negozio).filter(Boolean))];
     // i moduli dei set di partenza (sorgente): non i moduli aggiunti né i cloni entrati nella dashboard (hanno origine)
     const sorgenteDelSet = v => !v.modulo.aggiunto && !v.modulo.origine;
     negoziSorgente.forEach(n => {
       const sue = gallerie.filter(p => p.negozio === n);
-      const rami = sue.map((p, i) => ramoCatalogo(p, voci(p).filter(sorgenteDelSet), p.titolo || p.nome, p.id,
-        scorrimenti[`catalogo-${p.id}`] || 0, ritardo + 260 + i * 110));
+      const rami = r0 => sue.map((p, i) => ramoCatalogo(p, voci(p).filter(sorgenteDelSet), p.titolo || p.nome, p.id,
+        scorrimenti[`catalogo-${p.id}`] || 0, r0 + i * 110));
       const tutte = sue.flatMap(p => voci(p).filter(sorgenteDelSet));
       // il negozio con il suo logo, piccolo e bianco, la scritta MODULI SORGENTE e sotto il numero dei moduli
       const scheda = Negozi.scheda(n) || {};
       const logo = scheda.logoMenu || scheda.logoSplash;
-      aree.append(ramoArea(MODULI, `sorgenti-${n}`, logo ? 'Moduli sorgente' : `Sorgenti ${sigla(n)}`, `${tutte.length} moduli`, rami, ritardo,
-        tutte.map(v => statoCatalogo(v.pacchetto, v.modulo)), logo ? `assets/${logo}` : null));
-      ritardo += 260 + sue.length * 110;
+      elencoAree.push({ chiave: `sorgenti-${n}`, negozio: n, nome: logo ? 'Moduli sorgente' : `Sorgenti ${sigla(n)}`, sotto: `${tutte.length} moduli`,
+        logo: logo ? `assets/${logo}` : null, rami, stati: tutte.map(v => statoCatalogo(v.pacchetto, v.modulo)) });
     });
     // gli altri negozi (es. OPHILYA): i loro moduli sorgente, scritti a codice partendo da un negozio sorgente
     // (storecraft-derivata), con il logo del negozio e MODULI SORGENTE · DA TEBE
@@ -2735,26 +3217,25 @@
       const quanti = gruppi.reduce((t, g) => t + g.schede.length, 0);
       sorgentiDerivati += quanti;
       const da = [...new Set(gruppi.flatMap(g => g.schede).map(s => negozi[n].derivate.get(pagina(s.link))).filter(Boolean).map(d => d.split('/')[0]))];
-      const rami = gruppi.map((g, i) => ramoNegozioCatalogo(n, g.sezione, g.schede, g.sezione.titolo.split(' // ')[0], `${n}-${g.sezione.id}`,
-        scorrimenti[`catalogo-${n}-${g.sezione.id}`] || 0, ritardo + 260 + i * 110));
+      const rami = r0 => gruppi.map((g, i) => ramoNegozioCatalogo(n, g.sezione, g.schede, g.sezione.titolo.split(' // ')[0], `${n}-${g.sezione.id}`,
+        scorrimenti[`catalogo-${n}-${g.sezione.id}`] || 0, r0 + i * 110));
       const scheda = Negozi.scheda(n) || {};
       const logo = scheda.logoMenu || scheda.logoSplash;
-      aree.append(ramoArea(MODULI, `sorgenti-${n}`, logo ? 'Moduli sorgente' : `Sorgenti ${sigla(n)}`,
-        `${quanti} moduli${da.length ? ` · da ${da.map(sigla).join(', ')}` : ''}`, rami, ritardo,
-        gruppi.flatMap(g => g.schede).map(statoDi), logo ? `assets/${logo}` : null));
-      ritardo += 260 + gruppi.length * 110;
+      elencoAree.push({ chiave: `sorgenti-${n}`, negozio: n, nome: logo ? 'Moduli sorgente' : `Sorgenti ${sigla(n)}`,
+        sotto: `${quanti} moduli${da.length ? ` · da ${da.map(sigla).join(', ')}` : ''}`, logo: logo ? `assets/${logo}` : null, rami,
+        stati: gruppi.flatMap(g => g.schede).map(statoDi) });
     });
 
     // CLONI: i moduli creati dalle utilità. Nei negozi (copie fatte con duplica o moduli associati a un altro negozio;
     // quelli che vengono da un modulo nuovo stanno con lui, qui sotto) e i moduli nuovi delle gallerie di Gestione
     // pacchetti, anche non associati a nessun negozio
-    const ramiCloni = [];
+    const ramiCloni = [];   // funzioni: ognuna fa un ramo, dal ritardo di partenza e dalla sua posizione
     let cloniNeiNegozi = 0;
     Negozi.installati.filter(n => negozi[n]).forEach(n => {
       moduliDelNegozio(n, nome => negozi[n].cloni.has(nome) && !negozi[n].cloni.get(nome).startsWith('moduli/')).forEach(g => {
         cloniNeiNegozi += g.schede.length;
-        ramiCloni.push(ramoNegozioCatalogo(n, g.sezione, g.schede, `${sigla(n)} · ${g.sezione.titolo.split(' // ')[0]}`, `cloni-${n}-${g.sezione.id}`,
-          scorrimenti[`catalogo-cloni-${n}-${g.sezione.id}`] || 0, ritardo + 260 + ramiCloni.length * 110));
+        ramiCloni.push((r0, i) => ramoNegozioCatalogo(n, g.sezione, g.schede, `${sigla(n)} · ${g.sezione.titolo.split(' // ')[0]}`, `cloni-${n}-${g.sezione.id}`,
+          scorrimenti[`catalogo-cloni-${n}-${g.sezione.id}`] || 0, r0 + i * 110));
       });
     });
     const nuovi = [];
@@ -2763,22 +3244,48 @@
       if (sue.length) nuovi.push({ p, sue, titolo: p.negozio ? `${p.titolo || p.nome} · aggiunti` : (p.titolo || p.nome) });
     });
     const tuttiNuovi = nuovi.flatMap(g => g.sue);
-    nuovi.forEach(g => ramiCloni.push(ramoCatalogo(g.p, g.sue, g.titolo, `nuovi-${g.p.id}`, scorrimenti[`catalogo-nuovi-${g.p.id}`] || 0,
-      ritardo + 260 + ramiCloni.length * 110)));
-    if (!ramiCloni.length) ramiCloni.push(ramoCatalogo(null, [], 'In attesa', 'cloni', 0, ritardo + 260));
+    nuovi.forEach(g => ramiCloni.push((r0, i) => ramoCatalogo(g.p, g.sue, g.titolo, `nuovi-${g.p.id}`, scorrimenti[`catalogo-nuovi-${g.p.id}`] || 0,
+      r0 + i * 110)));
+    if (!ramiCloni.length) ramiCloni.push(r0 => ramoCatalogo(null, [], 'In attesa', 'cloni', 0, r0));
     const liberi = tuttiNuovi.filter(v => statoCatalogo(v.pacchetto, v.modulo) === 'libero').length;
     const totaleCloni = cloniNeiNegozi + tuttiNuovi.length;
-    const areaCloni = ramoArea(MODULI, 'cloni', 'Cloni', liberi ? `${totaleCloni} moduli · ${liberi} non associati` : `${totaleCloni} moduli`, ramiCloni, ritardo,
-      [...Array(cloniNeiNegozi).fill('attivo'), ...tuttiNuovi.map(v => statoCatalogo(v.pacchetto, v.modulo))]);
-    areaCloni.classList.add('area-cloni');
-    aree.append(areaCloni);
+    elencoAree.push({ chiave: 'cloni', nome: 'Cloni', sotto: liberi ? `${totaleCloni} moduli · ${liberi} non associati` : `${totaleCloni} moduli`,
+      classe: 'area-cloni', rami: r0 => ramiCloni.map((fai, i) => fai(r0, i)),
+      stati: [...Array(cloniNeiNegozi).fill('attivo'), ...tuttiNuovi.map(v => statoCatalogo(v.pacchetto, v.modulo))] });
 
-    const filo = nodo('span', 'filo');
+    // l'area al centro: quella scelta (di partenza la prima, il primo negozio)
+    areeCatalogo = elencoAree.map(a => a.chiave);
+    if (!areeCatalogo.includes(areaCatalogo)) areaCatalogo = areeCatalogo[0];
+    const scelta = elencoAree.find(a => a.chiave === areaCatalogo);
+    const chiaveArea = `${MODULI}:area:${scelta.chiave}`;
+    const aperta = !chiusi.has(chiaveArea);
+    const colonna = colonnaCatalogo(elencoAree, scelta, aperta, chiaveArea);
+    // a destra le gallerie dell'area scelta (chiusa: un riassunto, che la riapre)
+    const aree = nodo('ol', 'rami');
+    aree.setAttribute('aria-label', `Gallerie di ${scelta.chiave === 'cloni' ? 'Cloni' : `${nomeNegozio(scelta.negozio)}, moduli sorgente`}`);
+    if (aperta) aree.append(...scelta.rami(ritardo + 260));
+    else {
+      const riassunto = nodo('button', 'riassunto aperto-sempre');
+      riassunto.type = 'button';
+      riassunto.append(nodo('span', '', `${scelta.sotto} · espandi ›`));
+      riassunto.addEventListener('click', () => cambiaSviluppo(() => chiusi.delete(chiaveArea)));
+      const voce = nodo('li', 'ramo');
+      voce.append(riassunto);
+      aree.append(voce);
+    }
+
+    const fili = [nodo('span', 'filo'), nodo('span', `filo${aperta ? '' : ' fermo'}`)];
     radice.style.setProperty('--d', '0ms');
-    filo.style.setProperty('--d', '160ms');
+    fili[0].style.setProperty('--d', '160ms');
+    fili[1].style.setProperty('--d', '400ms');
     const colonnaRadice = nodo('div', 'colonna-negozio');
     colonnaRadice.append(radice, selettoriStile());
-    diagramma.append(colonnaRadice, filo, aree);
+    diagramma.append(colonnaRadice, fili[0], colonna, fili[1], aree);
+    // le voci sopra e sotto escono dalla colonna: il diagramma tiene lo spazio, come nel diagramma del negozio
+    const centro = colonna.querySelector('.indice-nodo');
+    const altezza = classe => colonna.querySelector(classe)?.offsetHeight || 0;
+    const spazio = Math.max(altezza('.voci-sopra'), altezza('.voci-sotto'));
+    diagramma.style.minHeight = spazio && centro.offsetHeight ? `${Math.ceil((centro.offsetHeight / 2 + spazio + 14) * 2)}px` : '';
 
     // totali
     const sorgenti = gallerie.filter(p => p.negozio).flatMap(p => voci(p).filter(sorgenteDelSet)).length + sorgentiDerivati;
@@ -2891,7 +3398,12 @@
       && !window.confirm(`Ultima conferma: il clone di ${modulo.titolo} in ${nomeNegozio(negozio)} non resta in nessun altro negozio.\n\nTogliendolo sparisce anche dal catalogo dei moduli. Eliminarlo definitivamente?`)) return;
     try {
       const dati = { modulo, tipo: pacchetto.tipo, cartella: cartellaModulo, negozio, avviso: esito };
-      if (voglio) await Associa.associa(progetto, dati);
+      if (voglio) {
+        // la galleria del negozio dove va il widget e, per un modulo import, il logo del .psd
+        const scelte = await Associa.chiediAssociazione({ progetto, ...dati, nomeNegozio: nomeNegozio(negozio) });
+        if (!scelte) { esito('annullato: nessuna modifica', 'nota'); return; }
+        await Associa.associa(progetto, { ...dati, ...scelte });
+      }
       else await Associa.togli(progetto, dati);
       await carica(negozio);   // il negozio si rilegge (anche il suo diagramma)
       esito(`${modulo.titolo} ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${nomeNegozio(negozio)}. ricorda il commit per pubblicarlo`, 'ok');
@@ -2902,7 +3414,12 @@
     ridisegna();
   }
 
-  // si parte dal negozio ricordato in questa scheda del browser (o dal primo)
+  // si parte dal negozio ricordato in questa scheda del browser (o dal primo); dopo + NUOVO NEGOZIO, dal negozio nuovo
+  try {
+    const nuovo = sessionStorage.getItem('storecraft_gestione_negozio');
+    sessionStorage.removeItem('storecraft_gestione_negozio');
+    if (nuovo && Negozi.installati.includes(nuovo)) negozioScelto = nuovo;
+  } catch { /* sessionStorage spento */ }
   scegli(negozioScelto);
   window.addEventListener('load', () => scelta() && sposta(scelta()));
   window.addEventListener('resize', () => scelta() && sposta(scelta()));

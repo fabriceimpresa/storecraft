@@ -11,7 +11,7 @@ Negozi.registra('tebe', {
   indirizzoBreve: 'CORSO 269',   // nel menu da computer, più stretto
   logoMenu: 'img/tebe/tebeblack.png',
   logoMenuLarghezza: 205,
-  // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport)
+  // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (loghi-ufficiali.html)
   oro: '#cc9e25',
   // brand prioritari nei menu BRAND: 'stella' (stella gialla ★) o 'maiuscolo' (⭐ e maiuscolo, i brand della casa TEBE)
   brandPrioritari: 'maiuscolo',

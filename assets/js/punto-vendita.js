@@ -26,6 +26,8 @@
       sigla: scheda.sigla,
       logo: new URL(`assets/${scheda.logoSplash}`, RADICE).href,
       larghezzaLogo: scheda.logoSplashLarghezza || 150,
+      // logo a colori (negozio creato con + NUOVO NEGOZIO): nella splash page resta a colori
+      aColori: Boolean(scheda.logoAColori),
       // indirizzo e logo del menu del telefono (PROFILO UTENTE e lista NEGOZI della dashboard); senza, nome e logo della splash
       indirizzo: scheda.indirizzo || scheda.nome,
       indirizzoBreve: scheda.indirizzoBreve || scheda.indirizzo || scheda.nome,

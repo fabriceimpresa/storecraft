@@ -2,19 +2,21 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261018-01"></script>
+<script src="assets/js/negozi.js?v=20261019-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
-<title>IMPORT LAYOUT (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261018-01">
+<title>IMPORTA LAYOUT .PSD (uso interno)</title>
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261019-01">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261018-01">
-  <script src="assets/js/operatore-sezione.js?v=20261018-01"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261019-01">
+  <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
   <!-- lettura del file Photoshop nel browser (ag-psd; non è su cdnjs: jsDelivr, versione fissata) -->
   <script src="https://cdn.jsdelivr.net/npm/ag-psd@31.0.2/dist/bundle.js"></script>
   <!-- generatore della pagina (dai dati letti alla pagina di cartelli sulla Nuova Base Comune) -->
-  <script src="modelli/import-genera.js?v=20261018-01"></script>
+  <script src="modelli/import-genera.js?v=20261019-01"></script>
+  <!-- salvataggio nella cartella del progetto (moduli/ e gallerie di Gestione pacchetti) -->
+  <script src="assets/js/pacchetti-associa.js?v=20261019-01"></script>
   <!--
     Import layout (area operatore): dal file Photoshop originale (.psd) alla nuova pagina di generazione di cartelli.
     Passo 1 (questa versione): si sceglie il .psd, la conversione legge foglio, cartelli e livelli (nomi dei componenti del
@@ -48,6 +50,21 @@
   .riapri[aria-expanded="true"] svg { transform: rotate(180deg); }
   @media (prefers-reduced-motion: reduce) { .riapri svg { transition: none; } }
   .file-scelto { color: var(--op-ok); font-size: 12px; }
+  /* note della pagina (i testi con // davanti): nascoste di partenza, «mostra note» sopra il divisorio della [1] le fa
+     comparire tutte (19 ottobre 2026) */
+  body:not(.note-visibili) :is(.subtitle, .passo-nota:not(.avviso-tipo), .didascalia, .nota-al, .ritocchi-vuoto) { display: none; }
+  .riga-note { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+  .mostra-note { font: inherit; font-size: 11.5px; letter-spacing: .06em; text-transform: lowercase; padding: 2px 0; cursor: pointer;
+    background: none; border: 0; color: var(--op-oro); }
+  .mostra-note:hover, .mostra-note[aria-pressed="true"] { color: var(--op-oro-chiaro); }
+  .mostra-note::before { content: '// '; color: var(--op-tenue); }
+  /* tipo di pagina da creare: cartelli o cartellini (solo carta stampata, niente etichette DYMO) */
+  .tipo-pagina { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 2px 0 12px; font-size: 12px; }
+  .tipo-pagina .tipo-titolo { color: var(--op-tenue); margin-right: 4px; }
+  .tipo-pagina button { font: inherit; text-transform: lowercase; letter-spacing: .06em; padding: 5px 14px; cursor: pointer;
+    background: transparent; color: var(--op-oro); border: 1px solid var(--op-oro); }
+  .tipo-pagina button[aria-checked="true"] { background: var(--op-oro); color: #121110; }
+  .avviso-tipo { color: var(--op-errore); }
   .file-scelto.err { color: var(--op-errore); }
   .file-scelto.vuoto { color: var(--op-tenue); }
   .file-scelto::before { content: '$ '; color: var(--op-oro); }
@@ -180,18 +197,27 @@
   .passo-op[hidden] { display: none; }
   .comandi-anteprima { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 14px; }
   .comandi-anteprima button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
+  .comandi-anteprima .editor-btn { background: var(--op-oro); color: #121110; }
+  .comandi-anteprima .editor-btn:hover { background: var(--op-oro-chiaro); }
   .stato-anteprima { color: var(--op-tenue); font-size: 11px; }
   .stato-anteprima.err { color: var(--op-errore); }
   .cornice-anteprima { position: relative; overflow: hidden; border: 1px solid var(--op-bordo); border-radius: 4px; background: #212529; }
   .cornice-anteprima iframe { display: block; width: 1280px; height: 1180px; border: 0; transform-origin: 0 0; }
 
   /* ritocchi nella pagina generata: elemento selezionato e piccoli spostamenti */
-  .ritocchi { margin-bottom: 14px; padding: 10px 12px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
+  /* i ritocchi: un riquadro flottante sopra l'anteprima, che si trascina dalla sua barra dove si vuole */
+  .passo4-corpo { position: relative; }
+  .ritocchi { position: absolute; z-index: 30; top: 0; left: 0; box-sizing: border-box; width: min(620px, calc(100% - 24px)); padding: 0 12px 10px;
+    border: 1px solid var(--op-oro); border-radius: 4px; background: rgba(13, 12, 11, .96); box-shadow: 0 12px 30px rgba(0, 0, 0, .55); }
+  .ritocchi-barra { margin: 0 -12px 10px; padding: 6px 12px; border-bottom: 1px solid var(--op-bordo); color: var(--op-oro); font-size: 10.5px;
+    letter-spacing: .16em; text-transform: uppercase; cursor: grab; user-select: none; touch-action: none; }
+  .ritocchi-barra:active { cursor: grabbing; }
   .ritocchi-vuoto { color: var(--op-tenue); font-size: 11.5px; }
   .ritocchi-comandi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
   .ritocchi-comandi[hidden] { display: none; }
-  .ritocchi-nome { min-width: 230px; color: var(--op-oro-chiaro); font-size: 12px; }
-  .ritocchi-nome small { color: var(--op-tenue); font-size: 10.5px; }
+  .ritocchi-nome { min-width: 170px; color: var(--op-oro-chiaro); font-size: 12px; }
+  .ritocchi-nome small { color: #fff; font-size: 11px; }   /* il cartello che si sta muovendo, in bianco */
+  .ritocchi-nome .solo-cartello { color: #fff; font-size: 12px; }
   .ritocchi-valore { min-width: 140px; color: var(--op-tenue); font-size: 11.5px; }
   .ritocchi-valore.cambiato { color: var(--op-oro); }
   .ritocchi-due { display: inline-flex; align-items: center; gap: 6px; color: var(--op-testo); font-size: 11.5px; cursor: pointer; }
@@ -204,6 +230,36 @@
   .ritocchi-nota { margin-top: 8px; color: var(--op-tenue); font-size: 10.5px; }
   .link-tenue { border: 0; background: none; color: var(--op-oro); font: inherit; text-decoration: underline; cursor: pointer; }
   .link-tenue[hidden] { display: none; }
+
+  /* le tre parti del risultato: una alla volta */
+  .parti { display: flex; flex-wrap: wrap; gap: 0 26px; margin: 4px 0 20px; border-bottom: 1px solid var(--op-bordo); }
+  .parti button { position: relative; padding: 8px 0 10px; border: 0; background: none; color: var(--op-tenue);
+    font: 400 11.5px var(--op-mono); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: color .15s; }
+  .parti button:hover { color: var(--op-oro-chiaro); }
+  .parti button[aria-selected="true"] { color: var(--op-oro-chiaro); }
+  .parti button[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--op-oro); }
+  .parti button[hidden] { display: none; }
+  .segno-parte { margin-left: 4px; color: var(--op-oro); }
+  .parte[hidden] { display: none; }
+  .titolo-parte { margin-bottom: 14px; color: var(--op-oro-chiaro); font: 400 12px var(--op-mono); letter-spacing: .1em; text-transform: uppercase; }
+
+  /* salva come modulo */
+  .salva-griglia { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 18px; margin-bottom: 14px; }
+  .campo-salva { display: flex; flex-direction: column; gap: 5px; color: var(--op-tenue); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; }
+  .campo-salva[hidden] { display: none; }
+  .campo-salva input, .campo-salva select { padding: 7px 10px; border: 1px solid var(--op-bordo); border-radius: 3px; background: var(--op-fondo);
+    color: var(--op-testo); font: 400 12.5px var(--op-mono); letter-spacing: .02em; text-transform: none; }
+  .campo-salva input:focus, .campo-salva select:focus { outline: none; border-color: var(--op-oro); }
+  .salva-comandi { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .salva-comandi .annulla { border-color: var(--op-bordo); color: var(--op-tenue); }
+  .btn-folder.collegata { border-color: #3a9b5a; background: #3a9b5a; color: #f4f1ea; }
+  .btn-folder.collegata::before { content: '✓ '; }
+  .stato-salva { margin-top: 10px; color: var(--op-tenue); font-size: 11.5px; }
+  .stato-salva:empty { display: none; }
+  .stato-salva::before { content: '$ '; color: var(--op-oro); }
+  .stato-salva.lavora { color: var(--op-oro-chiaro); }
+  .stato-salva.ok { color: var(--op-ok); }
+  .stato-salva.err { color: var(--op-errore); }
 
   /* linguette dei cartelli */
   .linguette { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
@@ -248,6 +304,34 @@
   .dettagli { margin-top: 20px; padding: 12px 14px; border: 1px solid var(--op-bordo); border-radius: 4px; background: #0a0908; }
   .dettagli[hidden] { display: none; }
   .dettagli h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--op-oro-chiaro); font: 400 12px var(--op-mono); }
+  .dettagli h3 .chiudi-dettagli { margin-left: auto; width: 24px; height: 24px; border: 1px solid var(--op-bordo); border-radius: 50%; background: none;
+    color: var(--op-tenue); font: 400 14px/1 var(--op-mono); cursor: pointer; }
+  .dettagli h3 .chiudi-dettagli:hover { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
+  /* valori modificabili */
+  .valori-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px 16px; }
+  .valore { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .valore.largo { grid-column: 1 / -1; }
+  .nome-valore { color: var(--op-tenue); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .valore input[type="number"], .valore input[type="text"], .valore select, .valore textarea { width: 100%; padding: 6px 8px; border: 1px solid var(--op-bordo);
+    border-radius: 3px; background: var(--op-fondo); color: var(--op-testo); font: 400 12px var(--op-mono); }
+  .valore textarea { resize: vertical; min-height: 44px; }
+  .valore input:focus, .valore select:focus, .valore textarea:focus { outline: none; border-color: var(--op-oro); }
+  .colore-campo { display: flex; gap: 6px; align-items: center; }
+  .colore-campo input[type="color"] { flex: none; width: 34px; height: 30px; padding: 0; border: 1px solid var(--op-bordo); border-radius: 3px; background: none; cursor: pointer; }
+  .colore-campo input[type="text"] { text-transform: uppercase; }
+  .scelte { display: flex; flex-wrap: wrap; gap: 4px; }
+  .scelte button { padding: 5px 9px; border: 1px solid var(--op-bordo); border-radius: 3px; background: var(--op-riquadro); color: var(--op-tenue);
+    font: 400 10.5px var(--op-mono); letter-spacing: .06em; cursor: pointer; }
+  .scelte button:hover { color: var(--op-oro-chiaro); border-color: var(--op-oro); }
+  .scelte button[aria-pressed="true"] { color: #121110; border-color: var(--op-oro); background: var(--op-oro); }
+  .posizione { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+  .posizione .frecce { display: inline-flex; gap: 4px; }
+  .sola-lettura { color: var(--op-testo); font-size: 11.5px; }
+  .note-valori { margin-top: 10px; }
+  .note-valori .nota { color: var(--op-oro); font-size: 11px; }
+  .note-valori .nota::before { content: '// '; }
+  .nota-modificato { color: var(--op-ok); font-size: 11px; }
+  .nota-modificato::before { content: '✎ '; }
   .dettagli dl { display: grid; grid-template-columns: max-content 1fr; gap: 3px 16px; font-size: 11.5px; }
   .dettagli dt { color: var(--op-tenue); }
   .dettagli dd { color: var(--op-testo); }
@@ -270,16 +354,23 @@
   <a href="operatore.html" class="app-close-btn" title="Torna all'area operatore" aria-label="Chiudi e torna all'area operatore">✕</a>
 
   <div class="container">
-    <h1>Import layout</h1>
+    <h1>Importa layout .psd</h1>
     <p class="subtitle">dal file photoshop originale (.psd) alla nuova pagina di generazione di cartelli. la conversione legge il foglio, i due cartelli e i livelli, chiamati con i nomi dei componenti del menu di sinistra (riquadro-brand, logo-brand, claim-sx, descrizione, prezzo-finale…), e abbina a ognuno il suo modulo comune. il file resta sul computer: si legge solo nel browser</p>
 
     <div class="passi-op">
+      <div class="riga-note"><button type="button" class="mostra-note" id="mostraNote" aria-pressed="false">mostra note</button></div>
       <section class="passo-op" id="passo1">
         <button type="button" class="riapri" hidden aria-expanded="true" aria-label="Riapri la sezione"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <span class="passo-num">1</span>
         <div>
           <p class="passo-titolo">file photoshop da importare <span class="riassunto"></span></p>
           <p class="passo-nota">foglio a4 con i due cartelli, livelli con i nomi dei componenti</p>
+          <div class="tipo-pagina" role="radiogroup" aria-label="Tipo di pagina da creare">
+            <span class="tipo-titolo">tipo di pagina</span>
+            <button type="button" role="radio" aria-checked="true" data-tipo="cartelli">cartelli</button>
+            <button type="button" role="radio" aria-checked="false" data-tipo="cartellini">cartellini</button>
+          </div>
+          <p class="passo-nota avviso-tipo" id="notaTipo" hidden>// cartellini: la base comune dei cartellini non c'è ancora. per ora import layout crea solo pagine di cartelli</p>
           <div class="upload-box" id="zonaFile" role="button" tabindex="0" aria-label="Scegli il file .psd">
             <strong>trascina qui il file .psd, o clicca per sceglierlo</strong>
             <input type="file" id="inputFile" accept=".psd,image/vnd.adobe.photoshop">
@@ -299,26 +390,38 @@
       </section>
 
       <section class="passo-op risultato" id="risultato" hidden>
+        <button type="button" class="riapri" hidden aria-expanded="true" aria-label="Riapri la sezione"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <span class="passo-num">3</span>
         <div>
-          <p class="passo-titolo">risultato</p>
-          <p class="passo-nota">la pagina che nasce da qui è un modulo import: rivista insieme, diventa modulo sorgente</p>
+          <p class="passo-titolo">risultato <span class="riassunto"></span></p>
           <canvas id="tela" hidden></canvas>
 
-          <p class="titoletto">pagina di partenza <span>· somiglianza con le pagine esistenti</span></p>
-          <p class="passo-nota">la pagina esistente più simile, se supera il 60%; altrimenti la nuova base comune (modelli/cartello-base.html, sola struttura standard). clicca un'altra voce per cambiare la partenza</p>
-          <div class="diagramma confronto" id="confronto"></div>
-
-          <p class="titoletto solo-allineamento">allineamento dei due cartelli <span>· ognuno nella sua metà del foglio</span></p>
-          <p class="passo-nota solo-allineamento">claim, riquadro del brand e logo nel riquadro, riga della descrizione o del doppio prezzo, prezzo finale, footer e margini dai bordi devono coincidere (tolleranza 0,3 mm). con delle differenze, allinea cartelli porta il cartello inferiore sulla posizione del superiore; per tenerli diversi, ▲ ▼ spostano l'impaginato di un cartello. passa sopra una riga per trovarla sul cartello</p>
-          <div class="allineamento" id="allineamento"></div>
-
-          <p class="titoletto">mappa dei cartelli <span>· livello del .psd → modulo comune del pannello</span></p>
+          <!-- sempre in vista: cosa c'è da verificare -->
           <div class="avvisi" id="avvisi" hidden></div>
-          <div class="linguette" id="linguette" role="tablist" aria-label="Cartelli del foglio"></div>
-          <div class="diagramma mappa" id="mappa"></div>
-          <div class="dettagli" id="dettagli" hidden></div>
-          <p class="didascalia">passa sopra un numero, un livello o un modulo per seguire il filo; clicca per i valori dell'elemento</p>
+
+          <!-- tre parti, una alla volta, per non allungare la pagina -->
+          <div class="parti" id="parti" role="tablist" aria-label="Parti del risultato">
+            <button type="button" role="tab" data-parte="partenza" aria-selected="true">partenza <span class="segno-parte"></span></button>
+            <button type="button" role="tab" data-parte="allineamento" aria-selected="false">allineamento <span class="segno-parte"></span></button>
+            <button type="button" role="tab" data-parte="contenuto" aria-selected="false">contenuto cartelli <span class="segno-parte"></span></button>
+          </div>
+
+          <div class="parte" data-parte="partenza">
+            <p class="titolo-parte">associa a pagina somigliante già esistente oppure crea una nuova base comune</p>
+            <div class="diagramma confronto" id="confronto"></div>
+          </div>
+
+          <div class="parte" data-parte="allineamento" hidden>
+            <div class="allineamento" id="allineamento"></div>
+          </div>
+
+          <div class="parte" data-parte="contenuto" hidden>
+            <div class="linguette" id="linguette" role="tablist" aria-label="Cartelli del foglio"></div>
+            <div class="diagramma mappa" id="mappa"></div>
+            <div class="dettagli" id="dettagli" hidden></div>
+            <p class="didascalia">passa sopra un numero, un livello o un modulo per seguire il filo; clicca per i valori dell'elemento</p>
+          </div>
+
           <div class="genera-riga">
             <button type="button" class="btn-folder" id="genera">genera la pagina</button>
             <span class="nota-al">costruisce la pagina dai dati letti: posizioni, font e colori del .psd, moduli comuni nel pannello</span>
@@ -328,15 +431,17 @@
 
       <section class="passo-op" id="passo4" hidden>
         <span class="passo-num">4</span>
-        <div>
+        <div class="passo4-corpo">
           <p class="passo-titolo">pagina generata</p>
           <p class="passo-nota">anteprima dal vivo: il pannello funziona. la pagina non è ancora salvata nel progetto</p>
           <div class="comandi-anteprima">
             <button type="button" class="btn-folder" id="sovrapponi" aria-pressed="false">sovrapponi il .psd</button>
             <button type="button" class="btn-folder" id="tuttaFinestra">apri a tutta finestra ↗</button>
+            <button type="button" class="btn-folder editor-btn" id="apriEditor" title="Layout Studio: modifica elementi e attributi, aggiungi testi, forme e immagini, guide e righelli">apri l'editor ✎</button>
             <span class="stato-anteprima" id="statoAnteprima"></span>
           </div>
           <div class="ritocchi" id="ritocchi">
+            <div class="ritocchi-barra" id="ritocchiBarra" title="trascina il riquadro dove vuoi"><span aria-hidden="true">⠿</span> ritocchi</div>
             <p class="ritocchi-vuoto" id="ritocchiVuoto">// clicca un elemento del cartello nell'anteprima per selezionarlo e spostarlo di poco, o una zona vuota del cartello per spostarlo tutto</p>
             <div class="ritocchi-comandi" id="ritocchiComandi" hidden>
               <span class="ritocchi-nome" id="ritocchiNome"></span>
@@ -349,13 +454,33 @@
               <button type="button" class="btn-folder annulla" id="azzeraElemento">azzera elemento</button>
               <button type="button" class="btn-folder annulla" id="deseleziona">deseleziona</button>
             </div>
-            <p class="ritocchi-cartello">sposta tutto il cartello, con il foglio A4 e la linea di taglio fermi:
+            <p class="ritocchi-cartello">
+              <button type="button" class="btn-folder" data-cartello="0" title="sposta i due cartelli insieme, con il foglio A4 e la linea di taglio fermi">entrambi i cartelli</button>
               <button type="button" class="btn-folder" data-cartello="1">cartello superiore</button>
               <button type="button" class="btn-folder" data-cartello="2">cartello inferiore</button>
             </p>
             <p class="ritocchi-nota">0,5 mm a clic, 0,1 mm con Maiuscolo; anche con le frecce della tastiera · <button type="button" class="link-tenue" id="azzeraTutti" hidden>azzera tutti i ritocchi</button></p>
           </div>
           <div class="cornice-anteprima" id="corniceAnteprima"><iframe id="anteprima" title="Anteprima della pagina generata"></iframe></div>
+        </div>
+      </section>
+
+      <section class="passo-op" id="passo5" hidden>
+        <span class="passo-num">5</span>
+        <div>
+          <p class="passo-titolo">salva come modulo</p>
+          <p class="passo-nota">va in gestione pacchetti, nella galleria scelta; non entra in nessun negozio: si associa dalla sua scheda</p>
+          <div class="salva-griglia">
+            <label class="campo-salva">nome del modulo<input type="text" id="nomeModulo" maxlength="40" autocomplete="off"></label>
+            <label class="campo-salva">galleria<select id="galleriaModulo"></select></label>
+            <label class="campo-salva" id="rigaNuovaGalleria">nome della nuova galleria<input type="text" id="nomeGalleria" maxlength="40" value="Test import" autocomplete="off"></label>
+          </div>
+          <div class="salva-comandi">
+            <button type="button" class="btn-folder" id="collegaCartella" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">collega la cartella del progetto</button>
+            <button type="button" class="btn-folder" id="salvaModulo" disabled>salva il modulo</button>
+            <button type="button" class="btn-folder annulla" id="vaiPacchetti" hidden>apri gestione pacchetti ↗</button>
+          </div>
+          <p class="stato-salva" id="statoSalva"></p>
         </div>
       </section>
     </div>
@@ -431,6 +556,28 @@
     if (risultato) ['confronto', 'mappa'].forEach(d => $(d).ridisegna && requestAnimationFrame(() => $(d).ridisegna()));
   }));
 
+  // note della pagina: nascoste di partenza, un clic su «mostra note» le mostra tutte, un altro le nasconde
+  $('mostraNote').addEventListener('click', () => {
+    const viste = document.body.classList.toggle('note-visibili');
+    $('mostraNote').setAttribute('aria-pressed', String(viste));
+    $('mostraNote').textContent = viste ? 'nascondi note' : 'mostra note';
+    if (risultato) ['confronto', 'mappa'].forEach(d => $(d).ridisegna && requestAnimationFrame(() => $(d).ridisegna()));
+  });
+
+  // tipo di pagina da creare (decisione del 19 ottobre 2026: dal .psd solo carta stampata, cartelli o cartellini)
+  let tipoPagina = 'cartelli';
+  const pulsantiTipo = [...document.querySelectorAll('.tipo-pagina button')];
+  pulsantiTipo.forEach(b => b.addEventListener('click', () => {
+    tipoPagina = b.dataset.tipo;
+    pulsantiTipo.forEach(x => x.setAttribute('aria-checked', String(x === b)));
+    $('notaTipo').hidden = tipoPagina !== 'cartellini';
+    if (typeof caricaGallerie === 'function') caricaGallerie();
+  }));
+  pulsantiTipo.forEach((b, i) => b.addEventListener('keydown', e => {
+    const passo = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (passo) { e.preventDefault(); const altro = pulsantiTipo[(i + passo + pulsantiTipo.length) % pulsantiTipo.length]; altro.focus(); altro.click(); }
+  }));
+
   function scegli(nuovo, collegamento = null) {
     if (!nuovo) return;
     if (!/\.psd$/i.test(nuovo.name)) {
@@ -443,7 +590,7 @@
     $('fileScelto').textContent = `${nuovo.name} · ${numero(nuovo.size / 1048576)} MB`;
     $('fileScelto').className = 'file-scelto';
     $('avvia').disabled = false;
-    chiudiPasso('passo1', `· ${nuovo.name} · ${numero(nuovo.size / 1048576)} MB`);
+    chiudiPasso('passo1', `· ${tipoPagina} · ${nuovo.name} · ${numero(nuovo.size / 1048576)} MB`);
     apriPasso('passo2');   // un file nuovo: la conversione si rifà, AVVIA CONVERSIONE in vista
   }
   // scelta del file: con il collegamento al file dove il browser lo permette, altrimenti il campo file del browser
@@ -746,11 +893,15 @@
     registro.replaceChildren();
     $('risultato').hidden = true;
     $('passo4').hidden = true;
+    $('passo5').hidden = true;
+    $('vaiPacchetti').hidden = true;
     paginaGenerata = null;
     selezionato = null;
     riga(`import-layout ${file.name}`, 'comando');
     try {
       await regolePronte;
+      riga(`tipo di pagina: ${tipoPagina}`);
+      if (tipoPagina === 'cartellini') throw new Error("la base comune dei cartellini non c'è ancora: per ora import layout crea solo pagine di cartelli (scegli cartelli)");
       if (!window.agPsd) throw new Error('la libreria per leggere i .psd (ag-psd) non si è caricata: serve la rete');
       // sempre da capo: il file si rilegge dal disco a ogni conversione, mai da una lettura di prima
       if (maniglia) file = await maniglia.getFile();
@@ -889,9 +1040,37 @@
   }
 
   let linguettaAperta = null, scelto = null, primaVolta = true;
+  // le tre parti del risultato: partenza, allineamento, contenuto cartelli (una alla volta)
+  function apriParte(parte) {
+    document.querySelectorAll('#parti button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.parte === parte)));
+    document.querySelectorAll('.parte').forEach(p => { p.hidden = p.dataset.parte !== parte; });
+    // i fili si ridisegnano sulle misure della parte che ora si vede
+    requestAnimationFrame(() => ['confronto', 'mappa'].forEach(id => $(id).ridisegna && $(id).ridisegna()));
+  }
+  document.querySelectorAll('#parti button').forEach(b => b.addEventListener('click', () => apriParte(b.dataset.parte)));
+  $('parti').addEventListener('keydown', evento => {
+    const tasti = [...document.querySelectorAll('#parti button:not([hidden])')];
+    const ora = tasti.indexOf(document.activeElement), passo = { ArrowRight: 1, ArrowLeft: -1 }[evento.key];
+    if (passo == null || ora < 0) return;
+    evento.preventDefault();
+    const prossimo = tasti[(ora + passo + tasti.length) % tasti.length];
+    prossimo.focus();
+    apriParte(prossimo.dataset.parte);
+  });
+  // segno sulle parti con qualcosa da fare
+  function segnaParti() {
+    const al = risultato.allineamento;
+    const tastoAl = document.querySelector('#parti [data-parte="allineamento"]');
+    tastoAl.hidden = !al;
+    tastoAl.querySelector('.segno-parte').textContent = al && !al.allineati ? '!' : '';
+    const daVedere = risultato.elementi.filter(e => e.stato !== 'ok').length;
+    document.querySelector('#parti [data-parte="contenuto"] .segno-parte').textContent = daVedere ? `${daVedere} !` : '';
+  }
+
   function mostra() {
     const { elementi, cartelli } = risultato;
     $('risultato').hidden = false;
+    apriParte('partenza');
     primaVolta = true;
     disegnaConfronto();
     disegnaAllineamento();
@@ -924,6 +1103,7 @@
     };
     apriLinguetta(voci[0]);
     disegnaAvvisi();
+    segnaParti();
   }
 
   // DA VERIFICARE: subito a schermo ogni elemento giallo o rosso, con il motivo e cosa fare (avvisi del file delle regole);
@@ -990,8 +1170,9 @@
       const svg = tela(box);
       nodi.forEach(n => filo(svg, box, nodoPsd, n, n.dataset.pagina === risultato.partenza ? 'scelto' : 'tenue', {}, false, anima));
     };
-    const scegli = pagina => {
+    const scegli = (pagina, aMano = false) => {
       risultato.partenza = pagina;
+      if (aMano) risultato.partenzaScelta = pagina;
       nodi.forEach(n => {
         const si = n.dataset.pagina === pagina;
         n.classList.toggle('scelto', si);
@@ -1001,14 +1182,14 @@
       fili();
     };
     nodi.forEach(n => {
-      n.addEventListener('click', () => scegli(n.dataset.pagina));
+      n.addEventListener('click', () => scegli(n.dataset.pagina, true));
       n.addEventListener('keydown', e => {
         const ora = nodi.indexOf(n), passo = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
-        if (passo != null) { e.preventDefault(); const prossimo = nodi[(ora + passo + nodi.length) % nodi.length]; prossimo.focus(); scegli(prossimo.dataset.pagina); }
-        else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); scegli(n.dataset.pagina); }
+        if (passo != null) { e.preventDefault(); const prossimo = nodi[(ora + passo + nodi.length) % nodi.length]; prossimo.focus(); scegli(prossimo.dataset.pagina, true); }
+        else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); scegli(n.dataset.pagina, true); }
       });
     });
-    scegli(proposta);
+    scegli(risultato.partenzaScelta && nodi.some(n => n.dataset.pagina === risultato.partenzaScelta) ? risultato.partenzaScelta : proposta);
     requestAnimationFrame(() => fili(primaVolta));
     box.ridisegna = () => fili();
   }
@@ -1057,7 +1238,7 @@
     return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   }
   function calcolaAllineamento(elementi, mm, meta, psd) {
-    const di = c => elementi.filter(e => e.cartello === c && e.chiave);
+    const di = c => elementi.filter(e => e.cartello === c && e.chiave && !e.rimosso);
     const sup = di('cartello-superiore'), inf = di('cartello-inferiore');
     if (!sup.length || !inf.length) return null;
     const trova = (lista, k) => lista.find(e => e.chiave === k && !e.numero);
@@ -1168,6 +1349,7 @@
     const { elementi, mm, meta, psd } = risultato;
     risultato.allineamento = calcolaAllineamento(elementi, mm, meta, psd);
     disegnaAllineamento();
+    segnaParti();
     if (linguettaAperta) apriLinguetta(linguettaAperta);
     if (paginaGenerata) generaPagina();
   }
@@ -1311,7 +1493,7 @@
     const { psd, elementi, meta } = risultato;
     const mappa = $('mappa');
     mappa.replaceChildren();
-    const suoi = elementi.map((e, i) => ({ e, i })).filter(({ e }) => e.cartello === voce)
+    const suoi = elementi.map((e, i) => ({ e, i })).filter(({ e }) => e.cartello === voce && !e.rimosso)
       .sort((a, b) => a.e.px.y - b.e.px.y || a.e.px.x - b.e.px.x);
 
     // colonna 1: il cartello, ritagliato dall'anteprima, con un numero su ogni elemento
@@ -1424,7 +1606,19 @@
     });
   }
 
-  // valori dell'elemento scelto
+  // ---- valori dell'elemento scelto, modificabili prima di salvare ----
+  // Lo stile (testo, font, grandezza, spaziatura, interlinea, allineamento, colore, stile) vale per l'elemento in tutti e
+  // due i cartelli, che devono coincidere; la posizione si sposta con le frecce come i ritocchi della pagina generata (in
+  // un cartello o in tutti e due). Ogni modifica rigenera la pagina, se è già generata.
+  const gemelli = e => risultato.elementi.filter(o => o.chiave && o.chiave === e.chiave && o.tipo === e.tipo);
+  let attesaRigenera = 0;
+  function modificaValore(e, campo, valore) {
+    if ((campo === 'pt' || campo === 'spaziatura') && valore == null) return;   // un campo lasciato vuoto non cambia niente
+    gemelli(e).forEach(o => { o[campo] = valore; o.modificato = true; });
+    if (paginaGenerata) { clearTimeout(attesaRigenera); attesaRigenera = setTimeout(generaPagina, 350); }
+  }
+  const nCartello = e => e.cartello === 'cartello-superiore' ? 1 : e.cartello === 'cartello-inferiore' ? 2 : 0;
+
   function mostraDettagli(i) {
     const e = risultato.elementi[i];
     scelto = i;
@@ -1433,34 +1627,126 @@
     box.replaceChildren();
     const h = el('h3');
     h.append(el('span', `spia ${e.stato}`), document.createTextNode(`${e.nome} · ${e.tipo} · ${STATI[e.stato]}`));
-    const dl = el('dl');
-    const voce = (nome, ...valore) => { const dd = el('dd'); valore.forEach(v => dd.append(v)); dl.append(el('dt', '', nome), dd); };
-    const colore = c => { const s = el('span', 'campione'); s.style.background = c; return s; };
+    const chiudi = el('button', 'chiudi-dettagli', '×');
+    chiudi.type = 'button';
+    chiudi.setAttribute('aria-label', 'Chiudi i valori');
+    chiudi.addEventListener('click', () => { box.hidden = true; scelto = null; $('mappa').querySelectorAll('.liv').forEach(b => b.classList.remove('scelto')); });
+    h.append(chiudi);
+    const griglia = el('div', 'valori-griglia');
+    const voce = (nome, ...contenuto) => { const r = el('label', 'valore'); r.append(el('span', 'nome-valore', nome), ...contenuto); griglia.append(r); return r; };
+    const numeroCampo = (valore, passo, campo, conv = v => v, inv = v => v) => {
+      const c = el('input');
+      c.type = 'number';
+      c.step = passo;
+      c.value = valore == null ? '' : Math.round(inv(valore) * 100) / 100;
+      c.addEventListener('input', () => { const v = parseFloat(c.value.replace(',', '.')); modificaValore(e, campo, Number.isFinite(v) ? conv(v) : null); });
+      return c;
+    };
+    const coloreCampo = campo => {
+      const riga = el('span', 'colore-campo');
+      const tavola = el('input');
+      tavola.type = 'color';
+      tavola.value = (e[campo] || '#000000').toLowerCase();
+      const esa = el('input');
+      esa.type = 'text';
+      esa.maxLength = 7;
+      esa.value = (e[campo] || '#000000').toUpperCase();
+      tavola.addEventListener('input', () => { esa.value = tavola.value.toUpperCase(); modificaValore(e, campo, esa.value); });
+      esa.addEventListener('input', () => {
+        if (/^#?[0-9a-f]{6}$/i.test(esa.value.trim())) {
+          const v = ('#' + esa.value.trim().replace('#', '')).toUpperCase();
+          tavola.value = v.toLowerCase();
+          modificaValore(e, campo, v);
+        }
+      });
+      riga.append(tavola, esa);
+      return riga;
+    };
+
     if (e.tipo === 'testo') {
-      voce('testo', `«${e.testo.replace(/\n/g, ' ↵ ')}»`);
-      voce('font', `${e.font}${risultato.fileFont[e.font] ? ' → assets/fonts/' + risultato.fileFont[e.font] : ' (da aggiungere in assets/fonts/)'}`);
-      voce('grandezza', e.pt ? `${numero(e.pt)} pt` : '?');
-      voce('spaziatura', `${e.spaziatura} (${numero(e.spaziatura / 1000, 3)} em)`);
-      voce('interlinea', e.interlinea ? `${numero(e.interlinea)} pt` : 'auto');
-      voce('allineamento', e.allineamento);
-      const stile = [e.grassettoFinto && 'grassetto finto', e.corsivoFinto && 'corsivo finto', e.maiuscolo && 'maiuscolo'].filter(Boolean);
-      if (stile.length) voce('stile', stile.join(' · '));
-      if (e.colore) voce('colore', colore(e.colore), e.colore);
+      const testo = el('textarea');
+      testo.rows = 2;
+      testo.value = e.testo;
+      testo.addEventListener('input', () => modificaValore(e, 'testo', testo.value));
+      voce('testo di partenza', testo).classList.add('largo');
+      // font: il catalogo dei font del progetto (assets/fonts/), più quello del .psd se non c'è
+      const font = el('select');
+      const catalogo = REGOLE.lettura.font.catalogo || [];
+      if (!catalogo.some(f => f.nome === e.font)) { const o = el('option', '', `${e.font} (dal .psd)`); o.value = e.font; font.append(o); }
+      catalogo.forEach(f => { const o = el('option', '', f.etichetta); o.value = f.nome; font.append(o); });
+      font.value = e.font;
+      font.addEventListener('change', () => {
+        const f = catalogo.find(x => x.nome === font.value);
+        if (f) risultato.fileFont[f.nome] = f.file;
+        modificaValore(e, 'font', font.value);
+      });
+      voce('font', font);
+      voce('grandezza (pt)', numeroCampo(e.pt, .5, 'pt'));
+      voce('spaziatura (millesimi di em)', numeroCampo(e.spaziatura, 5, 'spaziatura'));
+      const interlinea = numeroCampo(e.interlinea, .5, 'interlinea');
+      interlinea.placeholder = 'auto';
+      voce('interlinea (pt, vuoto = auto)', interlinea);
+      const allinea = el('span', 'scelte');
+      ['sinistra', 'centro', 'destra'].forEach(a => {
+        const b = el('button', '', a);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(e.allineamento === a));
+        b.addEventListener('click', () => { allinea.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); modificaValore(e, 'allineamento', a); });
+        allinea.append(b);
+      });
+      voce('allineamento', allinea);
+      voce('colore', coloreCampo('colore'));
+      const stile = el('span', 'scelte');
+      [['grassettoFinto', 'grassetto'], ['corsivoFinto', 'corsivo'], ['maiuscolo', 'maiuscolo']].forEach(([campo, nome]) => {
+        const b = el('button', '', nome);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(!!e[campo]));
+        b.addEventListener('click', () => { const si = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(si)); modificaValore(e, campo, si); });
+        stile.append(b);
+      });
+      voce('stile', stile);
     } else if (e.tipo === 'forma') {
-      if (e.colore) voce('colore', colore(e.colore), e.colore);
-      if (e.angoli) voce('angoli', e.angoli);
-      if (e.rotazione) voce('rotazione', `${numero(e.rotazione)}°`);
-      if (e.tratto) voce('traccia', `${numero(e.tratto.spessore, 2)} ${e.tratto.unita || ''}${e.tratto.tratteggio ? ' · tratteggiata' : ''}${e.tratto.colore ? ' · ' + e.tratto.colore : ''}`);
+      voce('colore', coloreCampo('colore'));
+      if (e.rotazione != null) voce('rotazione (°)', numeroCampo(e.rotazione, .5, 'rotazione'));
     } else {
-      voce('immagine', e.livello.canvas ? `${e.livello.canvas.width} × ${e.livello.canvas.height} px · si esporterà come png` : 'si esporterà come png');
+      voce('immagine', el('span', 'sola-lettura', e.livello.canvas ? `${e.livello.canvas.width} × ${e.livello.canvas.height} px · png` : 'png'));
     }
-    voce('posizione', `x ${numero(e.mm.x)} · y ${numero(e.mm.y)} mm`);
-    voce('misure', `${numero(e.mm.w)} × ${numero(e.mm.h)} mm`);
+
+    // posizione: le frecce spostano l'elemento (ritocchi), in questo cartello o in tutti e due
+    const n = nCartello(e);
+    if (n && e.chiave) {
+      const t = (((risultato.ritocchi || {})[n] || {})[e.chiave]) || { x: 0, y: 0 };
+      const pos = el('span', 'posizione');
+      const valore = el('span', 'sola-lettura', `x ${numero(e.mm.x + t.x)} · y ${numero(e.mm.y + t.y)} mm · ${numero(e.mm.w)} × ${numero(e.mm.h)} mm`);
+      const frecce = el('span', 'frecce');
+      [['▲', 0, -1, 'più su'], ['▼', 0, 1, 'più giù'], ['◀', -1, 0, 'più a sinistra'], ['▶', 1, 0, 'più a destra']].forEach(([s, x, y, nome]) => {
+        const b = el('button', 'tasto-sposta', s);
+        b.type = 'button';
+        b.setAttribute('aria-label', nome);
+        b.addEventListener('click', evento => {
+          const passo = evento.shiftKey ? .1 : .5;
+          selezionato = { n, k: e.chiave };
+          $('ritocchiDue').checked = due.querySelector('input').checked;
+          ritocca(x * passo, y * passo);
+          if (paginaGenerata) { clearTimeout(attesaRigenera); attesaRigenera = setTimeout(generaPagina, 350); }
+          mostraDettagli(i);
+        });
+        frecce.append(b);
+      });
+      const due = el('label', 'ritocchi-due');
+      const spunta = el('input');
+      spunta.type = 'checkbox';
+      spunta.checked = $('ritocchiDue').checked;
+      due.append(spunta, document.createTextNode(' nei due cartelli'));
+      pos.append(valore, frecce, due);
+      voce('posizione e misure', pos).classList.add('largo');
+    }
     const m = e.chiave && MODULI[e.chiave];
-    voce('modulo', m ? `${m.comando}${m.blocco ? ' · blocco ' + m.blocco : ''}` : 'nessuno: da assegnare');
-    if (m) voce('file', m.file);
-    e.note.forEach(n => dl.append(el('dd', 'nota', n)));
-    box.append(h, dl);
+    voce('modulo', el('span', 'sola-lettura', m ? `${m.comando}${m.blocco ? ' · blocco ' + m.blocco : ''} · ${m.file}` : 'nessuno: da assegnare')).classList.add('largo');
+    const note = el('div', 'note-valori');
+    e.note.forEach(nn => note.append(el('p', 'nota', nn)));
+    if (e.modificato) note.append(el('p', 'nota-modificato', 'modificato: vale per tutti e due i cartelli'));
+    box.append(h, griglia, note);
     box.hidden = false;
   }
 
@@ -1477,7 +1763,8 @@
     try {
       const base = await (await fetch('modelli/cartello-base.html', { cache: 'no-store' })).text();
       const immagini = {};
-      risultato.elementi.forEach(e => { if (e.tipo === 'immagine' && e.chiave && e.livello.canvas && !immagini[e.chiave]) immagini[e.chiave] = e.livello.canvas.toDataURL('image/png'); });
+      risultato.elementi.forEach(e => { if (e.tipo === 'immagine' && e.chiave && !e.rimosso && e.livello.canvas && !immagini[e.chiave]) immagini[e.chiave] = e.livello.canvas.toDataURL('image/png'); });
+      (risultato.extra || []).forEach(x => { if (x.tipo === 'immagine' && x.src) immagini[`extra-${x.id}`] = x.src; });
       const nome = file.name.replace(/\.psd$/i, '');
       paginaGenerata = ImportGenera.pagina(risultato, { base, nome, negozio: 'luxury', immagini });
       // nell'anteprima i percorsi ../assets/ partono dalla cartella modelli/
@@ -1486,6 +1773,8 @@
       riquadro.onload = () => { adattaAnteprima(); preparaRitocchi(); if ($('sovrapponi').getAttribute('aria-pressed') === 'true') sovrapponi(true); };
       riquadro.srcdoc = anteprima;
       $('passo4').hidden = false;
+      if ($('passo5').hidden) { $('passo5').hidden = false; if (!$('nomeModulo').value) $('nomeModulo').value = nome; caricaGallerie(); }
+      segnaCollegata();
       stato.className = 'stato-anteprima';
       stato.textContent = `generata alle ${new Date().toLocaleTimeString('it-IT')} · partenza: Nuova Base Comune con i moduli comuni${risultato.allineato ? ' · cartelli allineati' : ''}`;
       riga(`pagina generata · ${nome}`, 'ok');
@@ -1496,7 +1785,10 @@
       stato.textContent = `errore: ${errore.message || errore}`;
     }
   }
-  $('genera').addEventListener('click', async () => { await generaPagina(); $('passo4').scrollIntoView({ block: 'start', behavior: piano.matches ? 'auto' : 'smooth' }); });
+  $('genera').addEventListener('click', async () => {
+    await generaPagina();
+    const nomePartenza = risultato.partenza === BASE.pagina ? BASE.nome : (MODELLI.find(m => m.pagina === risultato.partenza) || {}).nome || risultato.partenza;
+    chiudiPasso('risultato', `· partenza: ${nomePartenza}${risultato.allineamento ? (risultato.allineamento.allineati ? ' · cartelli allineati' : ' · cartelli diversi') : ''} · ${risultato.elementi.length} elementi`); $('passo4').scrollIntoView({ block: 'start', behavior: piano.matches ? 'auto' : 'smooth' }); });
   // l'anteprima è larga come una finestra (1280 px) e rimpicciolita per stare nella pagina
   function adattaAnteprima() {
     const cornice = $('corniceAnteprima'), riquadro = $('anteprima');
@@ -1570,15 +1862,19 @@
       nodiDi(doc, n, k).forEach(nodo => { nodo.style.translate = dx || dy ? `${dx}mm ${dy}mm` : ''; });
     }));
     document.querySelectorAll('.ritocchi-cartello button').forEach(b => b.setAttribute('aria-pressed', String(!!selezionato && selezionato.k === '*' && +b.dataset.cartello === selezionato.n)));
+    collocaRitocchi();
     if (!selezionato) return;
     const { n, k } = selezionato;
     const tutto = k === '*';
     $('ritocchiDue').closest('label').hidden = tutto;
     $('azzeraElemento').textContent = tutto ? 'azzera cartello' : 'azzera elemento';
-    if (tutto) doc.getElementById('card' + n)?.classList.add('sel-import');
+    if (tutto) (n ? [n] : [1, 2]).forEach(c => doc.getElementById('card' + c)?.classList.add('sel-import'));
     else nodiDi(doc, n, k).forEach(nodo => nodo.classList.add('sel-import'));
     const nome = $('ritocchiNome');
-    nome.replaceChildren(document.createTextNode(tutto ? 'tutto il cartello' : (NOMI_EL()[k] || k)), document.createTextNode(' '), el('small', '', `· ${n === 1 ? 'cartello superiore' : 'cartello inferiore'}`));
+    const nomeCartello = n === 0 ? 'entrambi i cartelli' : n === 1 ? 'cartello superiore' : 'cartello inferiore';
+    // tutto un cartello: solo il cartello che si sta muovendo, in bianco; un elemento: il suo nome e, in bianco, il cartello
+    if (tutto) nome.replaceChildren(el('span', 'solo-cartello', nomeCartello));
+    else nome.replaceChildren(document.createTextNode(NOMI_EL()[k] || k), document.createTextNode(' '), el('small', '', `· ${nomeCartello}`));
     const t = tutto ? ((risultato.ritocchiCartello || {})[n] || { x: 0, y: 0 }) : ritoccoDi(n, k), valore = $('ritocchiValore');
     valore.textContent = t.x || t.y ? [t.y ? `y ${segnoMm(t.y)}` : null, t.x ? `x ${segnoMm(t.x)}` : null].filter(Boolean).join(' · ') : 'come nel .psd';
     valore.classList.toggle('cambiato', !!(t.x || t.y));
@@ -1588,15 +1884,19 @@
     const { n, k } = selezionato;
     risultato.ritocchi = risultato.ritocchi || {};
     const tutto = k === '*';
-    const cartelli = tutto || !$('ritocchiDue').checked ? [n] : [1, 2];
+    // entrambi i cartelli (n 0): i due cartelli insieme, ognuno con tutti i suoi elementi
+    const cartelli = tutto ? (n ? [n] : [1, 2]) : !$('ritocchiDue').checked ? [n] : [1, 2];
     // il riquadro del brand porta con sé il logo che contiene; tutto il cartello: tutti i suoi elementi
-    const chiavi = tutto ? chiaviCartello(n) : k === 'riquadro-brand' && MODULI['logo-brand'] ? [k, 'logo-brand'] : [k];
+    const chiavi = c => (tutto ? chiaviCartello(c) : k === 'riquadro-brand' && MODULI['logo-brand'] ? [k, 'logo-brand'] : [k]);
     if (tutto) {
-      const c = ((risultato.ritocchiCartello = risultato.ritocchiCartello || {})[n] = risultato.ritocchiCartello[n] || { x: 0, y: 0 });
-      c.x = Math.round((c.x + dx) * 100) / 100;
-      c.y = Math.round((c.y + dy) * 100) / 100;
+      risultato.ritocchiCartello = risultato.ritocchiCartello || {};
+      [n, ...(n ? [] : [1, 2])].forEach(q => {
+        const c = (risultato.ritocchiCartello[q] = risultato.ritocchiCartello[q] || { x: 0, y: 0 });
+        c.x = Math.round((c.x + dx) * 100) / 100;
+        c.y = Math.round((c.y + dy) * 100) / 100;
+      });
     }
-    cartelli.forEach(c => chiavi.forEach(ch => {
+    cartelli.forEach(c => chiavi(c).forEach(ch => {
       const t = ((risultato.ritocchi[c] = risultato.ritocchi[c] || {})[ch] = risultato.ritocchi[c][ch] || { x: 0, y: 0 });
       t.x = Math.round((t.x + dx) * 100) / 100;
       t.y = Math.round((t.y + dy) * 100) / 100;
@@ -1613,8 +1913,13 @@
     if (!selezionato) return;
     const { n, k } = selezionato;
     if (k === '*') {
+      // azzera: il cartello (o i due) torna dove l'aveva messo il .psd
       const c = (risultato.ritocchiCartello || {})[n];
-      if (c) { ritocca(-c.x, -c.y); risultato.ritocchiCartello[n] = { x: 0, y: 0 }; mostraRitocchi(); }
+      if (c) {
+        ritocca(-c.x, -c.y);
+        [n, ...(n ? [] : [1, 2])].forEach(q => { if (risultato.ritocchiCartello[q]) risultato.ritocchiCartello[q] = { x: 0, y: 0 }; });
+        mostraRitocchi();
+      }
       return;
     }
     const cartelli = $('ritocchiDue').checked ? [1, 2] : [n];
@@ -1628,6 +1933,28 @@
     mostraRitocchi();
   }));
   $('deseleziona').addEventListener('click', () => { selezionato = null; mostraRitocchi(); });
+  // il riquadro dei ritocchi si trascina dalla sua barra; di partenza sta in alto a destra sopra l'anteprima
+  let posizioneRitocchi = null;
+  function collocaRitocchi() {
+    const riquadro = $('ritocchi'), corpo = riquadro.parentElement, cornice = $('corniceAnteprima');
+    if (!corpo.offsetWidth) return;
+    const larghezza = riquadro.offsetWidth, altezza = riquadro.offsetHeight;
+    let { x, y } = posizioneRitocchi || { x: cornice.offsetLeft + cornice.offsetWidth - larghezza - 12, y: cornice.offsetTop + 12 };
+    x = Math.max(0, Math.min(x, corpo.offsetWidth - larghezza));
+    y = Math.max(0, Math.min(y, corpo.offsetHeight - altezza));
+    riquadro.style.left = `${x}px`;
+    riquadro.style.top = `${y}px`;
+  }
+  $('ritocchiBarra').addEventListener('pointerdown', evento => {
+    const riquadro = $('ritocchi');
+    const partenza = { x: evento.clientX, y: evento.clientY, l: riquadro.offsetLeft, t: riquadro.offsetTop };
+    $('ritocchiBarra').setPointerCapture(evento.pointerId);
+    const muovi = e => { posizioneRitocchi = { x: partenza.l + e.clientX - partenza.x, y: partenza.t + e.clientY - partenza.y }; collocaRitocchi(); };
+    const fine = () => { $('ritocchiBarra').removeEventListener('pointermove', muovi); $('ritocchiBarra').removeEventListener('pointerup', fine); };
+    $('ritocchiBarra').addEventListener('pointermove', muovi);
+    $('ritocchiBarra').addEventListener('pointerup', fine);
+  });
+  window.addEventListener('resize', collocaRitocchi);
   // frecce della tastiera: con un elemento selezionato, nella pagina e nell'anteprima
   const frecce = evento => {
     if (!selezionato || /input|select|textarea/i.test((evento.target.tagName || ''))) return;
@@ -1661,8 +1988,200 @@
     mostraRitocchi();
   }
 
+  // ---- passo 5: salva come modulo (Gestione pacchetti, galleria esistente o nuova; nessun negozio) ----
+  // La cartella del progetto: dentro la pagina operatore è quella collegata per tutte le sezioni (collegaProgetto), da sola
+  // la chiede questa pagina. Salva con Associa.salvaImport: moduli/<nome>.html, le grafiche, la miniatura, la galleria.
+  const operatore = window.parent !== window && typeof window.parent.collegaProgetto === 'function' ? window.parent : null;
+  const SCRIVIBILE = typeof (operatore || window).showDirectoryPicker === 'function';
+  let progetto = null;
+  const statoSalva = (testo, tipo = '') => { const p = $('statoSalva'); p.textContent = testo; p.className = `stato-salva ${tipo}`.trim(); };
+  const segnaCollegata = () => {
+    const b = $('collegaCartella');
+    b.classList.toggle('collegata', !!progetto);
+    b.textContent = progetto ? 'cartella collegata' : 'collega la cartella del progetto';
+    $('salvaModulo').disabled = !progetto || !paginaGenerata;
+  };
+  if (operatore?.progettoCollegato) progetto = operatore.progettoCollegato;
+  else operatore?.progettoSenzaChiedere?.().then(cartella => { if (cartella && !progetto) { progetto = cartella; segnaCollegata(); } }).catch(() => {});
+  if (!SCRIVIBILE) { $('collegaCartella').disabled = true; statoSalva('serve chrome o edge sul computer per salvare nella cartella del progetto', 'err'); }
+  $('collegaCartella').addEventListener('click', async () => {
+    try {
+      const passaggio = testo => statoSalva(testo, 'lavora');
+      progetto = operatore ? await operatore.collegaProgetto(passaggio) : await Associa.scegliProgetto(passaggio);
+      statoSalva(`cartella "${progetto.name}" collegata`, 'ok');
+    } catch (errore) {
+      if (errore.name !== 'AbortError') statoSalva(errore.message || String(errore), 'err');
+    }
+    segnaCollegata();
+  });
+
+  // gallerie dei cartelli di Gestione pacchetti (dall'elenco e dai loro file), più una nuova
+  async function caricaGallerie() {
+    const select = $('galleriaModulo');
+    select.replaceChildren();
+    // di partenza la scelta da fare: una galleria esistente o + nuova galleria
+    const invito = el('option', '', 'seleziona o crea una galleria');
+    invito.value = '-';
+    invito.disabled = true;
+    invito.selected = true;
+    const nuova = el('option', '', '+ nuova galleria');
+    nuova.value = '';
+    select.append(invito, nuova);
+    try {
+      const elenco = await (await fetch('assets/pacchetti/elenco.js', { cache: 'no-store' })).text();
+      const ids = [...(elenco.match(/installa\(\[([\s\S]*?)\]/) || [, ''])[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+      const gruppo = el('optgroup');
+      gruppo.label = 'gallerie esistenti';
+      for (const id of ids) {
+        const testo = await (await fetch(`assets/pacchetti/${id}.js`, { cache: 'no-store' })).text();
+        const tipo = (testo.match(/tipo:\s*'([^']+)'/) || [])[1];
+        if (tipoPagina === 'cartellini' ? tipo !== 'cartellini' : tipo !== 'cartelli' && tipo !== 'promo') continue;
+        const titolo = (testo.match(/titolo:\s*'((?:[^'\\]|\\.)*)'/) || [, id])[1].replace(/\\'/g, "'");
+        const o = el('option', '', `${titolo}${tipo === 'promo' ? ' · promo stagionali' : ''}`);
+        o.value = id;
+        o.dataset.tipo = tipo;
+        gruppo.append(o);
+      }
+      select.append(gruppo);
+    } catch (errore) { console.error(errore); }
+    $('rigaNuovaGalleria').hidden = select.value !== '';
+  }
+  $('galleriaModulo').addEventListener('change', () => { $('rigaNuovaGalleria').hidden = $('galleriaModulo').value !== ''; });
+
+  // miniatura del modulo: il cartello superiore su fondo scuro, 1280 × 720
+  function miniaturaModulo() {
+    const { psd, meta } = risultato, sorgente = $('tela'), s = sorgente.width / psd.width;
+    const c = document.createElement('canvas');
+    c.width = 1280; c.height = 720;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#121110';
+    ctx.fillRect(0, 0, c.width, c.height);
+    const w = sorgente.width, h = meta * s, scala = Math.min(1180 / w, 640 / h);
+    ctx.drawImage(sorgente, 0, 0, w, h, (1280 - w * scala) / 2, (720 - h * scala) / 2, w * scala, h * scala);
+    return new Promise(fatto => c.toBlob(fatto, 'image/jpeg', .88));
+  }
+  const NOMI_SPECIFICHE = { 'logo-brand': 'Brand', 'claim-sx': 'Claim', descrizione: 'Descrizione', 'prezzo-originario': 'Doppio prezzo', percentuale: 'Sconto', 'prezzo-finale': 'Prezzo finale' };
+
+  $('salvaModulo').addEventListener('click', async () => {
+    const nome = $('nomeModulo').value.trim();
+    if (!nome) { statoSalva('scrivi il nome del modulo', 'err'); $('nomeModulo').focus(); return; }
+    if ($('galleriaModulo').value === '-') { statoSalva('scegli la galleria, o + nuova galleria', 'err'); $('galleriaModulo').focus(); return; }
+    const galleria = $('galleriaModulo').value || null;
+    const titoloGalleria = $('nomeGalleria').value.trim() || 'Test import';
+    const tipo = galleria ? ($('galleriaModulo').selectedOptions[0].dataset.tipo || tipoPagina) : tipoPagina;
+    const bottone = $('salvaModulo');
+    bottone.disabled = true;
+    try {
+      statoSalva('preparo la pagina e le grafiche…', 'lavora');
+      const base = await (await fetch('modelli/cartello-base.html', { cache: 'no-store' })).text();
+      const grafiche = {};
+      for (const e of risultato.elementi) {
+        if (e.tipo !== 'immagine' || !e.chiave || e.rimosso || grafiche[e.chiave] || !e.livello.canvas) continue;
+        grafiche[e.chiave] = await new Promise(fatto => e.livello.canvas.toBlob(fatto, 'image/png'));
+      }
+      for (const x of risultato.extra || []) if (x.tipo === 'immagine' && x.src && !x.rimosso) grafiche[`extra-${x.id}`] = await (await fetch(x.src)).blob();
+      const fontNuovi = Object.fromEntries(Object.values(risultato.fontNuovi || {}).map(f => [f.file, new Blob([f.dati])]));
+      const chiavi = new Set(risultato.elementi.map(e => e.chiave));
+      const specifiche = [...new Set(Object.entries(NOMI_SPECIFICHE).filter(([k]) => chiavi.has(k)).map(([, v]) => v))];
+      const esito = await Associa.salvaImport(progetto, {
+        nome, galleria, titoloGalleria, tipo,
+        font: fontNuovi,
+        html: percorsi => ImportGenera.pagina({ ...risultato, fontUrl: null }, { base, nome, negozio: 'luxury', immagini: percorsi })
+          .replace('<meta charset="UTF-8">', `<meta charset="UTF-8">\n  <meta name="storecraft-import" content="${file.name.replace(/"/g, '')}">`),
+        grafiche,
+        miniatura: await miniaturaModulo(),
+        scheda: { tipo: tipoPagina === 'cartellini' ? 'CARTELLINO' : 'CARTELLO', specifiche },
+        avviso: testo => statoSalva(testo, 'lavora')
+      });
+      statoSalva(`salvato: ${esito.pagina} nella galleria ${galleria ? $('galleriaModulo').selectedOptions[0].textContent : `«${titoloGalleria}»`} (${esito.galleria}) · in nessun negozio`, 'ok');
+      riga(`modulo salvato · ${esito.pagina} · galleria ${esito.galleria}`, 'ok');
+      $('vaiPacchetti').hidden = false;
+      await caricaGallerie();
+      $('galleriaModulo').value = esito.galleria;
+      $('rigaNuovaGalleria').hidden = true;
+    } catch (errore) {
+      console.error(errore);
+      statoSalva(`errore: ${errore.message || errore}`, 'err');
+    } finally {
+      bottone.disabled = !progetto || !paginaGenerata;
+    }
+  });
+  $('vaiPacchetti').addEventListener('click', () => {
+    if (operatore) operatore.location.hash = 'pacchetti';
+    else window.open('operatore.html#pacchetti', '_blank');
+  });
+
+  // ---- Layout Studio: l'editor a pagina intera (layout-studio.html, in una scheda nuova) ----
+  // L'editor legge i dati della conversione (window.opener.ImportLayout.risultato) e con APPLICA li riporta qui:
+  // posizioni e misure in mm, stili, moduli cambiati, elementi tolti, elementi aggiunti (con un modulo: diventano elementi
+  // come quelli del .psd; senza: risultato.extra, grafica fissa), immagini scontornate, font importati; poi la pagina si
+  // rigenera. I ritocchi entrano nelle posizioni.
+  $('apriEditor').addEventListener('click', () => {
+    const finestra = window.open('layout-studio.html', 'storecraft-layout-studio');
+    if (!finestra) statoAnteprima('il browser ha bloccato la finestra dell\'editor: permetti le finestre di questo sito', true);
+  });
+  const statoAnteprima = (testo, errore = false) => { const p = $('statoAnteprima'); p.textContent = testo; p.className = `stato-anteprima${errore ? ' err' : ''}`; };
+  const telaDa = src => new Promise((fatto, sbagliato) => {
+    const img = new Image();
+    img.onload = () => { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0); fatto(c); };
+    img.onerror = sbagliato;
+    img.src = src;
+  });
+  async function applicaEditor({ elementi, fontNuovi = [] }) {
+    const r = risultato;
+    const px = v => v * r.dpi / 25.4, meta = r.mm(r.meta || r.psd.height / 2);
+    const extra = [];
+    for (const m of elementi) {
+      const dy = m.cartello === 'cartello-inferiore' ? meta : 0;
+      let e = m.origine != null ? r.elementi[m.origine] : null;
+      // un elemento del .psd diventato grafica fissa: esce dagli elementi e va tra gli aggiunti
+      if (e && !m.chiave && e.chiave && e.chiave !== 'footer') { e.rimosso = true; extra.push({ ...m, origine: null, id: `d${m.origine}`, rimosso: !m.visibile }); continue; }
+      if (!e && m.chiave) {
+        e = { nome: m.nome, chiave: m.chiave, cartello: m.cartello, tipo: m.tipo, stato: 'ok', note: ['aggiunto in layout studio'], aggiunto: true,
+          mm: { x: 0, y: 0, w: 0, h: 0 }, px: { x: 0, y: 0, w: 0, h: 0 }, livello: { name: m.nome, hidden: false, canvas: null } };
+        r.elementi.push(e);
+        m.origine = r.elementi.length - 1;
+      }
+      if (!e) { extra.push({ ...m, rimosso: !m.visibile }); continue; }
+      e.cartello = m.cartello;
+      e.rimosso = !m.visibile;
+      if (m.chiave) e.chiave = m.chiave;
+      if (m.tipo === 'forma' && m.forma === 'linea') {
+        // la barra: riquadro ruotato dalla lunghezza, dallo spessore e dalla rotazione
+        const a = (m.rotazione || 0) * Math.PI / 180, c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
+        const W = m.w * c + m.h * s, H = m.w * s + m.h * c, cx = m.x + m.w / 2, cy = m.y + m.h / 2;
+        e.mm = { x: cx - W / 2, y: cy - H / 2 - dy, w: W, h: H };
+        Object.assign(e, { rotazione: m.rotazione || 0, lungo: m.w, spesso: m.h, colore: m.traccia || m.riempimento });
+      } else {
+        e.mm = { x: m.x, y: m.y - dy, w: m.w, h: m.h };
+        if (m.tipo === 'forma') e.colore = m.riempimento;
+      }
+      e.px = { x: px(e.mm.x), y: px(e.mm.y + dy), w: px(e.mm.w), h: px(e.mm.h) };
+      if (m.tipo === 'testo') Object.assign(e, { testo: m.testo, font: m.font, pt: m.pt, spaziatura: m.spaziatura, interlinea: m.interlinea, allineamento: m.allineamento,
+        colore: m.colore, grassettoFinto: !!m.grassetto, corsivoFinto: !!m.corsivo, maiuscolo: !!m.maiuscolo });
+      if (m.tipo === 'immagine' && m.src && m.src !== e.srcEditor) { e.livello.canvas = await telaDa(m.src); e.srcEditor = m.src; }
+      if (m.richiesta != null) e.richiesta = m.richiesta;
+      e.modificato = true;
+    }
+    r.extra = extra;
+    r.ritocchi = {};
+    r.ritocchiCartello = {};
+    // font importati: nell'anteprima dal loro indirizzo, salvando in assets/fonts/
+    r.fontUrl = r.fontUrl || {};
+    r.fontNuovi = r.fontNuovi || {};
+    fontNuovi.forEach(f => {
+      r.fileFont[f.nome] = f.file;
+      if (!r.fontUrl[f.nome]) r.fontUrl[f.nome] = URL.createObjectURL(new Blob([f.dati]));
+      r.fontNuovi[f.nome] = { file: f.file, dati: f.dati };
+    });
+    r.allineamento = calcolaAllineamento(r.elementi, r.mm, r.meta, r.psd);
+    mostra();
+    await generaPagina();
+    riga('modifiche di layout studio riportate nella pagina generata', 'ok');
+  }
+
   // per le prove: la pagina si può pilotare da un'altra pagina dello stesso sito
-  window.ImportLayout = { scegli, converti, generaPagina, seleziona: (n, k) => { selezionato = { n, k }; mostraRitocchi(); }, ritocca, get risultato() { return risultato; }, get pagina() { return paginaGenerata; } };
+  window.ImportLayout = { applicaEditor, nomeFile: () => (file ? file.name : ''), scegli, converti, generaPagina, seleziona: (n, k) => { selezionato = { n, k }; mostraRitocchi(); }, ritocca, get risultato() { return risultato; }, get pagina() { return paginaGenerata; } };
 })();
 </script>
 </body>

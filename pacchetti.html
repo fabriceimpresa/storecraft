@@ -2,17 +2,17 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261018-01"></script>
+  <script src="assets/js/negozi.js?v=20261019-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gestione pacchetti</title>
-  <script src="assets/js/operatore-sezione.js?v=20261018-01"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
   <!-- tutti i pacchetti del progetto: il modulo e l'elenco, che carica i file dei pacchetti -->
-  <script src="assets/js/pacchetti.js?v=20261018-01"></script>
-  <script src="assets/pacchetti/elenco.js?v=20261018-01"></script>
+  <script src="assets/js/pacchetti.js?v=20261019-01"></script>
+  <script src="assets/pacchetti/elenco.js?v=20261019-01"></script>
   <!-- scheda del modulo: associare il modulo ai negozi, scrivendo nella cartella del progetto collegata -->
-  <script src="assets/js/admin-negozio.js?v=20261018-01"></script>
-  <script src="assets/js/pacchetti-associa.js?v=20261018-01"></script>
+  <script src="assets/js/admin-negozio.js?v=20261019-01"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261019-01"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
   <style>
     /* Gestione pacchetti (area operatore: non collegata, non copiata ai clienti). Database generale dei moduli: per ogni
@@ -124,6 +124,11 @@
     .esito:empty::before { content: none; }
     .esito.ok { color: #8fbf7a; }
     .esito.err { color: #e07a5f; }
+    /* ANNULLA dopo un'operazione sulle dashboard: rimette i file com'erano */
+    .esito .annulla-op { margin-left: 10px; font: inherit; text-transform: lowercase; letter-spacing: .06em; padding: 3px 10px; cursor: pointer;
+      background: transparent; color: var(--oro); border: 1px solid var(--oro); }
+    .esito .annulla-op:hover { background: var(--oro); color: #121110; }
+    .esito .annulla-op:disabled { opacity: .45; cursor: default; }
 
     /* + nuovo modulo, sotto la pulsantiera a sinistra */
     .azioni { display: flex; justify-content: flex-start; align-items: center; gap: 12px; margin: 38px 0 -12px; }   /* equidistante: 38 px sopra (dalla pulsantiera) e 38 sotto (al primo carosello, che ha 50 px sopra) */
@@ -519,7 +524,7 @@
   async function testoDashboard(negozio) {
     if (progetto) {
       const file = await (await (await progetto.getDirectoryHandle('assets')).getDirectoryHandle('negozi')).getFileHandle(`${negozio}-dashboard.js`);
-      return (await file.getFile()).text();
+      return (await Associa.istantanea(file)).text();   // letta subito, anche se OneDrive tocca il file
     }
     const risposta = await fetch(`assets/negozi/${negozio}-dashboard.js`, { cache: 'no-store' });
     return risposta.ok ? risposta.text() : '';
@@ -920,10 +925,32 @@
         if (!progetto) await collega();
         const avviso = testo => { esito.textContent = testo; esito.className = 'esito'; };
         const dati = { modulo, tipo: pacchetto.tipo, cartella: cartellaModulo, negozio, avviso };
-        if (voglio) await Associa.associa(progetto, dati);
-        else await Associa.togli(progetto, dati);
-        esito.textContent = `fatto: ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${Negozi.scheda(negozio)?.nome || negozio}. ricorda il commit per pubblicarlo`;
+        let scelte = null;
+        if (voglio) {
+          // la galleria del negozio dove va il widget e, per un modulo import, il logo del .psd
+          scelte = await Associa.chiediAssociazione({ progetto, ...dati, nomeNegozio: Negozi.scheda(negozio)?.nome || negozio });
+          if (!scelte) { esito.textContent = 'annullato: nessuna modifica'; esito.className = 'esito'; return; }
+        }
+        // i file com'erano prima, per ANNULLA
+        const passi = await Associa.registrando(() => voglio ? Associa.associa(progetto, { ...dati, ...scelte }) : Associa.togli(progetto, dati));
+        const nomeN = Negozi.scheda(negozio)?.nome || negozio;
+        esito.replaceChildren(`fatto: ${voglio ? 'aggiunto alla' : 'tolto dalla'} dashboard di ${nomeN}. ricorda il commit per pubblicarlo `);
         esito.className = 'esito ok';
+        if (passi.size) {
+          const indietro = nodo('button', 'annulla-op', '↶ annulla');
+          indietro.type = 'button';
+          indietro.title = `rimette i ${passi.size} file com'erano prima`;
+          indietro.addEventListener('click', async () => {
+            indietro.disabled = true;
+            try {
+              await Associa.annulla(progetto, passi, testo => { esito.textContent = testo; esito.className = 'esito'; });
+              esito.textContent = `annullato: ${modulo.titolo} è di nuovo com'era nella dashboard di ${nomeN}`;
+              esito.className = 'esito ok';
+            } catch (errore) { console.error(errore); esito.textContent = `errore nell'annullare (${errore.name}): ${errore.message}`; esito.className = 'esito err'; }
+            await righe();
+          });
+          esito.append(indietro);
+        }
       } catch (errore) {
         if (errore.name === 'AbortError') { esito.textContent = 'cartella non collegata: nessuna modifica'; esito.className = 'esito'; }
         else { console.error(errore); esito.textContent = `errore (${errore.name}): ${errore.message}`; esito.className = 'esito err'; }

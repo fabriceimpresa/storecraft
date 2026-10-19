@@ -1372,6 +1372,8 @@ body:has(.store-switch) .mode-switcher .mode-btn { flex: 1 1 0; justify-content:
 /* nel tema scuro bianco un poco spento (opacità 85%), meno acceso sul fondo scuro */
 .store-logo { display: block; width: 100%; max-width: var(--store-logo-larghezza, 205px); height: auto; filter: brightness(0) invert(1); opacity: .85; }
 :root[data-interface-theme="light"] .store-logo { filter: brightness(0); opacity: 1; }
+/* logo del negozio a colori (logoAColori nella scheda, + NUOVO NEGOZIO): resta com'è, in tutti e due i temi */
+.store-logo.a-colori, :root[data-interface-theme="light"] .store-logo.a-colori { filter: none; opacity: 1; }
 /* Luxury, tema chiaro: logo taupe scuro (#544e44 circa) invece del nero, meno duro sul fondo avorio */
 :root[data-negozio="luxury"][data-interface-theme="light"] .store-logo { filter: brightness(0) invert(28%) sepia(50%) saturate(110%); }
 .store-identity { text-align: right; padding-bottom: 3px; }

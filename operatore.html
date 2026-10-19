@@ -2,16 +2,16 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261018-01"></script>
+  <script src="assets/js/negozi.js?v=20261019-01"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261018-01"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261019-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
   <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
-       e splash page. Nella copia per un cliente (installati.js con copiaCliente) mostra solo Importa e Gestisci loghi
+       e splash page. Nella copia per un cliente (installati.js con copiaCliente) mostra solo Gestione negozi, Controllo codice e Loghi
        ufficiali, per aggiornare i menu BRAND di quel cliente senza toccare il progetto madre. Raccoglie l'importazione e la gestione dei loghi ufficiali
-       (logoimport.html, logogestione.html), la guida tecnica (guida-componenti.html), i negozi con il loro diagramma (gestione-negozi.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
+       (loghi-ufficiali.html, fino al 19 ottobre 2026 logoimport.html e logogestione.html), la guida tecnica (guida-componenti.html), i negozi con il loro diagramma (gestione-negozi.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
        Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
@@ -313,10 +313,9 @@
     <nav class="menu" id="menu" aria-label="Strumenti dell'operatore">
       <button class="voce" type="button" data-vista="negozi">Gestione negozi</button>
       <button class="voce" type="button" data-vista="pacchetti">Gestione pacchetti</button>
-      <button class="voce" type="button" data-vista="layout">Import layout</button>
+      <button class="voce" type="button" data-vista="layout">Importa layout .psd</button>
+      <button class="voce" type="button" data-vista="loghi">Loghi ufficiali</button>
       <button class="voce" type="button" data-vista="struttura">Controllo codice</button>
-      <button class="voce" type="button" data-vista="importa">Importa loghi ufficiali</button>
-      <button class="voce" type="button" data-vista="gestione">Gestisci loghi ufficiali</button>
       <button class="voce" type="button" data-vista="copia">Prepara copia per un cliente</button>
       <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
       <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
@@ -333,19 +332,16 @@
       <iframe data-src="pacchetti.html?incorporata" title="Gestione pacchetti"></iframe>
     </section>
     <section class="vista" data-vista="layout" hidden>
-      <iframe data-src="import-layout.html?incorporata" title="Import layout"></iframe>
+      <iframe data-src="import-layout.html?incorporata" title="Importa layout .psd"></iframe>
     </section>
-    <section class="vista" data-vista="importa" hidden>
-      <iframe data-src="logoimport.html?incorporata" title="Importa loghi ufficiali"></iframe>
-    </section>
-    <section class="vista" data-vista="gestione" hidden>
-      <iframe data-src="logogestione.html?incorporata" title="Gestisci loghi ufficiali"></iframe>
+    <section class="vista" data-vista="loghi" hidden>
+      <iframe data-src="loghi-ufficiali.html?incorporata" title="Loghi ufficiali"></iframe>
     </section>
 
     <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Prepara copia per un cliente">
       <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
         le schede dei negozi, con installati.js scritto per loro, e quest'area ridotta: gestione negozi e gestione pagine (ghost, ordine e copie dei moduli) e loghi ufficiali
-        (importa e gestisci), per aggiornare i menu BRAND del cliente. Restano fuori Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
+        (importa, in evidenza, sostituisci, elimina), per aggiornare i menu BRAND del cliente. Restano fuori Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
         di lavoro, le pagine di prova _*, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
@@ -387,7 +383,7 @@
 
   <script>
     // ----- Viste delle sezioni dentro la cornice -----
-    // #negozi, #struttura, #pacchetti, #layout, #importa, #gestione, #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
+    // #negozi, #struttura, #pacchetti, #layout, #loghi (anche #importa e #gestione di prima), #copia nell'indirizzo: si apre la sezione (anche con avanti / indietro del browser)
     // Cartella del progetto collegata per scrivere (Gestione pacchetti): la sceglie questa pagina, come Prepara copia, e
     // le sezioni nel riquadro la usano (window.parent.collegaProgetto); resta collegata finché la pagina è aperta
     window.progettoCollegato = null;
@@ -438,7 +434,7 @@
       return window.progettoCollegato;
     };
 
-    const VISTE = { negozi: 'Gestione negozi', struttura: 'Controllo codice', pacchetti: 'Gestione pacchetti', layout: 'Import layout', importa: 'Importa loghi ufficiali', gestione: 'Gestisci loghi ufficiali', copia: 'Prepara copia per un cliente' };
+    const VISTE = { negozi: 'Gestione negozi', struttura: 'Controllo codice', pacchetti: 'Gestione pacchetti', layout: 'Importa layout .psd', loghi: 'Loghi ufficiali', copia: 'Prepara copia per un cliente' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -447,7 +443,7 @@
     const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
     let vistaAperta = null;
 
-    // Copia per un cliente: solo le due sezioni dei loghi ufficiali (i menu BRAND del cliente); Controllo codice,
+    // Copia per un cliente: Gestione negozi, Controllo codice e Loghi ufficiali (i menu BRAND del cliente); Gestione pacchetti,
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
       // Gestione negozi e Controllo codice restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
@@ -483,6 +479,8 @@
 
     // subito: senza animazioni (aprendo la pagina con #sezione nell'indirizzo)
     async function apri(nome, subito = false) {
+      // indirizzi di prima (fino al 19 ottobre 2026 due sezioni dei loghi): aprono Loghi ufficiali
+      nome = { importa: 'loghi', gestione: 'loghi' }[nome] || nome;
       const nuova = VISTE[nome] ? nome : null;
       if (nuova === vistaAperta) return;
       // Prepara copia: la cartella del progetto già collegata (o ricordata con il permesso valido) è subito il passo 1
@@ -590,7 +588,7 @@
       else if (evento.data?.esc && vistaAperta) tornaAlMenu();
     });
     window.addEventListener('hashchange', () => apri(location.hash.slice(1)));
-    if (VISTE[location.hash.slice(1)]) apri(location.hash.slice(1), true);
+    if (VISTE[location.hash.slice(1)] || ['importa', 'gestione'].includes(location.hash.slice(1))) apri(location.hash.slice(1), true);
 
     // cambiando la finestra la cornice torna alla sua larghezza (la larghezza in più data a una sezione si ricalcola: le
     // sezioni nel riquadro rimandano le loro misure), così stringendo e riallargando la finestra la cornice si riallarga
@@ -771,9 +769,9 @@
 
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
-      // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, logoimport, logogestione);
+      // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, gestione-negozi, schema-pagine, loghi-ufficiali);
       // non Controllo codice, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html', 'Storecraft Aggiornamento.html'];
+      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html', 'layout-studio.html', 'Storecraft Aggiornamento.html'];
       riga('// radice: splash page e area operatore ridotta: gestione pagine e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;

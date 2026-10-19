@@ -1,4 +1,4 @@
-/* Sezioni dell'area operatore (logoimport.html, logogestione.html) aperte dentro la pagina operatore (operatore.html,
+/* Sezioni dell'area operatore (loghi-ufficiali.html e le altre in un riquadro) aperte dentro la pagina operatore (operatore.html,
    indirizzo con ?incorporata): classe incorporata su <html> (operatore.css toglie cornice, titolo e ✕) e altezza del
    contenuto comunicata alla pagina operatore, che adatta il riquadro e la cornice oro.
    Tastiera: una finestra di conferma che si apre porta il fuoco su Annulla, Esc la chiude (come Annulla); senza

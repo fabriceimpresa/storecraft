@@ -11,7 +11,7 @@ Negozi.registra('ophilya', {
   indirizzoBreve: 'CORSO 268',   // nel menu da computer, più stretto
   logoMenu: 'img/ophilya/ophilyablack.png',
   logoMenuLarghezza: 205,
-  // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport): per ora come TEBE
+  // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (loghi-ufficiali.html): per ora come TEBE
   oro: '#cc9e25',
   // brand prioritari nei menu BRAND: 'stella' (stella gialla ★) o 'maiuscolo' (⭐ e maiuscolo, come TEBE)
   brandPrioritari: 'maiuscolo',

@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script src="assets/js/negozi.js?v=20261019-01"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Layout Studio · STORE // CRAFT</title>
+<!--
+  Layout Studio (area operatore, dal 19 ottobre 2026): l'editor a pagina intera di Import layout, stile Photoshop
+  semplificato. Si apre dalla pagina generata di Import layout (APRI L'EDITOR) in una scheda nuova e lavora sui dati della
+  conversione (window.opener.ImportLayout): il foglio A4 con i due cartelli, gli elementi del .psd e quelli aggiunti qui.
+  Strumenti: seleziona (V), trasforma (T: maniglie, ridimensiona in proporzione, con Maiuscolo stirando, ruota), sposta la
+  vista (H), zoom (Z), testo (X), forme (U: rettangolo, quadrato, cerchio, triangolo, linea), immagine (I), guida (G),
+  bacchetta magica (W: scontorna la grafica). Righelli in cm (o mm), guide da trascinare dai righelli o da aggiungere con
+  la posizione, guide magnetiche. Finestre mobili Proprietà (testo, aspetto, posizione) e Funzione (modulo comune);
+  livelli per cartello. APPLICA e ← TORNA INDIETRO riportano le modifiche nella pagina generata (ImportLayout.applicaEditor).
+  Solo nel progetto madre: fuori dalle copie per i clienti.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=IBM+Plex+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fondo: #121110; --area: #1a1917; --pannello: #1f1d1b; --pannello-2: #262421; --bordo: #34312c; --bordo-tenue: #2a2824;
+    --testo: #e8e2d6; --tenue: #8f877b; --oro: #d4a373; --oro-chiaro: #e5ba73; --oro-scuro: #8f6a1f;
+    --guida: #3fc1d9; --selezione: #3a9b5a; --righello: #171614; --errore: #e07a5f;
+    --ui: 'Plus Jakarta Sans', system-ui, sans-serif; --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body { display: grid; grid-template-rows: 52px 38px 1fr 30px; grid-template-columns: 56px 1fr 280px; background: var(--fondo); color: var(--testo); font: 400 12.5px var(--ui); }
+  button { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  /* ---- barra in alto ---- */
+  .barra { grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; padding: 0 16px; border-bottom: 1px solid var(--bordo); background: #0e0d0c; }
+  .marchio { font: 600 15px 'Cinzel', serif; letter-spacing: .08em; color: var(--oro); white-space: nowrap; }
+  .marchio span { color: var(--tenue); font-weight: 500; }
+  .titolo-file { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+  .titolo-file strong { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .titolo-file small { color: var(--tenue); font-size: 11px; white-space: nowrap; }
+  .gruppo { display: flex; align-items: center; gap: 4px; }
+  .sep { width: 1px; height: 24px; background: var(--bordo); }
+  .tasto { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; min-width: 32px; padding: 0 10px; border: 1px solid transparent;
+    border-radius: 6px; background: none; color: var(--testo); cursor: pointer; transition: background .15s, border-color .15s, color .15s; white-space: nowrap; }
+  .tasto:hover:not(:disabled) { background: var(--pannello-2); border-color: var(--bordo); }
+  .tasto:disabled { opacity: .35; cursor: default; }
+  .tasto svg { width: 16px; height: 16px; }
+  .zoom { min-width: 54px; font: 400 12px var(--mono); color: var(--oro-chiaro); }
+  .spazio { flex: 1; }
+  .tasto-oro { border-color: var(--oro); color: var(--oro-chiaro); letter-spacing: .08em; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  .tasto-oro:hover { background: var(--oro) !important; color: #121110; }
+  .tasto-pieno { background: var(--oro); border-color: var(--oro); color: #121110; letter-spacing: .08em; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  .tasto-pieno:hover { background: var(--oro-chiaro) !important; }
+
+  /* ---- barra delle opzioni dello strumento ---- */
+  .opzioni-strumento { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--bordo); background: #151413; color: var(--tenue); font-size: 11.5px; }
+  .opzioni-strumento .nome-strumento { color: var(--oro-chiaro); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; font-size: 10.5px; min-width: 120px; }
+  .opzioni-strumento label { display: inline-flex; align-items: center; gap: 6px; }
+  .opzioni-strumento input[type="number"], .opzioni-strumento select { height: 26px; padding: 0 7px; border: 1px solid var(--bordo); border-radius: 5px; background: #141311; color: var(--testo); font: 400 11.5px var(--ui); }
+  .opzioni-strumento input[type="number"] { width: 70px; }
+  .opzioni-strumento input[type="range"] { width: 120px; accent-color: #d4a373; }
+  .opzioni-strumento .tasto { height: 26px; font-size: 11px; }
+  .opzioni-strumento .scelte-forma { display: inline-flex; gap: 3px; }
+  .opzioni-strumento .scelte-forma button { width: 30px; height: 26px; border: 1px solid var(--bordo); border-radius: 5px; background: #141311; color: var(--tenue); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .opzioni-strumento .scelte-forma button[aria-pressed="true"] { border-color: var(--oro); color: var(--oro-chiaro); background: rgba(212,163,115,.12); }
+  .opzioni-strumento .scelte-forma svg { width: 15px; height: 15px; }
+  .opzioni-strumento .suggerimento { color: var(--tenue); }
+  .opzioni-strumento .suggerimento::before { content: '// '; color: var(--oro); }
+
+  /* ---- strumenti a sinistra ---- */
+  .strumenti { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0; border-right: 1px solid var(--bordo); background: #0e0d0c; }
+  .strumento { position: relative; width: 38px; height: 38px; border: 1px solid transparent; border-radius: 8px; background: none; color: var(--tenue); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .strumento svg { width: 18px; height: 18px; }
+  .strumento:hover { color: var(--testo); background: var(--pannello-2); }
+  .strumento[aria-pressed="true"] { color: #121110; background: var(--oro); }
+  .strumento::after { content: attr(data-nome); position: absolute; left: 48px; top: 50%; transform: translateY(-50%); padding: 5px 8px; border: 1px solid var(--oro-scuro);
+    border-radius: 4px; background: #0a0908; color: var(--testo); font-size: 11px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s; z-index: 60; }
+  .strumento:hover::after { opacity: 1; }
+  .strumenti .sep { width: 24px; height: 1px; margin: 6px 0; }
+
+  /* ---- area di lavoro con i righelli ---- */
+  .lavoro { position: relative; overflow: hidden; background: var(--area); }
+  .righello { position: absolute; background: var(--righello); z-index: 8; }
+  .righello canvas { display: block; }
+  .righello.alto { left: 22px; right: 0; top: 0; height: 22px; border-bottom: 1px solid var(--bordo); cursor: s-resize; }
+  .righello.sinistro { top: 22px; bottom: 0; left: 0; width: 22px; border-right: 1px solid var(--bordo); cursor: e-resize; }
+  .angolo { position: absolute; left: 0; top: 0; width: 22px; height: 22px; background: var(--righello); border-right: 1px solid var(--bordo); border-bottom: 1px solid var(--bordo); z-index: 9;
+    color: var(--tenue); font: 400 8.5px var(--mono); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .scrivania { position: absolute; inset: 22px 0 0 22px; overflow: hidden; touch-action: none; }
+  .scrivania[data-strumento="mano"] { cursor: grab; }
+  .scrivania[data-strumento="zoom"] { cursor: zoom-in; }
+  .scrivania[data-strumento="zoom"].indietro { cursor: zoom-out; }
+  .scrivania[data-strumento="testo"] { cursor: text; }
+  .scrivania[data-strumento="forma"], .scrivania[data-strumento="guida"] { cursor: crosshair; }
+  .scrivania[data-strumento="bacchetta"] { cursor: cell; }
+  .foglio { position: absolute; background: #fff; color: #000; box-shadow: 0 6px 30px rgba(0,0,0,.55); }
+  .taglio { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed #c9c4bb; pointer-events: none; }
+  .el { position: absolute; transform-origin: center center; }
+  .el-testo { white-space: nowrap; }
+  .el img, .el canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
+  .el.bloccato { pointer-events: none; }
+  .sopra { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  .cornice-sel { position: absolute; outline: 1.5px solid var(--selezione); transform-origin: center center; }
+  .cornice-sel.leggera { outline-style: dashed; }
+  .maniglia { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border: 1.5px solid var(--selezione); background: #fff; pointer-events: auto; }
+  .maniglia[data-m="nw"], .maniglia[data-m="se"] { cursor: nwse-resize; } .maniglia[data-m="ne"], .maniglia[data-m="sw"] { cursor: nesw-resize; }
+  .maniglia[data-m="n"], .maniglia[data-m="s"] { cursor: ns-resize; } .maniglia[data-m="e"], .maniglia[data-m="w"] { cursor: ew-resize; }
+  .maniglia.ruota { border-radius: 50%; cursor: grab; }
+  .stelo { position: absolute; left: 50%; top: -22px; height: 22px; border-left: 1.5px solid var(--selezione); }
+  .misura { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); padding: 2px 7px; border-radius: 3px; background: var(--selezione); color: #fff; font: 400 10px var(--mono); white-space: nowrap; }
+  .modulo-tag { position: absolute; right: -2px; top: -20px; padding: 2px 6px; border-radius: 3px; background: var(--oro); color: #121110; font: 600 9px var(--ui); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  .modulo-tag.no { background: #3a3631; color: var(--testo); }
+  .disegno { position: absolute; border: 1px dashed var(--oro); background: rgba(212,163,115,.08); pointer-events: none; }
+  .guida { position: absolute; z-index: 6; }
+  .guida.v { top: 0; bottom: 0; width: 0; border-left: 1px solid var(--guida); cursor: col-resize; }
+  .guida.o { left: 0; right: 0; height: 0; border-top: 1px solid var(--guida); cursor: row-resize; }
+  .guida::before { content: ''; position: absolute; inset: -4px; }
+  .guida.attiva { border-color: #ff5ad1; }
+  .aggancio { position: absolute; z-index: 6; pointer-events: none; }
+  .aggancio.v { top: 0; bottom: 0; border-left: 1px solid #ff5ad1; }
+  .aggancio.o { left: 0; right: 0; border-top: 1px solid #ff5ad1; }
+  .avviso-vuoto { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--tenue); font-size: 13px; line-height: 1.7; }
+  .avviso-vuoto strong { color: var(--oro-chiaro); }
+
+  /* ---- finestre mobili (proprietà, funzione) ---- */
+  .finestra { position: absolute; z-index: 20; width: 292px; max-height: calc(100% - 40px); display: flex; flex-direction: column; border: 1px solid var(--bordo); border-radius: 10px;
+    background: rgba(31, 29, 27, .97); box-shadow: 0 14px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(212,163,115,.08); }
+  .finestra-testa { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--bordo-tenue); cursor: grab; user-select: none; flex: none; }
+  .finestra-testa:active { cursor: grabbing; }
+  .finestra-testa h2 { flex: 1; font: 600 11px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--oro-chiaro); }
+  .finestra-testa .punto { width: 7px; height: 7px; border-radius: 50%; background: var(--oro); }
+  .finestra-testa button { width: 22px; height: 22px; border: 0; border-radius: 4px; background: none; color: var(--tenue); cursor: pointer; }
+  .finestra-testa button:hover { background: var(--pannello-2); color: var(--testo); }
+  .finestra.ridotta .schede, .finestra.ridotta .corpo { display: none; }
+  .schede { display: flex; gap: 2px; padding: 8px 10px 0; flex: none; }
+  .schede button { flex: 1; padding: 6px 0; border: 0; border-radius: 6px 6px 0 0; background: none; color: var(--tenue); font-size: 11px; font-weight: 600; letter-spacing: .06em; cursor: pointer; }
+  .schede button[aria-selected="true"] { background: var(--pannello-2); color: var(--oro-chiaro); }
+  .schede button:disabled { opacity: .3; cursor: default; }
+  .corpo { padding: 12px; background: var(--pannello-2); border-radius: 0 0 10px 10px; display: flex; flex-direction: column; gap: 11px; overflow: auto; min-height: 0; }
+  .riga { display: grid; gap: 8px; }
+  .riga.due { grid-template-columns: 1fr 1fr; }
+  .riga.tre { grid-template-columns: 1fr 1fr 1fr; }
+  .campo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .campo > span { color: var(--tenue); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .campo input, .campo select, .campo textarea { height: 30px; padding: 0 9px; border: 1px solid var(--bordo); border-radius: 6px; background: #141311; color: var(--testo); font: 400 12px var(--ui); width: 100%; }
+  .campo textarea { height: auto; min-height: 52px; padding: 7px 9px; resize: vertical; line-height: 1.4; }
+  .campo input:focus, .campo select:focus, .campo textarea:focus { outline: none; border-color: var(--oro); }
+  .con-unita { position: relative; }
+  .con-unita input { padding-right: 30px; }
+  .con-unita i { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: var(--tenue); font: normal 400 10.5px var(--mono); pointer-events: none; }
+  .allinea { display: flex; gap: 4px; }
+  .allinea button { flex: 1; height: 30px; border: 1px solid var(--bordo); border-radius: 6px; background: #141311; color: var(--tenue); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .allinea button[aria-pressed="true"] { border-color: var(--oro); color: var(--oro-chiaro); background: rgba(212,163,115,.1); }
+  .allinea svg { width: 14px; height: 14px; }
+  .campioni { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+  .campioni button { aspect-ratio: 1; border: 1px solid rgba(255,255,255,.12); border-radius: 4px; cursor: pointer; }
+  .campioni button.trasparente { background: repeating-conic-gradient(#8a857c 0% 25%, #c9c4bb 0% 50%) 50% / 8px 8px !important; }
+  .hex { display: grid; grid-template-columns: 32px 1fr 30px; gap: 6px; }
+  .hex input[type="color"] { width: 32px; height: 30px; padding: 0; border: 1px solid var(--bordo); border-radius: 6px; background: none; cursor: pointer; }
+  .hex input[type="text"] { font-family: var(--mono); text-transform: uppercase; }
+  .contagocce { border: 1px solid var(--bordo); border-radius: 6px; background: #141311; color: var(--tenue); cursor: pointer; }
+  .contagocce:hover { color: var(--oro-chiaro); border-color: var(--oro); }
+  .nota { color: var(--tenue); font-size: 10.5px; line-height: 1.5; }
+  .gruppo-colore { display: flex; flex-direction: column; gap: 6px; }
+  .vuoto-prop { color: var(--tenue); font-size: 11.5px; line-height: 1.6; text-align: center; padding: 18px 6px; }
+  .ordine { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .ordine button, .elimina { height: 30px; border: 1px solid var(--bordo); border-radius: 6px; background: #141311; color: var(--tenue); cursor: pointer; font-size: 11px; }
+  .ordine button:hover { color: var(--oro-chiaro); border-color: var(--oro); }
+  .elimina { border-color: rgba(224,122,95,.5); color: var(--errore); }
+  .elimina:hover { background: var(--errore); color: #121110; }
+
+  .modulo-scelto { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--oro); border-radius: 8px; background: rgba(212,163,115,.08); }
+  .modulo-scelto.vuoto { border-color: var(--bordo); background: #141311; }
+  .modulo-scelto .icona { flex: none; width: 32px; height: 32px; border-radius: 6px; background: var(--oro); color: #121110; display: flex; align-items: center; justify-content: center; font: 700 14px var(--ui); }
+  .modulo-scelto.vuoto .icona { background: #3a3631; color: var(--testo); }
+  .modulo-scelto strong { display: block; font-size: 12.5px; }
+  .modulo-scelto small { color: var(--tenue); font-size: 10.5px; }
+  .opzione { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; }
+  .interr { position: relative; width: 34px; height: 19px; border: 0; border-radius: 10px; background: #3a3631; flex: none; cursor: pointer; }
+  .interr::after { content: ''; position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #cfc8bc; transition: left .15s; }
+  .interr[aria-pressed="true"] { background: #3a9b5a; }
+  .interr[aria-pressed="true"]::after { left: 17px; background: #fff; }
+  .anteprima-campo { padding: 10px; border: 1px dashed var(--bordo); border-radius: 8px; background: #141311; }
+  .anteprima-campo > span { display: block; margin-bottom: 5px; color: var(--oro); font-size: 10px; font-weight: 600; letter-spacing: .04em; }
+  .anteprima-campo .finto { display: flex; height: 28px; border: 1px solid #3a3631; border-radius: 4px; overflow: hidden; }
+  .anteprima-campo .finto b { padding: 0 9px; display: flex; align-items: center; background: #181715; color: var(--oro); border-right: 1px solid #3a3631; font-weight: 400; }
+  .anteprima-campo .finto em { padding: 0 9px; display: flex; align-items: center; font-style: normal; flex: 1; }
+
+  /* ---- livelli a destra ---- */
+  .livelli { grid-row: 3; grid-column: 3; display: flex; flex-direction: column; border-left: 1px solid var(--bordo); background: var(--pannello); min-height: 0; }
+  .livelli-testa { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 10px; border-bottom: 1px solid var(--bordo-tenue); }
+  .livelli-testa h2 { font: 600 11px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--oro-chiaro); }
+  .elenco-livelli { flex: 1; overflow: auto; padding: 6px 8px 12px; }
+  .gruppo-livelli { margin-top: 8px; }
+  .gruppo-livelli > button { width: 100%; padding: 4px 6px; border: 0; background: none; color: var(--tenue); font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; text-align: left; cursor: pointer; }
+  .livello { display: grid; grid-template-columns: 18px 18px 22px 1fr auto; align-items: center; gap: 5px; padding: 5px 6px; border-radius: 6px; cursor: pointer; }
+  .livello:hover { background: var(--pannello-2); }
+  .livello.sel { background: rgba(58,155,90,.16); box-shadow: inset 2px 0 0 var(--selezione); }
+  .livello.spento { opacity: .45; }
+  .livello .occhio, .livello .lucchetto { border: 0; background: none; color: var(--tenue); font-size: 11px; cursor: pointer; padding: 0; }
+  .livello .lucchetto.chiuso { color: var(--oro); }
+  .livello .tipo { width: 20px; height: 20px; border-radius: 4px; background: #141311; border: 1px solid var(--bordo); color: var(--tenue); display: flex; align-items: center; justify-content: center; font: 600 10px var(--mono); }
+  .livello .nome { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .livello .mod { padding: 1px 6px; border-radius: 10px; background: rgba(212,163,115,.14); color: var(--oro); font-size: 9.5px; font-weight: 600; white-space: nowrap; }
+  .livello .mod.no { background: #2c2a27; color: var(--tenue); }
+  .pannello-mini { border-top: 1px solid var(--bordo-tenue); padding: 12px 14px; }
+  .pannello-mini h3 { margin-bottom: 8px; font: 600 10.5px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--tenue); }
+  .blocchi { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .blocchi div { padding: 7px 8px; border: 1px solid var(--bordo); border-radius: 6px; font-size: 10.5px; color: var(--tenue); }
+  .blocchi div b { display: block; color: var(--oro-chiaro); font-size: 10px; letter-spacing: .08em; margin-bottom: 2px; font-weight: 600; }
+
+  /* ---- barra in basso ---- */
+  .stato { grid-column: 1 / -1; display: flex; align-items: center; gap: 18px; padding: 0 14px; border-top: 1px solid var(--bordo); background: #0e0d0c; color: var(--tenue); font: 400 11px var(--mono); }
+  .stato b { color: var(--testo); font-weight: 400; }
+  .stato button { border: 0; background: none; color: var(--tenue); font: inherit; cursor: pointer; }
+  .stato button[aria-pressed="true"] { color: var(--guida); }
+  .stato .spazio { flex: 1; }
+  .stato .messaggio { color: var(--oro); }
+  .stato .messaggio.ok { color: #8fbf7a; }
+
+  /* finestra dei font: elenco con l'anteprima del carattere */
+  .menu-font { position: absolute; z-index: 40; width: 280px; max-height: 360px; overflow: auto; border: 1px solid var(--oro-scuro); border-radius: 8px; background: #141311; box-shadow: 0 12px 30px rgba(0,0,0,.6); padding: 6px; }
+  .menu-font h4 { padding: 8px 8px 4px; color: var(--tenue); font: 600 9.5px var(--ui); letter-spacing: .14em; text-transform: uppercase; }
+  .menu-font button { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 8px; border: 0; border-radius: 5px; background: none; color: var(--testo); cursor: pointer; text-align: left; }
+  .menu-font button:hover, .menu-font button.scelto { background: rgba(212,163,115,.12); }
+  .menu-font button span { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-font button small { color: var(--tenue); font: 400 10px var(--ui); flex: none; }
+  .scelta-font { display: flex; align-items: center; justify-content: space-between; height: 32px; padding: 0 9px; border: 1px solid var(--bordo); border-radius: 6px; background: #141311; color: var(--testo); cursor: pointer; width: 100%; }
+  .scelta-font b { font-weight: 400; font-size: 15px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .scelta-font small { color: var(--tenue); font-size: 10px; flex: none; }
+  /* frecce dei campi numerici in stile STORE // CRAFT, come lo sconto dei pannelli: al posto di quelle del browser una
+     colonna a destra con ▲ ▼ oro, piena d'oro al passaggio del mouse */
+  input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+  .con-unita input { padding-right: 50px; }
+  .con-unita i { right: 29px; }
+  .frecce-num { position: absolute; top: 1px; right: 1px; bottom: 1px; display: flex; flex-direction: column; width: 20px; overflow: hidden;
+    border-left: 1px solid var(--bordo); border-radius: 0 5px 5px 0; background: #1a1816; }
+  .frecce-num button { flex: 1; display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--oro); font-size: 7px; line-height: 1; cursor: pointer; }
+  .frecce-num button + button { border-top: 1px solid var(--bordo); }
+  .frecce-num button:hover { background: var(--oro); color: #121110; }
+  .num-guida { position: relative; display: inline-flex; }
+  .num-guida input { padding-right: 26px !important; }
+  /* barre di scorrimento (menu dei font, finestre, livelli): colonna scura e maniglia oro squadrata, come i menu a cascata */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: #141311; }
+  ::-webkit-scrollbar-thumb { background: var(--oro); border: 2px solid #141311; border-radius: 0; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--oro-chiaro); }
+  ::-webkit-scrollbar-button { display: none; }
+  @supports not selector(::-webkit-scrollbar) { * { scrollbar-width: thin; scrollbar-color: var(--oro) #141311; } }
+  /* slider (tolleranza della bacchetta e gli altri): linea scura e maniglia tonda oro */
+  input[type="range"] { -webkit-appearance: none; appearance: none; height: 18px; background: transparent; cursor: pointer; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 3px; border-radius: 2px; background: #3a352e; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; margin-top: -5px; border-radius: 50%; background: var(--oro); box-shadow: 0 0 0 3px #141311; }
+  input[type="range"]:hover::-webkit-slider-thumb { background: var(--oro-chiaro); }
+  input[type="range"]::-moz-range-track { height: 3px; border-radius: 2px; background: #3a352e; }
+  input[type="range"]::-moz-range-thumb { width: 13px; height: 13px; border: 0; border-radius: 50%; background: var(--oro); }
+  input[type="range"]:focus-visible { outline: 1px solid var(--oro-chiaro); outline-offset: 3px; }
+</style>
+</head>
+<body>
+  <header class="barra">
+    <div class="marchio">STORE // CRAFT <span>· Layout Studio</span></div>
+    <div class="sep"></div>
+    <div class="titolo-file"><strong id="nomeDoc">Layout Studio</strong><small id="infoDoc">apri l'editor dalla pagina generata di Import layout</small></div>
+    <div class="spazio"></div>
+    <div class="gruppo">
+      <button class="tasto" id="annulla" title="Annulla (Ctrl+Z)" disabled><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4L3 7l3 3"/><path d="M3 7h6.5a3.5 3.5 0 0 1 0 7H7"/></svg></button>
+      <button class="tasto" id="ripeti" title="Ripeti (Ctrl+Y)" disabled><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 4l3 3-3 3"/><path d="M13 7H6.5a3.5 3.5 0 0 0 0 7H9"/></svg></button>
+    </div>
+    <div class="sep"></div>
+    <div class="gruppo">
+      <button class="tasto" id="zoomMeno" title="Riduci (Ctrl + −)">−</button>
+      <span class="tasto zoom" id="zoomValore">100%</span>
+      <button class="tasto" id="zoomPiu" title="Ingrandisci (Ctrl + +)">+</button>
+      <button class="tasto" id="adatta" title="Adatta alla finestra (Ctrl + 0)">adatta</button>
+    </div>
+    <div class="sep"></div>
+    <!-- i due cartelli uguali: uno prende posizioni, misure e stile dell'altro (si annulla con Ctrl+Z) -->
+    <div class="gruppo" aria-label="Rendi uguali i due cartelli">
+      <button class="tasto" id="copiaGiu" title="Il cartello inferiore diventa uguale al superiore: posizioni, misure, stile, testi e grafiche (Ctrl+Z annulla)">superiore → inferiore</button>
+      <button class="tasto" id="copiaSu" title="Il cartello superiore diventa uguale all'inferiore: posizioni, misure, stile, testi e grafiche (Ctrl+Z annulla)">inferiore → superiore</button>
+    </div>
+    <div class="sep"></div>
+    <div class="gruppo">
+      <button class="tasto tasto-oro" id="tornaIndietro" title="Applica le modifiche e torna a Import layout">← torna indietro</button>
+      <button class="tasto tasto-pieno" id="applica" title="Porta le modifiche nella pagina generata di Import layout (Ctrl+S)">applica</button>
+    </div>
+  </header>
+
+  <div class="opzioni-strumento" id="opzioni"></div>
+
+  <nav class="strumenti" aria-label="Strumenti">
+    <button class="strumento" data-strumento="seleziona" aria-pressed="true" data-nome="Seleziona e sposta · V"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 1.5l9.5 7-4.2.6 2.6 4.6-1.6.9-2.6-4.6L3 13z"/></svg></button>
+    <button class="strumento" data-strumento="trasforma" data-nome="Trasforma: maniglie, ridimensiona e ruota · T"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3.5" y="3.5" width="9" height="9" stroke-dasharray="2 1.5"/><rect x="1.5" y="1.5" width="3" height="3" fill="currentColor"/><rect x="11.5" y="1.5" width="3" height="3" fill="currentColor"/><rect x="1.5" y="11.5" width="3" height="3" fill="currentColor"/><rect x="11.5" y="11.5" width="3" height="3" fill="currentColor"/></svg></button>
+    <div class="sep"></div>
+    <button class="strumento" data-strumento="mano" data-nome="Sposta la vista · H (o tieni premuto spazio)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 7V3.5a1 1 0 0 1 2 0V7M7 6.5V2.5a1 1 0 0 1 2 0v4M9 6.5V3.5a1 1 0 0 1 2 0V8M11 6.5a1 1 0 0 1 2 0V10a5 5 0 0 1-5 5H8a5 5 0 0 1-4.3-2.4L2 9.6a1 1 0 0 1 1.7-1L5 10V7"/></svg></button>
+    <button class="strumento" data-strumento="zoom" data-nome="Zoom · Z (con Alt riduce)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l3.5 3.5M5 7h4M7 5v4"/></svg></button>
+    <div class="sep"></div>
+    <button class="strumento" data-strumento="testo" data-nome="Testo · X"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 2.5h11v3h-1.4l-.4-1.6H8.8v8.6l1.6.4V14h-4.8v-1.1l1.6-.4V3.9H4.3l-.4 1.6H2.5z"/></svg></button>
+    <button class="strumento" data-strumento="forma" data-nome="Forme · U (rettangolo, quadrato, cerchio, triangolo, linea)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="1.5" width="7" height="7"/><circle cx="11" cy="11" r="3.5"/></svg></button>
+    <button class="strumento" data-strumento="immagine" data-nome="Immagine · I"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="6" cy="6.5" r="1.2"/><path d="M2.5 12l3.8-3.6 2.5 2.4 1.7-1.5 3 2.7"/></svg></button>
+    <div class="sep"></div>
+    <button class="strumento" data-strumento="guida" data-nome="Guide · G (anche trascinandole dai righelli)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M5 1v14M1 10h14" stroke-dasharray="2 1.5"/></svg></button>
+    <button class="strumento" data-strumento="bacchetta" data-nome="Bacchetta magica: scontorna la grafica · W"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 14L10 6"/><path d="M11.5 1.5v2M11.5 6.5v2M8 5h2M13 5h2M9.4 2.9l1 1M12.6 6.1l1 1M13.6 2.9l-1 1" stroke-linecap="round"/></svg></button>
+  </nav>
+
+  <main class="lavoro" id="lavoro">
+    <button class="angolo" id="unita" title="Unità dei righelli: cm o mm">cm</button>
+    <div class="righello alto" id="righelloAltoBox" title="Trascina giù per una guida orizzontale"><canvas id="righelloAlto"></canvas></div>
+    <div class="righello sinistro" id="righelloSinistroBox" title="Trascina a destra per una guida verticale"><canvas id="righelloSinistro"></canvas></div>
+    <div class="scrivania" id="scrivania" data-strumento="seleziona">
+      <div class="foglio" id="foglio"></div>
+      <div class="sopra" id="sopra"></div>
+    </div>
+
+    <section class="finestra" id="proprieta" style="right:16px;top:16px">
+      <div class="finestra-testa"><span class="punto"></span><h2>Proprietà</h2><button class="riduci" title="Riduci">–</button></div>
+      <div class="schede" role="tablist">
+        <button data-scheda="testo" aria-selected="true">Testo</button><button data-scheda="aspetto">Aspetto</button><button data-scheda="posizione">Posizione</button>
+      </div>
+      <div class="corpo" id="corpoProprieta"></div>
+    </section>
+
+    <section class="finestra" id="funzione" style="right:16px;bottom:16px">
+      <div class="finestra-testa"><span class="punto" style="background:#3a9b5a"></span><h2>Funzione</h2><button class="riduci" title="Riduci">–</button></div>
+      <div class="corpo" id="corpoFunzione" style="border-radius:0 0 10px 10px"></div>
+    </section>
+  </main>
+
+  <aside class="livelli">
+    <div class="livelli-testa"><h2>Livelli</h2><span class="nota" id="contoLivelli"></span></div>
+    <div class="elenco-livelli" id="elencoLivelli"></div>
+    <div class="pannello-mini">
+      <h3>pannello della pagina</h3>
+      <div class="blocchi" id="blocchiPannello"></div>
+    </div>
+  </aside>
+
+  <footer class="stato">
+    <span>cursore <b id="cursore">—</b></span>
+    <span>selezione <b id="infoSel">nessuna</b></span>
+    <span class="spazio"></span>
+    <span class="messaggio" id="messaggio"></span>
+    <button id="magnetiche" aria-pressed="true" title="Guide magnetiche: gli elementi si agganciano a guide, bordi e centro del foglio">⌗ guide magnetiche</button>
+    <button id="mostraGuide" aria-pressed="true" title="Mostra o nascondi le guide (Ctrl+;)">guide visibili</button>
+  </footer>
+
+  <input type="file" id="fileImmagine" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+  <input type="file" id="fileFont" accept=".ttf,.otf,.woff,.woff2" hidden>
+
+<script>
+(() => {
+  'use strict';
+  const MM = 96 / 25.4;            // pixel dello schermo per mm a zoom 1
+  const PT = 96 / 72;              // pixel per punto tipografico a zoom 1
+  const $ = id => document.getElementById(id);
+  const el = (tag, classe, testo) => { const n = document.createElement(tag); if (classe) n.className = classe; if (testo != null) n.textContent = testo; return n; };
+  const num = (v, d = 1) => Number(v).toLocaleString('it-IT', { minimumFractionDigits: d, maximumFractionDigits: d });
+  const NOMI_CARTELLO = { 'cartello-superiore': 'cartello superiore', 'cartello-inferiore': 'cartello inferiore', foglio: 'foglio' };
+
+  // Google Fonts gratuiti anche per uso commerciale (licenza SIL Open Font o Apache), i più usati nella grafica di negozio
+  const GOOGLE = ['Playfair Display', 'Cormorant Garamond', 'DM Serif Display', 'Libre Baskerville', 'Bodoni Moda', 'Abril Fatface', 'Cinzel',
+    'Montserrat', 'Poppins', 'Inter', 'Roboto', 'Open Sans', 'Lato', 'Raleway', 'Work Sans', 'Josefin Sans', 'Oswald', 'Bebas Neue', 'Anton',
+    'Archivo Black', 'Great Vibes', 'Dancing Script', 'Caveat', 'Pacifico', 'Lobster', 'Permanent Marker'];
+
+  // ---- documento ----
+  const doc = {
+    larghezza: 210, altezza: 297, taglio: 148.5, meta: 148.5, elementi: [], guide: [],
+    font: [],               // { nome, etichetta, famiglia, origine: 'progetto' | 'google' | 'importato', file, url, dati }
+    nome: 'Layout', file: ''
+  };
+  const vista = { z: 1, x: 40, y: 30, strumento: 'seleziona', forma: 'rettangolo', sel: null, unita: 'cm', magnetiche: true, guideVisibili: true,
+    tolleranza: 32, contiguo: true, nuovaGuida: { asse: 'o', pos: 0 } };
+  let REGOLE = null, sorgente = null, prossimoId = 1;
+  const nuovoId = () => `n${prossimoId++}`;
+
+  // ---- storia (annulla / ripeti) ----
+  const storia = [], futuro = [];
+  const fotografia = () => JSON.stringify({ e: doc.elementi, g: doc.guide });
+  function ricorda() {
+    storia.push(fotografia());
+    if (storia.length > 80) storia.shift();
+    futuro.length = 0;
+    tastiStoria();
+  }
+  function ripristina(testo) {
+    const s = JSON.parse(testo);
+    doc.elementi = s.e;
+    doc.guide = s.g;
+    if (vista.sel && !trova(vista.sel)) vista.sel = null;
+    tutto();
+  }
+  function annulla() { if (!storia.length) return; futuro.push(fotografia()); ripristina(storia.pop()); tastiStoria(); }
+  function ripeti() { if (!futuro.length) return; storia.push(fotografia()); ripristina(futuro.pop()); tastiStoria(); }
+  function tastiStoria() { $('annulla').disabled = !storia.length; $('ripeti').disabled = !futuro.length; }
+  $('annulla').onclick = annulla;
+  $('ripeti').onclick = ripeti;
+
+  const trova = id => doc.elementi.find(e => e.id === id);
+  const selezionato = () => vista.sel && trova(vista.sel);
+
+  // ---- caricamento: dai dati della conversione di Import layout ----
+  async function carica() {
+    REGOLE = await (await fetch('modelli/import-regole.json', { cache: 'no-store' })).json();
+    (REGOLE.lettura.font.catalogo || []).forEach(f => doc.font.push({ nome: f.nome, etichetta: f.etichetta, famiglia: `PSD ${f.nome}`, origine: 'progetto', file: f.file }));
+    GOOGLE.forEach(g => doc.font.push({ nome: `G:${g}`, etichetta: g, famiglia: g, origine: 'google' }));
+    // i font del progetto si dichiarano subito (si scaricano solo se usati); i Google Fonts quando servono
+    const stile = el('style');
+    stile.textContent = doc.font.filter(f => f.origine === 'progetto').map(f => `@font-face { font-family: '${f.famiglia}'; src: url('assets/fonts/${f.file}'); font-display: swap; }`).join('\n');
+    document.head.append(stile);
+
+    // i dati: dalla finestra di Import layout che ha aperto l'editor (o, nelle prove, dalla pagina che lo contiene)
+    sorgente = (window.opener && !window.opener.closed && window.opener.ImportLayout) || (window.parent !== window && window.parent.ImportLayout) || null;
+    const r = sorgente && sorgente.risultato;
+    if (!r) {
+      $('scrivania').append(Object.assign(el('div', 'avviso-vuoto'), { innerHTML: '<div><strong>Nessun documento aperto</strong><br>apri Layout Studio dalla pagina generata di Import layout<br>(pulsante APRI L\'EDITOR)</div>' }));
+      return;
+    }
+    const mm = r.mm;
+    doc.larghezza = mm(r.psd.width);
+    doc.altezza = mm(r.psd.height);
+    doc.meta = mm(r.meta || r.psd.height / 2);
+    doc.taglio = mm(r.taglio || r.psd.height / 2);
+    doc.file = sorgente.nomeFile ? sorgente.nomeFile() : '';
+    doc.nome = doc.file.replace(/\.psd$/i, '') || 'Layout';
+    // font del .psd e font importati prima
+    Object.entries(r.fileFont || {}).forEach(([nome, file]) => {
+      if (!doc.font.some(f => f.nome === nome) && file) doc.font.push({ nome, etichetta: `${nome} (dal .psd)`, famiglia: `PSD ${nome}`, origine: 'progetto', file });
+    });
+    Object.entries(r.fontUrl || {}).forEach(([nome, url]) => {
+      const f = doc.font.find(x => x.nome === nome);
+      if (f) { f.url = url; f.origine = 'importato'; }
+    });
+    doc.font.filter(f => f.origine === 'importato').forEach(f => caricaFontImportato(f));
+
+    // elementi del .psd: misure in mm dal bordo sinistro e dal bordo alto del foglio
+    r.elementi.forEach((e, i) => {
+      if (!e.chiave && e.stato === 'manca' && e.tipo !== 'immagine' && e.tipo !== 'testo' && e.tipo !== 'forma') return;
+      if (e.chiave === 'background' || e.chiave === 'tratteggio-ritaglio') return;
+      const n = e.cartello === 'cartello-superiore' ? 1 : e.cartello === 'cartello-inferiore' ? 2 : 0;
+      const t = (n && e.chiave && r.ritocchi && r.ritocchi[n] && r.ritocchi[n][e.chiave]) || { x: 0, y: 0 };
+      const dy = n === 2 ? doc.meta : 0;
+      const base = { id: `p${i}`, origine: i, nome: e.nome, cartello: e.cartello, chiave: e.chiave || null, tipo: e.tipo,
+        x: e.mm.x + t.x, y: e.mm.y + dy + t.y, w: e.mm.w, h: e.mm.h, rotazione: 0, opacita: 1, visibile: !e.rimosso, bloccato: false, gemello: false };   // stile solo di questo cartello (19 ottobre 2026)
+      if (e.tipo === 'testo') Object.assign(base, { testo: e.testo, font: e.font, pt: e.pt || 12, spaziatura: e.spaziatura || 0, interlinea: e.interlinea || null,
+        allineamento: e.allineamento || 'sinistra', colore: e.colore || '#000000', grassetto: !!e.grassettoFinto, corsivo: !!e.corsivoFinto, maiuscolo: !!e.maiuscolo });
+      else if (e.tipo === 'forma') {
+        if (e.chiave === 'sbarra' || e.rotazione) {
+          // forma ruotata (la barra): lunghezza e spessore dal riquadro ruotato, al centro del riquadro
+          const a = (e.rotazione || 0) * Math.PI / 180, c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a)), den = c * c - s * s;
+          const L = e.lungo || (Math.abs(den) > .05 ? (e.mm.w * c - e.mm.h * s) / den : Math.max(e.mm.w, e.mm.h));
+          const T = e.spesso || Math.max(.2, Math.abs(den) > .05 ? (e.mm.h * c - e.mm.w * s) / den : Math.min(e.mm.w, e.mm.h));
+          const cx = base.x + e.mm.w / 2, cy = base.y + e.mm.h / 2;
+          Object.assign(base, { forma: 'linea', x: cx - L / 2, y: cy - T / 2, w: L, h: T, rotazione: e.rotazione || 0, traccia: e.colore || '#000000', riempimento: e.colore || '#000000' });
+        } else Object.assign(base, { forma: 'rettangolo', riempimento: e.colore || '#000000', traccia: '#000000', spessoreTraccia: 0, raggio: 0 });
+      } else if (e.tipo === 'immagine') {
+        base.src = e.livello && e.livello.canvas ? e.livello.canvas.toDataURL('image/png') : '';
+        base.srcOriginale = base.src;
+      }
+      doc.elementi.push(base);
+    });
+    // elementi aggiunti in una sessione di prima (senza modulo)
+    (r.extra || []).forEach(x => doc.elementi.push({ ...x, id: x.id || nuovoId(), visibile: !x.rimosso }));
+    doc.elementi.forEach(e => { const m = String(e.id).match(/^n(\d+)$/); if (m) prossimoId = Math.max(prossimoId, +m[1] + 1); });
+    $('nomeDoc').textContent = doc.nome;
+    $('infoDoc').textContent = `${doc.file || 'documento'} · A4 · 2 cartelli · modulo import`;
+    document.title = `${doc.nome} · Layout Studio`;
+    adatta();
+    tutto();
+  }
+
+  // ---- disegno del foglio ----
+  const foglio = $('foglio'), scrivania = $('scrivania'), sopra = $('sopra');
+  const font = nome => doc.font.find(f => f.nome === nome);
+  const famiglia = nome => { const f = font(nome); return f ? f.famiglia : `PSD ${nome}`; };
+  const googleCaricati = new Set();
+  function usaGoogle(nome) {
+    const f = font(nome);
+    if (!f || f.origine !== 'google' || googleCaricati.has(f.famiglia)) return;
+    googleCaricati.add(f.famiglia);
+    const l = el('link');
+    l.rel = 'stylesheet';
+    l.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(f.famiglia).replace(/%20/g, '+')}:ital,wght@0,400;0,700;1,400&display=swap`;
+    l.onload = () => setTimeout(tutto, 300);
+    document.head.append(l);
+  }
+  function caricaFontImportato(f) {
+    if (!f.url) return;
+    const ff = new FontFace(f.famiglia, `url(${f.url})`);
+    ff.load().then(x => { document.fonts.add(x); disegna(); }).catch(() => messaggio(`font ${f.etichetta} non leggibile`));
+  }
+
+  function nodoElemento(e) {
+    const s = MM * vista.z;
+    const d = el('div', 'el');
+    d.dataset.id = e.id;
+    if (!e.visibile) d.style.display = 'none';
+    if (e.bloccato) d.classList.add('bloccato');
+    d.style.opacity = e.opacita == null ? 1 : e.opacita;
+    const ruota = e.rotazione ? ` rotate(${e.rotazione}deg)` : '';
+    if (e.tipo === 'testo') {
+      usaGoogle(e.font);
+      d.classList.add('el-testo');
+      String(e.testo || '').split('\n').forEach((riga, i) => { if (i) d.append(el('br')); d.append(document.createTextNode(riga)); });
+      Object.assign(d.style, {
+        fontFamily: `'${famiglia(e.font)}', serif`, fontSize: `${e.pt * PT * vista.z}px`, letterSpacing: `${(e.spaziatura || 0) / 1000}em`,
+        lineHeight: e.interlinea ? `${e.interlinea * PT * vista.z}px` : '1', color: e.colore || '#000', fontWeight: e.grassetto ? 700 : 400,
+        fontStyle: e.corsivo ? 'oblique' : 'normal', textTransform: e.maiuscolo ? 'uppercase' : 'none',
+        textAlign: { destra: 'right', centro: 'center' }[e.allineamento] || 'left', top: `${(e.y + e.h / 2) * s}px`
+      });
+      if (e.allineamento === 'centro') { d.style.left = `${(e.x + e.w / 2) * s}px`; d.style.transform = `translate(-50%, -50%)${ruota}`; }
+      else if (e.allineamento === 'destra') { d.style.right = `${(doc.larghezza - e.x - e.w) * s}px`; d.style.transform = `translateY(-50%)${ruota}`; }
+      else { d.style.left = `${e.x * s}px`; d.style.transform = `translateY(-50%)${ruota}`; }
+    } else {
+      Object.assign(d.style, { left: `${e.x * s}px`, top: `${e.y * s}px`, width: `${Math.max(e.w * s, 1)}px`, height: `${Math.max(e.h * s, 1)}px`, transform: ruota.trim() || 'none' });
+      if (e.tipo === 'forma') {
+        d.style.background = e.forma === 'linea' ? (e.traccia || e.riempimento || '#000') : (e.riempimento || 'transparent');
+        if (e.forma !== 'linea' && e.spessoreTraccia) { d.style.border = `${e.spessoreTraccia * s}px solid ${e.traccia || '#000'}`; }
+        if (e.forma === 'cerchio') d.style.borderRadius = '50%';
+        else if (e.forma === 'triangolo') d.style.clipPath = 'polygon(50% 0, 100% 100%, 0 100%)';
+        else if (e.raggio) d.style.borderRadius = `${e.raggio * s}px`;
+      } else if (e.tipo === 'immagine' && e.src) {
+        const img = el('img');
+        img.src = e.src;
+        img.alt = '';
+        img.draggable = false;
+        d.append(img);
+      }
+    }
+    return d;
+  }
+
+  function disegna() {
+    const s = MM * vista.z;
+    Object.assign(foglio.style, { left: `${vista.x}px`, top: `${vista.y}px`, width: `${doc.larghezza * s}px`, height: `${doc.altezza * s}px` });
+    foglio.replaceChildren();
+    const taglio = el('div', 'taglio');
+    taglio.style.top = `${doc.taglio * s}px`;
+    foglio.append(taglio);
+    doc.elementi.forEach(e => foglio.append(nodoElemento(e)));
+    $('zoomValore').textContent = `${Math.round(vista.z * 100)}%`;
+    righelli();
+    disegnaSopra();
+  }
+
+  // cornice dell'elemento selezionato, maniglie (strumento trasforma), misura, modulo, guide
+  function rettangoloDi(e) {
+    const s = MM * vista.z;
+    if (e.tipo === 'testo') {
+      const nodo = foglio.querySelector(`[data-id="${e.id}"]`);
+      if (nodo) {
+        const r = nodo.getBoundingClientRect(), b = scrivania.getBoundingClientRect();
+        return { x: r.left - b.left, y: r.top - b.top, w: r.width, h: r.height, ruota: 0 };
+      }
+    }
+    return { x: vista.x + e.x * s, y: vista.y + e.y * s, w: e.w * s, h: e.h * s, ruota: e.rotazione || 0 };
+  }
+  function disegnaSopra() {
+    sopra.replaceChildren();
+    if (vista.guideVisibili) doc.guide.forEach(g => {
+      const d = el('div', `guida ${g.asse}`);
+      d.dataset.guida = g.id;
+      d.style.pointerEvents = 'auto';
+      if (g.asse === 'v') d.style.left = `${vista.x + g.pos * MM * vista.z}px`;
+      else d.style.top = `${vista.y + g.pos * MM * vista.z}px`;
+      d.title = `guida ${g.asse === 'v' ? 'verticale' : 'orizzontale'} a ${unita(g.pos)} · trascinala sul righello per toglierla`;
+      sopra.append(d);
+    });
+    const e = selezionato();
+    if (!e || !e.visibile) { infoSelezione(); return; }
+    const r = rettangoloDi(e);
+    const c = el('div', `cornice-sel${vista.strumento === 'trasforma' ? '' : ' leggera'}`);
+    Object.assign(c.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px`, transform: r.ruota ? `rotate(${r.ruota}deg)` : 'none' });
+    if (vista.strumento === 'trasforma' && !e.bloccato) {
+      const pos = { nw: [0, 0], n: [.5, 0], ne: [1, 0], e: [1, .5], se: [1, 1], s: [.5, 1], sw: [0, 1], w: [0, .5] };
+      Object.entries(pos).forEach(([m, [px, py]]) => {
+        const h = el('div', 'maniglia');
+        h.dataset.m = m;
+        Object.assign(h.style, { left: `${px * 100}%`, top: `${py * 100}%` });
+        c.append(h);
+      });
+      c.append(el('div', 'stelo'));
+      const rot = el('div', 'maniglia ruota');
+      rot.dataset.m = 'ruota';
+      Object.assign(rot.style, { left: '50%', top: '-22px' });
+      c.append(rot);
+    }
+    const tag = el('span', `modulo-tag${e.chiave ? '' : ' no'}`, e.chiave ? ((REGOLE.livelli.elenco[e.chiave] || {}).breve || e.chiave) : 'nessuna funzione');
+    c.append(tag);
+    c.append(el('span', 'misura', `${num(e.w)} × ${num(e.h)} mm · x ${num(e.x)} y ${num(e.y)}`));
+    sopra.append(c);
+    infoSelezione();
+  }
+  function infoSelezione() {
+    const e = selezionato();
+    $('infoSel').textContent = e ? `${e.nome} · ${unita(e.w)} × ${unita(e.h)}` : 'nessuna';
+  }
+  const unita = mm => vista.unita === 'cm' ? `${num(mm / 10, 2)} cm` : `${num(mm, 1)} mm`;
+
+  // ---- righelli in cm (o mm) ----
+  function righelli() {
+    [['righelloAlto', 'x'], ['righelloSinistro', 'y']].forEach(([id, asse]) => {
+      const c = $(id), box = c.parentElement.getBoundingClientRect(), dpr = devicePixelRatio || 1;
+      c.width = box.width * dpr; c.height = box.height * dpr;
+      c.style.width = `${box.width}px`; c.style.height = `${box.height}px`;
+      const ctx = c.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = '#171614'; ctx.fillRect(0, 0, box.width, box.height);
+      const o = asse === 'x' ? vista.x : vista.y, lungo = asse === 'x' ? box.width : box.height, passo = MM * vista.z;
+      ctx.fillStyle = 'rgba(212,163,115,.13)';
+      if (asse === 'x') ctx.fillRect(o, 0, doc.larghezza * passo, 22); else ctx.fillRect(0, o, 22, doc.altezza * passo);
+      ctx.strokeStyle = '#4f4a42'; ctx.fillStyle = '#8f877b'; ctx.font = '9px IBM Plex Mono, monospace';
+      const etichetta = vista.unita === 'cm' ? 10 : (vista.z < .6 ? 50 : 10);
+      const minimo = passo < 2.5 ? 5 : 1;
+      for (let mm = Math.floor(-o / passo); mm * passo + o < lungo; mm++) {
+        if (mm % minimo) continue;
+        const p = Math.round(o + mm * passo) + .5, cm = mm % 10 === 0, mezzo = mm % 5 === 0;
+        const l = cm ? 22 : mezzo ? 9 : 5;
+        ctx.beginPath();
+        if (asse === 'x') { ctx.moveTo(p, 22); ctx.lineTo(p, 22 - l); } else { ctx.moveTo(22, p); ctx.lineTo(22 - l, p); }
+        ctx.stroke();
+        if (mm % etichetta === 0) {
+          const testo = vista.unita === 'cm' ? String(mm / 10) : String(mm);
+          if (asse === 'x') ctx.fillText(testo, p + 3, 9);
+          else { ctx.save(); ctx.translate(9, p + 3); ctx.rotate(-Math.PI / 2); ctx.fillText(testo, 0, 0); ctx.restore(); }
+        }
+      }
+    });
+    $('unita').textContent = vista.unita;
+  }
+  $('unita').onclick = () => { vista.unita = vista.unita === 'cm' ? 'mm' : 'cm'; tutto(); };
+
+  // ---- coordinate ----
+  const daSchermo = (cx, cy) => { const b = scrivania.getBoundingClientRect(); const s = MM * vista.z; return { x: (cx - b.left - vista.x) / s, y: (cy - b.top - vista.y) / s }; };
+  const cartelloDa = y => y < doc.meta ? 'cartello-superiore' : 'cartello-inferiore';
+
+  // ---- zoom e vista ----
+  function zoomA(z, cx, cy) {
+    const b = scrivania.getBoundingClientRect();
+    cx = cx == null ? b.left + b.width / 2 : cx;
+    cy = cy == null ? b.top + b.height / 2 : cy;
+    const prima = daSchermo(cx, cy);
+    vista.z = Math.min(6, Math.max(.15, z));
+    const s = MM * vista.z;
+    vista.x = cx - b.left - prima.x * s;
+    vista.y = cy - b.top - prima.y * s;
+    disegna();
+  }
+  function adatta() {
+    const b = scrivania.getBoundingClientRect();
+    const libero = b.width - 330;   // lascia libero lo spazio delle finestre a destra
+    vista.z = Math.min((b.height - 60) / (doc.altezza * MM), (libero - 60) / (doc.larghezza * MM), 2);
+    vista.x = Math.max(30, (libero - doc.larghezza * MM * vista.z) / 2);
+    vista.y = (b.height - doc.altezza * MM * vista.z) / 2;
+    disegna();
+  }
+  $('zoomPiu').onclick = () => zoomA(vista.z * 1.25);
+  $('zoomMeno').onclick = () => zoomA(vista.z / 1.25);
+  $('adatta').onclick = adatta;
+  scrivania.addEventListener('wheel', ev => {
+    ev.preventDefault();
+    if (ev.ctrlKey || ev.metaKey) zoomA(vista.z * (ev.deltaY < 0 ? 1.1 : 1 / 1.1), ev.clientX, ev.clientY);
+    else { vista.x -= ev.shiftKey ? ev.deltaY : ev.deltaX; vista.y -= ev.shiftKey ? 0 : ev.deltaY; disegna(); }
+  }, { passive: false });
+  addEventListener('resize', () => disegna());
+
+  // ---- strumenti ----
+  const NOMI_STRUMENTI = { seleziona: 'seleziona', trasforma: 'trasforma', mano: 'sposta la vista', zoom: 'zoom', testo: 'testo', forma: 'forme', immagine: 'immagine', guida: 'guide', bacchetta: 'bacchetta magica' };
+  function scegliStrumento(s) {
+    vista.strumento = s;
+    document.querySelectorAll('.strumento').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.strumento === s)));
+    scrivania.dataset.strumento = s;
+    if (s === 'immagine') $('fileImmagine').click();
+    opzioniStrumento();
+    disegnaSopra();
+  }
+  document.querySelectorAll('.strumento').forEach(b => b.addEventListener('click', () => scegliStrumento(b.dataset.strumento)));
+
+  const ICONE_FORMA = {
+    rettangolo: '<rect x="2" y="4" width="12" height="8"/>', quadrato: '<rect x="3.5" y="3.5" width="9" height="9"/>', cerchio: '<circle cx="8" cy="8" r="5.5"/>',
+    triangolo: '<path d="M8 2.5l6 11H2z"/>', linea: '<path d="M2.5 13.5l11-11"/>'
+  };
+  function opzioniStrumento() {
+    const o = $('opzioni');
+    o.replaceChildren(el('span', 'nome-strumento', NOMI_STRUMENTI[vista.strumento]));
+    const sugg = t => o.append(el('span', 'suggerimento', t));
+    if (vista.strumento === 'seleziona') sugg('clicca un elemento per sceglierlo e trascinalo; frecce: 0,5 mm (con Maiuscolo 0,1 mm); Canc elimina');
+    if (vista.strumento === 'trasforma') sugg('maniglie: ridimensiona in proporzione, con Maiuscolo stirando; il pallino in alto ruota (con Maiuscolo a scatti di 15°)');
+    if (vista.strumento === 'mano') sugg('trascina per spostare la vista; anche tenendo premuto spazio o con la rotella');
+    if (vista.strumento === 'zoom') sugg('clic: ingrandisce dove clicchi; con Alt riduce; Ctrl + rotella da qualsiasi strumento');
+    if (vista.strumento === 'testo') sugg('clicca sul foglio per un testo nuovo; poi scrivilo nelle proprietà');
+    if (vista.strumento === 'forma') {
+      const scelte = el('span', 'scelte-forma');
+      Object.entries(ICONE_FORMA).forEach(([f, icona]) => {
+        const b = el('button');
+        b.title = f;
+        b.setAttribute('aria-pressed', String(vista.forma === f));
+        b.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">${icona}</svg>`;
+        b.onclick = () => { vista.forma = f; opzioniStrumento(); };
+        scelte.append(b);
+      });
+      o.append(scelte);
+      sugg('trascina sul foglio per disegnare; con Maiuscolo proporzioni fisse');
+    }
+    if (vista.strumento === 'immagine') {
+      const b = el('button', 'tasto tasto-oro', 'scegli un\'immagine…');
+      b.onclick = () => $('fileImmagine').click();
+      o.append(b);
+      sugg('png, jpg, webp o svg; poi la bacchetta magica scontorna lo sfondo');
+    }
+    if (vista.strumento === 'guida') {
+      const asse = el('select');
+      [['o', 'orizzontale'], ['v', 'verticale']].forEach(([v, t]) => { const op = el('option', '', t); op.value = v; asse.append(op); });
+      asse.value = vista.nuovaGuida.asse;
+      asse.onchange = () => { vista.nuovaGuida.asse = asse.value; };
+      const pos = el('input');
+      pos.type = 'number';
+      pos.step = vista.unita === 'cm' ? '.1' : '1';
+      pos.value = vista.unita === 'cm' ? vista.nuovaGuida.pos / 10 : vista.nuovaGuida.pos;
+      pos.oninput = () => { const v = parseFloat(pos.value); if (Number.isFinite(v)) vista.nuovaGuida.pos = vista.unita === 'cm' ? v * 10 : v; };
+      const l1 = el('label'); l1.append('nuova guida', asse);
+      const posBox = el('span', 'num-guida');
+      posBox.append(pos, frecceNumero(pos, vista.unita === 'cm' ? .1 : 1));
+      const l2 = el('label'); l2.append('a', posBox, vista.unita);
+      const agg = el('button', 'tasto tasto-oro', '+ aggiungi guida');
+      agg.onclick = () => { ricorda(); doc.guide.push({ id: nuovoId(), asse: vista.nuovaGuida.asse, pos: vista.nuovaGuida.pos }); disegnaSopra(); messaggio('guida aggiunta', true); };
+      const via = el('button', 'tasto', 'togli tutte');
+      via.onclick = () => { if (!doc.guide.length) return; ricorda(); doc.guide = []; disegnaSopra(); };
+      const meta = el('button', 'tasto', 'guide al centro');
+      meta.onclick = () => { ricorda(); doc.guide.push({ id: nuovoId(), asse: 'v', pos: doc.larghezza / 2 }, { id: nuovoId(), asse: 'o', pos: doc.meta / 2 }, { id: nuovoId(), asse: 'o', pos: doc.meta + (doc.altezza - doc.meta) / 2 }); disegnaSopra(); };
+      o.append(l1, l2, agg, via, meta);
+      sugg(`clic sul foglio: guida ${vista.nuovaGuida.asse === 'v' ? 'verticale' : 'orizzontale'} lì`);
+    }
+    if (vista.strumento === 'bacchetta') {
+      const t = el('input');
+      t.type = 'range'; t.min = 0; t.max = 120; t.value = vista.tolleranza;
+      const v = el('b', '', String(vista.tolleranza));
+      t.oninput = () => { vista.tolleranza = +t.value; v.textContent = t.value; };
+      const l = el('label'); l.append('tolleranza', t, v);
+      const cont = el('button', 'interr');
+      cont.setAttribute('aria-pressed', String(vista.contiguo));
+      cont.onclick = () => { vista.contiguo = !vista.contiguo; cont.setAttribute('aria-pressed', String(vista.contiguo)); };
+      const l2 = el('label'); l2.append('solo i pixel vicini', cont);
+      const rip = el('button', 'tasto', 'ripristina l\'immagine');
+      rip.onclick = () => { const e = selezionato(); if (e && e.tipo === 'immagine' && e.srcOriginale) { ricorda(); e.src = e.srcOriginale; tutto(); } };
+      o.append(l, l2, rip);
+      sugg('clicca il colore da togliere in un\'immagine: diventa trasparente');
+    }
+  }
+
+  // ---- puntatore sul foglio ----
+  let azione = null, spazio = false;
+  scrivania.addEventListener('pointerdown', ev => {
+    if (ev.button !== 0 && ev.button !== 1) return;
+    const p = daSchermo(ev.clientX, ev.clientY);
+    const guida = ev.target.closest('[data-guida]');
+    const maniglia = ev.target.closest('.maniglia');
+    const nodo = ev.target.closest('.el');
+    const strumento = spazio || ev.button === 1 ? 'mano' : vista.strumento;
+    scrivania.setPointerCapture(ev.pointerId);
+    if (guida && (strumento === 'seleziona' || strumento === 'trasforma' || strumento === 'guida')) {
+      ricorda();
+      azione = { tipo: 'guida', g: doc.guide.find(g => g.id === guida.dataset.guida) };
+      return;
+    }
+    if (strumento === 'mano') { azione = { tipo: 'mano', x0: ev.clientX, y0: ev.clientY, vx: vista.x, vy: vista.y }; scrivania.style.cursor = 'grabbing'; return; }
+    if (strumento === 'zoom') { zoomA(vista.z * (ev.altKey ? 1 / 1.4 : 1.4), ev.clientX, ev.clientY); return; }
+    if (maniglia && selezionato()) {
+      const e = selezionato();
+      ricorda();
+      azione = { tipo: maniglia.dataset.m === 'ruota' ? 'ruota' : 'scala', m: maniglia.dataset.m, e, start: { ...e }, p0: p };
+      return;
+    }
+    if (strumento === 'testo') {
+      ricorda();
+      const e = { id: nuovoId(), origine: null, nome: 'testo nuovo', cartello: cartelloDa(p.y), chiave: null, tipo: 'testo', x: p.x, y: p.y - 4, w: 40, h: 8, rotazione: 0, opacita: 1,
+        visibile: true, bloccato: false, gemello: false, testo: 'Testo', font: 'BodoniStd', pt: 24, spaziatura: 0, interlinea: null, allineamento: 'sinistra', colore: '#000000', grassetto: false, corsivo: false, maiuscolo: false };
+      doc.elementi.push(e);
+      vista.sel = e.id;
+      scegliStrumento('seleziona');
+      tutto();
+      apriScheda('testo');
+      setTimeout(() => { const t = document.querySelector('#corpoProprieta textarea'); if (t) { t.focus(); t.select(); } }, 30);
+      return;
+    }
+    if (strumento === 'forma') {
+      ricorda();
+      const e = { id: nuovoId(), origine: null, nome: vista.forma, cartello: cartelloDa(p.y), chiave: null, tipo: 'forma', forma: vista.forma, x: p.x, y: p.y, w: 0, h: 0, rotazione: 0,
+        opacita: 1, visibile: true, bloccato: false, gemello: false, riempimento: vista.forma === 'linea' ? '#000000' : '#E01212', traccia: '#000000', spessoreTraccia: 0, raggio: 0 };
+      doc.elementi.push(e);
+      vista.sel = e.id;
+      azione = { tipo: 'disegna', e, p0: p };
+      return;
+    }
+    if (strumento === 'guida') {
+      ricorda();
+      const asse = vista.nuovaGuida.asse;
+      doc.guide.push({ id: nuovoId(), asse, pos: Math.round((asse === 'v' ? p.x : p.y) * 2) / 2 });
+      disegnaSopra();
+      return;
+    }
+    if (strumento === 'bacchetta') {
+      const id = nodo ? nodo.dataset.id : null, e = id && trova(id);
+      if (e && e.tipo === 'immagine') { vista.sel = e.id; bacchetta(e, p); }
+      else messaggio('la bacchetta magica funziona sulle immagini: clicca il colore da togliere');
+      return;
+    }
+    // seleziona / trasforma
+    const id = nodo ? nodo.dataset.id : null;
+    if (id) {
+      const e = trova(id);
+      vista.sel = id;
+      if (!e.bloccato) { ricorda(); azione = { tipo: 'sposta', e, start: { x: e.x, y: e.y }, p0: p, mosso: false }; }
+      tutto();
+    } else { vista.sel = null; tutto(); }
+  });
+
+  scrivania.addEventListener('pointermove', ev => {
+    const p = daSchermo(ev.clientX, ev.clientY);
+    $('cursore').textContent = `x ${unita(p.x)} · y ${unita(p.y)}`;
+    if (!azione) return;
+    if (azione.tipo === 'mano') { vista.x = azione.vx + ev.clientX - azione.x0; vista.y = azione.vy + ev.clientY - azione.y0; disegna(); return; }
+    if (azione.tipo === 'guida') {
+      const g = azione.g;
+      g.pos = Math.round((g.asse === 'v' ? p.x : p.y) * 10) / 10;
+      $('cursore').textContent = `guida ${g.asse === 'v' ? 'verticale' : 'orizzontale'} ${unita(g.pos)}`;
+      disegnaSopra();
+      return;
+    }
+    if (azione.tipo === 'sposta') {
+      const e = azione.e;
+      let x = azione.start.x + p.x - azione.p0.x, y = azione.start.y + p.y - azione.p0.y;
+      if (ev.shiftKey) { if (Math.abs(p.x - azione.p0.x) > Math.abs(p.y - azione.p0.y)) y = azione.start.y; else x = azione.start.x; }
+      const agg = aggancia(e, x, y);
+      e.x = agg.x; e.y = agg.y;
+      azione.mosso = true;
+      disegna();
+      mostraAgganci(agg.linee);
+      return;
+    }
+    if (azione.tipo === 'disegna') {
+      const e = azione.e, p0 = azione.p0;
+      let w = p.x - p0.x, h = p.y - p0.y;
+      if (e.forma === 'linea') {
+        // linea: dal punto di partenza a qui, con lo spessore della linea
+        let ang = Math.atan2(h, w) * 180 / Math.PI;
+        if (ev.shiftKey) ang = Math.round(ang / 45) * 45;
+        const L = Math.hypot(w, h), T = .6, cx = p0.x + Math.cos(ang * Math.PI / 180) * L / 2, cy = p0.y + Math.sin(ang * Math.PI / 180) * L / 2;
+        Object.assign(e, { x: cx - L / 2, y: cy - T / 2, w: L, h: T, rotazione: ang });
+      } else {
+        if (e.forma === 'quadrato' || e.forma === 'cerchio' || ev.shiftKey) { const m = Math.max(Math.abs(w), Math.abs(h)); w = Math.sign(w || 1) * m; h = Math.sign(h || 1) * m; }
+        Object.assign(e, { x: Math.min(p0.x, p0.x + w), y: Math.min(p0.y, p0.y + h), w: Math.abs(w), h: Math.abs(h) });
+      }
+      disegna();
+      return;
+    }
+    if (azione.tipo === 'scala') { scala(azione, p, ev.shiftKey); disegna(); return; }
+    if (azione.tipo === 'ruota') {
+      const e = azione.e, cx = e.x + e.w / 2, cy = e.y + e.h / 2;
+      let ang = Math.atan2(p.y - cy, p.x - cx) * 180 / Math.PI + 90;
+      if (ev.shiftKey) ang = Math.round(ang / 15) * 15;
+      e.rotazione = Math.round(((ang + 540) % 360 - 180) * 10) / 10;
+      disegna();
+    }
+  });
+  scrivania.addEventListener('pointerup', ev => {
+    if (!azione) return;
+    const a = azione;
+    azione = null;
+    scrivania.style.cursor = '';
+    mostraAgganci([]);
+    if (a.tipo === 'guida') {
+      // trascinata sul righello o fuori dal foglio visibile: si toglie
+      const b = scrivania.getBoundingClientRect();
+      if (ev.clientX < b.left + 2 || ev.clientY < b.top + 2) { doc.guide = doc.guide.filter(g => g !== a.g); messaggio('guida tolta', true); }
+      disegnaSopra();
+      return;
+    }
+    if (a.tipo === 'sposta' && !a.mosso) storia.pop();
+    if (a.tipo === 'sposta' && a.mosso && a.e.chiave && a.e.tipo !== 'immagine') cartelloDopoSpostamento(a.e);
+    if (a.tipo === 'disegna') {
+      const e = a.e;
+      if ((e.forma === 'linea' ? e.w : Math.min(e.w, e.h)) < 1) {
+        // un clic senza trascinare: forma di partenza da 30 mm
+        Object.assign(e, e.forma === 'linea' ? { w: 30, h: .6 } : { w: 30, h: e.forma === 'rettangolo' ? 20 : 30 });
+      }
+      e.cartello = cartelloDa(e.y + e.h / 2);
+      scegliStrumento('trasforma');
+    }
+    tastiStoria();
+    tutto();
+  });
+  function cartelloDopoSpostamento(e) {
+    const nuovo = cartelloDa(e.y + e.h / 2);
+    if (e.cartello !== 'foglio' && nuovo !== e.cartello) { e.cartello = nuovo; messaggio(`${e.nome} ora è nel ${NOMI_CARTELLO[nuovo]}`); }
+  }
+
+  // ridimensionare con le maniglie: in proporzione, con Maiuscolo stirando; l'angolo opposto resta fermo
+  function scala(a, p, libero) {
+    const e = a.e, s0 = a.start, m = a.m;
+    const sx = m.includes('e') ? 1 : m.includes('w') ? -1 : 0, sy = m.includes('s') ? 1 : m.includes('n') ? -1 : 0;
+    const ang = (s0.rotazione || 0) * Math.PI / 180, c = Math.cos(ang), s = Math.sin(ang);
+    const dx = p.x - a.p0.x, dy = p.y - a.p0.y;
+    const lx = dx * c + dy * s, ly = -dx * s + dy * c;   // spostamento negli assi dell'elemento
+    let nw = s0.w + sx * lx, nh = s0.h + sy * ly;
+    if (!sx) nw = s0.w;
+    if (!sy) nh = s0.h;
+    if (!libero || e.tipo === 'testo') {
+      const k = sx && sy ? Math.max(nw / s0.w, nh / s0.h) : sx ? nw / s0.w : nh / s0.h;
+      nw = s0.w * k; nh = s0.h * k;
+    }
+    nw = Math.max(nw, .5); nh = Math.max(nh, e.forma === 'linea' ? .1 : .5);
+    // il punto opposto alla maniglia resta fermo
+    const o = { x: -sx * s0.w / 2, y: -sy * s0.h / 2 }, o2 = { x: -sx * nw / 2, y: -sy * nh / 2 };
+    const ddx = o.x - o2.x, ddy = o.y - o2.y;
+    const cx = s0.x + s0.w / 2 + ddx * c - ddy * s, cy = s0.y + s0.h / 2 + ddx * s + ddy * c;
+    if (e.tipo === 'testo') e.pt = Math.max(2, Math.round(s0.pt * nw / s0.w * 10) / 10);
+    Object.assign(e, { w: nw, h: nh, x: cx - nw / 2, y: cy - nh / 2 });
+  }
+
+  // guide magnetiche: bordi e centro dell'elemento su guide, bordi e centro del foglio, linea di taglio
+  function aggancia(e, x, y) {
+    if (!vista.magnetiche) return { x, y, linee: [] };
+    const soglia = 5 / (MM * vista.z), linee = [];
+    const vert = [0, doc.larghezza / 2, doc.larghezza, ...doc.guide.filter(g => g.asse === 'v').map(g => g.pos)];
+    const oriz = [0, doc.meta, doc.altezza, doc.meta / 2, doc.meta + (doc.altezza - doc.meta) / 2, ...doc.guide.filter(g => g.asse === 'o').map(g => g.pos)];
+    const prova = (val, dim, bersagli) => {
+      let meglio = null;
+      [0, dim / 2, dim].forEach(scarto => bersagli.forEach(b => {
+        const d = b - (val + scarto);
+        if (Math.abs(d) < soglia && (!meglio || Math.abs(d) < Math.abs(meglio.d))) meglio = { d, b };
+      }));
+      return meglio;
+    };
+    const ax = prova(x, e.w, vert), ay = prova(y, e.h, oriz);
+    if (ax) { x += ax.d; linee.push({ asse: 'v', pos: ax.b }); }
+    if (ay) { y += ay.d; linee.push({ asse: 'o', pos: ay.b }); }
+    return { x, y, linee };
+  }
+  function mostraAgganci(linee) {
+    sopra.querySelectorAll('.aggancio').forEach(n => n.remove());
+    linee.forEach(l => {
+      const d = el('div', `aggancio ${l.asse}`);
+      if (l.asse === 'v') d.style.left = `${vista.x + l.pos * MM * vista.z}px`; else d.style.top = `${vista.y + l.pos * MM * vista.z}px`;
+      sopra.append(d);
+    });
+  }
+
+  // guide dai righelli: si trascina giù dal righello alto (orizzontale) o a destra dal sinistro (verticale)
+  [['righelloAltoBox', 'o'], ['righelloSinistroBox', 'v']].forEach(([id, asse]) => {
+    $(id).addEventListener('pointerdown', ev => {
+      ricorda();
+      const g = { id: nuovoId(), asse, pos: 0 };
+      doc.guide.push(g);
+      azione = { tipo: 'guida', g };
+      scrivania.setPointerCapture(ev.pointerId);
+    });
+  });
+
+  // ---- bacchetta magica: i pixel del colore cliccato (vicini, o tutti) diventano trasparenti ----
+  function bacchetta(e, p) {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      // punto cliccato nelle coordinate dell'immagine (tenendo conto della rotazione)
+      const cx = e.x + e.w / 2, cy = e.y + e.h / 2, a = -(e.rotazione || 0) * Math.PI / 180;
+      const lx = (p.x - cx) * Math.cos(a) - (p.y - cy) * Math.sin(a) + e.w / 2, ly = (p.x - cx) * Math.sin(a) + (p.y - cy) * Math.cos(a) + e.h / 2;
+      const px = Math.floor(lx / e.w * c.width), py = Math.floor(ly / e.h * c.height);
+      if (px < 0 || py < 0 || px >= c.width || py >= c.height) return;
+      const dati = ctx.getImageData(0, 0, c.width, c.height), d = dati.data, W = c.width, H = c.height;
+      const i0 = (py * W + px) * 4, r0 = d[i0], g0 = d[i0 + 1], b0 = d[i0 + 2], a0 = d[i0 + 3], t = vista.tolleranza;
+      if (a0 === 0) { messaggio('lì è già trasparente'); return; }
+      const simile = i => d[i + 3] > 0 && Math.max(Math.abs(d[i] - r0), Math.abs(d[i + 1] - g0), Math.abs(d[i + 2] - b0)) <= t;
+      let tolti = 0;
+      if (vista.contiguo) {
+        const visti = new Uint8Array(W * H), pila = [py * W + px];
+        visti[py * W + px] = 1;
+        while (pila.length) {
+          const q = pila.pop(), i = q * 4;
+          if (!simile(i)) continue;
+          d[i + 3] = 0; tolti++;
+          const x = q % W, y = (q - x) / W;
+          if (x > 0 && !visti[q - 1]) { visti[q - 1] = 1; pila.push(q - 1); }
+          if (x < W - 1 && !visti[q + 1]) { visti[q + 1] = 1; pila.push(q + 1); }
+          if (y > 0 && !visti[q - W]) { visti[q - W] = 1; pila.push(q - W); }
+          if (y < H - 1 && !visti[q + W]) { visti[q + W] = 1; pila.push(q + W); }
+        }
+      } else for (let i = 0; i < d.length; i += 4) if (simile(i)) { d[i + 3] = 0; tolti++; }
+      ctx.putImageData(dati, 0, 0);
+      ricorda();
+      if (!e.srcOriginale) e.srcOriginale = e.src;
+      e.src = c.toDataURL('image/png');
+      messaggio(`scontornati ${tolti.toLocaleString('it-IT')} pixel`, true);
+      tutto();
+    };
+    img.src = e.src;
+  }
+
+  // ---- immagini nuove ----
+  $('fileImmagine').addEventListener('change', () => {
+    const f = $('fileImmagine').files[0];
+    $('fileImmagine').value = '';
+    if (!f) { if (vista.strumento === 'immagine') scegliStrumento('seleziona'); return; }
+    const lettore = new FileReader();
+    lettore.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        ricorda();
+        const larga = Math.min(80, doc.larghezza * .5), alta = larga * img.naturalHeight / img.naturalWidth;
+        const b = scrivania.getBoundingClientRect(), centro = daSchermo(b.left + b.width / 2 - 150, b.top + b.height / 2);
+        const e = { id: nuovoId(), origine: null, nome: f.name.replace(/\.[^.]+$/, ''), cartello: cartelloDa(centro.y), chiave: null, tipo: 'immagine', x: centro.x - larga / 2, y: centro.y - alta / 2,
+          w: larga, h: alta, rotazione: 0, opacita: 1, visibile: true, bloccato: false, gemello: false, src: lettore.result, srcOriginale: lettore.result };
+        doc.elementi.push(e);
+        vista.sel = e.id;
+        scegliStrumento('trasforma');
+        tutto();
+        messaggio('immagine aggiunta: con la bacchetta magica togli lo sfondo', true);
+      };
+      img.src = lettore.result;
+    };
+    lettore.readAsDataURL(f);
+  });
+
+  // ---- font importati ----
+  $('fileFont').addEventListener('change', async () => {
+    const f = $('fileFont').files[0];
+    $('fileFont').value = '';
+    if (!f) return;
+    const nome = `I:${f.name.replace(/\.[^.]+$/, '')}`;
+    const dati = await f.arrayBuffer();
+    const voce = { nome, etichetta: f.name.replace(/\.[^.]+$/, ''), famiglia: `IMP ${f.name.replace(/\.[^.]+$/, '')}`, origine: 'importato', file: f.name, dati, url: URL.createObjectURL(new Blob([dati])) };
+    doc.font.push(voce);
+    caricaFontImportato(voce);
+    const e = selezionato();
+    if (e && e.tipo === 'testo') { ricorda(); cambiaStile(e, 'font', nome); }
+    messaggio(`font ${voce.etichetta} importato`, true);
+  });
+
+  // ---- proprietà ----
+  let schedaAperta = 'testo';
+  function apriScheda(s) { schedaAperta = s; proprieta(); }
+  document.querySelectorAll('#proprieta .schede button').forEach(b => b.addEventListener('click', () => apriScheda(b.dataset.scheda)));
+  // lo stile vale anche per il gemello nell'altro cartello (stesso modulo), se l'elemento lo chiede
+  // i due claim dello stesso cartello hanno sempre lo stesso aspetto: cambiandone uno cambia anche l'altro (non il testo, la
+  // posizione e l'allineamento, che restano di ognuno); i due cartelli restano indipendenti (19 ottobre 2026)
+  const CLAIM = ['claim-sx', 'claim-dx'];
+  const ASPETTO_CLAIM = ['font', 'pt', 'spaziatura', 'interlinea', 'colore', 'grassetto', 'corsivo', 'maiuscolo', 'opacita'];
+  function cambiaStile(e, campo, valore) {
+    e[campo] = valore;
+    if (e.gemello && e.chiave) doc.elementi.forEach(o => { if (o !== e && o.chiave === e.chiave && o.tipo === e.tipo) o[campo] = valore; });
+    if (CLAIM.includes(e.chiave) && ASPETTO_CLAIM.includes(campo)) doc.elementi.forEach(o => { if (o !== e && CLAIM.includes(o.chiave) && o.cartello === e.cartello) o[campo] = valore; });
+    disegna();
+  }
+  let attesaStoria = 0, ricordato = false;
+  const ricordaUnaVolta = () => { if (!ricordato) { ricorda(); ricordato = true; } clearTimeout(attesaStoria); attesaStoria = setTimeout(() => { ricordato = false; }, 800); };
+
+  function campoNumero(etichetta, valore, unitaTesto, quando, passo = .1) {
+    const l = el('label', 'campo');
+    l.append(el('span', '', etichetta));
+    const box = el('div', 'con-unita');
+    const i = el('input');
+    i.type = 'number';
+    i.step = passo;
+    i.value = valore == null ? '' : Math.round(valore * 100) / 100;
+    if (valore == null) i.placeholder = 'auto';
+    i.addEventListener('input', () => { const v = parseFloat(i.value); ricordaUnaVolta(); quando(Number.isFinite(v) ? v : null); });
+    box.append(i, el('i', '', unitaTesto), frecceNumero(i, passo));
+    l.append(box);
+    return l;
+  }
+  // ▲ ▼ oro di un campo numerico: un passo in più o in meno, come scrivendo nel campo
+  function frecceNumero(campo, passo) {
+    const f = el('span', 'frecce-num');
+    [['▲', 1, 'aumenta'], ['▼', -1, 'diminuisci']].forEach(([testo, verso, nome]) => {
+      const b = el('button', '', testo);
+      b.type = 'button';
+      b.tabIndex = -1;
+      b.setAttribute('aria-label', nome);
+      b.addEventListener('click', evento => {
+        evento.preventDefault();
+        const ora = parseFloat(campo.value);
+        campo.value = Math.round(((Number.isFinite(ora) ? ora : 0) + verso * passo) * 1000) / 1000;
+        campo.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      f.append(b);
+    });
+    return f;
+  }
+  const COLORI = ['#E01212', '#000000', '#FFFFFF', '#BCB8B8', '#B48B37', '#D4A373', '#96382B', '#121110', '#CC9E25', '#5F8A55',
+                  '#1F4E79', '#E89106', '#87161C', '#0E4A3B', '#665E54', '#ECD9B3', '#F2B705', '#3FC1D9', '#7A4FA0', 'transparent'];
+  function campoColore(etichetta, valore, quando) {
+    const box = el('div', 'campo');
+    box.append(el('span', '', etichetta));
+    const gruppo = el('div', 'gruppo-colore');
+    const campioni = el('div', 'campioni');
+    // i colori del documento per primi
+    const delDoc = [...new Set(doc.elementi.flatMap(e => [e.colore, e.riempimento, e.traccia]).filter(c => c && c !== 'transparent').map(c => c.toUpperCase()))];
+    [...new Set([...delDoc, ...COLORI])].slice(0, 20).forEach(c => {
+      const b = el('button');
+      if (c === 'transparent') { b.className = 'trasparente'; b.title = 'nessun colore'; } else { b.style.background = c; b.title = c; }
+      b.onclick = () => { ricorda(); quando(c); aggiorna(c); };
+      campioni.append(b);
+    });
+    const riga = el('div', 'hex');
+    const tavola = el('input');
+    tavola.type = 'color';
+    const testo = el('input');
+    testo.type = 'text';
+    testo.maxLength = 7;
+    const occhio = el('button', 'contagocce', '⌖');
+    occhio.title = 'contagocce: prendi un colore dallo schermo';
+    occhio.onclick = async () => {
+      if (!window.EyeDropper) { messaggio('il contagocce funziona in chrome ed edge'); return; }
+      try { const { sRGBHex } = await new EyeDropper().open(); ricorda(); quando(sRGBHex.toUpperCase()); aggiorna(sRGBHex.toUpperCase()); } catch { /* annullato */ }
+    };
+    const aggiorna = c => { testo.value = c === 'transparent' ? 'nessuno' : String(c || '').toUpperCase(); if (/^#[0-9a-f]{6}$/i.test(c)) tavola.value = c.toLowerCase(); };
+    aggiorna(valore || '#000000');
+    tavola.oninput = () => { ricordaUnaVolta(); testo.value = tavola.value.toUpperCase(); quando(testo.value); };
+    testo.oninput = () => { const v = testo.value.trim().replace(/^#?/, '#'); if (/^#[0-9a-f]{6}$/i.test(v)) { ricordaUnaVolta(); tavola.value = v.toLowerCase(); quando(v.toUpperCase()); } };
+    riga.append(tavola, testo, occhio);
+    gruppo.append(campioni, riga);
+    box.append(gruppo);
+    return box;
+  }
+
+  function sceltaFont(e) {
+    const box = el('div', 'campo');
+    box.append(el('span', '', 'font'));
+    const b = el('button', 'scelta-font');
+    const f = font(e.font);
+    const nome = el('b', '', f ? f.etichetta : e.font);
+    nome.style.fontFamily = `'${famiglia(e.font)}', serif`;
+    b.append(nome, el('small', '', `${f ? { progetto: 'progetto', google: 'google', importato: 'importato' }[f.origine] : '.psd'} ▾`));
+    b.onclick = ev => { ev.stopPropagation(); menuFont(b, e); };
+    box.append(b);
+    return box;
+  }
+  function menuFont(ancora, e) {
+    document.querySelectorAll('.menu-font').forEach(m => m.remove());
+    const menu = el('div', 'menu-font');
+    const gruppi = [['progetto', 'font del progetto · assets/fonts'], ['importato', 'importati'], ['google', 'google fonts · uso commerciale']];
+    gruppi.forEach(([o, titolo]) => {
+      const lista = doc.font.filter(f => f.origine === o);
+      if (!lista.length) return;
+      menu.append(el('h4', '', titolo));
+      lista.forEach(f => {
+        if (o === 'google') usaGoogle(f.nome);
+        const b = el('button', f.nome === e.font ? 'scelto' : '');
+        const s = el('span', '', f.etichetta);
+        s.style.fontFamily = `'${f.famiglia}', serif`;
+        b.append(s, el('small', '', o === 'google' ? 'G' : ''));
+        b.onclick = () => { ricorda(); cambiaStile(e, 'font', f.nome); menu.remove(); proprieta(); };
+        menu.append(b);
+      });
+    });
+    const imp = el('button');
+    imp.append(el('span', '', '+ importa un font…'), el('small', '', 'ttf · otf · woff'));
+    imp.querySelector('span').style.cssText = 'font-size:12px;color:#e5ba73';
+    imp.onclick = () => { menu.remove(); $('fileFont').click(); };
+    menu.append(imp);
+    const r = ancora.getBoundingClientRect(), b = $('lavoro').getBoundingClientRect();
+    Object.assign(menu.style, { left: `${r.left - b.left}px`, top: `${r.bottom - b.top + 4}px` });
+    $('lavoro').append(menu);
+    setTimeout(() => document.addEventListener('pointerdown', function chiudi(ev) { if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener('pointerdown', chiudi); } }), 0);
+  }
+
+  function proprieta() {
+    const corpo = $('corpoProprieta');
+    corpo.replaceChildren();
+    const e = selezionato();
+    const schede = document.querySelectorAll('#proprieta .schede button');
+    if (!e) {
+      schede.forEach(b => { b.disabled = true; b.setAttribute('aria-selected', 'false'); });
+      corpo.append(el('p', 'vuoto-prop', 'seleziona un elemento sul foglio o nei livelli per vederne e cambiarne le proprietà'));
+      return;
+    }
+    const testo = e.tipo === 'testo';
+    if (!testo && schedaAperta === 'testo') schedaAperta = 'aspetto';
+    schede.forEach(b => { b.disabled = b.dataset.scheda === 'testo' && !testo; b.setAttribute('aria-selected', String(b.dataset.scheda === schedaAperta)); });
+
+    if (schedaAperta === 'testo') {
+      const t = el('label', 'campo');
+      t.append(el('span', '', 'testo'));
+      const area = el('textarea');
+      area.value = e.testo || '';
+      area.oninput = () => { ricordaUnaVolta(); e.testo = area.value; disegna(); };
+      t.append(area);
+      corpo.append(t, sceltaFont(e));
+      const riga = el('div', 'riga tre');
+      riga.append(campoNumero('grandezza', e.pt, 'pt', v => v && cambiaStile(e, 'pt', v), .5),
+        campoNumero('spaziatura', e.spaziatura || 0, '‰', v => cambiaStile(e, 'spaziatura', v || 0), 5),
+        campoNumero('interlinea', e.interlinea, 'pt', v => cambiaStile(e, 'interlinea', v), .5));
+      corpo.append(riga);
+      const al = el('div', 'campo');
+      al.append(el('span', '', 'allineamento e stile'));
+      const tasti = el('div', 'allinea');
+      [['sinistra', '<path d="M1 3h12M1 7h8M1 11h10"/>'], ['centro', '<path d="M1 3h12M3 7h8M2 11h10"/>'], ['destra', '<path d="M1 3h12M5 7h8M3 11h10"/>']].forEach(([a, icona]) => {
+        const b = el('button');
+        b.title = a;
+        b.setAttribute('aria-pressed', String(e.allineamento === a));
+        b.innerHTML = `<svg viewBox="0 0 14 14" stroke="currentColor" stroke-width="1.4">${icona}</svg>`;
+        b.onclick = () => {
+          ricorda();
+          // il testo resta dove si vede: si sposta solo l'ancora
+          cambiaStile(e, 'allineamento', a);
+          proprieta();
+        };
+        tasti.append(b);
+      });
+      [['grassetto', 'B', 'font-weight:700'], ['corsivo', 'I', 'font-style:italic;font-family:serif'], ['maiuscolo', 'AA', 'font-size:10px']].forEach(([campo, t2, css]) => {
+        const b = el('button', '', t2);
+        b.style.cssText = css;
+        b.title = campo;
+        b.setAttribute('aria-pressed', String(!!e[campo]));
+        b.onclick = () => { ricorda(); cambiaStile(e, campo, !e[campo]); proprieta(); };
+        tasti.append(b);
+      });
+      al.append(tasti);
+      corpo.append(al, campoColore('colore del testo', e.colore, c => cambiaStile(e, 'colore', c)));
+      if (e.chiave) corpo.append(el('p', 'nota', (e.gemello ? 'lo stile vale per l\'elemento in tutti e due i cartelli (si cambia nella funzione)' : 'lo stile vale solo per questo cartello')
+        + (CLAIM.includes(e.chiave) ? '; i due claim del cartello hanno sempre lo stesso aspetto' : '')));
+    }
+    if (schedaAperta === 'aspetto') {
+      if (e.tipo === 'forma') {
+        if (e.forma === 'linea') corpo.append(campoColore('colore della linea', e.traccia || e.riempimento, c => { cambiaStile(e, 'traccia', c); cambiaStile(e, 'riempimento', c); }),
+          campoNumero('spessore', e.h, 'mm', v => { if (v) { e.y += (e.h - v) / 2; e.h = v; disegna(); } }, .1));
+        else {
+          corpo.append(campoColore('riempimento', e.riempimento, c => cambiaStile(e, 'riempimento', c)), campoColore('traccia', e.traccia, c => cambiaStile(e, 'traccia', c)));
+          const riga = el('div', 'riga due');
+          riga.append(campoNumero('spessore traccia', e.spessoreTraccia || 0, 'mm', v => cambiaStile(e, 'spessoreTraccia', v || 0), .1));
+          if (e.forma === 'rettangolo' || e.forma === 'quadrato') riga.append(campoNumero('angoli arrotondati', e.raggio || 0, 'mm', v => cambiaStile(e, 'raggio', v || 0), .5));
+          corpo.append(riga);
+          const forma = el('label', 'campo');
+          forma.append(el('span', '', 'forma'));
+          const sel = el('select');
+          ['rettangolo', 'quadrato', 'cerchio', 'triangolo'].forEach(f => { const o = el('option', '', f); o.value = f; sel.append(o); });
+          sel.value = e.forma;
+          sel.onchange = () => { ricorda(); e.forma = sel.value; if (sel.value === 'quadrato' || sel.value === 'cerchio') { const m = Math.max(e.w, e.h); e.w = m; e.h = m; } tutto(); };
+          forma.append(sel);
+          corpo.append(forma);
+        }
+      }
+      if (e.tipo === 'immagine') {
+        corpo.append(el('p', 'nota', 'per scontornare: strumento bacchetta magica (W) e clic sul colore da togliere'));
+        const b = el('button', 'tasto tasto-oro', 'bacchetta magica');
+        b.onclick = () => scegliStrumento('bacchetta');
+        corpo.append(b);
+      }
+      corpo.append(campoNumero('opacità', Math.round((e.opacita == null ? 1 : e.opacita) * 100), '%', v => { e.opacita = Math.min(1, Math.max(0, (v == null ? 100 : v) / 100)); disegna(); }, 5));
+    }
+    if (schedaAperta === 'posizione') {
+      const fattore = vista.unita === 'cm' ? 10 : 1, u = vista.unita;
+      const r1 = el('div', 'riga due'), r2 = el('div', 'riga due');
+      r1.append(campoNumero('x', e.x / fattore, u, v => { if (v != null) { e.x = v * fattore; disegna(); } }),
+        campoNumero('y', e.y / fattore, u, v => { if (v != null) { e.y = v * fattore; disegna(); } }));
+      r2.append(campoNumero('larghezza', e.w / fattore, u, v => { if (v) { const k = v * fattore / e.w; if (e.tipo === 'testo') e.pt *= k; e.w = v * fattore; if (e.tipo === 'testo') e.h *= k; disegna(); } }),
+        campoNumero('altezza', e.h / fattore, u, v => { if (v) { e.h = v * fattore; disegna(); } }));
+      corpo.append(r1, r2, campoNumero('rotazione', e.rotazione || 0, '°', v => { e.rotazione = v || 0; disegna(); }, 1));
+      const c = el('label', 'campo');
+      c.append(el('span', '', 'cartello'));
+      const sel = el('select');
+      Object.entries(NOMI_CARTELLO).forEach(([v, t]) => { const o = el('option', '', t); o.value = v; sel.append(o); });
+      sel.value = e.cartello;
+      sel.onchange = () => { ricorda(); e.cartello = sel.value; tutto(); };
+      c.append(sel);
+      corpo.append(c);
+      const ord = el('div', 'campo');
+      ord.append(el('span', '', 'ordine dei livelli'));
+      const tasti = el('div', 'ordine');
+      [['in cima', 'cima'], ['su', 'su'], ['giù', 'giu'], ['in fondo', 'fondo']].forEach(([t, v]) => { const b = el('button', '', t); b.onclick = () => ordina(e, v); tasti.append(b); });
+      ord.append(tasti);
+      const via = el('button', 'elimina', 'elimina elemento');
+      via.onclick = () => elimina(e);
+      corpo.append(ord, via);
+    }
+  }
+  function ordina(e, verso) {
+    ricorda();
+    const i = doc.elementi.indexOf(e);
+    doc.elementi.splice(i, 1);
+    const j = verso === 'cima' ? doc.elementi.length : verso === 'fondo' ? 0 : verso === 'su' ? Math.min(doc.elementi.length, i + 1) : Math.max(0, i - 1);
+    doc.elementi.splice(j, 0, e);
+    tutto();
+  }
+  function elimina(e) {
+    ricorda();
+    if (e.origine != null) { e.visibile = false; e.eliminato = true; messaggio(`${e.nome} tolto dalla pagina (annulla per riaverlo)`); }
+    else doc.elementi.splice(doc.elementi.indexOf(e), 1);
+    vista.sel = null;
+    tutto();
+  }
+
+  // ---- funzione: il modulo comune dell'elemento ----
+  const ICONE_MODULO = { 'prezzo-finale': '€', 'prezzo-originario': '€', percentuale: '%', descrizione: 'T', 'claim-sx': 'C', 'claim-dx': 'C', 'logo-brand': 'B', 'logo-brand-2': 'B', 'riquadro-brand': '▭', sbarra: '/', footer: '▣' };
+  const ADATTI = { testo: ['descrizione', 'claim-sx', 'claim-dx', 'prezzo-originario', 'percentuale', 'prezzo-finale'], forma: ['riquadro-brand', 'sbarra'], immagine: ['logo-brand', 'logo-brand-2', 'footer'] };
+  function funzione() {
+    const corpo = $('corpoFunzione');
+    corpo.replaceChildren();
+    const e = selezionato();
+    if (!e) { corpo.append(el('p', 'vuoto-prop', 'seleziona un elemento per assegnargli un modulo comune: un campo del pannello del negozio')); return; }
+    const m = e.chiave && REGOLE.livelli.elenco[e.chiave];
+    const scelto = el('div', `modulo-scelto${m ? '' : ' vuoto'}`);
+    const testi = el('div');
+    testi.append(el('strong', '', m ? m.breve : 'nessuna funzione'), el('small', '', m ? `${m.file}${m.blocco ? ` · blocco ${m.blocco}` : ' · grafica della pagina'}` : 'grafica fissa: si stampa com\'è, senza campo nel pannello'));
+    scelto.append(el('span', 'icona', m ? (ICONE_MODULO[e.chiave] || '◆') : '—'), testi);
+    corpo.append(scelto);
+    const c = el('label', 'campo');
+    c.append(el('span', '', 'modulo comune'));
+    const sel = el('select');
+    const nessuno = el('option', '', 'grafica fissa · nessun campo');
+    nessuno.value = '';
+    sel.append(nessuno);
+    // i moduli adatti al tipo di elemento; quelli già usati da un altro elemento dello stesso cartello sono spenti
+    const usati = new Set(doc.elementi.filter(o => o !== e && o.visibile && o.cartello === e.cartello && o.chiave).map(o => o.chiave));
+    (ADATTI[e.tipo] || []).forEach(k => {
+      const mod = REGOLE.livelli.elenco[k];
+      if (!mod) return;
+      const o = el('option', '', `${mod.breve}${usati.has(k) ? ' · già nel cartello' : ''}`);
+      o.value = k;
+      o.disabled = usati.has(k);
+      sel.append(o);
+    });
+    const nuovo = el('option', '', '+ chiedi un modulo nuovo…');
+    nuovo.value = '__nuovo';
+    sel.append(nuovo);
+    sel.value = e.richiesta != null ? '__nuovo' : (e.chiave || '');
+    sel.onchange = () => {
+      ricorda();
+      if (sel.value === '__nuovo') { e.chiave = null; e.richiesta = e.richiesta || ''; }
+      else { e.chiave = sel.value || null; delete e.richiesta; if (e.chiave) e.nome = e.chiave; }
+      tutto();
+    };
+    c.append(sel);
+    corpo.append(c);
+    if (e.richiesta != null) {
+      const r = el('label', 'campo');
+      r.append(el('span', '', 'cosa deve fare il modulo nuovo'));
+      const area = el('textarea');
+      area.value = e.richiesta;
+      area.placeholder = 'es. una data di fine promozione che si sceglie dal calendario';
+      area.oninput = () => { e.richiesta = area.value; };
+      r.append(area);
+      corpo.append(r, el('p', 'nota', 'la richiesta resta con l\'elemento: il modulo comune nuovo si costruisce a codice; intanto l\'elemento è grafica fissa'));
+    }
+    if (e.chiave) {
+      const op = el('div', 'opzione');
+      op.append(document.createTextNode('stile uguale nei due cartelli'));
+      const i = el('button', 'interr');
+      i.setAttribute('aria-pressed', String(!!e.gemello));
+      i.onclick = () => { ricorda(); e.gemello = !e.gemello; doc.elementi.forEach(o => { if (o.chiave === e.chiave && o.tipo === e.tipo) o.gemello = e.gemello; }); tutto(); };
+      op.append(i);
+      corpo.append(op);
+      // il campo come lo vedrà il negozio nel pannello
+      const ant = el('div', 'anteprima-campo');
+      ant.append(el('span', '', `${m.breve} · nel pannello`));
+      const finto = el('div', 'finto');
+      if (/prezzo/.test(e.chiave)) finto.append(el('b', '', '€'), el('em', '', (e.testo || '').replace(/[^\d,.]/g, '') || '0,00'));
+      else if (e.chiave === 'percentuale') finto.append(el('em', '', (e.testo || '').replace(/\D/g, '') || '50'), el('b', '', '%'));
+      else if (/logo/.test(e.chiave)) finto.append(el('em', '', '-- Seleziona Brand --'));
+      else if (e.tipo === 'testo') finto.append(el('em', '', (e.testo || '').replace(/\n/g, ' ')));
+      else finto.append(el('em', '', 'nessun campo: grafica della pagina'));
+      ant.append(finto);
+      corpo.append(ant);
+    }
+  }
+
+  // ---- livelli ----
+  const chiusi = new Set();
+  function livelli() {
+    const box = $('elencoLivelli');
+    box.replaceChildren();
+    $('contoLivelli').textContent = `${doc.elementi.filter(e => !e.eliminato).length} elementi`;
+    Object.entries(NOMI_CARTELLO).forEach(([c, titolo]) => {
+      const suoi = doc.elementi.filter(e => e.cartello === c && !e.eliminato).reverse();   // in cima il livello più in alto
+      if (!suoi.length) return;
+      const g = el('div', 'gruppo-livelli');
+      const t = el('button', '', `${chiusi.has(c) ? '▸' : '▾'} ${titolo} · ${suoi.length}`);
+      t.onclick = () => { chiusi.has(c) ? chiusi.delete(c) : chiusi.add(c); livelli(); };
+      g.append(t);
+      if (!chiusi.has(c)) suoi.forEach(e => {
+        const r = el('div', `livello${e.id === vista.sel ? ' sel' : ''}${e.visibile ? '' : ' spento'}`);
+        const occhio = el('button', 'occhio', e.visibile ? '◉' : '○');
+        occhio.title = e.visibile ? 'nascondi' : 'mostra';
+        occhio.onclick = ev => { ev.stopPropagation(); ricorda(); e.visibile = !e.visibile; tutto(); };
+        const lucchetto = el('button', `lucchetto${e.bloccato ? ' chiuso' : ''}`, e.bloccato ? '🔒︎' : '·');
+        lucchetto.title = e.bloccato ? 'sblocca' : 'blocca';
+        lucchetto.onclick = ev => { ev.stopPropagation(); e.bloccato = !e.bloccato; tutto(); };
+        const tipo = el('span', 'tipo', e.tipo === 'testo' ? 'T' : e.tipo === 'immagine' ? '▣' : e.forma === 'linea' ? '/' : e.forma === 'cerchio' ? '○' : e.forma === 'triangolo' ? '△' : '▭');
+        const m = e.chiave && REGOLE.livelli.elenco[e.chiave];
+        r.append(occhio, lucchetto, tipo, el('span', 'nome', e.nome), el('span', `mod${m ? '' : ' no'}`, m ? m.breve.split(' · ')[0] : (e.richiesta != null ? 'modulo nuovo' : 'fissa')));
+        r.onclick = () => { vista.sel = e.id; tutto(); };
+        g.append(r);
+      });
+      box.append(g);
+    });
+    // il pannello della pagina: i quattro blocchi con i moduli usati
+    const chiavi = new Set(doc.elementi.filter(e => e.visibile && e.chiave).map(e => e.chiave));
+    const nome = k => (REGOLE.livelli.elenco[k] || {}).breve;
+    const blocco = n => [...chiavi].filter(k => (REGOLE.livelli.elenco[k] || {}).blocco === n).map(nome).join(' · ');
+    const doppia = (chiavi.has('prezzo-originario') || chiavi.has('percentuale')) && chiavi.has('descrizione');
+    $('blocchiPannello').replaceChildren(...[
+      ['1 · selettori', ['cartello sup / inf', doppia ? 'doppia cifra / descrizione' : '', blocco(1)].filter(Boolean).join(' · ')],
+      ['2 · brand e claim', blocco(2) || 'vuoto'], ['3 · campi', blocco(3) || 'vuoto'], ['4 · stampa', 'copia · 2 / 1 cartelli · stampa']
+    ].map(([t, v]) => { const d = el('div'); d.append(el('b', '', t), document.createTextNode(v)); return d; }));
+  }
+
+  function tutto() { disegna(); proprieta(); funzione(); livelli(); }
+
+  // ---- i due cartelli uguali: il cartello di arrivo prende posizioni (spostate di mezzo foglio), misure, stile, testi e
+  // grafiche di quello di partenza. Gli elementi con lo stesso modulo si aggiornano; quelli che il cartello di arrivo ha
+  // in più si nascondono; le grafiche e i testi aggiunti (senza modulo) si copiano. Si annulla con Ctrl+Z ----
+  function rendiUguali(da, a) {
+    if (!doc) return;
+    ricorda();
+    const sposta = da === 'cartello-superiore' ? doc.meta : -doc.meta;
+    const copia = e => JSON.parse(JSON.stringify(e));
+    const partenza = doc.elementi.filter(e => e.cartello === da);
+    const arrivo = doc.elementi.filter(e => e.cartello === a);
+    const CAMPI_FISSI = ['id', 'origine', 'cartello', 'nome'];
+    partenza.forEach(e => {
+      const gemello = e.chiave && arrivo.find(o => o.chiave === e.chiave && o.tipo === e.tipo);
+      if (gemello) {
+        Object.entries(copia(e)).forEach(([campo, valore]) => { if (!CAMPI_FISSI.includes(campo)) gemello[campo] = valore; });
+        gemello.y = e.y + sposta;
+      } else {
+        doc.elementi.push({ ...copia(e), id: nuovoId(), origine: null, cartello: a, y: e.y + sposta, nome: `${e.nome}` });
+      }
+    });
+    // quello che c'era solo nel cartello di arrivo: nascosto (i livelli del .psd) o tolto (gli aggiunti)
+    arrivo.forEach(o => {
+      if (partenza.some(e => e.chiave && e.chiave === o.chiave && e.tipo === o.tipo)) return;
+      if (o.origine != null) o.visibile = false;
+      else doc.elementi.splice(doc.elementi.indexOf(o), 1);
+    });
+    vista.sel = null;
+    tutto();
+    messaggio(`${a === 'cartello-inferiore' ? 'cartello inferiore' : 'cartello superiore'} uguale al ${da === 'cartello-superiore' ? 'superiore' : 'inferiore'} · Ctrl+Z annulla`, true);
+  }
+  $('copiaGiu').addEventListener('click', () => rendiUguali('cartello-superiore', 'cartello-inferiore'));
+  $('copiaSu').addEventListener('click', () => rendiUguali('cartello-inferiore', 'cartello-superiore'));
+
+  // ---- finestre mobili ----
+  document.querySelectorAll('.finestra').forEach(f => {
+    const testa = f.querySelector('.finestra-testa');
+    testa.addEventListener('pointerdown', ev => {
+      if (ev.target.closest('button')) return;
+      const r = f.getBoundingClientRect(), p = f.offsetParent.getBoundingClientRect();
+      const dx = ev.clientX - r.left, dy = ev.clientY - r.top;
+      testa.setPointerCapture(ev.pointerId);
+      const muovi = e => {
+        f.style.right = 'auto'; f.style.bottom = 'auto';
+        f.style.left = `${Math.min(Math.max(0, e.clientX - p.left - dx), p.width - 60)}px`;
+        f.style.top = `${Math.min(Math.max(0, e.clientY - p.top - dy), p.height - 40)}px`;
+      };
+      testa.addEventListener('pointermove', muovi);
+      testa.addEventListener('pointerup', () => testa.removeEventListener('pointermove', muovi), { once: true });
+    });
+    f.querySelector('.riduci').addEventListener('click', () => f.classList.toggle('ridotta'));
+  });
+
+  // ---- tastiera ----
+  const SCORCIATOIE = { v: 'seleziona', t: 'trasforma', h: 'mano', z: 'zoom', x: 'testo', u: 'forma', i: 'immagine', g: 'guida', w: 'bacchetta' };
+  document.addEventListener('keydown', ev => {
+    const scrive = /input|textarea|select/i.test(ev.target.tagName);
+    if ((ev.ctrlKey || ev.metaKey) && !scrive) {
+      const k = ev.key.toLowerCase();
+      if (k === 'z' && !ev.shiftKey) { ev.preventDefault(); annulla(); return; }
+      if (k === 'y' || (k === 'z' && ev.shiftKey)) { ev.preventDefault(); ripeti(); return; }
+      if (k === 's') { ev.preventDefault(); applica(); return; }
+      if (k === '0') { ev.preventDefault(); adatta(); return; }
+      if (k === '+' || k === '=') { ev.preventDefault(); zoomA(vista.z * 1.25); return; }
+      if (k === '-') { ev.preventDefault(); zoomA(vista.z / 1.25); return; }
+      if (k === ';') { ev.preventDefault(); vista.guideVisibili = !vista.guideVisibili; $('mostraGuide').setAttribute('aria-pressed', String(vista.guideVisibili)); disegnaSopra(); return; }
+      if (k === 'd') { ev.preventDefault(); vista.sel = null; tutto(); return; }
+      if (k === 'j') { ev.preventDefault(); duplica(); return; }
+    }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's') { ev.preventDefault(); applica(); return; }
+    if (scrive) return;
+    if (ev.key === ' ' && !spazio) { spazio = true; scrivania.style.cursor = 'grab'; ev.preventDefault(); return; }
+    if (ev.altKey && vista.strumento === 'zoom') scrivania.classList.add('indietro');
+    const e = selezionato();
+    const frecce = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[ev.key];
+    if (frecce && e && !e.bloccato) {
+      ev.preventDefault();
+      ricordaUnaVolta();
+      const passo = ev.shiftKey ? .1 : .5;
+      e.x += frecce[0] * passo; e.y += frecce[1] * passo;
+      disegna();
+      proprieta();
+      return;
+    }
+    if ((ev.key === 'Delete' || ev.key === 'Backspace') && e) { ev.preventDefault(); elimina(e); return; }
+    if (ev.key === 'Escape') { vista.sel = null; document.querySelectorAll('.menu-font').forEach(m => m.remove()); tutto(); return; }
+    if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && SCORCIATOIE[ev.key.toLowerCase()]) scegliStrumento(SCORCIATOIE[ev.key.toLowerCase()]);
+  });
+  document.addEventListener('keyup', ev => {
+    if (ev.key === ' ') { spazio = false; scrivania.style.cursor = ''; }
+    if (ev.key === 'Alt') scrivania.classList.remove('indietro');
+  });
+  function duplica() {
+    const e = selezionato();
+    if (!e) return;
+    ricorda();
+    const copia = { ...JSON.parse(JSON.stringify(e)), id: nuovoId(), origine: null, chiave: null, nome: `${e.nome} copia`, x: e.x + 3, y: e.y + 3, gemello: false };
+    doc.elementi.push(copia);
+    vista.sel = copia.id;
+    tutto();
+  }
+
+  $('magnetiche').onclick = () => { vista.magnetiche = !vista.magnetiche; $('magnetiche').setAttribute('aria-pressed', String(vista.magnetiche)); };
+  $('mostraGuide').onclick = () => { vista.guideVisibili = !vista.guideVisibili; $('mostraGuide').setAttribute('aria-pressed', String(vista.guideVisibili)); disegnaSopra(); };
+  let attesaMessaggio = 0;
+  function messaggio(t, ok = false) {
+    const m = $('messaggio');
+    m.textContent = t;
+    m.className = `messaggio${ok ? ' ok' : ''}`;
+    clearTimeout(attesaMessaggio);
+    attesaMessaggio = setTimeout(() => { m.textContent = ''; }, 4000);
+  }
+
+  // ---- applica: le modifiche nella pagina generata di Import layout ----
+  function applica() {
+    if (!sorgente || (window.opener && window.opener.closed)) { messaggio('import layout non è più aperto: le modifiche non si possono portare'); return false; }
+    const fontNuovi = doc.font.filter(f => f.origine === 'importato' && f.dati).map(f => ({ nome: f.nome, file: f.file, dati: f.dati, famiglia: f.famiglia }));
+    sorgente.applicaEditor({ elementi: JSON.parse(JSON.stringify(doc.elementi)), fontNuovi, fontGoogle: doc.font.filter(f => f.origine === 'google').map(f => f.nome) });
+    messaggio('modifiche portate nella pagina generata', true);
+    return true;
+  }
+  $('applica').onclick = applica;
+  $('tornaIndietro').onclick = () => {
+    if (sorgente && !applica()) return;
+    if (window.opener && !window.opener.closed) window.opener.focus();
+    window.close();
+  };
+
+  // per le prove: l'editor si può pilotare da un'altra pagina dello stesso sito
+  window.LayoutStudio = { doc, vista, tutto, scegliStrumento, applica, cambiaStile, rendiUguali, seleziona: id => { vista.sel = id; tutto(); }, carica };
+
+  opzioniStrumento();
+  carica().catch(errore => { console.error(errore); messaggio(`errore: ${errore.message || errore}`); });
+})();
+</script>
+</body>
+</html>

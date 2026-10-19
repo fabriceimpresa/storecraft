@@ -1,4 +1,4 @@
-/* Scelta del negozio nelle pagine di amministrazione dei loghi ufficiali (logoimport.html e logogestione.html, nella
+/* Scelta del negozio nelle pagine di amministrazione dei loghi ufficiali (loghi-ufficiali.html, nella
    radice, non collegate dalle dashboard): le pagine sono una sola per i tre negozi e agiscono sul negozio scelto qui.
    Stile in assets/css/operatore.css (stile terminale delle sezioni operatore).
 
@@ -101,7 +101,7 @@
   function elencoVuoto() {
     return `// assets/logos/${negozio}/elenco.js
 // Elenco dei loghi ufficiali di ${NEGOZI[negozio].nome} (file in questa cartella) e brand prioritari (stagionali) del negozio.
-// Il codice che usa l'elenco è comune, in assets/js/logos.js. logoimport.html e logogestione.html (nella radice)
+// Il codice che usa l'elenco è comune, in assets/js/logos.js. loghi-ufficiali.html (nella radice)
 // aggiornano LOGO_FILES: tenerlo nella forma const LOGO_FILES = [ "NOME.png", … ];
 const LOGO_FILES = [
 ];

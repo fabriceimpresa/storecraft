@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261018-01"></script>
+  <script src="assets/js/negozi.js?v=20261019-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Controllo codice</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261018-01"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261018-01"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261019-01"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -37,12 +37,12 @@
     /* in fondo a destra della riga del titolo */
     .live { margin-left: auto; color: var(--ok); font-size: 15px; letter-spacing: .06em; text-transform: none; vertical-align: 1px; }
     .live::after { content: '_'; margin-left: 2px; animation: cursore 1s steps(1) infinite; }
-    /* riga di stato: casella nera, "stato" in verde e l'esito dell'ultima lettura in oro, in JetBrains Mono */
+    /* riga di stato: casella nera, "stato" e l'esito dell'ultima lettura tutti in verde (19 ottobre 2026), in JetBrains Mono */
     .riga-stato { display: flex; align-items: baseline; gap: 14px; margin: 14px 0 0; padding: 9px 14px; background: #0a0908;
       border: 1px solid var(--bordo); border-radius: 4px; font: 400 12px/1.6 'JetBrains Mono', var(--mono); }
     .stato-etichetta { flex: none; color: var(--ok); letter-spacing: .08em; }
     .stato-etichetta::after { content: ':'; }
-    #stato { color: var(--oro-chiaro); }
+    #stato { color: var(--ok); }
     /* insegne dei negozi: discrete (bianche e tenui), quella scelta più chiara; sotto il segnalino oro che segue il mouse */
     .insegne { position: relative; display: flex; align-items: center; gap: 34px; margin: 26px 0 30px; padding-bottom: 12px; }
     .insegna { display: flex; align-items: center; height: 46px; padding: 0; border: 0; background: none; cursor: pointer; }
@@ -330,7 +330,7 @@
       try {
         const negozi = await (await cartella.getDirectoryHandle('assets')).getDirectoryHandle('negozi');
         const file = await negozi.getFileHandle(`${negozio}-dashboard.js`);
-        const testoDashboard = await (await file.getFile()).text();
+        const testoDashboard = await (await Associa.istantanea(file)).text();
         const scrittura = await file.createWritable();
         await scrittura.write(Associa.impostaFantasma(testoDashboard, pagina, !inGhost));
         await scrittura.close();
@@ -597,7 +597,7 @@
     ['idb', 'Cronologia di stampa', 'storecraft- / tebe- / ophilya-cronologia-stampa › stampe, fogli', 'per negozio (un database)', 'ogni foglio stampato: miniatura e foto grande (400–600 KB)', '7 giorni · archivio persistente', ['assets/js/cronologia-stampa.js', 'assets/negozi/luxury.js'], 'storecraft-cronologia-stampa'],
     ['idb', 'Foto della Bacheca', 'storecraft-bacheca-foto › foto', 'per negozio (chiave <negozio>:<id>)', 'foto allegate alle comunicazioni, ridotte a 1600 px', 'quanto la comunicazione · archivio persistente', ['assets/js/bacheca.js'], 'storecraft-bacheca-foto'],
     ['idb', 'Cartella del progetto', 'storecraft-operatore › cartelle', 'comune', 'il collegamento alla cartella (File System Access), non i file', 'finché il browser dà il permesso', ['operatore.html'], 'storecraft-operatore'],
-    ['file', 'Loghi ufficiali', 'assets/logos/<negozio>/elenco.js + PNG', 'per negozio', 'LOGO_FILES, PRIORITY_BRANDS e le varianti in printlogos/', 'nel progetto: commit e push', ['logoimport.html'], 'elenco.js'],
+    ['file', 'Loghi ufficiali', 'assets/logos/<negozio>/elenco.js + PNG', 'per negozio', 'LOGO_FILES, PRIORITY_BRANDS e le varianti in printlogos/', 'nel progetto: commit e push', ['loghi-ufficiali.html'], 'elenco.js'],
     ['file', 'Schede delle dashboard', 'assets/negozi/<negozio>-dashboard.js', 'per negozio', 'gallerie, moduli, ghost (nascosta), ordine', 'nel progetto: commit e push', ['assets/js/pacchetti-associa.js'], '-dashboard.js'],
     ['file', 'Pacchetti e moduli nuovi', 'assets/pacchetti/*.js · moduli/', 'comune', 'gallerie, moduli aggiunti, pagine in lavorazione', 'nel progetto: commit e push', ['assets/js/pacchetti-associa.js'], 'pacchetti'],
     ['esterno', 'Cambio valuta', 'open.er-api.com', 'comune', 'tassi del giorno (sola lettura); senza rete i tassi di riserva', 'nessun dato salvato', ['assets/js/cassa.js'], 'open.er-api.com'],

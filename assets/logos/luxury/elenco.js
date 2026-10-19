@@ -1,6 +1,6 @@
 // assets/logos/luxury/elenco.js
 // Elenco dei loghi ufficiali di Luxury Outlet (file in questa cartella) e brand prioritari (stagionali) del negozio.
-// Il codice che usa l'elenco è comune, in assets/js/logos.js. logoimport.html e logogestione.html di questo negozio
+// Il codice che usa l'elenco è comune, in assets/js/logos.js. loghi-ufficiali.html (nella radice)
 // aggiornano LOGO_FILES: tenerlo nella forma const LOGO_FILES = [ "NOME.png", … ];
 const LOGO_FILES = [
   "269TEBE.PNG",

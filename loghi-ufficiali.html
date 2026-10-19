@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script src="assets/js/negozi.js?v=20261019-01"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGHI UFFICIALI (uso interno)</title>
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261019-01">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261019-01">
+  <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
+  <script src="assets/js/admin-negozio.js?v=20261019-01"></script>
+  <!--
+    Loghi ufficiali (area operatore, dal 19 ottobre 2026: unisce Importa loghi ufficiali e Gestisci loghi ufficiali, prima
+    logoimport.html e logogestione.html). I loghi ufficiali di un negozio sono i brand dei menu BRAND di tutte le sue
+    pagine: l'originale in assets/logos/<negozio>/, le 4 varianti per la stampa (bianco, nero, rosso e l'oro del negozio)
+    in assets/img/<negozio>/printlogos/ e l'elenco assets/logos/<negozio>/elenco.js (LOGO_FILES e PRIORITY_BRANDS, i
+    brand in evidenza). [1] cartella del progetto e [2] negozio una volta sola, poi due sezioni apribili come nel Controllo
+    codice: IMPORTA LOGHI (png già pronti e trasparenti: la pagina non elabora le immagini, per quello c'è Genera Loghi) e
+    LOGHI DEL NEGOZIO (ricerca, varianti, in evidenza, sostituisci, elimina). Sostituendo un logo con lo stesso nome la
+    pagina aggiorna anche LOGO_ASSET_VERSION in assets/js/logos.js e print-logo-colors.js, così i browser riscaricano i
+    loghi invece di mostrare la copia vecchia. Scrive nella cartella del progetto (Chrome / Edge sul computer), poi commit.
+  -->
+  <style>
+    /* sezioni apribili, come nel Controllo codice: titolo con la freccia ⌄ (ruotata da chiusa) e il riassunto a destra */
+    .blocco { margin-top: 4px; }
+    .blocco + .blocco { margin-top: 22px; }
+    .blocco > .label { display: flex; align-items: center; gap: 16px; padding: 10px 10px; border-bottom: 1px solid var(--op-bordo);
+      cursor: pointer; transition: background .18s ease, box-shadow .18s ease; }
+    .blocco > .label:hover { background: rgba(212, 163, 115, .08); box-shadow: inset 2px 0 var(--op-oro); }
+    .blocco h2 { margin: 0; color: var(--op-oro-chiaro); font: 400 12.5px var(--op-mono); letter-spacing: .22em; }
+    .blocco h2::before { content: '> '; color: var(--op-oro); }
+    .blocco .riassunto { margin-left: auto; color: var(--op-tenue); font-size: 11px; letter-spacing: .04em; }
+    .section-toggle { border: 0; background: transparent; color: var(--op-oro); padding: 2px 4px; font-size: 16px; line-height: 1;
+      cursor: pointer; transition: transform .18s ease; }
+    .section-toggle[aria-expanded="false"] { transform: rotate(-90deg); }
+    .blocco-corpo { padding-top: 14px; }
+    .blocco.is-collapsed .blocco-corpo { display: none; }
+
+    /* elenco dei loghi: comandi della riga, stella dei brand in evidenza, logo appena importato */
+    .logo-item { flex-wrap: wrap; }
+    .logo-item-name { display: flex; align-items: center; gap: 8px; flex: 1 1 0; min-width: 0; }
+    .logo-item-name > span:not(.stella):not(.etichetta-nuovo) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .logo-item .row-status { min-width: 0; }
+    .stella { color: #f2b705; font-size: 13px; }
+    .etichetta-nuovo { padding: 1px 6px; border: 1px solid var(--op-ok); color: var(--op-ok); font-size: 9.5px; letter-spacing: .12em; }
+    .logo-item.nuovo { background: rgba(143, 191, 122, .07); box-shadow: inset 2px 0 var(--op-ok); }
+    .azioni-logo { display: flex; flex: none; align-items: center; gap: 6px; }
+    @media (max-width: 760px) { .azioni-logo { flex-wrap: wrap; flex: 1 1 100%; } }
+    .azioni-logo button { font: inherit; font-size: 10.5px; letter-spacing: .06em; text-transform: lowercase; padding: 5px 10px; cursor: pointer;
+      background: transparent; color: var(--op-oro); border: 1px solid var(--op-bordo); }
+    .azioni-logo button:hover:not(:disabled) { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
+    .azioni-logo button[aria-pressed="true"] { border-color: var(--op-oro); color: var(--op-oro-chiaro); background: rgba(212, 163, 115, .1); }
+    .azioni-logo button.evidenza[aria-pressed="true"] { border-color: #f2b705; color: #f2b705; background: rgba(242, 183, 5, .08); }
+    .azioni-logo button.elimina { color: var(--op-errore); }
+    .azioni-logo button.elimina:hover:not(:disabled) { border-color: var(--op-errore); color: var(--op-errore); background: rgba(224, 122, 95, .08); }
+    .azioni-logo button:disabled { opacity: .45; cursor: default; }
+    /* le 4 varianti di stampa, su un fondo a scacchi grigio (si vedono il bianco e il nero) */
+    .varianti { flex-basis: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 10px 0 4px 0; }
+    .variante { display: flex; flex-direction: column; gap: 5px; }
+    .variante-riquadro { height: 64px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--op-bordo);
+      background: #8a8580 repeating-conic-gradient(#9b9690 0 25%, #7c7772 0 50%) 0 0 / 14px 14px; }
+    .variante-riquadro img { max-width: 88%; max-height: 52px; width: auto; height: auto; }
+    .variante span { color: var(--op-tenue); font-size: 10.5px; letter-spacing: .06em; }
+    .variante .manca { color: var(--op-errore); font-size: 10.5px; }
+    @media (max-width: 600px) { .varianti { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body>
+
+  <a href="operatore.html" class="app-close-btn" title="Torna all'area operatore" aria-label="Chiudi e torna all'area operatore">✕</a>
+
+  <!-- logo con un nome già usato: sovrascrivi, altro nome o annulla -->
+  <div class="modal-overlay" id="conflictModal">
+    <div class="modal-box">
+      <div class="modal-warning-icon">!</div>
+      <p class="modal-message" id="conflictModalMessage"></p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="risolviConflitto('annulla')">Annulla</button>
+        <button type="button" class="modal-btn modal-btn-rename" onclick="risolviConflitto('rinomina')">Salva con nome diverso</button>
+        <button type="button" class="modal-btn modal-btn-overwrite" onclick="risolviConflitto('sovrascrivi')">Sovrascrivi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- conferma di eliminare o sostituire un logo -->
+  <div class="modal-overlay" id="confermaModal">
+    <div class="modal-box">
+      <div class="modal-warning-icon">!</div>
+      <p class="modal-message" id="confermaModalMessage"></p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn modal-btn-cancel" onclick="risolviConferma(false)">Annulla</button>
+        <button type="button" class="modal-btn modal-btn-confirm" id="confermaModalOk" onclick="risolviConferma(true)">Conferma</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="sostituisciInput" accept="image/png" hidden>
+
+  <div class="container">
+    <h1>Loghi ufficiali</h1>
+    <p class="subtitle">i loghi ufficiali di <span data-admin-nome-negozio></span>, cioè i brand dei menu BRAND di tutte le sue pagine: originale in assets/logos/<span data-admin-cartella-negozio></span>/, 4 varianti per la stampa (bianco, nero, rosso e oro del negozio) ed elenco dei loghi (elenco.js). qui si importano, si mettono in evidenza, si sostituiscono e si eliminano. alla fine i file vanno pubblicati con un commit</p>
+
+    <div class="passi-op">
+      <section class="passo-op">
+        <span class="passo-num">1</span>
+        <div>
+          <p class="passo-titolo">cartella del progetto</p>
+          <p class="folder-status" id="folderStatus">non collegata: scegli la cartella STORECRAFT (con index.html e assets)</p>
+          <button type="button" class="btn-folder" id="folderBtn" onclick="collegaCartella()" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">collega cartella progetto</button>
+        </div>
+      </section>
+
+      <section class="passo-op">
+        <span class="passo-num">2</span>
+        <div>
+          <p class="passo-titolo">negozio</p>
+          <div data-admin-negozio></div>
+        </div>
+      </section>
+
+      <section class="passo-op">
+        <span class="passo-num">3</span>
+        <div>
+          <p class="passo-titolo">loghi</p>
+
+          <section class="blocco" data-blocco="importa">
+            <div class="label">
+              <h2>IMPORTA LOGHI</h2>
+              <span class="riassunto" id="riassuntoImporta"></span>
+              <button class="section-toggle" type="button" aria-expanded="true" aria-controls="corpoImporta" aria-label="Chiudi Importa loghi">⌄</button>
+            </div>
+            <div class="blocco-corpo" id="corpoImporta">
+              <!-- la pagina non elabora le immagini (per togliere lo sfondo c'è Genera Loghi) -->
+              <p class="passo-nota">solo png pronti, già trasparenti</p>
+              <div class="upload-box disabled" id="dropZone" role="button" tabindex="0" aria-label="Scegli i png dei loghi">
+                <strong>trascina qui i png dei loghi, o clicca per sceglierli</strong>
+                <input type="file" id="fileInput" accept="image/png" multiple>
+              </div>
+              <div class="queue-list" id="queueList"></div>
+            </div>
+          </section>
+
+          <section class="blocco" data-blocco="elenco">
+            <div class="label">
+              <h2>LOGHI DEL NEGOZIO</h2>
+              <span class="riassunto" id="riassuntoElenco"></span>
+              <button class="section-toggle" type="button" aria-expanded="true" aria-controls="corpoElenco" aria-label="Chiudi Loghi del negozio">⌄</button>
+            </div>
+            <div class="blocco-corpo" id="corpoElenco">
+              <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="cerca un logo per nome…" aria-label="Cerca un logo per nome">
+              </div>
+              <p class="count-info" id="countInfo"></p>
+              <div class="logo-list" id="logoList"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<script>
+  // Colori delle 4 varianti; l'oro è quello del negozio scelto (admin-negozio.js)
+  const COLORI = { white: [255, 255, 255], black: [0, 0, 0], red: [224, 0, 0], get gold() { return AdminNegozio.oro(); } };
+  const NOMI_COLORI = { white: 'bianco', black: 'nero', red: 'rosso', gold: 'oro' };
+
+  let progetto = null, cartellaLoghi = null, cartellaStampa = null;
+  let coda = [];        // { id, immagine, nome, stato: 'pronto' | 'salva' | 'salvato' | 'errore' }
+  let loghi = [];       // { file, anteprima, stato, aperto, varianti, nuovo }
+  let prioritari = [];  // PRIORITY_BRANDS dell'elenco
+  let lavora = false;   // un salvataggio o una cancellazione in corso: niente cambio di negozio
+
+  const $ = id => document.getElementById(id);
+  const folderStatus = $('folderStatus');
+  const dropZone = $('dropZone');
+  const nodo = (tag, classe = '', testo = '') => { const n = document.createElement(tag); if (classe) n.className = classe; if (testo) n.textContent = testo; return n; };
+  const ordina = elenco => [...new Set(elenco)].sort((a, b) => a.toUpperCase().localeCompare(b.toUpperCase(), 'it', { sensitivity: 'base' }));
+  const nomePulito = testo => String(testo).toUpperCase().replace(/[^A-Z0-9_]/g, '');
+
+  // ----- cartella del progetto: dentro la pagina operatore quella condivisa da tutte le sezioni -----
+  const operatore = window.parent !== window && typeof window.parent.collegaProgetto === 'function' ? window.parent : null;
+  const scegliCartella = passaggio => (operatore ? operatore.collegaProgetto(passaggio) : AdminNegozio.scegliProgetto(passaggio));
+
+  async function collegaCartella() {
+    if (typeof window.showDirectoryPicker !== 'function') {
+      alert('Questa funzione richiede Chrome o Edge su desktop (File System Access API non disponibile in questo browser).');
+      return;
+    }
+    try {
+      // la riga di stato dice ogni passaggio: se qualcosa si ferma, si vede dove
+      progetto = await scegliCartella(passaggio => { folderStatus.textContent = passaggio; folderStatus.className = 'folder-status'; });
+      folderStatus.textContent = 'apro le cartelle dei loghi del negozio…';
+      await apriCartelleNegozio();
+      folderStatus.textContent = 'cartella del progetto collegata: ' + progetto.name;
+      folderStatus.className = 'folder-status ok';
+      const pulsante = $('folderBtn');
+      pulsante.textContent = 'cartella collegata';
+      pulsante.classList.add('collegata');
+      pulsante.title = 'Cartella collegata: un clic per collegarne un’altra';
+      dropZone.classList.remove('disabled');
+      await caricaElenco();
+    } catch (errore) {
+      if (errore.name === 'AbortError') return;   // finestra chiusa senza scegliere
+      console.error(errore);
+      progetto = null;
+      folderStatus.textContent = 'errore: ' + (errore.message || 'impossibile collegare la cartella');
+      folderStatus.className = 'folder-status err';
+    }
+  }
+  // all'apertura: la cartella già collegata nella pagina operatore (o ricordata con il permesso valido) si usa subito
+  operatore?.progettoSenzaChiedere?.().then(cartella => { if (cartella && !progetto) collegaCartella(); }).catch(() => {});
+
+  async function apriCartelleNegozio() {
+    ({ logos: cartellaLoghi, printlogos: cartellaStampa } = await AdminNegozio.cartelle(progetto));
+  }
+
+  // cambio di negozio: non durante un salvataggio; la coda si svuota (i loghi preparati per un negozio non finiscono in
+  // un altro) e l'elenco mostra i loghi del nuovo negozio
+  AdminNegozio.prima(() => {
+    if (lavora) { alert('Attendi la fine dell’operazione prima di cambiare negozio.'); return false; }
+    const inAttesa = coda.filter(voce => voce.stato !== 'salvato').length;
+    return !inAttesa || confirm(`Cambiando negozio la coda (${inAttesa} loghi non salvati) si svuota. Continuare?`);
+  });
+  AdminNegozio.alCambio(async () => {
+    coda = [];
+    disegnaCoda();
+    if (!progetto) return;
+    try {
+      await apriCartelleNegozio();
+      await caricaElenco();
+    } catch (errore) {
+      console.error(errore);
+      folderStatus.textContent = 'errore: ' + (errore.message || 'impossibile aprire le cartelle del negozio');
+      folderStatus.className = 'folder-status err';
+    }
+  });
+
+  // ----- file -----
+  // il contenuto letto subito e per intero: Chrome rifiuta (InvalidStateError) se il file cambia sul disco tra il
+  // riferimento e la lettura, es. OneDrive che sincronizza la cartella; si riprova qualche volta
+  async function leggiFile(cartella, nome) {
+    const maniglia = await cartella.getFileHandle(nome);
+    for (let prova = 1; ; prova++) {
+      try {
+        const file = await maniglia.getFile();
+        return new File([await file.arrayBuffer()], file.name, { type: file.type });
+      } catch (errore) {
+        if (prova >= 6 || !['InvalidStateError', 'NotReadableError'].includes(errore.name)) throw errore;
+        await new Promise(fatto => setTimeout(fatto, 150 * prova));
+      }
+    }
+  }
+  const esiste = async (cartella, nome) => { try { await cartella.getFileHandle(nome); return true; } catch { return false; } };
+  async function scrivi(cartella, nome, contenuto) {
+    const scrittura = await (await cartella.getFileHandle(nome, { create: true })).createWritable();
+    await scrittura.write(contenuto);
+    await scrittura.close();
+  }
+  async function togli(cartella, nome) { try { await cartella.removeEntry(nome); } catch { /* non c'è */ } }
+
+  // ----- elenco.js del negozio: LOGO_FILES e PRIORITY_BRANDS -----
+  const LISTA = nome => new RegExp(`^const\\s+${nome}\\s*=\\s*\\[([\\s\\S]*?)\\]\\s*;?`, 'm');   // a inizio riga: non il commento in cima
+  const voci = (testo, nome) => [...((testo.match(LISTA(nome)) || [])[1] || '').matchAll(/["']([^"']+)["']/g)].map(m => m[1]);
+  async function leggiElenco() {
+    let testo = '';
+    try { testo = await (await leggiFile(cartellaLoghi, 'elenco.js')).text(); } catch { testo = AdminNegozio.elencoVuoto(); }
+    return { testo, file: voci(testo, 'LOGO_FILES'), prioritari: voci(testo, 'PRIORITY_BRANDS') };
+  }
+  async function scriviElenco({ testo, file, prioritari: inEvidenza }) {
+    const blocco = `const LOGO_FILES = [\n${ordina(file).map(nome => `  "${nome}"`).join(',\n')}\n];`;
+    let nuovo = LISTA('LOGO_FILES').test(testo) ? testo.replace(LISTA('LOGO_FILES'), blocco) : `${testo ? testo + '\n' : ''}${blocco}\n`;
+    const riga = `const PRIORITY_BRANDS = [${inEvidenza.map(nome => `"${nome}"`).join(', ')}];`;
+    nuovo = LISTA('PRIORITY_BRANDS').test(nuovo) ? nuovo.replace(LISTA('PRIORITY_BRANDS'), riga) : `${nuovo.trimEnd()}\n\n${riga}\n`;
+    await scrivi(cartellaLoghi, 'elenco.js', nuovo);
+  }
+
+  // ----- versione dei loghi: un logo sostituito con lo stesso nome ha lo stesso indirizzo, e i browser che lo hanno già
+  // visto mostrerebbero la copia vecchia. Si cambia LOGO_ASSET_VERSION (data di oggi e un numero) in logos.js e in
+  // print-logo-colors.js, uguale nei due: tutti i loghi si riscaricano una volta -----
+  async function aggiornaVersioneLoghi() {
+    const js = await (await progetto.getDirectoryHandle('assets')).getDirectoryHandle('js');
+    const FORMA = /(LOGO_ASSET_VERSION\s*=\s*)(["'])([^"']*)\2/;
+    const testi = {};
+    for (const nome of ['logos.js', 'print-logo-colors.js']) testi[nome] = await (await leggiFile(js, nome)).text();
+    const oggi = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const [, , , attuale = ''] = testi['logos.js'].match(FORMA) || [];
+    const [giorno, numero] = attuale.split('-');
+    const nuova = giorno === oggi ? `${oggi}-${(parseInt(numero, 10) || 0) + 1}` : `${oggi}-1`;
+    for (const [nome, testo] of Object.entries(testi)) {
+      if (!FORMA.test(testo)) throw new Error(`in assets/js/${nome} non trovo LOGO_ASSET_VERSION`);
+      await scrivi(js, nome, testo.replace(FORMA, (tutto, prima, virgolette) => `${prima}${virgolette}${nuova}${virgolette}`));
+    }
+    return nuova;
+  }
+
+  // ----- immagini -----
+  const immagineDa = file => new Promise((fatto, sbagliato) => {
+    const lettore = new FileReader();
+    lettore.onload = () => { const img = new Image(); img.onload = () => fatto(img); img.onerror = sbagliato; img.src = lettore.result; };
+    lettore.onerror = sbagliato;
+    lettore.readAsDataURL(file);
+  });
+  function tela(img) {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    c.getContext('2d').drawImage(img, 0, 0);
+    return c;
+  }
+  const blobDa = c => new Promise(fatto => c.toBlob(fatto, 'image/png'));
+  // ogni pixel visibile nel colore della variante, la trasparenza resta
+  function colora(img, rgb) {
+    const c = tela(img), ctx = c.getContext('2d');
+    const dati = ctx.getImageData(0, 0, c.width, c.height);
+    for (let i = 0; i < dati.data.length; i += 4) if (dati.data[i + 3] > 0) { dati.data[i] = rgb[0]; dati.data[i + 1] = rgb[1]; dati.data[i + 2] = rgb[2]; }
+    ctx.putImageData(dati, 0, 0);
+    return blobDa(c);
+  }
+  // originale e 4 varianti del logo nel negozio
+  async function scriviLogo(file, img) {
+    await scrivi(cartellaLoghi, file, await blobDa(tela(img)));
+    for (const colore of Object.keys(COLORI)) await scrivi(cartellaStampa, colore + file, await colora(img, COLORI[colore]));
+  }
+
+  // ----- finestre di conferma -----
+  let conflitto = null, conferma = null;
+  function chiediConflitto(nome) {
+    return new Promise(fatto => {
+      conflitto = fatto;
+      $('conflictModalMessage').textContent = `Esiste già un logo chiamato "${nome}.png". Vuoi sovrascriverlo, salvare questo con un nome diverso, o annullare?`;
+      $('conflictModal').classList.add('active');
+    });
+  }
+  function risolviConflitto(scelta) { $('conflictModal').classList.remove('active'); if (conflitto) { conflitto(scelta); conflitto = null; } }
+  function chiedi(messaggio, etichetta) {
+    return new Promise(fatto => {
+      conferma = fatto;
+      $('confermaModalMessage').textContent = messaggio;
+      $('confermaModalOk').textContent = etichetta;
+      $('confermaModal').classList.add('active');
+    });
+  }
+  function risolviConferma(sì) { $('confermaModal').classList.remove('active'); if (conferma) { conferma(sì); conferma = null; } }
+
+  // ----- apri / chiudi le sezioni, come nel Controllo codice -----
+  document.querySelectorAll('.blocco').forEach(blocco => {
+    const freccia = blocco.querySelector('.section-toggle');
+    const nome = blocco.querySelector('h2').textContent.toLowerCase();
+    blocco.querySelector('.label').addEventListener('click', () => {
+      const chiusa = blocco.classList.toggle('is-collapsed');
+      freccia.setAttribute('aria-expanded', String(!chiusa));
+      freccia.setAttribute('aria-label', `${chiusa ? 'Espandi' : 'Chiudi'} ${nome}`);
+    });
+  });
+
+  // ===== IMPORTA LOGHI =====
+  function scegliFile() {
+    if (!cartellaLoghi) { alert('Collega prima la cartella del progetto.'); return; }
+    $('fileInput').click();
+  }
+  dropZone.addEventListener('click', scegliFile);
+  dropZone.addEventListener('keydown', evento => { if (evento.key === 'Enter' || evento.key === ' ') { evento.preventDefault(); scegliFile(); } });
+  $('fileInput').addEventListener('change', evento => { aggiungiInCoda(evento.target.files); evento.target.value = ''; });
+  ['dragenter', 'dragover'].forEach(tipo => dropZone.addEventListener(tipo, evento => {
+    evento.preventDefault();
+    if (cartellaLoghi) dropZone.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach(tipo => dropZone.addEventListener(tipo, evento => { evento.preventDefault(); dropZone.classList.remove('dragover'); }));
+  dropZone.addEventListener('drop', evento => {
+    if (!cartellaLoghi) { alert('Collega prima la cartella del progetto.'); return; }
+    if (evento.dataTransfer.files?.length) aggiungiInCoda(evento.dataTransfer.files);
+  });
+
+  async function aggiungiInCoda(files) {
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith('image/')) continue;
+      try {
+        const immagine = await immagineDa(file);
+        coda.push({ id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), immagine, nome: nomePulito(file.name.replace(/\.[^.]+$/, '')), stato: 'pronto' });
+      } catch (errore) { console.error(errore); }
+    }
+    disegnaCoda();
+  }
+
+  function disegnaCoda() {
+    const contenitore = $('queueList');
+    contenitore.replaceChildren();
+    $('riassuntoImporta').textContent = coda.length ? `${coda.length} in coda` : 'coda vuota';
+    if (!coda.length) { contenitore.append(nodo('p', 'empty-msg', 'nessun logo in coda')); return; }
+    for (const voce of coda) {
+      const riga = nodo('div', 'queue-item');
+      const anteprima = nodo('div', 'queue-item-preview');
+      const img = nodo('img'); img.src = voce.immagine.src; img.alt = '';
+      anteprima.append(img);
+      const nome = nodo('div', 'queue-item-name');
+      const etichetta = nodo('label', '', 'Nome brand (genera il nome file)');
+      const campo = nodo('input'); campo.type = 'text'; campo.value = voce.nome;
+      campo.addEventListener('input', () => { voce.nome = nomePulito(campo.value); });
+      nome.append(etichetta, campo);
+      const stato = nodo('span', `row-status ${{ salvato: 'saved', salva: 'saving', errore: 'error' }[voce.stato] || ''}`,
+        { salvato: '[ ok ] salvato', salva: 'salvataggio…', errore: '[ errore ]' }[voce.stato] || '');
+      const azioni = nodo('div', 'queue-item-actions');
+      const salva = nodo('button', 'btn-save-row', 'salva'); salva.type = 'button'; salva.disabled = voce.stato === 'salva';
+      salva.addEventListener('click', () => salvaVoce(voce));
+      const elimina = nodo('button', 'btn-delete-row', 'Elimina'); elimina.type = 'button';
+      elimina.addEventListener('click', () => { coda = coda.filter(v => v !== voce); disegnaCoda(); });
+      azioni.append(salva, elimina);
+      riga.append(anteprima, nome, stato, azioni);
+      contenitore.append(riga);
+    }
+  }
+
+  async function salvaVoce(voce) {
+    if (!cartellaLoghi || !cartellaStampa) { alert('Collega prima la cartella del progetto.'); return; }
+    let nome = (voce.nome || '').trim();
+    if (!nome) { alert('Inserisci un nome per il brand prima di salvare!'); return; }
+    voce.stato = 'salva'; lavora = true; disegnaCoda();
+    try {
+      let sostituito = false;
+      if (await esiste(cartellaLoghi, nome + '.png')) {
+        const scelta = await chiediConflitto(nome);
+        if (scelta === 'annulla') { voce.stato = 'pronto'; return; }
+        if (scelta === 'rinomina') {
+          const altro = prompt('Inserisci un nuovo nome per il logo:', nome + '_2');
+          if (!altro || !nomePulito(altro)) { voce.stato = 'pronto'; return; }
+          nome = voce.nome = nomePulito(altro);
+        } else sostituito = true;
+      }
+      const file = nome + '.png';
+      await scriviLogo(file, voce.immagine);
+      const elenco = await leggiElenco();
+      elenco.file.push(file);
+      await scriviElenco(elenco);
+      // sovrascritto con lo stesso nome: la versione dei loghi cambia, così i browser non mostrano quello vecchio
+      if (sostituito) await aggiornaVersioneLoghi();
+      voce.stato = 'salvato';
+      await caricaElenco(file);   // il logo nuovo compare subito nell'elenco, evidenziato
+    } catch (errore) {
+      console.error(errore);
+      voce.stato = 'errore';
+      alert('Errore durante il salvataggio: ' + (errore.message || errore));
+    } finally {
+      lavora = false;
+      disegnaCoda();
+    }
+  }
+
+  // ===== LOGHI DEL NEGOZIO =====
+  async function caricaElenco(nuovo = null) {
+    loghi.forEach(logo => { if (logo.anteprima) URL.revokeObjectURL(logo.anteprima); Object.values(logo.varianti || {}).forEach(url => url && URL.revokeObjectURL(url)); });
+    const prima = new Map(loghi.map(logo => [logo.file, logo]));
+    const elenco = await leggiElenco();
+    prioritari = elenco.prioritari;
+    loghi = [];
+    for (const file of ordina(elenco.file)) {
+      let anteprima = '';
+      try { anteprima = URL.createObjectURL(await leggiFile(cartellaLoghi, file)); } catch { /* il file manca */ }
+      // le righe tengono il loro stato (varianti aperte, nuovo) quando l'elenco si rilegge
+      const vecchio = prima.get(file);
+      loghi.push({ file, anteprima, stato: '', aperto: !!vecchio?.aperto, varianti: null, nuovo: file === nuovo || !!vecchio?.nuovo });
+    }
+    for (const logo of loghi) if (logo.aperto) await caricaVarianti(logo);
+    disegnaElenco();
+    if (nuovo) document.querySelector(`.logo-item[data-file="${CSS.escape(nuovo)}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  async function caricaVarianti(logo) {
+    logo.varianti = {};
+    for (const colore of Object.keys(COLORI)) {
+      try { logo.varianti[colore] = URL.createObjectURL(await leggiFile(cartellaStampa, colore + logo.file)); } catch { logo.varianti[colore] = ''; }
+    }
+  }
+
+  $('searchInput').addEventListener('input', disegnaElenco);
+
+  function disegnaElenco() {
+    const contenitore = $('logoList');
+    contenitore.replaceChildren();
+    const inEvidenza = loghi.filter(logo => prioritari.includes(logo.file)).length;
+    $('riassuntoElenco').textContent = cartellaLoghi ? `${loghi.length} loghi · ${inEvidenza} in evidenza` : '';
+    if (!cartellaLoghi) {
+      $('countInfo').textContent = '';
+      contenitore.append(nodo('p', 'empty-msg', 'collega la cartella del progetto per vedere l’elenco dei loghi'));
+      return;
+    }
+    const cerca = $('searchInput').value.trim().toUpperCase();
+    const mostrati = loghi.filter(logo => logo.file.toUpperCase().includes(cerca));
+    $('countInfo').textContent = `${mostrati.length} di ${loghi.length} loghi mostrati.`;
+    if (!mostrati.length) { contenitore.append(nodo('p', 'empty-msg', 'nessun logo trovato')); return; }
+    for (const logo of mostrati) {
+      const evidenza = prioritari.includes(logo.file);
+      const riga = nodo('div', `logo-item${logo.nuovo ? ' nuovo' : ''}`);
+      riga.dataset.file = logo.file;
+      const anteprima = nodo('div', 'logo-item-preview');
+      if (logo.anteprima) { const img = nodo('img'); img.src = logo.anteprima; img.alt = logo.file; anteprima.append(img); } else anteprima.textContent = '⚠';
+      const nome = nodo('div', 'logo-item-name');
+      if (evidenza) { const stella = nodo('span', 'stella', '★'); stella.title = 'in evidenza'; nome.append(stella); }
+      nome.append(nodo('span', '', logo.file));
+      if (logo.nuovo) nome.append(nodo('span', 'etichetta-nuovo', 'NUOVO'));
+      const stato = nodo('span', `row-status ${{ fatto: 'saved', lavora: 'saving', errore: 'error' }[logo.stato?.tipo] || ''}`, logo.stato?.testo || '');
+      const azioni = nodo('div', 'azioni-logo');
+      const comando = (testo, classe, azione, premuto = null) => {
+        const b = nodo('button', classe, testo); b.type = 'button';
+        if (premuto !== null) b.setAttribute('aria-pressed', String(premuto));
+        b.disabled = lavora;
+        b.addEventListener('click', azione);
+        azioni.append(b);
+      };
+      comando(evidenza ? '★ in evidenza' : '☆ in evidenza', 'evidenza', () => cambiaEvidenza(logo), evidenza);
+      comando('varianti', 'varianti-btn', () => apriVarianti(logo), logo.aperto);
+      comando('sostituisci', 'sostituisci', () => sostituisci(logo));
+      comando('elimina', 'elimina', () => elimina(logo));
+      riga.append(anteprima, nome, stato, azioni);
+      if (logo.aperto) {
+        const varianti = nodo('div', 'varianti');
+        for (const colore of Object.keys(COLORI)) {
+          const v = nodo('div', 'variante');
+          const riquadro = nodo('div', 'variante-riquadro');
+          const url = logo.varianti?.[colore];
+          if (url) { const img = nodo('img'); img.src = url; img.alt = `${logo.file} ${NOMI_COLORI[colore]}`; riquadro.append(img); }
+          else riquadro.append(nodo('span', 'manca', 'manca'));
+          v.append(riquadro, nodo('span', '', `${NOMI_COLORI[colore]} · ${colore}${logo.file}`));
+          varianti.append(v);
+        }
+        riga.append(varianti);
+      }
+      contenitore.append(riga);
+    }
+  }
+
+  const segna = (logo, tipo, testo) => { logo.stato = { tipo, testo }; disegnaElenco(); };
+
+  async function apriVarianti(logo) {
+    logo.aperto = !logo.aperto;
+    if (logo.aperto && !logo.varianti) await caricaVarianti(logo);
+    disegnaElenco();
+  }
+
+  // in evidenza: tra i brand prioritari (PRIORITY_BRANDS), in cima ai menu BRAND, con la stella (Luxury) o ⭐ e maiuscolo
+  async function cambiaEvidenza(logo) {
+    lavora = true;
+    try {
+      const elenco = await leggiElenco();
+      const sì = !elenco.prioritari.includes(logo.file);
+      elenco.prioritari = sì ? [...elenco.prioritari, logo.file] : elenco.prioritari.filter(nome => nome !== logo.file);
+      await scriviElenco(elenco);
+      prioritari = elenco.prioritari;
+      lavora = false;
+      segna(logo, 'fatto', sì ? '[ ok ] in evidenza' : '[ ok ] non in evidenza');
+    } catch (errore) {
+      console.error(errore);
+      lavora = false;
+      segna(logo, 'errore', '[ errore ]');
+      alert('Errore: ' + (errore.message || errore));
+    }
+  }
+
+  // sostituisci: un png nuovo con lo stesso nome (originale e varianti); la versione dei loghi cambia
+  let daSostituire = null;
+  function sostituisci(logo) { daSostituire = logo; $('sostituisciInput').click(); }
+  $('sostituisciInput').addEventListener('change', async evento => {
+    const file = evento.target.files[0];
+    evento.target.value = '';
+    const logo = daSostituire;
+    daSostituire = null;
+    if (!file || !logo) return;
+    let img;
+    try { img = await immagineDa(file); } catch { alert('Il file scelto non è un’immagine leggibile.'); return; }
+    if (!await chiedi(`Sostituire il logo "${logo.file}" con "${file.name}"? Si riscrivono l'originale e le 4 varianti colorate, con lo stesso nome; il brand resta nei menu e la versione dei loghi si aggiorna, così i browser mostrano quello nuovo.`, 'Sostituisci')) return;
+    lavora = true;
+    segna(logo, 'lavora', 'sostituzione…');
+    try {
+      await scriviLogo(logo.file, img);
+      const versione = await aggiornaVersioneLoghi();
+      lavora = false;
+      await caricaElenco();
+      const nuovo = loghi.find(l => l.file === logo.file);
+      if (nuovo) segna(nuovo, 'fatto', `[ ok ] sostituito · versione ${versione}`);
+    } catch (errore) {
+      console.error(errore);
+      lavora = false;
+      segna(logo, 'errore', '[ errore ]');
+      alert('Errore durante la sostituzione: ' + (errore.message || errore));
+    }
+  });
+
+  // elimina: originale, 4 varianti e la voce nell'elenco (anche tra quelli in evidenza)
+  async function elimina(logo) {
+    if (!await chiedi(`Sei sicuro di voler eliminare definitivamente il logo "${logo.file}"? Verranno rimossi il file originale, le 4 varianti colorate e la voce dall'elenco: il brand sparisce dai menu BRAND delle pagine.`, 'Elimina logo')) return;
+    lavora = true;
+    segna(logo, 'lavora', 'eliminazione…');
+    try {
+      // prima l'elenco, poi i file: un'operazione fermata a metà non lascia nel menu un logo che non c'è
+      const elenco = await leggiElenco();
+      elenco.file = elenco.file.filter(nome => nome !== logo.file);
+      elenco.prioritari = elenco.prioritari.filter(nome => nome !== logo.file);
+      await scriviElenco(elenco);
+      await togli(cartellaLoghi, logo.file);
+      for (const colore of Object.keys(COLORI)) await togli(cartellaStampa, colore + logo.file);
+      lavora = false;
+      await caricaElenco();
+    } catch (errore) {
+      console.error(errore);
+      lavora = false;
+      segna(logo, 'errore', '[ errore ]');
+      alert('Errore durante l’eliminazione: ' + (errore.message || errore));
+    }
+  }
+
+  disegnaCoda();
+  disegnaElenco();
+</script>
+</body>
+</html>

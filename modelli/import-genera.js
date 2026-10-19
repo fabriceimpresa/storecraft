@@ -45,15 +45,18 @@
     const per = { 1: {}, 2: {} };
     r.elementi.forEach(e => {
       const n = e.cartello === 'cartello-superiore' ? 1 : e.cartello === 'cartello-inferiore' ? 2 : 0;
-      if (n && e.chiave && !per[n][e.chiave]) per[n][e.chiave] = e;
+      if (n && e.chiave && !e.rimosso && !per[n][e.chiave]) per[n][e.chiave] = e;
     });
     const foglio = {};
-    r.elementi.filter(e => e.cartello === 'foglio' && e.chiave).forEach(e => { foglio[e.chiave] = e; });
+    r.elementi.filter(e => e.cartello === 'foglio' && e.chiave && !e.rimosso).forEach(e => { foglio[e.chiave] = e; });
     const comuni = Object.keys(per[1]).filter(k => per[2][k]);
     const scarto = { x: mediana(comuni.map(k => per[2][k].mm.x - per[1][k].mm.x)), y: mediana(comuni.map(k => per[2][k].mm.y - per[1][k].mm.y)) };
     const chiavi = new Set([...Object.keys(per[1]), ...Object.keys(per[2])]);
     const ha = k => chiavi.has(k);
     const modello = k => per[1][k] || per[2][k];       // stile di un elemento (font, colore…): dal superiore se c'è
+    // lo stile di un elemento in un cartello: il suo, se il cartello lo ha (dal 19 ottobre 2026 i due cartelli hanno ognuno
+    // il suo stile, cambiato nell'editor), altrimenti quello dell'altro cartello
+    const stileDi = (n, k) => per[n][k] || modello(k);
     // ritocchi dell'operatore nella pagina generata (risultato.ritocchi[cartello][chiave] = { x, y } in mm)
     const ritocco = (n, k) => (r.ritocchi && r.ritocchi[n] && r.ritocchi[n][k]) || { x: 0, y: 0 };
     const geoFile = (n, k) => {
@@ -74,16 +77,21 @@
     const inDescrizione = n => !(per[n]['prezzo-originario'] || per[n]['percentuale']) && !!per[n]['descrizione'];
 
     // ---- font del .psd ----
-    const famiglia = f => `PSD ${f}`;
+    // font del progetto (file in assets/fonts/), Google Fonts (nome G:<famiglia>, dal loro foglio di stile) e font importati
+    // nell'editor (risultato.fontUrl: nell'anteprima l'indirizzo del file, salvati in assets/fonts/)
+    const extra = (r.extra || []).filter(x => !x.rimosso);
+    const google = f => String(f).startsWith('G:');
+    const famiglia = f => google(f) ? f.slice(2) : `PSD ${f}`;
     const font = {};
-    chiavi.forEach(k => { const e = modello(k); if (e.tipo === 'testo' && e.font) font[e.font] = r.fileFont[e.font]; });
-    const fontFace = Object.entries(font).filter(([, file]) => file).map(([f, file]) =>
-      `    @font-face {\n      font-family: '${famiglia(f)}';\n      src: url('../assets/fonts/${file}') format('${/\.otf$/i.test(file) ? 'opentype' : 'truetype'}');\n      font-display: block;\n    }`).join('\n\n');
+    [1, 2].forEach(n => chiavi.forEach(k => { const e = stileDi(n, k); if (e && e.tipo === 'testo' && e.font) font[e.font] = r.fileFont[e.font]; }));
+    extra.forEach(x => { if (x.tipo === 'testo' && x.font) font[x.font] = r.fileFont[x.font]; });
+    const googleFonts = Object.keys(font).filter(google).map(f => f.slice(2));
+    const fontFace = Object.entries(font).filter(([f, file]) => !google(f) && file).map(([f, file]) =>
+      `    @font-face {\n      font-family: '${famiglia(f)}';\n      src: url('${(r.fontUrl && r.fontUrl[f]) || `../assets/fonts/${file}`}') format('${/\.otf$/i.test(file) ? 'opentype' : 'truetype'}');\n      font-display: block;\n    }`).join('\n\n');
 
     // ---- stile e posizione degli elementi ----
     const css = [];
-    const stileTesto = (k) => {
-      const e = modello(k);
+    const regoleTesto = e => {
       const regole = [
         `font-family: '${famiglia(e.font)}', serif`, `font-size: ${num(e.pt)}pt`, `letter-spacing: ${num(e.spaziatura / 1000)}em`,
         `line-height: ${e.interlinea ? num(e.interlinea) + 'pt' : '1'}`, `color: ${e.colore || '#000'}`, `text-align: ${{ destra: 'right', centro: 'center' }[e.allineamento] || 'left'}`,
@@ -91,11 +99,17 @@
       ];
       if (e.corsivoFinto) regole.push('font-style: oblique');
       if (e.maiuscolo) regole.push('text-transform: uppercase');
-      css.push(`    .el-${k} { ${regole.join('; ')}; }`);
+      return regole.join('; ');
+    };
+    // lo stile comune e, per il cartello che lo ha diverso, il suo
+    const stileTesto = k => {
+      const comune = regoleTesto(modello(k));
+      css.push(`    .el-${k} { ${comune}; }`);
+      [1, 2].forEach(n => { const suo = per[n][k] && regoleTesto(per[n][k]); if (suo && suo !== comune) css.push(`    #card${n} .el-${k} { ${suo}; }`); });
     };
     // testo ancorato secondo l'allineamento: centrato sul centro, a sinistra sul bordo sinistro, a destra sul destro
     const posTesto = (n, k) => {
-      const g = geo(n, k), e = modello(k);
+      const g = geo(n, k), e = stileDi(n, k);
       if (!g) return;
       const cy = mmCss(g.y + g.h / 2);
       const pos = e.allineamento === 'centro' ? `left: ${mmCss(g.x + g.w / 2)}; top: ${cy}; transform: translate(-50%, -50%)`
@@ -115,6 +129,7 @@
     if (ha('riquadro-brand')) {
       const e = modello('riquadro-brand');
       css.push(`    .el-riquadro-brand { background: ${e.colore || '#e00000'}; -webkit-print-color-adjust: exact; print-color-adjust: exact; }`);
+      [1, 2].forEach(n => { const suo = per[n]['riquadro-brand']; if (suo && suo.colore && suo.colore !== e.colore) css.push(`    #card${n} .el-riquadro-brand { background: ${suo.colore}; }`); });
       [1, 2].forEach(n => posRiquadro(n, 'riquadro-brand'));
     }
     if (ha('logo-brand')) {
@@ -135,14 +150,52 @@
       [1, 2].forEach(n => {
         const g = geo(n, 'sbarra');
         if (!g) return;
-        const lungo = Math.abs(den) > .05 ? (g.w * c - g.h * s) / den : Math.max(g.w, g.h);
-        const spesso = Math.max(.2, Math.abs(den) > .05 ? (g.h * c - g.w * s) / den : Math.min(g.w, g.h));
-        css.push(`    #card${n} .el-sbarra { left: ${mmCss(g.x + g.w / 2)}; top: ${mmCss(g.y + g.h / 2)}; width: ${mmCss(lungo)}; height: ${mmCss(spesso)}; transform: translate(-50%, -50%) rotate(${num(e.rotazione || 0)}deg); }`);
+        const suo = per[n].sbarra || e;
+        if (suo.colore && suo.colore !== e.colore) css.push(`    #card${n} .el-sbarra { background: ${suo.colore}; }`);
+        const lungo = suo.lungo || (Math.abs(den) > .05 ? (g.w * c - g.h * s) / den : Math.max(g.w, g.h));
+        const spesso = suo.spesso || Math.max(.2, Math.abs(den) > .05 ? (g.h * c - g.w * s) / den : Math.min(g.w, g.h));
+        css.push(`    #card${n} .el-sbarra { left: ${mmCss(g.x + g.w / 2)}; top: ${mmCss(g.y + g.h / 2)}; width: ${mmCss(lungo)}; height: ${mmCss(spesso)}; transform: translate(-50%, -50%) rotate(${num(suo.rotazione || 0)}deg); }`);
       });
     }
     // grafiche fisse (footer e le altre immagini con un nome riconosciuto)
     const grafiche = [...chiavi].filter(k => modello(k).tipo === 'immagine' && k !== 'logo-brand');
     grafiche.forEach(k => [1, 2].forEach(n => posRiquadro(n, k)));
+    // elementi aggiunti nell'editor senza modulo (testi fissi, forme, immagini): misure in mm dal bordo alto del foglio,
+    // nel cartello diventano dal bordo alto del cartello
+    const metaMm = r.mm(r.meta || r.psd.height / 2);
+    const cartelloDi = x => x.cartello === 'cartello-superiore' ? 1 : x.cartello === 'cartello-inferiore' ? 2 : 0;
+    extra.forEach(x => {
+      const n = cartelloDi(x), y = n === 2 ? x.y - metaMm : x.y;
+      const ruota = x.rotazione ? ` rotate(${num(x.rotazione)}deg)` : '';
+      const regole = [`opacity: ${x.opacita == null ? 1 : num(x.opacita)}`];
+      if (x.tipo === 'testo') {
+        regole.push(`font-family: '${famiglia(x.font)}', serif`, `font-size: ${num(x.pt)}pt`, `letter-spacing: ${num((x.spaziatura || 0) / 1000)}em`,
+          `line-height: ${x.interlinea ? num(x.interlinea) + 'pt' : '1'}`, `color: ${x.colore || '#000'}`, `text-align: ${{ destra: 'right', centro: 'center' }[x.allineamento] || 'left'}`,
+          'white-space: nowrap', `font-weight: ${x.grassetto ? 700 : 400}`);
+        if (x.corsivo) regole.push('font-style: oblique');
+        if (x.maiuscolo) regole.push('text-transform: uppercase');
+        const cy = mmCss(y + x.h / 2);
+        regole.push(x.allineamento === 'centro' ? `left: ${mmCss(x.x + x.w / 2)}; top: ${cy}; transform: translate(-50%, -50%)${ruota}`
+          : x.allineamento === 'destra' ? `right: ${mmCss(larghezzaFoglio - x.x - x.w)}; top: ${cy}; transform: translateY(-50%)${ruota}`
+          : `left: ${mmCss(x.x)}; top: ${cy}; transform: translateY(-50%)${ruota}`);
+      } else {
+        regole.push(`left: ${mmCss(x.x)}; top: ${mmCss(y)}; width: ${mmCss(x.w)}; height: ${mmCss(x.h)}`);
+        if (ruota) regole.push(`transform:${ruota}`);
+        if (x.tipo === 'forma') {
+          regole.push(`background: ${x.forma === 'linea' ? (x.traccia || x.riempimento || '#000') : (x.riempimento || 'transparent')}`, '-webkit-print-color-adjust: exact', 'print-color-adjust: exact');
+          if (x.forma !== 'linea' && x.spessoreTraccia) regole.push(`border: ${mmCss(x.spessoreTraccia)} solid ${x.traccia || '#000'}`, 'box-sizing: border-box');
+          if (x.forma === 'cerchio') regole.push('border-radius: 50%');
+          else if (x.forma === 'triangolo') regole.push('clip-path: polygon(50% 0, 100% 100%, 0 100%)');
+          else if (x.raggio) regole.push(`border-radius: ${mmCss(x.raggio)}`);
+        }
+      }
+      css.push(`    .ex-${x.id} { ${regole.join('; ')}; }`);
+    });
+    const markupExtra = n => extra.filter(x => cartelloDi(x) === n).map(x =>
+      x.tipo === 'testo' ? `      <div class="elemento ex-${x.id}">${String(x.testo || '').split('\n').map(esc).join('<br>')}</div>`
+      : x.tipo === 'immagine' ? `      <img class="elemento ex-${x.id}" src="${esc(immagini[`extra-${x.id}`] || '')}" alt="">`
+      : `      <div class="elemento ex-${x.id}"></div>`).join('\n');
+
     if (conModalita) {
       css.push('    .card.modo-descrizione .el-prezzo-originario, .card.modo-descrizione .el-sbarra, .card.modo-descrizione .el-percentuale { display: none; }');
       css.push('    .card.modo-doppia .el-descrizione { display: none; }');
@@ -166,6 +219,8 @@
       if (ha('percentuale')) righe.push(`      <div class="elemento el-percentuale" id="sconto${n}"></div>`);
       if (ha('prezzo-finale')) righe.push(`      <div class="elemento el-prezzo-finale" id="prezzoFinale${n}"></div>`);
       grafiche.forEach(k => righe.push(`      <img class="elemento el-${k}" src="${esc(immagini[k] || '')}" alt="">`));
+      const aggiunti = markupExtra(n);
+      if (aggiunti) righe.push(aggiunti);
       return righe.join('\n');
     };
 
@@ -411,7 +466,13 @@ ${ha('claim-dx') ? `          <div class="form-group">
       `  <script src="../assets/logos/${negozio}/elenco.js${v}"></script>`,
       `  <script src="../assets/js/logos.js${v}"></script>`,
       `  <script src="../assets/js/print-logo-colors.js${v}"></script>`);
+    if (googleFonts.length) fileComuni.push(`${fileComuni.length ? '  ' : ''}<link href="https://fonts.googleapis.com/css2?${googleFonts.map(f => `family=${encodeURIComponent(f).replace(/%20/g, '+')}:ital,wght@0,400;0,700;1,400`).join('&')}&display=swap" rel="stylesheet">`);
     metti('<!-- IMPORT: file comuni dei moduli aggiunti (loghi, testi pronti…) -->', fileComuni.join('\n') || '<!-- nessun file in più -->');
+    const delFoglio = markupExtra(0);
+    if (delFoglio) {
+      css.push('    .print-sheet > .elemento { position: absolute; }');
+      metti('    <div class="cut-line"></div>', `${delFoglio}\n    <div class="cut-line"></div>`);
+    }
     metti('    /* IMPORT: @font-face dei font del .psd (file in ../assets/fonts/) */', `    /* font del .psd */\n${fontFace}\n\n    /* elementi del .psd: stile e posizione in mm (x dal bordo sinistro del foglio, y dal bordo alto del cartello) */\n${css.join('\n')}`);
     metti('        <!-- IMPORT: altri selettori e pulsanti (modalità, + AGGIUNGI 2° BRAND…) -->', blocco1);
     metti('        <!-- IMPORT: BRAND, Loghi Personali, Claim Sinistro e Destro -->', blocco2.join('\n\n'));

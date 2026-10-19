@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <!-- Anteprima del nuovo negozio (Gestione negozi › + NUOVO NEGOZIO): la dashboard vera, disegnata da dashboard.js con
+       i colori e le pagine del modello (luxury per un outlet, tebe per una boutique) e il contenuto del negozio che si sta
+       creando, letto dalla pagina che la contiene (window.parent.NuovoNegozio.anteprima()). Tema e aspetto cambiano senza
+       ricaricare (window.cambiaAspetto). Non salva niente: il negozio nasce solo con APRI IL NEGOZIO. -->
+  <script>
+    // il negozio della pagina è il modello: deve esserci prima di negozi.js, che carica i suoi colori
+    document.documentElement.dataset.negozio = new URLSearchParams(location.search).get('modello') === 'tebe' ? 'tebe' : 'luxury';
+  </script>
+  <script src="assets/js/negozi.js?v=20261019-01"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Anteprima del nuovo negozio</title>
+  <script src="assets/js/punto-vendita.js?v=20261019-01"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/caroselli.css?v=20261019-01">
+  <script src="assets/js/caroselli.js?v=20261019-01" defer></script>
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=20261019-01">
+  <link rel="stylesheet" href="assets/css/menu-cascata.css?v=20261019-01">
+  <script src="assets/js/cassa.js?v=20261019-01"></script>
+  <script src="assets/js/dashboard.js?v=20261019-01"></script>
+  <script src="assets/js/theme.js?v=20261019-01"></script>
+  <link rel="stylesheet" href="assets/css/theme.css?v=20261019-01">
+  <style>
+    /* anteprima: niente clic che porti fuori, niente radio che suoni */
+    a { pointer-events: none; }
+    .home-mark { display: none !important; }
+    html { scrollbar-width: none; }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+  <script>
+    (() => {
+      const sorgente = window.parent?.NuovoNegozio;
+      const dati = sorgente?.anteprima?.();
+      // il contenuto del negozio nuovo prende il posto di quello del modello (caricato da dashboard.js)
+      if (dati) Dashboard.contenuto(dati.contenuto);
+      Dashboard.disegna();
+      const root = document.documentElement;
+      window.cambiaAspetto = ({ tema, aspetto }) => {
+        if (tema) root.dataset.interfaceTheme = tema;
+        if (aspetto) root.dataset.interfaceLook = aspetto;
+      };
+      // theme.js imposta il tema all'avvio: dopo, quello scelto nel nuovo negozio
+      const applica = () => dati && window.cambiaAspetto(dati);
+      applica();
+      document.addEventListener('DOMContentLoaded', applica);
+      window.addEventListener('load', () => { applica(); sorgente?.anteprimaPronta?.(); });
+    })();
+  </script>
+</body>
+</html>

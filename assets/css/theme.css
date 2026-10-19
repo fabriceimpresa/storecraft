@@ -314,7 +314,8 @@
     background: var(--interface-sidebar) !important;
   }
 
-  :root[data-interface-theme="light"] body #seasonal-promo-carousel .preview {
+  /* anche le schede dorate di qualunque galleria (lo stile dorato è del widget, non della sezione: regola del 13 ottobre 2026) */
+  :root[data-interface-theme="light"] body :is(#seasonal-promo-carousel, .gold-bf-card) .preview {
     background: var(--interface-sidebar) !important;
   }
 

@@ -28,7 +28,37 @@
      Associa.sostituisciLoghi(html, elencoDa, elencoA, logo)       { html, sostituiti }: i loghi che il negozio non ha
    Uso (file, con la cartella del progetto collegata):
      Associa.scegliProgetto(passaggio)                              cartella del progetto scelta e controllata (Chrome / Edge)
-     Associa.associa(progetto, { modulo, tipo, cartella, negozio })   aggiunge il modulo al negozio
+     Associa.associa(progetto, { modulo, tipo, cartella, negozio, sezione, nuovaGalleria, logo })
+                                         aggiunge il modulo al negozio: nella galleria (sezione della dashboard) con id
+                                         sezione, o in una galleria nuova con il titolo nuovaGalleria (senza: la prima
+                                         del tipo); un modulo import (dal .psd) porta con sé le sue grafiche
+                                         (assets/img/<negozio>/import/<pagina>/) e il logo del .psd come grafica di
+                                         partenza (logo: { modo: 'grafica' }) o come logo ufficiale del negozio
+                                         (logo: { modo: 'ufficiale', nome, prioritario }: nel menu BRAND, con le
+                                         varianti colorate, e logo di partenza della pagina)
+     Associa.chiediAssociazione({ progetto, modulo, tipo, cartella, negozio, nomeNegozio })
+                                         finestra che chiede galleria e, per un modulo import, il logo: { sezione,
+                                         nuovaGalleria, logo } o null (annullata)
+     Negozi clone (dal 19 ottobre 2026, + NUOVO NEGOZIO in Gestione negozi): un negozio nato dalle utilità, da un modello
+     (luxury per un outlet, tebe per una boutique). Ha la sua cartella <negozio>/ con la dashboard e le pagine di servizio,
+     la scheda assets/negozi/<negozio>.js (con clone: true), .css e -dashboard.js, le cartelle delle risorse e la voce in
+     installati.js. Si modifica (nome, sigla, indirizzo, descrizione, logo), si cancella (tutto) o si rende sorgente.
+     Associa.idNegozio(nome)                                    id e nome della cartella dal nome del negozio
+     Associa.testoSchedaNegozio(o) / testoDashboardNegozio(o)   testo della scheda e della dashboard di un negozio nuovo
+     Associa.creaNegozio(progetto, o)                           crea il negozio (o: id, nome, sigla, indirizzo, descrizione,
+                                         modello, tema, aspetto, oro, logo, logoNome, sezioni, intestazione, cassa, qr, loghi)
+     Associa.modificaNegozio(progetto, { negozio, nome, sigla, indirizzo, indirizzoBreve, descrizione, logo, logoNome })
+     Associa.eliminaNegozio(progetto, { negozio })              cancella un negozio clone e tutte le sue cartelle
+     Associa.rendiSorgenteNegozio(progetto, { negozio })        il negozio clone diventa sorgente (non si cancella più)
+     Associa.rendiSorgenteModulo(progetto, { negozio, nome })   la pagina clone diventa sorgente derivata (storecraft-derivata)
+     Associa.registrando(azione)                               esegue azione() ricordando i file com'erano prima: dà il
+                                         registro per Associa.annulla
+     Associa.annulla(progetto, registro)                        rimette i file com'erano (ANNULLA di Gestione pacchetti)
+     Associa.gallerie(testoDashboard, tipo)                    gallerie della dashboard adatte al tipo: [{ id, titolo, tipo, schede }]
+     Associa.nuovaSezione(testoDashboard, tipo, titolo)         { testo, id }: la dashboard con una galleria nuova, vuota
+     Associa.aggiungiAElenco(testoElenco, file, prioritario)    elenco.js dei loghi con il logo (e tra i prioritari)
+     Associa.logoUfficiale(progetto, { negozio, nome, immagine, prioritario })
+                                         logo ufficiale nuovo: originale, quattro varianti colorate ed elenco.js
      Associa.togli(progetto, { modulo, cartella, negozio })           lo toglie dalla dashboard (un clone si cancella)
      Associa.eliminaClone(progetto, { negozio, nome })              cancella il clone <negozio>/<nome> e la sua scheda
      Associa.clone(html)                                             origine del clone ('<cartella>/<pagina>.html') o null
@@ -39,6 +69,11 @@
                                          assets/pacchetti/ e nell'elenco); restituisce { galleria, pagina }
 
    Un nuovo modulo non è in nessuna dashboard: si associa ai negozi dalla sua scheda, come gli altri.
+     Associa.salvaImport(progetto, { nome, html, grafiche, font, miniatura, scheda, tipo, galleria, titoloGalleria })
+                                         modulo nato da Import layout (dal file Photoshop): pagina moduli/<nome>.html, le sue
+                                         grafiche in moduli/<nome>-grafiche/ (html può essere una funzione che riceve i loro
+                                         percorsi), la miniatura e il modulo in una galleria (esistente, o nuova con il titolo
+                                         titoloGalleria); restituisce { galleria, pagina }
      Associa.eliminaModulo(progetto, { galleria, modulo, negozi })
                                          toglie un nuovo modulo dalla sua galleria e cancella la sua pagina in moduli/ e la
                                          miniatura (se nessun altro modulo le usa) e la galleria creata qui rimasta vuota;
@@ -104,7 +139,8 @@
     throw new Error('Testo della dashboard non leggibile: parentesi non chiusa.');
   }
 
-  // Le sezioni della dashboard: { tipo, inizio, fine } dell'elenco schede ([ … ])
+  // Le sezioni della dashboard: { tipo, id, titolo, oggetto, inizio, fine } (inizio e fine dell'elenco schede, [ … ];
+  // oggetto: dove comincia la sezione, { … })
   function sezioni(testo) {
     const elenco = [];
     for (const trovato of testo.matchAll(/tipo:\s*'(cartelli|promo|cartellini|etichette|stampe)'/g)) {
@@ -112,9 +148,41 @@
       const schede = testo.indexOf('schede: [', trovato.index);
       if (schede < 0) continue;
       const aperta = schede + 'schede: '.length;
-      elenco.push({ tipo: trovato[1], inizio: aperta, fine: chiusura(testo, aperta) });
+      // l'oggetto della sezione: la graffa aperta prima del tipo (tra le due ci sono solo id, carosello e titolo)
+      let oggetto = -1;
+      for (let i = trovato.index - 1, livello = 0; i >= 0; i--) {
+        if (testo[i] === '}') livello++;
+        else if (testo[i] === '{') { if (!livello) { oggetto = i; break; } livello--; }
+      }
+      const testa = oggetto >= 0 ? testo.slice(oggetto, trovato.index) : '';
+      const id = (testa.match(/id:\s*'([^']+)'/) || [])[1] || '';
+      const titolo = ((testa.match(/titolo:\s*(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")/) || []).slice(1).find(v => v != null) || '').replace(/\\(.)/g, '$1');
+      elenco.push({ tipo: trovato[1], id, titolo, oggetto, inizio: aperta, fine: chiusura(testo, aperta) });
     }
     return elenco;
+  }
+
+  // gallerie della dashboard dove può stare un modulo del tipo: cartelli e promo tra loro, gli altri con il loro tipo
+  const compatibili = tipo => tipo === 'cartelli' || tipo === 'promo' ? ['cartelli', 'promo'] : [tipo];
+  function gallerie(testo, tipo) {
+    return sezioni(testo).filter(voce => compatibili(tipo).includes(voce.tipo))
+      .map(voce => ({ id: voce.id, titolo: voce.titolo, tipo: voce.tipo, schede: schede(testo, voce).length }));
+  }
+
+  // una galleria nuova (sezione vuota della dashboard) dopo l'ultima del suo tipo (le promo dopo l'ultima dei cartelli,
+  // se non ce ne sono); { testo, id }
+  function nuovaSezione(testo, tipo, titolo) {
+    const tutte = sezioni(testo);
+    const dopo = [...tutte].reverse().find(voce => voce.tipo === tipo) || [...tutte].reverse().find(voce => compatibili(tipo).includes(voce.tipo)) || tutte.at(-1);
+    if (!dopo || dopo.oggetto < 0) throw new Error('Nella dashboard non ci sono gallerie: non so dove mettere quella nuova.');
+    const radice = String(titolo).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'galleria';
+    let id = `${radice}-section`;
+    for (let n = 2; tutte.some(voce => voce.id === id); n++) id = `${radice}-${n}-section`;
+    const carosello = id.replace(/-section$/, '-carousel');
+    const fine = chiusura(testo, dopo.oggetto);
+    const rientro = testo.slice(testo.lastIndexOf('\n', dopo.oggetto) + 1, dopo.oggetto);
+    const nuova = `{\n${rientro}  id: ${virgolette(id)}, carosello: ${virgolette(carosello)}, titolo: ${virgolette(titolo)}, tipo: ${virgolette(tipo)},\n${rientro}  schede: [\n${rientro}  ]\n${rientro}}`;
+    return { testo: `${testo.slice(0, fine + 1)},\n${rientro}${nuova}${testo.slice(fine + 1)}`, id };
   }
 
   function sezione(testo, tipo) {
@@ -151,9 +219,9 @@
     return Boolean(trovaScheda(testo, negozio, cartella, nome));
   }
 
-  function aggiungiScheda(testo, tipo, scheda) {
-    const voce = sezione(testo, tipo);
-    if (!voce) throw new Error(`Nella dashboard non c'è una sezione ${tipo} in cui mettere il modulo.`);
+  function aggiungiScheda(testo, tipo, scheda, idSezione = null) {
+    const voce = idSezione ? sezioni(testo).find(v => v.id === idSezione) : sezione(testo, tipo);
+    if (!voce) throw new Error(idSezione ? `Nella dashboard non c'è la galleria ${idSezione}.` : `Nella dashboard non c'è una sezione ${tipo} in cui mettere il modulo.`);
     const esistenti = schede(testo, voce);
     const riga = testo.lastIndexOf('\n', voce.fine);
     const rientro = esistenti.length ? testo.slice(testo.lastIndexOf('\n', esistenti[0].inizio) + 1, esistenti[0].inizio) : '        ';
@@ -246,6 +314,358 @@
     return { html: nuovo, sostituiti };
   }
 
+  // elenco.js con un logo nuovo in LOGO_FILES (in ordine alfabetico, come loghi-ufficiali.html) e, se prioritario, in
+  // PRIORITY_BRANDS (in fondo ai prioritari)
+  function aggiungiAElenco(testo, file, prioritario = false) {
+    let nuovo = String(testo || '');
+    if (!/^const\s+LOGO_FILES\s*=/m.test(nuovo)) nuovo = `// Elenco dei loghi ufficiali del negozio (file in questa cartella) e brand prioritari.\nconst LOGO_FILES = [\n];\n\nconst PRIORITY_BRANDS = [];\n`;
+    const { file: files, prioritari } = elencoLoghi(nuovo);
+    const tutti = [...new Set([...files, file])].sort((x, y) => x.toUpperCase().localeCompare(y.toUpperCase(), 'it', { sensitivity: 'base' }));
+    nuovo = nuovo.replace(/^const\s+LOGO_FILES\s*=\s*\[[\s\S]*?\]\s*;?/m, `const LOGO_FILES = [\n${tutti.map(f => `  "${f}"`).join(',\n')}\n];`);
+    if (prioritario && !prioritari.includes(file)) {
+      const lista = [...prioritari, file].map(f => `"${f}"`).join(', ');
+      nuovo = /^const\s+PRIORITY_BRANDS\s*=/m.test(nuovo)
+        ? nuovo.replace(/^const\s+PRIORITY_BRANDS\s*=\s*\[[\s\S]*?\]\s*;?/m, `const PRIORITY_BRANDS = [${lista}];`)
+        : `${nuovo.trimEnd()}\n\nconst PRIORITY_BRANDS = [${lista}];\n`;
+    }
+    return nuovo;
+  }
+  // nome del file di un logo ufficiale dal nome scritto: maiuscolo, senza accenti né spazi (SALE INVADERS → SALEINVADERS.png)
+  const fileLogo = nome => `${String(nome).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/[^A-Z0-9_-]+/g, '') || 'LOGO'}.png`;
+  // le quattro varianti di stampa (come loghi-ufficiali.html): ogni pixel visibile nel colore, la trasparenza resta
+  async function variante(immagine, rgb) {
+    const bitmap = await createImageBitmap(immagine);
+    const tela = document.createElement('canvas');
+    tela.width = bitmap.width; tela.height = bitmap.height;
+    const ctx = tela.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0);
+    const dati = ctx.getImageData(0, 0, tela.width, tela.height);
+    for (let i = 0; i < dati.data.length; i += 4) if (dati.data[i + 3] > 0) { dati.data[i] = rgb[0]; dati.data[i + 1] = rgb[1]; dati.data[i + 2] = rgb[2]; }
+    ctx.putImageData(dati, 0, 0);
+    return new Promise(fatto => tela.toBlob(fatto, 'image/png'));
+  }
+  const rgbDi = esadecimale => { const h = String(esadecimale).replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
+  // logo ufficiale nuovo del negozio: assets/logos/<negozio>/<NOME>.png, le varianti white, black, red e gold (l'oro del
+  // negozio, dalla sua scheda) in assets/img/<negozio>/printlogos/ ed elenco.js. Un logo con lo stesso nome che il
+  // negozio ha già non si sovrascrive (si aggiunge solo ai prioritari, se richiesto). Restituisce il nome del file
+  async function logoUfficiale(progetto, { negozio, nome, immagine, prioritario = false, avviso = () => {} }) {
+    const file = fileLogo(nome);
+    const elenco = `assets/logos/${negozio}/elenco.js`;
+    const testo = await (await leggi(progetto, elenco)).text().catch(() => '');
+    if (!elencoLoghi(testo).file.includes(file) || !await esiste(progetto, `assets/logos/${negozio}/${file}`)) {
+      const scheda = await (await leggi(progetto, `assets/negozi/${negozio}.js`)).text().catch(() => '');
+      const oro = (scheda.match(/oro:\s*'(#[0-9a-fA-F]{6})'/) || [])[1] || '#b48b37';
+      avviso(`logo ufficiale ${file}: originale e varianti colorate in ${negozio}…`);
+      await scriviFile(progetto, `assets/logos/${negozio}/${file}`, immagine);
+      for (const [colore, rgb] of [['white', [255, 255, 255]], ['black', [0, 0, 0]], ['red', [224, 0, 0]], ['gold', rgbDi(oro)]]) {
+        await scriviFile(progetto, `assets/img/${negozio}/printlogos/${colore}${file}`, await variante(immagine, rgb));
+      }
+    } else avviso(`logo ufficiale ${file}: ${negozio} lo ha già, uso quello`);
+    await scriviFile(progetto, elenco, aggiungiAElenco(testo, file, prioritario));
+    return file;
+  }
+
+  // ===== Negozi clone =====
+  const PAGINE_NEGOZIO = ['index.html', 'lista-stampa.html', 'cronologia-stampa.html', 'bacheca.html', 'genera_loghi.html', 'gestisci_lista.html', 'pdf-viewer.html'];
+  // id del negozio dal nome: minuscolo, senza accenti, parole unite da trattini (es. BOUTIQUE ROMA → boutique-roma)
+  const idNegozio = nome => String(nome).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'negozio';
+  // sigla di un negozio nuovo: il suo nome (la sigla di Luxury Outlet, LXRY, è un marchio a sé); solo un nome lungo
+  // (oltre 12 caratteri) si accorcia nelle iniziali, per le etichette strette di Gestione negozi (BOUTIQUE ROMA CENTRO → BRC)
+  const siglaNegozio = nome => {
+    const pulito = String(nome).trim().toUpperCase();
+    if (pulito.length <= 12) return pulito;
+    const parole = pulito.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^A-Z0-9 ]/g, '').split(/\s+/).filter(Boolean);
+    return (parole.length > 1 ? parole.map(p => p[0]).join('') : parole[0] || pulito).slice(0, 12);
+  };
+  const testoHtml = valore => String(valore).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const RISORSE_NEGOZIO = ['img', 'logos', 'thumbnail', 'pdf', 'foto'];
+  // Il logo del negozio nelle pagine del modello: le immagini (in assets/img/<modello>/) che portano il logo del modello
+  // (piè dei cartelli, cartellini, etichette DYMO). Per un negozio nuovo si rifanno con il suo logo, alla stessa misura e
+  // nello stesso riquadro (LogoNegozio.adatta): le pagine copiate nel negozio le trovano già e non si sposta niente.
+  // (oro: le immagini oro prendono l'oro del negozio; le altre il colore principale dell'originale: rosso, arancio, nero)
+  const LOGO_NELLE_PAGINE = {
+    luxury: ['footer.png', 'footer_orange.png', 'footer_xmas.png', 'LUXURYOUTLET_BACK.png', ['logocartellini.png', 'oro'], 'loghinored.png', ['printlogos/goldLXRY_BRAND.png', 'oro']],
+    tebe: [['footer_tebe.png', 'oro'], ['tebeoro.png', 'oro'], 'tebeblack.png']
+  };
+  // I brand propri del modello tra i suoi loghi ufficiali (il marchio del negozio, non i brand che vende): non si copiano
+  // nel negozio nuovo e, nelle pagine copiate nel negozio, la scelta di partenza diventa il logo del negozio
+  const BRAND_DEL_MODELLO = { luxury: ['LUXURY_GOLD.png', 'LXRY_BRAND.png', 'LXRY.png'], tebe: ['269TEBE.PNG', 'Tebe269.png', 'Tebe.png'], ophilya: ['269TEBE.PNG', 'Tebe269.png', 'Tebe.png'] };
+  // le gallerie di partenza di un negozio nuovo, per tipo: id, carosello e titolo
+  const DATI_SEZIONE = {
+    cartelli: { id: 'generators', titolo: 'Crea Cartelli' },
+    promo: { id: 'seasonal-promo', titolo: 'Promo Stagionali' },
+    cartellini: { id: 'tickets', titolo: 'Cartellini' },
+    etichette: { id: 'dymo', titolo: 'Etichette Dymo' },
+    stampe: { id: 'prints', titolo: 'Stampe Pronte' }
+  };
+
+  function testoSchedaNegozio(o) {
+    const riga = (chiave, valore, nota = '') => `  ${chiave}: ${typeof valore === 'string' ? virgolette(valore) : JSON.stringify(valore).replace(/"(\w+)":/g, '$1: ').replace(/"/g, "'")},${nota ? `   // ${nota}` : ''}`;
+    return [
+      `/* Scheda del negozio ${o.nome} (vedi assets/js/negozi.js). I colori sono in ${o.id}.css.`,
+      `   Negozio clone: creato in Gestione negozi il ${new Date().toLocaleDateString('it-IT')} dal modello ${o.modello} (${o.tipo}). */`,
+      `Negozi.registra(${virgolette(o.id)}, {`,
+      riga('nome', o.nome),
+      riga('sigla', o.sigla || siglaNegozio(o.nome), 'il nome; solo un nome lungo si accorcia nelle iniziali'),
+      riga('clone', true, 'negozio clone: si modifica e si cancella da Gestione negozi; «rendi sorgente» toglie questa riga'),
+      riga('modello', o.modello, 'il negozio da cui ha preso aspetto e pagine'),
+      riga('logoSplash', o.logo),
+      riga('logoSplashLarghezza', o.logoLarghezza || 150),
+      riga('indirizzo', o.indirizzo || ''),
+      riga('indirizzoBreve', o.indirizzoBreve || o.indirizzo || ''),
+      riga('logoMenu', o.logo),
+      riga('logoMenuLarghezza', o.logoLarghezza || 185),
+      riga('oro', o.oro),
+      ...(o.logoUfficiale ? [riga('logoUfficiale', o.logoUfficiale, 'il logo del negozio tra i loghi ufficiali: di partenza nei menu BRAND delle pagine copiate qui')] : []),
+      ...(o.logoAColori ? [riga('logoAColori', true, 'logo a colori: nella dashboard e nella splash page resta a colori')] : []),
+      riga('brandPrioritari', o.modello === 'tebe' ? 'maiuscolo' : 'stella'),
+      riga('listaStampa', `${o.id}-lista-stampa`),
+      riga('cronologiaStampa', `${o.id}-cronologia-stampa`),
+      '  guida: null,',
+      `  interfaccia: { tema: ${virgolette(o.tema)}, aspetto: ${virgolette(o.aspetto)} }`,
+      '});',
+      ''
+    ].join('\n');
+  }
+
+  function testoDashboardNegozio(o) {
+    const usati = {};
+    const sezioni = o.sezioni.map(sezione => {
+      const base = DATI_SEZIONE[sezione.tipo] || DATI_SEZIONE.cartelli;
+      usati[base.id] = (usati[base.id] || 0) + 1;
+      const id = usati[base.id] === 1 ? base.id : `${base.id}-${usati[base.id]}`;
+      return `    {\n      id: ${virgolette(`${id}-section`)}, carosello: ${virgolette(`${id}-carousel`)}, titolo: ${virgolette(sezione.titolo || base.titolo)}, tipo: ${virgolette(sezione.tipo)},\n      schede: [\n      ]\n    }`;
+    });
+    const intestazione = ['titolo: false', ...['dataOra', 'radio', 'meteo'].filter(k => o.intestazione?.[k]).map(k => `${k}: true`)];
+    return [
+      `/* Contenuto della dashboard di ${o.nome} (vedi assets/js/dashboard.js). Immagini e PDF nella cartella assets/.`,
+      '   Negozio clone creato in Gestione negozi: le gallerie nascono vuote e i moduli si aggiungono con le spunte di Gestione',
+      '   pacchetti o del catalogo (una galleria senza moduli non compare nella dashboard). */',
+      'Dashboard.contenuto({',
+      `  intestazione: { ${intestazione.join(', ')} },`,
+      `  logo: { src: ${virgolette(o.logo)}, larghezza: ${o.logoLarghezza || 185}, alt: ${virgolette(o.nome)} },`,
+      `  identita: [${virgolette(o.indirizzo || '')}, ${virgolette(o.descrizione || '')}],`,
+      `  qr: ${virgolette(o.qr || 'https://fabriceimpresa.github.io/storecraft/')},`,
+      `  cassa: ${virgolette(o.cassa === 'solo-cassiere' ? 'solo-cassiere' : 'sempre')},`,
+      '  sezioni: [',
+      sezioni.join(',\n'),
+      '  ]',
+      '});',
+      ''
+    ].join('\n');
+  }
+
+  // l'elenco dei negozi installati con un negozio in più (o in meno)
+  function installatiCon(testo, id, aggiungi = true) {
+    return String(testo).replace(/Negozi\.installa\(\[([^\]]*)\]/, (tutto, dentro) => {
+      const ids = [...dentro.matchAll(/'([^']+)'/g)].map(m => m[1]).filter(x => x !== id);
+      if (aggiungi) ids.push(id);
+      return `Negozi.installa([${ids.map(x => `'${x}'`).join(', ')}]`;
+    });
+  }
+
+  // copia una cartella intera (sottocartelle comprese) da un percorso a un altro del progetto
+  async function copiaCartella(progetto, da, a, avviso = () => {}, salta = () => false) {
+    let sorgente;
+    try { sorgente = await cartella(progetto, da); } catch { return 0; }
+    let quanti = 0;
+    for await (const [nome, voce] of sorgente.entries()) {
+      if (voce.kind === 'directory') quanti += await copiaCartella(progetto, `${da}/${nome}`, `${a}/${nome}`, avviso, salta);
+      else if (!salta(nome)) {
+        await scriviFile(progetto, `${a}/${nome}`, await istantanea(voce));
+        if (++quanti % 40 === 0) avviso(`copio ${da}/ in ${a}/… ${quanti} file`);
+      }
+    }
+    return quanti;
+  }
+  // cancella una cartella intera; ricorda prima i suoi file (per annulla)
+  async function cancellaCartella(progetto, percorso) {
+    const parti = percorso.split('/');
+    let dir;
+    try { dir = await cartella(progetto, percorso); } catch { return false; }
+    const ricordaTutto = async (d, base) => {
+      for await (const [nome, voce] of d.entries()) {
+        if (voce.kind === 'directory') await ricordaTutto(voce, `${base}/${nome}`);
+        else await ricorda(progetto, `${base}/${nome}`);
+      }
+    };
+    if (registro) await ricordaTutto(dir, percorso);
+    await (await cartella(progetto, parti.slice(0, -1).join('/'))).removeEntry(parti.at(-1), { recursive: true });
+    return true;
+  }
+
+  async function creaNegozio(progetto, o, avviso = () => {}) {
+    const id = o.id;
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) throw new Error(`«${id}» non va bene come nome della cartella: solo lettere minuscole, numeri e trattini`);
+    const installati = await (await leggi(progetto, 'assets/negozi/installati.js')).text();
+    if (new RegExp(`'${id}'`).test(installati) || await esiste(progetto, `assets/negozi/${id}.js`)) throw new Error(`c'è già un negozio «${id}»: scegli un altro nome`);
+    try { await cartella(progetto, id); throw new Error(`c'è già una cartella ${id}/ nel progetto: scegli un altro nome`); } catch (errore) { if (errore.name !== 'NotFoundError' && errore.name !== 'TypeError') throw errore; }
+    const m = o.modello;
+    const LN = typeof window !== 'undefined' ? window.LogoNegozio : null;
+    // il logo: quello caricato, già analizzato (sfondo tolto dagli angoli e ritagliato, o.logoTela), in
+    // assets/img/<negozio>/logo.png; senza, quello di STORE // CRAFT
+    let logo = 'img/storecraftlogo.png';
+    let tela = o.logoTela || null;
+    if (tela) {
+      logo = `img/${id}/logo.png`;
+      avviso(`salvo il logo assets/${logo}…`);
+      await scriviFile(progetto, `assets/${logo}`, await LN.png(tela));
+    } else if (o.logoFile) {
+      const estensione = (String(o.logoNome || '').match(/\.(png|jpe?g|webp|svg)$/i) || [, 'png'])[1].toLowerCase();
+      logo = `img/${id}/logo.${estensione}`;
+      await scriviFile(progetto, `assets/${logo}`, o.logoFile);
+    }
+    if (!tela && LN) {
+      const url = URL.createObjectURL(await leggi(progetto, 'assets/img/storecraftlogo.png'));
+      try { const img = await LN.caricaImmagine(url); tela = document.createElement('canvas'); tela.width = img.naturalWidth; tela.height = img.naturalHeight; tela.getContext('2d').drawImage(img, 0, 0); }
+      finally { URL.revokeObjectURL(url); }
+    }
+    const aColori = Boolean(o.logoAColori && o.logoTela);
+    // il logo tra i loghi ufficiali del negozio (in evidenza, primo nei menu BRAND): a tinta piatta con le 4 varianti
+    // colorate, a colori con una sola versione (le 4 varianti sono la stessa immagine, così le pagine la trovano)
+    const logoUfficiale = fileLogo(o.nome);
+    const dati = { ...o, logo, logoUfficiale, logoAColori: aColori };
+    // le pagine del negozio: la dashboard e le pagine di servizio del modello, adattate a lui
+    for (const file of PAGINE_NEGOZIO) {
+      let html;
+      try { html = await (await leggi(progetto, `${m}/${file}`)).text(); } catch { continue; }
+      let { html: nuovo, risorse } = adattaPagina(html, m, id, `${m}/${file}`);
+      // pagine proprie del negozio, non cloni: niente segno d'origine
+      nuovo = nuovo.replace(/\n?\s*<meta name="storecraft-origine" content="[^"]*">/, '')
+        .replace(new RegExp(`· ${(Negozi?.scheda?.(m)?.nome || m.toUpperCase()).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g'), `· ${testoHtml(o.nome)}`)
+        .replace(new RegExp(`store=${m}\\b`, 'g'), `store=${id}`);
+      avviso(`scrivo ${id}/${file}…`);
+      await scriviFile(progetto, `${id}/${file}`, nuovo);
+      await copiaRisorse(progetto, risorse, m, id);
+    }
+    // la bandiera Made in Italy del modello (la usano i moduli con il tema Made in Italy)
+    await copiaRisorsa(progetto, 'img', m, id, 'madeinitaly.png');
+    // il logo del negozio nelle immagini delle pagine dei modelli (piè dei cartelli, cartellini, etichette), alla stessa
+    // misura e nello stesso riquadro del loro logo: le pagine copiate qui le trovano già (copiaRisorse non le
+    // sovrascrive) e non si sposta niente. Di tutti e due i modelli: un negozio può ricevere moduli da Luxury e da TEBE
+    if (tela && LN) {
+      for (const [modelloImmagini, voci] of Object.entries(LOGO_NELLE_PAGINE)) for (const voce of voci) {
+        const [file, colore] = Array.isArray(voce) ? voce : [voce, null];
+        let originale;
+        if (await esiste(progetto, `assets/img/${id}/${file}`)) continue;
+        try { originale = await leggi(progetto, `assets/img/${modelloImmagini}/${file}`); } catch { continue; }
+        const url = URL.createObjectURL(originale);
+        try {
+          avviso(`logo del negozio in assets/img/${id}/${file}…`);
+          await scriviFile(progetto, `assets/img/${id}/${file}`, await LN.png(await LN.adatta(tela, await LN.caricaImmagine(url), { colori: aColori, colore: colore === 'oro' ? rgbDi(o.oro || '#b48b37') : null })));
+        } finally { URL.revokeObjectURL(url); }
+      }
+    }
+    // loghi ufficiali: quelli del modello, o nessuno (si importano da Loghi ufficiali)
+    const propri = BRAND_DEL_MODELLO[m] || [];
+    let elenco;
+    if (o.loghi === 'copia') {
+      avviso(`copio i loghi ufficiali di ${m} (senza i suoi marchi: ${propri.join(', ')})…`);
+      // (senza badare a maiuscole: 269TEBE.PNG ha le varianti black269TEBE.png…)
+      const minuscolo = nome => nome.toLowerCase().replace(/\.png$/, '');
+      const salta = nome => propri.some(p => [p, ...['white', 'black', 'red', 'gold'].map(c => c + p)].some(x => minuscolo(x) === minuscolo(nome)));
+      await copiaCartella(progetto, `assets/logos/${m}`, `assets/logos/${id}`, avviso, salta);
+      await copiaCartella(progetto, `assets/img/${m}/printlogos`, `assets/img/${id}/printlogos`, avviso, salta);
+      elenco = (await (await leggi(progetto, `assets/logos/${id}/elenco.js`)).text()).replace(/^\/\/ assets\/logos\/[\w-]+\/elenco\.js/m, `// assets/logos/${id}/elenco.js`)
+        .replace(/loghi ufficiali di [^(\n]+\(/, `loghi ufficiali di ${o.nome} (`)
+        .replace(/^\/\/ BRAND PRIORITARI[^\n]*(\n\/\/[^\n]*)*/m, '// BRAND PRIORITARI: in evidenza, mostrati per primi in ogni menu a cascata dei loghi (il primo è il logo del negozio).');
+      // i marchi del modello escono anche dall'elenco
+      const voci = elencoLoghi(elenco);
+      elenco = elenco.replace(/^const\s+LOGO_FILES\s*=\s*\[[\s\S]*?\]\s*;?/m, `const LOGO_FILES = [\n${voci.file.filter(f => !propri.includes(f)).map(f => `  "${f}"`).join(',\n')}\n];`)
+        .replace(/^const\s+PRIORITY_BRANDS\s*=\s*\[[\s\S]*?\]\s*;?/m, `const PRIORITY_BRANDS = [${voci.prioritari.filter(f => !propri.includes(f)).map(f => `"${f}"`).join(', ')}];`);
+    } else {
+      elenco = `// assets/logos/${id}/elenco.js\n// Elenco dei loghi ufficiali di ${o.nome} (file in questa cartella) e brand prioritari del negozio.\n// Il codice che usa l'elenco è comune, in assets/js/logos.js. loghi-ufficiali.html (nella radice)\n// aggiorna LOGO_FILES: tenerlo nella forma const LOGO_FILES = [ "NOME.png", … ];\nconst LOGO_FILES = [\n];\n\n// BRAND PRIORITARI: mostrati per primi in ogni menu a cascata dei loghi.\nconst PRIORITY_BRANDS = [];\n`;
+    }
+    // il logo del negozio tra i suoi loghi ufficiali, primo dei brand in evidenza
+    if (tela && LN) {
+      avviso(`logo ufficiale ${logoUfficiale}: ${aColori ? 'a colori, una sola versione' : 'a tinta piatta, 4 varianti'}…`);
+      const originale = await LN.png(tela);
+      await scriviFile(progetto, `assets/logos/${id}/${logoUfficiale}`, originale);
+      for (const [colore, rgb] of [['white', [255, 255, 255]], ['black', [0, 0, 0]], ['red', [224, 0, 0]], ['gold', rgbDi(o.oro || '#b48b37')]]) {
+        await scriviFile(progetto, `assets/img/${id}/printlogos/${colore}${logoUfficiale}`, aColori ? originale : await LN.png(LN.tinta(tela, rgb)));
+      }
+      elenco = aggiungiAElenco(elenco, logoUfficiale, false);
+      const voci = elencoLoghi(elenco);
+      elenco = elenco.replace(/^const\s+PRIORITY_BRANDS\s*=\s*\[[\s\S]*?\]\s*;?/m, `const PRIORITY_BRANDS = [${[logoUfficiale, ...voci.prioritari.filter(f => f !== logoUfficiale)].map(f => `"${f}"`).join(', ')}];`);
+    }
+    await scriviFile(progetto, `assets/logos/${id}/elenco.js`, elenco);
+    // scheda, colori e dashboard
+    avviso(`scrivo la scheda del negozio assets/negozi/${id}.js…`);
+    await scriviFile(progetto, `assets/negozi/${id}.js`, testoSchedaNegozio(dati));
+    const css = await (await leggi(progetto, `assets/negozi/${m}.css`)).text();
+    await scriviFile(progetto, `assets/negozi/${id}.css`, `/* Colori del negozio ${o.nome}: copia dei colori di ${m} (negozio clone, vedi ${id}.js). */\n`
+      + css.replace(new RegExp(`data-negozio="${m}"`, 'g'), `data-negozio="${id}"`)
+        // il colore del cursore sul foglio scelto (oro come Luxury, rosso come TEBE); le misure restano quelle del modello
+        .replace(/(--cursore-colore:\s*)#[0-9a-fA-F]{3,6}/, (t, prima) => `${prima}${o.cursore || (m === 'tebe' ? '#96382b' : '#b48b37')}`));
+    await scriviFile(progetto, `assets/negozi/${id}-dashboard.js`, testoDashboardNegozio(dati));
+    // per ultimo l'elenco dei negozi installati: da qui il negozio compare nella splash page e nei menu
+    avviso('aggiungo il negozio a installati.js…');
+    await scriviFile(progetto, 'assets/negozi/installati.js', installatiCon(installati, id, true));
+    return { id, logo };
+  }
+
+  const eNegozioClone = testo => /^\s*clone:\s*true,/m.test(String(testo));
+  async function eliminaNegozio(progetto, { negozio, avviso = () => {} }) {
+    const scheda = await (await leggi(progetto, `assets/negozi/${negozio}.js`)).text();
+    if (!eNegozioClone(scheda)) throw new Error(`${negozio} è un negozio sorgente: non si cancella dalle utilità`);
+    // prima l'elenco: il negozio sparisce subito dalla splash page e dai menu
+    avviso('tolgo il negozio da installati.js…');
+    await scriviFile(progetto, 'assets/negozi/installati.js', installatiCon(await (await leggi(progetto, 'assets/negozi/installati.js')).text(), negozio, false));
+    avviso(`cancello la cartella ${negozio}/…`);
+    await cancellaCartella(progetto, negozio);
+    for (const tipo of RISORSE_NEGOZIO) if (await cancellaCartella(progetto, `assets/${tipo}/${negozio}`)) avviso(`cancello assets/${tipo}/${negozio}/…`);
+    for (const file of [`${negozio}.js`, `${negozio}.css`, `${negozio}-dashboard.js`]) { try { await cancella(progetto, `assets/negozi/${file}`); } catch { /* già tolto */ } }
+  }
+  async function rendiSorgenteNegozio(progetto, { negozio }) {
+    const percorso = `assets/negozi/${negozio}.js`;
+    const scheda = await (await leggi(progetto, percorso)).text();
+    if (!eNegozioClone(scheda)) return;
+    await scriviFile(progetto, percorso, scheda.replace(/^\s*clone:\s*true,[^\n]*\n/m,
+      `  // negozio sorgente dal ${new Date().toLocaleDateString('it-IT')} (prima clone): si modifica e si cancella solo dal codice\n`));
+  }
+  // nome, sigla, indirizzo, descrizione e logo di un negozio clone, nella scheda e nella dashboard
+  async function modificaNegozio(progetto, { negozio, nome, sigla, indirizzo, indirizzoBreve, descrizione, logoFile = null, logoNome = '' }) {
+    const percorso = `assets/negozi/${negozio}.js`;
+    let scheda = await (await leggi(progetto, percorso)).text();
+    if (!eNegozioClone(scheda)) throw new Error(`${negozio} è un negozio sorgente: si modifica dal codice`);
+    let dashboard = await (await leggi(progetto, `assets/negozi/${negozio}-dashboard.js`)).text();
+    const campo = (testo, chiave, valore) => testo.replace(new RegExp(`(\\n\\s*${chiave}:\\s*)'(?:[^'\\\\]|\\\\.)*'`), (t, prima) => `${prima}${virgolette(valore)}`);
+    if (logoFile) {
+      const estensione = (String(logoNome).match(/\.(png|jpe?g|webp|svg)$/i) || [, 'png'])[1].toLowerCase();
+      const logo = `img/${negozio}/logo-${Date.now().toString(36)}.${estensione}`;
+      await scriviFile(progetto, `assets/${logo}`, logoFile);
+      scheda = campo(campo(scheda, 'logoSplash', logo), 'logoMenu', logo);
+      dashboard = dashboard.replace(/(logo:\s*\{\s*src:\s*)'[^']*'/, `$1${virgolette(logo)}`);
+    }
+    if (nome) {
+      scheda = campo(campo(scheda, 'nome', nome), 'sigla', sigla || siglaNegozio(nome));
+      dashboard = dashboard.replace(/(logo:\s*\{[^}]*alt:\s*)'(?:[^'\\]|\\.)*'/, `$1${virgolette(nome)}`);
+    }
+    if (indirizzo !== undefined) scheda = campo(scheda, 'indirizzo', indirizzo);
+    if (indirizzoBreve !== undefined || indirizzo !== undefined) scheda = campo(scheda, 'indirizzoBreve', indirizzoBreve || indirizzo || '');
+    if (indirizzo !== undefined || descrizione !== undefined) {
+      dashboard = dashboard.replace(/identita:\s*\[\s*('(?:[^'\\]|\\.)*')\s*,\s*('(?:[^'\\]|\\.)*')\s*\]/, (t, a, b) =>
+        `identita: [${indirizzo !== undefined ? virgolette(indirizzo) : a}, ${descrizione !== undefined ? virgolette(descrizione) : b}]`);
+    }
+    await scriviFile(progetto, percorso, scheda);
+    await scriviFile(progetto, `assets/negozi/${negozio}-dashboard.js`, dashboard);
+  }
+  // un modulo clone diventa sorgente: la pagina perde il segno del clone e prende quello della pagina sorgente da cui
+  // deriva (storecraft-derivata), le sue schede perdono origine; da qui si cancella solo dal codice
+  async function rendiSorgenteModulo(progetto, { negozio, nome }) {
+    const percorso = `${negozio}/${nome}`;
+    const html = await (await leggi(progetto, percorso)).text();
+    const origine = clone(html);
+    if (!origine) return;
+    await scriviFile(progetto, percorso, html.replace(/\n?\s*<meta name="storecraft-(origine|copiati)" content="[^"]*">/g, '')
+      .replace(/(<meta charset="[^"]*">)/i, `$1\n  <meta name="storecraft-derivata" content="${origine}">`));
+    const dashboard = `assets/negozi/${negozio}-dashboard.js`;
+    const testo = await (await leggi(progetto, dashboard)).text();
+    const segno = virgolette(origine).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    await scriviFile(progetto, dashboard, testo.replace(new RegExp(`,\\s*origine:\\s*${segno}`, 'g'), '').replace(new RegExp(`origine:\\s*${segno},\\s*`, 'g'), ''));
+  }
+
   // Origine scritta nella pagina clonata (null: pagina di partenza, non un clone)
   function clone(html) {
     return (String(html).match(/<meta name="storecraft-origine" content="([^"]+)">/) || [])[1] || null;
@@ -282,15 +702,55 @@
     for (const nome of percorso.split('/').filter(Boolean)) attuale = await attuale.getDirectoryHandle(nome, { create: crea });
     return attuale;
   }
+  // Il contenuto di un file letto subito, tutto, in memoria. Chrome legge un file in due tempi (getFile, poi il
+  // contenuto) e, se nel frattempo il file cambia sul disco (es. OneDrive che sincronizza la cartella mentre la pagina
+  // scrive), rifiuta con InvalidStateError: si riprova qualche volta, con una piccola attesa (19 ottobre 2026)
+  async function istantanea(maniglia) {
+    for (let prova = 1; ; prova++) {
+      try {
+        const file = await maniglia.getFile();
+        return new File([await file.arrayBuffer()], file.name, { type: file.type, lastModified: file.lastModified });
+      } catch (errore) {
+        if (prova >= 6 || !['InvalidStateError', 'NotReadableError'].includes(errore.name)) throw errore;
+        await new Promise(fatto => setTimeout(fatto, 150 * prova));
+      }
+    }
+  }
   async function leggi(progetto, percorso) {
     const parti = percorso.split('/');
     const dir = await cartella(progetto, parti.slice(0, -1).join('/'));
-    return (await (await dir.getFileHandle(parti.at(-1))).getFile());
+    return istantanea(await dir.getFileHandle(parti.at(-1)));
   }
   async function esiste(progetto, percorso) {
-    try { await leggi(progetto, percorso); return true; } catch { return false; }
+    try {
+      const parti = percorso.split('/');
+      await (await cartella(progetto, parti.slice(0, -1).join('/'))).getFileHandle(parti.at(-1));
+      return true;
+    } catch { return false; }
+  }
+  // ----- Annulla: durante un'operazione (registrando) ogni file scritto o cancellato si ricorda com'era la prima volta
+  // (contenuto, o null se non c'era); annulla lo rimette così, dall'ultimo al primo -----
+  let registro = null;
+  async function ricorda(progetto, percorso) {
+    if (!registro || registro.has(percorso)) return;
+    registro.set(percorso, null);
+    try { registro.set(percorso, await leggi(progetto, percorso)); } catch { /* non c'era */ }
+  }
+  async function registrando(azione) {
+    const mio = new Map();
+    const prima = registro;
+    registro = mio;
+    try { await azione(); } finally { registro = prima; }
+    return mio;
+  }
+  async function annulla(progetto, passi, avviso = () => {}) {
+    for (const [percorso, contenuto] of [...passi].reverse()) {
+      if (contenuto) { avviso(`rimetto ${percorso}…`); await scriviFile(progetto, percorso, contenuto); }
+      else { avviso(`tolgo ${percorso}…`); try { await cancella(progetto, percorso); } catch { /* già tolto */ } }
+    }
   }
   async function scriviFile(progetto, percorso, contenuto) {
+    await ricorda(progetto, percorso);
     const parti = percorso.split('/');
     const dir = await cartella(progetto, parti.slice(0, -1).join('/'), true);
     const scrittura = await (await dir.getFileHandle(parti.at(-1), { create: true })).createWritable();
@@ -329,7 +789,7 @@
     if (!elencoDa.file.some(file => !elencoA.file.includes(file) && tra(file).test(html))) return html;
     const pagine = [];
     for await (const [file, voce] of (await cartella(progetto, a)).entries()) {
-      if (voce.kind === 'file' && file.endsWith('.html')) pagine.push(await (await voce.getFile()).text());
+      if (voce.kind === 'file' && file.endsWith('.html')) pagine.push(await (await istantanea(voce)).text());
     }
     const predefinito = logoPredefinito(pagine, elencoA);
     const esito = sostituisciLoghi(html, elencoDa, elencoA, predefinito);
@@ -337,7 +797,7 @@
     return esito.html;
   }
 
-  async function associa(progetto, { modulo, tipo, cartella: da, negozio: a, avviso = () => {} }) {
+  async function associa(progetto, { modulo, tipo, cartella: da, negozio: a, sezione: idSezione = null, nuovaGalleria = '', logo = null, avviso = () => {} }) {
     const dashboard = `assets/negozi/${a}-dashboard.js`;
     let testo = await (await leggi(progetto, dashboard)).text();
     const nome = pagina(modulo.link);
@@ -358,7 +818,37 @@
       const origineRisorse = (sorgente.match(/data-negozio="([\w-]+)"/) || [])[1] || da;
       let { html, risorse } = adattaPagina(sorgente, origineRisorse, a, `${da}/${nome}`);
       if (origineRisorse !== a) html = await loghiDelNegozio(progetto, html, origineRisorse, a, avviso);
+      // un negozio con il suo logo tra i loghi ufficiali (+ NUOVO NEGOZIO): i marchi del modello scritti nella pagina
+      // come scelta di partenza (es. LUXURY_GOLD.png, 269TEBE.PNG) diventano il logo del negozio
+      try {
+        const suo = ((await (await leggi(progetto, `assets/negozi/${a}.js`)).text()).match(/logoUfficiale:\s*'([^']+)'/) || [])[1];
+        if (suo && origineRisorse !== a) for (const marchio of BRAND_DEL_MODELLO[origineRisorse] || []) {
+          if (tra(marchio).test(html)) { html = html.replace(tra(marchio), (t, v) => `${v}${suo}${v}`); avviso(`logo di partenza: ${marchio} → ${suo}`); }
+        }
+      } catch { /* negozio senza scheda leggibile */ }
       const copiati = origineRisorse === a ? [] : await copiaRisorse(progetto, risorse, origineRisorse, a);   // il clone li elenca
+      // modulo import (dal file Photoshop): le sue grafiche stanno accanto alla pagina, in <cartella>/<pagina>-grafiche/;
+      // nel negozio vanno in assets/img/<negozio>/import/<pagina>/, elencate tra i file copiati per il clone
+      if (/<meta name="storecraft-import"/.test(html)) {
+        const grafiche = new Set([...html.matchAll(/(["'])([\w-]+-grafiche)\/([\w.-]+)\1/g)].map(m => `${m[2]}/${m[3]}`));
+        for (const voce of grafiche) {
+          const [cartellaGrafiche, file] = voce.split('/');
+          const base = cartellaGrafiche.replace(/-grafiche$/, '');
+          const destinazione = `assets/img/${a}/import/${base}/${file}`;
+          try {
+            await scriviFile(progetto, destinazione, await leggi(progetto, `${da}/${voce}`));
+            if (!copiati.includes(`img/import/${base}/${file}`)) copiati.push(`img/import/${base}/${file}`);
+            avviso(`grafica ${file} in assets/img/${a}/import/${base}/…`);
+          } catch { avviso(`grafica ${da}/${voce} non trovata`); continue; }
+          html = html.split(voce).join(`../${destinazione}`);
+        }
+        // il logo del .psd come logo ufficiale del negozio: nel menu BRAND e logo di partenza dei due cartelli
+        const logoPsd = [...grafiche].find(voce => voce.endsWith('/logo-brand.png'));
+        if (logo && logo.modo === 'ufficiale' && logoPsd) {
+          const fileUfficiale = await logoUfficiale(progetto, { negozio: a, nome: logo.nome, immagine: await leggi(progetto, `${da}/${logoPsd}`), prioritario: !!logo.prioritario, avviso });
+          html = html.replace(/stato:\s*\{\s*brand:\s*''/, `stato: { brand: ${virgolette(fileUfficiale)}`);
+        }
+      }
       // la miniatura nelle anteprime del negozio (da quelle del negozio di partenza o da moduli/miniature/)
       scheda.miniature = await Promise.all((modulo.miniature || []).map(async miniatura => {
         const [file, query = ''] = miniatura.split('?');
@@ -378,12 +868,141 @@
       scheda.link = libero + (modulo.link.includes('?') ? `?${modulo.link.split('?')[1]}` : '');
       scheda.origine = `${da}/${nome}`;
     }
+    if (nuovaGalleria) {
+      avviso(`creo la galleria «${nuovaGalleria}» nella dashboard di ${a}…`);
+      ({ testo, id: idSezione } = nuovaSezione(testo, tipo === 'promo' ? 'promo' : tipo, nuovaGalleria));
+    }
     avviso(`aggiungo la scheda alla dashboard di ${a}…`);
-    testo = aggiungiScheda(testo, tipo, scheda);
+    testo = aggiungiScheda(testo, tipo, scheda, idSezione);
     await scriviFile(progetto, dashboard, testo);
   }
 
+  // ----- Finestra della scelta: galleria del negozio e, per un modulo import, il logo del .psd -----
+  const STILE_FINESTRA = `
+    .as-velo { position: fixed; inset: 0; z-index: 9999; background: rgba(8, 7, 6, .72); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .as-finestra { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: #121110; color: #d8d3ca; border: 1px solid #8f6a1f;
+      box-shadow: 0 0 0 4px #121110, 0 0 0 5px rgba(143, 106, 31, .45); padding: 22px 24px; font: 13px/1.5 'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+    .as-finestra h3 { margin: 0 0 4px; font: 500 15px 'Cinzel', serif; letter-spacing: .2em; text-transform: uppercase; color: #d4a373; }
+    .as-finestra .as-nota { margin: 0 0 14px; color: #8f877c; font-size: 12px; }
+    .as-finestra fieldset { border: 0; border-top: 1px solid rgba(212, 163, 115, .25); margin: 0; padding: 12px 0 6px; }
+    .as-finestra legend { padding: 0 8px 0 0; color: #d4a373; text-transform: lowercase; letter-spacing: .08em; }
+    .as-finestra label { display: flex; gap: 8px; align-items: center; margin: 6px 0; cursor: pointer; }
+    .as-finestra select, .as-finestra input[type="text"] { width: 100%; box-sizing: border-box; background: #0a0908; color: #e8e2d6; border: 1px solid #5c4a2c;
+      padding: 7px 9px; font: inherit; }
+    .as-finestra input[type="radio"], .as-finestra input[type="checkbox"] { accent-color: #d4a373; }
+    .as-finestra .as-sotto { margin: 4px 0 8px 24px; }
+    .as-finestra .as-sotto[hidden] { display: none; }
+    .as-finestra .as-logo { display: flex; align-items: center; justify-content: center; height: 70px; margin: 4px 0 10px; background: #2a2622;
+      background-image: linear-gradient(45deg, #1d1b18 25%, transparent 25%, transparent 75%, #1d1b18 75%), linear-gradient(45deg, #1d1b18 25%, transparent 25%, transparent 75%, #1d1b18 75%);
+      background-size: 14px 14px; background-position: 0 0, 7px 7px; }
+    .as-finestra .as-logo img { max-height: 60px; max-width: 90%; }
+    .as-finestra .as-piccola { color: #8f877c; font-size: 11.5px; margin: 2px 0 0; }
+    .as-finestra .as-comandi { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+    .as-finestra button { font: inherit; text-transform: lowercase; letter-spacing: .06em; padding: 8px 16px; cursor: pointer; border: 1px solid #d4a373; }
+    .as-finestra .as-annulla { background: transparent; color: #d4a373; }
+    .as-finestra .as-ok { background: #d4a373; color: #121110; }
+    .as-finestra .as-ok:disabled { opacity: .45; cursor: default; }
+    .as-finestra button:focus-visible, .as-finestra input:focus-visible, .as-finestra select:focus-visible { outline: 2px solid #e5ba73; outline-offset: 2px; }`;
+  async function chiediAssociazione({ progetto, modulo, tipo, cartella: da, negozio, nomeNegozio = negozio, sezione: giaScelta = null }) {
+    const testo = await (await leggi(progetto, `assets/negozi/${negozio}-dashboard.js`)).text();
+    const elenco = gallerie(testo, tipo);
+    // modulo import con il logo del .psd: la sua grafica, per l'anteprima
+    let logoUrl = null;
+    try {
+      const html = await (await leggi(progetto, `${da}/${pagina(modulo.link)}`)).text();
+      const voce = /<meta name="storecraft-import"/.test(html) && (html.match(/["']([\w-]+-grafiche\/logo-brand\.png)["']/) || [])[1];
+      if (voce) logoUrl = URL.createObjectURL(await leggi(progetto, `${da}/${voce}`));
+    } catch { /* pagina non leggibile: niente scelta del logo */ }
+    if (!document.getElementById('associa-stile')) {
+      const stile = document.createElement('style');
+      stile.id = 'associa-stile';
+      stile.textContent = STILE_FINESTRA;
+      document.head.append(stile);
+    }
+    const crea = (tag, attributi = {}, ...figli) => {
+      const nodo = document.createElement(tag);
+      Object.entries(attributi).forEach(([k, v]) => { if (k === 'testo') nodo.textContent = v; else if (v !== false && v != null) nodo.setAttribute(k, v === true ? '' : v); });
+      nodo.append(...figli);
+      return nodo;
+    };
+    const sigla = voce => `${voce.titolo || voce.id}${voce.tipo === 'promo' ? ' · promo stagionali' : ''} · ${voce.schede} ${voce.schede === 1 ? 'modulo' : 'moduli'}`;
+    const scelta = crea('select', { id: 'as-galleria' });
+    elenco.forEach(voce => scelta.append(crea('option', { value: voce.id, testo: sigla(voce) })));
+    scelta.append(crea('option', { value: '', testo: '+ nuova galleria' }));
+    if (giaScelta && elenco.some(v => v.id === giaScelta)) scelta.value = giaScelta;   // la galleria da cui si aggiunge
+    const titoloNuova = crea('input', { type: 'text', maxlength: '40', placeholder: 'titolo della galleria, es. Promo Import', 'aria-label': 'Titolo della nuova galleria' });
+    const rigaNuova = crea('div', { class: 'as-sotto', hidden: elenco.length > 0 }, titoloNuova);
+    const finestra = crea('div', { class: 'as-finestra', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'as-titolo' },
+      crea('h3', { id: 'as-titolo', testo: `aggiungi a ${nomeNegozio}` }),
+      crea('p', { class: 'as-nota', testo: `// ${modulo.titolo}: scegli in quale galleria della dashboard di ${nomeNegozio} va il widget` }),
+      crea('fieldset', {}, crea('legend', { testo: 'galleria' }), scelta, rigaNuova));
+    let nomeLogo, prioritario, modoLogo = () => null;
+    if (logoUrl) {
+      const radio = (valore, testoVoce, scelto) => crea('label', {}, crea('input', { type: 'radio', name: 'as-logo', value: valore, checked: scelto }), crea('span', { testo: testoVoce }));
+      nomeLogo = crea('input', { type: 'text', maxlength: '30', value: String(modulo.titolo || '').replace(/\s+outlet$/i, '').toUpperCase(), 'aria-label': 'Nome del logo nel menu BRAND' });
+      prioritario = crea('input', { type: 'checkbox' });
+      const sotto = crea('div', { class: 'as-sotto', hidden: true },
+        crea('label', {}, crea('span', { testo: 'nome nel menu brand' })), nomeLogo,
+        crea('p', { class: 'as-piccola', testo: `// file ${fileLogo(nomeLogo.value)} in assets/logos/${negozio}/, con le varianti bianco, nero, rosso e oro` }),
+        crea('label', {}, prioritario, crea('span', { testo: 'in evidenza: tra i brand prioritari, in cima al menu' })));
+      const notaFile = sotto.querySelector('.as-piccola');
+      nomeLogo.addEventListener('input', () => { notaFile.textContent = `// file ${fileLogo(nomeLogo.value)} in assets/logos/${negozio}/, con le varianti bianco, nero, rosso e oro`; });
+      const campo = crea('fieldset', {}, crea('legend', { testo: 'logo del .psd' }),
+        crea('div', { class: 'as-logo' }, crea('img', { src: logoUrl, alt: 'Logo del file Photoshop' })),
+        radio('grafica', 'elemento grafico: resta il logo di partenza dei cartelli, il menu brand lo cambia', true),
+        radio('ufficiale', 'logo ufficiale: entra nel menu brand del negozio ed è il logo di partenza', false), sotto);
+      campo.addEventListener('change', evento => { if (evento.target.name === 'as-logo') sotto.hidden = evento.target.value !== 'ufficiale'; });
+      modoLogo = () => campo.querySelector('input[name="as-logo"]:checked').value;
+      finestra.append(campo);
+    }
+    const annulla = crea('button', { type: 'button', class: 'as-annulla', testo: 'annulla' });
+    const ok = crea('button', { type: 'button', class: 'as-ok', testo: 'aggiungi' });
+    finestra.append(crea('div', { class: 'as-comandi' }, annulla, ok));
+    const velo = crea('div', { class: 'as-velo' }, finestra);
+    const controlla = () => {
+      ok.disabled = (scelta.value === '' && !titoloNuova.value.trim()) || (modoLogo() === 'ufficiale' && !nomeLogo.value.trim());
+    };
+    scelta.addEventListener('change', () => { rigaNuova.hidden = scelta.value !== ''; if (!rigaNuova.hidden) titoloNuova.focus(); controlla(); });
+    finestra.addEventListener('input', controlla);
+    finestra.addEventListener('change', controlla);
+    document.body.append(velo);
+    // dentro un riquadro alto quanto il suo contenuto (la pagina operatore) la finestra va nella parte che si vede
+    try {
+      const riquadro = window.frameElement && window.frameElement.getBoundingClientRect();
+      if (riquadro) {
+        const alto = Math.max(0, -riquadro.top), visibile = Math.min(window.innerHeight, window.parent.innerHeight);
+        velo.style.alignItems = 'flex-start';
+        finestra.style.marginTop = `${Math.max(16, alto + (visibile - finestra.offsetHeight) / 2)}px`;
+        finestra.style.maxHeight = `${visibile - 32}px`;
+      }
+    } catch { /* riquadro di un altro sito: al centro */ }
+    controlla();
+    const prima = document.activeElement;
+    (elenco.length ? scelta : titoloNuova).focus();
+    return new Promise(fatto => {
+      const chiudi = valore => {
+        velo.remove();
+        if (logoUrl) URL.revokeObjectURL(logoUrl);
+        prima?.focus?.();
+        fatto(valore);
+      };
+      annulla.addEventListener('click', () => chiudi(null));
+      velo.addEventListener('click', evento => { if (evento.target === velo) chiudi(null); });
+      velo.addEventListener('keydown', evento => { if (evento.key === 'Escape') { evento.stopPropagation(); chiudi(null); } });
+      ok.addEventListener('click', () => {
+        if (ok.disabled) return;
+        const modo = modoLogo();
+        chiudi({
+          sezione: scelta.value || null,
+          nuovaGalleria: scelta.value ? '' : titoloNuova.value.trim(),
+          logo: modo ? { modo, nome: modo === 'ufficiale' ? nomeLogo.value.trim() : '', prioritario: modo === 'ufficiale' && prioritario.checked } : null
+        });
+      });
+    });
+  }
+
   async function cancella(progetto, percorso) {
+    await ricorda(progetto, percorso);
     const parti = percorso.split('/');
     await (await cartella(progetto, parti.slice(0, -1).join('/'))).removeEntry(parti.at(-1));
   }
@@ -402,9 +1021,17 @@
     // (tutte quelle che lo aprono: un clone di etichette ne ha una per layout), e la sua voce nell'ordine dei widget
     if (schedeDellaPagina(testo, nome).length) {
       avviso(`tolgo la scheda dalla dashboard di ${negozio}…`);
+      // le gallerie (sezioni) che avevano il clone: rimaste senza schede, si tolgono anche loro (regola del 19 ottobre 2026)
+      const sue = sezioni(testo).filter(voce => schede(testo, voce).some(sk => pagina((sk.testo.match(/link:\s*'([^']+)'/) || [])[1]) === nome)).map(voce => voce.id).filter(Boolean);
       let scheda;
       while ((scheda = schedeDellaPagina(testo, nome)[0])) testo = togliOggetto(testo, scheda);
       testo = togliDaOrdini(testo, nome);
+      for (const id of sue) {
+        const voce = sezioni(testo).find(v => v.id === id);
+        if (!voce || voce.oggetto < 0 || schede(testo, voce).length) continue;
+        avviso(`la galleria «${voce.titolo || id}» di ${negozio} è rimasta vuota: la tolgo…`);
+        testo = togliOggetto(testo, { inizio: voce.oggetto, fine: chiusura(testo, voce.oggetto) });
+      }
       await scriviFile(progetto, dashboard, testo);
     }
     avviso(`cancello ${negozio}/${nome}…`);
@@ -413,7 +1040,7 @@
     const copiati = ((html.match(/<meta name="storecraft-copiati" content="([^"]*)">/) || [])[1] || '').split(',').filter(Boolean);
     const usate = [testo];
     for await (const [file, voce] of (await cartella(progetto, negozio)).entries()) {
-      if (voce.kind === 'file' && file.endsWith('.html')) usate.push(await (await voce.getFile()).text());
+      if (voce.kind === 'file' && file.endsWith('.html')) usate.push(await (await istantanea(voce)).text());
     }
     for (const copiato of copiati) {
       const [tipo, ...resto] = copiato.split('/');
@@ -452,6 +1079,38 @@
     const modulo = { ...scheda, titolo: nome, link: libero + (link.includes('?') ? `?${link.split('?')[1]}` : ''), miniature: [`../${MODULI}/miniature/${base}.jpg`] };
     modulo.cartella = a;
     return scriviNellaGalleria(progetto, { modulo, tipo, galleria, pagina: `${a}/${libero}`, avviso });
+  }
+
+  // Modulo import (Import layout): la pagina generata dal file Photoshop nella cartella dei moduli in lavorazione, con le
+  // sue grafiche accanto (moduli/<nome>-grafiche/<chiave>.png), la miniatura e il modulo nella galleria scelta o in una
+  // nuova. Come gli altri nuovi moduli non entra in nessuna dashboard.
+  async function salvaImport(progetto, { nome, html, grafiche = {}, font = {}, miniatura = null, scheda = {}, tipo = 'cartelli', galleria = null, titoloGalleria = 'Nuova Galleria', avviso = () => {} }) {
+    await preparaModuli(progetto);
+    // font importati nell'editor: in assets/fonts/, se non ci sono già
+    for (const [file, dati] of Object.entries(font)) {
+      if (await esiste(progetto, `assets/fonts/${file}`)) continue;
+      avviso(`salvo il font assets/fonts/${file}…`);
+      await scriviFile(progetto, `assets/fonts/${file}`, dati);
+    }
+    let base = nomeFile(nome), libero = `${base}.html`;
+    for (let n = 2; await esiste(progetto, `${MODULI}/${libero}`); n++) libero = `${base}-${n}.html`;
+    base = libero.replace(/\.html$/, '');
+    const percorsi = {};
+    for (const [chiave, dati] of Object.entries(grafiche)) {
+      const file = `${base}-grafiche/${nomeFile(chiave)}.png`;
+      avviso(`salvo la grafica ${MODULI}/${file}…`);
+      await scriviFile(progetto, `${MODULI}/${file}`, dati);
+      percorsi[chiave] = file;
+    }
+    avviso(`salvo la pagina ${MODULI}/${libero}…`);
+    await scriviFile(progetto, `${MODULI}/${libero}`, typeof html === 'function' ? html(percorsi) : html);
+    if (miniatura) {
+      avviso(`salvo la miniatura ${MODULI}/miniature/${base}.jpg…`);
+      await scriviFile(progetto, `${MODULI}/miniature/${base}.jpg`, miniatura);
+    }
+    const modulo = { ...scheda, titolo: nome, link: libero, miniature: miniatura ? [`../${MODULI}/miniature/${base}.jpg`] : undefined };
+    modulo.cartella = MODULI;
+    return scriviNellaGalleria(progetto, { modulo, tipo, galleria, pagina: `${MODULI}/${libero}`, avviso, titolo: titoloGalleria });
   }
 
   // il modulo nella galleria: una creata qui o un set di partenza (tra gli aggiunti), o una nuova galleria-<n>.js
@@ -548,20 +1207,29 @@ Pacchetti.registra('${galleria}', {
     const galleriaVuota = rimasti === 0 && /^galleria-\d+$/.test(galleria);
     if (galleriaVuota) {
       avviso(`la galleria ${galleria} è vuota: la cancello…`);
-      await cancella(progetto, file);
+      // prima l'elenco, poi il file: se qualcosa si ferma, l'elenco non resta con una galleria che non c'è più
       const elenco = 'assets/pacchetti/elenco.js';
       await scriviFile(progetto, elenco, togliDaElenco(await (await leggi(progetto, elenco)).text(), galleria));
+      await cancella(progetto, file);
     } else await scriviFile(progetto, file, rimasti === 0 && modulo.aggiunto ? senzaAggiunti(testo) : testo);
     // la pagina e la miniatura provvisoria, se nessun'altra galleria le usa
     if (modulo.cartella !== MODULI) return { galleriaCancellata: galleriaVuota };
     const gallerie = [];
     for await (const [voce, maniglia] of (await cartella(progetto, 'assets/pacchetti')).entries()) {
-      if (maniglia.kind === 'file' && voce.endsWith('.js')) gallerie.push(await (await maniglia.getFile()).text());
+      if (maniglia.kind === 'file' && voce.endsWith('.js')) gallerie.push(await (await istantanea(maniglia)).text());
     }
     const usata = segno => gallerie.some(testoGalleria => testoGalleria.includes(segno));
     if (nome && !usata(`link: '${nome}'`) && !usata(`link: '${nome}?`)) {
       avviso(`cancello ${MODULI}/${nome}…`);
       try { await cancella(progetto, `${MODULI}/${nome}`); } catch { /* già tolta */ }
+      // modulo import: le sue grafiche, nella cartella accanto alla pagina
+      const grafiche = nome.replace(/\.html$/, '-grafiche');
+      try {
+        const dir = await cartella(progetto, `${MODULI}/${grafiche}`);
+        for await (const [file, voce] of dir.entries()) if (voce.kind === 'file') await ricorda(progetto, `${MODULI}/${grafiche}/${file}`);
+        await (await cartella(progetto, MODULI)).removeEntry(grafiche, { recursive: true });
+        avviso(`cancello ${MODULI}/${grafiche}/…`);
+      } catch { /* non c'è */ }
     }
     for (const miniatura of modulo.miniature || []) {
       const file = (miniatura.split('?')[0].match(/^\.\.\/moduli\/(miniature\/.+)$/) || [])[1];
@@ -885,7 +1553,7 @@ Pacchetti.registra('${galleria}', {
     return testi.reduce((totale, testo) => totale + String(testo).split(segno).length - 1, 0) <= 1;
   }
 
-  const Associa = Object.freeze({ scriviMiniatura, spostaScheda, modificaScheda, modifica, derivata, ultimoClone, chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
+  const Associa = Object.freeze({ siglaNegozio, idNegozio, testoSchedaNegozio, testoDashboardNegozio, creaNegozio, modificaNegozio, eliminaNegozio, rendiSorgenteNegozio, rendiSorgenteModulo, eNegozioClone, istantanea, registrando, annulla, chiediAssociazione, gallerie, nuovaSezione, aggiungiAElenco, logoUfficiale, salvaImport, scriviMiniatura, spostaScheda, modificaScheda, modifica, derivata, ultimoClone, chiaveScheda, ordine, impostaOrdine, togliDaOrdini, fantasmaScheda, impostaFantasmaScheda, schedaDuplicata, duplica, rinominaGalleria, rinomina, togliModulo, eliminaModulo, elencoLoghi, logoPredefinito, sostituisciLoghi, fantasma, impostaFantasma, clonaEtichette, layoutEtichette, usato, aggiungiScheda, togliScheda, adattaPagina, clone, scegliProgetto, associa, togli, eliminaClone, creaModulo, nomeFile, pagina });
   if (typeof window !== 'undefined') window.Associa = Associa;
   if (typeof module !== 'undefined') module.exports = Associa;
 })();

@@ -13,7 +13,7 @@ Negozi.registra('luxury', {
   logoMenuLarghezza: 185,
   // logo del riquadro del negozio nella lista NEGOZI del menu di sistema (senza: logoMenu): qui LUXURY OUTLET su due righe
   logoNegozi: 'img/luxury/logo-dashboard.png',
-  // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (logoimport)
+  // oro dei loghi ricolorati per la stampa e della variante gold dei loghi ufficiali (loghi-ufficiali.html)
   oro: '#b48b37',
   // brand prioritari nei menu BRAND: 'stella' (stella gialla ★, i brand stagionali) o 'maiuscolo' (⭐ e maiuscolo)
   brandPrioritari: 'stella',
