@@ -205,29 +205,42 @@
   .cornice-anteprima iframe { display: block; width: 1280px; height: 1180px; border: 0; transform-origin: 0 0; }
 
   /* ritocchi nella pagina generata: elemento selezionato e piccoli spostamenti */
-  /* i ritocchi: un riquadro flottante sopra l'anteprima, che si trascina dalla sua barra dove si vuole */
+  /* i ritocchi: un riquadro flottante, che si trascina dalla sua barra dove si vuole in tutta la finestra (sta nel body,
+     fisso sulla finestra; si vede solo con la [4] aperta) */
   .passo4-corpo { position: relative; }
-  .ritocchi { position: absolute; z-index: 30; top: 0; left: 0; box-sizing: border-box; width: min(620px, calc(100% - 24px)); padding: 0 12px 10px;
+  .ritocchi { position: fixed; z-index: 1100; top: 0; left: 0; box-sizing: border-box; width: max-content; max-width: calc(100vw - 24px); padding: 0 10px 8px;
     border: 1px solid var(--op-oro); border-radius: 4px; background: rgba(13, 12, 11, .96); box-shadow: 0 12px 30px rgba(0, 0, 0, .55); }
-  .ritocchi-barra { margin: 0 -12px 10px; padding: 6px 12px; border-bottom: 1px solid var(--op-bordo); color: var(--op-oro); font-size: 10.5px;
-    letter-spacing: .16em; text-transform: uppercase; cursor: grab; user-select: none; touch-action: none; }
+  .ritocchi-barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 -10px 7px; padding: 5px 10px;
+    border-bottom: 1px solid var(--op-bordo); color: var(--op-oro); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; cursor: grab; user-select: none; }
   .ritocchi-barra:active { cursor: grabbing; }
-  .ritocchi-vuoto { color: var(--op-tenue); font-size: 11.5px; }
-  .ritocchi-comandi { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .ritocchi-comandi[hidden] { display: none; }
-  .ritocchi-nome { min-width: 170px; color: var(--op-oro-chiaro); font-size: 12px; }
-  .ritocchi-nome small { color: #fff; font-size: 11px; }   /* il cartello che si sta muovendo, in bianco */
-  .ritocchi-nome .solo-cartello { color: #fff; font-size: 12px; }
-  .ritocchi-valore { min-width: 140px; color: var(--op-tenue); font-size: 11.5px; }
+  .ritocchi[hidden] { display: none; }
+  .ritocchi-vuoto { margin: 0 0 7px; color: var(--op-tenue); font-size: 11px; }
+  .ritocchi-comandi { display: flex; flex-wrap: nowrap; align-items: center; gap: 5px; white-space: nowrap; }
+  .ritocchi-comandi .tasto-sposta { width: 26px; height: 24px; }
+  .ritocchi-comandi button:disabled { opacity: .35; cursor: default; pointer-events: none; }
+  /* nome dell'elemento selezionato, in bianco, nella riga del titolo a destra */
+  .ritocchi-nome { color: #fff; font-size: 11px; letter-spacing: .04em; text-transform: none; }
+  .ritocchi-nome small { color: var(--op-tenue); font-size: 10.5px; }
+  .ritocchi-valore { padding: 0 3px; color: var(--op-tenue); font-size: 11px; }
+  .ritocchi-valore:empty { display: none; }
   .ritocchi-valore.cambiato { color: var(--op-oro); }
-  .ritocchi-due { display: inline-flex; align-items: center; gap: 6px; color: var(--op-testo); font-size: 11.5px; cursor: pointer; }
-  .ritocchi-due input { accent-color: #d4a373; }
-  .ritocchi-comandi .annulla { border-color: var(--op-bordo); color: var(--op-tenue); }
-  .ritocchi-comandi .annulla:hover { background: var(--op-bordo); color: var(--op-testo); }
-  .ritocchi-cartello { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; color: var(--op-tenue); font-size: 11px; }
+  .ritocchi-sep { width: 1px; height: 20px; margin: 0 5px; background: var(--op-bordo); }
+  .tasto-icona { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; padding: 0; border: 1px solid var(--op-oro);
+    border-radius: 3px; background: transparent; color: var(--op-oro-chiaro); cursor: pointer; transition: background .15s, color .15s; }
+  .tasto-icona[hidden] { display: none; }
+  .tasto-icona svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .tasto-icona circle { fill: currentColor; stroke: none; }
+  .tasto-icona:hover, .tasto-icona:focus-visible { background: var(--op-oro); color: #121110; }
+  .ritocchi-comandi [data-avviso]::after { top: calc(100% + 7px); }
+  /* selettore SUPERIORE / INFERIORE: tutto un cartello */
+  .ritocchi-cartello { display: inline-flex; border: 1px solid var(--op-oro); border-radius: 3px; overflow: hidden; }
+  .ritocchi-cartello button { height: 22px; padding: 0 9px; border: 0; background: transparent; color: var(--op-oro-chiaro); font: 400 10px var(--op-mono);
+    letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .ritocchi-cartello button + button { border-left: 1px solid var(--op-oro); }
+  .ritocchi-cartello button:hover { background: rgba(212, 163, 115, .15); }
   .ritocchi-cartello button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
-  .ritocchi-due[hidden] { display: none; }
-  .ritocchi-nota { margin-top: 8px; color: var(--op-tenue); font-size: 10.5px; }
+  .ritocchi-due { display: inline-flex; align-items: center; gap: 5px; margin-left: 4px; color: var(--op-testo); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+  .ritocchi-due input { margin: 0; accent-color: #d4a373; }
   .link-tenue { border: 0; background: none; color: var(--op-oro); font: inherit; text-decoration: underline; cursor: pointer; }
   .link-tenue[hidden] { display: none; }
 
@@ -440,26 +453,32 @@
             <button type="button" class="btn-folder editor-btn" id="apriEditor" title="Layout Studio: modifica elementi e attributi, aggiungi testi, forme e immagini, guide e righelli">apri l'editor ✎</button>
             <span class="stato-anteprima" id="statoAnteprima"></span>
           </div>
-          <div class="ritocchi" id="ritocchi">
-            <div class="ritocchi-barra" id="ritocchiBarra" title="trascina il riquadro dove vuoi"><span aria-hidden="true">⠿</span> ritocchi</div>
-            <p class="ritocchi-vuoto" id="ritocchiVuoto">// clicca un elemento del cartello nell'anteprima per selezionarlo e spostarlo di poco, o una zona vuota del cartello per spostarlo tutto</p>
-            <div class="ritocchi-comandi" id="ritocchiComandi" hidden>
-              <span class="ritocchi-nome" id="ritocchiNome"></span>
-              <button type="button" class="tasto-sposta" data-verso="su" aria-label="Più su">▲</button>
-              <button type="button" class="tasto-sposta" data-verso="giu" aria-label="Più giù">▼</button>
-              <button type="button" class="tasto-sposta" data-verso="sinistra" aria-label="Più a sinistra">◀</button>
-              <button type="button" class="tasto-sposta" data-verso="destra" aria-label="Più a destra">▶</button>
+          <div class="ritocchi" id="ritocchi" hidden>
+            <div class="ritocchi-barra" id="ritocchiBarra" title="trascina il riquadro dove vuoi"><span><span aria-hidden="true">⠿</span> sposta elementi</span><span class="ritocchi-nome" id="ritocchiNome"></span></div>
+            <p class="ritocchi-vuoto" id="ritocchiVuoto">// clicca un elemento del cartello nell'anteprima per selezionarlo e spostarlo di poco, o una zona vuota del cartello per spostarlo tutto; 0,5 mm a clic, 0,1 mm con Maiuscolo, anche con le frecce della tastiera</p>
+            <div class="ritocchi-comandi" id="ritocchiComandi">
+              <button type="button" class="tasto-sposta" data-verso="su" aria-label="Più su" disabled>▲</button>
+              <button type="button" class="tasto-sposta" data-verso="giu" aria-label="Più giù" disabled>▼</button>
+              <button type="button" class="tasto-sposta" data-verso="sinistra" aria-label="Più a sinistra" disabled>◀</button>
+              <button type="button" class="tasto-sposta" data-verso="destra" aria-label="Più a destra" disabled>▶</button>
               <span class="ritocchi-valore" id="ritocchiValore"></span>
-              <label class="ritocchi-due"><input type="checkbox" id="ritocchiDue" checked> nei due cartelli</label>
-              <button type="button" class="btn-folder annulla" id="azzeraElemento">azzera elemento</button>
-              <button type="button" class="btn-folder annulla" id="deseleziona">deseleziona</button>
+              <span class="ritocchi-sep" aria-hidden="true"></span>
+              <!-- azzera e deseleziona: piccoli e quadrati, con il loro nome nel riquadro che compare al passaggio del mouse -->
+              <button type="button" class="tasto-icona" id="azzeraElemento" disabled aria-label="Azzera elemento" data-avviso="azzera elemento">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6.5a5 5 0 1 1 .9 5" /><path d="M3 2.5v4h4" /></svg>
+              </button>
+              <button type="button" class="tasto-icona" id="deseleziona" disabled aria-label="Deseleziona" data-avviso="deseleziona (anche Esc)">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 5V2.5H5M11 2.5h2.5V5M13.5 11v2.5H11M5 13.5H2.5V11" /><path d="M6 6l4 4M10 6l-4 4" /></svg>
+              </button>
+              <button type="button" class="tasto-icona" id="azzeraTutti" aria-label="Azzera tutti i ritocchi" data-avviso="azzera tutti i ritocchi" hidden>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6.5a5 5 0 1 1 .9 5" /><path d="M3 2.5v4h4" /><circle cx="8.5" cy="8.5" r="1.3" /></svg>
+              </button>
+              <span class="ritocchi-sep" aria-hidden="true"></span>
+              <span class="ritocchi-cartello" role="group" aria-label="Sposta tutto un cartello">
+                <button type="button" data-cartello="1">superiore</button><button type="button" data-cartello="2">inferiore</button>
+              </span>
+              <label class="ritocchi-due" data-avviso="con un elemento: lo sposta nei due cartelli; senza: seleziona i due cartelli interi"><input type="checkbox" id="ritocchiDue"> entrambi</label>
             </div>
-            <p class="ritocchi-cartello">
-              <button type="button" class="btn-folder" data-cartello="0" title="sposta i due cartelli insieme, con il foglio A4 e la linea di taglio fermi">entrambi i cartelli</button>
-              <button type="button" class="btn-folder" data-cartello="1">cartello superiore</button>
-              <button type="button" class="btn-folder" data-cartello="2">cartello inferiore</button>
-            </p>
-            <p class="ritocchi-nota">0,5 mm a clic, 0,1 mm con Maiuscolo; anche con le frecce della tastiera · <button type="button" class="link-tenue" id="azzeraTutti" hidden>azzera tutti i ritocchi</button></p>
           </div>
           <div class="cornice-anteprima" id="corniceAnteprima"><iframe id="anteprima" title="Anteprima della pagina generata"></iframe></div>
         </div>
@@ -1831,6 +1850,8 @@
   // Lo spostamento vale per il cartello dell'elemento o, con «nei due cartelli», per tutti e due; resta in
   // risultato.ritocchi e il generatore lo aggiunge alla posizione, così resta anche rigenerando la pagina.
   // Nell'anteprima si vede subito: lo spostamento dopo l'ultima generazione con la proprietà translate dell'elemento.
+  let elementiDue = true;          // «entrambi» con un elemento selezionato: lo sposta nei due cartelli
+  let ultimoCartello = 1;          // l'ultimo cartello scelto con SUPERIORE / INFERIORE
   let selezionato = null;          // { n, k } cartello (1, 2) e chiave dell'elemento; k '*' = tutto il cartello
   // elementi di un cartello (per spostarlo tutto): le chiavi dei suoi elementi, non quelle del foglio
   const chiaviCartello = n => [...new Set(risultato.elementi.filter(e => e.cartello === (n === 1 ? 'cartello-superiore' : 'cartello-inferiore') && e.chiave).map(e => e.chiave))]
@@ -1848,9 +1869,10 @@
     const doc = $('anteprima').contentDocument;
     if (!doc) return;
     doc.querySelectorAll('.sel-import').forEach(n => n.classList.remove('sel-import'));
-    const comandi = $('ritocchiComandi');
-    comandi.hidden = !selezionato;
+    // i comandi stanno sempre su una riga; senza selezione frecce, azzera e deseleziona sono spenti
+    $('ritocchiComandi').querySelectorAll('.tasto-sposta, #azzeraElemento, #deseleziona').forEach(b => { b.disabled = !selezionato; });
     $('ritocchiVuoto').hidden = !!selezionato;
+    $('ritocchiDue').checked = !selezionato ? false : selezionato.k === '*' ? selezionato.n === 0 : elementiDue;
     $('azzeraTutti').hidden = !Object.values(risultato.ritocchi || {}).some(c => Object.values(c).some(t => t.x || t.y));
     // spostamento dopo l'ultima generazione, nell'anteprima
     [1, 2].forEach(n => Object.keys(MODULI).forEach(k => {
@@ -1861,23 +1883,24 @@
       const dx = (ora.x - prima.x) - (conRiquadro.x - primaRiquadro.x), dy = (ora.y - prima.y) - (conRiquadro.y - primaRiquadro.y);
       nodiDi(doc, n, k).forEach(nodo => { nodo.style.translate = dx || dy ? `${dx}mm ${dy}mm` : ''; });
     }));
-    document.querySelectorAll('.ritocchi-cartello button').forEach(b => b.setAttribute('aria-pressed', String(!!selezionato && selezionato.k === '*' && +b.dataset.cartello === selezionato.n)));
-    collocaRitocchi();
-    if (!selezionato) return;
+    document.querySelectorAll('.ritocchi-cartello button').forEach(b => b.setAttribute('aria-pressed', String(!!selezionato && selezionato.k === '*' && (selezionato.n === 0 || +b.dataset.cartello === selezionato.n))));
+    const nome = $('ritocchiNome');
+    if (!selezionato) { nome.replaceChildren(); $('ritocchiValore').textContent = ''; collocaRitocchi(); return; }
     const { n, k } = selezionato;
     const tutto = k === '*';
-    $('ritocchiDue').closest('label').hidden = tutto;
-    $('azzeraElemento').textContent = tutto ? 'azzera cartello' : 'azzera elemento';
+    const azzera = tutto ? (n === 0 ? 'azzera i due cartelli' : 'azzera cartello') : 'azzera elemento';
+    $('azzeraElemento').dataset.avviso = azzera;
+    $('azzeraElemento').setAttribute('aria-label', azzera);
     if (tutto) (n ? [n] : [1, 2]).forEach(c => doc.getElementById('card' + c)?.classList.add('sel-import'));
     else nodiDi(doc, n, k).forEach(nodo => nodo.classList.add('sel-import'));
-    const nome = $('ritocchiNome');
     const nomeCartello = n === 0 ? 'entrambi i cartelli' : n === 1 ? 'cartello superiore' : 'cartello inferiore';
     // tutto un cartello: solo il cartello che si sta muovendo, in bianco; un elemento: il suo nome e, in bianco, il cartello
-    if (tutto) nome.replaceChildren(el('span', 'solo-cartello', nomeCartello));
-    else nome.replaceChildren(document.createTextNode(NOMI_EL()[k] || k), document.createTextNode(' '), el('small', '', `· ${nomeCartello}`));
+    if (tutto) nome.replaceChildren(document.createTextNode(nomeCartello));
+    else nome.replaceChildren(document.createTextNode(NOMI_EL()[k] || k), document.createTextNode(' '), el('small', '', `· ${elementiDue ? 'entrambi i cartelli' : nomeCartello}`));
     const t = tutto ? ((risultato.ritocchiCartello || {})[n] || { x: 0, y: 0 }) : ritoccoDi(n, k), valore = $('ritocchiValore');
-    valore.textContent = t.x || t.y ? [t.y ? `y ${segnoMm(t.y)}` : null, t.x ? `x ${segnoMm(t.x)}` : null].filter(Boolean).join(' · ') : 'come nel .psd';
+    valore.textContent = t.x || t.y ? [t.y ? `y ${segnoMm(t.y)}` : null, t.x ? `x ${segnoMm(t.x)}` : null].filter(Boolean).join(' · ') : '';
     valore.classList.toggle('cambiato', !!(t.x || t.y));
+    collocaRitocchi();
   }
   function ritocca(dx, dy) {
     if (!selezionato) return;
@@ -1885,7 +1908,8 @@
     risultato.ritocchi = risultato.ritocchi || {};
     const tutto = k === '*';
     // entrambi i cartelli (n 0): i due cartelli insieme, ognuno con tutti i suoi elementi
-    const cartelli = tutto ? (n ? [n] : [1, 2]) : !$('ritocchiDue').checked ? [n] : [1, 2];
+    if (!tutto) elementiDue = $('ritocchiDue').checked;
+    const cartelli = tutto ? (n ? [n] : [1, 2]) : !elementiDue ? [n] : [1, 2];
     // il riquadro del brand porta con sé il logo che contiene; tutto il cartello: tutti i suoi elementi
     const chiavi = c => (tutto ? chiaviCartello(c) : k === 'riquadro-brand' && MODULI['logo-brand'] ? [k, 'logo-brand'] : [k]);
     if (tutto) {
@@ -1922,29 +1946,44 @@
       }
       return;
     }
-    const cartelli = $('ritocchiDue').checked ? [1, 2] : [n];
+    const cartelli = elementiDue ? [1, 2] : [n];
     const chiavi = k === 'riquadro-brand' ? [k, 'logo-brand'] : [k];
     cartelli.forEach(c => chiavi.forEach(ch => { if (risultato.ritocchi && risultato.ritocchi[c]) delete risultato.ritocchi[c][ch]; }));
     mostraRitocchi();
   });
   $('azzeraTutti').addEventListener('click', () => { risultato.ritocchi = {}; risultato.ritocchiCartello = {}; mostraRitocchi(); });
   document.querySelectorAll('.ritocchi-cartello button').forEach(b => b.addEventListener('click', () => {
-    selezionato = { n: +b.dataset.cartello, k: '*' };
+    ultimoCartello = +b.dataset.cartello;
+    selezionato = { n: ultimoCartello, k: '*' };
     mostraRitocchi();
   }));
+  // ENTRAMBI: con un elemento lo sposta nei due cartelli; con un cartello, o senza selezione, seleziona i due cartelli interi
+  $('ritocchiDue').addEventListener('change', () => {
+    const si = $('ritocchiDue').checked;
+    if (selezionato && selezionato.k !== '*') elementiDue = si;
+    else if (si) selezionato = { n: 0, k: '*' };
+    else if (selezionato) selezionato = { n: ultimoCartello, k: '*' };
+    mostraRitocchi();
+  });
   $('deseleziona').addEventListener('click', () => { selezionato = null; mostraRitocchi(); });
   // il riquadro dei ritocchi si trascina dalla sua barra; di partenza sta in alto a destra sopra l'anteprima
+  // (dal 19 ottobre 2026 in tutta la finestra: il riquadro sta nel body, fisso, e si vede solo con la [4] aperta e in vista)
   let posizioneRitocchi = null;
+  document.body.append($('ritocchi'));
   function collocaRitocchi() {
-    const riquadro = $('ritocchi'), corpo = riquadro.parentElement, cornice = $('corniceAnteprima');
-    if (!corpo.offsetWidth) return;
-    const larghezza = riquadro.offsetWidth, altezza = riquadro.offsetHeight;
-    let { x, y } = posizioneRitocchi || { x: cornice.offsetLeft + cornice.offsetWidth - larghezza - 12, y: cornice.offsetTop + 12 };
-    x = Math.max(0, Math.min(x, corpo.offsetWidth - larghezza));
-    y = Math.max(0, Math.min(y, corpo.offsetHeight - altezza));
+    const riquadro = $('ritocchi'), passo = $('passo4'), cornice = $('corniceAnteprima');
+    const r = passo.getBoundingClientRect();
+    riquadro.hidden = passo.hidden || !r.height || r.bottom < 0 || r.top > window.innerHeight;
+    if (riquadro.hidden) return;
+    const larghezza = riquadro.offsetWidth, altezza = riquadro.offsetHeight, c = cornice.getBoundingClientRect();
+    let { x, y } = posizioneRitocchi || { x: c.right - larghezza - 12, y: Math.max(c.top, 0) + 12 };
+    x = Math.max(0, Math.min(x, window.innerWidth - larghezza));
+    y = Math.max(0, Math.min(y, window.innerHeight - altezza));
     riquadro.style.left = `${x}px`;
     riquadro.style.top = `${y}px`;
   }
+  new MutationObserver(collocaRitocchi).observe($('passo4'), { attributes: true, attributeFilter: ['hidden'] });
+  window.addEventListener('scroll', collocaRitocchi, { passive: true });
   $('ritocchiBarra').addEventListener('pointerdown', evento => {
     const riquadro = $('ritocchi');
     const partenza = { x: evento.clientX, y: evento.clientY, l: riquadro.offsetLeft, t: riquadro.offsetTop };
@@ -2161,6 +2200,7 @@
         colore: m.colore, grassettoFinto: !!m.grassetto, corsivoFinto: !!m.corsivo, maiuscolo: !!m.maiuscolo });
       if (m.tipo === 'immagine' && m.src && m.src !== e.srcEditor) { e.livello.canvas = await telaDa(m.src); e.srcEditor = m.src; }
       if (m.richiesta != null) e.richiesta = m.richiesta;
+      if (m.liste) e.liste = m.liste;
       e.modificato = true;
     }
     r.extra = extra;

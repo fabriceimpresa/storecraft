@@ -175,6 +175,9 @@
   .modulo-scelto.vuoto .icona { background: #3a3631; color: var(--testo); }
   .modulo-scelto strong { display: block; font-size: 12.5px; }
   .modulo-scelto small { color: var(--tenue); font-size: 10.5px; }
+  .scelte-liste { display: flex; gap: 6px; }
+  .scelte-liste .tasto { flex: 1; }
+  .scelte-liste .tasto[aria-pressed="true"] { background: var(--oro); border-color: var(--oro); color: #121110; }
   .opzione { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; }
   .interr { position: relative; width: 34px; height: 19px; border: 0; border-radius: 10px; background: #3a3631; flex: none; cursor: pointer; }
   .interr::after { content: ''; position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #cfc8bc; transition: left .15s; }
@@ -442,7 +445,7 @@
       const t = (n && e.chiave && r.ritocchi && r.ritocchi[n] && r.ritocchi[n][e.chiave]) || { x: 0, y: 0 };
       const dy = n === 2 ? doc.meta : 0;
       const base = { id: `p${i}`, origine: i, nome: e.nome, cartello: e.cartello, chiave: e.chiave || null, tipo: e.tipo,
-        x: e.mm.x + t.x, y: e.mm.y + dy + t.y, w: e.mm.w, h: e.mm.h, rotazione: 0, opacita: 1, visibile: !e.rimosso, bloccato: false, gemello: false };   // stile solo di questo cartello (19 ottobre 2026)
+        x: e.mm.x + t.x, y: e.mm.y + dy + t.y, w: e.mm.w, h: e.mm.h, rotazione: 0, opacita: 1, visibile: !e.rimosso, bloccato: false, gemello: false, liste: e.liste || null };   // stile solo di questo cartello (19 ottobre 2026)
       if (e.tipo === 'testo') Object.assign(base, { testo: e.testo, font: e.font, pt: e.pt || 12, spaziatura: e.spaziatura || 0, interlinea: e.interlinea || null,
         allineamento: e.allineamento || 'sinistra', colore: e.colore || '#000000', grassetto: !!e.grassettoFinto, corsivo: !!e.corsivoFinto, maiuscolo: !!e.maiuscolo });
       else if (e.tipo === 'forma') {
@@ -1297,6 +1300,21 @@
   // ---- funzione: il modulo comune dell'elemento ----
   const ICONE_MODULO = { 'prezzo-finale': '€', 'prezzo-originario': '€', percentuale: '%', descrizione: 'T', 'claim-sx': 'C', 'claim-dx': 'C', 'logo-brand': 'B', 'logo-brand-2': 'B', 'riquadro-brand': '▭', sbarra: '/', footer: '▣' };
   const ADATTI = { testo: ['descrizione', 'claim-sx', 'claim-dx', 'prezzo-originario', 'percentuale', 'prezzo-finale'], forma: ['riquadro-brand', 'sbarra'], immagine: ['logo-brand', 'logo-brand-2', 'footer'] };
+  // le liste dei testi pronti (testi-pronti.js) e il menu che ne nasce: titolo e voce di partenza come nelle pagine
+  const LISTE = ['Promozioni', 'Articoli'];
+  const listeDi = e => (e.liste && e.liste.length ? e.liste : LISTE);
+  const menuListe = liste => liste.length > 1 ? { titolo: 'TESTI PRONTI', partenza: '-- Seleziona Testo Pronto --' }
+    : liste[0] === 'Articoli' ? { titolo: 'Articoli', partenza: '-- Seleziona un articolo --' } : { titolo: 'Promozioni', partenza: '-- Seleziona Promozione --' };
+  // i moduli per un testo, nell'ordine che il suo contenuto suggerisce: con il % prima lo Sconto, con una cifra e un
+  // segno di valuta prima Prezzo Originario e Prezzo Finale (il prezzo outlet), altrimenti prima i testi
+  function ordinePerTesto(testo) {
+    const t = String(testo || '');
+    const cifra = /\d/.test(t), valuta = /[€$£¥]|\b(eur|euro|usd|chf|gbp)\b/i.test(t);
+    const primi = /%/.test(t) ? ['percentuale', 'prezzo-originario', 'prezzo-finale']
+      : cifra && valuta ? ['prezzo-originario', 'prezzo-finale', 'percentuale']
+      : ['descrizione', 'claim-sx', 'claim-dx'];
+    return [...primi, ...ADATTI.testo.filter(k => !primi.includes(k))];
+  }
   function funzione() {
     const corpo = $('corpoFunzione');
     corpo.replaceChildren();
@@ -1316,10 +1334,13 @@
     sel.append(nessuno);
     // i moduli adatti al tipo di elemento; quelli già usati da un altro elemento dello stesso cartello sono spenti
     const usati = new Set(doc.elementi.filter(o => o !== e && o.visibile && o.cartello === e.cartello && o.chiave).map(o => o.chiave));
-    (ADATTI[e.tipo] || []).forEach(k => {
+    const adatti = e.tipo === 'testo' ? ordinePerTesto(e.testo) : (ADATTI[e.tipo] || []);
+    // consigliato: il modulo che ha già, se è tra quelli che il testo suggerisce, altrimenti il primo libero
+    const consigliato = e.tipo === 'testo' && (adatti.slice(0, 3).includes(e.chiave) ? e.chiave : adatti.find(k => !usati.has(k) && REGOLE.livelli.elenco[k]));
+    adatti.forEach(k => {
       const mod = REGOLE.livelli.elenco[k];
       if (!mod) return;
-      const o = el('option', '', `${mod.breve}${usati.has(k) ? ' · già nel cartello' : ''}`);
+      const o = el('option', '', `${mod.breve}${usati.has(k) ? ' · già nel cartello' : k === consigliato ? ' · consigliato' : ''}`);
       o.value = k;
       o.disabled = usati.has(k);
       sel.append(o);
@@ -1346,6 +1367,28 @@
       r.append(area);
       corpo.append(r, el('p', 'nota', 'la richiesta resta con l\'elemento: il modulo comune nuovo si costruisce a codice; intanto l\'elemento è grafica fissa'));
     }
+    // TESTI PRONTI: quali liste ha il menu sopra il Testo Libero, Promozioni, Articoli o tutte e due (almeno una);
+    // il menu è uno solo nel pannello, quindi la scelta vale per la descrizione di tutti e due i cartelli
+    if (e.chiave === 'descrizione') {
+      const liste = listeDi(e);
+      const r = el('div', 'campo');
+      r.append(el('span', '', 'testi pronti nel menu'));
+      const scelte = el('div', 'scelte-liste');
+      LISTE.forEach(nome => {
+        const b = el('button', 'tasto', nome);
+        b.setAttribute('aria-pressed', String(liste.includes(nome)));
+        b.onclick = () => {
+          const nuove = liste.includes(nome) ? liste.filter(x => x !== nome) : LISTE.filter(x => x === nome || liste.includes(x));
+          if (!nuove.length) { messaggio('serve almeno una lista: Promozioni o Articoli'); return; }
+          ricorda();
+          doc.elementi.forEach(o => { if (o.chiave === 'descrizione') o.liste = nuove; });
+          tutto();
+        };
+        scelte.append(b);
+      });
+      r.append(scelte);
+      corpo.append(r);
+    }
     if (e.chiave) {
       const op = el('div', 'opzione');
       op.append(document.createTextNode('stile uguale nei due cartelli'));
@@ -1356,11 +1399,12 @@
       corpo.append(op);
       // il campo come lo vedrà il negozio nel pannello
       const ant = el('div', 'anteprima-campo');
-      ant.append(el('span', '', `${m.breve} · nel pannello`));
+      ant.append(el('span', '', `${e.chiave === 'descrizione' ? `${menuListe(listeDi(e)).titolo} · Testo Libero` : m.breve} · nel pannello`));
       const finto = el('div', 'finto');
       if (/prezzo/.test(e.chiave)) finto.append(el('b', '', '€'), el('em', '', (e.testo || '').replace(/[^\d,.]/g, '') || '0,00'));
       else if (e.chiave === 'percentuale') finto.append(el('em', '', (e.testo || '').replace(/\D/g, '') || '50'), el('b', '', '%'));
       else if (/logo/.test(e.chiave)) finto.append(el('em', '', '-- Seleziona Brand --'));
+      else if (e.chiave === 'descrizione') finto.append(el('em', '', menuListe(listeDi(e)).partenza));
       else if (e.tipo === 'testo') finto.append(el('em', '', (e.testo || '').replace(/\n/g, ' ')));
       else finto.append(el('em', '', 'nessun campo: grafica della pagina'));
       ant.append(finto);

@@ -248,11 +248,15 @@ ${ha('claim-dx') ? `          <div class="form-group">
           </div>` : ''}
         </div>`);
     const blocco3 = [];
+    // il menu dei testi pronti: Promozioni, Articoli o tutte e due (scelta di Layout Studio, di partenza tutte e due)
+    const liste = (([1, 2].map(n => per[n].descrizione).find(e => e && e.liste && e.liste.length) || {}).liste) || ['Promozioni', 'Articoli'];
+    const menu = liste.length > 1 ? { titolo: 'TESTI PRONTI', partenza: '-- Seleziona Testo Pronto --' }
+      : liste[0] === 'Articoli' ? { titolo: 'Articoli', partenza: '-- Seleziona un articolo --' } : { titolo: 'Promozioni', partenza: '-- Seleziona Promozione --' };
     if (ha('descrizione')) blocco3.push(`        <div class="form-group" id="descGroup">
-          <label class="section-label" for="presetDesc">TESTI PRONTI</label>
+          <label class="section-label" for="presetDesc">${menu.titolo}</label>
           <div class="preset-select">
-            <select id="presetDesc" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyPreset()">
-              <option value="" class="ready-text-placeholder">-- Seleziona Testo Pronto --</option>
+            <select id="presetDesc" class="ready-text-complete" data-testi-pronti="${liste.join(',')}" onchange="applyPreset()">
+              <option value="" class="ready-text-placeholder">${menu.partenza}</option>
             </select>
           </div>
           <label for="desc">Testo Libero</label>
@@ -490,6 +494,19 @@ ${ha('claim-dx') ? `          <div class="form-group">
     metti('    // IMPORT: registrazione dei campi', campi.join('\n\n'));
     const avvio = [];
     if (conModalita) [1, 2].forEach(n => avvio.push(`    cards[${n}].withDesc = ${inDescrizione(n)};   // modalità del cartello nel .psd`));
+    // i testi di partenza di ogni cartello: i suoi (dal 19 ottobre 2026 si cambiano per cartello in Layout Studio), non
+    // quelli del cartello superiore per tutti e due
+    [1, 2].forEach(n => {
+      const suo = k => per[n][k] && String(per[n][k].testo || '');
+      const valori = {};
+      if (per[n]['claim-sx']) valori.left = suo('claim-sx').replace(/\s*\n\s*/g, ' ');
+      if (per[n]['claim-dx']) valori.right = suo('claim-dx').replace(/\s*\n\s*/g, ' ');
+      if (per[n].descrizione) valori.desc = suo('descrizione').replace(/\s*\n\s*/g, ' ');
+      if (per[n]['prezzo-originario']) valori.old = parti(suo('prezzo-originario')).valore;
+      if (per[n].percentuale) valori.disc = parti(suo('percentuale')).valore.replace(/\D/g, '');
+      if (per[n]['prezzo-finale']) valori.price = parti(suo('prezzo-finale')).valore;
+      if (Object.keys(valori).length) avvio.push(`    Object.assign(cards[${n}], ${J(valori)});   // testi del cartello nel .psd`);
+    });
     metti('    // IMPORT: avvio dopo i dati che servono (es. LoghiPersonalizzati.pronto.then(avvia))\n    window.onload = avvia;',
       `${avvio.join('\n')}${avvio.length ? '\n' : ''}    window.onload = ${ha('logo-brand') ? '() => LoghiPersonalizzati.pronto.then(() => { loadLocalLogos(); avvia(); })' : 'avvia'};`);
     return html;
