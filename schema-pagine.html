@@ -5,7 +5,7 @@
   <script src="assets/js/negozi.js?v=20261019-01"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Controllo codice</title>
+  <title>Pannello di controllo</title>
   <link rel="icon" href="assets/img/favicon-32.png">
   <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
@@ -199,11 +199,10 @@
   <a class="torna" href="operatore.html">← Area operatore</a>
   <header class="testa">
     <img src="assets/img/storecraftlogo.png" alt="STORE // CRAFT">
-    <h1>Controllo codice</h1>
+    <h1>Pannello di controllo</h1>
     <span class="live" title="Lo schema si rifà a ogni apertura leggendo le pagine">.live update</span>
   </header>
 
-  <p class="riga-stato"><span class="stato-etichetta">stato</span><span id="stato">Lettura in corso…</span></p>
   <!-- Sezioni apribili e richiudibili come quelle del menu laterale della dashboard: un clic sul titolo (o sulla
        freccia) apre o chiude; ripartono sempre chiuse -->
   <section class="blocco is-collapsed" data-blocco="pagine">
@@ -213,6 +212,8 @@
       <button class="section-toggle" type="button" aria-expanded="false" aria-controls="pagine-corpo" aria-label="Espandi Pagine e moduli">⌄</button>
     </div>
     <div class="blocco-corpo" id="pagine-corpo">
+      <!-- riga di stato dentro Pagine e moduli (dal 19 ottobre 2026) -->
+      <p class="riga-stato"><span class="stato-etichetta">stato</span><span id="stato">Lettura in corso…</span></p>
       <div id="schema"></div>
     </div>
   </section>
