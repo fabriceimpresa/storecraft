@@ -107,8 +107,21 @@
   .maniglia[data-m="n"], .maniglia[data-m="s"] { cursor: ns-resize; } .maniglia[data-m="e"], .maniglia[data-m="w"] { cursor: ew-resize; }
   .maniglia.ruota { border-radius: 50%; cursor: grab; }
   .stelo { position: absolute; left: 50%; top: -22px; height: 22px; border-left: 1.5px solid var(--selezione); }
-  .misura { position: absolute; left: 50%; bottom: -26px; transform: translateX(-50%); padding: 2px 7px; border-radius: 3px; background: var(--selezione); color: #fff; font: 400 10px var(--mono); white-space: nowrap; }
-  .modulo-tag { position: absolute; right: -2px; top: -20px; padding: 2px 6px; border-radius: 3px; background: var(--oro); color: #121110; font: 600 9px var(--ui); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+  /* le etichette della selezione in una riga sotto la cornice, una accanto all'altra (mai sovrapposte, nemmeno su un
+     elemento stretto; sopra la cornice c'è la maniglia per ruotare): tastino 1 / 2 cartelli, modulo, misure */
+  .etichette-sel { position: absolute; left: -2px; top: calc(100% + 9px); display: flex; align-items: center; gap: 4px; white-space: nowrap; pointer-events: none; }
+  .etichette-sel > * { flex: none; height: 18px; display: inline-flex; align-items: center; border-radius: 3px; }
+  .misura { padding: 0 6px; background: var(--selezione); color: #fff; font: 400 9.5px var(--mono); }
+  .modulo-tag { padding: 0 6px; background: var(--oro); color: #121110; font: 600 9px var(--ui); letter-spacing: .06em; text-transform: uppercase; }
+  /* tastino 1 / 2 cartelli sopra la cornice della selezione: la modifica vale solo per l'elemento scelto o anche per
+     lo stesso elemento dell'altro cartello */
+  .tasto-entrambi { display: inline-flex; align-items: center; gap: 5px; height: 18px; padding: 0 7px 0 5px;
+    border: 1px solid var(--selezione); border-radius: 3px; background: #121110; color: #cfe8d6; font: 600 9px var(--ui); letter-spacing: .06em;
+    text-transform: uppercase; white-space: nowrap; pointer-events: auto; cursor: pointer; }
+  .tasto-entrambi svg { width: 12px; height: 12px; }
+  .tasto-entrambi:hover { background: #1c2a20; }
+  .tasto-entrambi[aria-pressed="true"] { background: var(--selezione); color: #fff; }
+  .cornice-gemello { position: absolute; outline: 1.5px dashed var(--selezione); outline-offset: 1px; opacity: .8; transform-origin: center center; }
   .modulo-tag.no { background: #3a3631; color: var(--testo); }
   .disegno { position: absolute; border: 1px dashed var(--oro); background: rgba(212,163,115,.08); pointer-events: none; }
   .guida { position: absolute; z-index: 6; }
@@ -123,7 +136,7 @@
   .avviso-vuoto strong { color: var(--oro-chiaro); }
 
   /* ---- finestre mobili (proprietà, funzione) ---- */
-  .finestra { position: absolute; z-index: 20; width: 292px; max-height: calc(100% - 40px); display: flex; flex-direction: column; border: 1px solid var(--bordo); border-radius: 10px;
+  .finestra { position: absolute; z-index: 20; width: 300px; max-height: calc(100% - 40px); display: flex; flex-direction: column; border: 1px solid var(--bordo); border-radius: 10px;
     background: rgba(31, 29, 27, .97); box-shadow: 0 14px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(212,163,115,.08); }
   .finestra-testa { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--bordo-tenue); cursor: grab; user-select: none; flex: none; }
   .finestra-testa:active { cursor: grabbing; }
@@ -131,7 +144,30 @@
   .finestra-testa .punto { width: 7px; height: 7px; border-radius: 50%; background: var(--oro); }
   .finestra-testa button { width: 22px; height: 22px; border: 0; border-radius: 4px; background: none; color: var(--tenue); cursor: pointer; }
   .finestra-testa button:hover { background: var(--pannello-2); color: var(--testo); }
-  .finestra.ridotta .schede, .finestra.ridotta .corpo { display: none; }
+  .finestra.ridotta .pannello { display: none; }
+  /* pannelli a linguette come in Photoshop: una finestra può tenere più pannelli (Proprietà, Funzione, Anteprima menu);
+     trascinate una sull'altra le finestre si uniscono, una linguetta trascinata fuori torna una finestra a sé */
+  .pannello { display: flex; flex-direction: column; min-height: 0; }
+  .pannello[hidden] { display: none; }
+  /* le linguette: vere linguette nella barra della finestra, staccate tra loro, con il titolo dentro (accorciato con … se
+     non entra); quella in vista si unisce al pannello sotto */
+  .finestra-testa:has(.linguette-f) { align-items: flex-end; padding: 7px 8px 0 8px; }
+  .finestra-testa:has(.linguette-f) .riduci { align-self: center; margin-bottom: 4px; }
+  .linguette-f { flex: 1; display: flex; flex-wrap: nowrap; gap: 5px; min-width: 0; margin-bottom: -1px; }
+  .finestra-testa .linguetta-f { flex: 0 1 auto; width: auto; min-width: 0; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border: 1px solid var(--bordo-tenue);
+    border-bottom: 0; border-radius: 7px 7px 0 0; background: #191816; color: var(--tenue); font: 600 9.5px var(--ui); letter-spacing: .08em; text-transform: uppercase;
+    cursor: grab; white-space: nowrap; touch-action: none; }
+  .linguetta-f .testo { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  /* la finestra comune si allarga quanto serve perché i titoli delle linguette si leggano interi */
+  .finestra:has(> .pannello ~ .pannello) { width: 340px; }
+  .finestra:has(> .pannello ~ .pannello ~ .pannello) { width: 392px; }
+  .finestra-testa .linguetta-f:hover { background: #1d1c1a; color: var(--testo); }
+  .finestra-testa .linguetta-f[aria-selected="true"] { flex-shrink: 0; background: var(--pannello-2); border-color: var(--bordo); color: var(--oro-chiaro); }
+  .linguetta-f .punto { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .finestra.bersaglio { box-shadow: 0 0 0 2px var(--oro), 0 14px 40px rgba(0,0,0,.55); }
+  .finestra.bersaglio .finestra-testa { background: rgba(212,163,115,.12); }
+  .fantasma-linguetta { position: fixed; z-index: 100; pointer-events: none; padding: 5px 10px; border: 1px solid var(--oro); border-radius: 6px; background: var(--pannello);
+    color: var(--oro-chiaro); font: 600 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
   .schede { display: flex; gap: 2px; padding: 8px 10px 0; flex: none; }
   .schede button { flex: 1; padding: 6px 0; border: 0; border-radius: 6px 6px 0 0; background: none; color: var(--tenue); font-size: 11px; font-weight: 600; letter-spacing: .06em; cursor: pointer; }
   .schede button[aria-selected="true"] { background: var(--pannello-2); color: var(--oro-chiaro); }
@@ -154,6 +190,9 @@
   .allinea svg { width: 14px; height: 14px; }
   .campioni { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
   .campioni button { aspect-ratio: 1; border: 1px solid rgba(255,255,255,.12); border-radius: 4px; cursor: pointer; }
+  .campioni button.aggiungi { border: 1px dashed var(--oro); background: none; color: var(--oro); font: 600 13px/1 var(--ui); display: flex; align-items: center; justify-content: center; padding: 0; }
+  .campioni button.aggiungi:hover { background: var(--oro); color: #121110; }
+  .campioni button.mio { box-shadow: inset 0 -3px 0 rgba(212,163,115,.9); }
   .campioni button.trasparente { background: repeating-conic-gradient(#8a857c 0% 25%, #c9c4bb 0% 50%) 50% / 8px 8px !important; }
   .hex { display: grid; grid-template-columns: 32px 1fr 30px; gap: 6px; }
   .hex input[type="color"] { width: 32px; height: 30px; padding: 0; border: 1px solid var(--bordo); border-radius: 6px; background: none; cursor: pointer; }
@@ -188,6 +227,32 @@
   .anteprima-campo .finto { display: flex; height: 28px; border: 1px solid #3a3631; border-radius: 4px; overflow: hidden; }
   .anteprima-campo .finto b { padding: 0 9px; display: flex; align-items: center; background: #181715; color: var(--oro); border-right: 1px solid #3a3631; font-weight: 400; }
   .anteprima-campo .finto em { padding: 0 9px; display: flex; align-items: center; font-style: normal; flex: 1; }
+
+  /* ---- menu della pagina: anteprima funzionante del pannello di sinistra che la pagina avrà (19 ottobre 2026) ---- */
+  .menu-blocco { display: flex; flex-direction: column; gap: 9px; padding-bottom: 11px; border-bottom: 1px solid var(--bordo-tenue); }
+  .menu-blocco:last-child { padding-bottom: 0; border-bottom: 0; }
+  .menu-blocco > .titolo-blocco { color: var(--tenue); font: 600 9px var(--ui); letter-spacing: .16em; text-transform: uppercase; }
+  .menu-pagina .campo > span { color: var(--oro); }
+  .sel-modo { display: flex; border: 1px solid var(--bordo); border-radius: 6px; overflow: hidden; }
+  .sel-modo button { flex: 1; min-height: 34px; padding: 4px 6px; border: 0; border-right: 1px solid var(--bordo); background: #141311; color: var(--tenue);
+    font: 500 9.5px/1.25 var(--ui); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .sel-modo button:last-child { border-right: 0; }
+  .sel-modo button:hover { color: var(--testo); }
+  .sel-modo button[aria-pressed="true"] { background: var(--oro); color: #121110; }
+  .partenza-vista { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--tenue); font-size: 10.5px; }
+  .partenza-vista b { color: var(--oro-chiaro); font-weight: 600; }
+  .partenza-vista .tasto { height: 24px; font-size: 10px; }
+  .affisso { display: flex; height: 30px; border: 1px solid var(--bordo); border-radius: 6px; background: #141311; overflow: hidden; }
+  .affisso:focus-within { border-color: var(--oro); }
+  .affisso b { display: flex; align-items: center; padding: 0 8px; color: var(--oro); font-weight: 400; background: #181715; }
+  .affisso b:first-child { border-right: 1px solid var(--bordo); }
+  .affisso input { flex: 1; min-width: 0; height: 100% !important; border: 0 !important; border-radius: 0 !important; background: none !important; }
+  .menu-pagina .campo input:disabled, .menu-pagina .campo select:disabled { opacity: .5; }
+  .menu-pagina .finto-stampa { height: 34px; border-radius: 6px; background: #96382b; color: #fff; display: flex; align-items: center; justify-content: center;
+    font: 600 11px var(--ui); letter-spacing: .1em; text-transform: uppercase; opacity: .55; }
+  .menu-pagina .manca { color: var(--tenue); font-size: 10.5px; font-style: italic; }
+  .livello .vista { padding: 1px 6px; border-radius: 10px; background: #2c2a27; color: var(--tenue); font-size: 9.5px; white-space: nowrap; }
+  .livello.fuori-vista { opacity: .5; }
 
   /* ---- livelli a destra ---- */
   .livelli { grid-row: 3; grid-column: 3; display: flex; flex-direction: column; border-left: 1px solid var(--bordo); background: var(--pannello); min-height: 0; }
@@ -317,17 +382,32 @@
       <div class="sopra" id="sopra"></div>
     </div>
 
-    <section class="finestra" id="proprieta" style="right:16px;top:16px">
-      <div class="finestra-testa"><span class="punto"></span><h2>Proprietà</h2><button class="riduci" title="Riduci">–</button></div>
-      <div class="schede" role="tablist">
-        <button data-scheda="testo" aria-selected="true">Testo</button><button data-scheda="aspetto">Aspetto</button><button data-scheda="posizione">Posizione</button>
+    <!-- finestre mobili a linguette: ogni pannello (data-pannello) sta in una finestra; le finestre si uniscono trascinandole
+         una sull'altra e si dividono trascinando fuori una linguetta (le linguette le scrive lo script) -->
+    <section class="finestra" style="right:16px;top:16px">
+      <div class="finestra-testa"><div class="linguette-f" role="tablist"></div><button class="riduci" title="Riduci">–</button></div>
+      <div class="pannello" data-pannello="proprieta" data-titolo="Proprietà" data-colore="#d4a373">
+        <div class="schede" role="tablist">
+          <button data-scheda="testo" aria-selected="true">Testo</button><button data-scheda="aspetto">Aspetto</button><button data-scheda="posizione">Posizione</button>
+        </div>
+        <div class="corpo" id="corpoProprieta"></div>
       </div>
-      <div class="corpo" id="corpoProprieta"></div>
     </section>
 
-    <section class="finestra" id="funzione" style="right:16px;bottom:16px">
-      <div class="finestra-testa"><span class="punto" style="background:#3a9b5a"></span><h2>Funzione</h2><button class="riduci" title="Riduci">–</button></div>
-      <div class="corpo" id="corpoFunzione" style="border-radius:0 0 10px 10px"></div>
+    <section class="finestra" style="right:16px;bottom:16px">
+      <div class="finestra-testa"><div class="linguette-f" role="tablist"></div><button class="riduci" title="Riduci">–</button></div>
+      <div class="pannello" data-pannello="funzione" data-titolo="Funzione" data-colore="#3a9b5a">
+        <div class="corpo" id="corpoFunzione" style="border-radius:0 0 10px 10px"></div>
+      </div>
+    </section>
+
+    <!-- anteprima funzionante del pannello di sinistra che la pagina avrà: si provano le viste di ogni cartello (es. doppia
+         cifra e descrizione) e si cambiano i testi dei campi in tutte e due -->
+    <section class="finestra" style="left:16px;top:16px">
+      <div class="finestra-testa"><div class="linguette-f" role="tablist"></div><button class="riduci" title="Riduci">–</button></div>
+      <div class="pannello menu-pagina" data-pannello="menu" data-titolo="Anteprima menu" data-colore="#96382b">
+        <div class="corpo" id="corpoMenu" style="border-radius:0 0 10px 10px"></div>
+      </div>
     </section>
   </main>
 
@@ -352,6 +432,8 @@
   <input type="file" id="fileImmagine" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
   <input type="file" id="fileFont" accept=".ttf,.otf,.woff,.woff2" hidden>
 
+<script src="assets/js/testi-pronti.js?v=20261019-01"></script>
+
 <script>
 (() => {
   'use strict';
@@ -371,16 +453,19 @@
   const doc = {
     larghezza: 210, altezza: 297, taglio: 148.5, meta: 148.5, elementi: [], guide: [],
     font: [],               // { nome, etichetta, famiglia, origine: 'progetto' | 'google' | 'importato', file, url, dati }
-    nome: 'Layout', file: ''
+    nome: 'Layout', file: '',
+    // viste dei cartelli (doppia cifra / descrizione): quella in prova nell'editor e quella da cui parte la pagina
+    modo: { 1: 'doppia', 2: 'doppia' }, modoIniziale: { 1: 'doppia', 2: 'doppia' }, attivo: 1
   };
   const vista = { z: 1, x: 40, y: 30, strumento: 'seleziona', forma: 'rettangolo', sel: null, unita: 'cm', magnetiche: true, guideVisibili: true,
-    tolleranza: 32, contiguo: true, nuovaGuida: { asse: 'o', pos: 0 } };
+    tolleranza: 32, contiguo: true, nuovaGuida: { asse: 'o', pos: 0 },
+    entrambi: false };   // le modifiche dell'elemento scelto valgono anche per lo stesso elemento dell'altro cartello
   let REGOLE = null, sorgente = null, prossimoId = 1;
   const nuovoId = () => `n${prossimoId++}`;
 
   // ---- storia (annulla / ripeti) ----
   const storia = [], futuro = [];
-  const fotografia = () => JSON.stringify({ e: doc.elementi, g: doc.guide });
+  const fotografia = () => JSON.stringify({ e: doc.elementi, g: doc.guide, m: doc.modo, mi: doc.modoIniziale });
   function ricorda() {
     storia.push(fotografia());
     if (storia.length > 80) storia.shift();
@@ -391,6 +476,9 @@
     const s = JSON.parse(testo);
     doc.elementi = s.e;
     doc.guide = s.g;
+    if (s.m) doc.modo = s.m;
+    if (s.mi) doc.modoIniziale = s.mi;
+    statoPrima = null;   // annullando, i due cartelli tornano com'erano: niente da ricopiare sul gemello
     if (vista.sel && !trova(vista.sel)) vista.sel = null;
     tutto();
   }
@@ -466,6 +554,13 @@
     // elementi aggiunti in una sessione di prima (senza modulo)
     (r.extra || []).forEach(x => doc.elementi.push({ ...x, id: x.id || nuovoId(), visibile: !x.rimosso }));
     doc.elementi.forEach(e => { const m = String(e.id).match(/^n(\d+)$/); if (m) prossimoId = Math.max(prossimoId, +m[1] + 1); });
+    // la vista di ogni cartello: quella scelta prima nell'editor, altrimenti quella del .psd (con prezzo originario o
+    // sconto doppia cifra, con la sola descrizione descrizione)
+    [1, 2].forEach(n => {
+      const ha = k => !!elDi(n, k);
+      doc.modoIniziale[n] = (r.modoIniziale && r.modoIniziale[n]) || (ha('prezzo-originario') || ha('percentuale') ? 'doppia' : ha('descrizione') ? 'descrizione' : 'doppia');
+      doc.modo[n] = doc.modoIniziale[n];
+    });
     $('nomeDoc').textContent = doc.nome;
     $('infoDoc').textContent = `${doc.file || 'documento'} · A4 · 2 cartelli · modulo import`;
     document.title = `${doc.nome} · Layout Studio`;
@@ -498,7 +593,7 @@
     const s = MM * vista.z;
     const d = el('div', 'el');
     d.dataset.id = e.id;
-    if (!e.visibile) d.style.display = 'none';
+    if (!e.visibile || !inVista(e)) d.style.display = 'none';
     if (e.bloccato) d.classList.add('bloccato');
     d.style.opacity = e.opacita == null ? 1 : e.opacita;
     const ruota = e.rotazione ? ` rotate(${e.rotazione}deg)` : '';
@@ -534,7 +629,44 @@
     return d;
   }
 
+  // ---- modifica su tutti e due i cartelli ----
+  // Con il tastino «2 cartelli» acceso (sopra la cornice della selezione, o il tasto E) ogni modifica dell'elemento scelto
+  // vale anche per lo stesso elemento dell'altro cartello (stesso modulo, o per la grafica stesso nome e tipo): testo,
+  // stile, colori, immagine, visibilità; posizione e misure si spostano della stessa quantità, così ognuno resta nel suo
+  // cartello. Funziona per qualunque modifica, dal foglio, dalle finestre o dalla tastiera: il disegno confronta l'elemento
+  // con com'era e ripete sul gemello quello che è cambiato.
+  const FISSI = ['id', 'origine', 'cartello', 'nome', 'idEditor', 'bloccato', 'gemello'];
+  const DELTA = ['x', 'y', 'w', 'h'];
+  let statoPrima = null;
+  function gemelloDi(e) {
+    if (!e || (e.cartello !== 'cartello-superiore' && e.cartello !== 'cartello-inferiore')) return null;
+    const altro = e.cartello === 'cartello-superiore' ? 'cartello-inferiore' : 'cartello-superiore';
+    return doc.elementi.find(o => o !== e && o.cartello === altro && !o.eliminato && o.tipo === e.tipo && (e.chiave ? o.chiave === e.chiave : !o.chiave && o.nome === e.nome)) || null;
+  }
+  function ripetiSulGemello() {
+    const e = selezionato();
+    if (!e) { statoPrima = null; return; }
+    const g = vista.entrambi ? gemelloDi(e) : null;
+    if (g && statoPrima && statoPrima.id === e.id) {
+      Object.keys({ ...statoPrima, ...e }).forEach(k => {
+        if (FISSI.includes(k)) return;
+        const prima = statoPrima[k], ora = e[k];
+        if (JSON.stringify(prima) === JSON.stringify(ora)) return;
+        if (DELTA.includes(k) && typeof prima === 'number' && typeof ora === 'number' && typeof g[k] === 'number') g[k] = Math.round((g[k] + ora - prima) * 1000) / 1000;
+        else g[k] = ora === undefined ? undefined : JSON.parse(JSON.stringify(ora));
+      });
+    }
+    statoPrima = JSON.parse(JSON.stringify(e));
+  }
+  function cambiaEntrambi() {
+    vista.entrambi = !vista.entrambi;
+    statoPrima = null;
+    disegna();
+    messaggio(vista.entrambi ? 'le modifiche valgono per l\'elemento in tutti e due i cartelli' : 'le modifiche valgono solo per l\'elemento scelto', true);
+  }
+
   function disegna() {
+    ripetiSulGemello();
     const s = MM * vista.z;
     Object.assign(foglio.style, { left: `${vista.x}px`, top: `${vista.y}px`, width: `${doc.larghezza * s}px`, height: `${doc.altezza * s}px` });
     foglio.replaceChildren();
@@ -571,7 +703,7 @@
       sopra.append(d);
     });
     const e = selezionato();
-    if (!e || !e.visibile) { infoSelezione(); return; }
+    if (!e || !e.visibile || !inVista(e)) { infoSelezione(); return; }
     const r = rettangoloDi(e);
     const c = el('div', `cornice-sel${vista.strumento === 'trasforma' ? '' : ' leggera'}`);
     Object.assign(c.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px`, transform: r.ruota ? `rotate(${r.ruota}deg)` : 'none' });
@@ -589,9 +721,31 @@
       Object.assign(rot.style, { left: '50%', top: '-22px' });
       c.append(rot);
     }
+    // il gemello nell'altro cartello: il tastino 1 / 2 cartelli e, acceso, la sua cornice tratteggiata
+    const etichette = el('div', 'etichette-sel');
+    const g = gemelloDi(e);
+    if (g) {
+      const b = el('button', 'tasto-entrambi');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(vista.entrambi));
+      b.title = vista.entrambi ? 'le modifiche valgono anche per lo stesso elemento dell\'altro cartello · clic (o E) per modificare solo questo'
+        : 'le modifiche valgono solo per questo cartello · clic (o E) per modificare l\'elemento in tutti e due i cartelli';
+      b.innerHTML = vista.entrambi
+        ? '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1.5" y="1" width="9" height="4.2" fill="currentColor"/><rect x="1.5" y="6.8" width="9" height="4.2" fill="currentColor"/></svg>'
+        : '<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1.5" y="1" width="9" height="4.2" fill="currentColor"/><rect x="1.5" y="6.8" width="9" height="4.2"/></svg>';
+      b.append(document.createTextNode(vista.entrambi ? '2 cartelli' : '1 cartello'));
+      b.addEventListener('pointerdown', ev => ev.stopPropagation());
+      b.addEventListener('click', ev => { ev.stopPropagation(); cambiaEntrambi(); });
+      etichette.append(b);
+      if (vista.entrambi && g.visibile && inVista(g)) {
+        const rg = rettangoloDi(g), cg = el('div', 'cornice-gemello');
+        Object.assign(cg.style, { left: `${rg.x}px`, top: `${rg.y}px`, width: `${rg.w}px`, height: `${rg.h}px`, transform: rg.ruota ? `rotate(${rg.ruota}deg)` : 'none' });
+        sopra.append(cg);
+      }
+    }
     const tag = el('span', `modulo-tag${e.chiave ? '' : ' no'}`, e.chiave ? ((REGOLE.livelli.elenco[e.chiave] || {}).breve || e.chiave) : 'nessuna funzione');
-    c.append(tag);
-    c.append(el('span', 'misura', `${num(e.w)} × ${num(e.h)} mm · x ${num(e.x)} y ${num(e.y)}`));
+    etichette.append(tag, el('span', 'misura', `${num(e.w)} × ${num(e.h)} mm · x ${num(e.x)} y ${num(e.y)}`));
+    c.append(etichette);
     sopra.append(c);
     infoSelezione();
   }
@@ -1046,7 +1200,7 @@
   // ---- proprietà ----
   let schedaAperta = 'testo';
   function apriScheda(s) { schedaAperta = s; proprieta(); }
-  document.querySelectorAll('#proprieta .schede button').forEach(b => b.addEventListener('click', () => apriScheda(b.dataset.scheda)));
+  document.querySelectorAll('[data-pannello="proprieta"] .schede button').forEach(b => b.addEventListener('click', () => apriScheda(b.dataset.scheda)));
   // lo stile vale anche per il gemello nell'altro cartello (stesso modulo), se l'elemento lo chiede
   // i due claim dello stesso cartello hanno sempre lo stesso aspetto: cambiandone uno cambia anche l'altro (non il testo, la
   // posizione e l'allineamento, che restano di ognuno); i due cartelli restano indipendenti (19 ottobre 2026)
@@ -1094,20 +1248,50 @@
     return f;
   }
   const COLORI = ['#E01212', '#000000', '#FFFFFF', '#BCB8B8', '#B48B37', '#D4A373', '#96382B', '#121110', '#CC9E25', '#5F8A55',
-                  '#1F4E79', '#E89106', '#87161C', '#0E4A3B', '#665E54', '#ECD9B3', '#F2B705', '#3FC1D9', '#7A4FA0', 'transparent'];
-  function campoColore(etichetta, valore, quando) {
+                  '#1F4E79', '#E89106', '#87161C', '#0E4A3B', '#665E54', '#ECD9B3', '#F2B705', '#3FC1D9', '#7A4FA0'];
+  // campioni personali: aggiunti con + dal colore del campo HEX, restano in questo browser (clic destro li toglie)
+  const CHIAVE_CAMPIONI = 'storecraft_layout_studio_campioni';
+  const campioniMiei = () => { try { return JSON.parse(localStorage.getItem(CHIAVE_CAMPIONI)) || []; } catch { return []; } };
+  const salvaCampioni = lista => { try { localStorage.setItem(CHIAVE_CAMPIONI, JSON.stringify(lista.slice(0, 30))); } catch { /* senza memoria del browser restano per questa sessione */ } };
+  // «nessun colore» (trasparente) solo dove serve: il riempimento di una forma, per avere solo il contorno (es. una cornice)
+  function campoColore(etichetta, valore, quando, { trasparente = false } = {}) {
     const box = el('div', 'campo');
     box.append(el('span', '', etichetta));
     const gruppo = el('div', 'gruppo-colore');
     const campioni = el('div', 'campioni');
     // i colori del documento per primi
     const delDoc = [...new Set(doc.elementi.flatMap(e => [e.colore, e.riempimento, e.traccia]).filter(c => c && c !== 'transparent').map(c => c.toUpperCase()))];
-    [...new Set([...delDoc, ...COLORI])].slice(0, 20).forEach(c => {
+    const miei = campioniMiei();
+    const lista = [...new Set([...delDoc.slice(0, 10), ...miei, ...COLORI])];
+    lista.forEach(c => {
       const b = el('button');
-      if (c === 'transparent') { b.className = 'trasparente'; b.title = 'nessun colore'; } else { b.style.background = c; b.title = c; }
+      b.style.background = c;
+      b.title = miei.includes(c) ? `${c} · campione tuo (clic destro per toglierlo)` : c;
+      if (miei.includes(c)) {
+        b.classList.add('mio');
+        b.oncontextmenu = ev => { ev.preventDefault(); salvaCampioni(campioniMiei().filter(x => x !== c)); proprieta(); messaggio(`campione ${c} tolto`); };
+      }
       b.onclick = () => { ricorda(); quando(c); aggiorna(c); };
       campioni.append(b);
     });
+    if (trasparente) {
+      const b = el('button', 'trasparente');
+      b.title = 'nessun colore: solo il contorno';
+      b.onclick = () => { ricorda(); quando('transparent'); aggiorna('transparent'); };
+      campioni.append(b);
+    }
+    // + aggiunge ai campioni il colore scritto nel campo HEX (o scelto con la tavolozza o il contagocce)
+    const piu = el('button', 'aggiungi', '+');
+    piu.title = 'aggiungi ai campioni il colore del campo HEX';
+    piu.onclick = () => {
+      const c = testo.value.trim().toUpperCase();
+      if (!/^#[0-9A-F]{6}$/.test(c)) { messaggio('scrivi o scegli prima un colore (#RRGGBB)'); return; }
+      if (lista.includes(c) && campioniMiei().includes(c)) { messaggio(`${c} è già tra i tuoi campioni`); return; }
+      salvaCampioni([c, ...campioniMiei().filter(x => x !== c)]);
+      proprieta();
+      messaggio(`${c} aggiunto ai campioni`, true);
+    };
+    campioni.append(piu);
     const riga = el('div', 'hex');
     const tavola = el('input');
     tavola.type = 'color';
@@ -1175,7 +1359,7 @@
     const corpo = $('corpoProprieta');
     corpo.replaceChildren();
     const e = selezionato();
-    const schede = document.querySelectorAll('#proprieta .schede button');
+    const schede = document.querySelectorAll('[data-pannello="proprieta"] .schede button');
     if (!e) {
       schede.forEach(b => { b.disabled = true; b.setAttribute('aria-selected', 'false'); });
       corpo.append(el('p', 'vuoto-prop', 'seleziona un elemento sul foglio o nei livelli per vederne e cambiarne le proprietà'));
@@ -1190,7 +1374,7 @@
       t.append(el('span', '', 'testo'));
       const area = el('textarea');
       area.value = e.testo || '';
-      area.oninput = () => { ricordaUnaVolta(); e.testo = area.value; disegna(); };
+      area.oninput = () => { ricordaUnaVolta(); e.testo = area.value; disegna(); menuPagina(); };
       t.append(area);
       corpo.append(t, sceltaFont(e));
       const riga = el('div', 'riga tre');
@@ -1232,7 +1416,7 @@
         if (e.forma === 'linea') corpo.append(campoColore('colore della linea', e.traccia || e.riempimento, c => { cambiaStile(e, 'traccia', c); cambiaStile(e, 'riempimento', c); }),
           campoNumero('spessore', e.h, 'mm', v => { if (v) { e.y += (e.h - v) / 2; e.h = v; disegna(); } }, .1));
         else {
-          corpo.append(campoColore('riempimento', e.riempimento, c => cambiaStile(e, 'riempimento', c)), campoColore('traccia', e.traccia, c => cambiaStile(e, 'traccia', c)));
+          corpo.append(campoColore('riempimento', e.riempimento, c => cambiaStile(e, 'riempimento', c), { trasparente: true }), campoColore('traccia', e.traccia, c => cambiaStile(e, 'traccia', c)));
           const riga = el('div', 'riga due');
           riga.append(campoNumero('spessore traccia', e.spessoreTraccia || 0, 'mm', v => cambiaStile(e, 'spessoreTraccia', v || 0), .1));
           if (e.forma === 'rettangolo' || e.forma === 'quadrato') riga.append(campoNumero('angoli arrotondati', e.raggio || 0, 'mm', v => cambiaStile(e, 'raggio', v || 0), .5));
@@ -1426,7 +1610,7 @@
       t.onclick = () => { chiusi.has(c) ? chiusi.delete(c) : chiusi.add(c); livelli(); };
       g.append(t);
       if (!chiusi.has(c)) suoi.forEach(e => {
-        const r = el('div', `livello${e.id === vista.sel ? ' sel' : ''}${e.visibile ? '' : ' spento'}`);
+        const r = el('div', `livello${e.id === vista.sel ? ' sel' : ''}${e.visibile ? '' : ' spento'}${inVista(e) ? '' : ' fuori-vista'}`);
         const occhio = el('button', 'occhio', e.visibile ? '◉' : '○');
         occhio.title = e.visibile ? 'nascondi' : 'mostra';
         occhio.onclick = ev => { ev.stopPropagation(); ricorda(); e.visibile = !e.visibile; tutto(); };
@@ -1435,8 +1619,12 @@
         lucchetto.onclick = ev => { ev.stopPropagation(); e.bloccato = !e.bloccato; tutto(); };
         const tipo = el('span', 'tipo', e.tipo === 'testo' ? 'T' : e.tipo === 'immagine' ? '▣' : e.forma === 'linea' ? '/' : e.forma === 'cerchio' ? '○' : e.forma === 'triangolo' ? '△' : '▭');
         const m = e.chiave && REGOLE.livelli.elenco[e.chiave];
-        r.append(occhio, lucchetto, tipo, el('span', 'nome', e.nome), el('span', `mod${m ? '' : ' no'}`, m ? m.breve.split(' · ')[0] : (e.richiesta != null ? 'modulo nuovo' : 'fissa')));
-        r.onclick = () => { vista.sel = e.id; tutto(); };
+        r.append(occhio, lucchetto, tipo, el('span', 'nome', e.nome), inVista(e)
+          ? el('span', `mod${m ? '' : ' no'}`, m ? m.breve.split(' · ')[0] : (e.richiesta != null ? 'modulo nuovo' : 'fissa'))
+          : el('span', 'vista', `vista ${DOPPIA.includes(e.chiave) ? 'doppia cifra' : 'descrizione'}`));
+        if (!inVista(e)) r.title = "nell'altra vista del cartello: un clic la mostra";
+        // un elemento dell'altra vista: il clic porta il cartello in quella vista
+        r.onclick = () => { if (!inVista(e)) doc.modo[nDi(e)] = DOPPIA.includes(e.chiave) ? 'doppia' : 'descrizione'; vista.sel = e.id; tutto(); };
         g.append(r);
       });
       box.append(g);
@@ -1452,7 +1640,194 @@
     ].map(([t, v]) => { const d = el('div'); d.append(el('b', '', t), document.createTextNode(v)); return d; }));
   }
 
-  function tutto() { disegna(); proprieta(); funzione(); livelli(); }
+  function tutto() { disegna(); proprieta(); funzione(); livelli(); menuPagina(); }
+
+  // ---- viste dei cartelli e menu della pagina ----
+  // Un cartello con doppia cifra e descrizione ha due viste, come nella pagina generata: DOPPIA CIFRA (prezzo originario,
+  // barra e sconto) e DESCRIZIONE ARTICOLO (testi pronti e testo libero). Nell'editor si prova una vista alla volta per
+  // cartello: gli elementi dell'altra vista si nascondono (senza toglierli). Passando a una vista che il cartello nel .psd
+  // non ha, i suoi elementi nascono copiati dall'altro cartello, spostati di mezzo foglio, così si sistemano anche lì.
+  // Funzione generica: vale per ogni .psd importato, il menu nasce dai moduli che il layout usa.
+  const CART = { 1: 'cartello-superiore', 2: 'cartello-inferiore' };
+  const DOPPIA = ['prezzo-originario', 'percentuale', 'sbarra'];
+  const NOMI_MODO = { doppia: 'doppia cifra', descrizione: 'descrizione articolo' };
+  const nDi = e => e.cartello === 'cartello-superiore' ? 1 : e.cartello === 'cartello-inferiore' ? 2 : 0;
+  function elDi(n, k) { return doc.elementi.find(e => e.cartello === CART[n] && e.chiave === k && !e.eliminato); }
+  const usaChiave = k => doc.elementi.some(e => e.chiave === k && !e.eliminato && e.visibile);
+  const haModalita = () => (usaChiave('prezzo-originario') || usaChiave('percentuale')) && usaChiave('descrizione');
+  function inVista(e) {
+    const n = nDi(e);
+    if (!n || !e.chiave || !haModalita()) return true;
+    if (doc.modo[n] === 'descrizione') return !DOPPIA.includes(e.chiave);
+    return e.chiave !== 'descrizione';
+  }
+  // gli elementi della vista che il cartello non ha: copiati dal gemello dell'altro cartello
+  function assicuraVista(n) {
+    const chiavi = doc.modo[n] === 'descrizione' ? ['descrizione'] : DOPPIA;
+    const altro = n === 1 ? 2 : 1, sposta = n === 2 ? doc.meta : -doc.meta;
+    let nati = 0;
+    chiavi.forEach(k => {
+      if (elDi(n, k)) return;
+      const g = elDi(altro, k);
+      if (!g) return;
+      doc.elementi.push({ ...JSON.parse(JSON.stringify(g)), id: nuovoId(), origine: null, cartello: CART[n], nome: k, y: g.y + sposta, visibile: true });
+      nati++;
+    });
+    return nati;
+  }
+  function cambiaVista(n, modo) {
+    if (doc.modo[n] === modo) return;
+    ricorda();
+    doc.modo[n] = modo;
+    doc.attivo = n;
+    const nati = assicuraVista(n);
+    const e = selezionato();
+    if (e && !inVista(e)) vista.sel = null;
+    tutto();
+    messaggio(`${NOMI_CARTELLO[CART[n]]}: vista ${NOMI_MODO[modo]}${nati ? ` · ${nati === 1 ? 'un elemento copiato' : `${nati} elementi copiati`} dall'altro cartello, da sistemare` : ''}`, true);
+  }
+  // testo di un prezzo o di uno sconto: parte prima del numero, numero, parte dopo («€ 18,00», «-70%»)
+  function parti(testo) {
+    const m = String(testo || '').trim().match(/^(\D*?)([\d.,]+)(\D*)$/);
+    return m ? { prima: m[1], valore: m[2], dopo: m[3] } : { prima: '', valore: String(testo || '').trim(), dopo: '' };
+  }
+  // un campo scelto nel menu seleziona il suo elemento sul foglio (senza rifare il menu, che ha il cursore)
+  function selezionaDaMenu(e) {
+    if (!e || vista.sel === e.id) return;
+    vista.sel = e.id;
+    disegna(); proprieta(); funzione(); livelli();
+  }
+  function menuPagina() {
+    const corpo = $('corpoMenu');
+    if (!corpo) return;
+    const attivo = document.activeElement;
+    if (corpo.contains(attivo) && /input|textarea/i.test(attivo.tagName)) return;   // si sta scrivendo nel menu
+    corpo.replaceChildren();
+    if (!doc.elementi.length) { corpo.append(el('p', 'vuoto-prop', 'il menu compare con il documento aperto')); return; }
+    const sel = selezionato();
+    if (sel && nDi(sel)) doc.attivo = nDi(sel);
+    const n = doc.attivo, modalita = haModalita(), modo = doc.modo[n];
+    const blocco = titolo => { const b = el('div', 'menu-blocco'); b.append(el('span', 'titolo-blocco', titolo)); corpo.append(b); return b; };
+    const selettore = (voci, attiva, quando, etichetta) => {
+      const box = el('div', 'sel-modo');
+      box.setAttribute('role', 'group');
+      box.setAttribute('aria-label', etichetta);
+      voci.forEach(([valore, testo]) => {
+        const b = el('button', '', testo);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(valore === attiva));
+        b.onclick = () => quando(valore);
+        box.append(b);
+      });
+      return box;
+    };
+    // un campo di testo legato all'elemento del cartello in modifica
+    const campoTesto = (etichetta, k, { leggi = t => t, scrivi = v => v, affisso, dopo, max } = {}) => {
+      const e = elDi(n, k), l = el('label', 'campo');
+      l.append(el('span', '', etichetta));
+      const i = el('input');
+      i.type = 'text';
+      if (max) i.maxLength = max;
+      if (!e) { i.disabled = true; i.placeholder = "non c'è in questo cartello"; }
+      else {
+        i.value = leggi(e.testo || '', e);
+        i.onfocus = () => selezionaDaMenu(e);
+        i.oninput = () => { ricordaUnaVolta(); e.testo = scrivi(i.value, e); disegna(); if (vista.sel === e.id) proprieta(); };
+      }
+      if (affisso || dopo) {
+        const box = el('div', 'affisso');
+        if (affisso) box.append(el('b', '', affisso));
+        box.append(i);
+        if (dopo) box.append(el('b', '', dopo));
+        l.append(box);
+      } else l.append(i);
+      return l;
+    };
+    // claim: la prima parola sopra, il resto sotto, come nella pagina (se nel .psd è su due righe)
+    const claim = { leggi: t => t.replace(/\s*\n\s*/g, ' '), scrivi: (v, e) => /\n/.test(e.testo || '') ? v.replace(' ', '\n') : v };
+    const prezzo = { leggi: t => parti(t).valore, scrivi: (v, e) => { const p = parti(e.testo); const c = v.replace(/[^\d,.]/g, ''); return c ? p.prima + c + p.dopo : ''; } };
+
+    // blocco 1: cartello superiore / inferiore e la vista del cartello
+    const b1 = blocco('blocco 1 · selettori');
+    b1.append(selettore([[1, 'cartello superiore'], [2, 'cartello inferiore']], n, v => { doc.attivo = v; vista.sel = null; tutto(); }, 'Cartello in modifica'));
+    if (modalita) {
+      b1.append(selettore([['doppia', 'doppia cifra'], ['descrizione', 'descrizione articolo']], modo, v => cambiaVista(n, v), 'Vista del cartello'));
+      const p = el('div', 'partenza-vista');
+      const t = el('span');
+      t.append(document.createTextNode('la pagina parte in '), el('b', '', NOMI_MODO[doc.modoIniziale[n]]));
+      p.append(t);
+      if (doc.modoIniziale[n] !== modo) {
+        const b = el('button', 'tasto tasto-oro', 'parti da questa');
+        b.title = `La pagina generata apre il ${NOMI_CARTELLO[CART[n]]} in ${NOMI_MODO[modo]}`;
+        b.onclick = () => { ricorda(); doc.modoIniziale[n] = modo; menuPagina(); };
+        p.append(b);
+      }
+      b1.append(p);
+    }
+    // blocco 2: brand e claim
+    const haBrand = usaChiave('logo-brand'), haClaim = usaChiave('claim-sx') || usaChiave('claim-dx');
+    if (haBrand || haClaim) {
+      const b2 = blocco('blocco 2 · brand e claim');
+      if (haBrand) {
+        const l = el('label', 'campo');
+        l.append(el('span', '', 'BRAND'));
+        const s2 = el('select');
+        s2.append(el('option', '', 'logo del .psd · si sceglie nella pagina'));
+        const logo = elDi(n, 'logo-brand');
+        if (logo) s2.onfocus = () => selezionaDaMenu(logo);
+        l.append(s2);
+        b2.append(l);
+      }
+      if (haClaim) {
+        const riga = el('div', 'riga due');
+        if (usaChiave('claim-sx')) riga.append(campoTesto('Claim Sinistro', 'claim-sx', claim));
+        if (usaChiave('claim-dx')) riga.append(campoTesto('Claim Destro', 'claim-dx', claim));
+        b2.append(riga);
+      }
+    }
+    // blocco 3: i campi della vista del cartello
+    const vedi = k => usaChiave(k) && (!modalita || (k === 'descrizione' ? modo === 'descrizione' : !DOPPIA.includes(k) || modo === 'doppia'));
+    if (['descrizione', 'prezzo-originario', 'percentuale', 'prezzo-finale'].some(vedi)) {
+      const b3 = blocco('blocco 3 · campi del cartello');
+      if (vedi('descrizione')) {
+        const e = elDi(n, 'descrizione');
+        const liste = (e && e.liste && e.liste.length) ? e.liste : ['Promozioni', 'Articoli'];
+        const menu = liste.length > 1 ? { titolo: 'TESTI PRONTI', partenza: '-- Seleziona Testo Pronto --' }
+          : liste[0] === 'Articoli' ? { titolo: 'Articoli', partenza: '-- Seleziona un articolo --' } : { titolo: 'Promozioni', partenza: '-- Seleziona Promozione --' };
+        const l = el('label', 'campo');
+        l.append(el('span', '', menu.titolo));
+        const s3 = el('select');
+        const o = el('option', '', menu.partenza);
+        o.value = '';
+        s3.append(o);
+        if (window.TestiPronti) TestiPronti.populate(s3, liste);
+        s3.value = '';
+        if (!e) s3.disabled = true;
+        else {
+          s3.onfocus = () => selezionaDaMenu(e);
+          s3.onchange = () => { if (!s3.value) return; ricorda(); e.testo = s3.value; disegna(); menuPagina(); };
+        }
+        l.append(s3);
+        b3.append(l, campoTesto('Testo Libero', 'descrizione', { leggi: t => t.replace(/\s*\n\s*/g, ' '), max: 37 }));
+      }
+      const prezzi = ['prezzo-originario', 'percentuale', 'prezzo-finale'].filter(vedi);
+      const riga = el('div', `riga ${prezzi.length === 3 ? 'tre' : prezzi.length === 2 ? 'due' : ''}`);
+      if (vedi('prezzo-originario')) riga.append(campoTesto('Prezzo Orig.', 'prezzo-originario', { ...prezzo, affisso: '€' }));
+      if (vedi('percentuale')) riga.append(campoTesto('Sconto', 'percentuale', { leggi: t => parti(t).valore.replace(/\D/g, ''), scrivi: (v, e) => { const p = parti(e.testo); const c = v.replace(/\D/g, '').slice(0, 2); return c ? p.prima + c + p.dopo : ''; }, dopo: '%' }));
+      if (vedi('prezzo-finale')) riga.append(campoTesto('Prezzo Finale', 'prezzo-finale', { ...prezzo, affisso: '€' }));
+      if (riga.children.length) b3.append(riga);
+    }
+    // blocco 4: stampa, com'è nella pagina (si prova nella pagina generata)
+    const b4 = blocco('blocco 4 · stampa');
+    const c = el('label', 'campo');
+    c.append(el('span', '', 'Impostazioni di Stampa'));
+    const s4 = el('select');
+    s4.disabled = true;
+    s4.append(el('option', '', '2 CARTELLI (Foglio A4)'));
+    c.append(s4);
+    b4.append(c, el('div', 'finto-stampa', 'stampa cartelli'), el('p', 'manca', 'copia su altro cartello e stampa si provano nella pagina generata'));
+  }
+
 
   // ---- i due cartelli uguali: il cartello di arrivo prende posizioni (spostate di mezzo foglio), misure, stile, testi e
   // grafiche di quello di partenza. Gli elementi con lo stesso modulo si aggiornano; quelli che il cartello di arrivo ha
@@ -1487,24 +1862,131 @@
   $('copiaGiu').addEventListener('click', () => rendiUguali('cartello-superiore', 'cartello-inferiore'));
   $('copiaSu').addEventListener('click', () => rendiUguali('cartello-inferiore', 'cartello-superiore'));
 
-  // ---- finestre mobili ----
-  document.querySelectorAll('.finestra').forEach(f => {
+  // ---- finestre mobili a linguette (come in Photoshop) ----
+  // Ogni finestra tiene uno o più pannelli (Proprietà, Funzione, Anteprima menu), uno alla volta, con una linguetta per
+  // pannello nella barra del titolo. Un clic sulla linguetta mostra il suo pannello. Unire: si trascina una finestra per la
+  // barra del titolo sopra la barra di un'altra (tutti i suoi pannelli ci entrano), o una sola linguetta sopra un'altra
+  // finestra. Dividere: si trascina una linguetta fuori dalla finestra comune, e diventa una finestra a sé dove la si lascia.
+  const lavoro = $('lavoro');
+  function linguette(f) {
+    const box = f.querySelector('.linguette-f');
+    const pannelli = [...f.querySelectorAll(':scope > .pannello')];
+    if (!pannelli.length) { f.remove(); return; }
+    if (!pannelli.some(p => !p.hidden)) pannelli[0].hidden = false;
+    box.replaceChildren(...pannelli.map(p => {
+      const b = el('button', 'linguetta-f');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(!p.hidden));
+      b.title = pannelli.length > 1 ? "clic per vederlo · trascinala fuori per staccarla, su un'altra finestra per spostarla"
+        : "trascina la finestra sulla barra di un'altra per unirle";
+      const punto = el('span', 'punto');
+      punto.style.background = p.dataset.colore;
+      b.append(punto, el('span', 'testo', p.dataset.titolo));
+      b.setAttribute('aria-label', p.dataset.titolo);
+      b.addEventListener('pointerdown', ev => trascinaLinguetta(ev, p, b));
+      return b;
+    }));
+  }
+  function mostraPannello(p) {
+    const f = p.closest('.finestra');
+    f.querySelectorAll(':scope > .pannello').forEach(x => { x.hidden = x !== p; });
+    f.classList.remove('ridotta');
+    linguette(f);
+  }
+  const porta = f => lavoro.append(f);   // la finestra toccata va sopra le altre
+  // la finestra (diversa da quella trascinata) sotto il puntatore, e se il puntatore è sulla sua barra del titolo
+  function sottoIl(e, escludi) {
+    const sotto = document.elementsFromPoint(e.clientX, e.clientY).find(n => n.closest('.finestra') && !escludi.contains(n));
+    const f = sotto && sotto.closest('.finestra');
+    return f ? { f, barra: !!sotto.closest('.finestra-testa') } : null;
+  }
+  const evidenzia = (vecchio, nuovo) => { if (vecchio && vecchio !== nuovo) vecchio.classList.remove('bersaglio'); if (nuovo) nuovo.classList.add('bersaglio'); return nuovo; };
+  // unisce tutti i pannelli di una finestra in un'altra
+  function unisci(da, a) {
+    const visibile = da.querySelector(':scope > .pannello:not([hidden])');
+    da.querySelectorAll(':scope > .pannello').forEach(p => a.append(p));
+    da.remove();
+    if (visibile) mostraPannello(visibile); else linguette(a);
+    porta(a);
+  }
+  function nuovaFinestra(p, left, top) {
+    const f = el('section', 'finestra');
+    const testa = el('div', 'finestra-testa');
+    const box = el('div', 'linguette-f');
+    box.setAttribute('role', 'tablist');
+    const riduci = el('button', 'riduci', '–');
+    riduci.title = 'Riduci';
+    testa.append(box, riduci);
+    f.append(testa, p);
+    Object.assign(f.style, { left: `${left}px`, top: `${top}px` });
+    lavoro.append(f);
+    rendiMobile(f);
+    mostraPannello(p);
+    return f;
+  }
+  function trascinaLinguetta(ev, p, b) {
+    if (ev.button !== 0) return;
+    const da = p.closest('.finestra');
+    // con un solo pannello la linguetta sposta la finestra intera (e la unisce, lasciata sulla barra di un'altra)
+    if (da.querySelectorAll(':scope > .pannello').length === 1) { trascinaFinestra(ev, da); return; }
+    ev.preventDefault();
+    const x0 = ev.clientX, y0 = ev.clientY;
+    let fantasma = null, bersaglio = null;
+    b.setPointerCapture(ev.pointerId);
+    const muovi = e => {
+      if (!fantasma && Math.hypot(e.clientX - x0, e.clientY - y0) < 6) return;
+      if (!fantasma) { fantasma = el('div', 'fantasma-linguetta', p.dataset.titolo); document.body.append(fantasma); }
+      Object.assign(fantasma.style, { left: `${e.clientX + 10}px`, top: `${e.clientY + 8}px` });
+      const s = sottoIl(e, fantasma);
+      bersaglio = evidenzia(bersaglio, s && s.f !== da ? s.f : null);
+    };
+    const fine = e => {
+      b.removeEventListener('pointermove', muovi);
+      if (bersaglio) bersaglio.classList.remove('bersaglio');
+      if (!fantasma) { mostraPannello(p); return; }   // un clic: mostra il pannello
+      fantasma.remove();
+      if (bersaglio) { bersaglio.append(p); mostraPannello(p); linguette(da); porta(bersaglio); return; }
+      // lasciata dentro la sua finestra: resta lì
+      const s = sottoIl(e, fantasma);
+      if (s && s.f === da) return;
+      // fuori: una finestra nuova dove si lascia la linguetta
+      const z = lavoro.getBoundingClientRect();
+      nuovaFinestra(p, Math.min(Math.max(0, e.clientX - z.left - 40), z.width - 120), Math.min(Math.max(0, e.clientY - z.top - 14), z.height - 60));
+      linguette(da);
+    };
+    b.addEventListener('pointermove', muovi);
+    b.addEventListener('pointerup', fine, { once: true });
+    b.addEventListener('pointercancel', () => { b.removeEventListener('pointermove', muovi); if (fantasma) fantasma.remove(); if (bersaglio) bersaglio.classList.remove('bersaglio'); }, { once: true });
+  }
+  // sposta la finestra; lasciata con il puntatore sulla barra del titolo di un'altra, le due si uniscono
+  function trascinaFinestra(ev, f) {
+    ev.preventDefault();
+    porta(f);
+    const presa = ev.target;
+    const r = f.getBoundingClientRect(), p = lavoro.getBoundingClientRect();
+    const dx = ev.clientX - r.left, dy = ev.clientY - r.top;
+    let bersaglio = null;
+    presa.setPointerCapture(ev.pointerId);
+    const muovi = e => {
+      f.style.right = 'auto'; f.style.bottom = 'auto';
+      f.style.left = `${Math.min(Math.max(0, e.clientX - p.left - dx), p.width - 60)}px`;
+      f.style.top = `${Math.min(Math.max(0, e.clientY - p.top - dy), p.height - 40)}px`;
+      const s = sottoIl(e, f);
+      bersaglio = evidenzia(bersaglio, s && s.barra ? s.f : null);
+    };
+    presa.addEventListener('pointermove', muovi);
+    presa.addEventListener('pointerup', () => {
+      presa.removeEventListener('pointermove', muovi);
+      if (bersaglio) { bersaglio.classList.remove('bersaglio'); unisci(f, bersaglio); }
+    }, { once: true });
+  }
+  function rendiMobile(f) {
     const testa = f.querySelector('.finestra-testa');
-    testa.addEventListener('pointerdown', ev => {
-      if (ev.target.closest('button')) return;
-      const r = f.getBoundingClientRect(), p = f.offsetParent.getBoundingClientRect();
-      const dx = ev.clientX - r.left, dy = ev.clientY - r.top;
-      testa.setPointerCapture(ev.pointerId);
-      const muovi = e => {
-        f.style.right = 'auto'; f.style.bottom = 'auto';
-        f.style.left = `${Math.min(Math.max(0, e.clientX - p.left - dx), p.width - 60)}px`;
-        f.style.top = `${Math.min(Math.max(0, e.clientY - p.top - dy), p.height - 40)}px`;
-      };
-      testa.addEventListener('pointermove', muovi);
-      testa.addEventListener('pointerup', () => testa.removeEventListener('pointermove', muovi), { once: true });
-    });
+    testa.addEventListener('pointerdown', ev => { if (ev.button !== 0 || ev.target.closest('button')) return; trascinaFinestra(ev, f); });
     f.querySelector('.riduci').addEventListener('click', () => f.classList.toggle('ridotta'));
-  });
+  }
+  document.querySelectorAll('.finestra').forEach(f => { rendiMobile(f); linguette(f); });
 
   // ---- tastiera ----
   const SCORCIATOIE = { v: 'seleziona', t: 'trasforma', h: 'mano', z: 'zoom', x: 'testo', u: 'forma', i: 'immagine', g: 'guida', w: 'bacchetta' };
@@ -1539,6 +2021,7 @@
     }
     if ((ev.key === 'Delete' || ev.key === 'Backspace') && e) { ev.preventDefault(); elimina(e); return; }
     if (ev.key === 'Escape') { vista.sel = null; document.querySelectorAll('.menu-font').forEach(m => m.remove()); tutto(); return; }
+    if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && ev.key.toLowerCase() === 'e' && gemelloDi(selezionato())) { cambiaEntrambi(); return; }
     if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && SCORCIATOIE[ev.key.toLowerCase()]) scegliStrumento(SCORCIATOIE[ev.key.toLowerCase()]);
   });
   document.addEventListener('keyup', ev => {
@@ -1570,7 +2053,7 @@
   function applica() {
     if (!sorgente || (window.opener && window.opener.closed)) { messaggio('import layout non è più aperto: le modifiche non si possono portare'); return false; }
     const fontNuovi = doc.font.filter(f => f.origine === 'importato' && f.dati).map(f => ({ nome: f.nome, file: f.file, dati: f.dati, famiglia: f.famiglia }));
-    sorgente.applicaEditor({ elementi: JSON.parse(JSON.stringify(doc.elementi)), fontNuovi, fontGoogle: doc.font.filter(f => f.origine === 'google').map(f => f.nome) });
+    sorgente.applicaEditor({ elementi: JSON.parse(JSON.stringify(doc.elementi)), fontNuovi, modoIniziale: haModalita() ? { ...doc.modoIniziale } : null, fontGoogle: doc.font.filter(f => f.origine === 'google').map(f => f.nome) });
     messaggio('modifiche portate nella pagina generata', true);
     return true;
   }

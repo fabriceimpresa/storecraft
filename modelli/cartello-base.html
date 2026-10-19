@@ -83,6 +83,9 @@
       pointer-events: none;
     }
     .card:has(.elemento) .card-vuota { display: none; }
+    /* il riquadro del cartello per il cursore del selettore CARTELLO SUPERIORE / INFERIORE: vuoto e trasparente (il
+       cursore misurerebbe altrimenti i testi del cartello, che sono tutti in assoluto, e finirebbe in mezzo al cartello) */
+    .card-area { position: absolute; inset: 0; pointer-events: none; }
 
     /* LINEA TRATTEGGIATA PER IL RITAGLIO, al centro esatto del foglio */
     .cut-line {
@@ -192,6 +195,7 @@
   <div class="print-sheet double-mode" id="printSheet">
     <!-- CARTELLO 1 -->
     <div class="card" id="card1">
+      <div class="card-area" aria-hidden="true"></div>
       <div class="card-vuota">cartello superiore<br>210 × 148,5 mm</div>
       <!-- IMPORT: elementi del cartello superiore -->
     </div>
@@ -201,6 +205,7 @@
 
     <!-- CARTELLO 2 -->
     <div class="card" id="card2">
+      <div class="card-area" aria-hidden="true"></div>
       <div class="card-vuota">cartello inferiore<br>210 × 148,5 mm</div>
       <!-- IMPORT: elementi del cartello inferiore -->
     </div>
@@ -316,6 +321,9 @@
     const activeCard = () => document.getElementById('card' + currentCard);
     const inActiveCard = selector => () => activeCard().querySelector(selector);
     const cardOf = target => target.closest('.card');
+    // il cartello parte dal bordo del foglio: il cursore del selettore dei cartelli sta dentro, con la punta 7 mm sotto il
+    // bordo del cartello, come in Cartello Semplice e Outlet
+    const CARD_CURSOR_GAP = -7 * 96 / 25.4;
 
     Cursore.create({
       panel: '.controls',
@@ -323,7 +331,7 @@
       scope: cardOf,
       obstacles: target => cardOf(target).querySelectorAll('.elemento'),
       rules: [
-        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above' },
+        { controls: '#selectCard1, #selectCard2', target: () => activeCard().querySelector('.card-area'), placement: 'above', gap: CARD_CURSOR_GAP },
         ...CAMPI.flatMap(campo => campo.cursore || [])
       ]
     });

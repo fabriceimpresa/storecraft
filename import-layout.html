@@ -7,7 +7,7 @@
   <meta name="robots" content="noindex">
 <title>IMPORTA LAYOUT .PSD (uso interno)</title>
 <link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261019-01">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
   <link rel="stylesheet" href="assets/css/operatore.css?v=20261019-01">
   <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
@@ -113,24 +113,35 @@
   .nodo-psd { padding: 8px; border: 1px solid var(--op-oro); border-radius: 4px; background: var(--op-fondo); text-align: center; }
   .nodo-psd canvas { display: block; width: 100%; height: auto; margin-bottom: 6px; background: #fff; }
   .nodo-psd p { color: var(--op-oro-chiaro); font-size: 10.5px; word-break: break-all; }
-  .modelli { display: flex; flex-direction: column; gap: 8px; }
-  .nodo-modello { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 5px 14px; align-items: center; padding: 8px 12px;
+  /* i widget delle pagine somiglianti: piccoli (19 ottobre 2026), la nuova base comune staccata e diversa */
+  .modelli { display: flex; flex-direction: column; gap: 6px; max-width: 520px; }
+  .nodo-modello { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 3px 10px; align-items: center; padding: 5px 10px;
     border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
   .nodo-modello.scelto { border-color: var(--op-oro); background: rgba(212, 163, 115, .07); }
   .nodo-modello { cursor: pointer; transition: border-color .15s, background .15s; }
   .nodo-modello:hover { border-color: #6d665c; }
-  .nodo-modello.base { border-style: dashed; }
+  .modelli .oppure { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; color: var(--op-tenue); font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; }
+  .modelli .oppure::before, .modelli .oppure::after { content: ""; flex: 1; height: 1px; background: var(--op-bordo); }
+  .nodo-modello.base { grid-template-columns: 26px minmax(0, 1fr) auto; padding: 8px 12px; border: 1px dashed var(--op-oro); border-radius: 18px;
+    background: repeating-linear-gradient(135deg, rgba(212, 163, 115, .05) 0 6px, transparent 6px 12px), var(--op-fondo); }
+  .nodo-modello.base:hover { border-color: var(--op-oro-chiaro); }
+  .nodo-modello.base .segno-base { grid-row: 1 / span 2; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--op-oro);
+    border-radius: 50%; color: var(--op-oro); font-size: 16px; line-height: 1; }
+  .nodo-modello.base.scelto .segno-base { background: var(--op-oro); color: #121110; }
+  .nodo-modello.base .nome { color: var(--op-oro); letter-spacing: .08em; text-transform: uppercase; }
+  .nodo-modello.base .differenze { grid-column: 2 / -1; }
   .nodo-modello .proposta { margin-left: 8px; color: var(--op-tenue); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; }
   .nodo-modello .etichetta[hidden] { display: none; }
-  .nodo-modello .nome { color: var(--op-testo); font-size: 12px; }
+  .nodo-modello .nome { color: var(--op-testo); font-size: 11px; }
+  .nodo-modello .percento { font-size: 10.5px; text-align: right; }
   .nodo-modello.scelto .nome { color: var(--op-oro-chiaro); }
-  .nodo-modello .nome small { margin-left: 6px; color: var(--op-tenue); font-size: 10.5px; }
+  .nodo-modello .nome small { margin-left: 6px; color: var(--op-tenue); font-size: 9.5px; text-transform: none; letter-spacing: 0; }
   .nodo-modello .etichetta { margin-left: 8px; padding: 1px 6px; border-radius: 2px; background: var(--op-oro); color: #121110; font-size: 9.5px; letter-spacing: .1em; }
-  .barra { position: relative; height: 6px; border-radius: 3px; background: #24221f; overflow: hidden; }
+  .barra { position: relative; height: 4px; border-radius: 2px; background: #24221f; overflow: hidden; }
   .barra i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: #6d665c; }
   .scelto .barra i { background: var(--op-oro); }
   .differenze { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; }
-  .differenze span { padding: 0 5px; border: 1px solid var(--op-bordo); border-radius: 2px; font-size: 10px; }
+  .differenze span { padding: 0 4px; border: 1px solid var(--op-bordo); border-radius: 2px; font-size: 9.5px; }
   .differenze .piu { color: var(--op-errore); }
   .differenze .meno { color: var(--op-tenue); }
   .differenze .nota-f { color: var(--op-oro); }
@@ -197,8 +208,9 @@
   .passo-op[hidden] { display: none; }
   .comandi-anteprima { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 14px; }
   .comandi-anteprima button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
-  .comandi-anteprima .editor-btn { background: var(--op-oro); color: #121110; }
-  .comandi-anteprima .editor-btn:hover { background: var(--op-oro-chiaro); }
+  /* apri l'editor: rosso pieno, ben distinto dagli altri comandi, allineato a destra */
+  .comandi-anteprima .editor-btn { margin-left: auto; background: #b8392b; border-color: #b8392b; color: #fff; font-weight: 600; }
+  .comandi-anteprima .editor-btn:hover { background: #d04535; border-color: #d04535; color: #fff; }
   .stato-anteprima { color: var(--op-tenue); font-size: 11px; }
   .stato-anteprima.err { color: var(--op-errore); }
   .cornice-anteprima { position: relative; overflow: hidden; border: 1px solid var(--op-bordo); border-radius: 4px; background: #212529; }
@@ -314,14 +326,19 @@
   .vuoto-b { color: var(--op-tenue); font-size: 10.5px; }
 
   /* dettagli dell'elemento scelto: compaiono con un clic */
-  .dettagli { margin-top: 20px; padding: 12px 14px; border: 1px solid var(--op-bordo); border-radius: 4px; background: #0a0908; }
-  .dettagli[hidden] { display: none; }
+  /* pannello di controllo: i valori dell'elemento scelto, sotto l'anteprima del cartello (19 ottobre 2026) */
+  .titolo-controllo { display: flex; align-items: center; gap: 8px; margin: 20px 0 8px; color: var(--op-oro); font: 500 12px 'Cinzel', serif;
+    letter-spacing: .2em; text-transform: uppercase; }
+  .titolo-controllo svg { flex: none; width: 15px; height: 15px; }
+  .titolo-controllo::after { content: ""; flex: 1; height: 1px; background: var(--op-bordo); }
+  .dettagli { padding: 12px 14px; border: 1px solid var(--op-bordo); border-radius: 4px; background: #0a0908; }
+  .dettagli[hidden], .controllo[hidden] { display: none; }
   .dettagli h3 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--op-oro-chiaro); font: 400 12px var(--op-mono); }
   .dettagli h3 .chiudi-dettagli { margin-left: auto; width: 24px; height: 24px; border: 1px solid var(--op-bordo); border-radius: 50%; background: none;
     color: var(--op-tenue); font: 400 14px/1 var(--op-mono); cursor: pointer; }
   .dettagli h3 .chiudi-dettagli:hover { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
   /* valori modificabili */
-  .valori-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px 16px; }
+  .valori-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px 16px; }
   .valore { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
   .valore.largo { grid-column: 1 / -1; }
   .nome-valore { color: var(--op-tenue); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
@@ -376,7 +393,7 @@
         <button type="button" class="riapri" hidden aria-expanded="true" aria-label="Riapri la sezione"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <span class="passo-num">1</span>
         <div>
-          <p class="passo-titolo">file photoshop da importare <span class="riassunto"></span></p>
+          <p class="passo-titolo">file .psd da importare <span class="riassunto"></span></p>
           <p class="passo-nota">foglio a4 con i due cartelli, livelli con i nomi dei componenti</p>
           <div class="tipo-pagina" role="radiogroup" aria-label="Tipo di pagina da creare">
             <span class="tipo-titolo">tipo di pagina</span>
@@ -431,7 +448,10 @@
           <div class="parte" data-parte="contenuto" hidden>
             <div class="linguette" id="linguette" role="tablist" aria-label="Cartelli del foglio"></div>
             <div class="diagramma mappa" id="mappa"></div>
-            <div class="dettagli" id="dettagli" hidden></div>
+            <div class="controllo" id="controllo" hidden>
+              <p class="titolo-controllo"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>pannello di controllo</p>
+              <div class="dettagli" id="dettagli"></div>
+            </div>
             <p class="didascalia">passa sopra un numero, un livello o un modulo per seguire il filo; clicca per i valori dell'elemento</p>
           </div>
 
@@ -448,10 +468,9 @@
           <p class="passo-titolo">pagina generata</p>
           <p class="passo-nota">anteprima dal vivo: il pannello funziona. la pagina non è ancora salvata nel progetto</p>
           <div class="comandi-anteprima">
-            <button type="button" class="btn-folder" id="sovrapponi" aria-pressed="false">sovrapponi il .psd</button>
-            <button type="button" class="btn-folder" id="tuttaFinestra">apri a tutta finestra ↗</button>
-            <button type="button" class="btn-folder editor-btn" id="apriEditor" title="Layout Studio: modifica elementi e attributi, aggiungi testi, forme e immagini, guide e righelli">apri l'editor ✎</button>
+            <button type="button" class="btn-folder" id="sovrapponi" aria-pressed="false">sovrapponi il .psd sorgente</button>
             <span class="stato-anteprima" id="statoAnteprima"></span>
+            <button type="button" class="btn-folder editor-btn" id="apriEditor" title="Layout Studio: modifica elementi e attributi, aggiungi testi, forme e immagini, guide e righelli">apri l'editor ✎</button>
           </div>
           <div class="ritocchi" id="ritocchi" hidden>
             <div class="ritocchi-barra" id="ritocchiBarra" title="trascina il riquadro dove vuoi"><span><span aria-hidden="true">⠿</span> sposta elementi</span><span class="ritocchi-nome" id="ritocchiNome"></span></div>
@@ -1182,7 +1201,8 @@
     lista.setAttribute('role', 'radiogroup');
     lista.setAttribute('aria-label', 'Pagina di partenza');
     const nodi = [...classifica, { m: BASE }].map(r => nodoModello(r, r.m.pagina === proposta));
-    lista.append(...nodi);
+    // la nuova base comune: staccata dalle pagine somiglianti da un «oppure»
+    lista.append(...nodi.slice(0, -1), el('div', 'oppure', 'oppure'), nodi[nodi.length - 1]);
     box.append(nodoPsd, lista);
 
     const fili = (anima = false) => {
@@ -1219,6 +1239,7 @@
     n.dataset.pagina = r.m.pagina;
     n.tabIndex = 0;
     n.setAttribute('role', 'radio');
+    if (base) n.append(el('span', 'segno-base', '+'));
     const nome = el('div', 'nome', r.m.nome);
     nome.append(el('small', '', `${r.m.negozio}${base ? '' : ' · ' + r.m.pagina}`));
     const etichetta = el('span', 'etichetta', 'PARTENZA');
@@ -1507,7 +1528,10 @@
   function apriLinguetta(voce) {
     linguettaAperta = voce;
     scelto = null;
-    $('dettagli').hidden = true;
+    // il pannello di controllo sta sotto l'anteprima del cartello: si toglie dalla mappa prima di rifarla
+    const controllo = $('controllo');
+    controllo.hidden = true;
+    $('mappa').after(controllo);
     $('linguette').querySelectorAll('button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.voce === voce)));
     const { psd, elementi, meta } = risultato;
     const mappa = $('mappa');
@@ -1546,7 +1570,7 @@
       cartello.append(area, segno);
       segni[i] = segno;
     });
-    col1.append(cartello);
+    col1.append(cartello, controllo);
 
     // colonna 2: i livelli del .psd
     const col2 = el('div');
@@ -1649,7 +1673,7 @@
     const chiudi = el('button', 'chiudi-dettagli', '×');
     chiudi.type = 'button';
     chiudi.setAttribute('aria-label', 'Chiudi i valori');
-    chiudi.addEventListener('click', () => { box.hidden = true; scelto = null; $('mappa').querySelectorAll('.liv').forEach(b => b.classList.remove('scelto')); });
+    chiudi.addEventListener('click', () => { $('controllo').hidden = true; scelto = null; $('mappa').querySelectorAll('.liv').forEach(b => b.classList.remove('scelto')); });
     h.append(chiudi);
     const griglia = el('div', 'valori-griglia');
     const voce = (nome, ...contenuto) => { const r = el('label', 'valore'); r.append(el('span', 'nome-valore', nome), ...contenuto); griglia.append(r); return r; };
@@ -1766,7 +1790,7 @@
     e.note.forEach(nn => note.append(el('p', 'nota', nn)));
     if (e.modificato) note.append(el('p', 'nota-modificato', 'modificato: vale per tutti e due i cartelli'));
     box.append(h, griglia, note);
-    box.hidden = false;
+    $('controllo').hidden = false;
   }
 
   // i fili seguono il diagramma quando cambia misura (finestra, caratteri caricati)
@@ -1837,15 +1861,6 @@
     b.setAttribute('aria-pressed', String(si));
     sovrapponi(si);
   });
-  $('tuttaFinestra').addEventListener('click', () => {
-    if (!paginaGenerata) return;
-    const finestra = window.open('', '_blank');
-    if (!finestra) return;
-    finestra.document.open();
-    finestra.document.write(paginaGenerata.replace('<head>', `<head>\n  <base href="${baseModelli()}">`));
-    finestra.document.close();
-  });
-
   // ---- ritocchi: un elemento della pagina generata si seleziona con un clic e si sposta di poco ----
   // Lo spostamento vale per il cartello dell'elemento o, con «nei due cartelli», per tutti e due; resta in
   // risultato.ritocchi e il generatore lo aggiunge alla posizione, così resta anche rigenerando la pagina.
@@ -2166,7 +2181,7 @@
     img.onerror = sbagliato;
     img.src = src;
   });
-  async function applicaEditor({ elementi, fontNuovi = [] }) {
+  async function applicaEditor({ elementi, fontNuovi = [], modoIniziale = null }) {
     const r = risultato;
     const px = v => v * r.dpi / 25.4, meta = r.mm(r.meta || r.psd.height / 2);
     const extra = [];
@@ -2175,8 +2190,11 @@
       let e = m.origine != null ? r.elementi[m.origine] : null;
       // un elemento del .psd diventato grafica fissa: esce dagli elementi e va tra gli aggiunti
       if (e && !m.chiave && e.chiave && e.chiave !== 'footer') { e.rimosso = true; extra.push({ ...m, origine: null, id: `d${m.origine}`, rimosso: !m.visibile }); continue; }
+      // un elemento con modulo nato nell'editor (anche per l'altra vista di un cartello): una volta sola, anche applicando
+      // più volte (idEditor)
+      if (!e && m.chiave) e = r.elementi.find(x => x.idEditor === m.id) || null;
       if (!e && m.chiave) {
-        e = { nome: m.nome, chiave: m.chiave, cartello: m.cartello, tipo: m.tipo, stato: 'ok', note: ['aggiunto in layout studio'], aggiunto: true,
+        e = { idEditor: m.id, nome: m.nome, chiave: m.chiave, cartello: m.cartello, tipo: m.tipo, stato: 'ok', note: ['aggiunto in layout studio'], aggiunto: true,
           mm: { x: 0, y: 0, w: 0, h: 0 }, px: { x: 0, y: 0, w: 0, h: 0 }, livello: { name: m.nome, hidden: false, canvas: null } };
         r.elementi.push(e);
         m.origine = r.elementi.length - 1;
@@ -2204,6 +2222,8 @@
       e.modificato = true;
     }
     r.extra = extra;
+    // la vista da cui parte ogni cartello nella pagina generata (doppia cifra o descrizione), scelta nell'editor
+    r.modoIniziale = modoIniziale;
     r.ritocchi = {};
     r.ritocchiCartello = {};
     // font importati: nell'anteprima dal loro indirizzo, salvando in assets/fonts/

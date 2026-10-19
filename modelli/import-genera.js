@@ -74,7 +74,9 @@
     };
     const doppia = ha('prezzo-originario') || ha('percentuale');
     const conModalita = doppia && ha('descrizione');
-    const inDescrizione = n => !(per[n]['prezzo-originario'] || per[n]['percentuale']) && !!per[n]['descrizione'];
+    // la vista da cui parte il cartello: scelta in Layout Studio (r.modoIniziale), altrimenti quella del .psd
+    const inDescrizione = n => r.modoIniziale && r.modoIniziale[n] ? r.modoIniziale[n] === 'descrizione'
+      : !(per[n]['prezzo-originario'] || per[n]['percentuale']) && !!per[n]['descrizione'];
 
     // ---- font del .psd ----
     // font del progetto (file in assets/fonts/), Google Fonts (nome G:<famiglia>, dal loro foglio di stile) e font importati
@@ -367,7 +369,10 @@ ${ha('claim-dx') ? `          <div class="form-group">
         else if (s.brand) PrintLogoColors.setBrandLogoSrc('logo' + n, '', s.brand, s.brand, COLORE_LOGHI);
         else img.src = LOGO_PARTENZA;
       },
-      cursore: [{ controls: '#brandSelect, #customBrandSelect', target: () => document.getElementById('logo' + currentCard), placement: 'above' }]
+      // sul riquadro rosso il triangolo non si vedrebbe: sta sopra il riquadro, centrato sul logo, con la punta a 1 mm
+      // (come nelle pagine sorgente); senza riquadro, 1 mm sopra il logo
+      cursore: [{ controls: '#brandSelect, #customBrandSelect', target: () => document.getElementById('logo' + currentCard), placement: 'above',
+        gap: logo => { const riquadro = logo.closest('.el-riquadro-brand'); return 96 / 25.4 + (riquadro ? Math.max(0, logo.getBoundingClientRect().top - riquadro.getBoundingClientRect().top) : 0); } }]
     });`);
     }
     if (ha('descrizione')) {
@@ -487,7 +492,7 @@ ${ha('claim-dx') ? `          <div class="form-group">
     if (ha('descrizione')) prima.push(`<script src="../assets/js/testi-pronti.js${v}"></script>`);
     metti('  <!-- IMPORT: moduli comuni da caricare prima dello script della pagina (testi-pronti.js, second-brand-toggle.js…) -->', prima.length ? '  ' + prima.join('\n  ') : '');
     if (conModalita) {
-      const riga = html.match(/  <script src="\.\.\/assets\/js\/selettore-cartello\.js[^"]*"><\/script>\n/);
+      const riga = html.match(/  <script src="\.\.\/assets\/js\/selettore-cartello\.js[^"]*"><\/script>\r?\n/);   // anche con gli a capo di Windows
       if (!riga) throw new Error('selettore-cartello.js non trovato nella base');
       html = html.replace(riga[0], `${riga[0]}  <script src="../assets/js/selettore-modalita-prezzo.js${v}"></script>\n`);
     }
