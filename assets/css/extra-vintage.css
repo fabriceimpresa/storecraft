@@ -68,20 +68,56 @@
     background-image:
       linear-gradient(90deg, transparent calc(100% - 9px), var(--v-senape) calc(100% - 9px), var(--v-senape) calc(100% - 6px), var(--v-carta) calc(100% - 6px), var(--v-carta) calc(100% - 4px), var(--v-rosso) calc(100% - 4px)) !important;
   }
-  /* il marchio STORE // CRAFT come il cartello di un motel anni '50: lettere crema in Racing Sans One, il corsivo sportivo delle
-     insegne, su una freccia rossa che punta a destra, con le // senape */
-  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] :is(#sidebar-menu .brand, .mobile-brand, .testata-marchio) {
-    width: auto; padding: 8px 30px 8px 16px;
-    background: var(--v-rosso) !important; color: #f3ead3 !important;
-    font-family: 'Racing Sans One', 'Oswald', sans-serif !important; font-weight: 400 !important; letter-spacing: .06em !important;
-    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+  /* il marchio STORE // CRAFT come l'insegna di un diner anni '50: «Store // Craft» in Grand Hotel, corsivo inclinato con
+     l'ombra piena, crema sul verde del menu laterale, con le // in rosso mattone */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-brand,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .testata-marchio {
+    font-family: 'Grand Hotel', cursive !important; font-weight: 400 !important; letter-spacing: 0 !important;
+    color: #f3ead3 !important; text-shadow: 2px 2px 0 #1b2c22;
   }
-  /* nel menu laterale la freccia è larga quanto la scritta (le altre due scritte tengono il loro modo di comparire) */
-  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand { display: inline-block; font-size: 20px; line-height: 1.2; letter-spacing: .03em !important; padding: 10px 32px 10px 14px; clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 0 100%); }
-  /* alta almeno quanto il riquadro di data e ora (44 px), perché è il nome principale; alzata di 11,5 px, così ha il centro
-     sulla stessa linea di data e ora e di CASSIERE / CREATOR (44,5 px dall'alto), senza spostare il menu sotto */
-  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand { top: -11.5px; }
-  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] :is(#sidebar-menu .brand, .mobile-brand, .testata-marchio) .marchio-barre { color: var(--v-senape); }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand .marchio-parola,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-brand .marchio-parola,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .testata-marchio .marchio-parola {
+    display: inline-block; text-transform: lowercase;
+  }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand .marchio-parola::first-letter,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-brand .marchio-parola::first-letter,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .testata-marchio .marchio-parola::first-letter {
+    text-transform: uppercase;
+  }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand .marchio-barre,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-brand .marchio-barre,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .testata-marchio .marchio-barre {
+    font-family: 'Oswald', sans-serif; font-weight: 600; font-size: .62em; color: var(--v-rosso); text-shadow: none; margin: 0 .05em;
+  }
+  /* nel menu laterale grande e inclinato, un poco più in basso della linea di data e ora e di CASSIERE / CREATOR */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand {
+    font-size: 41.5px; line-height: 1; transform: rotate(-5deg); transform-origin: left center; top: 8px;
+    text-align: left; padding-left: 0; margin-left: -4px;   /* la S comincia 4 px prima delle voci del menu */
+  }
+  /* il marchio grande alzerebbe l'intestazione del menu: 14,5 px in meno sotto (47,5 invece di 62), così CREA CARTELLI torna
+     sulla linea del logo LXRY, come negli altri temi, e il marchio non si muove */
+  @media (min-width: 721px), (pointer: fine) {   /* non sul telefono, dove il menu ha i suoi spazi */
+    :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .sidebar-header { padding-bottom: 47.5px; }
+  }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand:is(:hover, :focus-visible) { animation: none; }
+  /* le // si accendono ogni tanto come il neon di un'insegna da diner: due sfarfallii e poi accese un momento */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand .marchio-barre {
+    animation: vintage-neon 7s linear infinite;
+  }
+  @keyframes vintage-neon {
+    0%, 84%, 100% { color: var(--v-rosso); text-shadow: none; }
+    85%, 87%, 90%, 92%, 93.5%, 96% { color: #ff6b4f; text-shadow: 0 0 4px #ff6b4f, 0 0 10px rgba(255, 90, 60, .75), 0 0 18px rgba(255, 90, 60, .45); }
+    86%, 88.5%, 91% { color: var(--v-rosso); text-shadow: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand .marchio-barre { animation: none; }
+  }
+  /* nella finestra stretta e nella barra del telefono il fondo è crema: lì in navy, con l'ombra senape */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] :is(.testata-marchio, .mobile-brand) {
+    color: var(--v-navy) !important; text-shadow: 2px 2px 0 rgba(204, 154, 45, .55); font-size: 30px !important; line-height: 1;
+  }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .sidebar-section > .label,
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .sidebar-section > .label span {
     font-family: var(--v-cond) !important; font-weight: 500; font-size: 12.5px; letter-spacing: .18em;
@@ -372,4 +408,14 @@
     font-family: var(--v-cond); font-weight: 500; font-size: .78rem; letter-spacing: .14em;
   }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .extra-esci:is(:hover, :focus-visible) { background: var(--v-senape); color: #24402f; }
+}
+
+/* PROMO STAGIONALI nel menu laterale: al passaggio del mouse (e con la tastiera) si riempie di rosso mattone, scritta nel bianco vintage della carta */
+@media screen {
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .nav-subtoggle:is(:hover, :focus-visible) {
+    background: var(--v-rosso) !important; color: #f3ead3 !important; box-shadow: none !important; border-radius: 3px !important;
+  }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .nav-subtoggle:is(:hover, :focus-visible) * {
+    color: #f3ead3 !important;
+  }
 }

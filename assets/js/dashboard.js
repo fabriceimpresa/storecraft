@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.38 2026';
+  const VERSIONE = 'V 1.2.39 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -64,8 +64,9 @@
     return nodo;
   }
   const due = n => String(n).padStart(2, '0');
-  // il marchio STORE // CRAFT a pezzi, con le // in un loro <span>: uguale in tutti i temi, un set EXTRA le può colorare
-  const marchioTesto = () => ['STORE ', el('span', { class: 'marchio-barre', text: '//' }), ' CRAFT'];
+  // il marchio STORE // CRAFT a pezzi, parole e // in un loro <span>: uguale in tutti i temi, un set EXTRA lo può ridisegnare
+  const marchioTesto = () => [el('span', { class: 'marchio-parola', text: 'STORE' }), ' ', el('span', { class: 'marchio-barre', text: '//' }), ' ',
+    el('span', { class: 'marchio-parola', text: 'CRAFT' })];
 
   // ----- Menu laterale -----
   function vociMenu(sezione) {

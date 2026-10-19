@@ -15,7 +15,7 @@
       nome: 'VINTAGE',
       tema: 'light',
       aspetto: 'standard',
-      font: 'https://fonts.googleapis.com/css2?family=Yellowtail&family=Racing+Sans+One&family=Alfa+Slab+One&family=Oswald:wght@400;500;600&family=Libre+Franklin:wght@400;500;600&display=swap'
+      font: 'https://fonts.googleapis.com/css2?family=Yellowtail&family=Grand+Hotel&family=Alfa+Slab+One&family=Oswald:wght@400;500;600&family=Libre+Franklin:wght@400;500;600&display=swap'
     }
   });
   const SCRIPT = document.currentScript;
