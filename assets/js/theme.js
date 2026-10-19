@@ -5,7 +5,21 @@
   const SUFFISSO = NEGOZIO && NEGOZIO !== 'luxury' ? `_${NEGOZIO}` : '';
   const STORAGE_KEY = `storecraft_interface_theme${SUFFISSO}`;
   const LOOK_STORAGE_KEY = `storecraft_interface_look${SUFFISSO}`;
+  const EXTRA_STORAGE_KEY = `storecraft_interface_extra${SUFFISSO}`;
   const THEMES = Object.freeze(['dark', 'light']);
+  // Set EXTRA (dal 19 ottobre 2026): impongono insieme tema e aspetto e li bloccano finché sono attivi; uscendo dal set si torna
+  // a tema e aspetto di partenza del negozio. Ogni set ha il suo foglio di stile, assets/css/extra-<set>.css, e i suoi
+  // caratteri, caricati solo quando serve. MATRIX e NEUROMANCE sono in arrivo (solo nel menu, spenti)
+  const EXTRAS = Object.freeze({
+    vintage: {
+      nome: 'VINTAGE',
+      tema: 'light',
+      aspetto: 'standard',
+      font: 'https://fonts.googleapis.com/css2?family=Yellowtail&family=Racing+Sans+One&family=Alfa+Slab+One&family=Oswald:wght@400;500;600&family=Libre+Franklin:wght@400;500;600&display=swap'
+    }
+  });
+  const SCRIPT = document.currentScript;
+  let extraAttivo = null;
   const LOOKS = Object.freeze(['standard', 'minimal']);
   const root = document.documentElement;
   // Valori iniziali, finché l'utente non sceglie: quelli del negozio della pagina, nella sua scheda
@@ -112,9 +126,86 @@
     document.head.append(link);
   }
 
-  const initialTheme = readTheme();
-  applyTheme(initialTheme);
+  function readExtra() {
+    try {
+      const storedExtra = localStorage.getItem(EXTRA_STORAGE_KEY);
+      return Object.hasOwn(EXTRAS, storedExtra) ? storedExtra : null;
+    } catch (error) {
+      console.error('Lettura del set extra dell’interfaccia non riuscita.', error);
+      return null;
+    }
+  }
+
+  // foglio di stile e caratteri del set, accanto a theme.js (stessa versione nell'indirizzo)
+  function loadExtraStyles(extra) {
+    const id = `interface-extra-${extra}`;
+    if (document.getElementById(id)) return;
+    const css = document.createElement('link');
+    css.id = id;
+    css.rel = 'stylesheet';
+    const base = SCRIPT?.src ? new URL(SCRIPT.src) : new URL('../assets/js/theme.js', location.href);
+    css.href = new URL(`../css/extra-${extra}.css${base.search}`, base).href;
+    css.addEventListener('error', () => console.error(`Caricamento dello stile del set ${extra} non riuscito.`), { once: true });
+    const font = document.createElement('link');
+    font.id = `${id}-font`;
+    font.rel = 'stylesheet';
+    font.href = EXTRAS[extra].font;
+    font.addEventListener('error', () => console.error(`Caricamento dei caratteri del set ${extra} non riuscito.`), { once: true });
+    document.head.append(font, css);
+  }
+
+  // stato dei comandi del menu: set scelto, TEMA e ASPETTO spenti finché un set è attivo, ESCI DAL SET EXTRA visibile
+  function refreshExtraControls() {
+    document.querySelectorAll('[data-interface-extra-choice]').forEach(button => {
+      const selected = button.dataset.interfaceExtraChoice === extraAttivo;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    document.querySelectorAll('[data-interface-theme-choice], [data-interface-look-choice]').forEach(button => {
+      button.disabled = Boolean(extraAttivo);
+      const row = button.closest('.system-setting-row');
+      row?.classList.toggle('is-bloccata', Boolean(extraAttivo));
+      if (extraAttivo) row?.setAttribute('title', `Impostato dal set ${EXTRAS[extraAttivo].nome}`);
+      else row?.removeAttribute('title');
+    });
+    document.querySelectorAll('[data-interface-extra-exit]').forEach(button => { button.hidden = !extraAttivo; });
+  }
+
+  // extra: il nome del set, o null per uscire e tornare a tema e aspetto di partenza del negozio
+  function applyExtra(extra, persist = false) {
+    if (extra !== null && !Object.hasOwn(EXTRAS, extra)) {
+      throw new Error(`Set extra dell’interfaccia non riconosciuto: ${extra}`);
+    }
+    extraAttivo = extra;
+    if (extra) {
+      root.dataset.interfaceExtra = extra;
+      loadExtraStyles(extra);
+      applyTheme(EXTRAS[extra].tema);
+      applyLook(EXTRAS[extra].aspetto);
+    } else {
+      // uscendo dal set si torna all'aspetto di partenza del negozio (scheda del negozio, interfaccia: per Luxury Outlet
+      // SCURO e STANDARD), che diventa anche la scelta salvata di TEMA e ASPETTO (decisione del 19 ottobre 2026)
+      delete root.dataset.interfaceExtra;
+      applyTheme(DEFAULT_THEME, persist);
+      applyLook(DEFAULT_LOOK, persist);
+    }
+    refreshExtraControls();
+
+    if (persist) {
+      try {
+        if (extra) localStorage.setItem(EXTRA_STORAGE_KEY, extra);
+        else localStorage.removeItem(EXTRA_STORAGE_KEY);
+      } catch (error) {
+        console.error('Salvataggio del set extra dell’interfaccia non riuscito.', error);
+        window.alert('Il set è stato applicato, ma non è stato possibile salvarlo in questo browser.');
+      }
+    }
+  }
+
+  applyTheme(readTheme());
   applyLook(readLook());
+  const initialExtra = readExtra();
+  if (initialExtra) applyExtra(initialExtra);
 
   function setSystemMenuOpen(open) {
     if (!systemMenu || !systemMenuButtons.length) return;
@@ -144,7 +235,10 @@
     if (view === 'home') {
       systemMenu.querySelector('[data-system-menu-item="settings"]')?.focus({ preventScroll: true });
     } else if (view === 'settings') {
-      systemMenu.querySelector('[data-system-view="settings"] [data-interface-theme-choice].is-selected')
+      // con un set extra attivo TEMA e ASPETTO sono spenti: il fuoco va sul set scelto
+      systemMenu.querySelector(extraAttivo
+        ? '[data-system-view="settings"] [data-interface-extra-choice].is-selected'
+        : '[data-system-view="settings"] [data-interface-theme-choice].is-selected')
         ?.focus({ preventScroll: true });
     } else if (view === 'contacts' || view === 'stores') {
       systemMenu.querySelector(`[data-system-view="${view}"] [data-system-menu-back]`)
@@ -196,8 +290,22 @@
         applyLook(button.dataset.interfaceLookChoice, true);
       });
     });
+    // set EXTRA: un clic sceglie il set; un altro clic sul set già scelto, o ESCI DAL SET EXTRA, ne esce
+    document.querySelectorAll('[data-interface-extra-choice]').forEach(button => {
+      button.addEventListener('click', () => {
+        const extra = button.dataset.interfaceExtraChoice;
+        applyExtra(extraAttivo === extra ? null : extra, true);
+      });
+    });
+    document.querySelectorAll('[data-interface-extra-exit]').forEach(button => {
+      button.addEventListener('click', () => {
+        applyExtra(null, true);
+        systemMenu.querySelector('[data-interface-theme-choice].is-selected')?.focus({ preventScroll: true });
+      });
+    });
     applyTheme(root.dataset.interfaceTheme || DEFAULT_THEME);
     applyLook(root.dataset.interfaceLook || DEFAULT_LOOK);
+    refreshExtraControls();
     document.addEventListener('pointerdown', event => {
       if (!systemMenu.hidden && !systemMenu.contains(event.target) &&
           !systemMenuButtons.some(button => button.contains(event.target))) {

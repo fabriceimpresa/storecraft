@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.37 2026';
+  const VERSIONE = 'V 1.2.38 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -64,6 +64,8 @@
     return nodo;
   }
   const due = n => String(n).padStart(2, '0');
+  // il marchio STORE // CRAFT a pezzi, con le // in un loro <span>: uguale in tutti i temi, un set EXTRA le può colorare
+  const marchioTesto = () => ['STORE ', el('span', { class: 'marchio-barre', text: '//' }), ' CRAFT'];
 
   // ----- Menu laterale -----
   function vociMenu(sezione) {
@@ -218,6 +220,17 @@
           el('span', { class: 'system-setting-label', text: 'ASPETTO' }),
           el('div', { class: 'theme-choices', role: 'group', 'aria-label': 'Aspetto interfaccia' },
             scelta('data-interface-look-choice', 'standard', 'STANDARD'), scelta('data-interface-look-choice', 'minimal', 'COMPATTO'))),
+        // EXTRA (dal 19 ottobre 2026): set che impongono insieme tema e aspetto e li bloccano; un altro clic sul set scelto,
+        // o ESCI DAL SET EXTRA, torna a tema e aspetto di partenza del negozio (theme.js). MATRIX e NEUROMANCE in arrivo
+        el('div', { class: 'system-setting-row system-setting-extra' },
+          el('span', { class: 'system-setting-label', text: 'EXTRA' }),
+          el('div', { class: 'theme-choices extra-choices', role: 'group', 'aria-label': 'Set extra' },
+            scelta('data-interface-extra-choice', 'vintage', 'VINTAGE'),
+            el('button', { class: 'theme-choice in-arrivo', type: 'button', disabled: true, 'aria-label': 'MATRIX, coming soon' },
+              'MATRIX', el('small', { text: 'COMING SOON' })),
+            el('button', { class: 'theme-choice in-arrivo', type: 'button', disabled: true, 'aria-label': 'NEUROMANCE, coming soon' },
+              'NEUROMANCE', el('small', { text: 'COMING SOON' }))),
+          el('button', { class: 'extra-esci', type: 'button', 'data-interface-extra-exit': '', hidden: true, text: '✕ ESCI DAL SET EXTRA' })),
         indietro()),
       el('div', { class: 'system-menu-view', 'data-system-view': 'contacts', hidden: true },
         el('div', { class: 'system-credits' },
@@ -378,7 +391,12 @@
     const cima = el('div', { class: 'card-top' },
       el('span', { class: 'number', text: due(numero) }),
       s.tipo ? el('span', { class: 'card-type', text: s.tipo }) : null);
-    const titolo = el('h3', { class: s.compatto ? 'compact-title' : false, text: s.titolo });
+    // la ✦ in fondo al titolo (promo e allestimenti) in un suo <span>, così un set EXTRA la può disegnare a modo suo
+    const stellaFinale = /\s*✦$/.exec(s.titolo || '');
+    const titolo = stellaFinale
+      ? el('h3', { class: s.compatto ? 'compact-title' : false }, s.titolo.slice(0, stellaFinale.index) + ' ',
+          el('span', { class: 'titolo-stella', text: '✦' }))
+      : el('h3', { class: s.compatto ? 'compact-title' : false, text: s.titolo });
     const classi = `carousel-card${dorata(s) ? ' gold-bf-card' : ''}${s.prossimamente ? ' is-soon' : ''}`;
 
     if (sezione.tipo === 'stampe') {
@@ -604,7 +622,7 @@
   // dove STORE // CRAFT sta già nella barra in alto
   function marchioStretto(testata) {
     const RESPIRO = 24;
-    const marchio = el('div', { class: 'testata-marchio', 'aria-hidden': 'true', text: 'STORE // CRAFT' });
+    const marchio = el('div', { class: 'testata-marchio', 'aria-hidden': 'true' }, marchioTesto());
     testata.append(marchio);
     const menu = document.querySelector('.mobile-nav-toggle');
     const misura = () => {
@@ -634,6 +652,8 @@
 
   function disegna() {
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
+    // segno della dashboard: le regole dei set EXTRA (es. extra-vintage.css) valgono solo qui
+    document.body.dataset.pagina = 'dashboard';
     // Pagine in ghost (Controllo codice, nascosta: true): le loro schede non si vedono, né come widget né nel menu
     // laterale; una sezione che resta senza schede sparisce, e la voce Etichette DYMO se la sua pagina è in ghost
     const pagina = link => String(link || '').split('?')[0];
@@ -662,11 +682,11 @@
       el('div', { class: 'mobile-top-bar' },
         el('button', { class: 'mobile-nav-toggle', type: 'button', 'aria-label': 'Apri menu', 'aria-controls': 'sidebar-menu',
           'aria-expanded': 'false', onclick: () => premiTastoMenu(), text: '☰' }),
-        el('button', { class: 'mobile-brand', type: 'button', onclick: () => returnToHomeTop(), text: 'STORE // CRAFT' }),
+        el('button', { class: 'mobile-brand', type: 'button', onclick: () => returnToHomeTop() }, marchioTesto()),
         modalita()),
       el('aside', { id: 'sidebar-menu' },
         el('div', { class: 'sidebar-header' },
-          el('button', { class: 'brand', type: 'button', onclick: () => returnToHomeTop(), text: 'STORE // CRAFT' }),
+          el('button', { class: 'brand', type: 'button', onclick: () => returnToHomeTop() }, marchioTesto()),
           el('button', { class: 'mobile-close-btn', type: 'button', 'aria-label': 'Chiudi menu', onclick: () => toggleMobileSidebar(), text: '✕' })),
         menuLaterale(),
         menuSistema(),

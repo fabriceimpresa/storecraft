@@ -1043,6 +1043,25 @@
 .theme-choice.is-selected { background: var(--interface-accent); color: #fffdfa; border-color: var(--interface-accent); }
 :root[data-interface-theme="dark"] .theme-choice.is-selected { color: #121110; }
 
+/* Set EXTRA (dal 19 ottobre 2026): sotto ASPETTO, VINTAGE su tutta la riga e sotto MATRIX e NEUROMANCE, spenti, con COMING
+   SOON sotto il nome. Con un set attivo TEMA e ASPETTO sono spenti e attenuati e compare ESCI DAL SET EXTRA */
+.extra-choices { display: grid; grid-template-columns: 1fr 1fr; }
+.extra-choices .theme-choice:first-child { grid-column: 1 / -1; }
+.extra-choices .theme-choice { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 6px 2px; white-space: normal; }
+.extra-choices .theme-choice small { font-size: .74em; letter-spacing: .04em; opacity: .85; white-space: nowrap; }
+.theme-choice:disabled { cursor: not-allowed; }
+.theme-choice.in-arrivo { opacity: .5; }
+.theme-choice.in-arrivo:hover { background: transparent; box-shadow: none; color: var(--interface-muted); }
+.system-setting-row.is-bloccata { opacity: .4; }
+.system-setting-row.is-bloccata .theme-choice:hover { background: transparent; box-shadow: none; }
+.extra-esci {
+  display: block; width: 100%; min-height: 34px; margin-top: 8px; padding: 7px 4px;
+  border: 1px solid var(--interface-accent); border-radius: 7px; background: transparent; color: var(--interface-accent);
+  font: 400 .61rem/1.2 var(--interface-font); letter-spacing: .08em; cursor: pointer;
+}
+.extra-esci[hidden] { display: none; }
+.extra-esci:hover, .extra-esci:focus-visible { background: var(--interface-accent); color: #fffdfa; outline: none; }
+
 /* Lista NEGOZI del menu di sistema (dal 13 ottobre 2026): ogni negozio è un riquadro-pulsante, come la cornice della
    splash page in piccolo: cornice sottile con un filetto interno, al centro il logo del negozio (logoNegozi della scheda,
    grande quanto gli dà lo stesso peso degli altri: --logo-fattore da dashboard.js); dal 14 ottobre 2026 solo il logo, senza
