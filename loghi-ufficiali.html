@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261019-01"></script>
+<script src="assets/js/negozi.js?v=20261019-02"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261019-01">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261019-02">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261019-01">
-  <script src="assets/js/operatore-sezione.js?v=20261019-01"></script>
-  <script src="assets/js/admin-negozio.js?v=20261019-01"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261019-02">
+  <script src="assets/js/operatore-sezione.js?v=20261019-02"></script>
+  <script src="assets/js/admin-negozio.js?v=20261019-02"></script>
   <!--
     Loghi ufficiali (area operatore, dal 19 ottobre 2026: unisce Importa loghi ufficiali e Gestisci loghi ufficiali, prima
     logoimport.html e logogestione.html). I loghi ufficiali di un negozio sono i brand dei menu BRAND di tutte le sue
@@ -65,6 +65,17 @@
     .variante span { color: var(--op-tenue); font-size: 10.5px; letter-spacing: .06em; }
     .variante .manca { color: var(--op-errore); font-size: 10.5px; }
     @media (max-width: 600px) { .varianti { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    /* iniziali dei loghi: lettere e cifre sulla riga del conteggio, a sinistra; un clic mostra solo i loghi che cominciano
+       così, un altro clic sulla stessa le toglie; spente quelle senza loghi */
+    .riga-conteggio { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .riga-conteggio .count-info { margin: 0; flex: none; }
+    .alfabeto { display: flex; flex-wrap: nowrap; gap: 2px; min-width: 0; }
+    .alfabeto button { min-width: 18px; height: 23px; padding: 0 3px; border: 1px solid transparent; border-radius: 2px; background: none; color: var(--op-oro);
+      font: 400 12px var(--op-mono); line-height: 1; cursor: pointer; }
+    .alfabeto button:hover:not(:disabled) { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
+    .alfabeto button[aria-pressed="true"] { background: var(--op-oro); border-color: var(--op-oro); color: #121110; }
+    .alfabeto button:disabled { color: #3a3631; cursor: default; }
+    .alfabeto .sep-alfabeto { width: 1px; margin: 3px 4px; background: var(--op-bordo); }
   </style>
 </head>
 <body>
@@ -107,7 +118,7 @@
         <span class="passo-num">1</span>
         <div>
           <p class="passo-titolo">cartella del progetto</p>
-          <p class="folder-status" id="folderStatus">non collegata: scegli la cartella STORECRAFT (con index.html e assets)</p>
+          <p class="folder-status" id="folderStatus">cartella non collegata</p>
           <button type="button" class="btn-folder" id="folderBtn" onclick="collegaCartella()" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">collega cartella progetto</button>
         </div>
       </section>
@@ -152,7 +163,10 @@
               <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="cerca un logo per nome…" aria-label="Cerca un logo per nome">
               </div>
-              <p class="count-info" id="countInfo"></p>
+              <div class="riga-conteggio">
+                <div class="alfabeto" id="alfabeto" role="group" aria-label="Mostra i loghi che cominciano con"></div>
+                <p class="count-info" id="countInfo"></p>
+              </div>
               <div class="logo-list" id="logoList"></div>
             </div>
           </section>
@@ -170,6 +184,7 @@
   let coda = [];        // { id, immagine, nome, stato: 'pronto' | 'salva' | 'salvato' | 'errore' }
   let loghi = [];       // { file, anteprima, stato, aperto, varianti, nuovo }
   let prioritari = [];  // PRIORITY_BRANDS dell'elenco
+  let iniziale = '';    // lettera o cifra scelta nella riga del conteggio ('' = tutte)
   let lavora = false;   // un salvataggio o una cancellazione in corso: niente cambio di negozio
 
   const $ = id => document.getElementById(id);
@@ -443,6 +458,7 @@
     } finally {
       lavora = false;
       disegnaCoda();
+      disegnaElenco();   // l'elenco disegnato durante il salvataggio aveva i comandi spenti: si riaccendono
     }
   }
 
@@ -474,6 +490,24 @@
 
   $('searchInput').addEventListener('input', disegnaElenco);
 
+  // lettere A–Z e cifre 0–9: un clic mostra solo i loghi che cominciano così, un altro clic torna a tutti
+  function disegnaAlfabeto() {
+    const box = $('alfabeto');
+    const presenti = new Set(loghi.map(logo => logo.file.charAt(0).toUpperCase()));
+    if (iniziale && !presenti.has(iniziale)) iniziale = '';
+    const tasto = c => {
+      const b = nodo('button', '', c);
+      b.type = 'button';
+      b.disabled = !presenti.has(c);
+      b.setAttribute('aria-pressed', String(c === iniziale));
+      b.title = b.disabled ? `nessun logo con ${c}` : c === iniziale ? 'mostra tutti i loghi' : `solo i loghi che cominciano con ${c}`;
+      b.addEventListener('click', () => { iniziale = iniziale === c ? '' : c; disegnaElenco(); });
+      return b;
+    };
+    box.replaceChildren(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(tasto), nodo('span', 'sep-alfabeto'), ...'0123456789'.split('').map(tasto));
+    box.hidden = !cartellaLoghi;
+  }
+
   function disegnaElenco() {
     const contenitore = $('logoList');
     contenitore.replaceChildren();
@@ -485,8 +519,9 @@
       return;
     }
     const cerca = $('searchInput').value.trim().toUpperCase();
-    const mostrati = loghi.filter(logo => logo.file.toUpperCase().includes(cerca));
-    $('countInfo').textContent = `${mostrati.length} di ${loghi.length} loghi mostrati.`;
+    disegnaAlfabeto();
+    const mostrati = loghi.filter(logo => logo.file.toUpperCase().includes(cerca) && (!iniziale || logo.file.toUpperCase().startsWith(iniziale)));
+    $('countInfo').textContent = `${mostrati.length} di ${loghi.length} loghi mostrati${iniziale ? ` · iniziale ${iniziale}` : ''}.`;
     if (!mostrati.length) { contenitore.append(nodo('p', 'empty-msg', 'nessun logo trovato')); return; }
     for (const logo of mostrati) {
       const evidenza = prioritari.includes(logo.file);

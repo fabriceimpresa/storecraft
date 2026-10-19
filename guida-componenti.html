@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261019-01"></script>
+  <script src="assets/js/negozi.js?v=20261019-02"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 19 ottobre 2026 · versione 1.2.36</p>
+  <p class="aggiornamento">ultimo aggiornamento: 19 ottobre 2026 · versione 1.2.37</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -430,7 +430,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261019-01</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261019-02</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -577,7 +577,7 @@
   <!-- ================================================================ -->
   <h2 id="loghi">Loghi ufficiali e personali</h2>
   <ul class="regole">
-    <li><strong>Ufficiali</strong>: file in <code>assets/logos/&lt;negozio&gt;/</code>, elenco in <code>elenco.js</code> accanto (<code>LOGO_FILES</code> e <code>PRIORITY_BRANDS</code>), quattro varianti colore (white, black, red, gold) in <code>assets/img/&lt;negozio&gt;/printlogos/</code>. Si gestiscono dalla sezione <strong>Gestione loghi</strong> dell'area operatore (<code>loghi-ufficiali.html</code>, dal 19 ottobre 2026, prima chiamata Loghi ufficiali; prima due pagine, Importa e Gestisci loghi ufficiali): [1] cartella del progetto (la riga di stato in verde mostra ogni passaggio, il browser chiede il permesso di modificare i file, a cartella collegata il pulsante diventa «✓ cartella collegata»), [2] negozio, [3] due sezioni apribili come nel Controllo codice: IMPORTA LOGHI (solo PNG già trasparenti, coda con il nome del brand; un logo salvato compare subito nell'elenco con l'etichetta NUOVO) e LOGHI DEL NEGOZIO (ricerca e conteggio; per ogni logo ☆ / ★ in evidenza, cioè tra i brand prioritari di <code>PRIORITY_BRANDS</code>, varianti, che mostra le quattro varianti su un fondo a scacchi, sostituisci, un PNG nuovo con lo stesso nome, ed elimina, che toglie anche il logo da quelli in evidenza). Sostituendo un logo, o sovrascrivendolo importandolo con lo stesso nome, la pagina aggiorna da sola <code>LOGO_ASSET_VERSION</code> in <code>logos.js</code> e <code>print-logo-colors.js</code> (data di oggi e un numero), così i browser riscaricano i loghi invece di mostrare la copia vecchia. Alla fine i file vanno pubblicati con un commit.</li>
+    <li><strong>Ufficiali</strong>: file in <code>assets/logos/&lt;negozio&gt;/</code>, elenco in <code>elenco.js</code> accanto (<code>LOGO_FILES</code> e <code>PRIORITY_BRANDS</code>), quattro varianti colore (white, black, red, gold) in <code>assets/img/&lt;negozio&gt;/printlogos/</code>. Si gestiscono dalla sezione <strong>Gestione loghi</strong> dell'area operatore (<code>loghi-ufficiali.html</code>, dal 19 ottobre 2026, prima chiamata Loghi ufficiali; prima due pagine, Importa e Gestisci loghi ufficiali): [1] cartella del progetto (la riga di stato in verde mostra ogni passaggio, il browser chiede il permesso di modificare i file, a cartella collegata il pulsante diventa «✓ cartella collegata»), [2] negozio, [3] due sezioni apribili come nel Controllo codice: IMPORTA LOGHI (solo PNG già trasparenti, coda con il nome del brand; un logo salvato compare subito nell'elenco con l'etichetta NUOVO) e LOGHI DEL NEGOZIO (ricerca e conteggio, con a sinistra le iniziali A–Z e 0–9 cliccabili che mostrano solo i loghi che cominciano così; per ogni logo ☆ / ★ in evidenza, cioè tra i brand prioritari di <code>PRIORITY_BRANDS</code>, varianti, che mostra le quattro varianti su un fondo a scacchi, sostituisci, un PNG nuovo con lo stesso nome, ed elimina, che toglie anche il logo da quelli in evidenza). Sostituendo un logo, o sovrascrivendolo importandolo con lo stesso nome, la pagina aggiorna da sola <code>LOGO_ASSET_VERSION</code> in <code>logos.js</code> e <code>print-logo-colors.js</code> (data di oggi e un numero), così i browser riscaricano i loghi invece di mostrare la copia vecchia. Alla fine i file vanno pubblicati con un commit.</li>
     <li><strong>Personali</strong>: nel browser, una lista per negozio (<code>loghi-personalizzati.js</code>, IndexedDB <code>storecraft-loghi-personalizzati</code>); si creano con Genera Loghi e si gestiscono con Gestisci Lista; per portarli su un altro computer si usa il backup.</li>
     <li><strong>Nelle pagine</strong>: prima <code>elenco.js</code> del negozio, poi <code>logos.js</code>; i menu Loghi Personali si riempiono quando la lista è pronta (<code>LoghiPersonalizzati.pronto</code>). Per la stampa i loghi sono ricolorati da <code>print-logo-colors.js</code> (eccezione: Promo Multibrand con il filtro CSS).</li>
   </ul>

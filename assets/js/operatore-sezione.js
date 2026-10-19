@@ -15,10 +15,27 @@
       window.parent.postMessage({ esc: true }, location.origin);
     }
   });
+  // Dentro la pagina operatore il riquadro della sezione è alto quanto tutto il contenuto (es. 196 loghi): una finestra
+  // di conferma centrata nel riquadro finirebbe fuori dallo schermo, con solo il velo in vista. La finestra si mette al
+  // centro della parte del riquadro che si vede (e segue lo scorrimento della pagina operatore finché è aperta).
+  function inVista(finestra) {
+    const box = finestra.querySelector('.modal-box');
+    if (!box) return;
+    if (!incorporata || !window.frameElement) { finestra.style.alignItems = ''; box.style.marginTop = ''; return; }
+    const r = window.frameElement.getBoundingClientRect(), alto = window.parent.innerHeight;
+    const da = Math.max(0, -r.top), a = Math.min(r.height, alto - r.top);
+    finestra.style.alignItems = 'flex-start';
+    box.style.marginTop = `${Math.max(da + 12, da + (a - da - box.offsetHeight) / 2)}px`;
+  }
+  const segui = () => document.querySelectorAll('.modal-overlay.active').forEach(inVista);
+  // scorrimento della pagina operatore, della finestra o di un suo riquadro (in cattura: lo scorrimento di un elemento non risale)
+  if (incorporata && window.frameElement) { window.parent.document.addEventListener('scroll', segui, { passive: true, capture: true }); window.parent.addEventListener('resize', segui); }
   // una finestra di conferma che si apre prende la tastiera (sul pulsante Annulla, il più prudente)
   const osserva = () => document.querySelectorAll('.modal-overlay').forEach(finestra => {
     new MutationObserver(() => {
-      if (finestra.classList.contains('active')) finestra.querySelector('.modal-btn-cancel')?.focus();
+      if (!finestra.classList.contains('active')) return;
+      inVista(finestra);
+      finestra.querySelector('.modal-btn-cancel')?.focus({ preventScroll: true });
     }).observe(finestra, { attributes: true, attributeFilter: ['class'] });
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', osserva);
