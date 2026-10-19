@@ -177,7 +177,7 @@
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title {
     display: flex; align-items: baseline; justify-content: center; gap: 18px; text-align: center;
     font-family: var(--v-script) !important; font-size: 3rem; font-weight: 400; letter-spacing: 0; text-transform: none;
-    line-height: 1.05; color: var(--v-rosso) !important;
+    line-height: 1.05; color: var(--v-verde) !important;   /* verde bottiglia come il menu laterale */
     margin-bottom: 1.15rem;   /* un poco più di spazio tra il titolo e i widget sotto (0,8rem nella dashboard) */
   }
   /* i due titoli lunghi delle stampe pronte (Stampe Pronte // … e Allestimenti Pronti // …) restano più piccoli */
