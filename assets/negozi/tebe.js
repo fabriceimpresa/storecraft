@@ -29,6 +29,7 @@ Negozi.registra('tebe', {
     'cartelli_multiarticolo.html': ['morsamultiarticolo.jpg'],
     'albero.html': ['albero.jpg'],
     'cornici10x15.html': ['cornice10x15.jpg'],
+    'cornice21x27.html': ['cornice21x27.jpg'],
     'paletto.html': ['paletto.jpg'],
     'paletto18x12.html': ['paletto.jpg']
   },

@@ -21,6 +21,7 @@ Negozi.registra('ophilya', {
   cronologiaStampa: 'ophilya-cronologia-stampa',
   // guida "Dove montare la stampa?": per pagina, le foto in assets/foto/ophilya/ (senza foto: riquadri "Foto in arrivo")
   guida: {
+    'albero-ophilya.html': ['alberoophilya.jpg'],
     'paletto-ophilya.html': ['palettoophilya.jpg'],
     'paletto18x12-ophilya.html': ['palettoophilya.jpg']
   },
