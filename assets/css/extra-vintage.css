@@ -453,7 +453,8 @@
      degli altri temi (il set la allargava con il carattere .78rem e lettere molto spaziate) */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar { gap: 8px; }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mobile-brand {
-    flex: 1 1 auto; min-width: 0; overflow: hidden; text-align: center; padding: 0 2px;
+    flex: 1 1 auto; min-width: 0; overflow-x: clip; overflow-y: visible; text-align: center; padding: 4px 2px 6px;
+    line-height: 1.25 !important;   /* la coda della f di Yellowtail scende sotto la riga: con overflow: hidden veniva tagliata */
     font-size: clamp(20px, 7vw, 30px) !important;
   }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mode-switcher { flex: 0 1 auto; min-width: 0; }
