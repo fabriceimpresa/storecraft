@@ -449,13 +449,15 @@
     background: var(--v-rosso) !important; color: var(--v-carta) !important;
   }
   /* barra in alto: ☰, marchio e CASSIERE / CREATOR devono stare nella larghezza dello schermo. Il marchio si rimpicciolisce
-     con lo schermo (7vw, da 20 a 30 px) e può stringersi; CASSIERE / CREATOR torna alla grandezza della barra del telefono
+     con lo schermo (7,8vw, da 22 a 33 px); CASSIERE / CREATOR torna alla grandezza della barra del telefono
      degli altri temi (il set la allargava con il carattere .78rem e lettere molto spaziate) */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar { gap: 8px; }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mobile-brand {
-    flex: 1 1 auto; min-width: 0; overflow-x: clip; overflow-y: visible; text-align: center; padding: 4px 2px 6px;
-    line-height: 1.25 !important;   /* la coda della f di Yellowtail scende sotto la riga: con overflow: hidden veniva tagliata */
-    font-size: clamp(20px, 7vw, 30px) !important;
+    flex: 1 1 auto; min-width: 0; text-align: center; padding: 4px 2px 10px;
+    /* la coda della f di Yellowtail scende molto sotto la riga: niente ritaglio (Safari su iPhone taglia anche con
+       overflow-x: clip) e riga più alta; lo spazio in larghezza c'è, il marchio si rimpicciolisce con lo schermo */
+    overflow: visible !important; line-height: 1.4 !important;
+    font-size: clamp(22px, 7.8vw, 33px) !important;
   }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mode-switcher { flex: 0 1 auto; min-width: 0; }
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mode-switcher .mode-btn {
