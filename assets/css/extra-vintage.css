@@ -24,7 +24,7 @@
   --v-rosso: #b13b2e;
   --v-rosso-scuro: #922d22;
   --v-senape: #cc9a2d;
-  --v-marrone: #5e3820;
+  --v-marrone: #6f442a;   /* un poco più chiaro dal 20 ottobre 2026 (prima #5e3820) */
   --v-inchiostro: #2b2620;
   --v-tenue: #8a7d66;
   --v-script: 'Yellowtail', cursive;
@@ -178,7 +178,7 @@
   }
   /* sopra Utilità Cassa la stellina è marrone cuoio come il suo titolo */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content #tools-title {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L14.59 8.44L22.46 8.6L16.18 13.36L18.47 20.9L12 16.4L5.53 20.9L7.82 13.36L1.54 8.6L9.41 8.44Z' fill='%235e3820'/%3E%3Cpath d='M12 12L12 2.6M12 12L20.9 9.1M12 12L17.5 19.6M12 12L6.5 19.6M12 12L3.1 9.1' stroke='%233b2213' stroke-width='.7' stroke-linecap='round'/%3E%3Cpath d='M12 1L12 12L1.54 8.6L9.41 8.44ZM22.46 8.6L12 12L18.47 20.9L16.18 13.36ZM5.53 20.9L12 12L12 16.4Z' fill='%238a5a38' opacity='.55'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 1L14.59 8.44L22.46 8.6L16.18 13.36L18.47 20.9L12 16.4L5.53 20.9L7.82 13.36L1.54 8.6L9.41 8.44Z' fill='%236f442a'/%3E%3Cpath d='M12 12L12 2.6M12 12L20.9 9.1M12 12L17.5 19.6M12 12L6.5 19.6M12 12L3.1 9.1' stroke='%23482b19' stroke-width='.7' stroke-linecap='round'/%3E%3Cpath d='M12 1L12 12L1.54 8.6L9.41 8.44ZM22.46 8.6L12 12L18.47 20.9L16.18 13.36ZM5.53 20.9L12 12L12 16.4Z' fill='%239a6a46' opacity='.55'/%3E%3C/svg%3E");
   }
   /* titolo Utilità Cassa in marrone cuoio */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content #tools-title { color: var(--v-marrone) !important; }
@@ -465,7 +465,7 @@
   }
   /* menu di sinistra del telefono: lì il marchio è una riga flessibile (dashboard.css), che perde gli spazi tra le parole
      e le //: lo spazio lo dà gap; le //, più piccole, si allineano alla base della scritta e non in alto (Safari) */
-  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand { gap: .24em; align-items: baseline; }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand { gap: .24em; align-items: baseline; top: 11px; }   /* 5 px più in basso che da computer: in linea con la ✕ */
   /* titoli delle sezioni su una riga anche sui telefoni stretti: grandi con lo schermo (9vw, da 2 a 2,7rem), ali del filetto
      più corte */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title,
