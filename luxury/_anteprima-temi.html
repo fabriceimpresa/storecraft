@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="luxury" data-tema-prova="neuro">
+<head>
+  <meta charset="UTF-8">
+  <script src="../assets/js/negozi.js?v=20261019-03"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anteprima temi · STORE // CRAFT</title>
+  <!-- PROVA, non collegata: dashboard di Luxury Outlet con i temi nuovi in anteprima (?tema=neuro|vintage|chiaro).
+       Non salva niente nel browser: tema chiaro e aspetto STANDARD forzati solo qui. -->
+  <script src="../assets/js/punto-vendita.js?v=20261019-03"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Alfa+Slab+One&family=Oswald:wght@400;500;600&family=Yellowtail&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Rajdhani:wght@500;600;700&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="../assets/css/caroselli.css?v=20261019-03">
+  <script src="../assets/js/caroselli.js?v=20261019-03" defer></script>
+  <link rel="stylesheet" href="../assets/css/dashboard.css?v=20261019-03">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261019-03">
+  <script defer src="../assets/js/menu-cascata.js?v=20261019-03"></script>
+  <script src="../assets/js/cassa.js?v=20261019-03"></script>
+  <script src="../assets/js/dashboard.js?v=20261019-03"></script>
+  <script src="../assets/js/theme.js?v=20261019-03"></script>
+  <script>
+    (() => {
+      const r = document.documentElement;
+      const t = new URLSearchParams(location.search).get('tema') || 'neuro';
+      r.dataset.temaProva = t;
+      if (['neuro'].includes(t)) r.dataset.famiglia = 'moderno';
+      r.dataset.interfaceTheme = 'light';
+      r.dataset.interfaceLook = 'standard';
+      // il set EXTRA salvato nel browser (es. VINTAGE scelto nella dashboard) non deve entrare nell'anteprima:
+      // theme.js l'ha già caricato, qui si tolgono il segno su <html>, il suo foglio di stile e i suoi caratteri
+      delete r.dataset.interfaceExtra;
+      document.querySelectorAll('link[id^="interface-extra-"]').forEach(link => link.remove());
+      try { PuntoVendita.ricorda('luxury'); } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261019-03">
+  <link rel="stylesheet" href="_anteprima-temi.css?v=1">
+  <link rel="stylesheet" href="_anteprima-temi-2.css?v=1">
+</head>
+<body>
+  <script>Dashboard.disegna();</script>
+  <nav class="prova-temi" aria-label="Temi in prova">
+    <span>ANTEPRIMA TEMA</span>
+    <a href="?tema=chiaro">chiaro</a><a href="?tema=vintage">vintage usa</a><i></i><a href="?tema=neuro">neuro</a>
+  </nav>
+  <script>
+    // ?vista=cassiere apre le Utilità Cassa (solo per le foto della prova)
+    if (new URLSearchParams(location.search).get('vista') === 'cassiere') {
+      addEventListener('load', () => [...document.querySelectorAll('.mode-btn')].find(b => /cassiere/i.test(b.textContent))?.click());
+    }
+    // ?menu=1 apre MENU // IMPOSTAZIONI, ?menu=impostazioni anche la vista IMPOSTAZIONI (solo per le foto della prova)
+    const menuProva = new URLSearchParams(location.search).get('menu');
+    if (menuProva) addEventListener('load', () => setTimeout(() => {
+      document.querySelector('.system-menu-toggle')?.click();
+      if (menuProva === 'impostazioni') setTimeout(() => document.querySelector('[data-system-menu-item="settings"]')?.click(), 100);
+    }, 300));
+    // ?scorri=<id> porta in vista una galleria (solo per le foto della prova)
+    const scorriProva = new URLSearchParams(location.search).get('scorri');
+    if (scorriProva) addEventListener('load', () => setTimeout(() => document.getElementById(scorriProva)?.closest('.carousel-wrapper')?.previousElementSibling?.scrollIntoView({ behavior: 'instant' }), 300));
+    document.querySelectorAll('.prova-temi a').forEach(a => a.classList.toggle('attivo', new URLSearchParams(a.search).get('tema') === document.documentElement.dataset.temaProva));
+  </script>
+</body>
+</html>

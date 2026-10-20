@@ -1,0 +1,349 @@
+/*
+ * PROVA dei temi VINTAGE (qui) e MODERNI e MILITARE (in _anteprima-temi-2.css) sulla dashboard (luxury/_anteprima-temi.html), non collegata.
+ * Si appoggiano al tema chiaro (data-interface-theme="light") e ne cambiano colori, caratteri e dettagli.
+ * Quando i temi saranno approvati, queste regole entreranno in theme.css come temi veri.
+ */
+
+/* riquadro della prova, in basso al centro */
+.prova-temi {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 99999;
+  display: flex; align-items: center; gap: 4px; padding: 5px 6px 5px 14px;
+  background: #121110; border: 1px solid #d4a373; border-radius: 999px;
+  font: 600 10px/1 'Plus Jakarta Sans', sans-serif; letter-spacing: .14em; color: #8c857b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+}
+.prova-temi span { margin-right: 8px; }
+.prova-temi a { padding: 7px 12px; border-radius: 999px; color: #f4f1ea; text-decoration: none; text-transform: uppercase; }
+.prova-temi a:hover { color: #d4a373; }
+.prova-temi a.attivo { background: #d4a373; color: #121110; }
+
+/* =====================================================================================================
+   VINTAGE: America anni '50, tutto opaco. Carta crema in tinta piatta (niente trame: regola dell'utente), menu laterale verde bottiglia, blu navy
+   per bordi e testi forti, rosso per i pulsanti, senape per le luci; il marrone
+   cuoio solo per il titolo Utilità Cassa, il tipo in alto a destra delle schede e il + delle specifiche. Caratteri: Yellowtail (insegne a
+   mano), Alfa Slab One (titoli da manifesto), Oswald (etichette condensate), Libre Franklin (testo).
+   Schede come cartoncini stampati, con l'ombra piena spostata della stampa a registro.
+   ===================================================================================================== */
+:root[data-tema-prova="vintage"][data-interface-theme="light"] {
+  --v-crema: #ede3cc;
+  --v-carta: #f7f0de;
+  --v-carta-scura: #e3d6b8;
+  --v-verde: #2e4a3b;
+  --v-verde-chiaro: #4d6b58;
+  --v-navy: #25385a;
+  --v-rosso: #b13b2e;
+  --v-rosso-scuro: #922d22;
+  --v-senape: #cc9a2d;
+  --v-marrone: #5e3820;
+  --v-inchiostro: #2b2620;
+  --v-tenue: #8a7d66;
+  --v-script: 'Yellowtail', cursive;
+  --v-slab: 'Alfa Slab One', Georgia, serif;
+  --v-cond: 'Oswald', 'Arial Narrow', sans-serif;
+
+  --interface-page: var(--v-crema);
+  --interface-sidebar: var(--v-verde);
+  --interface-surface: var(--v-carta);
+  --interface-control: var(--v-carta);
+  --interface-border: rgba(37, 56, 90, .35);
+  --interface-accent: var(--v-rosso);
+  --interface-accent-bright: var(--v-rosso-scuro);
+  --interface-option-hover: var(--v-carta-scura);
+  --interface-text: var(--v-inchiostro);
+  --interface-muted: var(--v-tenue);
+  --interface-font: 'Libre Franklin', sans-serif;
+  --interface-shadow: rgba(43, 38, 32, .25);
+  --cursore-colore: var(--v-rosso);
+}
+
+@media screen {
+  :root[data-tema-prova="vintage"] body {
+    background-color: var(--v-crema) !important;
+    background-image: none !important;
+    font-family: 'Libre Franklin', sans-serif !important;
+  }
+  :root[data-tema-prova="vintage"] body #main-content { background: transparent !important; }
+
+  /* menu laterale verde bottiglia, con la riga tricolore anni '50 sul bordo */
+  :root[data-tema-prova="vintage"] body aside#sidebar-menu,
+  :root[data-tema-prova="vintage"] body #sidebar-menu :is(.sidebar-bottom, .sidebar-credits) {
+    background-color: var(--v-verde) !important;
+    border-color: transparent !important;
+  }
+  :root[data-tema-prova="vintage"] body #sidebar-menu :is(.sidebar-bottom, .sidebar-credits) { background: transparent !important; }
+  :root[data-tema-prova="vintage"] body aside#sidebar-menu {
+    background-image:
+      linear-gradient(90deg, transparent calc(100% - 9px), var(--v-senape) calc(100% - 9px), var(--v-senape) calc(100% - 6px), var(--v-carta) calc(100% - 6px), var(--v-carta) calc(100% - 4px), var(--v-rosso) calc(100% - 4px)) !important;
+  }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .brand { color: var(--v-senape) !important; }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .sidebar-section > .label,
+  :root[data-tema-prova="vintage"] body #sidebar-menu .sidebar-section > .label span {
+    font-family: var(--v-cond) !important; font-weight: 500; font-size: 12.5px; letter-spacing: .18em;
+    color: #e8dcc0 !important;
+  }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .sidebar-section > .label .section-toggle { color: var(--v-senape) !important; }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .sidebar-section > .label:hover,
+  :root[data-tema-prova="vintage"] body #sidebar-menu .sidebar-section > .label:hover span { color: var(--v-senape) !important; }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .sidebar-section .label:hover::before,
+  :root[data-tema-prova="vintage"] body #sidebar-menu :is(.nav-btn:hover, .nav-btn.active, .nav-subtoggle:hover) {
+    background: rgba(0, 0, 0, .16) !important;
+    box-shadow: inset 3px 0 var(--v-rosso) !important;
+  }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .nav-btn { font-family: 'Libre Franklin', sans-serif !important; color: #d6c9a8 !important; }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .nav-btn:hover { color: #fff6e2 !important; }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .storecraft-mark img {
+    filter: brightness(0) saturate(100%) invert(68%) sepia(50%) saturate(560%) hue-rotate(2deg) brightness(88%) !important;
+    opacity: .85 !important; mix-blend-mode: normal;
+  }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .signature-caption { font-family: var(--v-cond) !important; color: #b8ab8c !important; letter-spacing: .2em; }
+  :root[data-tema-prova="vintage"] body #sidebar-menu .system-menu-toggle { font-family: var(--v-cond) !important; color: var(--v-senape) !important; letter-spacing: .2em; border-color: rgba(232, 220, 192, .2) !important; }
+
+  /* intestazione */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .mode-switcher {
+    background: var(--v-carta) !important;
+    border: 2px solid var(--v-navy) !important;
+    border-radius: 6px !important;
+    box-shadow: 3px 3px 0 var(--v-navy) !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .mode-switcher .mode-btn {
+    font-family: var(--v-cond) !important; font-weight: 500 !important; font-size: .78rem !important; letter-spacing: .16em;
+    color: var(--v-tenue) !important; border-radius: 3px !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .mode-switcher:not(.orologio-testata) .mode-btn:hover { color: var(--v-navy) !important; background: var(--v-carta-scura) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .mode-switcher:not(.orologio-testata) .mode-btn.active { background: var(--v-rosso) !important; color: var(--v-carta) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .orologio-testata .mode-btn,
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .orologio-testata .mode-btn:hover { background: transparent !important; color: var(--v-navy) !important; }
+  :root[data-tema-prova="vintage"] body .orologio-data { color: var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body .orologio-punto { color: var(--v-senape) !important; }
+  :root[data-tema-prova="vintage"] body .or-gira { border: 2px solid var(--v-navy) !important; color: var(--v-navy) !important; background: var(--v-senape) !important; }
+  :root[data-tema-prova="vintage"] body .or-gira:hover { background: var(--v-rosso) !important; color: var(--v-carta) !important; }
+
+  :root[data-tema-prova="vintage"] body .testata-titolo {
+    font-family: var(--v-script) !important; font-weight: 400; font-size: 30px; letter-spacing: .01em; text-transform: none;
+    color: var(--v-rosso) !important;
+  }
+  :root[data-tema-prova="vintage"] body .testata-titolo::before,
+  :root[data-tema-prova="vintage"] body .testata-titolo::after {
+    content: '★'; width: auto; height: auto; background: none; opacity: 1; margin: 0; font-size: 12px; color: var(--v-senape);
+  }
+  :root[data-tema-prova="vintage"] body .store-identity strong { font-family: var(--v-slab) !important; font-weight: 400 !important; color: var(--v-navy) !important; letter-spacing: .08em; }
+  :root[data-tema-prova="vintage"] body .store-identity span { font-family: var(--v-cond) !important; color: var(--v-rosso) !important; letter-spacing: .2em; }
+  :root[data-tema-prova="vintage"] body .store-logo { filter: brightness(0) saturate(100%) invert(18%) sepia(30%) saturate(1300%) hue-rotate(190deg) brightness(92%) !important; opacity: 1 !important; }
+
+  /* titoli delle sezioni: insegna scritta a mano, più grande; dopo, una sola linea navy che alla fine si piega
+     appena verso l'alto, come il colpo di penna che chiude una firma */
+  :root[data-tema-prova="vintage"] body #main-content .section-title {
+    display: flex; align-items: baseline; gap: 18px;
+    font-family: var(--v-script) !important; font-size: 2.75rem; font-weight: 400; letter-spacing: 0; text-transform: none;
+    line-height: 1.05; color: var(--v-rosso) !important;
+  }
+  /* titolo Utilità Cassa in marrone cuoio */
+  :root[data-tema-prova="vintage"] body #main-content #tools-title { color: var(--v-marrone) !important; }
+  :root[data-tema-prova="vintage"] body #main-content .section-title::after {
+    content: ''; flex: 1; height: 18px; align-self: center; transform: translateY(6px);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 18'%3E%3Cpath d='M0 15H20C33 15 40 11.5 45 3' fill='none' stroke='%2325385a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") right top / 48px 18px no-repeat,
+      linear-gradient(var(--v-navy), var(--v-navy)) left 14px / calc(100% - 47px) 2px no-repeat;
+  }
+
+  /* schede: cartoncini stampati, bordo navy e ombra piena spostata */
+  :root[data-tema-prova="vintage"] body #main-content :is(.carousel-card, .card) {
+    background: var(--v-carta) !important;
+    border: 2px solid var(--v-navy) !important;
+    border-radius: 8px !important;
+    box-shadow: 4px 4px 0 var(--v-navy) !important;
+    transition: transform .15s ease, box-shadow .15s ease !important;
+  }
+  :root[data-tema-prova="vintage"] body #main-content :is(.carousel-card, .card):hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: 6px 6px 0 var(--v-navy) !important;
+  }
+  :root[data-tema-prova="vintage"] body #main-content .card-top {
+    font-family: var(--v-cond) !important; font-weight: 500 !important; font-size: 11px; letter-spacing: .18em;
+    color: var(--v-marrone) !important; align-items: center;
+  }
+  :root[data-tema-prova="vintage"] body #main-content .card-top .number {
+    display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--v-senape); color: var(--v-navy) !important; font-weight: 600; letter-spacing: 0;
+    border: 2px solid var(--v-navy);
+  }
+  :root[data-tema-prova="vintage"] body #main-content .preview,
+  :root[data-tema-prova="vintage"] body #main-content .preview:not([style]) {
+    background: var(--v-carta-scura) !important; border: 1.5px solid var(--v-navy); border-radius: 4px !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content .card-body h3 {
+    font-family: var(--v-slab) !important; font-weight: 400 !important; font-size: 19px; letter-spacing: .03em; line-height: 1.15;
+    text-transform: uppercase; font-variant: normal; color: var(--v-navy) !important; text-shadow: none !important;
+  }
+  :root[data-tema-prova="vintage"] body #main-content .spec-toggle { color: var(--v-marrone) !important; }
+  :root[data-tema-prova="vintage"] body #main-content .spec-toggle:is(:hover, :focus-visible) { background: var(--v-marrone) !important; color: #fff !important; }
+  :root[data-tema-prova="vintage"] body #main-content .spec { font-family: var(--v-cond); font-size: 12.5px; letter-spacing: .06em; color: var(--v-tenue); }
+
+  /* promo stagionali: cartoncino rosso fuori registro */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(.gold-bf-card, #prints-promo-carousel .carousel-card) {
+    border: 2px solid var(--v-rosso) !important;
+    box-shadow: 4px 4px 0 var(--v-rosso) !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(.gold-bf-card, #prints-promo-carousel .carousel-card):hover { box-shadow: 6px 6px 0 var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(.gold-bf-card h3, #prints-promo-carousel .card-body h3) { color: var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body #main-content .promo-lightning,
+  :root[data-tema-prova="vintage"] body #main-content .nav-star { color: var(--v-senape) !important; text-shadow: none !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .card-badge {
+    background: var(--v-senape) !important; color: var(--v-navy) !important; border: 1.5px solid var(--v-navy);
+    border-radius: 3px !important; font-family: var(--v-cond) !important; font-weight: 600 !important; letter-spacing: .12em;
+    transform: rotate(-4deg); box-shadow: 2px 2px 0 var(--v-navy) !important;
+  }
+
+  /* frecce dei caroselli: bottoni tondi navy con la freccia senape */
+  :root[data-tema-prova="vintage"] body .carousel-arrow {
+    background: var(--v-navy) !important; border: 2px solid var(--v-navy) !important; color: var(--v-senape) !important;
+    box-shadow: 2px 2px 0 rgba(43, 38, 32, .35) !important;
+  }
+  :root[data-tema-prova="vintage"] body .carousel-arrow:hover { background: var(--v-rosso) !important; border-color: var(--v-rosso) !important; color: var(--v-carta) !important; }
+
+  /* Utilità Cassa */
+  :root[data-tema-prova="vintage"] body #tools .widget {
+    background: var(--v-carta) !important; border: 2px solid var(--v-navy) !important; border-radius: 8px !important; box-shadow: 4px 4px 0 var(--v-navy) !important;
+  }
+  :root[data-tema-prova="vintage"] body #tools .widget:not(.expanded):hover { border-color: var(--v-navy) !important; box-shadow: 6px 6px 0 var(--v-navy) !important; transform: translate(-2px, -2px); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools .widget h3 { font-family: var(--v-slab) !important; font-weight: 400; letter-spacing: .04em; text-transform: uppercase; color: var(--v-navy) !important; font-size: 1.12rem !important; line-height: 1.15; white-space: normal; }
+  :root[data-tema-prova="vintage"] body #tools :is(.tool-input, .tool-input-select, .input-group, .rate-btn-widget) {
+    border-radius: 4px !important; border: 1.5px solid var(--v-navy) !important; background: #fffaf0 !important; color: var(--v-inchiostro) !important;
+  }
+  :root[data-tema-prova="vintage"] body #tools :is(.input-prefix, .input-suffix) { background: var(--v-senape) !important; color: var(--v-navy) !important; border-color: var(--v-navy) !important; font-family: var(--v-cond) !important; font-weight: 600; }
+  :root[data-tema-prova="vintage"] body #tools :is(.tool-input, .tool-input-select) { font-family: 'Libre Franklin', sans-serif !important; }
+  :root[data-tema-prova="vintage"] body #tools .rate-btn-widget { font-family: var(--v-cond) !important; letter-spacing: .08em; }
+  :root[data-tema-prova="vintage"] body #tools :is(.rate-btn-widget:hover, .rate-btn-widget.active) { background: var(--v-verde) !important; border-color: var(--v-verde) !important; color: var(--v-carta) !important; }
+  :root[data-tema-prova="vintage"] body #tools .tool-btn:not(.tool-btn-secondary) {
+    background: var(--v-rosso) !important; border: 2px solid var(--v-navy) !important; color: var(--v-carta) !important;
+    border-radius: 999px !important; font-family: var(--v-cond) !important; font-weight: 500; letter-spacing: .16em; box-shadow: 2px 2px 0 var(--v-navy) !important;
+  }
+  :root[data-tema-prova="vintage"] body #tools .tool-btn:not(.tool-btn-secondary):hover { background: var(--v-rosso-scuro) !important; }
+  :root[data-tema-prova="vintage"] body #tools .tool-btn-secondary {
+    background: transparent !important; border: 2px solid var(--v-navy) !important; color: var(--v-navy) !important;
+    border-radius: 999px !important; font-family: var(--v-cond) !important; letter-spacing: .16em;
+  }
+  :root[data-tema-prova="vintage"] body #tools .tool-result { font-family: var(--v-slab) !important; color: var(--v-navy) !important; }
+  :root[data-tema-prova="vintage"] body #tools #widget-bacheca { border-color: var(--v-rosso) !important; background: var(--v-carta) !important; box-shadow: 4px 4px 0 var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body #tools #widget-bacheca h3.bacheca-titolo { color: var(--v-rosso) !important; font-family: var(--v-script) !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 1.9rem !important; font-weight: 400 !important; }
+  :root[data-tema-prova="vintage"] body .bacheca-mazzo { background: var(--v-carta-scura) !important; }
+
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .home-mark { border: 2px solid var(--v-navy) !important; color: var(--v-navy) !important; font-family: var(--v-cond) !important; box-shadow: 2px 2px 0 var(--v-navy) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .home-mark:hover { background: var(--v-rosso) !important; color: var(--v-carta) !important; }
+}
+.prova-temi i { width: 1px; height: 18px; margin: 0 6px; background: #3a3631; }
+
+/* ---------- VINTAGE: Utilità Cassa, Bacheca e menu (blocco generato) ---------- */
+@media screen {
+  /* colori dei widget: i primi tre blu, Calcola IVA e Generatore QR marroni, la Bacheca rossa (bordo, ombra e titolo) */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools :is(#widget-iva, #widget-qrcode) { border-color: var(--v-marrone) !important; box-shadow: 4px 4px 0 var(--v-marrone) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools :is(#widget-iva, #widget-qrcode):not(.expanded):hover { border-color: var(--v-marrone) !important; box-shadow: 6px 6px 0 var(--v-marrone) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools :is(#widget-iva, #widget-qrcode) h3 { color: var(--v-marrone) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools :is(#widget-sconto, #widget-aliquota, #widget-valuta) { border-color: var(--v-navy) !important; box-shadow: 4px 4px 0 var(--v-navy) !important; }
+
+  /* La tua Bacheca, anni '50: la lavagnetta dei messaggi di un diner. Cartoncino crema con gli angoli tondi, il titolo
+     su un nastro rosso con le code a coda di rondine, le stelline "atomiche" dell'epoca (senape e blu) negli angoli e i
+     post-it appuntati su un pannello blu con la doppia cornice crema e senape. Solo tinte piatte. */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca {
+    border: 2px solid var(--v-rosso) !important;
+    border-radius: 14px !important;
+    background-color: var(--v-carta) !important;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cc9a2d'%3E%3Cpath d='M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2325385a'%3E%3Cpath d='M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cc9a2d'%3E%3Cpath d='M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0z'/%3E%3C/svg%3E"), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2325385a'%3E%3Cpath d='M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: 16px 18px, 40px 12px, calc(100% - 14px) calc(100% - 12px), calc(100% - 38px) calc(100% - 28px) !important;
+    background-size: 20px, 11px, 20px, 11px !important;
+    box-shadow: 4px 4px 0 var(--v-rosso) !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca:not(.expanded):hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca h3.bacheca-titolo {
+    width: fit-content; margin-left: auto !important; margin-right: auto !important; gap: 10px !important;
+    padding: 1px 30px 5px !important;
+    background: var(--v-rosso); color: var(--v-carta) !important;
+    font-family: var(--v-script) !important; font-size: 1.75rem !important; font-weight: 400 !important;
+    letter-spacing: 0 !important; text-transform: none !important; line-height: 1.15 !important;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 13px) 50%, 100% 100%, 0 100%, 13px 50%);
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca h3.bacheca-titolo::before,
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca h3.bacheca-titolo::after {
+    content: '✦'; flex: none; max-width: none; width: auto; height: auto; background: none; opacity: 1; margin: 0;
+    font-family: var(--v-cond); font-size: .5em; color: var(--v-senape);
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca .bacheca-mazzo {
+    background: var(--v-navy) !important; border: 0 !important; border-radius: 10px !important;
+    box-shadow: inset 0 0 0 4px var(--v-carta), inset 0 0 0 6px var(--v-senape);
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca .bacheca-descrizione { color: var(--v-inchiostro) !important; font-family: 'Libre Franklin', sans-serif; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca .bacheca-conteggio {
+    color: var(--v-rosso) !important; border-top: 2px solid var(--v-senape) !important;
+    font-family: var(--v-cond) !important; font-weight: 600; font-size: .78rem !important; letter-spacing: .2em;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca .bacheca-conteggio::before { content: '★  '; color: var(--v-senape); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #tools #widget-bacheca .bacheca-conteggio::after { content: '  ★'; color: var(--v-senape); }
+
+  /* menu MENU // IMPOSTAZIONI: voci chiare, più grandi e un poco più spesse, icone vintage disegnate */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu {
+    background: #24402f !important; border: 2px solid var(--v-senape) !important; border-radius: 8px !important;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, .35) !important; color: #f3ead3 !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-heading { color: var(--v-senape) !important; font-family: var(--v-cond) !important; font-weight: 600 !important; font-size: .95rem !important; letter-spacing: .3em !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-heading.system-menu-title::before { content: '★ '; font-size: .6em; vertical-align: .25em; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-heading.system-menu-title::after { background: linear-gradient(90deg, transparent, var(--v-senape) 20%, var(--v-senape) 80%, transparent) !important; opacity: .55; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-item {
+    min-height: 46px; color: #f3ead3 !important; font-family: var(--v-cond) !important; font-weight: 500 !important;
+    font-size: .9rem !important; letter-spacing: .14em !important; border-radius: 4px !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-item:not(:disabled):hover,
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-item:focus-visible { background: rgba(0, 0, 0, .22) !important; color: var(--v-senape) !important; box-shadow: inset 3px 0 var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-item-label { gap: 12px !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-icon {
+    flex: 0 0 22px !important; width: 22px; height: 22px !important; font-size: 0 !important; color: inherit !important;
+    background: currentColor; -webkit-mask: var(--v-icona) center / contain no-repeat; mask: var(--v-icona) center / contain no-repeat;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) [data-system-menu-item="settings"] .system-menu-icon { --v-icona: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(0 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(45 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(90 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(135 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(180 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(225 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(270 12 12)'/%3E%3Crect x='10' y='0.8' width='4' height='5' rx='.8' transform='rotate(315 12 12)'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='6.6' fill='none' stroke='%23000' stroke-width='4.2'/%3E%3C/svg%3E"); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) [data-system-menu-item="profile"] .system-menu-icon { --v-icona: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3Ccircle cx='12' cy='9' r='3.6'/%3E%3Cpath d='M5.6 19.2c.8-3.6 3.4-5.4 6.4-5.4s5.6 1.8 6.4 5.4c-1.7 1.6-3.9 2.5-6.4 2.5s-4.7-.9-6.4-2.5z'/%3E%3C/svg%3E"); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) [data-system-menu-item="contacts"] .system-menu-icon { --v-icona: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='5' width='20' height='14.5' rx='1.6' fill='none' stroke='%23000' stroke-width='2.2'/%3E%3Cpath d='M2.8 6.2 12 13.2l9.2-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='14.6' r='3.1'/%3E%3C/svg%3E"); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) [data-system-menu-item="home"] .system-menu-icon { --v-icona: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6 22.6 11.4h-2.8V21h-5.4v-5.8H9.6V21H4.2v-9.6H1.4z'/%3E%3Crect x='15.6' y='3.6' width='2.8' height='5'/%3E%3C/svg%3E"); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-item > span[aria-hidden="true"] { color: var(--v-senape); font-size: 1.1rem; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-store-current .system-store-logo { filter: brightness(0) invert(.92) sepia(.3) !important; opacity: .9; max-height: 14px; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-setting-label { color: var(--v-senape) !important; font-family: var(--v-cond) !important; font-weight: 600; font-size: .82rem !important; letter-spacing: .24em !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .theme-choices { background: rgba(0, 0, 0, .2) !important; border: 1.5px solid rgba(243, 234, 211, .35) !important; border-radius: 5px !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .theme-choice { color: #f3ead3 !important; font-family: var(--v-cond) !important; font-weight: 500 !important; font-size: .8rem !important; letter-spacing: .14em !important; border-radius: 3px !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .theme-choice:hover { background: rgba(0, 0, 0, .2) !important; color: var(--v-senape) !important; box-shadow: none !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .theme-choice.is-selected { background: var(--v-rosso) !important; border-color: var(--v-rosso) !important; color: #fff6e2 !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-footer::before { background: linear-gradient(90deg, transparent, var(--v-senape) 20%, var(--v-senape) 80%, transparent) !important; opacity: .55; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-back { color: #f3ead3 !important; font-family: var(--v-cond) !important; font-size: .82rem !important; letter-spacing: .16em !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-menu-back:hover { background: rgba(0, 0, 0, .22) !important; color: var(--v-senape) !important; box-shadow: inset 3px 0 var(--v-rosso) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-credits { color: #e2d6b6 !important; font-family: 'Libre Franklin', sans-serif !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) .system-credits :is(.release-number, a) { color: var(--v-senape) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #sidebar-menu .system-menu-toggle[aria-expanded="true"] { background: var(--v-senape) !important; color: #24402f !important; border-color: var(--v-senape) !important; }
+}
+
+/* ---------- VINTAGE: colori delle gallerie, Apri & Stampa, titoli a capo (blocco generato) ---------- */
+@media screen {
+  /* Etichette DYMO in verde bottiglia, Stampe Pronte in marrone cuoio (bordo, ombra piena, titolo, bollino, anteprima) */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content #dymo-carousel .carousel-card { --v-galleria: var(--v-verde); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content #prints-carousel .carousel-card { --v-galleria: var(--v-marrone); }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(#dymo-carousel, #prints-carousel) .carousel-card {
+    border-color: var(--v-galleria) !important; box-shadow: 4px 4px 0 var(--v-galleria) !important;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(#dymo-carousel, #prints-carousel) .carousel-card:hover { box-shadow: 6px 6px 0 var(--v-galleria) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(#dymo-carousel, #prints-carousel) .card-body h3 { color: var(--v-galleria) !important; }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(#dymo-carousel, #prints-carousel) :is(.card-top .number, .preview) { border-color: var(--v-galleria) !important; }
+
+  /* Apri & Stampa: pillola rossa con il bordo navy e l'ombra piena, come i pulsanti delle Utilità Cassa */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content .print-pdf-btn {
+    background: var(--v-rosso) !important; border: 2px solid var(--v-navy) !important; color: var(--v-carta) !important;
+    border-radius: 999px !important; box-shadow: 2px 2px 0 var(--v-navy) !important;
+    font-family: var(--v-cond) !important; font-weight: 500 !important; font-size: .82rem !important; letter-spacing: .18em !important;
+    text-transform: uppercase;
+  }
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content .print-pdf-btn:hover { background: var(--v-rosso-scuro) !important; }
+
+  /* un titolo che non entra in una riga va a capo, non viene tagliato (schede, Allestimenti Pronti, widget) */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content :is(.card-body h3, .compact-title, #tools .widget h3) {
+    white-space: normal !important; overflow: visible !important; text-overflow: clip !important;
+  }
+  /* le schede senza il + delle specifiche (Stampe Pronte, Allestimenti, DYMO) non tengono libero il suo spazio */
+  :root[data-tema-prova="vintage"] body:not([data-layout]) #main-content .carousel-card:not(:has(.spec-toggle)) .card-body h3 { padding-right: 0 !important; }
+}
