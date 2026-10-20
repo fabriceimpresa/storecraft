@@ -448,6 +448,26 @@
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .carousel-arrow:active {
     background: var(--v-rosso) !important; color: var(--v-carta) !important;
   }
+  /* barra in alto: ☰, marchio e CASSIERE / CREATOR devono stare nella larghezza dello schermo. Il marchio si rimpicciolisce
+     con lo schermo (7vw, da 20 a 30 px) e può stringersi; CASSIERE / CREATOR torna alla grandezza della barra del telefono
+     degli altri temi (il set la allargava con il carattere .78rem e lettere molto spaziate) */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar { gap: 8px; }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mobile-brand {
+    flex: 1 1 auto; min-width: 0; overflow: hidden; text-align: center; padding: 0 2px;
+    font-size: clamp(20px, 7vw, 30px) !important;
+  }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mode-switcher { flex: 0 1 auto; min-width: 0; }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] .mobile-top-bar .mode-switcher .mode-btn {
+    font-size: clamp(.56rem, 2.5vw, .66rem) !important; letter-spacing: .08em; padding: 0 clamp(5px, 1.8vw, 9px);
+  }
+  /* titoli delle sezioni su una riga anche sui telefoni stretti: grandi con lo schermo (9vw, da 2 a 2,7rem), ali del filetto
+     più corte */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title:has(+ .carousel-wrapper :is(#prints-carousel, #prints-promo-carousel)) {
+    font-size: clamp(2rem, 9vw, 2.7rem); gap: 10px; white-space: nowrap;
+  }
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title::before,
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title::after { min-width: 18px; }
   /* titoli lunghi solo con la prima parte: Stampe Pronte e Allestimenti Pronti (la parte dopo // è .titolo-coda) */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title .titolo-coda { display: none; }
 }
