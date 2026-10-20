@@ -22,6 +22,8 @@
   --x-nero: #18181a;
   --x-anteprima: #f2f3f4;
   --x-cromo: linear-gradient(180deg, #ffffff 0%, #e6e8eb 44%, #c3c7cc 52%, #f1f2f4 100%);
+  /* fondo pieno di orologio e CASSIERE / CREATOR: grigio chiaro, con una luce appena percettibile in alto */
+  --x-pieno: linear-gradient(180deg, #eef0f2 0%, #e7e9ec 100%);
   --x-raggio: 0px;
   --x-titolo: 'Michroma', 'Eurostile', sans-serif;
   --x-etichetta: 'Rajdhani', sans-serif;
@@ -74,7 +76,7 @@
 
   /* intestazione */
   :root[data-famiglia="moderno"] body:not([data-layout]) .mode-switcher {
-    background: var(--x-cromo) !important; border: 1px solid var(--x-linea-forte) !important;
+    background: var(--x-pieno) !important; border: 1px solid var(--x-linea-forte) !important;
     border-radius: var(--x-raggio) !important; box-shadow: none !important;
   }
   :root[data-famiglia="moderno"] body:not([data-layout]) .mode-switcher .mode-btn {
@@ -114,6 +116,69 @@
       linear-gradient(var(--x-linea-forte), var(--x-linea-forte)) left center / 100% 1px no-repeat;
   }
   :root[data-famiglia="moderno"] body:not([data-layout]) #main-content .section-title .promo-lightning { color: var(--x-rosso) !important; text-shadow: none !important; }
+
+  /* radio hi-tech: piastra grigia piena come l'orologio, display grigio chiaro da LCD con tacche e nome rossi, interruttore a slitta
+     squadrato e potenziometri da strumento (anello nero con le tacche, cappuccio grigio, indice rosso); tinte piatte */
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-vintage {
+    background: var(--x-pieno) !important; border: 1px solid var(--x-linea-forte) !important; border-radius: 0 !important; box-shadow: none !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-scala {
+    border-radius: 0 !important; background: #d3d6da !important; box-shadow: 0 0 0 1px var(--x-linea-forte), inset 0 1px 0 rgba(0, 0, 0, .12) !important; filter: saturate(.25) opacity(.75) !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-vintage.accesa .radio-scala { filter: none !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-tacche {
+    background:
+      repeating-linear-gradient(90deg, var(--x-rosso) 0 2px, transparent 2px 25%) top / 100% 7px no-repeat,
+      repeating-linear-gradient(90deg, rgba(181, 18, 27, .7) 0 1.5px, transparent 1.5px 5%) top / 100% 4px no-repeat !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-ago { width: 2px; margin-left: -1px; border-radius: 0; background: var(--x-rosso) !important; box-shadow: none !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-nome {
+    font: 400 9.5px/1.2 var(--x-titolo) !important; letter-spacing: .16em; -webkit-text-stroke: .25px var(--x-rosso); color: var(--x-rosso) !important; text-shadow: none !important;
+  }
+  /* interruttore a slitta: guida nera, cursore quadrato grigio da spento, rosso da acceso; spia quadrata */
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-leva {
+    width: 14px; border-radius: 0 !important; border: 1px solid var(--x-linea-forte) !important; background: #121214 !important; box-shadow: none !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-leva::before { width: 1px; margin-left: -.5px; border-radius: 0; background: #3a3a3e !important; box-shadow: none !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-leva-asta {
+    width: 10px; height: 9px; margin: -4.5px 0 0 -5px; border-radius: 0 !important;
+    background: linear-gradient(#c9ccd1, #c9ccd1) center / 6px 1px no-repeat, #8e9196 !important; box-shadow: none !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-vintage.accesa .radio-leva-asta {
+    background: linear-gradient(#ffd0d2, #ffd0d2) center / 6px 1px no-repeat, var(--x-rosso) !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-leva:hover,
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-leva:focus-visible { border-color: var(--x-rosso) !important; background: #121214 !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-spia { width: 5px; height: 5px; border-radius: 0; background: #c9ccd1 !important; box-shadow: none !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-vintage.accesa .radio-spia { background: #ff2a35 !important; box-shadow: 0 0 5px rgba(255, 42, 53, .8) !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-vintage[data-segnale="assente"] .radio-spia { background: #e0a020 !important; box-shadow: 0 0 5px rgba(224, 160, 32, .8) !important; }
+  /* potenziometri: anello nero con le tacche fini, cappuccio grigio pieno con un filo nero, indice rosso */
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola {
+    background: repeating-conic-gradient(#121214 0 9deg, #4a4b50 9deg 10deg) !important;
+    box-shadow: 0 0 0 1px var(--x-linea-forte) !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola::before {
+    inset: 4px; background: radial-gradient(circle at 50% 35%, #f4f5f7 0%, #dfe1e5 100%) !important; box-shadow: 0 0 0 1px var(--x-linea-forte) !important;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola-segno::after { top: 4px; width: 2px; height: 7px; border-radius: 0; background: var(--x-rosso) !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola:hover,
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola:focus-visible { box-shadow: 0 0 0 1px var(--x-rosso) !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola:hover::before,
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola:focus-visible::before { background: var(--x-rosso) !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola:hover .radio-manopola-segno::after,
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-manopola:focus-visible .radio-manopola-segno::after { background: #ffffff !important; }
+
+  /* riquadri di aiuto della radio (levetta, manopole, pulsantino): grigio pieno come la radio, filo nero, squadrati,
+     scritta nera in Rajdhani; l'altoparlante del volume rosso */
+  :root[data-famiglia="moderno"] body:not([data-layout]) :is(.radio-leva, .radio-manopola, .or-gira)[data-suggerimento]::after {
+    background-color: #e7e9ec !important; color: var(--x-nero) !important; border: 1px solid var(--x-linea-forte) !important; border-radius: 0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25) !important;
+    font: 700 10.5px/1.2 var(--x-etichetta) !important; letter-spacing: .14em;
+  }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-volume[data-livello="0"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b5121b'/%3E%3Cpath d='M10 4l4 4M14 4l-4 4' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E") !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-volume[data-livello="1"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b5121b'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E") !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-volume[data-livello="2"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b5121b'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M11.4 2.7a4.7 4.7 0 0 1 0 6.6' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E") !important; }
+  :root[data-famiglia="moderno"] body:not([data-layout]) .radio-volume[data-livello="3"]::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='12' viewBox='0 0 15 12'%3E%3Cpath d='M1 4.2h2.6L7.2 1v10L3.6 7.8H1z' fill='%23b5121b'/%3E%3Cpath d='M9.6 4.3a2.4 2.4 0 0 1 0 3.4' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M11.4 2.7a4.7 4.7 0 0 1 0 6.6' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M13.2 1.1a7 7 0 0 1 0 9.8' fill='none' stroke='%23b5121b' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E") !important; }
 
   /* un poco più di spazio tra il logo LXRY e la prima sezione: 3,4rem invece dei 2,75rem della dashboard (non in CASSIERE,
      dove la riga del negozio sta in fondo) */

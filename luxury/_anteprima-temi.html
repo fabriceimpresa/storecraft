@@ -56,6 +56,8 @@
       document.querySelector('.system-menu-toggle')?.click();
       if (menuProva === 'impostazioni') setTimeout(() => document.querySelector('[data-system-menu-item="settings"]')?.click(), 100);
     }, 300));
+    // ?radio=1 gira l'orologio sulla radio (solo per le foto della prova)
+    if (new URLSearchParams(location.search).get('radio')) addEventListener('load', () => setTimeout(() => document.querySelector('.or-gira')?.click(), 300));
     // ?scorri=<id> porta in vista una galleria (solo per le foto della prova)
     const scorriProva = new URLSearchParams(location.search).get('scorri');
     if (scorriProva) addEventListener('load', () => setTimeout(() => document.getElementById(scorriProva)?.closest('.carousel-wrapper')?.previousElementSibling?.scrollIntoView({ behavior: 'instant' }), 300));
