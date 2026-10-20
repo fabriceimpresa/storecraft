@@ -464,8 +464,8 @@
     font-size: clamp(.56rem, 2.5vw, .66rem) !important; letter-spacing: .08em; padding: 0 clamp(5px, 1.8vw, 9px);
   }
   /* menu di sinistra del telefono: lì il marchio è una riga flessibile (dashboard.css), che perde gli spazi tra le parole
-     e le //: lo spazio lo dà gap */
-  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand { gap: .24em; }
+     e le //: lo spazio lo dà gap; le //, più piccole, si allineano alla base della scritta e non in alto (Safari) */
+  :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #sidebar-menu .brand { gap: .24em; align-items: baseline; }
   /* titoli delle sezioni su una riga anche sui telefoni stretti: grandi con lo schermo (9vw, da 2 a 2,7rem), ali del filetto
      più corte */
   :root[data-interface-extra="vintage"] body[data-pagina="dashboard"] #main-content .section-title,
