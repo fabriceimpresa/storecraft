@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.45 2026';
+  const VERSIONE = 'V 1.2.46 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -64,9 +64,12 @@
     return nodo;
   }
   const due = n => String(n).padStart(2, '0');
-  // il marchio STORE // CRAFT a pezzi, parole e // in un loro <span>: uguale in tutti i temi, un set EXTRA lo può ridisegnare
-  const marchioTesto = () => [el('span', { class: 'marchio-parola', text: 'STORE' }), ' ', el('span', { class: 'marchio-barre', text: '//' }), ' ',
-    el('span', { class: 'marchio-parola', text: 'CRAFT' })];
+  // il marchio STORE // CRAFT a pezzi, parole e // in un loro <span>, e dentro ogni lettera e ogni / nel suo <span>: uguale
+  // in tutti i temi (la scritta non cambia), un set EXTRA lo può ridisegnare (VINTAGE lo scrive come a mano, irregolare)
+  const pezzi = (testo, classe) => [...testo].map(c => el('span', { class: classe, text: c }));
+  const marchioTesto = () => [el('span', { class: 'marchio-parola' }, pezzi('STORE', 'marchio-lettera')), ' ',
+    el('span', { class: 'marchio-barre' }, pezzi('//', 'marchio-barra')), ' ',
+    el('span', { class: 'marchio-parola' }, pezzi('CRAFT', 'marchio-lettera'))];
 
   // ----- Menu laterale -----
   function vociMenu(sezione) {
@@ -421,7 +424,11 @@
   function sezione(s) {
     const classiCarosello = `carousel-container${s.tipo === 'cartelli' && s.righe !== 1 ? ' two-rows' : ''}${s.tipo === 'etichette' ? ' dymo' : ''}`;
     return el('div', { id: s.id },
-      el('div', { class: 'section-title' }, s.titolo,
+      // un titolo con // (es. Stampe Pronte // Listini & Punto Vendita) ha la parte dopo // in <span class="titolo-coda">,
+      // così un tema la può nascondere dove lo spazio è poco (VINTAGE sul telefono); la scritta resta uguale
+      el('div', { class: 'section-title' }, s.titolo.includes(' // ')
+          ? [s.titolo.slice(0, s.titolo.indexOf(' // ')), el('span', { class: 'titolo-coda', text: s.titolo.slice(s.titolo.indexOf(' // ')) })]
+          : s.titolo,
         s.stella ? [' ', el('span', { class: 'promo-lightning', 'aria-hidden': 'true', text: '✦' })] : []),
       el('div', { class: 'carousel-wrapper' },
         el('button', { class: 'carousel-arrow prev', type: 'button', 'aria-label': 'Scorri a sinistra', text: '‹',
