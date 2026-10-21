@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.53 2026';
+  const VERSIONE = 'V 1.2.54 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -813,44 +813,87 @@
             for (let quanti = da; quanti !== a; quanti += Math.sign(a - da)) { disegna(pezzi, quanti); await attendi(passo); }
             disegna(pezzi, a);
           };
-          // il testo del meteo che entra nel riquadro: città · gradi e tempo, poi senza il tempo, poi la città accorciata
-          const pezziMeteo = () => {
+          // il meteo su una riga sola (dal 21 ottobre 2026): città · gradi e tempo; se è più largo del riquadro il
+          // carattere si rimpicciolisce quanto serve, così il riquadro non va mai a capo e non cambia forma. Sotto il 55%
+          // della grandezza normale non si leggerebbe più: allora il meteo si scrive in due atti, prima città · gradi e poi
+          // il tempo (es. CIVITAVECCHIA · 13°, poi POCO NUVOLOSO); se nemmeno città · gradi entra si accorcia la città
+          const MINIMO = 0.55;
+          const atti = () => {
             const citta = meteo.citta.toUpperCase();
             const gradi = `${meteo.temperatura}°`;
-            const prove = [[citta, `${gradi} ${meteo.breve}`.toUpperCase().trim()], [citta, gradi]];
-            for (let taglio = citta.length - 1; taglio > 3; taglio--) prove.push([`${citta.slice(0, taglio).trim()}.`, gradi]);
+            const tempo = (meteo.breve || '').toUpperCase().trim();
+            const pezzi = (nome, valore) => [{ testo: nome, classe: 'orologio-data' }, { testo: '·', classe: 'orologio-punto' }, { testo: valore, classe: 'orologio-ora' }];
             const prova = orologio.cloneNode(true);
-            prova.style.cssText = 'position: absolute; visibility: hidden; min-width: 0;';
+            prova.style.cssText = 'position: absolute; visibility: hidden; min-width: 0; width: auto;';
+            prova.firstChild.style.cssText = 'white-space: nowrap; width: auto; flex: none; transition: none;';
             orologio.after(prova);
-            const scelta = prove.find(([nome, valore]) => {
-              prova.firstChild.replaceChildren(el('span', { class: 'orologio-data', text: nome }), el('span', { class: 'orologio-punto', text: '·' }),
-                el('span', { class: 'orologio-ora', text: valore }));
-              return prova.offsetWidth <= orologio.offsetWidth;
-            }) || prove[prove.length - 1];
+            // la scala del carattere con cui i pezzi entrano nel riquadro (1: entrano già)
+            const scalaPer = lista => {
+              prova.firstChild.replaceChildren(...lista.map(pezzo => el('span', { class: pezzo.classe, text: pezzo.testo })),
+                el('span', { class: 'orologio-cursore', 'aria-hidden': 'true' }));
+              const serve = prova.firstChild.getBoundingClientRect().width;
+              // lo spazio per la scritta: il riquadro meno i suoi bordi e margini interni (misurati sulla prova)
+              const spazio = orologio.getBoundingClientRect().width - (prova.getBoundingClientRect().width - serve) - 2;
+              // margini interni del pulsante e spazi tra i pezzi sono in px e rem: non si rimpiccioliscono con il carattere
+              const stile = getComputedStyle(prova.firstChild);
+              const cursore = prova.firstChild.lastChild.getBoundingClientRect().width + parseFloat(getComputedStyle(prova.firstChild.lastChild).marginLeft);
+              const fisso = parseFloat(stile.paddingLeft) + parseFloat(stile.paddingRight)
+                + (parseFloat(stile.columnGap) || 0) * (prova.firstChild.children.length - 1) + cursore;
+              return serve > spazio ? Math.max(0, (spazio - fisso) / (serve - fisso)) : 1;
+            };
+            const atto = lista => ({ pezzi: lista, scala: scalaPer(lista) });
+            let elenco;
+            const intero = atto(pezzi(citta, `${gradi} ${tempo}`.trim()));
+            if (intero.scala >= MINIMO || !tempo) elenco = [intero];
+            if (!elenco || elenco[0].scala < MINIMO) {
+              const prove = [citta];
+              for (let taglio = citta.length - 1; taglio > 3; taglio--) prove.push(`${citta.slice(0, taglio).trim()}.`);
+              let primo = null;
+              for (const nome of prove) { primo = atto(pezzi(nome, gradi)); if (primo.scala >= MINIMO) break; }
+              elenco = tempo ? [primo, atto([{ testo: tempo, classe: 'orologio-ora' }])] : [primo];
+            }
             prova.remove();
-            return [{ testo: scelta[0], classe: 'orologio-data' }, { testo: '·', classe: 'orologio-punto' }, { testo: scelta[1], classe: 'orologio-ora' }];
+            return elenco;
+          };
+          // il carattere dell'atto: rimpicciolito quanto serve; la grandezza la rimette grandezzaNormale
+          const grandezzaNormale = () => { testo.style.removeProperty('font-size'); testo.style.whiteSpace = ''; testo.style.transition = ''; };
+          const applica = scala => {
+            grandezzaNormale();
+            testo.style.whiteSpace = 'nowrap';
+            testo.style.transition = 'none';   // la transizione di .mode-btn farebbe crescere e calare il riquadro
+            if (scala < 1) testo.style.setProperty('font-size', `${(parseFloat(getComputedStyle(testo).fontSize) * scala).toFixed(2)}px`, 'important');
           };
           const riduci = matchMedia('(prefers-reduced-motion: reduce)');
           const ciclo = async () => {
             if (!meteo || inMeteo || document.hidden || phoneViewQuery.matches || orologio.closest('.orologio-radio.girato')) return;
             inMeteo = true;
             orologio.setAttribute('aria-label', `Meteo: ${meteo.citta}, ${meteo.temperatura} gradi, ${meteo.descrizione}`);
-            const scritta = pezziMeteo();
+            const scene = atti();
+            // 8 secondi in tutto: con due atti 4,5 secondi ciascuno
+            const tieni = scene.length > 1 ? 4500 : 8000;
             if (riduci.matches) {
-              disegna(scritta, lunghezza(scritta), false);
-              await attendi(8000);
+              for (const scena of scene) {
+                applica(scena.scala);
+                disegna(scena.pezzi, lunghezza(scena.pezzi), false);
+                await attendi(tieni);
+              }
             } else {
               const prima = pezziDi([...testo.children]);
               await batti(prima, lunghezza(prima), 0, 30);
-              await attendi(250);
-              await batti(scritta, 0, lunghezza(scritta), 65);
-              await attendi(8000);
-              await batti(scritta, lunghezza(scritta), 0, 30);
+              for (const scena of scene) {
+                applica(scena.scala);
+                await attendi(250);
+                await batti(scena.pezzi, 0, lunghezza(scena.pezzi), 65);
+                await attendi(tieni);
+                await batti(scena.pezzi, lunghezza(scena.pezzi), 0, 30);
+              }
+              grandezzaNormale();
               await attendi(250);
               const ora = pezziDi(nodiOra());
               await batti(ora, 0, lunghezza(ora), 65);
               await attendi(400);
             }
+            grandezzaNormale();
             testo.replaceChildren(...nodiOra());
             orologio.setAttribute('aria-label', 'Data e ora');
             inMeteo = false;
