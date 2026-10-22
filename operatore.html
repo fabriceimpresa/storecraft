@@ -2,18 +2,18 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-06"></script>
+  <script src="assets/js/negozi.js?v=20261022-07"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-06"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261022-06"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261022-07"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-07"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
   <!-- Pagina operatore: strumenti di amministrazione riservati al titolare di STORE // CRAFT. Non collegata da dashboard
-       e splash page. Nella copia per un cliente (installati.js con copiaCliente) mostra solo Gestione negozi, Controllo codice e Loghi
-       ufficiali, per aggiornare i menu BRAND di quel cliente senza toccare il progetto madre. Raccoglie l'importazione e la gestione dei loghi ufficiali
+       e splash page. Solo nel progetto madre: dal 22 ottobre 2026 le copie dei clienti non hanno l'area operatore (ogni
+       modifica si fa qui e si porta nella copia con Aggiorna copia cliente). Raccoglie l'importazione e la gestione dei loghi ufficiali
        (loghi-ufficiali.html, fino al 19 ottobre 2026 logoimport.html e logogestione.html), la guida tecnica (guida-componenti.html), i negozi con il loro diagramma (gestione-negozi.html), la struttura delle pagine (schema-pagine.html) e la preparazione di una copia per un cliente, fatta qui con la File System
-       Access API (Chrome / Edge sul computer), con la stessa logica di Prepara copia.bat, che resta come alternativa. -->
+       Access API (Chrome / Edge sul computer): dal 22 ottobre 2026 l'unico modo, Prepara copia.bat è stato tolto. -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -370,10 +370,10 @@
         <button class="section-toggle" type="button" aria-expanded="false" aria-controls="prepara-corpo" aria-label="Espandi Prepara copia per un cliente">⌄</button>
       </div>
       <div class="blocco-corpo" id="prepara-corpo">
-      <p class="copy-note">come Prepara copia.bat: nella copia la splash page, le cartelle dei negozi scelti, i file comuni e
-        le schede dei negozi, con installati.js scritto per loro, e quest'area ridotta: gestione negozi e utilities (ghost, ordine e copie dei moduli) e gestione loghi
-        (importa, in evidenza, sostituisci, elimina), per aggiornare i menu BRAND del cliente. Restano fuori Gestione pacchetti e assets/pacchetti/, Prepara copia, la Guida tecnica, il piano
-        di lavoro, le pagine di prova _*, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
+      <p class="copy-note">nella copia la splash page (index.html), le cartelle dei negozi scelti, i file comuni e le schede
+        dei negozi, con installati.js scritto per loro e i codici delle statistiche dei clienti spuntati. Niente area operatore:
+        ogni modifica (loghi ufficiali, ghost, ordine dei moduli…) si fa qui e si porta nella copia con aggiorna copia cliente.
+        Restano fuori anche assets/pacchetti/, la guida, il piano, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
       <div class="step">
@@ -422,11 +422,49 @@
      <section class="blocco is-collapsed" data-blocco="aggiorna">
       <div class="label">
         <h2>AGGIORNA COPIA CLIENTE</h2>
-        <span class="riassunto">in arrivo</span>
+        <span class="riassunto">la copia di un cliente rifatta dal progetto</span>
         <button class="section-toggle" type="button" aria-expanded="false" aria-controls="aggiorna-corpo" aria-label="Espandi Aggiorna copia cliente">⌄</button>
       </div>
       <div class="blocco-corpo" id="aggiorna-corpo">
-        <p class="copy-note">da fare: portare in una copia già consegnata a un cliente gli aggiornamenti del progetto, senza perdere quello che il cliente ha personalizzato nella sua copia.</p>
+        <p class="copy-note">porta gli aggiornamenti del progetto nella copia di un cliente già consegnata: si sceglie la
+          cartella del suo sito (la copia sul computer del suo repository, es. storecraftlxry), si vede cosa cambia e si
+          aggiorna: file nuovi e cambiati scritti, file che nel progetto non ci sono più tolti. Negozi e codici delle statistiche
+          restano quelli della copia; .git e i file che cominciano con il punto, CNAME e README non si toccano. Alla fine commit
+          e push del repository del cliente, e il sito si aggiorna. I dati dei negozi (loghi personali, cronologie, bacheca)
+          stanno nel browser e non si toccano.</p>
+
+        <div class="step">
+          <span class="step-num">1</span>
+          <div>
+            <p class="step-label">collega la cartella del progetto STORE // CRAFT</p>
+            <button class="btn" type="button" id="aggSorgente" data-avviso="solo chrome o edge sul computer: gli altri browser non possono collegare la cartella del progetto">scegli cartella progetto</button>
+            <p class="status" id="aggSorgenteStatus" role="status">la stessa di prepara copia [1]</p>
+          </div>
+        </div>
+
+        <div class="step" id="aggStepCopia" aria-disabled="true">
+          <span class="step-num">2</span>
+          <div>
+            <p class="step-label">scegli la cartella della copia del cliente</p>
+            <button class="btn" type="button" id="aggCopia" disabled>scegli la cartella della copia</button>
+            <p class="status" id="aggCopiaStatus" role="status"></p>
+          </div>
+        </div>
+
+        <div class="step" id="aggStepVai" aria-disabled="true">
+          <span class="step-num">3</span>
+          <div>
+            <p class="step-label">confronta e aggiorna</p>
+            <button class="btn" type="button" id="aggConfronta" disabled>confronta</button>
+            <button class="btn" type="button" id="aggVai" disabled>aggiorna la copia</button>
+            <p class="status" id="aggStatus" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="terminale" id="terminaleAgg" hidden>
+          <div class="terminale-barra" aria-hidden="true"><span></span><span></span><span></span><b>aggiorna-copia</b></div>
+          <pre class="terminale-testo" id="terminaleAggTesto" role="log" aria-label="Operazioni dell'aggiornamento"></pre>
+        </div>
       </div>
      </section>
     </section>
@@ -495,18 +533,6 @@
     const indietro = document.getElementById('indietro');
     const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
     let vistaAperta = null;
-
-    // Copia per un cliente: Gestione negozi, Controllo codice e Loghi ufficiali (i menu BRAND del cliente); Gestione pacchetti,
-    // Prepara copia e Guida tecnica restano nel progetto madre
-    if (Negozi.copiaCliente) {
-      // Gestione negozi e Controllo codice restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
-      menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="layout"], [data-vista="copia"], [data-vista="statistiche"], .voce-aiuto').forEach(voce => voce.remove());
-      // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
-      delete VISTE.pacchetti;
-      delete VISTE.layout;
-      delete VISTE.copia;
-      delete VISTE.statistiche;
-    }
 
     // la cornice passa dall'altezza di prima alla nuova con un'animazione (cambia passa al nuovo contenuto)
     function adatta(cambia, durata = 450) {
@@ -694,6 +720,11 @@
     let sorgente = null;     // cartella del progetto (lettura)
     let negozi = [];         // [{ id, nome }] dalle schede in assets/negozi/
     let inCorso = false;
+    // Aggiorna copia cliente: cartella della copia del cliente, i suoi negozi e codici, le differenze dell'ultimo confronto
+    let copiaCliente = null;
+    let copiaNegozi = [];
+    let copiaCodici = {};
+    let differenze = null;            // { scrivere: [[percorso, contenuto, motivo]], togliere: [percorso] }
 
     function stato(elemento, testo, tipo = '') {
       elemento.textContent = testo;
@@ -702,7 +733,7 @@
 
     if (!supportata) {
       $('pickSource').disabled = true;
-      stato($('sourceStatus'), 'serve Chrome o Edge sul computer: questo browser non può leggere e scrivere cartelle (in alternativa Prepara copia.bat)', 'err');
+      stato($('sourceStatus'), 'serve Chrome o Edge sul computer: questo browser non può leggere e scrivere cartelle', 'err');
     }
 
     async function cartella(dir, nome) {
@@ -850,6 +881,7 @@
       $('pickTarget').disabled = !puoCopiare;
       $('stepCopy').setAttribute('aria-disabled', String(!puoCopiare && !inCorso));
       $('pickSource').disabled = !supportata || inCorso;
+      if (typeof aggiornaPassiAgg === 'function') aggiornaPassiAgg();
     }
 
     // ----- Copia -----
@@ -859,13 +891,14 @@
     // tiene le ultime 600 righe
     const terminale = $('terminale');
     const terminaleTesto = $('terminaleTesto');
+    let uscita = terminaleTesto;   // terminale in uso: prepara copia o aggiorna copia cliente
     function riga(testo, tipo = 'file') {
       const linea = document.createElement('span');
       linea.className = tipo;
       linea.textContent = `${testo}\n`;
-      terminaleTesto.append(linea);
-      while (terminaleTesto.childElementCount > 600) terminaleTesto.firstElementChild.remove();
-      terminaleTesto.scrollTop = terminaleTesto.scrollHeight;
+      uscita.append(linea);
+      while (uscita.childElementCount > 600) uscita.firstElementChild.remove();
+      uscita.scrollTop = uscita.scrollHeight;
     }
 
     async function copiaFile(voce, dir, nome, percorso = nome) {
@@ -885,71 +918,252 @@
       for await (const [figlio, sotto] of voce.entries()) await copia(sotto, arrivo, figlio, `${percorso}/${figlio}`);
     }
 
-    // opzioni di installati.js: copiaCliente e, con un cliente scelto, i codici delle statistiche dei negozi della copia
-    function opzioniInstallati(ids) {
-      const codici = Object.entries(codiciCliente()).filter(([id]) => ids.includes(id));
-      return codici.length ? `{ copiaCliente: true, statistiche: { ${codici.map(([id, codice]) => `${id}: '${codice}'`).join(', ')} } }` : '{ copiaCliente: true }';
-    }
-    function testoInstallati(ids) {
+    // installati.js della copia: i negozi e, se ci sono, i codici delle statistiche ({ luxury: '…' })
+    function testoInstallati(ids, codici, nota) {
       const oggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      const cliente = clientiScelti().join(', ').replace(/\*\//g, '');
+      const coppie = Object.entries(codici).filter(([id]) => ids.includes(id));
+      const opzioni = coppie.length ? `, { statistiche: { ${coppie.map(([id, codice]) => `${id}: '${codice}'`).join(', ')} } }` : '';
       return '/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).\r\n' +
         '   Con un solo negozio la splash page apre subito la sua dashboard e i menu mostrano solo quel negozio.\r\n' +
-        (cliente ? `   Clienti: ${cliente}; i codici dei negozi spediscono le statistiche (assets/js/statistiche.js).\r\n` : '') +
+        (nota ? `   ${nota.replace(/\*\//g, '')}\r\n` : '') +
         `   Scritto dalla pagina operatore il ${oggi}. */\r\n` +
-        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], ${opzioniInstallati(ids)});\r\n`;
+        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}]${opzioni});\r\n`;
     }
+    const nascondiCodici = testo => testo.split('\r\n').filter(Boolean).pop().replace(/'[0-9a-f]{32}'/g, "'••••'");
 
-    async function preparaCopia(destinazione, ids) {
+    // Tutti i file della copia di un cliente, dal progetto: Map percorso → { voce } (file del progetto) o { testo }.
+    // Della radice solo la splash page (dal 22 ottobre 2026 niente area operatore nelle copie); le cartelle dei negozi
+    // scelti; assets interi, tranne assets/pacchetti/ (area operatore) e, nelle cartelle divise per negozio, i negozi non
+    // scelti; in assets/negozi/ le schede dei negozi scelti e installati.js scritto per loro
+    async function fileCopia(ids, installati) {
       const tutti = negozi.map(negozio => negozio.id);
-      // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, gestione-negozi, schema-pagine, loghi-ufficiali);
-      // non Controllo codice, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html', 'layout-studio.html', 'statistiche.html', 'Storecraft Aggiornamento.html'];
-      riga('// radice: splash page e area operatore ridotta: gestione pagine e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
-      for await (const [nome, voce] of sorgente.entries()) {
-        if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
-        await copiaFile(voce, destinazione, nome);
-      }
-      // Cartelle delle pagine dei negozi scelti
+      const file = new Map();
+      const aggiungi = async (voce, percorso) => {
+        if (voce.kind === 'file') { file.set(percorso, { voce }); return; }
+        for await (const [figlio, sotto] of voce.entries()) await aggiungi(sotto, `${percorso}/${figlio}`);
+      };
+      file.set('index.html', { voce: await sorgente.getFileHandle('index.html') });
       for (const id of ids) {
-        riga(`// pagine del negozio: ${id}/`, 'sezione');
         const pagine = await cartella(sorgente, id);
-        if (pagine) await copia(pagine, destinazione, id);
+        if (pagine) await aggiungi(pagine, id);
       }
-      // assets: file comuni interi; nelle cartelle divise per negozio i file comuni e le sottocartelle dei soli negozi scelti
       const assets = await cartella(sorgente, 'assets');
-      const assetsArrivo = await destinazione.getDirectoryHandle('assets', { create: true });
       for await (const [nome, voce] of assets.entries()) {
-        if (voce.kind === 'file') { await copiaFile(voce, assetsArrivo, nome, `assets/${nome}`); continue; }
-        if (nome === 'pacchetti') { riga('// assets/pacchetti/ saltata: pacchetti dell\'area operatore', 'sezione'); continue; }
+        if (voce.kind === 'file') { file.set(`assets/${nome}`, { voce }); continue; }
+        if (nome === 'pacchetti') continue;
         if (nome === 'negozi') {
-          riga('// schede dei negozi scelti: assets/negozi/', 'sezione');
-          const arrivo = await assetsArrivo.getDirectoryHandle('negozi', { create: true });
-          for await (const [file, scheda] of voce.entries()) {
-            const base = file.replace(/\.[^.]+$/, '');
-            if (scheda.kind === 'file' && ids.some(id => base === id || base === `${id}-dashboard`)) await copiaFile(scheda, arrivo, file, `assets/negozi/${file}`);
+          for await (const [nomeFile, scheda] of voce.entries()) {
+            const base = nomeFile.replace(/\.[^.]+$/, '');
+            if (scheda.kind === 'file' && ids.some(id => base === id || base === `${id}-dashboard`)) file.set(`assets/negozi/${nomeFile}`, { voce: scheda });
           }
-          const scrittura = await (await arrivo.getFileHandle('installati.js', { create: true })).createWritable();
-          await scrittura.write(testoInstallati(ids));
-          await scrittura.close();
-          riga(`  scrivo assets/negozi/installati.js  → Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], ${opzioniInstallati(ids).replace(/'[0-9a-f]{32}'/g, "'••••'")})`, 'ok');
+          file.set('assets/negozi/installati.js', { testo: installati });
           continue;
         }
-        riga(`// assets/${nome}/`, 'sezione');
         const figli = [];
         for await (const voceFiglia of voce.entries()) figli.push(voceFiglia);
         const divisa = figli.some(([figlio, sotto]) => sotto.kind === 'directory' && tutti.includes(figlio));
-        if (!divisa) { await copia(voce, assetsArrivo, nome, `assets/${nome}`); continue; }
-        const arrivo = await assetsArrivo.getDirectoryHandle(nome, { create: true });
         for (const [figlio, sotto] of figli) {
-          if (sotto.kind === 'directory' && tutti.includes(figlio) && !ids.includes(figlio)) {
-            riga(`  salto assets/${nome}/${figlio}/  (negozio non scelto)`, 'salta');
-            continue;
-          }
-          await copia(sotto, arrivo, figlio, `assets/${nome}/${figlio}`);
+          if (divisa && sotto.kind === 'directory' && tutti.includes(figlio) && !ids.includes(figlio)) continue;
+          await aggiungi(sotto, `assets/${nome}/${figlio}`);
         }
       }
+      return file;
     }
+
+    // Scrive un file della copia (con le cartelle che mancano)
+    async function scriviFile(destinazione, percorso, { voce, testo: contenuto }) {
+      const parti = percorso.split('/');
+      let dir = destinazione;
+      for (const parte of parti.slice(0, -1)) dir = await dir.getDirectoryHandle(parte, { create: true });
+      const scrittura = await (await dir.getFileHandle(parti.at(-1), { create: true })).createWritable();
+      const dato = voce ? await voce.getFile() : contenuto;
+      await scrittura.write(dato);
+      await scrittura.close();
+      copiati += 1;
+      return voce ? dato.size : new Blob([contenuto]).size;
+    }
+
+    async function preparaCopia(destinazione, ids) {
+      const installati = testoInstallati(ids, codiciCliente(), clientiScelti().length ? `Clienti: ${clientiScelti().join(', ')}; i codici dei negozi spediscono le statistiche (assets/js/statistiche.js).` : '');
+      riga('// raccolgo i file: splash page, negozi scelti e assets (niente area operatore)', 'sezione');
+      const file = await fileCopia(ids, installati);
+      for (const [percorso, contenuto] of file) {
+        const peso = await scriviFile(destinazione, percorso, contenuto);
+        riga(`  copio ${percorso}  (${Math.max(1, Math.round(peso / 1024))} kB)`, contenuto.testo ? 'ok' : 'file');
+        if (copiati % 20 === 0) stato($('copyStatus'), `Copia in corso… ${copiati} file.`);
+      }
+      riga(`  installati.js  → ${nascondiCodici(installati)}`, 'ok');
+    }
+
+    // ----- Aggiorna copia cliente (dal 22 ottobre 2026) -----
+    // La copia di un cliente è sempre rifatta dal progetto: niente personalizzazioni da salvare (le copie non hanno
+    // l'area operatore). Si sceglie la cartella del suo sito (la copia locale del suo repository), si confronta e si
+    // aggiorna: file nuovi e cambiati scritti, file che nel progetto non ci sono più tolti. Negozi e codici delle
+    // statistiche restano quelli di installati.js della copia. Non si toccano .git e i file che cominciano con il punto,
+    // CNAME e README (del sito, non di STORE // CRAFT)
+    const protetto = percorso => percorso.split('/').some(parte => parte.startsWith('.')) || /^(CNAME|README[^/]*|LICENSE[^/]*)$/i.test(percorso);
+
+    function aggiornaPassiAgg() {
+      const progetto = Boolean(sorgente) && !inCorso;
+      $('aggSorgente').disabled = !supportata || inCorso;
+      $('aggSorgente').textContent = sorgente ? '✓ cartella collegata' : 'scegli cartella progetto';
+      $('aggSorgente').classList.toggle('collegata', Boolean(sorgente));
+      if (sorgente) stato($('aggSorgenteStatus'), `Collegata: ${sorgente.name} (${negozi.length} negozi).`, 'ok');
+      $('aggCopia').disabled = !progetto;
+      $('aggStepCopia').setAttribute('aria-disabled', String(!progetto));
+      const pronto = progetto && Boolean(copiaCliente);
+      $('aggConfronta').disabled = !pronto;
+      $('aggVai').disabled = !pronto || !differenze || !(differenze.scrivere.length + differenze.togliere.length);
+      $('aggStepVai').setAttribute('aria-disabled', String(!pronto));
+    }
+    // la cartella del progetto è la stessa di prepara copia [1]
+    $('aggSorgente').addEventListener('click', () => $('pickSource').click());
+
+    $('aggCopia').addEventListener('click', async () => {
+      if (!sorgente || inCorso) return;
+      let scelta;
+      try {
+        scelta = await window.showDirectoryPicker({ id: 'storecraft-copia-cliente', mode: 'readwrite' });
+      } catch (errore) {
+        if (errore.name !== 'AbortError') stato($('aggCopiaStatus'), `Cartella non scelta: ${errore.message}`, 'err');
+        return;
+      }
+      differenze = null;
+      try {
+        if (await sorgente.isSameEntry(scelta) || await sorgente.resolve(scelta)) throw new Error('è il progetto STORE // CRAFT (o una sua cartella), non la copia di un cliente.');
+        await scelta.getFileHandle('index.html').catch(() => { throw new Error('manca index.html: non è la copia di un cliente.'); });
+        const schede = await cartella(await cartella(scelta, 'assets') || scelta, 'negozi');
+        if (!schede) throw new Error('manca assets/negozi: non è la copia di un cliente.');
+        const installati = await testo(schede, 'installati.js');
+        const elenco = installati.match(/installa\(\[([^\]]*)\]/)?.[1] || '';
+        copiaNegozi = [...elenco.matchAll(/'([a-z0-9_-]+)'/g)].map(m => m[1]);
+        copiaCodici = Object.fromEntries([...(installati.match(/statistiche:\s*\{([^}]*)\}/)?.[1] || '').matchAll(/([a-z0-9_-]+)\s*:\s*'([0-9a-f]{32})'/g)].map(m => [m[1], m[2]]));
+        if (!copiaNegozi.length) throw new Error('installati.js della copia non dice quali negozi ha.');
+        const mancanti = copiaNegozi.filter(id => !negozi.some(n => n.id === id));
+        if (mancanti.length) throw new Error(`il progetto non ha i negozi della copia: ${mancanti.join(', ')}.`);
+        copiaCliente = scelta;
+        const conCodice = copiaNegozi.filter(id => copiaCodici[id]);
+        stato($('aggCopiaStatus'), `Copia: ${scelta.name} · negozi ${copiaNegozi.join(', ')} · statistiche ${conCodice.length ? conCodice.join(', ') : 'nessuna'}.`, 'ok');
+        stato($('aggStatus'), 'premi confronta per vedere cosa cambia.');
+      } catch (errore) {
+        copiaCliente = null;
+        stato($('aggCopiaStatus'), `La cartella scelta non va bene: ${errore.message}`, 'err');
+      }
+      aggiornaPassiAgg();
+    });
+
+    // file di una cartella della copia: Map percorso → FileHandle (senza i protetti)
+    async function fileEsistenti(dir, base = '', elenco = new Map()) {
+      for await (const [nome, voce] of dir.entries()) {
+        const percorso = base ? `${base}/${nome}` : nome;
+        if (protetto(percorso)) continue;
+        if (voce.kind === 'file') elenco.set(percorso, voce);
+        else await fileEsistenti(voce, percorso, elenco);
+      }
+      return elenco;
+    }
+    async function uguali(a, b) {
+      if (a.size !== b.size) return false;
+      const [x, y] = await Promise.all([a.arrayBuffer(), b.arrayBuffer()]);
+      const u = new Uint8Array(x), v = new Uint8Array(y);
+      for (let i = 0; i < u.length; i++) if (u[i] !== v[i]) return false;
+      return true;
+    }
+
+    $('aggConfronta').addEventListener('click', async () => {
+      if (!sorgente || !copiaCliente || inCorso) return;
+      inCorso = true;
+      aggiornaPassiAgg();
+      uscita = $('terminaleAggTesto');
+      uscita.replaceChildren();
+      adatta(() => { $('terminaleAgg').hidden = false; }, 300);
+      riga(`$ aggiorna-copia --da "${sorgente.name}" --a "${copiaCliente.name}" --negozi ${copiaNegozi.join(',')} (solo confronto)`, 'comando');
+      stato($('aggStatus'), 'Confronto in corso…');
+      try {
+        const installati = testoInstallati(copiaNegozi, copiaCodici, 'Copia aggiornata con Aggiorna copia cliente.');
+        const voluti = await fileCopia(copiaNegozi, installati);
+        const presenti = await fileEsistenti(copiaCliente);
+        const scrivere = [];
+        let invariati = 0;
+        for (const [percorso, contenuto] of voluti) {
+          const esistente = presenti.get(percorso);
+          if (!esistente) { scrivere.push([percorso, contenuto, 'nuovo']); continue; }
+          const nuovo = contenuto.voce ? await contenuto.voce.getFile() : new Blob([contenuto.testo]);
+          // installati.js: conta solo se cambiano negozi o codici, non la data nel commento
+          if (percorso === 'assets/negozi/installati.js') {
+            const elencoNegozi = t => t.split(/\r?\n/).filter(l => l.startsWith('Negozi.installa')).join('');
+            if (elencoNegozi(await (await esistente.getFile()).text()) === elencoNegozi(contenuto.testo)) { invariati += 1; continue; }
+          } else if (await uguali(nuovo, await esistente.getFile())) { invariati += 1; continue; }
+          scrivere.push([percorso, contenuto, 'cambiato']);
+        }
+        const togliere = [...presenti.keys()].filter(percorso => !voluti.has(percorso)).sort();
+        differenze = { scrivere, togliere };
+        scrivere.forEach(([percorso, , motivo]) => riga(`  ${motivo === 'nuovo' ? '+ nuovo   ' : '~ cambiato'}  ${percorso}`, 'ok'));
+        togliere.forEach(percorso => riga(`  - da togliere  ${percorso}`, 'err'));
+        const nuovi = scrivere.filter(([, , m]) => m === 'nuovo').length;
+        const totale = scrivere.length + togliere.length;
+        riga(`${totale ? '' : '✓ '}${nuovi} nuovi · ${scrivere.length - nuovi} cambiati · ${togliere.length} da togliere · ${invariati} uguali`, totale ? 'sezione' : 'ok');
+        stato($('aggStatus'), totale ? `${totale} cambiamenti: ${nuovi} nuovi, ${scrivere.length - nuovi} cambiati, ${togliere.length} da togliere. Premi aggiorna la copia.` : 'La copia è già aggiornata: niente da cambiare.', 'ok');
+        $('aggVai').textContent = totale ? `aggiorna la copia (${totale})` : 'aggiorna la copia';
+      } catch (errore) {
+        console.error(errore);
+        differenze = null;
+        riga(`✗ confronto non riuscito: ${errore.message}`, 'err');
+        stato($('aggStatus'), `Confronto non riuscito: ${errore.message}`, 'err');
+      } finally {
+        inCorso = false;
+        aggiornaPassi();
+        aggiornaPassiAgg();
+      }
+    });
+
+    // toglie un file e le cartelle rimaste vuote sopra di lui
+    async function togliFile(radice, percorso) {
+      const parti = percorso.split('/');
+      const cartelle = [radice];
+      for (const parte of parti.slice(0, -1)) cartelle.push(await cartelle.at(-1).getDirectoryHandle(parte));
+      await cartelle.at(-1).removeEntry(parti.at(-1));
+      for (let i = cartelle.length - 1; i > 0; i--) {
+        let vuota = true;
+        for await (const _ of cartelle[i].keys()) { vuota = false; break; }
+        if (!vuota) break;
+        await cartelle[i - 1].removeEntry(parti[i - 1]);
+      }
+    }
+
+    $('aggVai').addEventListener('click', async () => {
+      if (!differenze || inCorso) return;
+      const { scrivere, togliere } = differenze;
+      if (!confirm(`Aggiornare la copia "${copiaCliente.name}"?\n\n${scrivere.length} file da scrivere e ${togliere.length} da togliere.\n.git, CNAME e i file che cominciano con il punto non si toccano.`)) return;
+      inCorso = true;
+      copiati = 0;
+      aggiornaPassiAgg();
+      uscita = $('terminaleAggTesto');
+      riga(`$ aggiorna-copia --a "${copiaCliente.name}"`, 'comando');
+      try {
+        for (const [percorso, contenuto, motivo] of scrivere) {
+          await scriviFile(copiaCliente, percorso, contenuto);
+          riga(`  ${motivo === 'nuovo' ? 'scrivo  ' : 'aggiorno'} ${percorso}`, 'ok');
+        }
+        for (const percorso of togliere) {
+          await togliFile(copiaCliente, percorso);
+          riga(`  tolgo    ${percorso}`, 'err');
+        }
+        riga(`✓ copia aggiornata: ${scrivere.length} file scritti, ${togliere.length} tolti. Ora commit e push del repository del cliente.`, 'ok');
+        stato($('aggStatus'), `Copia aggiornata: ${scrivere.length} file scritti, ${togliere.length} tolti. Ora commit e push del repository del cliente (es. con GitHub Desktop).`, 'ok');
+        differenze = null;
+        $('aggVai').textContent = 'aggiorna la copia';
+      } catch (errore) {
+        console.error(errore);
+        riga(`✗ aggiornamento interrotto: ${errore.message}`, 'err');
+        stato($('aggStatus'), `Aggiornamento interrotto: ${errore.message}. Rifai il confronto.`, 'err');
+        differenze = null;
+      } finally {
+        inCorso = false;
+        aggiornaPassi();
+        aggiornaPassiAgg();
+      }
+    });
 
     // 3. Cartella di destinazione e copia
     $('pickTarget').addEventListener('click', async () => {
@@ -978,6 +1192,7 @@
       aggiornaPassi();
       stato($('copyStatus'), `Preparo la copia con: ${nomi}…`);
       // terminale: si apre vuoto e mostra il comando di partenza
+      uscita = terminaleTesto;
       terminaleTesto.replaceChildren();
       adatta(() => { terminale.hidden = false; }, 300);
       riga(`$ prepara-copia --negozi ${ids.join(',')} --da "${sorgente.name}" --a "${destinazione.name}"`, 'comando');

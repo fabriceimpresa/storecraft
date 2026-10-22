@@ -209,6 +209,10 @@ begin
   if v_numero > 1000 or pg_column_size(p_backup) > 40000000 then
     raise exception 'backup troppo grande';
   end if;
+  -- una lista vuota non sostituisce un backup con dei loghi (un computer nuovo del negozio, una prova)
+  if v_numero = 0 and exists (select 1 from backup_loghi where negozio_id = v_negozio and numero > 0) then
+    return jsonb_build_object('loghi', 0, 'saltato', true);
+  end if;
   insert into backup_loghi (negozio_id, backup, numero, impronta, aggiornato_il)
   values (v_negozio, p_backup, v_numero, left(p_impronta, 80), now())
   on conflict (negozio_id) do update

@@ -2,7 +2,7 @@
    Ogni negozio ha la sua scheda in assets/negozi/: <negozio>.js (nome, sigla, oro, guida di montaggio, lista di
    stampa, valori iniziali dell'interfaccia…) e <negozio>.css (colori come variabili CSS: cursore, pulsantiera, riquadro
    PDF). L'elenco dei negozi installati sta in assets/negozi/installati.js: con un solo negozio la splash page si salta e
-   i menu mostrano solo quel negozio. Prepara copia.bat, nella radice, scrive l'elenco per la copia di un cliente.
+   i menu mostrano solo quel negozio. Prepara copia della pagina operatore scrive l'elenco per la copia di un cliente.
 
    Va incluso per primo nel <head> di ogni pagina, prima degli altri moduli: carica subito (durante la lettura della
    pagina) l'elenco, le schede dei negozi installati e i colori del negozio della pagina (data-negozio su <html>).
@@ -12,13 +12,12 @@
      Negozi.scheda(id)            scheda del negozio (null se non è installato)
      Negozi.corrente()            scheda del negozio della pagina (null nelle pagine della radice)
      Negozi.unico()               il negozio, se ne è installato uno solo; altrimenti null
-     Negozi.copiaCliente          true nella copia per un cliente (la pagina operatore mostra solo i loghi ufficiali)
    Nelle schede e in installati.js:
      Negozi.registra(id, scheda)  aggiunge la scheda di un negozio
      Negozi.installa([...])       dichiara i negozi installati e carica le loro schede;
-     Negozi.installa([...], { copiaCliente: true })   così lo scrive Prepara copia nella copia per un cliente
-     Negozi.installa([...], { copiaCliente: true, statistiche: { luxury: '<codice>' } })   con il codice del negozio
-                                  per spedire le statistiche (statistiche.js, sezione Statistiche dell'area operatore)
+     Negozi.installa([...], { statistiche: { luxury: '<codice>' } })   così lo scrive Prepara copia nella copia per
+                                  un cliente, con il codice di ogni negozio per spedire le statistiche (statistiche.js,
+                                  sezione Statistiche dell'area operatore); la copia non ha l'area operatore
      Negozi.codiceStatistiche(id) codice del negozio per le statistiche (null se la copia non lo ha) */
 (() => {
   const script = document.currentScript;
@@ -27,7 +26,6 @@
   const negozio = document.documentElement.dataset.negozio || null;
   const schede = {};
   let installati = [];
-  let copiaCliente = false;
   let codiciStatistiche = {};
 
   // Caricamento durante la lettura della pagina: i moduli che seguono trovano già schede e colori.
@@ -48,14 +46,12 @@
     scheda: id => (installati.includes(id) && schede[id]) || null,
     corrente: () => (negozio && schede[negozio]) || null,
     unico: () => (installati.length === 1 ? installati[0] : null),
-    get copiaCliente() { return copiaCliente; },
     codiceStatistiche: id => codiciStatistiche[id] || null,
     registra(id, scheda) {
       schede[id] = Object.freeze({ id, ...scheda });
     },
     installa(elenco, opzioni = {}) {
       installati = elenco.slice();
-      copiaCliente = Boolean(opzioni.copiaCliente);
       codiciStatistiche = { ...(opzioni.statistiche || {}) };
       installati.forEach(id => {
         scrivi(`<script src="${new URL(`${id}.js${versione}`, cartella).href}"><\/script>`);

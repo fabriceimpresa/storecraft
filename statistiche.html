@@ -2,16 +2,16 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261022-06"></script>
+<script src="assets/js/negozi.js?v=20261022-07"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
 <title>STATISTICHE (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-06">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-07">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-06">
-  <script src="assets/js/operatore-sezione.js?v=20261022-06"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261022-06"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-07">
+  <script src="assets/js/operatore-sezione.js?v=20261022-07"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-07"></script>
   <!--
     Statistiche (area operatore, dal 22 ottobre 2026; solo nel progetto madre): i dati che le copie dei clienti spediscono
     a STORE // CRAFT su Supabase (assets/js/statistiche.js, schema in supabase/schema.sql), letti dopo l'accesso con
@@ -276,7 +276,7 @@
       const suoi = negozi.filter(x => x.cliente === n.cliente && x.attivo);
       const elenco = suoi.map(x => `'${x.negozio}'`).join(', ');
       const codici = suoi.map(x => `${x.negozio}: '${x.token}'`).join(', ');
-      return `Negozi.installa([${elenco}], { copiaCliente: true, statistiche: { ${codici} } });`;
+      return `Negozi.installa([${elenco}], { statistiche: { ${codici} } });`;
     }
 
     function disegnaNegozi(fogli) {

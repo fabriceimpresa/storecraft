@@ -6,11 +6,12 @@
    - le etichette DYMO stampate, dalla cronologia DYMO (cronologia-dymo.js): layout, stampe, copie e l'anteprima;
    - il backup dei loghi personali (loghi-personalizzati.js), solo quando la lista è cambiata.
    Mai la Bacheca. Parte solo se la copia ha il codice del negozio, scritto in installati.js:
-     Negozi.installa(['luxury'], { copiaCliente: true, statistiche: { luxury: '<codice>' } })
+     Negozi.installa(['luxury'], { statistiche: { luxury: '<codice>' } })
    Il codice permette solo di spedire i dati del proprio negozio (funzioni invia_statistiche e invia_backup_loghi);
    l'operatore li legge nella sezione Statistiche dell'area operatore (statistiche.html), dopo l'accesso.
    Una volta al giorno per browser (localStorage storecraft_statistiche_<negozio>); senza rete riprova alla prossima
-   apertura. Statistiche.invia({ forza: true }) spedisce subito, per le prove. */
+   apertura. Mai da localhost né da file aperti da disco (prove), e mai una lista vuota di loghi personali.
+   Statistiche.invia({ forza: true }) spedisce subito, anche in locale, per le prove. */
 (() => {
   const SUPABASE = 'https://uzttznyyrhrqehejbxbf.supabase.co';
   const CHIAVE = 'sb_publishable_bBc9vT9fVRXFQIPevein4A_bewS5knI';   // chiave pubblica: permette solo le due funzioni
@@ -145,6 +146,8 @@
     const loghi = await modulo('js/loghi-personalizzati.js', 'LoghiPersonalizzati');
     await loghi.pronto;
     const lista = loghi.elenco();
+    // una lista vuota (browser nuovo, prova) non sostituisce mai il backup di un altro computer del negozio
+    if (!lista.length) return { loghi: 'lista vuota, non spedita' };
     const firma = await impronta(JSON.stringify(lista.map(l => [l.id, l.name, l.data])));
     if (firma === leggi(CHIAVE_LOGHI, null)) return { loghi: 'invariati' };
     const backup = { version: 1, negozio, exportedAt: new Date().toISOString(), logos: lista };
@@ -170,8 +173,11 @@
 
   window.Statistiche = Object.freeze({ invia, attivo: Boolean(codice) });
 
-  // Da solo, qualche secondo dopo l'apertura della dashboard, per non rallentarla
-  if (codice) {
+  // Da solo, qualche secondo dopo l'apertura della dashboard, per non rallentarla; solo dal sito vero: una copia
+  // provata in locale (localhost, file aperti da disco) non spedisce le stampe di prova ai clienti veri
+  // (Statistiche.invia({ forza: true }) spedisce comunque, per le prove)
+  const inLocale = location.protocol === 'file:' || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  if (codice && !inLocale) {
     setTimeout(() => {
       invia().catch(errore => console.warn('Statistiche non spedite: si riprova alla prossima apertura.', errore));
     }, 6000);
