@@ -163,7 +163,9 @@
 
     /* SPECIFICO PER LAYOUT 2 ARTICOLI */
     .frame-box.layout-2-articles {
-      padding: 5mm 6mm;
+      /* i due articoli stanno ai bordi alto e basso, la linea al centro: meno spazio ai bordi li allontana dalla
+         linea (5 mm fino al 22 ottobre 2026) */
+      padding: 3.5mm 6mm;
       gap: 2mm;
       justify-content: space-between;
     }
@@ -184,7 +186,7 @@
     #frameRight { right: 7.5mm; }
 
     .deco-img {
-      width: 56.25mm;
+      width: 52.5mm;   /* un poco più piccole (56,25 mm fino al 22 ottobre 2026) */
       height: auto;
       object-fit: contain;
     }
@@ -325,11 +327,6 @@
       -webkit-text-stroke: 0.2px #2b2926;
     }
 
-    /* Percentuale Sconto con BRAND: logo nero (variante black), un poco attenuato perché sia un nero
-       pieno ma non brillante, come la descrizione #2b2926 */
-    .frame-box.percent-mode .pct-brand-box .frame-brand-logo {
-      opacity: 0.88;
-    }
 
     .pct-brand-box {
       display: flex;
@@ -430,7 +427,7 @@
         padding: 12mm 8mm;
       }
       .frame-box.layout-2-articles {
-        padding: 7mm 8mm;
+        padding: 5.5mm 8mm;
       }
       #frameLeft,
       #frameRight {
@@ -476,6 +473,12 @@
           <button value="extra" id="extraArticleModeBtn">DOPPIO<br>ARTICOLO</button>
           <button value="brand" id="brandModeBtn">BRAND</button>
           <button value="percent" id="percentModeBtn">PERCENTUALE<br>SCONTO</button>
+        </div>
+
+        <!-- solo con BRAND: sotto il logo la descrizione (testi pronti o Testo Libero) o il doppio prezzo -->
+        <div data-selettore id="brandViewSelector" data-on-change="setBrandView" aria-label="Seleziona cosa mostrare sotto il logo brand" hidden>
+          <button value="desc" id="brandViewDescBtn">DESCRIZIONE</button>
+          <button value="double" id="brandViewDoubleBtn" class="active">DOPPIO PREZZO</button>
         </div>
 
         <!-- solo con PERCENTUALE SCONTO: cosa c'è sopra la percentuale -->
@@ -591,6 +594,7 @@
       left: {
         twoArticlesActive: false,
         brandActive: false,
+        brandView: 'double',   // BRAND: 'double' doppio prezzo, 'desc' descrizione sotto il logo
         percentActive: false,
         percent: { discount: '50', extra: 'standard', desc: 'Sconto alla Cassa' },
         brand: { officialFile: '', customLogoId: '' },
@@ -603,6 +607,7 @@
       right: {
         twoArticlesActive: false,
         brandActive: false,
+        brandView: 'double',   // BRAND: 'double' doppio prezzo, 'desc' descrizione sotto il logo
         percentActive: false,
         percent: { discount: '50', extra: 'standard', desc: 'Sconto alla Cassa' },
         brand: { officialFile: '', customLogoId: '' },
@@ -644,6 +649,21 @@
       syncSidebarWithState();
       updateAll();
     }
+
+    // BRAND: sotto il logo la descrizione (con il solo Prezzo Finale) o il doppio prezzo
+    function setBrandView(view) {
+      const state = framesState[currentActiveFrame];
+      state.brandView = view;
+      if (view === 'desc') {
+        state.articles[0].desc = limitDescriptionLines(state.articles[0].desc, BRAND_DESC_LINES);
+      }
+      syncSidebarWithState();
+      updateAll();
+    }
+
+    // con BRAND e DESCRIZIONE la descrizione ha al massimo 2 righe (sopra c'è il logo)
+    const BRAND_DESC_LINES = 2;
+    const brandWithDesc = state => state.brandActive && state.brandView === 'desc';
 
     // Il logo brand serve in modalità Brand e in Percentuale Sconto con l'opzione Brand.
     function usesBrandLogo(state) {
@@ -691,7 +711,12 @@
       const mode = state.percentActive ? 'percent' : state.brandActive ? 'brand' : state.twoArticlesActive ? 'extra' : 'standard';
       Selettore.attiva('frameModeSelector', mode);
       document.getElementById('rowSelectorContainer').hidden = !state.twoArticlesActive;
-      document.getElementById('descriptionFieldsGroup').hidden = state.brandActive || state.percentActive;
+      document.getElementById('descriptionFieldsGroup').hidden = (state.brandActive && !brandWithDesc(state)) || state.percentActive;
+      document.getElementById('brandViewSelector').hidden = !state.brandActive;
+      Selettore.attiva('brandViewSelector', state.brandView);
+      // con BRAND e DESCRIZIONE resta solo il Prezzo Finale
+      document.getElementById('oldPrice').closest('.form-group').hidden = brandWithDesc(state);
+      document.getElementById('discountValue').closest('.form-group').hidden = brandWithDesc(state);
       document.getElementById('priceFieldsGroup').hidden = state.percentActive;
       document.getElementById('percentFieldsGroup').hidden = !state.percentActive;
       document.getElementById('percentExtraSelector').hidden = !state.percentActive;
@@ -773,8 +798,8 @@
       updateAll();
     }
 
-    // Colore del logo brand: oro nelle modalità con le decorazioni, nero nella Percentuale Sconto
-    const brandLogoColor = state => state.percentActive ? 'black' : 'gold';
+    // Colore del logo brand: oro in tutte le modalità (anche in Percentuale Sconto, dove la descrizione è nera)
+    const brandLogoColor = () => 'gold';
 
     function getBrandLogoSource(brand, color = 'gold') {
       const customLogo = readCustomLogos().find(logo => logo.id === brand.customLogoId);
@@ -826,8 +851,8 @@
       const state = framesState[currentActiveFrame];
       const art = state.articles[state.activeRow];
       const descInput = document.getElementById('descFree');
-      if (!state.brandActive) {
-        const maxLines = state.twoArticlesActive ? 3 : 4;
+      if (!state.brandActive || brandWithDesc(state)) {
+        const maxLines = brandWithDesc(state) ? BRAND_DESC_LINES : state.twoArticlesActive ? 3 : 4;
         const limitedDesc = limitDescriptionLines(descInput.value, maxLines);
         if (limitedDesc !== descInput.value) {
           const selectionStart = descInput.selectionStart;
@@ -913,9 +938,18 @@
         } else {
           titleContent = renderDescription(art);
         }
+        box.classList.toggle('brand-desc', brandWithDesc(state));
+        let content;
+        if (brandWithDesc(state)) {
+          // logo, descrizione e Prezzo Finale (senza prezzo originario e sconto)
+          content = node('div', 'frame-content');
+          content.append(titleContent, renderDescription(art), node('div', 'price-final-frame', `€ ${art.newPrice}`));
+        } else {
+          content = articleContent(art, titleContent);
+        }
         container.replaceChildren(
           image('deco-img', '../assets/img/tebe/decoup.png', 'Decoro Superiore'),
-          articleContent(art, titleContent),
+          content,
           image('deco-img', '../assets/img/tebe/decodown.png', 'Decoro Inferiore')
         );
         if (state.brandActive) {
@@ -924,7 +958,7 @@
         if (box.classList.contains('standard-one-line-desc')) fitOneLineDesc(container);
       } else {
         box.classList.add('layout-2-articles');
-        box.classList.remove('brand-mode');
+        box.classList.remove('brand-mode', 'brand-desc');
         box.classList.remove('standard-max-lines');
         box.classList.remove('standard-two-line-desc', 'standard-one-line-desc');
         box.style.removeProperty('--standard-desc-font-size');
@@ -941,7 +975,7 @@
     // Percentuale Sconto: descrizione o logo brand, "FINO AL" con la barra del meno
     // e la percentuale, senza decorazioni; logo TEBE oro in fondo alla cornice.
     function renderPercentContent(state, box, container) {
-      box.classList.remove('layout-2-articles', 'brand-mode', 'standard-max-lines', 'standard-two-line-desc', 'standard-one-line-desc');
+      box.classList.remove('layout-2-articles', 'brand-mode', 'brand-desc', 'standard-max-lines', 'standard-two-line-desc', 'standard-one-line-desc');
       box.style.removeProperty('--standard-desc-font-size');
 
       const element = (tag, className, text) => {
@@ -961,7 +995,7 @@
         brandImage.alt = 'Logo brand';
         brandBox.appendChild(brandImage);
         content.appendChild(brandBox);
-        loadBrandImage(brandImage, state.brand, 'black');
+        loadBrandImage(brandImage, state.brand);
       } else if (state.percent.extra === 'descrizione' && state.percent.desc.trim()) {
         // in alto nella cornice, fuori dal blocco della percentuale
         topDesc = element('div', 'pct-desc pct-desc-top', state.percent.desc);
@@ -1133,6 +1167,8 @@
         { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: inFrame('.pct-desc'), gap: GAP_CORNICE },
         { controls: '#rowSelectorContainer', target: activeFrameArticle },
         { controls: '#descPreset, #descFree', target: inFrameArticle('.desc-title'), gap: GAP_CORNICE },
+        { controls: '#brandViewDescBtn', target: inFrameArticle('.desc-title'), gap: GAP_CORNICE },
+        { controls: '#brandViewDoubleBtn', target: inFrameArticle('.price-row-frame'), gap: GAP_CORNICE },
         { controls: '#oldPrice', target: inFrameArticle('.price-old-frame'), gap: GAP_CORNICE },
         { controls: '#discountValue, #discountValue ~ .percent-stepper', target: inFrameArticle('.price-percent-frame'), gap: GAP_CORNICE },
         { controls: '#newPrice', target: inFrameArticle('.price-final-frame'), gap: GAP_CORNICE }
