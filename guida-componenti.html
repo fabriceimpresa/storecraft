@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-08"></script>
+  <script src="assets/js/negozi.js?v=20261022-10"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.65</p>
+  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.66</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -355,7 +355,7 @@
     <tr><td>Schede e caroselli</td><td><code>sezioni</code> e <code>schede</code> nei contenuti; <code>caroselli.css/js</code></td><td>4 schede per riga (2 sotto 1300 px, 1 sul telefono) · titolo Cinzel (STANDARD) o Fraunces (COMPATTO); chiaro taupe <code>#665e54</code>, scuro STANDARD peso 600</td><td>Crea Cartelli su due righe (<code>righe: 1</code> per una sola); Coming Soon con <code>prossimamente: true</code></td></tr>
     <tr><td>Utilità Cassa</td><td><code>cassa.js</code></td><td>widget squadrati (COMPATTO) o arrotondati (STANDARD); titoli bianchi nel tema scuro, taupe nel chiaro</td><td>su desktop si aprono in un popup; <code>cassa: 'solo-cassiere'</code> le mostra solo in CASSIERE (sul telefono anche in CREATOR)</td></tr>
     <tr><td>Tema e aspetto</td><td><code>theme.js</code> + <code>theme.css</code></td><td>CHIARO / SCURO e STANDARD / COMPATTO, indipendenti, ricordati per negozio</td><td>iniziali: Luxury scuro + STANDARD, TEBE chiaro + COMPATTO; non cambiano mai i fogli di stampa</td></tr>
-    <tr><td>Set EXTRA</td><td><code>theme.js</code> (<code>EXTRAS</code>, <code>applyExtra</code>) + <code>assets/css/extra-&lt;set&gt;.css</code>, caricato solo con il set attivo</td><td>in IMPOSTAZIONI, sotto ASPETTO: VINTAGE e, spenti con COMING SOON, MATRIX e NEUROMANCE · VINTAGE: America anni '50, crema, menu verde bottiglia, schede-cartoncino con bordo e ombra piena, titoli delle sezioni con la stellina da mostrina militare sopra, Yellowtail, Alfa Slab One, Oswald</td><td>il set impone tema e aspetto (VINTAGE: CHIARO + STANDARD) e li spegne; si esce con un altro clic sul set o ✕ ESCI DAL SET EXTRA, e si torna a tema e aspetto di partenza del negozio (Luxury SCURO + STANDARD) · <code>storecraft_interface_extra[_&lt;negozio&gt;]</code> · regole solo nella dashboard (<code>body[data-pagina="dashboard"]</code>), nelle altre pagine solo i colori <code>--interface-*</code>; fogli di stampa invariati · solo tinte piatte, niente trame</td></tr>
+    <tr><td>Set EXTRA</td><td><code>theme.js</code> (<code>EXTRAS</code>, <code>applyExtra</code>) + <code>assets/css/extra-&lt;set&gt;.css</code>, caricato solo con il set attivo</td><td>in IMPOSTAZIONI, sotto ASPETTO: VINTAGE e, spenti con COMING SOON, MATRIX e NEUROMANCE · VINTAGE: America anni '50, crema, menu verde bottiglia, schede-cartoncino con bordo e ombra piena, titoli delle sezioni con la stellina da mostrina militare sopra, Yellowtail, Alfa Slab One, Oswald</td><td>il set impone tema e aspetto (VINTAGE: CHIARO + STANDARD) e li spegne; si esce con un altro clic sul set o ✕ ESCI DAL SET EXTRA, e si torna a tema e aspetto di partenza del negozio (Luxury SCURO + STANDARD) · <code>storecraft_interface_extra[_&lt;negozio&gt;]</code> · regole solo nella dashboard (<code>body[data-pagina="dashboard"]</code>), nelle altre pagine solo i colori <code>--interface-*</code>; fogli di stampa invariati · solo tinte piatte, niente trame; <strong>solo nel progetto madre</strong> (dal 22 ottobre 2026): si accendono con <code>Negozi.installa([...], { extra: true })</code> in <code>installati.js</code>; le copie per i clienti per ora hanno solo TEMA e ASPETTO</td></tr>
   </table>
 
   <!-- ================================================================ -->
@@ -433,7 +433,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-08</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-10</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>

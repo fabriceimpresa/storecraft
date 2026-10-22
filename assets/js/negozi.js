@@ -18,7 +18,9 @@
      Negozi.installa([...], { statistiche: { luxury: '<codice>' } })   così lo scrive Prepara copia nella copia per
                                   un cliente, con il codice di ogni negozio per spedire le statistiche (statistiche.js,
                                   sezione Statistiche dell'area operatore); la copia non ha l'area operatore
-     Negozi.codiceStatistiche(id) codice del negozio per le statistiche (null se la copia non lo ha) */
+     Negozi.codiceStatistiche(id) codice del negozio per le statistiche (null se la copia non lo ha)
+     Negozi.extra                 true se il menu IMPOSTAZIONI ha i set EXTRA (VINTAGE…): Negozi.installa([...], { extra: true });
+                                  il progetto madre sì, le copie dei clienti no (dal 22 ottobre 2026) */
 (() => {
   const script = document.currentScript;
   const versione = new URL(script.src).search;  // stessa versione (?v=) dei file comuni
@@ -27,6 +29,7 @@
   const schede = {};
   let installati = [];
   let codiciStatistiche = {};
+  let extra = false;
 
   // Caricamento durante la lettura della pagina: i moduli che seguono trovano già schede e colori.
   function scrivi(html) {
@@ -47,12 +50,14 @@
     corrente: () => (negozio && schede[negozio]) || null,
     unico: () => (installati.length === 1 ? installati[0] : null),
     codiceStatistiche: id => codiciStatistiche[id] || null,
+    get extra() { return extra; },
     registra(id, scheda) {
       schede[id] = Object.freeze({ id, ...scheda });
     },
     installa(elenco, opzioni = {}) {
       installati = elenco.slice();
       codiciStatistiche = { ...(opzioni.statistiche || {}) };
+      extra = Boolean(opzioni.extra);
       installati.forEach(id => {
         scrivi(`<script src="${new URL(`${id}.js${versione}`, cartella).href}"><\/script>`);
       });

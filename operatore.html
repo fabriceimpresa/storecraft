@@ -2,10 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-08"></script>
+  <script src="assets/js/negozi.js?v=20261022-10"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-08"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261022-08"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261022-10"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-10"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -939,6 +939,8 @@
       const tutti = negozi.map(negozio => negozio.id);
       const file = new Map();
       const aggiungi = async (voce, percorso) => {
+        // pagine e file di prova (_anteprima-temi.html, _proposte-…): mai nelle copie, in nessuna cartella
+        if (percorso.split('/').pop().startsWith('_')) return;
         if (voce.kind === 'file') { file.set(percorso, { voce }); return; }
         for await (const [figlio, sotto] of voce.entries()) await aggiungi(sotto, `${percorso}/${figlio}`);
       };

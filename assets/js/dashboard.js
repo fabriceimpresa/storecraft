@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.65 2026';
+  const VERSIONE = 'V 1.2.66 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -225,8 +225,9 @@
           el('div', { class: 'theme-choices', role: 'group', 'aria-label': 'Aspetto interfaccia' },
             scelta('data-interface-look-choice', 'standard', 'STANDARD'), scelta('data-interface-look-choice', 'minimal', 'COMPATTO'))),
         // EXTRA (dal 19 ottobre 2026): set che impongono insieme tema e aspetto e li bloccano; un altro clic sul set scelto,
-        // o ESCI DAL SET EXTRA, torna a tema e aspetto di partenza del negozio (theme.js). MATRIX e NEUROMANCE in arrivo
-        el('div', { class: 'system-setting-row system-setting-extra' },
+        // o ESCI DAL SET EXTRA, torna a tema e aspetto di partenza del negozio (theme.js). MATRIX e NEUROMANCE in arrivo.
+        // Solo con Negozi.extra (il progetto madre; le copie per i clienti per ora hanno solo TEMA e ASPETTO)
+        window.Negozi?.extra && el('div', { class: 'system-setting-row system-setting-extra' },
           el('span', { class: 'system-setting-label', text: 'EXTRA' }),
           el('div', { class: 'theme-choices extra-choices', role: 'group', 'aria-label': 'Set extra' },
             scelta('data-interface-extra-choice', 'vintage', 'VINTAGE'),

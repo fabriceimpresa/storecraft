@@ -214,6 +214,8 @@
     document.head.append(stile);
     // il testo segnato, scritto dalla pagina sul cartello, diventa l'avviso
     const trasforma = radice => {
+      // un testo aggiunto e subito tolto (es. la vista telefono che sposta i pezzi) non è più nella pagina
+      if (!radice || !radice.isConnected) return;
       const camminatore = document.createTreeWalker(radice, NodeFilter.SHOW_TEXT, {
         acceptNode: n => (n.nodeValue.includes(SEGNO) && !n.parentElement?.closest('.testo-mancante, input, textarea, select, option'))
           ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT

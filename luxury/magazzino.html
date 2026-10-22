@@ -2,22 +2,22 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-08"></script>
+  <script src="../assets/js/negozi.js?v=20261022-10"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartelli Magazzino // STORE CRAFT</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-10">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-08">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-08">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-08">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-10">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-10">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-10">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-10">
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-08"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261022-08"></script>
-  <script src="../assets/js/logos.js?v=20261022-08"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261022-08"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-10"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261022-10"></script>
+  <script src="../assets/js/logos.js?v=20261022-10"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261022-10"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-10">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -241,13 +241,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-08">
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-08"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-08">
-  <script defer src="../assets/js/responsive.js?v=20261022-08"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261022-08"></script>
-  <script src="../assets/js/theme.js?v=20261022-08"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-10">
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-10"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-10">
+  <script defer src="../assets/js/responsive.js?v=20261022-10"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261022-10"></script>
+  <script src="../assets/js/theme.js?v=20261022-10"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-10">
 </head>
 <body data-layout="cartelli">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna all'index">✕</a>
@@ -338,11 +338,11 @@
     <div class="cartello-box" id="cartelloBox1">
       <div class="brand-area">
         <div class="brand-slot">
-          <img id="logoImg1" src="" alt="Brand Logo" onerror="onLogoError(1, '')" style="display:none;">
+          <img id="logoImg1" src="" alt="Brand Logo" onerror="window.onLogoError && onLogoError(1, '')" style="display:none;">
           <span id="logoFallback1" class="brand-text-fallback">BRAND</span>
         </div>
         <div class="brand-slot bis">
-          <img id="logoImg1Bis" src="" alt="Brand Logo 2" onerror="onLogoError(1, 'Bis')" style="display:none;">
+          <img id="logoImg1Bis" src="" alt="Brand Logo 2" onerror="window.onLogoError && onLogoError(1, 'Bis')" style="display:none;">
           <span id="logoFallback1Bis" class="brand-text-fallback">BRAND</span>
         </div>
       </div>
@@ -358,11 +358,11 @@
     <div class="cartello-box" id="cartelloBox2">
       <div class="brand-area">
         <div class="brand-slot">
-          <img id="logoImg2" src="" alt="Brand Logo" onerror="onLogoError(2, '')" style="display:none;">
+          <img id="logoImg2" src="" alt="Brand Logo" onerror="window.onLogoError && onLogoError(2, '')" style="display:none;">
           <span id="logoFallback2" class="brand-text-fallback">BRAND</span>
         </div>
         <div class="brand-slot bis">
-          <img id="logoImg2Bis" src="" alt="Brand Logo 2" onerror="onLogoError(2, 'Bis')" style="display:none;">
+          <img id="logoImg2Bis" src="" alt="Brand Logo 2" onerror="window.onLogoError && onLogoError(2, 'Bis')" style="display:none;">
           <span id="logoFallback2Bis" class="brand-text-fallback">BRAND</span>
         </div>
       </div>
@@ -378,9 +378,9 @@
 
 
 
-  <script src="../assets/js/second-brand-toggle.js?v=20261022-08"></script>
-  <script src="../assets/js/selettore.js?v=20261022-08"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261022-08"></script>
+  <script src="../assets/js/second-brand-toggle.js?v=20261022-10"></script>
+  <script src="../assets/js/selettore.js?v=20261022-10"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261022-10"></script>
 
 
 
@@ -665,7 +665,7 @@
       document.fonts.ready.then(renderCards);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-08"></script>
+  <script src="../assets/js/cursore.js?v=20261022-10"></script>
 
 
 
@@ -699,7 +699,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/copia-cartello.js?v=20261022-08"></script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261022-08" data-sheet="#a4Sheet"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261022-10"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261022-10" data-sheet="#a4Sheet"></script>
 </body>
 </html>

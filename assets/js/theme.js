@@ -126,7 +126,12 @@
     document.head.append(link);
   }
 
+  // i set EXTRA solo dove sono accesi (Negozi.extra: il progetto madre sì, le copie per i clienti no): altrove un set
+  // scelto prima in questo browser non si applica
+  const EXTRA_ACCESI = Boolean(window.Negozi?.extra);
+
   function readExtra() {
+    if (!EXTRA_ACCESI) return null;
     try {
       const storedExtra = localStorage.getItem(EXTRA_STORAGE_KEY);
       return Object.hasOwn(EXTRAS, storedExtra) ? storedExtra : null;
