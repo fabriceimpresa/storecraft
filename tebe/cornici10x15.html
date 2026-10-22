@@ -128,6 +128,18 @@
       transform: translateY(1.3mm) scale(1.12);
     }
 
+    /* BRAND › DESCRIZIONE: testo pronto (Promozioni e Articoli) o Testo Libero, su una riga, nero, in Arial come i
+       testi delle pagine di TEBE (non maiuscolo né oro come i testi delle cornici) */
+    .brand-desc-text {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12pt;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #231f20;
+      white-space: nowrap;
+      text-align: center;
+    }
+
     .frame-brand-logo {
       max-width: 100%;
       max-height: 13mm;
@@ -547,6 +559,18 @@
           <textarea id="descFree" rows="4" placeholder="-- Testo Libero --" oninput="updateData()"></textarea>
         </div>
 
+        <!-- solo con BRAND › DESCRIZIONE: il menu dei testi pronti standard (Promozioni e Articoli) e il Testo Libero -->
+        <div class="form-group" id="brandDescGroup" hidden>
+          <label class="section-label" for="brandDescPreset">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="brandDescPreset" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyBrandDescPreset()">
+              <option value="">-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <label for="brandDescFree">Testo Libero</label>
+          <input type="text" id="brandDescFree" maxlength="37" placeholder="-- Testo Libero --" oninput="updateBrandDesc()">
+        </div>
+
         <div class="form-row" id="priceFieldsGroup">
           <div class="form-group">
             <label for="oldPrice">Prezzo Originario</label>
@@ -600,7 +624,7 @@
         brand: { officialFile: '', customLogoId: '' },
         activeRow: 0,
         articles: [
-          { desc: "PURO\nCOTONE", oldPrice: "34,90", discount: "50", newPrice: "17,90" },
+          { desc: "PURO\nCOTONE", brandDesc: 'Special Deal', oldPrice: "34,90", discount: "50", newPrice: "17,90" },
           { desc: "LANA\nMERINOS", oldPrice: "39,90", discount: "50", newPrice: "19,90" }
         ]
       },
@@ -613,7 +637,7 @@
         brand: { officialFile: '', customLogoId: '' },
         activeRow: 0,
         articles: [
-          { desc: "LANA &\nCACHEMIRE", oldPrice: "34,90", discount: "50", newPrice: "17,90" },
+          { desc: "LANA &\nCACHEMIRE", brandDesc: 'Special Deal', oldPrice: "34,90", discount: "50", newPrice: "17,90" },
           { desc: "LANA\nMERINOS", oldPrice: "39,90", discount: "50", newPrice: "19,90" }
         ]
       }
@@ -654,15 +678,21 @@
     function setBrandView(view) {
       const state = framesState[currentActiveFrame];
       state.brandView = view;
-      if (view === 'desc') {
-        state.articles[0].desc = limitDescriptionLines(state.articles[0].desc, BRAND_DESC_LINES);
-      }
       syncSidebarWithState();
       updateAll();
     }
 
-    // con BRAND e DESCRIZIONE la descrizione ha al massimo 2 righe (sopra c'è il logo)
-    const BRAND_DESC_LINES = 2;
+    // BRAND › DESCRIZIONE: un testo suo (brandDesc), con i testi pronti standard; la descrizione delle cornici resta
+    function applyBrandDescPreset() {
+      document.getElementById('brandDescFree').value = document.getElementById('brandDescPreset').value;
+      updateBrandDesc();
+    }
+
+    function updateBrandDesc() {
+      framesState[currentActiveFrame].articles[0].brandDesc = document.getElementById('brandDescFree').value;
+      updateAll();
+    }
+
     const brandWithDesc = state => state.brandActive && state.brandView === 'desc';
 
     // Il logo brand serve in modalità Brand e in Percentuale Sconto con l'opzione Brand.
@@ -711,7 +741,9 @@
       const mode = state.percentActive ? 'percent' : state.brandActive ? 'brand' : state.twoArticlesActive ? 'extra' : 'standard';
       Selettore.attiva('frameModeSelector', mode);
       document.getElementById('rowSelectorContainer').hidden = !state.twoArticlesActive;
-      document.getElementById('descriptionFieldsGroup').hidden = (state.brandActive && !brandWithDesc(state)) || state.percentActive;
+      document.getElementById('descriptionFieldsGroup').hidden = state.brandActive || state.percentActive;
+      document.getElementById('brandDescGroup').hidden = !brandWithDesc(state);
+      document.getElementById('brandDescFree').value = state.articles[0].brandDesc ?? '';
       document.getElementById('brandViewSelector').hidden = !state.brandActive;
       Selettore.attiva('brandViewSelector', state.brandView);
       // con BRAND e DESCRIZIONE resta solo il Prezzo Finale
@@ -851,8 +883,8 @@
       const state = framesState[currentActiveFrame];
       const art = state.articles[state.activeRow];
       const descInput = document.getElementById('descFree');
-      if (!state.brandActive || brandWithDesc(state)) {
-        const maxLines = brandWithDesc(state) ? BRAND_DESC_LINES : state.twoArticlesActive ? 3 : 4;
+      if (!state.brandActive) {
+        const maxLines = state.twoArticlesActive ? 3 : 4;
         const limitedDesc = limitDescriptionLines(descInput.value, maxLines);
         if (limitedDesc !== descInput.value) {
           const selectionStart = descInput.selectionStart;
@@ -943,7 +975,7 @@
         if (brandWithDesc(state)) {
           // logo, descrizione e Prezzo Finale (senza prezzo originario e sconto)
           content = node('div', 'frame-content');
-          content.append(titleContent, renderDescription(art), node('div', 'price-final-frame', `€ ${art.newPrice}`));
+          content.append(titleContent, node('div', 'brand-desc-text', art.brandDesc ?? ''), node('div', 'price-final-frame', `€ ${art.newPrice}`));
         } else {
           content = articleContent(art, titleContent);
         }
@@ -956,6 +988,7 @@
           loadBrandImage(container.querySelector('.frame-brand-logo'), state.brand);
         }
         if (box.classList.contains('standard-one-line-desc')) fitOneLineDesc(container);
+        if (brandWithDesc(state)) fitOneLineDesc(container, '.brand-desc-text');
       } else {
         box.classList.add('layout-2-articles');
         box.classList.remove('brand-mode', 'brand-desc');
@@ -1055,8 +1088,8 @@
     // Testo su una riga troppo lungo (es. PANTALONCINO): il corpo si riduce finché il testo non supera
     // il 70% della larghezza dei decori. Le misure sono a schermo, il rapporto vale anche in stampa.
     const ONE_LINE_MAX_RATIO = 0.7;
-    function fitOneLineDesc(container) {
-      const title = container.querySelector('.desc-title');
+    function fitOneLineDesc(container, selector = '.desc-title') {
+      const title = container.querySelector(selector);
       const deco = container.querySelector('.deco-img');
       if (!title || !deco) return;
       title.style.fontSize = '';
@@ -1167,7 +1200,7 @@
         { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: inFrame('.pct-desc'), gap: GAP_CORNICE },
         { controls: '#rowSelectorContainer', target: activeFrameArticle },
         { controls: '#descPreset, #descFree', target: inFrameArticle('.desc-title'), gap: GAP_CORNICE },
-        { controls: '#brandViewDescBtn', target: inFrameArticle('.desc-title'), gap: GAP_CORNICE },
+        { controls: '#brandViewDescBtn, #brandDescPreset, #brandDescFree', target: inFrameArticle('.brand-desc-text'), gap: GAP_CORNICE },
         { controls: '#brandViewDoubleBtn', target: inFrameArticle('.price-row-frame'), gap: GAP_CORNICE },
         { controls: '#oldPrice', target: inFrameArticle('.price-old-frame'), gap: GAP_CORNICE },
         { controls: '#discountValue, #discountValue ~ .percent-stepper', target: inFrameArticle('.price-percent-frame'), gap: GAP_CORNICE },

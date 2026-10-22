@@ -22,13 +22,7 @@ Dashboard.contenuto({
         { titolo: 'Paletto 16,5 x 11,5', link: 'paletto18x12-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 16,5 x 11,5 OPHILYA' }
       ]
     },
-    {
-      id: 'tickets-section', carosello: 'tickets-carousel', titolo: 'Cartellini', tipo: 'cartellini',
-      schede: [
-        { titolo: 'Cartellini', tipo: 'CARTELLINI', prossimamente: true },
-        { titolo: 'Cartellini LXRY', tipo: 'CARTELLINI', prossimamente: true }
-      ]
-    },
+    // niente sezione Cartellini: OPHILYA non li usa (tolta il 22 ottobre 2026)
     {
       id: 'dymo-section', carosello: 'dymo-carousel', titolo: 'Etichette Dymo', tipo: 'etichette',
       schede: [
