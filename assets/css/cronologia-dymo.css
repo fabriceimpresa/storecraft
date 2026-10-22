@@ -1,0 +1,252 @@
+/* Cronologia di stampa delle etichette DYMO (assets/js/cronologia-dymo.js): una finestra a tutto schermo dentro la
+   pagina delle etichette, nello stile della Cronologia di Stampa di cartelli e cartellini (Cinzel e Plus Jakarta Sans,
+   colori del tema --interface-*). Classi cd-. */
+
+/* il pulsante «Cronologia di Stampa» al posto di «← Torna al Dashboard» (stessa forma del collegamento .nav-btn) */
+/* più evidente del collegamento di prima: bordo e scritta oro, fondo appena dorato, l'orologio davanti; pieno d'oro al
+   passaggio del mouse */
+button.nav-btn.nav-cronologia-dymo {
+  width: 100%;
+  min-height: 42px;
+  margin-bottom: 1.7rem;   /* un poco più staccato da GALLERIA MODELLI (1,2rem il collegamento di prima) */
+  border: 1px solid var(--interface-accent, #d4a373);
+  background: color-mix(in srgb, var(--interface-accent, #d4a373) 12%, transparent);
+  color: var(--interface-accent, #d4a373);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+button.nav-btn.nav-cronologia-dymo svg { flex: none; }
+button.nav-btn.nav-cronologia-dymo:hover,
+button.nav-btn.nav-cronologia-dymo:focus-visible { background: var(--interface-accent, #d4a373); color: #fff; outline: none; }
+:root:not([data-interface-theme="light"]) button.nav-btn.nav-cronologia-dymo:hover,
+:root:not([data-interface-theme="light"]) button.nav-btn.nav-cronologia-dymo:focus-visible { color: #121110; }
+
+html.cd-aperta, html.cd-aperta body { overflow: hidden; }
+
+.cd-pannello {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  background: var(--interface-page, #121110);
+  color: var(--interface-text, #f4f1ea);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+.cd-pannello[hidden] { display: none; }
+
+.cd-testata {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 68px;
+  padding: 0.8rem 1.5rem;
+  background: var(--interface-sidebar, #181715);
+  border-bottom: 1px solid var(--interface-accent, #d4a373);
+}
+.cd-marchio { color: var(--interface-accent, #d4a373); font-family: 'Cinzel', serif; font-size: 1.15rem; letter-spacing: 2px; white-space: nowrap; }
+.cd-titolo { position: absolute; left: 50%; margin: 0; color: var(--interface-muted, #8c857b); font-size: 1.05rem; font-weight: 400; letter-spacing: 0.4px; white-space: nowrap; transform: translateX(-50%); }
+.cd-chiudi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--chiudi-sfondo, #d4a373);
+  color: var(--chiudi-colore, #121110);
+  font: 700 1.1rem Arial, sans-serif;
+  cursor: pointer;
+}
+.cd-chiudi:hover { filter: brightness(1.08); }
+
+.cd-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.5rem;
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+  padding: 1.2rem 1.5rem 0.2rem;
+}
+.cd-info { color: var(--interface-muted, #8c857b); font-size: 0.8rem; }
+.cd-comandi-barra { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.cd-contorno {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--interface-accent, #d4a373);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--interface-accent, #d4a373);
+  font: 700 0.72rem 'Plus Jakarta Sans', system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cd-contorno:hover:not(:disabled) { background: var(--interface-accent, #d4a373); color: #121110; }
+.cd-contorno:disabled { opacity: 0.4; cursor: default; }
+
+.cd-elenco { flex: 1; overflow-y: auto; width: 100%; max-width: 1450px; margin: 0 auto; padding: 0.4rem 1.5rem 1.5rem; }
+.cd-giorno { margin-top: 1.4rem; }
+.cd-giorno-titolo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 0.9rem;
+  color: var(--interface-accent, #d4a373);
+  font: 500 0.95rem 'Cinzel', serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.cd-giorno-titolo::after { content: ''; flex: 1; height: 1px; background: var(--interface-border, #2e2b27); }
+.cd-griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+
+.cd-scheda {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--interface-border, #2e2b27);
+  border-radius: 8px;
+  background: var(--interface-surface, #1e1d1a);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cd-scheda:hover { border-color: var(--interface-accent, #d4a373); }
+.cd-scheda.scelta { border-color: var(--interface-accent, #d4a373); box-shadow: 0 0 0 1px var(--interface-accent, #d4a373); }
+.cd-tocca {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 10px 6px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.cd-tocca:focus-visible, .cd-contorno:focus-visible, .cd-ristampa:focus-visible, .cd-chiudi:focus-visible, .cd-passo:focus-visible, .cd-elimina:focus-visible {
+  outline: 2px solid var(--interface-accent-bright, #e5ba73);
+  outline-offset: 2px;
+}
+.cd-miniatura {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  padding: 10px;
+  border-radius: 4px;
+  background: var(--interface-control, #0a0908);
+}
+.cd-miniatura img { display: block; max-width: 100%; max-height: 100%; background: #fff; border-radius: 3px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35); }
+.cd-senza { color: var(--interface-muted, #8c857b); font-size: 0.72rem; }
+/* pallino di selezione in alto a sinistra: vuoto, pieno d'oro con la spunta quando l'etichetta è scelta */
+.cd-spunta {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--interface-accent, #d4a373);
+  border-radius: 50%;
+  background: rgba(10, 9, 8, 0.55);
+}
+.cd-scheda.scelta .cd-spunta { background: var(--interface-accent, #d4a373); }
+.cd-scheda.scelta .cd-spunta::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid #121110;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.cd-nome { overflow: hidden; font-size: 0.84rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.cd-dettagli { display: flex; justify-content: space-between; gap: 6px; color: var(--interface-muted, #8c857b); font-size: 0.72rem; }
+
+.cd-sotto { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 42px; padding: 0 10px 8px; }
+.cd-suggerimento { color: var(--interface-muted, #8c857b); font-size: 0.72rem; }
+.cd-copie { display: flex; align-items: center; gap: 8px; color: var(--interface-accent, #d4a373); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.cd-numero { display: inline-flex; align-items: stretch; height: 30px; border: 1px solid var(--interface-border, #2e2b27); border-radius: 5px; overflow: hidden; }
+.cd-numero input {
+  width: 38px;
+  border: none;
+  background: var(--interface-control, #0a0908);
+  color: var(--interface-text, #f4f1ea);
+  font: 600 0.85rem Arial, sans-serif;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.cd-numero input::-webkit-inner-spin-button, .cd-numero input::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
+.cd-passo { width: 28px; border: none; background: var(--interface-sidebar, #181715); color: var(--interface-accent, #d4a373); font: 700 0.95rem Arial, sans-serif; cursor: pointer; }
+.cd-passo:hover { background: var(--interface-accent, #d4a373); color: #121110; }
+.cd-elimina {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--interface-border, #2e2b27);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--interface-muted, #8c857b);
+  font: 700 0.75rem Arial, sans-serif;
+  cursor: pointer;
+}
+.cd-elimina:hover { border-color: #96382b; background: #96382b; color: #fff; }
+
+.cd-vuota { max-width: 460px; margin: 4rem auto; color: var(--interface-muted, #8c857b); font-size: 0.95rem; line-height: 1.6; text-align: center; }
+.cd-vuota strong { display: block; margin-bottom: 0.4rem; color: var(--interface-accent, #d4a373); font: 500 1rem 'Cinzel', serif; letter-spacing: 0.16em; text-transform: uppercase; }
+
+/* in fondo: quante etichette e copie, l'esito e RISTAMPA, rosso come i tasti di stampa */
+.cd-piede {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.5rem calc(0.8rem + env(safe-area-inset-bottom, 0px));
+  background: var(--interface-sidebar, #181715);
+  border-top: 1px solid var(--interface-border, #2e2b27);
+}
+.cd-conto { color: var(--interface-text, #f4f1ea); font-size: 0.85rem; font-weight: 600; }
+.cd-esito { flex: 1; color: var(--interface-accent-bright, #e5ba73); font-size: 0.8rem; text-align: right; }
+.cd-ristampa {
+  min-width: 200px;
+  min-height: 44px;
+  padding: 0 1.2rem;
+  border: none;
+  border-radius: 5px;
+  background: #96382b;
+  color: #fff;
+  font: 700 0.85rem 'Plus Jakarta Sans', system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cd-ristampa:hover:not(:disabled) { background: #7a2d22; }
+.cd-ristampa:disabled { opacity: 0.45; cursor: default; }
+
+.cd-cornice-stampa { position: fixed; left: -10000px; top: 0; width: 57mm; height: 32mm; border: 0; }
+
+/* Telefono: due etichette per riga, piede in colonna */
+@media (max-width: 760px) {
+  .cd-testata { min-height: 60px; padding: 0.6rem 0.75rem; }
+  .cd-marchio { font-size: 0.9rem; letter-spacing: 1px; }
+  .cd-titolo { position: static; transform: none; font-size: 0.85rem; white-space: normal; text-align: center; }
+  .cd-barra, .cd-elenco { padding-left: 12px; padding-right: 12px; }
+  .cd-griglia { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .cd-piede { flex-wrap: wrap; padding-left: 12px; padding-right: 12px; }
+  .cd-esito { order: 3; flex-basis: 100%; text-align: left; }
+  .cd-ristampa { flex: 1; min-width: 0; }
+}
+
+/* Tema chiaro: ombre corte e nette (regola delle ombre nel tema chiaro) */
+:root[data-interface-theme="light"] .cd-miniatura img { box-shadow: 0 1px 3px rgba(40, 34, 28, .26); }
+:root[data-interface-theme="light"] .cd-spunta { background: rgba(255, 253, 250, 0.8); }

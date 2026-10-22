@@ -580,6 +580,8 @@ html::-webkit-scrollbar-thumb:hover { background: var(--interface-accent-bright,
 /* cestino in modalità cancellazione: bordo chiaro; con note selezionate rosso pieno, con il numero */
 .bc-cancella[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--interface-page, #121110), 0 0 0 4px var(--interface-accent, #d4a373); }
 .bc-cancella.rosso, .bc-cancella.rosso:hover { background: #96382b; color: #fff; }
+/* svuota bacheca: rosso, perché cancella tutto (dopo due conferme) */
+.bc-svuota, .bc-svuota:hover { background: #96382b; color: #fff; }
 .bc-cancella.rosso[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--interface-page, #121110), 0 0 0 4px #96382b; }
 .bc-conta {
   position: absolute;

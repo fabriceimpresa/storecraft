@@ -69,8 +69,30 @@
       scrivi(`<script src="${new URL(`radio.js${versione}`, script.src).href}" data-mini="${negozio}"><\/script>`);
     }
   } catch { /* sessionStorage spento: niente mini radio */ }
-  // Bacheca dimostrativa (per mostrarla a un cliente): solo con ?demo nell'indirizzo, dopo le schede dei negozi
-  if (/[?&]demo(=|&|$)/.test(location.search)) scrivi(`<script src="${new URL(`bacheca-demo.js${versione}`, script.src).href}"><\/script>`);
+  // La Bacheca dimostrativa (?demo) è stata tolta il 22 ottobre 2026: nei browser dove era stata aperta restano note e
+  // comunicazioni segnate demo: true, che qui si tolgono una volta sola, con la locandina nell'archivio delle foto
+  // (le note vere restano). Il segno è la chiave storecraft_bacheca_demo_<negozio>, che si toglie alla fine.
+  try {
+    Object.keys(localStorage).filter(chiave => chiave.startsWith('storecraft_bacheca_demo_')).forEach(chiave => {
+      const negozioDemo = chiave.slice('storecraft_bacheca_demo_'.length);
+      const leggi = k => { try { const v = JSON.parse(localStorage.getItem(k) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } };
+      const chiaveNote = `storecraft_bacheca_${negozioDemo}`;
+      const chiaveCom = `storecraft_bacheca_comunicazioni_${negozioDemo}`;
+      const comunicazioni = leggi(chiaveCom);
+      const foto = comunicazioni.filter(c => c && c.demo && c.foto).map(c => `${negozioDemo}:${c.id}`);
+      localStorage.setItem(chiaveNote, JSON.stringify(leggi(chiaveNote).filter(nota => !(nota && nota.demo))));
+      localStorage.setItem(chiaveCom, JSON.stringify(comunicazioni.filter(c => !(c && c.demo))));
+      localStorage.removeItem(chiave);
+      if (foto.length && window.indexedDB) {
+        const apertura = indexedDB.open('storecraft-bacheca-foto', 1);
+        apertura.onupgradeneeded = () => apertura.result.createObjectStore('foto');
+        apertura.onsuccess = () => {
+          const archivio = apertura.result.transaction('foto', 'readwrite').objectStore('foto');
+          foto.forEach(k => archivio.delete(k));
+        };
+      }
+    });
+  } catch { /* localStorage spento: niente da pulire */ }
 
   // Icona di STORE // CRAFT (S in Cinzel, oro scuro, su fondo bianco), la stessa in tutte le pagine di tutti i negozi:
   // nella scheda del browser (32 o 512 px) e, su iPhone e iPad, sulla schermata Home.

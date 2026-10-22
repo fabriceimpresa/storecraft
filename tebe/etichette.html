@@ -2,24 +2,26 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-02"></script>
+  <script src="../assets/js/negozi.js?v=20261022-03"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261022-02"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-02">
+  <script src="../assets/js/theme.js?v=20261022-03"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-03">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-03">
   <title>Etichette DYMO · TEBE</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-02">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-02">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-03">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-03">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-02"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261022-02"></script>
-  <script src="../assets/js/logos.js?v=20261022-02"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-03"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261022-03"></script>
+  <script src="../assets/js/logos.js?v=20261022-03"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261022-02"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261022-03"></script>
+  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-03">
+  <script src="../assets/js/cronologia-dymo.js?v=20261022-03"></script>
 
   <style>
     @font-face {
@@ -529,10 +531,10 @@
     }
 /* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .label-preview-wrapper { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .custom-brand-box { box-shadow: 0 1px 3px rgba(40, 34, 28, .2); }    @media (max-width: 768px) {      :root[data-interface-theme="light"] .preview-section { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }      :root[data-interface-theme="light"] aside { box-shadow: 0 -1px 4px rgba(40, 34, 28, .22); }    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-02">
-  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-02">
-  <script src="../assets/js/campi-prezzo.js?v=20261022-02" defer></script>
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-02"></script>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-03">
+  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-03">
+  <script src="../assets/js/campi-prezzo.js?v=20261022-03" defer></script>
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-03"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -544,7 +546,7 @@
   <aside>
     <div>
       <div class="brand">TEBE</div>
-      <a href="index.html?store=tebe" class="nav-btn">← Torna al Dashboard</a>
+      <button type="button" class="nav-btn nav-cronologia-dymo" onclick="CronologiaDymo.apri()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>Cronologia di Stampa</span></button>
 
       <div class="gallery-title">Galleria Modelli (57x32)</div>
       <div class="template-gallery">
@@ -591,7 +593,7 @@
   <main>
     <div class="editor-section">
       <header>
-        <a href="index.html?store=tebe" class="nav-btn mobile-nav-btn">← Torna al Dashboard</a>
+        <button type="button" class="nav-btn nav-cronologia-dymo mobile-nav-btn" onclick="CronologiaDymo.apri()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>Cronologia di Stampa</span></button>
         <h1 id="templateTitle">Etichette DYMO</h1>
         <p>Stampa Diretta 57x32mm (11354)</p>
       </header>
@@ -711,8 +713,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261022-02"></script>
-  <script src="../assets/js/selettore.js?v=20261022-02"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-03"></script>
+  <script src="../assets/js/selettore.js?v=20261022-03"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/logos/tebe/Tebe.png";
     const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
@@ -1481,6 +1483,7 @@
           const copies = getPrintCopies();
           const copiesHint = copies > 1 ? `\nImposta ${copies} copie nella finestra di stampa.` : '';
           alert(`Stampa DYMO diretta non disponibile (${err.message}).\nUso la stampa del browser.${copiesHint}`);
+          await registraEtichettaBrowser(png);
           printLabelIsolated();
           return;
         }
@@ -1488,10 +1491,12 @@
         try {
           const copies = getPrintCopies();
           await DymoDirect.dymoPrintPng(printer.name, png, copies);
+          registraEtichetta(png, copies);
           setDymoStatus('CONNESSA', true, `${printer.name} · ${copies === 1 ? 'etichetta inviata' : `${copies} etichette inviate`}`);
         } catch (err) {
           // La richiesta potrebbe essere già arrivata alla stampante: niente fallback automatico
           console.error('Errore stampa DYMO:', err);
+          registraEtichetta(png, getPrintCopies());
           if (confirm(`Errore durante la stampa DYMO (${err.message}).\nVuoi usare la stampa del browser?`)) {
             printLabelIsolated();
           }
@@ -1501,6 +1506,31 @@
         btn.innerText = originalText;
       }
     }
+
+    // Cronologia delle etichette DYMO (assets/js/cronologia-dymo.js): ogni etichetta stampata entra da sola, con
+    // l'immagine che va alla DYMO e il documento di stampa del browser, per ristamparla dal pulsante «Cronologia di Stampa»
+    function registraEtichetta(png, copies) {
+      try {
+        const html = getPrintIframe().contentWindow.document.documentElement.outerHTML;
+        const nome = document.querySelector(`#card-tpl-${currentTemplateKey} .tpl-name`)?.textContent.trim() || currentTemplateKey;
+        CronologiaDymo.registra({ png, html, layout: currentTemplateKey, nome, copie: copies });
+      } catch (err) {
+        console.error('Etichetta non salvata nella cronologia DYMO:', err);
+      }
+    }
+
+    // stampa dal browser: prima l'immagine per la cronologia (se non c'è già), poi il documento di stampa
+    async function registraEtichettaBrowser(png) {
+      try {
+        if (!png) png = await renderLabelPng();
+      } catch {
+        png = null;
+        writePrintIframe(false);
+      }
+      registraEtichetta(png, getPrintCopies());
+    }
+
+    CronologiaDymo.collega({ trovaStampante: checkDymoPresence, statoStampante: setDymoStatus });
 
     function getPrintIframe() {
       let iframe = document.getElementById('printIframe');
@@ -1796,7 +1826,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-02"></script>
+  <script src="../assets/js/cursore.js?v=20261022-03"></script>
   <script>
     // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
     // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.

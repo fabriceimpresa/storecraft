@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-02"></script>
+  <script src="assets/js/negozi.js?v=20261022-03"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STORE // CRAFT</title>
   <!-- Splash page: scelta del punto vendita alla prima apertura della giornata (punto-vendita.js).
        Se oggi è già stato scelto un negozio si va subito alla sua dashboard, tranne quando si arriva dalla voce HOME
        del menu di sistema (index.html?scegli), che chiede di scegliere di nuovo. Si vedono solo i negozi installati in
        questa copia (assets/negozi/installati.js); con un solo negozio la scelta si salta sempre. -->
-  <script src="assets/js/punto-vendita.js?v=20261022-02"></script>
+  <script src="assets/js/punto-vendita.js?v=20261022-03"></script>
   <script>
     if (PuntoVendita.unico()) {
       PuntoVendita.ricorda(PuntoVendita.unico());
@@ -189,11 +189,6 @@
       display: none;
     }
 
-    /* il tastino «demo» (Bacheca dimostrativa), discreto, sotto i crediti: provvisorio, da togliere */
-    .splash-demo { display: flex; justify-content: center; margin: 14px 0 0; animation: comparsa 0.9s 0.2s ease-out both; }
-    .splash-demo a { padding: 7px 16px; border: 1px solid var(--frame); color: var(--gold-light); font: 500 0.62rem/1 'Cinzel', serif; letter-spacing: 0.24em;
-      text-decoration: none; text-transform: uppercase; transition: background .2s, color .2s; }
-    .splash-demo a:hover, .splash-demo a:focus-visible { background: var(--frame); color: #121110; outline: none; }
     .splash-footer {
       color: var(--text-muted);
       font-size: 0.66rem;
@@ -210,7 +205,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .splash-frame, .splash-footer, .splash-demo { animation: none; }
+      .splash-frame, .splash-footer { animation: none; }
       .store-choice img, .store-choice::after { transition: none; }
     }
 
@@ -237,9 +232,6 @@
     © 2026 STORE // CRAFT · Developed by Fabrizio Notte<br>
     Marchi e loghi appartengono ai rispettivi proprietari
   </footer>
-
-  <!-- Bacheca dimostrativa (presentazioni ai clienti, provvisorio): apre la dashboard di Luxury con ?demo, che riempie la Bacheca di tutti i negozi (widget pieno e avvisi) -->
-  <p class="splash-demo"><a href="luxury/index.html?demo" id="demo-bacheca">demo</a></p>
 
   <script>
     // Un pulsante per ogni negozio installato, con il logo della sua scheda. I negozi già nella struttura si aprono;
@@ -271,9 +263,6 @@
       soon.textContent = 'IN ARRIVO';
       button.append(soon);
     });
-    // «demo»: Luxury Outlet diventa il punto vendita di oggi (altrimenti la dashboard rimanda qui), poi la sua dashboard
-    // con ?demo, che carica la Bacheca dimostrativa
-    document.getElementById('demo-bacheca')?.addEventListener('click', () => PuntoVendita.ricorda('luxury'));
   </script>
 </body>
 </html>

@@ -1117,6 +1117,7 @@
     tastoCancella.setAttribute('aria-pressed', String(cancellazione));
     $('nuova').disabled = cancellazione;
     $('nuovaCom').disabled = cancellazione;
+    $('svuota').disabled = cancellazione;
   }
   function selezionaNota(id, el) {
     if (selezionate.has(id)) selezionate.delete(id); else selezionate.add(id);
@@ -1155,6 +1156,44 @@
     esciCancellazione();
   });
   $('annulla').addEventListener('click', esciCancellazione);
+
+  // ----- Svuota bacheca -----
+  // SVUOTA BACHECA (rosso, accanto al cestino) cancella tutte le note e le comunicazioni ufficiali del negozio, con le
+  // foto e i commenti, dopo due conferme: la seconda ricorda che non si torna indietro. Esc, ANNULLA o un clic fuori
+  // non cancellano niente (dal 22 ottobre 2026)
+  const tastoSvuota = $('svuota');
+  tastoSvuota.addEventListener('click', async () => {
+    if (!note.length && !comunicazioni.length) {
+      tastoSvuota.querySelector('.bc-suggerimento').textContent = 'La bacheca è già vuota';
+      suggerisci(tastoSvuota);
+      setTimeout(() => { tastoSvuota.querySelector('.bc-suggerimento').textContent = 'Svuota tutta la bacheca'; }, DURATA_SUGGERIMENTO + 200);
+      return;
+    }
+    if (!serveNome(() => tastoSvuota.click())) return;
+    const parti = [];
+    if (note.length) parti.push(`${note.length} ${scrittaNote(note.length)}`);
+    if (comunicazioni.length) parti.push(`${comunicazioni.length} ${comunicazioni.length === 1 ? 'comunicazione' : 'comunicazioni'}`);
+    const prima = await conferma({
+      titolo: 'Svuotare tutta la bacheca?',
+      testo: `Si cancellano ${parti.join(' e ')}, con le foto e i commenti.`,
+      si: 'Svuota'
+    });
+    if (!prima) return;
+    const seconda = await conferma({
+      titolo: 'Sei proprio sicuro?',
+      testo: 'La bacheca resterà vuota e non si potrà tornare indietro.',
+      si: 'Sì, svuota tutto'
+    });
+    if (!seconda) return;
+    comunicazioni.filter(c => c.foto).forEach(c => togliFoto(c.id));
+    comunicazioni = [];
+    salvaComunicazioni(comunicazioni);
+    note = [];
+    salva(note);
+    selezionate.clear();
+    disegna();
+    aggiornaCancella();
+  });
 
   // ----- Tieni premuto (telefono e tablet) -----
   // Come sull'iPhone: tenendo premuto il dito su una nota, un'etichetta o una comunicazione per TIENI_PREMUTO ms si entra
