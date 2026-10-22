@@ -16,7 +16,10 @@
    Nelle schede e in installati.js:
      Negozi.registra(id, scheda)  aggiunge la scheda di un negozio
      Negozi.installa([...])       dichiara i negozi installati e carica le loro schede;
-     Negozi.installa([...], { copiaCliente: true })   così lo scrive Prepara copia nella copia per un cliente */
+     Negozi.installa([...], { copiaCliente: true })   così lo scrive Prepara copia nella copia per un cliente
+     Negozi.installa([...], { copiaCliente: true, statistiche: { luxury: '<codice>' } })   con il codice del negozio
+                                  per spedire le statistiche (statistiche.js, sezione Statistiche dell'area operatore)
+     Negozi.codiceStatistiche(id) codice del negozio per le statistiche (null se la copia non lo ha) */
 (() => {
   const script = document.currentScript;
   const versione = new URL(script.src).search;  // stessa versione (?v=) dei file comuni
@@ -25,6 +28,7 @@
   const schede = {};
   let installati = [];
   let copiaCliente = false;
+  let codiciStatistiche = {};
 
   // Caricamento durante la lettura della pagina: i moduli che seguono trovano già schede e colori.
   function scrivi(html) {
@@ -45,12 +49,14 @@
     corrente: () => (negozio && schede[negozio]) || null,
     unico: () => (installati.length === 1 ? installati[0] : null),
     get copiaCliente() { return copiaCliente; },
+    codiceStatistiche: id => codiciStatistiche[id] || null,
     registra(id, scheda) {
       schede[id] = Object.freeze({ id, ...scheda });
     },
     installa(elenco, opzioni = {}) {
       installati = elenco.slice();
       copiaCliente = Boolean(opzioni.copiaCliente);
+      codiciStatistiche = { ...(opzioni.statistiche || {}) };
       installati.forEach(id => {
         scrivi(`<script src="${new URL(`${id}.js${versione}`, cartella).href}"><\/script>`);
       });

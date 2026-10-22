@@ -2,9 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-05"></script>
+  <script src="assets/js/negozi.js?v=20261022-06"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-05"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261022-06"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-06"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -265,6 +266,7 @@
     .step-num::after { content: ']'; color: var(--text-muted); }
     .step-label { margin: 0 0 10px; color: #d9d3c7; font-size: 12.5px; }
     .step[aria-disabled="true"] { opacity: .4; }
+    .copy .status a { color: var(--gold-light); }
 
     .btn {
       padding: 7px 12px;
@@ -332,6 +334,7 @@
       <button class="voce" type="button" data-vista="layout">Importa layout .psd</button>
       <button class="voce" type="button" data-vista="loghi">Gestione loghi</button>
       <button class="voce" type="button" data-vista="copia">Gestione clienti</button>
+      <button class="voce" type="button" data-vista="statistiche">Statistiche</button>
       <button class="voce" type="button" data-vista="struttura">Pannello di controllo</button>
       <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
       <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
@@ -352,6 +355,9 @@
     </section>
     <section class="vista" data-vista="loghi" hidden>
       <iframe data-src="loghi-ufficiali.html?incorporata" title="Gestione loghi"></iframe>
+    </section>
+    <section class="vista" data-vista="statistiche" hidden>
+      <iframe data-src="statistiche.html?incorporata" title="Statistiche"></iframe>
     </section>
 
     <!-- Gestione clienti (dal 19 ottobre 2026; prima Prepara copia per un cliente): due sezioni apribili e richiudibili come
@@ -379,8 +385,17 @@
         </div>
       </div>
 
-      <div class="step" id="stepStores" aria-disabled="true">
+      <div class="step" id="stepCliente" aria-disabled="true">
         <span class="step-num">2</span>
+        <div>
+          <p class="step-label" id="clientiLabel">clienti, per le statistiche (nessuno: copia senza statistiche)</p>
+          <fieldset class="stores" id="clientiCopia" aria-labelledby="clientiLabel" disabled></fieldset>
+          <p class="status" id="clienteStatus" role="status"></p>
+        </div>
+      </div>
+
+      <div class="step" id="stepStores" aria-disabled="true">
+        <span class="step-num">3</span>
         <div>
           <p class="step-label" id="storesLabel">negozi da mettere nella copia</p>
           <fieldset class="stores" id="stores" aria-labelledby="storesLabel" disabled></fieldset>
@@ -388,7 +403,7 @@
       </div>
 
       <div class="step" id="stepCopy" aria-disabled="true">
-        <span class="step-num">3</span>
+        <span class="step-num">4</span>
         <div>
           <p class="step-label">scegli la cartella di destinazione e prepara la copia</p>
           <button class="btn" type="button" id="pickTarget" disabled>scegli cartella e prepara</button>
@@ -472,7 +487,7 @@
       return window.progettoCollegato;
     };
 
-    const VISTE = { negozi: 'Gestione negozi', struttura: 'Pannello di controllo', pacchetti: 'Gestione pacchetti', layout: 'Importa layout .psd', loghi: 'Gestione loghi', copia: 'Gestione clienti' };
+    const VISTE = { negozi: 'Gestione negozi', struttura: 'Pannello di controllo', pacchetti: 'Gestione pacchetti', layout: 'Importa layout .psd', loghi: 'Gestione loghi', copia: 'Gestione clienti', statistiche: 'Statistiche' };
     const TITOLO_MENU = 'Area operatore';
     const cornice = document.getElementById('cornice');
     const titolo = document.getElementById('titolo');
@@ -485,11 +500,12 @@
     // Prepara copia e Guida tecnica restano nel progetto madre
     if (Negozi.copiaCliente) {
       // Gestione negozi e Controllo codice restano (anche nella copia si mettono in ghost, si riordinano e si duplicano i moduli)
-      menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="layout"], [data-vista="copia"], .voce-aiuto').forEach(voce => voce.remove());
+      menu.querySelectorAll('[data-vista="pacchetti"], [data-vista="layout"], [data-vista="copia"], [data-vista="statistiche"], .voce-aiuto').forEach(voce => voce.remove());
       // le sezioni restano nella pagina, nascoste e non apribili (lo script di Prepara copia ne cerca i comandi)
       delete VISTE.pacchetti;
       delete VISTE.layout;
       delete VISTE.copia;
+      delete VISTE.statistiche;
     }
 
     // la cornice passa dall'altezza di prima alla nuova con un'animazione (cambia passa al nuovo contenuto)
@@ -728,7 +744,8 @@
           trovati.push({ id, nome: contenuto.match(/nome:\s*'([^']+)'/)?.[1] || id.toUpperCase() });
         }
         if (!trovati.length) throw new Error('non trovo le schede dei negozi in assets/negozi.');
-        const ordine = [...(await testo(schede, 'installati.js')).matchAll(/'([a-z0-9_-]+)'/g)].map(m => m[1]);
+        const elenco = (await testo(schede, 'installati.js')).match(/installa\(\[([^\]]*)\]/)?.[1] || '';
+        const ordine = [...elenco.matchAll(/'([a-z0-9_-]+)'/g)].map(m => m[1]);
         const posto = id => (ordine.includes(id) ? ordine.indexOf(id) : 999);
         negozi = trovati.sort((a, b) => posto(a.id) - posto(b.id) || a.id.localeCompare(b.id));
         sorgente = scelta;
@@ -765,9 +782,69 @@
       return [...document.querySelectorAll('#stores input:checked')].map(casella => casella.value);
     }
 
+    // 2. Clienti per le statistiche (dal 22 ottobre 2026): i negozi clienti registrati nella sezione Statistiche
+    // (Supabase, assets/js/supabase-operatore.js), una casella per cliente; una copia può avere più clienti (es. Zaddick
+    // Srl con Luxury Outlet e Tebe 96 Srl con TEBE e OPHILYA). Spuntando un cliente si spuntano i suoi negozi, e
+    // installati.js della copia prende i codici dei negozi dei clienti spuntati (statistiche.js li usa per spedire i
+    // dati). Nessun cliente: copia senza statistiche, es. una demo
+    let clientiCopia = [];      // [{ cliente, negozio, nome, token }] dei negozi attivi
+    const clientiScelti = () => [...document.querySelectorAll('#clientiCopia input:checked')].map(casella => casella.value);
+    async function caricaClienti() {
+      const campo = $('clientiCopia');
+      const prima = clientiScelti();
+      clientiCopia = [];
+      campo.replaceChildren();
+      if (!SupabaseOperatore.dentro) {
+        $('clienteStatus').replaceChildren('per scegliere i clienti accedi nella sezione ',
+          Object.assign(document.createElement('a'), { href: '#statistiche', textContent: 'statistiche' }), '.');
+        $('clienteStatus').className = 'status';
+        return;
+      }
+      try {
+        clientiCopia = await SupabaseOperatore.api('negozi_clienti?select=cliente,negozio,nome,token&attivo=eq.true&order=cliente.asc');
+        const nomi = [...new Set(clientiCopia.map(c => c.cliente))];
+        nomi.forEach(nome => {
+          const etichetta = document.createElement('label');
+          const casella = document.createElement('input');
+          casella.type = 'checkbox';
+          casella.value = nome;
+          casella.checked = prima.includes(nome);
+          casella.addEventListener('change', () => sceltaCliente(nome, casella.checked));
+          const suoi = clientiCopia.filter(c => c.cliente === nome).map(c => c.nome).join(', ');
+          etichetta.append(casella, document.createTextNode(`${nome} · ${suoi}`));
+          campo.append(etichetta);
+        });
+        stato($('clienteStatus'), nomi.length ? `${nomi.length} ${nomi.length === 1 ? 'cliente registrato' : 'clienti registrati'} nella sezione statistiche` : 'nessun cliente registrato nella sezione statistiche', 'ok');
+      } catch (errore) {
+        stato($('clienteStatus'), `clienti non letti: ${errore.message}`, 'err');
+      }
+      aggiornaPassi();
+    }
+    // codici dei negozi dei clienti spuntati: { luxury: '…', tebe: '…' }
+    function codiciCliente() {
+      const scelti = clientiScelti();
+      return Object.fromEntries(clientiCopia.filter(c => scelti.includes(c.cliente)).map(c => [c.negozio, c.token]));
+    }
+    // un cliente spuntato spunta i suoi negozi; tolto, li toglie
+    function sceltaCliente(nome, acceso) {
+      const suoi = clientiCopia.filter(c => c.cliente === nome).map(c => c.negozio);
+      document.querySelectorAll('#stores input').forEach(casella => { if (suoi.includes(casella.value)) casella.checked = acceso; });
+      const mancanti = suoi.filter(id => !negozi.some(n => n.id === id));
+      // lo stesso negozio in due clienti spuntati: vale il codice dell'ultimo
+      const ripetuti = clientiCopia.filter(c => clientiScelti().includes(c.cliente)).map(c => c.negozio).filter((id, i, tutti) => tutti.indexOf(id) !== i);
+      if (acceso && mancanti.length) stato($('clienteStatus'), `negozi del cliente che il progetto non ha: ${mancanti.join(', ')}`, 'err');
+      else if (ripetuti.length) stato($('clienteStatus'), `lo stesso negozio in due clienti spuntati: ${ripetuti.join(', ')}`, 'err');
+      else stato($('clienteStatus'), clientiScelti().length ? `statistiche per: ${clientiScelti().join(', ')}` : 'nessun cliente: copia senza statistiche', 'ok');
+      aggiornaPassi();
+    }
+    window.addEventListener('supabase-operatore', caricaClienti);
+    caricaClienti();
+
     function aggiornaPassi() {
       const pronto = Boolean(sorgente) && !inCorso;
       $('stores').disabled = !pronto;
+      $('clientiCopia').disabled = !pronto;
+      $('stepCliente').setAttribute('aria-disabled', String(!pronto));
       $('stepStores').setAttribute('aria-disabled', String(!pronto));
       const puoCopiare = pronto && scelti().length > 0;
       $('pickTarget').disabled = !puoCopiare;
@@ -808,19 +885,26 @@
       for await (const [figlio, sotto] of voce.entries()) await copia(sotto, arrivo, figlio, `${percorso}/${figlio}`);
     }
 
+    // opzioni di installati.js: copiaCliente e, con un cliente scelto, i codici delle statistiche dei negozi della copia
+    function opzioniInstallati(ids) {
+      const codici = Object.entries(codiciCliente()).filter(([id]) => ids.includes(id));
+      return codici.length ? `{ copiaCliente: true, statistiche: { ${codici.map(([id, codice]) => `${id}: '${codice}'`).join(', ')} } }` : '{ copiaCliente: true }';
+    }
     function testoInstallati(ids) {
       const oggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const cliente = clientiScelti().join(', ').replace(/\*\//g, '');
       return '/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).\r\n' +
         '   Con un solo negozio la splash page apre subito la sua dashboard e i menu mostrano solo quel negozio.\r\n' +
+        (cliente ? `   Clienti: ${cliente}; i codici dei negozi spediscono le statistiche (assets/js/statistiche.js).\r\n` : '') +
         `   Scritto dalla pagina operatore il ${oggi}. */\r\n` +
-        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], { copiaCliente: true });\r\n`;
+        `Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], ${opzioniInstallati(ids)});\r\n`;
     }
 
     async function preparaCopia(destinazione, ids) {
       const tutti = negozi.map(negozio => negozio.id);
       // Radice: la splash page e l'area operatore con i soli loghi ufficiali (operatore, gestione-negozi, schema-pagine, loghi-ufficiali);
       // non Controllo codice, la Guida tecnica, il piano di lavoro e le pagine di prova (_*)
-      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html', 'layout-studio.html', 'Storecraft Aggiornamento.html'];
+      const esclusi = ['guida-componenti.html', 'guida-campione.html', 'pacchetti.html', 'pacchetto-vetrina.html', 'import-layout.html', 'layout-studio.html', 'statistiche.html', 'Storecraft Aggiornamento.html'];
       riga('// radice: splash page e area operatore ridotta: gestione pagine e loghi (non guida, pacchetti, piano e pagine _*)', 'sezione');
       for await (const [nome, voce] of sorgente.entries()) {
         if (voce.kind !== 'file' || !nome.endsWith('.html') || nome.startsWith('_') || esclusi.includes(nome)) continue;
@@ -848,7 +932,7 @@
           const scrittura = await (await arrivo.getFileHandle('installati.js', { create: true })).createWritable();
           await scrittura.write(testoInstallati(ids));
           await scrittura.close();
-          riga(`  scrivo assets/negozi/installati.js  → Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], { copiaCliente: true })`, 'ok');
+          riga(`  scrivo assets/negozi/installati.js  → Negozi.installa([${ids.map(id => `'${id}'`).join(', ')}], ${opzioniInstallati(ids).replace(/'[0-9a-f]{32}'/g, "'••••'")})`, 'ok');
           continue;
         }
         riga(`// assets/${nome}/`, 'sezione');

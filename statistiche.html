@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script src="assets/js/negozi.js?v=20261022-06"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+<title>STATISTICHE (uso interno)</title>
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-06">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-06">
+  <script src="assets/js/operatore-sezione.js?v=20261022-06"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-06"></script>
+  <!--
+    Statistiche (area operatore, dal 22 ottobre 2026; solo nel progetto madre): i dati che le copie dei clienti spediscono
+    a STORE // CRAFT su Supabase (assets/js/statistiche.js, schema in supabase/schema.sql), letti dopo l'accesso con
+    email e password dell'operatore (Supabase Auth; le iscrizioni libere sono spente). Tre sezioni apribili:
+    NEGOZI CLIENTI (i negozi registrati, ognuno con il suo codice da scrivere nella copia del cliente, in installati.js),
+    STAMPE (per negozio e periodo: totali, tipi, le pagine più usate, ogni foglio con la sua anteprima e i dettagli, e le
+    etichette DYMO per layout) e BACKUP LOGHI PERSONALI (l'ultima lista di ogni negozio, da scaricare nel formato di
+    Gestisci Lista e reimportare con Unisci o Sostituisci Lista). L'accesso (assets/js/supabase-operatore.js) resta nel browser
+    (localStorage storecraft_operatore_supabase) finché non si esce.
+  -->
+  <style>
+    .blocco { margin-top: 4px; }
+    .blocco + .blocco { margin-top: 22px; }
+    .blocco > .label { display: flex; align-items: center; gap: 16px; padding: 10px 10px; border-bottom: 1px solid var(--op-bordo);
+      cursor: pointer; transition: background .18s ease, box-shadow .18s ease; }
+    .blocco > .label:hover { background: rgba(212, 163, 115, .08); box-shadow: inset 2px 0 var(--op-oro); }
+    .blocco h2 { margin: 0; color: var(--op-oro-chiaro); font: 400 12.5px var(--op-mono); letter-spacing: .22em; }
+    .blocco h2::before { content: '> '; color: var(--op-oro); }
+    .blocco .riassunto { margin-left: auto; color: var(--op-tenue); font-size: 11px; letter-spacing: .04em; }
+    .section-toggle { border: 0; background: transparent; color: var(--op-oro); padding: 2px 4px; font-size: 16px; line-height: 1;
+      cursor: pointer; transition: transform .18s ease; }
+    .section-toggle[aria-expanded="false"] { transform: rotate(-90deg); }
+    .blocco-corpo { padding-top: 14px; }
+    .blocco.is-collapsed .blocco-corpo { display: none; }
+
+    .comando { padding: 7px 12px; border: 1px solid var(--op-oro); border-radius: 3px; background: transparent; color: var(--op-oro);
+      font: 400 11px var(--op-mono); letter-spacing: .08em; text-transform: lowercase; cursor: pointer; }
+    .comando:hover:not(:disabled) { background: rgba(212, 163, 115, .12); color: var(--op-oro-chiaro); }
+    .comando:disabled { opacity: .45; cursor: default; }
+    .comando.pieno { background: var(--op-oro); color: #121110; }
+    .comando.pieno:hover:not(:disabled) { background: var(--op-oro-chiaro); color: #121110; }
+    .comando.rosso { border-color: var(--op-errore); color: var(--op-errore); }
+    /* disattiva: discreto (grigio) e staccato da elimina, con una linea in mezzo */
+    .comando.discreto { border-color: var(--op-bordo); color: var(--op-tenue); }
+    .comando.discreto:hover:not(:disabled) { border-color: var(--op-oro); color: var(--op-oro-chiaro); background: transparent; }
+    .azioni-negozio { display: inline-flex; align-items: center; gap: 14px; }
+    .azioni-negozio .divisorio { width: 1px; height: 22px; background: var(--op-bordo); }
+    .campo { display: flex; flex-direction: column; gap: 5px; color: var(--op-tenue); font-size: 11px; letter-spacing: .06em; }
+    .campo input, .campo select { min-width: 0; padding: 7px 9px; border: 1px solid var(--op-bordo); border-radius: 3px; background: var(--op-fondo);
+      color: var(--op-testo); font: 400 12px var(--op-mono); }
+    .campo input:focus, .campo select:focus { outline: 1px solid var(--op-oro); border-color: var(--op-oro); }
+
+    /* riga di stato del collegamento, come le altre sezioni */
+    .stato { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; padding: 10px 12px;
+      border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
+    .stato-testo { flex: 1; color: var(--op-tenue); font-size: 12px; }
+    .stato-testo::before { content: '$ '; color: var(--op-oro); }
+    .stato-testo.ok { color: var(--op-ok); }
+    .stato-testo.err { color: var(--op-errore); }
+
+    /* accesso */
+    .accesso { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 12px; max-width: 640px; }
+    .accesso[hidden], #contenuto[hidden] { display: none; }
+    @media (max-width: 640px) { .accesso { grid-template-columns: 1fr; } }
+
+    /* negozi clienti */
+    .tabella { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .tabella th { padding: 6px 8px; border-bottom: 1px solid var(--op-bordo); color: var(--op-tenue); font-weight: 400; letter-spacing: .08em;
+      text-align: left; text-transform: lowercase; }
+    .tabella td { padding: 9px 8px; border-bottom: 1px solid var(--op-bordo); vertical-align: middle; }
+    .tabella td.num { text-align: right; white-space: nowrap; }
+    .nome-negozio { color: var(--op-oro-chiaro); letter-spacing: .06em; }
+    .tenue { color: var(--op-tenue); }
+    .spento { opacity: .5; }
+    .verde { color: var(--op-ok); }
+    .rossa { color: var(--op-errore); }
+    .codice { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+    .codice code { padding: 3px 6px; border: 1px solid var(--op-bordo); background: var(--op-fondo); color: var(--op-testo); font-size: 11px; word-break: break-all; }
+    .nuovo-negozio { display: grid; grid-template-columns: 1.2fr 1fr 1fr auto; align-items: end; gap: 12px; margin-top: 16px; padding-top: 14px;
+      border-top: 1px dashed var(--op-bordo); }
+    @media (max-width: 760px) { .nuovo-negozio { grid-template-columns: 1fr; } .tabella-scorre { overflow-x: auto; } }
+    .riga-installa { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--op-bordo); background: var(--op-fondo); font-size: 11px;
+      line-height: 1.6; word-break: break-all; }
+    .riga-installa::before { content: '// in installati.js della copia del cliente:'; display: block; margin-bottom: 4px; color: var(--op-tenue); }
+
+    /* stampe */
+    .scelte { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+    .scelte .etichetta { margin-right: 6px; color: var(--op-tenue); font-size: 11.5px; }
+    .scelte button { padding: 6px 11px; border: 1px solid var(--op-bordo); border-radius: 3px; background: var(--op-riquadro); color: var(--op-tenue);
+      font: 400 11px var(--op-mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+    .scelte button:hover { color: var(--op-oro-chiaro); border-color: var(--op-oro); }
+    .scelte button[aria-pressed="true"] { color: var(--op-oro-chiaro); border-color: var(--op-oro); background: rgba(212, 163, 115, .1); }
+    .scelte button[aria-pressed="true"]::before { content: '> '; }
+    .numeri { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 18px; }
+    .numero { padding: 12px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
+    .numero b { display: block; color: var(--op-oro-chiaro); font-size: 20px; font-weight: 400; }
+    .numero span { color: var(--op-tenue); font-size: 10.5px; letter-spacing: .08em; text-transform: lowercase; }
+    .sottotitolo { margin: 18px 0 10px; color: var(--op-oro); font-size: 11.5px; letter-spacing: .16em; text-transform: lowercase; }
+    .sottotitolo::before { content: '// '; }
+    .barre { display: flex; flex-direction: column; gap: 6px; }
+    .barra { display: grid; grid-template-columns: minmax(120px, 230px) 1fr 90px; align-items: center; gap: 10px; font-size: 11.5px; }
+    .barra-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .barra-fondo { height: 8px; border-radius: 2px; background: var(--op-riquadro); }
+    .barra-pieno { height: 100%; border-radius: 2px; background: var(--op-oro); }
+    .barra-valore { color: var(--op-tenue); text-align: right; white-space: nowrap; }
+    .fogli { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+    .foglio { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo);
+      font-size: 10.5px; line-height: 1.45; }
+    .foglio-immagine { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; padding: 6px; background: var(--op-riquadro); }
+    .foglio-immagine img { max-width: 100%; max-height: 100%; background: #fff; }
+    .foglio-immagine span { color: var(--op-tenue); }
+    .foglio-nome { color: var(--op-testo); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .foglio-tipo { color: var(--op-oro); letter-spacing: .08em; text-transform: uppercase; }
+    .foglio .tenue { overflow-wrap: anywhere; }
+    .vuoto { padding: 10px 0; color: var(--op-tenue); font-size: 12px; }
+
+    /* backup loghi */
+    .loghi-anteprima { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .loghi-anteprima img { width: 64px; height: 40px; padding: 4px; object-fit: contain; border: 1px solid var(--op-bordo);
+      background: repeating-conic-gradient(#3a3733 0 25%, #2a2723 0 50%) 0 0 / 10px 10px; }
+  </style>
+</head>
+<body>
+
+  <a href="operatore.html" class="app-close-btn" title="Torna all'area operatore" aria-label="Chiudi e torna all'area operatore">✕</a>
+
+  <div class="container">
+    <h1>Statistiche</h1>
+    <p class="subtitle">i dati che le copie dei clienti spediscono una volta al giorno: fogli stampati con anteprima e dettagli, etichette dymo per layout e backup dei loghi personali. ogni negozio cliente ha il suo codice, da scrivere nella sua copia</p>
+
+    <div class="stato">
+      <span class="stato-testo" id="stato" role="status">collegamento a supabase…</span>
+      <button type="button" class="comando" id="aggiorna" hidden title="rilegge i dati arrivati dai negozi">↻ aggiorna</button>
+      <button type="button" class="comando" id="esci" hidden>esci</button>
+    </div>
+
+    <!-- accesso dell'operatore -->
+    <form class="accesso" id="accesso" hidden>
+      <label class="campo">email<input type="email" id="email" autocomplete="username" required></label>
+      <label class="campo">password<input type="password" id="password" autocomplete="current-password" required></label>
+      <button type="submit" class="comando pieno">accedi</button>
+    </form>
+
+    <div id="contenuto" hidden>
+      <section class="blocco" id="bloccoNegozi">
+        <div class="label"><h2>NEGOZI CLIENTI</h2><span class="riassunto" id="riassuntoNegozi"></span><button type="button" class="section-toggle" aria-expanded="true" aria-label="Apri o chiudi">⌄</button></div>
+        <div class="blocco-corpo">
+          <div class="tabella-scorre"><table class="tabella">
+            <thead><tr><th>negozio</th><th>cliente</th><th>ultimo invio</th><th>versione</th><th>codice</th><th></th></tr></thead>
+            <tbody id="righeNegozi"></tbody>
+          </table></div>
+          <p class="vuoto" id="nessunNegozio" hidden>nessun negozio cliente: registrane uno qui sotto</p>
+          <form class="nuovo-negozio" id="nuovoNegozio">
+            <label class="campo">cliente<input id="nnCliente" required maxlength="80" placeholder="es. Luxury Outlet srl" list="clientiNoti" autocomplete="off"></label>
+            <datalist id="clientiNoti"></datalist>
+            <label class="campo">negozio nella copia<select id="nnNegozio"></select></label>
+            <label class="campo">nome<input id="nnNome" required maxlength="60"></label>
+            <button type="submit" class="comando pieno">+ registra</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="blocco" id="bloccoStampe">
+        <div class="label"><h2>STAMPE</h2><span class="riassunto" id="riassuntoStampe"></span><button type="button" class="section-toggle" aria-expanded="true" aria-label="Apri o chiudi">⌄</button></div>
+        <div class="blocco-corpo">
+          <div class="scelte" id="sceltaNegozio" role="group" aria-label="Negozio"></div>
+          <div class="scelte" id="sceltaPeriodo" role="group" aria-label="Periodo"></div>
+          <div id="corpoStampe"></div>
+        </div>
+      </section>
+
+      <section class="blocco" id="bloccoLoghi">
+        <div class="label"><h2>BACKUP LOGHI PERSONALI</h2><span class="riassunto" id="riassuntoLoghi"></span><button type="button" class="section-toggle" aria-expanded="true" aria-label="Apri o chiudi">⌄</button></div>
+        <div class="blocco-corpo"><div id="corpoLoghi"></div></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const PERIODI = [['7', '7 giorni'], ['30', '30 giorni'], ['365', 'un anno'], ['tutto', 'tutto']];
+    const NOMI_TIPO = { cartelli: 'cartello', cartellini: 'cartellini', promo: 'promo' };
+
+    let negozi = [];
+    let negozioScelto = null;
+    let periodo = '30';
+
+    const $ = id => document.getElementById(id);
+    const nodo = (tag, classe, testo) => {
+      const n = document.createElement(tag);
+      if (classe) n.className = classe;
+      if (testo !== undefined && testo !== null) n.textContent = testo;
+      return n;
+    };
+    const stato = (testo, tipo = '') => { $('stato').textContent = testo; $('stato').className = `stato-testo ${tipo}`; };
+    const data = valore => valore ? new Date(valore).toLocaleString('it-IT', { day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '—';
+    function fa(valore) {
+      if (!valore) return 'mai';
+      const minuti = Math.round((Date.now() - new Date(valore)) / 60000);
+      if (minuti < 60) return `${minuti} min fa`;
+      const ore = Math.round(minuti / 60);
+      if (ore < 48) return `${ore} ore fa`;
+      return `${Math.round(ore / 24)} giorni fa`;
+    }
+
+    // ----- Supabase: accesso e richieste (assets/js/supabase-operatore.js) -----
+    const api = (percorso, opzioni) => SupabaseOperatore.api(percorso, opzioni);
+    window.addEventListener('supabase-operatore', () => mostra());
+
+    $('accesso').addEventListener('submit', async evento => {
+      evento.preventDefault();
+      stato('accesso in corso…');
+      try {
+        await SupabaseOperatore.accedi($('email').value.trim(), $('password').value);
+        $('password').value = '';
+      } catch (errore) {
+        stato(`accesso non riuscito: ${errore.message}`, 'err');
+      }
+    });
+    $('esci').addEventListener('click', () => SupabaseOperatore.esci());
+    $('aggiorna').addEventListener('click', () => caricaNegozi());
+
+    function mostra() {
+      const dentro = SupabaseOperatore.dentro;
+      $('accesso').hidden = dentro;
+      $('contenuto').hidden = !dentro;
+      $('esci').hidden = !dentro;
+      $('aggiorna').hidden = !dentro;
+      if (!dentro) { stato('accedi con l\'email e la password dell\'operatore (supabase › authentication › users)'); return; }
+      caricaNegozi();
+    }
+
+    // ----- Sezioni apribili -----
+    document.querySelectorAll('.blocco > .label').forEach(label => label.addEventListener('click', () => {
+      const blocco = label.parentElement;
+      const chiuso = blocco.classList.toggle('is-collapsed');
+      label.querySelector('.section-toggle').setAttribute('aria-expanded', String(!chiuso));
+    }));
+
+    // ----- Negozi clienti -----
+    function opzioniNegozio() {
+      const scelta = $('nnNegozio');
+      scelta.replaceChildren(...Negozi.installati.map(id => {
+        const opzione = nodo('option', '', `${id} · ${Negozi.scheda(id)?.nome || id}`);
+        opzione.value = id;
+        return opzione;
+      }));
+      const nome = () => { $('nnNome').value = (Negozi.scheda(scelta.value)?.nome || scelta.value).toUpperCase(); };
+      scelta.addEventListener('change', nome);
+      nome();
+    }
+
+    async function caricaNegozi() {
+      stato('lettura dei negozi clienti…');
+      try {
+        negozi = await api('negozi_clienti?select=*&order=cliente.asc,creato_il.asc');
+        const conti = await api('stampe?select=negozio_id,volte');
+        const fogli = {};
+        conti.forEach(r => { fogli[r.negozio_id] = (fogli[r.negozio_id] || 0) + r.volte; });
+        disegnaNegozi(fogli);
+        if (!negozi.some(n => n.id === negozioScelto)) negozioScelto = negozi[0]?.id || null;
+        disegnaScelte();
+        await Promise.all([caricaStampe(), caricaLoghi()]);
+        stato(`connesso come ${SupabaseOperatore.email || 'operatore'} · ${negozi.length} ${negozi.length === 1 ? 'negozio cliente' : 'negozi clienti'}`, 'ok');
+      } catch (errore) {
+        stato(errore.message, 'err');
+      }
+    }
+
+    // Riga per installati.js della copia del cliente: tutti i negozi attivi dello stesso cliente (una copia può averne più
+    // d'uno, es. TEBE e OPHILYA), ognuno con il suo codice
+    function rigaInstalla(n) {
+      const suoi = negozi.filter(x => x.cliente === n.cliente && x.attivo);
+      const elenco = suoi.map(x => `'${x.negozio}'`).join(', ');
+      const codici = suoi.map(x => `${x.negozio}: '${x.token}'`).join(', ');
+      return `Negozi.installa([${elenco}], { copiaCliente: true, statistiche: { ${codici} } });`;
+    }
+
+    function disegnaNegozi(fogli) {
+      // i clienti già registrati, da scegliere per aggiungere un altro negozio allo stesso cliente (nome uguale)
+      $('clientiNoti').replaceChildren(...[...new Set(negozi.map(n => n.cliente))].map(c => { const o = document.createElement('option'); o.value = c; return o; }));
+      $('nessunNegozio').hidden = negozi.length > 0;
+      $('riassuntoNegozi').textContent = `${negozi.length} ${negozi.length === 1 ? 'negozio' : 'negozi'} · ${negozi.filter(n => n.ultimo_invio).length} con invii`;
+      $('righeNegozi').replaceChildren(...negozi.map(n => {
+        const riga = nodo('tr', n.attivo ? '' : 'spento');
+        const nome = nodo('td');
+        nome.append(nodo('div', 'nome-negozio', n.nome), nodo('div', 'tenue', `${n.negozio} · ${fogli[n.id] || 0} fogli stampati`));
+        const invio = nodo('td', n.ultimo_invio ? 'verde' : 'tenue', fa(n.ultimo_invio));
+        invio.title = data(n.ultimo_invio);
+        const codice = nodo('td');
+        const blocco = nodo('div', 'codice');
+        const testo = nodo('code', '', '••••••••');
+        const mostraCodice = nodo('button', 'comando', 'mostra');
+        mostraCodice.type = 'button';
+        mostraCodice.addEventListener('click', () => {
+          const visibile = testo.textContent !== '••••••••';
+          testo.textContent = visibile ? '••••••••' : n.token;
+          mostraCodice.textContent = visibile ? 'mostra' : 'nascondi';
+        });
+        const copia = nodo('button', 'comando', 'copia riga');
+        copia.type = 'button';
+        copia.title = 'copia la riga per installati.js della copia del cliente (con tutti i negozi di questo cliente)';
+        copia.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(rigaInstalla(n)); copia.textContent = 'copiata ✓'; }
+          catch { prompt('copia la riga per installati.js', rigaInstalla(n)); }
+          setTimeout(() => { copia.textContent = 'copia riga'; }, 2000);
+        });
+        blocco.append(testo, mostraCodice, copia);
+        codice.append(blocco);
+        const azioni = nodo('td', 'num');
+        const attiva = nodo('button', `comando ${n.attivo ? 'discreto' : 'pieno'}`, n.attivo ? 'disattiva' : 'riattiva');
+        attiva.type = 'button';
+        attiva.title = n.attivo ? 'sospende il codice: la copia non spedisce più dati, statistiche e loghi restano' : 'il codice torna valido';
+        attiva.addEventListener('click', async () => {
+          if (n.attivo && !confirm(`Disattivare il codice di ${n.nome} (${n.cliente})?
+
+La copia del cliente non potrà più spedire dati finché non lo riattivi. Statistiche e backup dei loghi già arrivati restano.`)) return;
+          try { await api(`negozi_clienti?id=eq.${n.id}`, { metodo: 'PATCH', corpo: { attivo: !n.attivo } }); caricaNegozi(); }
+          catch (errore) { stato(errore.message, 'err'); }
+        });
+        const elimina = nodo('button', 'comando rosso', 'elimina');
+        elimina.type = 'button';
+        elimina.title = 'elimina il negozio con tutte le sue statistiche e il backup dei loghi';
+        elimina.addEventListener('click', async () => {
+          if (!confirm(`Eliminare ${n.nome} (${n.cliente}) con tutte le sue statistiche e il backup dei loghi personali?`)) return;
+          if (!confirm(`Sei sicuro? Non si può annullare, e la copia del cliente non potrà più spedire dati con questo codice.`)) return;
+          try { await api(`negozi_clienti?id=eq.${n.id}`, { metodo: 'DELETE' }); stato(`${n.nome} eliminato`, 'ok'); caricaNegozi(); }
+          catch (errore) { stato(errore.message, 'err'); }
+        });
+        const gruppo = nodo('span', 'azioni-negozio');
+        gruppo.append(attiva, nodo('span', 'divisorio'), elimina);
+        azioni.append(gruppo);
+        riga.append(nome, nodo('td', '', n.cliente), invio, nodo('td', 'tenue', n.versione || '—'), codice, azioni);
+        return riga;
+      }));
+    }
+
+    $('nuovoNegozio').addEventListener('submit', async evento => {
+      evento.preventDefault();
+      try {
+        const [nuovo] = await api('negozi_clienti', { metodo: 'POST', prefer: 'return=representation',
+          corpo: { cliente: $('nnCliente').value.trim(), negozio: $('nnNegozio').value, nome: $('nnNome').value.trim().toUpperCase() } });
+        $('nnCliente').value = '';
+        negozioScelto = nuovo.id;
+        await caricaNegozi();
+        stato(`registrato ${nuovo.nome}: copia la riga del codice nella copia del cliente`, 'ok');
+      } catch (errore) {
+        stato(`negozio non registrato: ${errore.message}`, 'err');
+      }
+    });
+
+    // ----- Stampe -----
+    function disegnaScelte() {
+      $('sceltaNegozio').replaceChildren(nodo('span', 'etichetta', 'negozio:'), ...negozi.map(n => {
+        const b = nodo('button', '', n.nome);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(n.id === negozioScelto));
+        b.addEventListener('click', () => { negozioScelto = n.id; disegnaScelte(); caricaStampe(); });
+        return b;
+      }));
+      $('sceltaPeriodo').replaceChildren(nodo('span', 'etichetta', 'periodo:'), ...PERIODI.map(([valore, nome]) => {
+        const b = nodo('button', '', nome);
+        b.type = 'button';
+        b.setAttribute('aria-pressed', String(valore === periodo));
+        b.addEventListener('click', () => { periodo = valore; disegnaScelte(); caricaStampe(); });
+        return b;
+      }));
+    }
+
+    const filtroPeriodo = () => periodo === 'tutto' ? '' : `&stampata_il=gte.${new Date(Date.now() - Number(periodo) * 86400000).toISOString()}`;
+
+    function barre(voci) {
+      const massimo = Math.max(1, ...voci.map(v => v.valore));
+      const totale = voci.reduce((s, v) => s + v.valore, 0) || 1;
+      const contenitore = nodo('div', 'barre');
+      voci.forEach(v => {
+        const riga = nodo('div', 'barra');
+        const fondo = nodo('div', 'barra-fondo');
+        const pieno = nodo('div', 'barra-pieno');
+        pieno.style.width = `${(v.valore / massimo) * 100}%`;
+        fondo.append(pieno);
+        const nome = nodo('span', 'barra-nome', v.nome);
+        nome.title = v.nome;
+        riga.append(nome, fondo, nodo('span', 'barra-valore', `${v.valore} · ${Math.round((v.valore / totale) * 100)}%`));
+        contenitore.append(riga);
+      });
+      return contenitore;
+    }
+
+    function numero(valore, testo) {
+      const n = nodo('div', 'numero');
+      n.append(nodo('b', '', String(valore)), nodo('span', '', testo));
+      return n;
+    }
+
+    function schedaFoglio({ anteprima, nome, tipo, righe }) {
+      const foglio = nodo('div', 'foglio');
+      const immagine = nodo('div', 'foglio-immagine');
+      if (anteprima) {
+        const img = document.createElement('img');
+        img.src = anteprima;
+        img.alt = nome;
+        img.loading = 'lazy';
+        immagine.append(img);
+      } else immagine.append(nodo('span', '', 'senza anteprima'));
+      const titolo = nodo('div', 'foglio-nome', nome);
+      titolo.title = nome;
+      foglio.append(immagine, titolo, nodo('div', 'foglio-tipo', tipo));
+      righe.forEach(r => foglio.append(nodo('div', 'tenue', r)));
+      return foglio;
+    }
+
+    async function caricaStampe() {
+      const corpo = $('corpoStampe');
+      if (!negozioScelto) { corpo.replaceChildren(nodo('p', 'vuoto', 'nessun negozio cliente')); $('riassuntoStampe').textContent = ''; return; }
+      corpo.replaceChildren(nodo('p', 'vuoto', 'lettura…'));
+      try {
+        const filtro = `negozio_id=eq.${negozioScelto}${filtroPeriodo()}`;
+        const [stampe, dymo] = await Promise.all([
+          api(`stampe?select=id,impronta,nome,titolo,tipo,pagina,mm_larghezza,mm_altezza,orientamento,anteprima,volte,prima_stampa,stampata_il&${filtro}&order=stampata_il.desc&limit=500`),
+          api(`etichette_dymo?select=id,layout,nome,anteprima,volte,copie,prima_stampa,stampata_il&${filtro}&order=stampata_il.desc&limit=500`)
+        ]);
+        const fogli = stampe.reduce((s, r) => s + r.volte, 0);
+        const copie = dymo.reduce((s, r) => s + r.copie, 0);
+        $('riassuntoStampe').textContent = `${fogli} fogli · ${copie} etichette dymo`;
+        const parti = [];
+        const numeri = nodo('div', 'numeri');
+        numeri.append(numero(fogli, 'fogli stampati'), numero(stampe.length, 'fogli diversi'),
+          ...['cartelli', 'cartellini', 'promo'].map(t => numero(stampe.filter(r => r.tipo === t).reduce((s, r) => s + r.volte, 0), NOMI_TIPO[t])),
+          numero(copie, 'etichette dymo'), numero(dymo.reduce((s, r) => s + r.volte, 0), 'stampe dymo'));
+        parti.push(numeri);
+
+        // pagine più usate
+        const perPagina = new Map();
+        stampe.forEach(r => perPagina.set(r.nome, (perPagina.get(r.nome) || 0) + r.volte));
+        if (perPagina.size) {
+          parti.push(nodo('p', 'sottotitolo', 'pagine più usate (fogli stampati)'),
+            barre([...perPagina].map(([nome, valore]) => ({ nome, valore })).sort((a, b) => b.valore - a.valore).slice(0, 12)));
+        }
+        // dymo per layout
+        const perLayout = new Map();
+        dymo.forEach(r => { const chiave = r.nome || r.layout; perLayout.set(chiave, (perLayout.get(chiave) || 0) + r.copie); });
+        if (perLayout.size) {
+          parti.push(nodo('p', 'sottotitolo', 'etichette dymo per layout (copie)'),
+            barre([...perLayout].map(([nome, valore]) => ({ nome, valore })).sort((a, b) => b.valore - a.valore)));
+        }
+        // ogni foglio con anteprima e dettagli
+        parti.push(nodo('p', 'sottotitolo', `fogli stampati (${stampe.length})`));
+        if (stampe.length) {
+          const griglia = nodo('div', 'fogli');
+          griglia.append(...stampe.map(r => schedaFoglio({
+            anteprima: r.anteprima, nome: r.nome || r.titolo || 'foglio', tipo: NOMI_TIPO[r.tipo] || r.tipo,
+            righe: [
+              `${r.volte} ${r.volte === 1 ? 'volta' : 'volte'} · ultima ${data(r.stampata_il)}`,
+              `prima ${data(r.prima_stampa)}`,
+              `${r.pagina || ''}${r.mm_larghezza ? ` · ${Math.round(r.mm_larghezza)} × ${Math.round(r.mm_altezza)} mm` : ''}${r.orientamento === 'landscape' ? ' · orizzontale' : ''}`
+            ]
+          })));
+          parti.push(griglia);
+        } else parti.push(nodo('p', 'vuoto', 'nessun foglio stampato in questo periodo'));
+        parti.push(nodo('p', 'sottotitolo', `etichette dymo (${dymo.length})`));
+        if (dymo.length) {
+          const griglia = nodo('div', 'fogli');
+          griglia.append(...dymo.map(r => schedaFoglio({
+            anteprima: r.anteprima, nome: r.nome || r.layout, tipo: 'dymo',
+            righe: [`${r.copie} ${r.copie === 1 ? 'copia' : 'copie'} in ${r.volte} ${r.volte === 1 ? 'stampa' : 'stampe'}`, `ultima ${data(r.stampata_il)}`]
+          })));
+          parti.push(griglia);
+        } else parti.push(nodo('p', 'vuoto', 'nessuna etichetta dymo in questo periodo'));
+        corpo.replaceChildren(...parti);
+      } catch (errore) {
+        corpo.replaceChildren(nodo('p', 'vuoto rossa', errore.message));
+      }
+    }
+
+    // ----- Backup dei loghi personali -----
+    async function caricaLoghi() {
+      const corpo = $('corpoLoghi');
+      try {
+        const backup = await api('backup_loghi?select=negozio_id,numero,aggiornato_il');
+        $('riassuntoLoghi').textContent = `${backup.length} ${backup.length === 1 ? 'backup' : 'backup'}`;
+        if (!negozi.length) { corpo.replaceChildren(nodo('p', 'vuoto', 'nessun negozio cliente')); return; }
+        const tabella = nodo('table', 'tabella');
+        const corpoTabella = nodo('tbody');
+        negozi.forEach(n => {
+          const b = backup.find(x => x.negozio_id === n.id);
+          const riga = nodo('tr');
+          const nome = nodo('td');
+          nome.append(nodo('div', 'nome-negozio', n.nome), nodo('div', 'tenue', n.cliente));
+          const azioni = nodo('td', 'num');
+          const dettagli = nodo('td');
+          if (b) {
+            dettagli.append(`${b.numero} ${b.numero === 1 ? 'logo' : 'loghi'} · aggiornato ${data(b.aggiornato_il)}`);
+            const vedi = nodo('button', 'comando', 'vedi');
+            vedi.type = 'button';
+            vedi.addEventListener('click', async () => {
+              const presente = dettagli.querySelector('.loghi-anteprima');
+              if (presente) { presente.remove(); return; }
+              const lista = await scaricaBackup(n);
+              const anteprima = nodo('div', 'loghi-anteprima');
+              (lista.logos || []).forEach(logo => {
+                const img = document.createElement('img');
+                img.src = logo.data;
+                img.alt = logo.name;
+                img.title = logo.name;
+                anteprima.append(img);
+              });
+              dettagli.append(anteprima);
+            });
+            const scarica = nodo('button', 'comando pieno', 'scarica json');
+            scarica.type = 'button';
+            scarica.addEventListener('click', async () => {
+              const lista = await scaricaBackup(n);
+              const file = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(file);
+              a.download = `storecraft-loghi-personali-${n.negozio}-${n.cliente.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.json`;
+              a.click();
+              setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            });
+            azioni.append(vedi, ' ', scarica);
+          } else {
+            dettagli.className = 'tenue';
+            dettagli.textContent = 'ancora nessun backup';
+          }
+          riga.append(nome, dettagli, azioni);
+          corpoTabella.append(riga);
+        });
+        tabella.append(corpoTabella);
+        corpo.replaceChildren(tabella);
+      } catch (errore) {
+        corpo.replaceChildren(nodo('p', 'vuoto rossa', errore.message));
+      }
+    }
+    async function scaricaBackup(n) {
+      const [riga] = await api(`backup_loghi?select=backup&negozio_id=eq.${n.id}`);
+      return riga?.backup || { version: 1, negozio: n.negozio, logos: [] };
+    }
+
+    opzioniNegozio();
+    mostra();
+  </script>
+</body>
+</html>

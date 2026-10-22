@@ -30,7 +30,7 @@
                     come widget né nel menu; la pagina resta nella cartella), origine (clone: la pagina da cui è copiata) }] */
 (() => {
   // Versione del prodotto, visibile in CONTATTI & CREDITS (vedi "Versione del prodotto" in AGENTS.md)
-  const VERSIONE = 'V 1.2.62 2026';
+  const VERSIONE = 'V 1.2.63 2026';
   const script = document.currentScript;
   const versioneFile = new URL(script.src).search;
   const ASSETS = new URL('../', script.src);
@@ -662,6 +662,8 @@
     if (!dati) throw new Error(`Contenuto della dashboard non trovato: assets/negozi/${negozio}-dashboard.js`);
     // segno della dashboard: le regole dei set EXTRA (es. extra-vintage.css) valgono solo qui
     document.body.dataset.pagina = 'dashboard';
+    // statistiche verso STORE // CRAFT, solo nelle copie con il codice del negozio (assets/js/statistiche.js)
+    if (window.Negozi?.codiceStatistiche?.(negozio)) document.head.append(el('script', { src: risorsa(`js/statistiche.js${versioneFile}`) }));
     // Pagine in ghost (Controllo codice, nascosta: true): le loro schede non si vedono, né come widget né nel menu
     // laterale; una sezione che resta senza schede sparisce, e la voce Etichette DYMO se la sua pagina è in ghost
     const pagina = link => String(link || '').split('?')[0];
@@ -1025,7 +1027,8 @@
 
   window.Dashboard = Object.freeze({
     contenuto(contenuto) { dati = contenuto; },
-    disegna
+    disegna,
+    VERSIONE
   });
 
   // ===== Comportamento della dashboard (dalla dashboard Luxury) =====
