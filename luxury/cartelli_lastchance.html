@@ -44,6 +44,16 @@
       font-display: block;
     }
 
+    /* Anton (licenza SIL OFL, assets/fonts/Anton-OFL.txt): la scritta della fascia rossa, letta dal progetto così è
+       uguale su ogni computer, telefono e PDF (prima Impact, carattere di Windows con il grassetto finto) */
+    @font-face {
+      font-family: 'Anton Project';
+      src: url('../assets/fonts/Anton-Regular.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
     @font-face {
       font-family: 'Space Invaders Project';
       src: url('../assets/fonts/space_invaders.ttf') format('truetype');
@@ -233,6 +243,14 @@
       margin-top: 7mm;
     }
 
+    /* senza brand: prezzo, nota e fascia rossa 4 mm più vicini alla grafica LAST CHANCE, senza spostare l'header
+       (22 ottobre 2026); in fondo resta più spazio, lontano dal bordo della morsa */
+    .price-block.no-brand,
+    .price-block.no-brand ~ .card-footer {
+      position: relative;
+      top: -4mm;
+    }
+
     .price-final {
       font-family: 'Bodoni Project', serif;
       font-size: 9.9rem;
@@ -278,12 +296,12 @@
     }
 
     .red-bottom-banner .banner-text {
-      font-family: "Impact", "Arial Black", "ITC Machine", sans-serif;
+      font-family: 'Anton Project', 'Arial Narrow', sans-serif;
       font-size: 1.55rem;
-      font-weight: 900;
+      font-weight: 400;   /* il peso vero di Anton, senza il grassetto finto che aveva Impact */
       color: #ffffff;
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 0.04em;
       line-height: 1;
     }
 

@@ -258,15 +258,24 @@
     .has-2-brands .brand-logo-slot.bis { display: flex; opacity: 1; }
 
     /* SOTTOTITOLO */
+    /* pallino della descrizione: più piccolo e alzato a metà delle minuscole */
+    .card-subtitle .desc-pallino {
+      font-size: 0.55em;
+      vertical-align: 0.32em;
+    }
+
     .card-subtitle {
       font-family: 'Bodoni Project', Didot, serif;
-      font-size: 1.65rem;
+      font-size: 2rem;   /* più grande (1,65rem fino al 22 ottobre 2026); i testi lunghi restano 1,65rem: setDescriptionText */
       font-weight: 400;
       color: #000;
       text-align: center;
       margin-top: 8mm;
       margin-bottom: 2mm;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.04em;   /* lettere più strette, spaziatura normale (-0,3px fino al 22 ottobre 2026) */
+      /* a metà tra l'header e la percentuale, misurato sull'inchiostro (22 ottobre 2026) */
+      position: relative;
+      top: 1.6mm;
     }
 
     /* SCONTO GIGANTE */
@@ -281,6 +290,9 @@
       margin: 0;
       white-space: nowrap;
       flex-grow: 1;
+      /* 2 mm più su: meno spazio vuoto attorno al testo, il logo in fondo può salire (22 ottobre 2026) */
+      position: relative;
+      top: -2mm;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -294,6 +306,8 @@
       justify-content: center;
       margin-bottom: 1mm;
       flex-shrink: 0;
+      position: relative;
+      top: -3mm;   /* 3 mm più su, lontano dal bordo della morsa (22 ottobre 2026) */
     }
 
     .card-footer img {
@@ -891,14 +905,26 @@
 
     // Testo Libero: fino a 31 caratteri (quanto "Made in Italy • Genuine Leather") il testo ha la sua grandezza;
     // da 32 a 37 caratteri (il campo si ferma lì) il carattere si rimpicciolisce perché il testo resti largo uguale.
+    // Grandezza del testo (22 ottobre 2026): fino a 24 caratteri 2rem; da 25 (Fino ad esaurimento scorte) al 93%; da 27
+    // (Vera Pelle • Genuine Leather, Made in Italy • Genuine Leather) 1,78rem, e oltre 31 caratteri
+    // (fino a 37, dove il campo si ferma) più piccolo perché il testo resti largo uguale
     const DESC_FULL_LENGTH = 31;
+    const DESC_LONG_SIZE = 1.78 / 2;   // 1,78rem rispetto ai 2rem dei testi corti (1,65rem fino al 22 ottobre 2026)
     function setDescriptionText(element, text) {
-      element.textContent = text;
+      // il pallino «•» (es. Made in Italy • Genuine Leather) più piccolo e a metà altezza delle lettere, come nel Cartello Semplice
+      element.replaceChildren(...text.split('•').flatMap((parte, indice) => {
+        if (!indice) return [parte];
+        const pallino = document.createElement('span');
+        pallino.className = 'desc-pallino';
+        pallino.textContent = '•';
+        return [pallino, parte];
+      }));
       element.style.fontSize = '';
-      if (text.length > DESC_FULL_LENGTH) {
-        const baseSize = parseFloat(getComputedStyle(element).fontSize);
-        element.style.fontSize = (baseSize * DESC_FULL_LENGTH / text.length) + 'px';
-      }
+      const lunghezza = text.trim().length;
+      if (lunghezza < 25) return;
+      const baseSize = parseFloat(getComputedStyle(element).fontSize);
+      const scala = lunghezza >= 27 ? DESC_LONG_SIZE * Math.min(1, DESC_FULL_LENGTH / lunghezza) : 0.93;
+      element.style.fontSize = (baseSize * scala) + 'px';
     }
 
     function renderCard(cardIndex) {
