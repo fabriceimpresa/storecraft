@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-07"></script>
+  <script src="assets/js/negozi.js?v=20261022-08"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.64</p>
+  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.65</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -292,6 +292,7 @@
     <tr><td>Fasce Prezzo</td><td><code>&lt;div data-fasce-prezzo data-select-id data-on-change&gt;</code> + <code>fasce-prezzo.js</code></td><td>etichetta e menu creati dal modulo · gruppi Prezzi tondi / Prezzi ,90</td><td>la funzione della pagina mette il prezzo dove serve</td></tr>
     <tr><td>Campo prezzo</td><td><code>&lt;input data-prezzo&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>simbolo € fisso davanti, oro (grassetto nel tema chiaro, un poco meno marcato nello scuro), grande quanto le cifre, in un riquadro a parte come nelle Utilità Cassa (0,7rem ai lati, linea che lo separa dal campo), con il fondo del riquadro della freccia dei menu (<code>--pannello-riquadro</code>: grigio scuro nel tema scuro, beige nel chiaro)</td><td>solo cifre, virgola e punto; uscendo sempre due decimali (35 → 35,00) e nuovo evento <code>input</code></td></tr>
     <tr><td>Campo sconto</td><td><code>&lt;input data-percentuale type="number" min="1" max="99"&gt;</code></td><td>% fisso in fondo al campo, un poco staccato dalle frecce, nel grigio del valore di esempio del campo vuoto, senza riquadro (sul fondo del campo) · frecce ▲▼ oro in una colonna larga 1,6rem, come la freccia dei menu e il suo riquadro</td><td>numeri da 1 a 99; le frecce sono del modulo (nessuna funzione nella pagina)</td></tr>
+    <tr><td>Prezzo con i decimali (etichette DYMO)</td><td><code>&lt;input data-decimali&gt;</code> + <code>campi-prezzo.js</code> (defer)</td><td>il campo normale della pagina, senza riquadro né simbolo (il titolo ha già «(€)»)</td><td>solo cifre, virgola e punto; uscendo dal campo sempre due decimali (29 → 29,00; 1.299 → 1299,00), un campo vuoto resta vuoto; i prezzi delle etichette DYMO dei tre negozi (dal 22 ottobre 2026)</td></tr>
     <tr><td>Campo numero</td><td><code>&lt;input data-numero="copie" min="1" max="99"&gt;</code> + <code>campi-prezzo.js</code> (defer) e <code>input-affix.css</code></td><td>lo stesso riquadro del campo sconto, senza simbolo: cifre a sinistra, a destra le frecce ▲▼ oro nella colonna larga 1,6rem, fondo e bordo degli altri campi del menu</td><td>solo numeri interi tra min e max; ▲▼ ±1; uscendo dal campo un valore vuoto o fuori misura torna dentro i limiti; il numero di copie delle etichette DYMO dei tre negozi (dal 14 ottobre 2026)</td></tr>
     <tr><td>TEXT AREA</td><td><code>&lt;textarea rows="4"&gt;</code> (altre righe: <code>style="--righe: 2"</code>)</td><td>come il campo · interlinea 1,4 · alta quanto le righe · senza maniglia</td><td>il numero massimo di righe lo controlla la pagina (es. Magazzino, Cornici)</td></tr>
     <tr><td>Barra</td><td><code>&lt;input type="range"&gt;</code></td><td>alta 31,4 px · linea 6 px · maniglia tonda 16 px <code>--pannello-oro</code>, al passaggio <code>--pannello-oro-chiaro</code></td><td>es. Dimensione Testo del Magazzino</td></tr>
@@ -432,7 +433,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-07</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-08</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>

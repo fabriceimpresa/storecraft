@@ -2,26 +2,26 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-07"></script>
+  <script src="../assets/js/negozi.js?v=20261022-08"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-07">
+  <script src="../assets/js/theme.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-08">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-07">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-08">
   <title>Etichette DYMO · TEBE</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-07">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-07">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-08">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-07"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261022-07"></script>
-  <script src="../assets/js/logos.js?v=20261022-07"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-08"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261022-08"></script>
+  <script src="../assets/js/logos.js?v=20261022-08"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-07">
-  <script src="../assets/js/cronologia-dymo.js?v=20261022-07"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-08">
+  <script src="../assets/js/cronologia-dymo.js?v=20261022-08"></script>
 
   <style>
     @font-face {
@@ -322,15 +322,16 @@
     .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 3px 6px; margin: -3px -6px -3px 0; font-size: 22px; background: #000; color: #fff; }
     /* STANDARD: logo TEBE piccolo al posto della riga prezzo originario/sconto, centrato sul titolo SIZE / TAGLIA.
        Tebe.png ha molto margine trasparente: la casella alta 28px mostra solo la scritta, il margine destro (62/1200) si compensa. */
-    .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 150px; height: 28px; margin-top: 2px; overflow: hidden; }
-    .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 150px; max-width: none; max-height: none; margin-right: -7.75px; }
+    /* loghi dei layout 4 e 5 circa 12% più grandi (22 ottobre 2026) */
+    .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 168px; height: 31.4px; margin-top: 2px; overflow: hidden; }
+    .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 168px; max-width: none; max-height: none; margin-right: -8.7px; }
     .tpl-tagliedoppiacifra.is-standard .size-logo { display: flex; }
     .tpl-tagliedoppiacifra.is-standard .top-price-row { display: none; }
     /* 5. TAGLIE BRAND: logo scelto (ufficiale o personale) in una casella 170x70,8 (proporzione 1200x500 dei loghi ufficiali),
        senza ritaglio, cosi' anche i loghi alti (HAVEONE, 269TEBE) restano interi. In DOPPIA CIFRA il logo resta in alto a destra, il testo descrittivo sparisce e prezzo originario/sconto
        scendono appena sopra il prezzo finale, appoggiato in basso. */
-    .tpl-tagliebrand .size-logo { width: 170px; height: 70.8px; margin-top: -9px; align-items: center; }
-    .tpl-tagliebrand .size-logo img { width: 170px; height: 70.8px; object-fit: contain; object-position: right center; margin-right: 0; }
+    .tpl-tagliebrand .size-logo { width: 190px; height: 79.3px; margin-top: -9px; align-items: center; }
+    .tpl-tagliebrand .size-logo img { width: 190px; height: 79.3px; object-fit: contain; object-position: right center; margin-right: 0; }
     .tpl-tagliebrand .size-logo .brand-text-fallback { font-size: 14px; text-align: right; }
     .tpl-tagliebrand:not(.is-standard) .size-logo { display: flex; }
     .tpl-tagliebrand:not(.is-standard) .top-price-row { margin-top: auto; margin-bottom: 12px; }
@@ -531,10 +532,10 @@
     }
 /* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .label-preview-wrapper { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .custom-brand-box { box-shadow: 0 1px 3px rgba(40, 34, 28, .2); }    @media (max-width: 768px) {      :root[data-interface-theme="light"] .preview-section { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }      :root[data-interface-theme="light"] aside { box-shadow: 0 -1px 4px rgba(40, 34, 28, .22); }    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-07">
-  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-07">
-  <script src="../assets/js/campi-prezzo.js?v=20261022-07" defer></script>
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-07"></script>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-08">
+  <script src="../assets/js/campi-prezzo.js?v=20261022-08" defer></script>
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-08"></script>
 </head>
 <body>
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -678,11 +679,11 @@
       <div class="row" id="groupPriceRow">
         <div class="form-group" id="groupOrig" style="flex:1;">
           <label id="lblOrigTitle">Prezzo Originario (€)</label>
-          <input type="text" id="inputOrig" class="form-control" value="330,00" oninput="calculateDiscount()">
+          <input type="text" id="inputOrig" class="form-control" data-decimali value="330,00" oninput="calculateDiscount()">
         </div>
         <div class="form-group" id="groupDiscounted" style="flex:1;">
           <label>Prezzo Scontato (€)</label>
-          <input type="text" id="inputDiscounted" class="form-control" value="99,00" oninput="updateLabel()">
+          <input type="text" id="inputDiscounted" class="form-control" data-decimali value="99,00" oninput="updateLabel()">
         </div>
         <div class="form-group" id="groupDiscount" style="flex:1; display:none;">
           <label>Sconto (%)</label>
@@ -692,7 +693,7 @@
 
       <div class="form-group" id="groupOutlet">
         <label id="lblPriceTitle">Prezzo Finito (€)</label>
-        <input type="text" id="inputOutlet" class="form-control" value="29,90" inputmode="decimal" oninput="handleOutletPriceInput(this)" onblur="formatOutletPrice(this)">
+        <input type="text" id="inputOutlet" class="form-control" data-decimali value="29,90" inputmode="decimal" oninput="handleOutletPriceInput(this)" onblur="formatOutletPrice(this)">
       </div>
 
       <!-- Copie da stampare: vale per tutti i layout, quindi resta sempre visibile. -->
@@ -713,8 +714,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261022-07"></script>
-  <script src="../assets/js/selettore.js?v=20261022-07"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-08"></script>
+  <script src="../assets/js/selettore.js?v=20261022-08"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/logos/tebe/Tebe.png";
     const PLACEHOLDER_TEXT = "-- Seleziona Brand --";
@@ -1704,7 +1705,8 @@
             /* Promo centrata sull'adesivo: centro a 1,08 + 15/2 = 8,58 mm dal bordo destro, casella a 1 mm dal bordo. */
             .tpl-outlet.is-made-in-italy .promo-label { left: -1.58mm; }
             .tpl-outlet.is-made-in-italy .promo-label.is-outlined { left: -1.08mm; }
-            .tpl-outlet .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 9mm; margin-top: 1.5mm; padding: 0 1mm 0 1.25mm; width: 100%; }
+            /* riga Euro + prezzo + SALE 0,5 mm più su (22 ottobre 2026: margine sopra da 1,5 a 1 mm) */
+            .tpl-outlet .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 9mm; margin-top: 1mm; padding: 0 1mm 0 1.25mm; width: 100%; }
             .tpl-outlet .price-box { width: 36.25mm; display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; }
             .tpl-outlet .price-label { font: 300 11pt/1 'Bodoni Std', serif; letter-spacing: -0.5px; }
             .tpl-outlet .price-val { position: relative; top: 1.6mm; left: -5mm; transform-origin: right bottom; font: 300 24pt/1 'Bodoni Std', serif; letter-spacing: -1.5px; -webkit-text-stroke: 0.25px #fff; paint-order: fill stroke; white-space: nowrap; }
@@ -1775,17 +1777,18 @@
             .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 1.1pt 2.2pt; margin: -1.1pt -2.2pt -1.1pt 0; font-size: 9pt; background: #000; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             /* Solo stampa DYMO (html2canvas): testo alzato di 0,6pt per restare centrato nella casella nera. */
             .is-raster .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 0.5pt 2.2pt 1.7pt; margin: -1.1pt -2.2pt -1.1pt 0; }
-            .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 19mm; height: 3.6mm; margin-top: 0.24mm; overflow: hidden; }
-            .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 19mm; max-width: none; max-height: none; margin-right: -0.99mm; }
+            /* loghi dei layout 4 e 5 circa 12% più grandi (22 ottobre 2026) */
+            .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 21.3mm; height: 4.03mm; margin-top: 0.24mm; overflow: hidden; }
+            .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 21.3mm; max-width: none; max-height: none; margin-right: -1.11mm; }
             .tpl-tagliedoppiacifra.is-standard .size-logo { display: flex; }
             .tpl-tagliedoppiacifra.is-standard .top-price-row { display: none; }
             /* Casella alta quanto l'immagine (niente ritaglio) e 0,9 mm sotto il bordo del layout: il logo piu' alto (HAVEONE) resta a oltre 1 mm dal bordo stampato. */
-            .tpl-tagliebrand .size-logo { width: 21.5mm; height: 8.96mm; margin-top: -0.3mm; align-items: center; }
-            .tpl-tagliebrand .size-logo img { width: 21.5mm; height: 8.96mm; object-fit: contain; object-position: right center; margin-right: 0; }
+            .tpl-tagliebrand .size-logo { width: 24.1mm; height: 10.04mm; margin-top: -0.3mm; align-items: center; }
+            .tpl-tagliebrand .size-logo img { width: 24.1mm; height: 10.04mm; object-fit: contain; object-position: right center; margin-right: 0; }
             .tpl-tagliebrand .size-logo .brand-text-fallback { font-size: 5pt; text-align: right; }
             /* DOPPIA CIFRA: logo brand un po' piu' grande in stampa (24 mm invece di 21,5), leggermente piu' in basso per restare lontano dal bordo. */
-            .tpl-tagliebrand:not(.is-standard) .size-logo { display: flex; width: 24mm; height: 10mm; margin-top: -0.3mm; }
-            .tpl-tagliebrand:not(.is-standard) .size-logo img { width: 24mm; height: 10mm; }
+            .tpl-tagliebrand:not(.is-standard) .size-logo { display: flex; width: 26.9mm; height: 11.2mm; margin-top: -0.3mm; }
+            .tpl-tagliebrand:not(.is-standard) .size-logo img { width: 26.9mm; height: 11.2mm; }
             .tpl-tagliebrand:not(.is-standard) .top-price-row { margin-top: auto; margin-bottom: 1.6mm; }
             .tpl-tagliebrand:not(.is-standard) .final-price { margin: 0; }
             .tpl-tagliebrand:not(.is-standard) .price-section { padding-bottom: 1.6mm; }
@@ -1826,7 +1829,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-07"></script>
+  <script src="../assets/js/cursore.js?v=20261022-08"></script>
   <script>
     // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
     // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.

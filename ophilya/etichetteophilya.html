@@ -2,28 +2,28 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-07"></script>
+  <script src="../assets/js/negozi.js?v=20261022-08"></script>
   <!-- modulo sorgente, scritto a codice partendo da TEBE (non è un clone: non si cancella dalle utilità) -->
   <meta name="storecraft-derivata" content="tebe/etichette.html">
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-07">
+  <script src="../assets/js/theme.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-08">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-07">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-08">
   <title>Etichette DYMO · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-07">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-07">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-08">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-07"></script>
-  <script src="../assets/logos/ophilya/elenco.js?v=20261022-07"></script>
-  <script src="../assets/js/logos.js?v=20261022-07"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-08"></script>
+  <script src="../assets/logos/ophilya/elenco.js?v=20261022-08"></script>
+  <script src="../assets/js/logos.js?v=20261022-08"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-07">
-  <script src="../assets/js/cronologia-dymo.js?v=20261022-07"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-08">
+  <script src="../assets/js/cronologia-dymo.js?v=20261022-08"></script>
 
   <style>
     @font-face {
@@ -228,7 +228,8 @@
     /* SALE alzato di quanto serve per avere la stessa linea di base di "Euro" (Bodoni 30px: 9,06px sopra il fondo; Arial 36px: 5,52px). */
     .tpl-outlet .promo-label { position: relative; left: -4px; bottom: 3.54px; width: 96px; font: 36px Arial, Helvetica, sans-serif; letter-spacing: -1.35px; text-transform: uppercase; line-height: 1; text-align: center; }
     /* GENUINE LEATHER: due righe; la base di LEATHER resta sulla linea di "Euro" (Arial 19,5px, interlinea 1,05: 3,48px sopra il fondo). */
-    .tpl-outlet .promo-label.is-two-lines { bottom: 1.2px; font-size: 21px; letter-spacing: 0; line-height: 1.05; white-space: pre-line; }
+    /* 22 ottobre 2026: anteprima come la stampa (GENUINE LEATHER più in basso e un poco più grande, sulla linea di Euro) */
+    .tpl-outlet .promo-label.is-two-lines { left: -1px; bottom: -1.8px; font-size: 23px; letter-spacing: 0; line-height: 1.05; white-space: pre-line; }
     .tpl-outlet .promo-label .promo-line { display: block; width: max-content; margin: 0 auto; }
     /* Casella nera: il margine interno inferiore alza il testo, quindi si abbassa la casella di altrettanto per tenere la base sulla linea di "Euro". */
     .tpl-outlet .promo-label.is-inverted { bottom: 1.58px; padding: 4px 0; background: #000; color: #fff; }
@@ -249,10 +250,11 @@
        la casella (96px, bordata 104px) parte a 8px dal bordo, quindi si sposta di 8 - (66 - larghezza/2). */
     .tpl-outlet.is-made-in-italy .promo-label { left: -10px; }
     .tpl-outlet.is-made-in-italy .promo-label.is-outlined { left: -6px; }
-    .tpl-outlet .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 52px; margin-top: 18px; padding: 0 8px 0 10px; width: 100%; }
+    /* 22 ottobre 2026: Euro, prezzo e promo nelle stesse posizioni della stampa (misurate in percentuale dell'etichetta) */
+    .tpl-outlet .label-bottom { box-sizing: border-box; display: flex; justify-content: space-between; align-items: flex-end; height: 52px; margin-top: 29.5px; padding: 0 8px 0 2px; width: 100%; }
     .tpl-outlet .price-box { width: 290px; display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; }
-    .tpl-outlet .price-label { font: 300 30px/1 'Bodoni Std', serif; letter-spacing: -0.5px; }
-    .tpl-outlet .price-val { position: relative; top: 10px; left: -20px; transform-origin: right bottom; font: 300 60px/1 'Bodoni Std', serif; letter-spacing: -1.5px; -webkit-text-stroke: 0.35px #fff; paint-order: fill stroke; white-space: nowrap; }
+    .tpl-outlet .price-label { font: 300 33px/1 'Bodoni Std', serif; letter-spacing: -0.5px; }
+    .tpl-outlet .price-val { position: relative; top: 9px; left: -20px; transform-origin: right bottom; font: 300 68.7px/1 'Bodoni Std', serif; letter-spacing: -1.5px; -webkit-text-stroke: 0.35px #fff; paint-order: fill stroke; white-space: nowrap; }
     .tpl-outlet.tpl-outlet-promo .label-bottom { justify-content: space-between; align-items: baseline; margin-top: 30px; padding: 0 8px 0 10px; }
     .tpl-outlet.tpl-outlet-promo .promo-description { min-width: 0; max-width: 58%; overflow: hidden; font: 300 var(--promo-description-size-screen, 42px)/1 'Bodoni Std', serif; letter-spacing: -0.02em; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
     .tpl-outlet.tpl-outlet-promo .price-box { flex: 0 0 auto; width: auto; align-items: baseline; justify-content: flex-end; gap: 8px; text-align: right; }
@@ -319,8 +321,9 @@
     .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 3px 6px; margin: -3px -6px -3px 0; font-size: 22px; background: #000; color: #fff; }
     /* STANDARD: logo OPHILYA piccolo al posto della riga prezzo originario/sconto, centrato sul titolo SIZE / TAGLIA.
        ophilyablack.png non ha margini trasparenti: largo 150px, alto circa 20px nella casella da 28px. */
-    .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 150px; height: 28px; margin-top: 2px; overflow: hidden; }
-    .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 150px; max-width: none; max-height: none; }
+    /* logo OPHILYA del layout 4 circa 15% più grande (22 ottobre 2026) */
+    .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 173px; height: 32.2px; margin-top: 2px; overflow: hidden; }
+    .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 173px; max-width: none; max-height: none; }
     .tpl-tagliedoppiacifra.is-standard .size-logo { display: flex; }
     .tpl-tagliedoppiacifra.is-standard .top-price-row { display: none; }
     /* Tracking -50 = -0,05em. */
@@ -517,10 +520,10 @@
     }
 /* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .label-preview-wrapper { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .custom-brand-box { box-shadow: 0 1px 3px rgba(40, 34, 28, .2); }    @media (max-width: 768px) {      :root[data-interface-theme="light"] .preview-section { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }      :root[data-interface-theme="light"] aside { box-shadow: 0 -1px 4px rgba(40, 34, 28, .22); }    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-07">
-  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-07">
-  <script src="../assets/js/campi-prezzo.js?v=20261022-07" defer></script>
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-07"></script>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-08">
+  <script src="../assets/js/campi-prezzo.js?v=20261022-08" defer></script>
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-08"></script>
 </head>
 <body>
   <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -657,11 +660,11 @@
       <div class="row" id="groupPriceRow">
         <div class="form-group" id="groupOrig" style="flex:1;">
           <label id="lblOrigTitle">Prezzo Originario (€)</label>
-          <input type="text" id="inputOrig" class="form-control" value="330,00" oninput="calculateDiscount()">
+          <input type="text" id="inputOrig" class="form-control" data-decimali value="330,00" oninput="calculateDiscount()">
         </div>
         <div class="form-group" id="groupDiscounted" style="flex:1;">
           <label>Prezzo Scontato (€)</label>
-          <input type="text" id="inputDiscounted" class="form-control" value="99,00" oninput="updateLabel()">
+          <input type="text" id="inputDiscounted" class="form-control" data-decimali value="99,00" oninput="updateLabel()">
         </div>
         <div class="form-group" id="groupDiscount" style="flex:1; display:none;">
           <label>Sconto (%)</label>
@@ -671,7 +674,7 @@
 
       <div class="form-group" id="groupOutlet">
         <label id="lblPriceTitle">Prezzo Finito (€)</label>
-        <input type="text" id="inputOutlet" class="form-control" value="29,90" inputmode="decimal" oninput="handleOutletPriceInput(this)" onblur="formatOutletPrice(this)">
+        <input type="text" id="inputOutlet" class="form-control" data-decimali value="29,90" inputmode="decimal" oninput="handleOutletPriceInput(this)" onblur="formatOutletPrice(this)">
       </div>
 
       <!-- Copie da stampare: vale per tutti i layout, quindi resta sempre visibile. -->
@@ -692,8 +695,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261022-07"></script>
-  <script src="../assets/js/selettore.js?v=20261022-07"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-08"></script>
+  <script src="../assets/js/selettore.js?v=20261022-08"></script>
   <script>
     const DEFAULT_LOGO_SRC = "../assets/img/ophilya/ophilyablack.png";
     // Voce del menu brand che rimette il logo OPHILYA predefinito.
@@ -1000,7 +1003,8 @@
 
       if (typeof LOGO_FILES !== 'undefined' && Array.isArray(LOGO_FILES)) {
         const { priorityFiles, remainingFiles } = getSortedLogoFiles();
-        [...priorityFiles, ...remainingFiles].forEach(fileName => {
+        // OPHILYA c'è già, prima voce, con il suo logo originale: il file OPHILYA.png dei loghi ufficiali non si ripete
+        [...priorityFiles, ...remainingFiles].filter(fileName => cleanBrandName(fileName).toUpperCase() !== 'OPHILYA').forEach(fileName => {
           appendBrandOption(select, fileName, cleanBrandName(fileName), priorityFiles.includes(fileName));
         });
       }
@@ -1683,8 +1687,9 @@
             .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 1.1pt 2.2pt; margin: -1.1pt -2.2pt -1.1pt 0; font-size: 9pt; background: #000; color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             /* Solo stampa DYMO (html2canvas): testo alzato di 0,6pt per restare centrato nella casella nera. */
             .is-raster .tpl-tagliedoppiacifra .footer-text.is-inverted { padding: 0.5pt 2.2pt 1.7pt; margin: -1.1pt -2.2pt -1.1pt 0; }
-            .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 19mm; height: 3.6mm; margin-top: 0.24mm; overflow: hidden; }
-            .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 19mm; max-width: none; max-height: none; }
+            /* logo OPHILYA del layout 4 circa 15% più grande (22 ottobre 2026) */
+            .tpl-tagliedoppiacifra .size-logo { display: none; justify-content: flex-end; width: 21.85mm; height: 4.14mm; margin-top: 0.24mm; overflow: hidden; }
+            .tpl-tagliedoppiacifra .size-logo img { flex: 0 0 auto; width: 21.85mm; max-width: none; max-height: none; }
             .tpl-tagliedoppiacifra.is-standard .size-logo { display: flex; }
             .tpl-tagliedoppiacifra.is-standard .top-price-row { display: none; }
             .tpl-tagliedoppiacifra .original-price { font: 300 11.57pt/1 'Bodoni Std', serif; letter-spacing: -0.05em; }
@@ -1723,7 +1728,7 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateLabel);
     };
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-07"></script>
+  <script src="../assets/js/cursore.js?v=20261022-08"></script>
   <script>
     // Cursore legato ai campi (assets/js/cursore.js): indica sull'anteprima dell'etichetta
     // l'elemento che si sta modificando. Di lato può uscire dall'etichetta, restando nel riquadro dell'anteprima.

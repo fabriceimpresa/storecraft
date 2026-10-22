@@ -5,6 +5,11 @@
      <input data-percentuale …>   simbolo % fisso dopo e frecce ▲▼, solo numeri da 1 a 99
      <input data-numero min max>  solo le frecce ▲▼, numero intero tra min e max (es. il numero di copie delle etichette
                                   DYMO, 1–99); uscendo dal campo un valore vuoto o fuori misura torna dentro i limiti
+     <input data-decimali …>      come data-prezzo ma senza riquadro né simbolo (i prezzi delle etichette DYMO dei tre
+                                  negozi, con «(€)» nel titolo): solo cifre, virgola e punto, e uscendo dal campo sempre
+                                  due decimali (29 → 29,00); un campo vuoto resta vuoto
+   Il punto delle migliaia si riconosce: «1.299» è 1299,00, «39.9» è 39,90 (il separatore dei decimali è l'ultimo punto o
+   virgola seguito da una o due cifre).
    Il modulo crea il riquadro attorno al campo; se il campo è già in un riquadro della pagina (.input-affix con il suo
    simbolo .affix, come nelle pagine di Luxury, oppure .currency-input-group / .percent-input-wrapper) usa quello,
    conservando simbolo e frecce della pagina (.percent-stepper, con i suoi clic).
@@ -20,10 +25,14 @@
   };
 
   function formattaPrezzo(valore) {
-    const pulito = valore.replace(/[^\d,.]/g, '').replace(/\./g, ',');
+    const pulito = valore.replace(/[^\d,.]/g, '');
     if (!/\d/.test(pulito)) return '';
-    const [interi, ...resto] = pulito.split(',');
-    const decimali = resto.join('').replace(/\D/g, '');
+    // decimali: dopo l'ultimo punto o virgola, se le cifre sono una o due; tre cifre dopo un punto sono migliaia
+    const ultimo = Math.max(pulito.lastIndexOf(','), pulito.lastIndexOf('.'));
+    const dopo = ultimo === -1 ? '' : pulito.slice(ultimo + 1).replace(/\D/g, '');
+    const decimale = ultimo !== -1 && (pulito[ultimo] === ',' || dopo.length <= 2);
+    const interi = (decimale ? pulito.slice(0, ultimo) : pulito).replace(/\D/g, '').replace(/^0+(?=\d)/, '');
+    const decimali = decimale ? dopo : '';
     return `${interi || '0'},${decimali.padEnd(2, '0').slice(0, 2)}`;
   }
 
@@ -114,7 +123,7 @@
   document.addEventListener('input', evento => {
     const campo = evento.target;
     if (!(campo instanceof HTMLInputElement)) return;
-    if (campo.hasAttribute('data-prezzo')) {
+    if (campo.hasAttribute('data-prezzo') || campo.hasAttribute('data-decimali')) {
       const pulito = campo.value.replace(/[^\d,.]/g, '');
       if (pulito !== campo.value) campo.value = pulito;
     } else if (campo.hasAttribute('data-percentuale')) {
@@ -142,7 +151,7 @@
   // Uscendo dal campo prezzo: sempre due decimali
   document.addEventListener('focusout', evento => {
     const campo = evento.target;
-    if (!(campo instanceof HTMLInputElement) || !campo.hasAttribute('data-prezzo')) return;
+    if (!(campo instanceof HTMLInputElement) || !(campo.hasAttribute('data-prezzo') || campo.hasAttribute('data-decimali'))) return;
     const formattato = formattaPrezzo(campo.value);
     if (formattato !== campo.value) {
       campo.value = formattato;
@@ -154,6 +163,7 @@
     document.querySelectorAll('input[data-prezzo]').forEach(preparaPrezzo);
     document.querySelectorAll('input[data-percentuale]').forEach(preparaPercentuale);
     document.querySelectorAll('input[data-numero]').forEach(preparaNumero);
+    document.querySelectorAll('input[data-decimali]').forEach(campo => { campo.inputMode = 'decimal'; });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepara);

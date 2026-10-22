@@ -2,23 +2,31 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-07"></script>
+  <script src="../assets/js/negozi.js?v=20261022-08"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Etichette DYMO // STORE CRAFT</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- COLLEGAMENTO AL FILE CENTRALIZZATO LOGHI -->
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-07"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261022-07"></script>
-  <script src="../assets/js/logos.js?v=20261022-07"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-08"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261022-08"></script>
+  <script src="../assets/js/logos.js?v=20261022-08"></script>
   <!-- STAMPA DIRETTA DYMO: RASTERIZZAZIONE ETICHETTA + WEB SERVICE DYMO CONNECT -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="../assets/js/dymo-direct.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-07">
-  <script src="../assets/js/cronologia-dymo.js?v=20261022-07"></script>
+  <script src="../assets/js/dymo-direct.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/cronologia-dymo.css?v=20261022-08">
+  <script src="../assets/js/cronologia-dymo.js?v=20261022-08"></script>
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-07">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-08">
   <style>
+    /* Arial Black dal progetto (assets/fonts, copiato da Windows il 22 ottobre 2026): prezzo finale e sconto di Taglie |
+       Doppia Cifra uguali su ogni computer (prima Arial peso 900, che diventava Arial Black solo dove è installato) */
+    @font-face {
+      font-family: 'Arial Black';
+      src: url('../assets/fonts/Arial%20Black.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+    }
     :root {
       --bg: #121110;
       --sidebar: #181715;
@@ -235,14 +243,17 @@
     .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; }
     .tpl-tagliedoppiacifra .size-box { width: 48px; height: 48px; border: 2.5px solid #000000; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 400; background-color: #ffffff; text-align: center; }
     .tpl-tagliedoppiacifra .price-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 10px; padding-bottom: 6px; }
-    .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 14px; width: 100%; margin-top: 2px; }
+    /* prezzo originale e sconto sulla stessa linea delle lettere (baseline), non al centro dei riquadri: lo sconto è
+       in Arial Black, più alto, e al centro sembrava più in alto (22 ottobre 2026) */
+    .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: baseline; justify-content: flex-end; gap: 14px; width: 100%; margin-top: 2px; }
     .tpl-tagliedoppiacifra .original-price { font-size: 32px; font-weight: 400; letter-spacing: -0.5px; }
-    .tpl-tagliedoppiacifra .discount-tag { font-size: 32px; font-weight: 900; }
+    .tpl-tagliedoppiacifra .discount-tag { font-family: 'Arial Black', Arial, sans-serif; font-size: 32px; font-weight: 400; }
 
     /* FONT DINAMICO PREZZO FINALE (SCHERMO) */
-    .tpl-tagliedoppiacifra .final-price { 
-      font-size: var(--final-price-size-screen, 76px); 
-      font-weight: 900; 
+    .tpl-tagliedoppiacifra .final-price {
+      font-family: 'Arial Black', Arial, sans-serif;
+      font-size: var(--final-price-size-screen, 70px);
+      font-weight: 400;
       line-height: 0.85; 
       letter-spacing: -2px; 
       margin-top: -2px; 
@@ -427,13 +438,13 @@
     }
 /* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .label-preview-wrapper { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .custom-brand-box { box-shadow: 0 1px 3px rgba(40, 34, 28, .2); }    @media (max-width: 768px) {      :root[data-interface-theme="light"] .preview-section { box-shadow: 0 2px 5px rgba(40, 34, 28, .24); }      :root[data-interface-theme="light"] aside { box-shadow: 0 -1px 4px rgba(40, 34, 28, .22); }    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-07">
-  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-07">
-  <script src="../assets/js/campi-prezzo.js?v=20261022-07" defer></script>
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-07">
-  <script src="../assets/js/theme.js?v=20261022-07"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-07">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-08">
+  <link rel="stylesheet" href="../assets/css/input-affix.css?v=20261022-08">
+  <script src="../assets/js/campi-prezzo.js?v=20261022-08" defer></script>
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-08">
+  <script src="../assets/js/theme.js?v=20261022-08"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-08">
 </head>
 <body data-layout="dymo">
   <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -557,11 +568,11 @@
       <div class="row" id="groupPriceRow">
         <div class="form-group" id="groupOrig" style="flex:1;">
           <label id="lblOrigTitle">Prezzo Originario (€)</label>
-          <input type="text" id="inputOrig" class="form-control" value="330,00" oninput="calculateDiscount()">
+          <input type="text" id="inputOrig" class="form-control" data-decimali value="330,00" oninput="calculateDiscount()">
         </div>
         <div class="form-group" id="groupDiscounted" style="flex:1;">
           <label>Prezzo Scontato (€)</label>
-          <input type="text" id="inputDiscounted" class="form-control" value="99,00" oninput="updateLabel()">
+          <input type="text" id="inputDiscounted" class="form-control" data-decimali value="99,00" oninput="updateLabel()">
         </div>
         <div class="form-group" id="groupDiscount" style="flex:1; display:none;">
           <label>Sconto (%)</label>
@@ -571,7 +582,7 @@
 
       <div class="form-group" id="groupOutlet">
         <label id="lblPriceTitle">Prezzo Finito (€)</label>
-        <input type="text" id="inputOutlet" class="form-control" value="99,00" oninput="updateLabel()">
+        <input type="text" id="inputOutlet" class="form-control" data-decimali value="99,00" oninput="updateLabel()">
       </div>
 
       <div class="form-group" id="groupCopies">
@@ -934,24 +945,26 @@
       const text = elemOutlet.innerText.trim();
       const len = text.length;
 
-      let screenSize = '76px';
-      let printSize = '28pt';
+      // prezzo finale un poco più piccolo (22 ottobre 2026: era troppo grosso e usciva dall'etichetta); se ancora non
+      // entra, nella stampa lo rimpicciolisce adattaTaglie
+      let screenSize = '66px';
+      let printSize = '24pt';
 
       if (len <= 7) {
-        screenSize = '84px';
-        printSize = '31pt';
-      } else if (len === 8) {
         screenSize = '70px';
         printSize = '25pt';
-      } else if (len === 9) {
+      } else if (len === 8) {
         screenSize = '62px';
         printSize = '22pt';
+      } else if (len === 9) {
+        screenSize = '56px';
+        printSize = '19.5pt';
       } else if (len === 10) {
-        screenSize = '52px';
-        printSize = '18.5pt';
+        screenSize = '48px';
+        printSize = '17pt';
       } else if (len >= 11) {
-        screenSize = '44px';
-        printSize = '15.5pt';
+        screenSize = '42px';
+        printSize = '14.5pt';
       }
 
       elemOutlet.style.setProperty('--final-price-size-screen', screenSize);
@@ -1184,6 +1197,8 @@
         img.addEventListener('error', resolve, { once: true });
       })));
       if (doc.fonts) await doc.fonts.ready;
+      // Taglie | Doppia Cifra: aspetta Arial Black e i prezzi rimpiccioliti se non entrano
+      if (iframe.contentWindow.prontoTaglie) await iframe.contentWindow.prontoTaglie;
 
       // html2canvas ignora i filtri CSS: applica a mano il filter: brightness(0) dei loghi brand
       doc.querySelectorAll('.brand-logo-container img').forEach(img => {
@@ -1213,6 +1228,12 @@
         <head>
           <title>Stampa DYMO 11354</title>
           <style>
+            @font-face {
+              font-family: 'Arial Black';
+              src: url('${new URL('../assets/fonts/Arial%20Black.ttf', location.href).href}') format('truetype');
+              font-weight: 400;
+              font-style: normal;
+            }
             @page {
               size: 57mm 32mm;
               margin: 0 !important;
@@ -1313,18 +1334,27 @@
             .tpl-promo50 .banner-right .price-val { color: #fff; font-size: 23pt; font-weight: 800; line-height: 1; letter-spacing: -0.5pt; white-space: nowrap; text-align: right; }
 
             /* TEMPLATE 6 PRINT (TAGLIE DOPPIA CIFRA CON FONT STAMPA DINAMICO) */
-            .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; height: 29mm; width: 100%; }
+            /* 22 ottobre 2026: prima il prezzo e il -70% uscivano a destra e il blocco stava troppo in alto. Ora 1 mm di margine
+               ai lati (con l'ingrandimento a 1,08 circa 1,5 mm sull'etichetta), prezzi che si rimpiccioliscono se non entrano
+               (adattaTaglie qui sotto) e il blocco 0,75 mm più in basso invece di 1 mm più in alto: l'etichetta è centrata in altezza
+               (sopra appena meno spazio che sotto, perché la DYMO stampa un poco più in basso dell'immagine) */
+            .tpl-tagliedoppiacifra { display: flex; justify-content: space-between; align-items: stretch; height: 29mm; width: 100%; padding: 0 1mm; }
+            .print-wrapper .tpl-tagliedoppiacifra { transform: translateY(0.75mm) scale(1.08); }
+            /* sempre su una riga: se non entrano, li rimpicciolisce adattaTaglie invece di andare a capo */
+            .tpl-tagliedoppiacifra .top-price-row, .tpl-tagliedoppiacifra .original-price, .tpl-tagliedoppiacifra .discount-tag,
+            .tpl-tagliedoppiacifra .footer-text { white-space: nowrap; }
             .tpl-tagliedoppiacifra .size-section { display: flex; flex-direction: column; align-items: center; width: 15mm; }
             .tpl-tagliedoppiacifra .size-title { font-size: 8pt; font-weight: 400; letter-spacing: 0.2pt; margin-bottom: 0.5mm; text-transform: uppercase; }
             .tpl-tagliedoppiacifra .size-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8mm; width: 100%; }
             .tpl-tagliedoppiacifra .size-box { width: 7mm; height: 7mm; border: 0.5mm solid #000000; display: flex; align-items: center; justify-content: center; font-size: 7.5pt; font-weight: 400; background-color: #ffffff; }
-            .tpl-tagliedoppiacifra .price-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 1mm; padding-bottom: 1.5mm; }
-            .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: center; justify-content: flex-end; gap: 2mm; width: 100%; }
+            .tpl-tagliedoppiacifra .price-section { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-left: 2mm; padding-bottom: 1.5mm; }
+            .tpl-tagliedoppiacifra .top-price-row { display: flex; align-items: baseline; justify-content: flex-end; gap: 2mm; width: 100%; }
             .tpl-tagliedoppiacifra .original-price { font-size: 12.5pt; font-weight: 400; }
-            .tpl-tagliedoppiacifra .discount-tag { font-size: 12.5pt; font-weight: 900; }
-            .tpl-tagliedoppiacifra .final-price { 
-              font-size: var(--final-price-size-print, 28pt) !important; 
-              font-weight: 900; 
+            .tpl-tagliedoppiacifra .discount-tag { font-family: 'Arial Black', Arial, sans-serif; font-size: 12.5pt; font-weight: 400; }
+            .tpl-tagliedoppiacifra .final-price {
+              font-family: 'Arial Black', Arial, sans-serif;
+              font-size: var(--final-price-size-print, 25pt) !important;
+              font-weight: 400;
               line-height: 0.85; 
               letter-spacing: -0.5pt; 
               white-space: nowrap; 
@@ -1336,12 +1366,43 @@
           <div class="print-wrapper">
             ${labelHTML}
           </div>
+          <script>
+            // Taglie | Doppia Cifra: un prezzo o un testo che non entra nella colonna dei prezzi si rimpicciolisce finché
+            // sta dentro l'etichetta, quando Arial Black è caricato (con un altro carattere le misure sarebbero sbagliate);
+            // la foto a 300 dpi per la DYMO e la stampa dal browser aspettano che abbia finito (window.prontoTaglie)
+            window.prontoTaglie = (document.fonts ? document.fonts.load('20px "Arial Black"') : Promise.resolve())
+              .catch(function () {}).then(function adattaTaglie() {
+              var sezione = document.querySelector('.tpl-tagliedoppiacifra .price-section');
+              if (!sezione) return;
+              var stile = getComputedStyle(sezione);
+              var spazio = sezione.clientWidth - parseFloat(stile.paddingLeft) - parseFloat(stile.paddingRight);
+              // larghezza del testo della riga (non del suo riquadro), senza l'ingrandimento della stampa
+              var scala = sezione.getBoundingClientRect().width / sezione.offsetWidth || 1;
+              var larghezza = function (riga) {
+                var tratto = document.createRange();
+                tratto.selectNodeContents(riga);
+                return tratto.getBoundingClientRect().width / scala;
+              };
+              ['.top-price-row', '.final-price', '.footer-text'].forEach(function (selettore) {
+                var riga = sezione.querySelector(selettore);
+                if (!riga) return;
+                var pezzi = [riga].concat([].slice.call(riga.querySelectorAll('*')));
+                for (var giro = 0; giro < 40 && larghezza(riga) > spazio + 0.5; giro++) {
+                  pezzi.forEach(function (pezzo) {
+                    pezzo.style.setProperty('font-size', (parseFloat(getComputedStyle(pezzo).fontSize) * 0.96) + 'px', 'important');
+                  });
+                }
+              });
+            });
+          <\/script>
           ${autoPrint ? `<script>
             window.onload = function() {
-              setTimeout(function() {
-                window.focus();
-                window.print();
-              }, 300);
+              (window.prontoTaglie || Promise.resolve()).then(function () {
+                setTimeout(function() {
+                  window.focus();
+                  window.print();
+                }, 300);
+              });
             };
           <\/script>` : ''}
         </body>
