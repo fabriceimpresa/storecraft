@@ -63,6 +63,8 @@ h1::before { content: '> '; color: var(--op-oro); }
   font-size: 11.5px;
 }
 .subtitle::before { content: '// '; color: var(--op-oro); }
+/* note dell'area operatore nascoste (decisione del 22 ottobre 2026): descrizione sotto il titolo e note dei passi; in Import layout le mostra «// mostra note» (classe note-visibili) */
+body:not(.note-visibili) :is(.subtitle, .passo-nota:not(.avviso-tipo)) { display: none; }
 
 /* dentro la pagina operatore: niente cornice, titolo, ✕ e sfondo propri */
 html.incorporata, html.incorporata body { overflow: hidden; }   /* niente barre: la pagina operatore adatta riquadro e cornice */

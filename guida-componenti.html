@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-10"></script>
+  <script src="assets/js/negozi.js?v=20261022-13"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.66</p>
+  <p class="aggiornamento">ultimo aggiornamento: 23 ottobre 2026 · versione 1.2.67</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -214,6 +214,8 @@
     <p>STORE // CRAFT permette di ottenere un risultato dal look professionale ed esteticamente bello, con le comuni stampanti da ufficio o con stampanti dedicate come la DYMO per le etichette adesive, il tutto con un occhio sempre rivolto al risparmio di toner. Una stampa <strong>bella e professionale</strong>, come fosse preparata dalle mani di un grafico professionista, ma allo stesso tempo generata <strong>facilmente</strong> in tempi record e con pochi click, da chiunque anche chi non ha alcun tipo di esperienza di computer o grafica.</p>
     <p>Finalmente la cartellonistica e la segnaletica del negozio non saranno più un incubo (quante belle esposizioni rovinate da cartelli e cartellini scritti a mano...), bensì un vanto per il look del punto vendita ed uno strumento di marketing <strong>utile</strong> e mirato alle vendite: la segnaletica professionale generata tramite STORE // CRAFT valorizza il prodotto ed incrementa le vendite.</p>
     <p class="filosofia-base">Questa è la filosofia di base di STORE // CRAFT: <em>COOL · EASY · SMART</em>.</p>
+    <h3>Un software disegnato da un grafico</h3>
+    <p>STORE // CRAFT è ideato e realizzato da un grafico, prima ancora che da un programmatore. È una delle sue particolarità: lo stile, l'ordine e la pulizia che si chiedono a una stampa valgono anche per le interfacce del programma, sia nelle pagine dei negozi sia negli strumenti dell'operatore. Nei software di solito non succede: in STORE // CRAFT ogni schermata è curata come un lavoro grafico, con gli spazi giusti, poche cose in vista e un ordine che si capisce a colpo d'occhio.</p>
     <h3>Gli sviluppi futuri</h3>
     <p>Oltre alla grafica fai da te, ma di «lusso» professionale, STORE // CRAFT si occuperà anche di:</p>
     <ul>
@@ -226,6 +228,7 @@
   <h2 id="regole">Regole comuni</h2>
   <ul class="regole">
     <li><strong>La filosofia di STORE // CRAFT: COOL · EASY · SMART</strong> (in italiano bello · utile · facile), il claim del prodotto, sulla copertina della guida. Ogni pagina e ogni componente devono essere belli da vedere (curati come la grafica del negozio), utili (fanno risparmiare tempo nel lavoro di ogni giorno) e facili da usare (chi lavora in negozio capisce subito cosa fare, senza istruzioni). Davanti a una scelta, si sceglie quello che rispetta di più queste tre parole.</li>
+    <li><strong>Stile delle interfacce</strong> (dal 23 ottobre 2026; STORE // CRAFT è disegnato da un grafico): in cima i comandi principali, grandi e con il titolo al centro, poi il riepilogo, i filtri di dettaglio, i grafici e le tabelle; spazi generosi e regolari, niente pulsanti che vanno a capo; per ogni oggetto solo l'essenziale, i comandi secondari dietro un'icona; via le note di spiegazione e le scritte ripetute; una sezione aperta alla volta; un logo o un segno grafico che spezzi i testi; stampatello maiuscolo per pulsanti ovali, scelte a segmenti, titoli delle colonne ed etichette (in bianco), i valori come sono; parole chiare (STAMPE NEL PERIODO); aspetto da terminale elegante ma moderno; negli editor i comportamenti di Photoshop. Ogni modifica d'aspetto si controlla con una foto della pagina.</li>
     <li><strong>Ogni pagina si costruisce con i moduli comuni</strong> (regola generale dal 9 ottobre 2026): pannello, selettori, campi, menu e pulsanti vengono da <code>assets/css/pannello.css</code> e dai moduli di <code>assets/js/</code>. Un negozio può avere un componente suo: lo si scrive come modulo comune riutilizzabile o lo si dichiara come <em>eccezione voluta</em> con un commento nella pagina. Se un modulo non copre un caso, si allarga il modulo, non si copia il codice nella pagina.</li>
     <li><strong>Una pagina per strumento, una per negozio</strong> (<code>luxury/</code>, <code>tebe/</code>, <code>ophilya/</code>), anche quando due pagine si assomigliano; nella radice solo la splash page e le pagine dell'operatore.</li>
     <li><strong>Ombre nel tema chiaro più solide che sfumate</strong> (dall'11 ottobre 2026): corte, poco sfocate e un poco più marcate, es. <code>0 1px 3px rgba(40, 34, 28, .38)</code> per i pulsanti tondi, <code>0 2px 6px rgba(40, 34, 28, .24)</code> per fogli e riquadri, <code>0 4px 10px rgba(40, 34, 28, .26)</code> per i popup; mai aloni larghi come <code>0 4px 12px rgba(0, 0, 0, .5)</code>. Il tema scuro tiene le sue.</li>
@@ -433,7 +436,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-10</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-13</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -629,18 +632,35 @@
     <li>Area operatore › Gestione clienti › Prepara copia per un cliente (Chrome o Edge sul computer): è l'unico modo (dal 22 ottobre 2026 <code>Prepara copia.bat</code> non c'è più, perché non scriveva i codici delle statistiche).</li>
     <li>[1] si collega la cartella del progetto, in <strong>sola lettura</strong>: il progetto non può essere modificato; [2] si spuntano i <strong>clienti per le statistiche</strong> (i clienti registrati nella sezione Statistiche, dopo l'accesso; spuntare un cliente spunta i suoi negozi e la copia prende i loro codici in <code>installati.js</code>; nessuno: copia senza statistiche); [3] si spuntano i negozi; [4] si sceglie la cartella di destinazione, meglio una cartella nuova e vuota (non dentro il progetto: la pagina rifiuta; se non è vuota chiede conferma).</li>
     <li>Durante la copia, sotto i passi, il terminale nero mostra ogni operazione: comando di partenza, file copiati con percorso e peso, cartelle dei negozi non scelti saltate, <code>installati.js</code> scritto ed esito finale.</li>
-    <li>Nella copia: splash page, cartelle dei negozi scelti, file comuni, risorse dei soli negozi scelti e <code>installati.js</code> scritto per loro, con i codici delle statistiche. <strong>Niente area operatore</strong> (dal 22 ottobre 2026): ogni modifica, anche un logo ufficiale, si fa nel progetto madre. Restano fuori anche <code>assets/pacchetti/</code>, la Guida tecnica, il piano, le pagine <code>_*</code>, Git e la documentazione.</li>
+    <li>Nella copia: splash page, cartelle dei negozi scelti, file comuni, risorse dei soli negozi scelti e <code>installati.js</code> scritto per loro, con i codici delle statistiche e <code>copiaCliente: true</code>. <strong>Area operatore ridotta</strong> (22 ottobre 2026): solo Gestione loghi e Pannello di controllo, per aggiungere i loghi ufficiali che servono solo a quel cliente e mettere in ghost le sue pagine, lavorando sulla copia locale del suo repository; Aggiorna copia cliente tiene i loghi e i ghost della copia. Restano fuori anche <code>assets/pacchetti/</code>, la Guida tecnica, il piano, le pagine <code>_*</code>, Git e la documentazione.</li>
     <li><strong>Aggiorna copia cliente</strong> (Gestione clienti): [1] la cartella del progetto, [2] la cartella della copia del cliente (la copia sul computer del repository del suo sito, es. <code>storecraftlxry</code>), [3] CONFRONTA mostra file nuovi, cambiati e da togliere e AGGIORNA LA COPIA li scrive e toglie; negozi e codici restano quelli della copia, <code>.git</code>, <code>CNAME</code> e i file che cominciano con il punto non si toccano. Poi commit e push del repository del cliente.</li>
     <li>Per provarla in locale: si chiude il server del progetto (la porta 8000 è una sola), si mette nella cartella della copia <code>Avvia server.bat</code> (sul Mac <code>Avvia server mac.command</code>) e si fa doppio clic; finita la prova lo si toglie prima di consegnarla.</li>
     <li>Le correzioni si fanno sempre in questo progetto e si rifà la copia.</li>
   </ol>
+
+  <h3 id="statistiche-periodo">Statistiche per periodo, pagina e sezione</h3>
+  <ul>
+    <li><strong>Stampe di ogni giorno</strong> (dal 22 ottobre 2026): la Cronologia di Stampa e la cronologia DYMO contano le stampe di ogni giorno (<code>giorni</code>); <code>statistiche.js</code> le spedisce e Supabase le tiene in <code>stampe_giorni</code> (<code>supabase/aggiorna-03.sql</code>), una riga per foglio e giorno, senza anteprime: i conteggi per periodo sono esatti.</li>
+    <li><strong>Sezione Statistiche</strong>: filtri a pillola per negozio, periodo e sezione (cartelli, cartellini, promo, etichette dymo) e il menu della pagina (o del layout); numeri del periodo, grafico a barre delle stampe nel tempo (per giorno o per mese, valore al passaggio del mouse), pagine più usate, fogli per sezione e le schede dei fogli con anteprima.</li>
+    <li><strong>Solo dati di stampa</strong> (decisione del 22 ottobre 2026): niente immagini dei fogli stampati, che occupavano spazio e non servivano; le colonne delle anteprime sono state tolte dal database. Senza immagini lo spazio del piano free basta per anni.</li>
+  </ul>
+
+  <h3 id="anagrafica-clienti">Anagrafica clienti</h3>
+  <ul>
+    <li><strong>Dove</strong> (dal 22 ottobre 2026): area operatore › Gestione clienti › <strong>Anagrafica clienti</strong>, la prima sezione, dopo l'accesso a Supabase (lo stesso della sezione Statistiche). Le schede stanno su Supabase, tabella <code>clienti</code> (<code>supabase/aggiorna-02.sql</code>, poi anche in <code>schema.sql</code>).</li>
+    <li><strong>Scheda del cliente</strong>: numero cliente STORE // CRAFT progressivo (N° 0001, dato dal database) e data di registrazione, ragione sociale (obbligatoria e unica), sede legale (indirizzo, città, provincia, cap), partita iva, codice sdi, legal mail (pec), indirizzo e città del negozio, contatto interno (nome e telefono) e note libere. MODIFICA apre il modulo al posto della scheda; ELIMINA, con due conferme, solo per una scheda senza negozi.</li>
+    <li><strong>Città</strong>: scrivendo almeno due lettere compare l'elenco dei comuni italiani (<code>dati/comuni-italiani.js</code>, 7904 comuni, dati ISTAT; prima quelli che cominciano così), con frecce, Invio ed Esc; scelto un comune si riempiono provincia e cap (con più cap, es. Roma, il cap si sceglie dal suo elenco).</li>
+    <li><strong>Controlli</strong>: partita iva (11 cifre e cifra di controllo), codice sdi (7 lettere o cifre), pec, cap (5 cifre, della città scelta) e telefono si segnalano in rosso ma non bloccano: al primo SALVA la pagina avvisa, al secondo («salva comunque») salva, perché i dati si completano anche dopo.</li>
+    <li><strong>Negozi</strong>: nella scheda i negozi del cliente (stato, fogli stampati, ultimo invio e versione della copia) con «statistiche ›», che apre la sezione Statistiche su quel negozio; + ASSOCIA NEGOZIO registra un negozio del progetto non ancora di nessun cliente, con il suo codice delle statistiche; COPIA RIGA INSTALLATI.JS copia la riga con i negozi attivi del cliente e i loro codici. Nel database ogni negozio ha <code>cliente_id</code>; il nome del cliente nei negozi segue da solo la ragione sociale della scheda.</li>
+    <li>La cartella <code>dati/</code> non entra nelle copie dei clienti.</li>
+  </ul>
 
   <h3 id="statistiche-clienti">Statistiche dei clienti</h3>
   <ul>
     <li><strong>Cosa arriva</strong> (dal 22 ottobre 2026, Supabase, <code>supabase/schema.sql</code>): una volta al giorno, alla prima apertura della dashboard, ogni copia con il codice del negozio spedisce (<code>assets/js/statistiche.js</code>) i fogli stampati di cartelli, cartellini e promo (nome, pagina, tipo, misure, volte, date e un'anteprima di 240 px, una volta sola per foglio), le etichette DYMO (layout, stampe, copie, anteprima) e il backup dei loghi personali, solo quando cambia. Mai la Bacheca.</li>
     <li><strong>Mai avvisi per i commessi</strong>: senza rete o con un errore la spedizione tace e riprova alla prossima apertura.</li>
     <li><strong>Codice del negozio</strong>: si registra il negozio nella sezione <strong>Statistiche</strong> dell'area operatore (cliente, negozio, nome) e il suo codice entra nella copia con Prepara copia (passo [2]) o con «copia riga» in <code>assets/negozi/installati.js</code>: <code>Negozi.installa([...], { statistiche: { luxury: '…' } })</code>. Il codice permette solo di spedire i dati del suo negozio.</li>
-    <li><strong>Sezione Statistiche</strong> (<code>statistiche.html</code>, solo nel progetto madre): accesso con email e password di Supabase (<code>assets/js/supabase-operatore.js</code>); Negozi clienti (codici, disattiva con conferma, elimina con due conferme), Stampe (per negozio e periodo, totali, pagine più usate, DYMO per layout, ogni foglio con anteprima) e Backup loghi personali (vedi e scarica json, da reimportare con Unisci o Sostituisci Lista).</li>
+    <li><strong>Sezione Statistiche</strong> (<code>statistiche.html</code>, solo nel progetto madre): accesso con email e password di Supabase (<code>assets/js/supabase-operatore.js</code>); Negozi clienti (codici, disattiva con conferma, elimina con due conferme), Stampe (per negozio, periodo, sezione e pagina: numeri, grafico nel tempo, pagine più usate, DYMO per layout, tabelle dei fogli e delle etichette con i dati di stampa) e Backup loghi personali (vedi e scarica json, da reimportare con Unisci o Sostituisci Lista).</li>
   </ul>
 
 

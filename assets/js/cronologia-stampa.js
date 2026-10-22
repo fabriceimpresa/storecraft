@@ -75,6 +75,13 @@
     return layout === 'cartellini' || layout === 'prezzi' ? 'cartellini' : 'cartelli';
   }
 
+  // Stampe di ogni giorno (giorno locale AAAA-MM-GG → numero), per le statistiche esatte per periodo (dal 22 ottobre 2026)
+  function giornoDi(ms = Date.now()) {
+    const d = new Date(ms);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  const piuOggi = (giorni = {}) => ({ ...giorni, [giornoDi()]: (giorni[giornoDi()] || 0) + 1 });
+
   // Registra la stampa del foglio. Restituisce { nuova: true | false } (false: stesso foglio già in cronologia)
   async function registra(foglio, tipo) {
     const foto = await ListaStampa.fotografa(foglio, FOTO);
@@ -85,12 +92,12 @@
       ? await transazione('readonly', ({ stampe }) => stampe.index('impronta').get(firma))
       : undefined;
     if (esistente) {
-      await transazione('readwrite', ({ stampe }) => stampe.put({ ...esistente, stampataIl: adesso, volte: (esistente.volte || 1) + 1 }));
+      await transazione('readwrite', ({ stampe }) => stampe.put({ ...esistente, stampataIl: adesso, volte: (esistente.volte || 1) + 1, giorni: piuOggi(esistente.giorni) }));
       return { nuova: false };
     }
     const { jpeg, ...dati } = foto;
     await transazione('readwrite', ({ stampe, fogli }) => {
-      const richiesta = stampe.add({ ...dati, tipo: tipoPagina(tipo), impronta: firma, primaStampa: adesso, stampataIl: adesso, volte: 1 });
+      const richiesta = stampe.add({ ...dati, tipo: tipoPagina(tipo), impronta: firma, primaStampa: adesso, stampataIl: adesso, volte: 1, giorni: piuOggi() });
       richiesta.onsuccess = () => fogli.put({ id: richiesta.result, jpeg });
     });
     // chiede al browser di non cancellare questi dati quando il disco si riempie
@@ -119,7 +126,7 @@
   // Ristampata dalla cronologia: aggiorna data e numero di stampe
   async function ristampata(id) {
     const dati = await transazione('readonly', ({ stampe }) => stampe.get(id));
-    if (dati) await transazione('readwrite', ({ stampe }) => stampe.put({ ...dati, stampataIl: Date.now(), volte: (dati.volte || 1) + 1 }));
+    if (dati) await transazione('readwrite', ({ stampe }) => stampe.put({ ...dati, stampataIl: Date.now(), volte: (dati.volte || 1) + 1, giorni: piuOggi(dati.giorni) }));
   }
 
   const elimina = id => transazione('readwrite', ({ stampe, fogli }) => { stampe.delete(id); fogli.delete(id); });

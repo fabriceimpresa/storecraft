@@ -2,10 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-10"></script>
+  <script src="assets/js/negozi.js?v=20261022-13"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-10"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261022-10"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261022-13"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-13"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -222,7 +222,7 @@
     .vista { margin-top: 8px; }
     .vista iframe { display: block; width: 100%; height: 320px; border: 0; background: transparent; }
 
-    /* Gestione clienti: sezioni apribili come nel Pannello di controllo (schema-pagine.html): titolo con > in oro, riassunto a destra e
+    /* Gestione clienti: sezioni apribili come nel Pannello di controllo (schema-pagine.html): titolo con > in oro e
        freccia ⌄ ruotata da chiusa; al passaggio del mouse fondo oro tenue e linea oro a sinistra */
     .copy .blocco + .blocco { margin-top: 18px; }
     .copy .blocco > .label { display: flex; align-items: center; gap: 16px; padding: 12px 10px; border-bottom: 1px solid #2a2723;
@@ -230,18 +230,21 @@
     .copy .blocco > .label:hover { background: rgba(212, 163, 115, .08); box-shadow: inset 2px 0 var(--accent); }
     .copy .blocco h2 { margin: 0; color: var(--gold-light); font: 400 13px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .22em; }
     .copy .blocco h2::before { content: '> '; color: var(--accent); }
-    .copy .blocco .riassunto { margin-left: auto; color: var(--text-muted); font-size: 11px; letter-spacing: .04em; }
+    /* niente riassunto a destra del titolo (tolto il 22 ottobre 2026): la freccia va in fondo alla riga */
+    .copy .blocco > .label .section-toggle { margin-left: auto; }
     .copy .section-toggle { border: 0; background: transparent; color: var(--accent); padding: 2px 4px; font-size: 16px; line-height: 1;
       cursor: pointer; transition: transform .18s ease; }
     .copy .section-toggle[aria-expanded="false"] { transform: rotate(-90deg); }
     .copy .blocco-corpo { padding-top: 16px; }
     .copy .blocco.is-collapsed .blocco-corpo { display: none; }
-    @media (max-width: 600px) { .copy .blocco h2 { font-size: 12px; letter-spacing: .16em; } .copy .blocco .riassunto { font-size: 10px; } }
+    @media (max-width: 600px) { .copy .blocco h2 { font-size: 12px; letter-spacing: .16em; } }
 
     /* Prepara copia: tre passi, stile terminale */
     .copy { color: #d9d3c7; font: 300 13px/1.65 'IBM Plex Mono', ui-monospace, monospace; }
     .copy-note { margin: 0 0 18px; color: var(--text-muted); font-size: 11.5px; line-height: 1.6; }
     .copy-note::before { content: '// '; color: var(--accent); }
+    /* note dell'area operatore nascoste (decisione del 22 ottobre 2026) */
+    .copy-note { display: none; }
 
     .step {
       display: grid;
@@ -290,6 +293,90 @@
     .status:not(:empty)::before { content: '$ '; color: var(--accent); }
     .status.ok { color: #8fbf7a; }
     .status.err { color: #e07a5f; }
+
+    /* Anagrafica clienti: schede in stile terminale, modulo con i campi in fila, città con l'elenco dei comuni */
+    .ana-barra { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+    .ana-barra .status { margin: 0; }
+    .ana-schede { display: grid; gap: 16px; margin-top: 18px; }
+    .ana-scheda { padding: 16px 18px; border: 1px solid #2a2723; border-left: 2px solid var(--accent); border-radius: 4px; background: #0d0c0b; }
+    .ana-testa { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid #2a2723; }
+    .ana-numero { color: var(--accent); font-size: 11px; letter-spacing: .14em; }
+    .ana-nome { margin: 0; color: var(--gold-light); font: 500 14px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .ana-data { color: var(--text-muted); font-size: 11px; }
+    .ana-azioni { margin-left: auto; display: flex; gap: 8px; }
+    .ana-campi { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 28px; margin: 12px 0 0; }
+    .ana-campi div { min-width: 0; }
+    .ana-campi dt { color: var(--text-muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .ana-campi dd { margin: 1px 0 0; color: #d9d3c7; font-size: 12.5px; overflow-wrap: anywhere; }
+    .ana-campi dd.vuoto { color: #5d5850; }
+    .ana-campi .intero { grid-column: 1 / -1; }
+    .ana-campi .note { white-space: pre-wrap; }
+    .ana-sotto { margin: 14px 0 6px; color: var(--accent); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; }
+    .ana-negozi { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .ana-negozi td { padding: 6px 8px 6px 0; border-top: 1px solid #1d1c1a; vertical-align: baseline; }
+    .ana-negozi .tenue { color: var(--text-muted); font-size: 11px; }
+    .ana-negozi .ok { color: #8fbf7a; }
+    .ana-negozi .spento { color: #e07a5f; }
+    .ana-negozi a { color: var(--gold-light); text-decoration: none; }
+    .ana-negozi a:hover { text-decoration: underline; }
+    .ana-associa { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-top: 10px; }
+    .ana-modulo { margin-top: 18px; padding: 16px 18px; border: 1px solid var(--accent); border-radius: 4px; background: #0d0c0b; }
+    .ana-modulo h3 { margin: 0 0 12px; color: var(--gold-light); font: 400 12px 'IBM Plex Mono', ui-monospace, monospace; letter-spacing: .18em; }
+    .ana-griglia { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px 14px; }
+    .ana-griglia .gruppo { grid-column: 1 / -1; margin: 6px 0 -4px; color: var(--accent); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; }
+    .campo-ana { display: flex; flex-direction: column; gap: 4px; position: relative; min-width: 0; grid-column: span 3; }
+    .campo-ana.c2 { grid-column: span 2; }
+    .campo-ana.c1 { grid-column: span 1; }
+    .campo-ana.c6 { grid-column: 1 / -1; }
+    .campo-ana > span { color: var(--text-muted); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .campo-ana input, .campo-ana textarea, .ana-associa select, .ana-associa input {
+      width: 100%; box-sizing: border-box; padding: 7px 9px; border: 1px solid #3a3631; border-radius: 3px; background: #0a0908;
+      color: #f0ebe1; font: 400 12.5px 'IBM Plex Mono', ui-monospace, monospace; }
+    .ana-associa select, .ana-associa input { width: auto; }
+    .campo-ana textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
+    .campo-ana input:focus, .campo-ana textarea:focus, .ana-associa select:focus, .ana-associa input:focus { outline: none; border-color: var(--accent); }
+    .campo-ana .avviso-campo { color: #e07a5f; font-size: 10.5px; }
+    .campo-ana .avviso-campo:empty { display: none; }
+    .campo-ana.da-vedere input { border-color: #a0563f; }
+    .ana-elenco { position: absolute; top: 100%; left: 0; right: 0; z-index: 20; margin: 2px 0 0; padding: 4px 0; list-style: none;
+      max-height: 260px; overflow-y: auto; border: 1px solid var(--accent); border-radius: 3px; background: #0a0908; box-shadow: 0 6px 18px rgba(0, 0, 0, .5); }
+    .ana-elenco[hidden] { display: none; }
+    .ana-elenco li { padding: 5px 10px; color: #d9d3c7; font-size: 12px; cursor: pointer; }
+    .ana-elenco li small { color: var(--text-muted); }
+    .ana-elenco li[aria-selected="true"], .ana-elenco li:hover { background: rgba(212, 163, 115, .14); color: var(--gold-light); }
+    .ana-comandi { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-top: 16px; }
+    .ana-comandi .status { margin: 0; }
+    .btn.rosso { border-color: #a0563f; color: #e07a5f; }
+    .btn.rosso:hover:not(:disabled) { background: #a0563f; color: #f4f1ea; }
+    @media (max-width: 760px) {
+      .ana-campi { grid-template-columns: 1fr; }
+      .ana-griglia { grid-template-columns: 1fr 1fr; }
+      .campo-ana, .campo-ana.c2 { grid-column: 1 / -1; }
+      .campo-ana.c1 { grid-column: span 1; }
+    }
+
+    /* Gestione clienti, aspetto più moderno (22 ottobre 2026, come Statistiche): sezioni e passi in riquadri arrotondati,
+       comandi a pillola, scelte a gettoni */
+    .copy .blocco { border: 1px solid #24221f; border-radius: 14px; background: rgba(18, 17, 15, .6); }
+    .copy .blocco + .blocco { margin-top: 14px; }
+    .copy .blocco > .label { padding: 14px 18px; border-bottom: 1px solid transparent; border-radius: 14px; }
+    .copy .blocco:not(.is-collapsed) > .label { border-bottom-color: #24221f; border-radius: 14px 14px 0 0; }
+    .copy .blocco-corpo { padding: 18px; }
+    .copy .step { padding: 16px; border: 1px solid #26231f; border-radius: 12px; background: #12110f; }
+    .copy .step + .step { margin-top: 10px; }
+    .copy .step-num { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--accent); border-radius: 50%; }
+    .copy .step-num::before, .copy .step-num::after { content: none; }
+    .copy .btn { border-radius: 999px; padding: 7px 15px; }
+    .copy .terminale { border-radius: 12px; }
+    .copy .stores label { padding: 7px 13px; border: 1px solid #2c2925; border-radius: 999px; background: #0a0908; transition: border-color .15s, background .15s; }
+    .copy .stores label:has(input:checked) { border-color: var(--accent); background: rgba(212, 163, 115, .1); color: var(--gold-light); }
+    .copy .ana-scheda { border-radius: 14px; border-left-width: 1px; border-color: #26231f; background: #12110f; }
+    .copy .ana-scheda:hover { border-color: rgba(212, 163, 115, .45); }
+    .copy .ana-modulo { border-radius: 14px; }
+    .copy .campo-ana input, .copy .campo-ana textarea { border-radius: 8px; }
+    .copy .ana-associa select, .copy .ana-associa input { border-radius: 999px; padding: 7px 14px; }
+    .copy .ana-numero { padding: 3px 9px; border: 1px solid var(--accent); border-radius: 999px; }
+    .copy .ana-elenco { border-radius: 10px; }
 
     .stores { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0; padding: 0; border: 0; }
     .stores label { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
@@ -360,19 +447,38 @@
       <iframe data-src="statistiche.html?incorporata" title="Statistiche"></iframe>
     </section>
 
-    <!-- Gestione clienti (dal 19 ottobre 2026; prima Prepara copia per un cliente): due sezioni apribili e richiudibili come
-         nel Pannello di controllo, che ripartono chiuse: Prepara copia per un cliente e Aggiorna copia cliente (da fare) -->
+    <!-- Gestione clienti (dal 19 ottobre 2026; prima Prepara copia per un cliente): tre sezioni apribili e richiudibili come
+         nel Pannello di controllo, che ripartono chiuse: Anagrafica clienti, Prepara copia per un cliente e Aggiorna copia cliente -->
     <section class="vista copy" data-vista="copia" id="copyPanel" hidden aria-label="Gestione clienti">
+     <!-- Anagrafica clienti (dal 22 ottobre 2026): una scheda per cliente su Supabase (tabella clienti), con numero cliente
+          progressivo, data di registrazione, dati di fatturazione, negozio, contatto e note; dalla scheda si associano i
+          negozi (con il codice delle statistiche) -->
+     <section class="blocco is-collapsed" data-blocco="anagrafica">
+      <div class="label">
+        <h2>ANAGRAFICA CLIENTI</h2>
+        <button class="section-toggle" type="button" aria-expanded="false" aria-controls="anagrafica-corpo" aria-label="Espandi Anagrafica clienti">⌄</button>
+      </div>
+      <div class="blocco-corpo" id="anagrafica-corpo">
+        <p class="copy-note">una scheda per cliente, con il numero cliente STORE // CRAFT e la data di registrazione. Dalla
+          scheda si associano i negozi del cliente: ogni negozio ha il suo codice per le statistiche, da mettere nella sua
+          copia con prepara copia [2]. I dati stanno su Supabase, visibili solo all'operatore dopo l'accesso.</p>
+        <div class="ana-barra">
+          <button class="btn" type="button" id="anaNuovo" disabled>+ nuovo cliente</button>
+          <p class="status" id="anaStato" role="status" aria-live="polite"></p>
+        </div>
+        <div class="ana-schede" id="anaSchede"></div>
+      </div>
+     </section>
+
      <section class="blocco is-collapsed" data-blocco="prepara">
       <div class="label">
         <h2>PREPARA COPIA per un CLIENTE</h2>
-        <span class="riassunto">una copia nuova con i negozi scelti</span>
         <button class="section-toggle" type="button" aria-expanded="false" aria-controls="prepara-corpo" aria-label="Espandi Prepara copia per un cliente">⌄</button>
       </div>
       <div class="blocco-corpo" id="prepara-corpo">
       <p class="copy-note">nella copia la splash page (index.html), le cartelle dei negozi scelti, i file comuni e le schede
-        dei negozi, con installati.js scritto per loro e i codici delle statistiche dei clienti spuntati. Niente area operatore:
-        ogni modifica (loghi ufficiali, ghost, ordine dei moduli…) si fa qui e si porta nella copia con aggiorna copia cliente.
+        dei negozi, con installati.js scritto per loro e i codici delle statistiche dei clienti spuntati, e l'area operatore
+        ridotta: gestione loghi (i loghi ufficiali del cliente) e pannello di controllo (ghost delle sue pagine).
         Restano fuori anche assets/pacchetti/, la guida, il piano, Git, la documentazione e i lanciatori. Il progetto non viene modificato.</p>
       <p class="copy-note">per provarla in locale: copia nella cartella della copia Avvia server.bat (sul mac avvia server mac.command) e fai doppio clic (prima chiudi il server del progetto: la porta 8000 è una sola); finita la prova, toglilo dalla copia prima di consegnarla.</p>
 
@@ -422,13 +528,13 @@
      <section class="blocco is-collapsed" data-blocco="aggiorna">
       <div class="label">
         <h2>AGGIORNA COPIA CLIENTE</h2>
-        <span class="riassunto">la copia di un cliente rifatta dal progetto</span>
         <button class="section-toggle" type="button" aria-expanded="false" aria-controls="aggiorna-corpo" aria-label="Espandi Aggiorna copia cliente">⌄</button>
       </div>
       <div class="blocco-corpo" id="aggiorna-corpo">
         <p class="copy-note">porta gli aggiornamenti del progetto nella copia di un cliente già consegnata: si sceglie la
           cartella del suo sito (la copia sul computer del suo repository, es. storecraftlxry), si vede cosa cambia e si
-          aggiorna: file nuovi e cambiati scritti, file che nel progetto non ci sono più tolti. Negozi e codici delle statistiche
+          aggiorna: file nuovi e cambiati scritti, file che nel progetto non ci sono più tolti. I loghi ufficiali della copia
+          restano (i loghi nuovi del progetto si aggiungono) e le pagine in ghost nella copia restano in ghost. Negozi e codici delle statistiche
           restano quelli della copia; .git e i file che cominciano con il punto, CNAME e README non si toccano. Alla fine commit
           e push del repository del cliente, e il sito si aggiorna. I dati dei negozi (loghi personali, cronologie, bacheca)
           stanno nel browser e non si toccano.</p>
@@ -533,6 +639,20 @@
     const indietro = document.getElementById('indietro');
     const piano = window.matchMedia('(prefers-reduced-motion: reduce)');
     let vistaAperta = null;
+
+    // operatore.html?demo#statistiche: la sezione Statistiche con i dati di esempio (statistiche.html?demo), senza Supabase
+    if (new URLSearchParams(location.search).has('demo')) {
+      const statistiche = document.querySelector('.vista[data-vista="statistiche"] iframe');
+      if (statistiche) statistiche.dataset.src += '&demo';
+    }
+
+    // Copia per un cliente (installati.js con copiaCliente, dal 22 ottobre 2026): solo Gestione loghi (i loghi ufficiali
+    // del cliente, che restano nella sua copia) e Pannello di controllo (ghost delle pagine del suo STORE // CRAFT); le
+    // altre sezioni restano nel progetto madre (nella pagina, nascoste e non apribili)
+    if (Negozi.copiaCliente) {
+      menu.querySelectorAll('.voce').forEach(voce => { if (!['loghi', 'struttura'].includes(voce.dataset.vista)) voce.remove(); });
+      Object.keys(VISTE).forEach(nome => { if (!['loghi', 'struttura'].includes(nome)) delete VISTE[nome]; });
+    }
 
     // la cornice passa dall'altezza di prima alla nuova con un'animazione (cambia passa al nuovo contenuto)
     function adatta(cambia, durata = 450) {
@@ -922,7 +1042,8 @@
     function testoInstallati(ids, codici, nota) {
       const oggi = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
       const coppie = Object.entries(codici).filter(([id]) => ids.includes(id));
-      const opzioni = coppie.length ? `, { statistiche: { ${coppie.map(([id, codice]) => `${id}: '${codice}'`).join(', ')} } }` : '';
+      // copiaCliente: la pagina operatore della copia ha solo Gestione loghi e Pannello di controllo
+      const opzioni = `, { copiaCliente: true${coppie.length ? `, statistiche: { ${coppie.map(([id, codice]) => `${id}: '${codice}'`).join(', ')} }` : ''} }`;
       return '/* Negozi installati in questa copia di STORE // CRAFT (vedi assets/js/negozi.js).\r\n' +
         '   Con un solo negozio la splash page apre subito la sua dashboard e i menu mostrano solo quel negozio.\r\n' +
         (nota ? `   ${nota.replace(/\*\//g, '')}\r\n` : '') +
@@ -932,9 +1053,11 @@
     const nascondiCodici = testo => testo.split('\r\n').filter(Boolean).pop().replace(/'[0-9a-f]{32}'/g, "'••••'");
 
     // Tutti i file della copia di un cliente, dal progetto: Map percorso → { voce } (file del progetto) o { testo }.
-    // Della radice solo la splash page (dal 22 ottobre 2026 niente area operatore nelle copie); le cartelle dei negozi
+    // Della radice la splash page e l'area operatore ridotta (pagina operatore, Gestione loghi, Pannello di controllo:
+    // ROOT_COPIA); le cartelle dei negozi
     // scelti; assets interi, tranne assets/pacchetti/ (area operatore) e, nelle cartelle divise per negozio, i negozi non
     // scelti; in assets/negozi/ le schede dei negozi scelti e installati.js scritto per loro
+    const ROOT_COPIA = ['index.html', 'operatore.html', 'loghi-ufficiali.html', 'schema-pagine.html'];
     async function fileCopia(ids, installati) {
       const tutti = negozi.map(negozio => negozio.id);
       const file = new Map();
@@ -944,7 +1067,7 @@
         if (voce.kind === 'file') { file.set(percorso, { voce }); return; }
         for await (const [figlio, sotto] of voce.entries()) await aggiungi(sotto, `${percorso}/${figlio}`);
       };
-      file.set('index.html', { voce: await sorgente.getFileHandle('index.html') });
+      for (const nome of ROOT_COPIA) file.set(nome, { voce: await sorgente.getFileHandle(nome) });
       for (const id of ids) {
         const pagine = await cartella(sorgente, id);
         if (pagine) await aggiungi(pagine, id);
@@ -987,7 +1110,7 @@
 
     async function preparaCopia(destinazione, ids) {
       const installati = testoInstallati(ids, codiciCliente(), clientiScelti().length ? `Clienti: ${clientiScelti().join(', ')}; i codici dei negozi spediscono le statistiche (assets/js/statistiche.js).` : '');
-      riga('// raccolgo i file: splash page, negozi scelti e assets (niente area operatore)', 'sezione');
+      riga('// raccolgo i file: splash page, area operatore ridotta (gestione loghi, pannello di controllo), negozi scelti e assets', 'sezione');
       const file = await fileCopia(ids, installati);
       for (const [percorso, contenuto] of file) {
         const peso = await scriviFile(destinazione, percorso, contenuto);
@@ -1087,9 +1210,13 @@
         const presenti = await fileEsistenti(copiaCliente);
         const scrivere = [];
         let invariati = 0;
-        for (const [percorso, contenuto] of voluti) {
+        let tenuti = 0;
+        for (const [percorso, voluto] of voluti) {
           const esistente = presenti.get(percorso);
-          if (!esistente) { scrivere.push([percorso, contenuto, 'nuovo']); continue; }
+          if (!esistente) { scrivere.push([percorso, voluto, 'nuovo']); continue; }
+          // loghi ufficiali: quelli della copia sono del cliente e restano; ghost e versione dei loghi della copia restano
+          const contenuto = await suMisuraDellaCopia(percorso, voluto, esistente);
+          if (!contenuto) { tenuti += 1; continue; }
           const nuovo = contenuto.voce ? await contenuto.voce.getFile() : new Blob([contenuto.testo]);
           // installati.js: conta solo se cambiano negozi o codici, non la data nel commento
           if (percorso === 'assets/negozi/installati.js') {
@@ -1098,12 +1225,14 @@
           } else if (await uguali(nuovo, await esistente.getFile())) { invariati += 1; continue; }
           scrivere.push([percorso, contenuto, 'cambiato']);
         }
-        const togliere = [...presenti.keys()].filter(percorso => !voluti.has(percorso)).sort();
+        // i loghi aggiunti nella copia (Gestione loghi della copia) non si tolgono
+        const togliere = [...presenti.keys()].filter(percorso => !voluti.has(percorso) && !ZONA_LOGHI.test(percorso)).sort();
         differenze = { scrivere, togliere };
         scrivere.forEach(([percorso, , motivo]) => riga(`  ${motivo === 'nuovo' ? '+ nuovo   ' : '~ cambiato'}  ${percorso}`, 'ok'));
         togliere.forEach(percorso => riga(`  - da togliere  ${percorso}`, 'err'));
         const nuovi = scrivere.filter(([, , m]) => m === 'nuovo').length;
         const totale = scrivere.length + togliere.length;
+        if (tenuti) riga(`  = ${tenuti} loghi della copia tenuti come sono`, 'salta');
         riga(`${totale ? '' : '✓ '}${nuovi} nuovi · ${scrivere.length - nuovi} cambiati · ${togliere.length} da togliere · ${invariati} uguali`, totale ? 'sezione' : 'ok');
         stato($('aggStatus'), totale ? `${totale} cambiamenti: ${nuovi} nuovi, ${scrivere.length - nuovi} cambiati, ${togliere.length} da togliere. Premi aggiorna la copia.` : 'La copia è già aggiornata: niente da cambiare.', 'ok');
         $('aggVai').textContent = totale ? `aggiorna la copia (${totale})` : 'aggiorna la copia';
@@ -1118,6 +1247,45 @@
         aggiornaPassiAgg();
       }
     });
+
+    // Quello che nella copia è del cliente (dal 22 ottobre 2026, area operatore ridotta nella copia):
+    // - i loghi ufficiali (assets/logos/<negozio>/ e assets/img/<negozio>/printlogos/): un logo che la copia ha già resta
+    //   com'è (anche se nel progetto è diverso), quelli nuovi del progetto si aggiungono, quelli solo della copia non si
+    //   tolgono; elenco.js unisce i due elenchi LOGO_FILES e tiene i brand in evidenza (PRIORITY_BRANDS) della copia;
+    // - le pagine in ghost (Pannello di controllo della copia): la dashboard del progetto con gli stessi ghost;
+    // - LOGO_ASSET_VERSION di logos.js e print-logo-colors.js: la più recente tra progetto e copia.
+    // Restituisce il contenuto da scrivere, o null per tenere il file della copia
+    const ZONA_LOGHI = /^assets\/(logos\/[^/]+|img\/[^/]+\/printlogos)\//;
+    const testoDi = async contenuto => contenuto.voce ? (await contenuto.voce.getFile()).text() : contenuto.testo;
+    async function suMisuraDellaCopia(percorso, voluto, esistente) {
+      if (ZONA_LOGHI.test(percorso)) {
+        if (!/\/elenco\.js$/.test(percorso)) return null;
+        const progetto = await testoDi(voluto);
+        const copia = await (await esistente.getFile()).text();
+        const voci = t => [...((t.match(/const LOGO_FILES = \[([\s\S]*?)\];/) || [])[1] || '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
+        const tutte = [...new Set([...voci(progetto), ...voci(copia)])];
+        const elenco = `const LOGO_FILES = [\n${tutte.map(v => `  "${v}"`).join(',\n')}\n];`;
+        let unito = progetto.replace(/const LOGO_FILES = \[[\s\S]*?\];/, () => elenco);
+        const evidenza = copia.match(/const PRIORITY_BRANDS = \[[\s\S]*?\];/);
+        if (evidenza) unito = unito.replace(/const PRIORITY_BRANDS = \[[\s\S]*?\];/, () => evidenza[0]);
+        return { testo: unito };
+      }
+      if (/^assets\/negozi\/[^/]+-dashboard\.js$/.test(percorso)) {
+        const copia = await (await esistente.getFile()).text();
+        let testo = await testoDi(voluto);
+        const pagine = new Set([...copia.matchAll(/link:\s*'([^'?#]+)/g)].map(m => Associa.pagina(m[1])));
+        pagine.forEach(nome => { if (Associa.fantasma(copia, nome)) testo = Associa.impostaFantasma(testo, nome, true); });
+        return { testo };
+      }
+      if (/^assets\/js\/(logos|print-logo-colors)\.js$/.test(percorso)) {
+        const copia = await (await esistente.getFile()).text();
+        const testo = await testoDi(voluto);
+        const versione = t => (t.match(/LOGO_ASSET_VERSION = ['"]([^'"]+)['"]/) || [])[1] || '';
+        const daCopia = versione(copia);
+        return daCopia > versione(testo) ? { testo: testo.replace(/(LOGO_ASSET_VERSION = ['"])[^'"]+/, (_, prima) => prima + daCopia) } : voluto;
+      }
+      return voluto;
+    }
 
     // toglie un file e le cartelle rimaste vuote sopra di lui
     async function togliFile(radice, percorso) {
@@ -1212,6 +1380,421 @@
         aggiornaPassi();
       }
     });
+  </script>
+
+  <script>
+    // Anagrafica clienti (dal 22 ottobre 2026; Gestione clienti, prima sezione). Le schede stanno su Supabase, tabella
+    // clienti (supabase/aggiorna-02.sql): numero cliente progressivo e data di registrazione li dà il database, il resto
+    // si scrive qui. Dalla scheda si associano i negozi (negozi_clienti, con il codice delle statistiche). Le città
+    // vengono dall'elenco dei comuni italiani (dati/comuni-italiani.js, caricato alla prima apertura del modulo)
+    (() => {
+      const api = (percorso, opzioni) => SupabaseOperatore.api(percorso, opzioni);
+      const el = (tag, classe, testo) => {
+        const n = document.createElement(tag);
+        if (classe) n.className = classe;
+        if (testo !== undefined && testo !== null) n.textContent = testo;
+        return n;
+      };
+      const bottone = (testo, classe = 'btn') => { const b = el('button', classe, testo); b.type = 'button'; return b; };
+      const numeroCliente = n => `N° ${String(n).padStart(4, '0')}`;
+      const giorno = d => d ? new Date(`${d.slice(0, 10)}T12:00`).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+      const quando = d => d ? new Date(d).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'mai';
+
+      let clienti = [];
+      let negoziClienti = [];
+      let fogli = {};
+      let inModifica = null;          // id della scheda in modifica, 'nuovo' per un cliente nuovo
+
+      // ----- Comuni italiani: [nome, sigla, 'cap|cap|…'] -----
+      let comuni = null;
+      function caricaComuni() {
+        if (!comuni) comuni = new Promise((fatto, errore) => {
+          if (window.COMUNI_ITALIANI) { fatto(window.COMUNI_ITALIANI); return; }
+          const script = document.createElement('script');
+          script.src = 'dati/comuni-italiani.js';
+          script.onload = () => fatto(window.COMUNI_ITALIANI || []);
+          script.onerror = () => { comuni = null; errore(new Error('elenco dei comuni non letto')); };
+          document.head.append(script);
+        });
+        return comuni;
+      }
+      const semplice = testo => testo.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+      // ----- Lettura -----
+      async function carica() {
+        const schede = $('anaSchede');
+        $('anaNuovo').disabled = !SupabaseOperatore.dentro;
+        if (!SupabaseOperatore.dentro) {
+          schede.replaceChildren();
+          $('anaStato').replaceChildren('per le schede dei clienti accedi nella sezione ',
+            Object.assign(document.createElement('a'), { href: '#statistiche', textContent: 'statistiche' }), '.');
+          $('anaStato').className = 'status';
+          return;
+        }
+        stato($('anaStato'), 'lettura delle schede…');
+        try {
+          const [elenco, negozi, conti] = await Promise.all([
+            api('clienti?select=*&order=numero.asc'),
+            api('negozi_clienti?select=id,cliente_id,cliente,negozio,nome,token,attivo,ultimo_invio,versione&order=creato_il.asc'),
+            api('stampe?select=negozio_id,volte')
+          ]);
+          clienti = elenco;
+          negoziClienti = negozi;
+          fogli = {};
+          conti.forEach(r => { fogli[r.negozio_id] = (fogli[r.negozio_id] || 0) + r.volte; });
+          disegna();
+          const senza = negoziClienti.filter(n => !n.cliente_id);
+          stato($('anaStato'), senza.length
+            ? `${senza.length} ${senza.length === 1 ? 'negozio senza scheda' : 'negozi senza scheda'}: ${senza.map(n => `${n.nome} (${n.cliente})`).join(', ')}`
+            : `${clienti.length} ${clienti.length === 1 ? 'cliente' : 'clienti'} · ${negoziClienti.length} ${negoziClienti.length === 1 ? 'negozio' : 'negozi'}`, senza.length ? 'err' : 'ok');
+        } catch (errore) {
+          const manca = /clienti|cliente_id|schema cache/i.test(errore.message);
+          stato($('anaStato'), manca ? 'manca la tabella dei clienti: esegui supabase/aggiorna-02.sql in supabase › sql editor › run' : `schede non lette: ${errore.message}`, 'err');
+        }
+      }
+
+      // ----- Schede -----
+      function disegna() {
+        const parti = [];
+        if (inModifica === 'nuovo') parti.push(modulo(null));
+        clienti.forEach(c => parti.push(inModifica === c.id ? modulo(c) : scheda(c)));
+        if (!clienti.length && inModifica !== 'nuovo') parti.push(el('p', 'status', 'nessun cliente: + nuovo cliente per la prima scheda'));
+        adatta(() => $('anaSchede').replaceChildren(...parti), 250);
+      }
+
+      function voce(nome, valore, classe = '') {
+        const d = el('div', classe);
+        const vuoto = valore === null || valore === undefined || String(valore).trim() === '';
+        d.append(el('dt', '', nome), el('dd', vuoto ? 'vuoto' : (classe.includes('note') ? 'note' : ''), vuoto ? '—' : valore));
+        return d;
+      }
+      const luogo = (indirizzo, cap, citta, provincia) => [indirizzo, [cap, citta].filter(Boolean).join(' ') + (provincia ? ` (${provincia})` : '')]
+        .map(s => (s || '').trim()).filter(Boolean).join(', ');
+
+      function scheda(c) {
+        const box = el('article', 'ana-scheda');
+        const testa = el('div', 'ana-testa');
+        const azioni = el('div', 'ana-azioni');
+        const modifica = bottone('modifica');
+        modifica.addEventListener('click', () => { inModifica = c.id; disegna(); });
+        const suoi = negoziClienti.filter(n => n.cliente_id === c.id);
+        const elimina = bottone('elimina', 'btn rosso');
+        elimina.addEventListener('click', () => eliminaCliente(c, suoi));
+        azioni.append(modifica, elimina);
+        testa.append(el('span', 'ana-numero', numeroCliente(c.numero)), el('h3', 'ana-nome', c.ragione_sociale),
+          el('span', 'ana-data', `registrato il ${giorno(c.registrato_il)}`), azioni);
+
+        const campi = el('dl', 'ana-campi');
+        campi.append(
+          voce('sede legale', luogo(c.sede_indirizzo, c.sede_cap, c.sede_citta, c.sede_provincia)),
+          voce('partita iva', c.partita_iva),
+          voce('codice sdi', c.codice_sdi),
+          voce('legal mail (pec)', c.pec),
+          voce('negozio', luogo(c.negozio_indirizzo, '', c.negozio_citta, c.negozio_provincia)),
+          voce('contatto interno', [c.contatto_nome, c.contatto_telefono].filter(Boolean).join(' · ')),
+          voce('note', c.note, 'intero note'));
+
+        box.append(testa, campi, el('p', 'ana-sotto', `negozi e statistiche (${suoi.length})`));
+        if (suoi.length) {
+          const tabella = el('table', 'ana-negozi');
+          const corpo = el('tbody');
+          suoi.forEach(n => {
+            const riga = el('tr');
+            const nome = el('td');
+            nome.append(el('div', '', n.nome), el('div', 'tenue', n.negozio));
+            const statistiche = el('td');
+            const vai = Object.assign(document.createElement('a'), { href: '#statistiche', textContent: 'statistiche ›' });
+            vai.addEventListener('click', () => apriStatistiche(n.id));
+            statistiche.append(vai);
+            riga.append(nome,
+              el('td', n.attivo ? 'ok' : 'spento', n.attivo ? 'attivo' : 'disattivato'),
+              el('td', 'tenue', `${fogli[n.id] || 0} fogli stampati`),
+              el('td', 'tenue', `ultimo invio ${quando(n.ultimo_invio)}${n.versione ? ` · ${n.versione}` : ''}`),
+              statistiche);
+            corpo.append(riga);
+          });
+          tabella.append(corpo);
+          box.append(tabella);
+        } else box.append(el('p', 'status', 'nessun negozio associato'));
+        box.append(associa(c, suoi));
+        return box;
+      }
+
+      // Associa un negozio alla scheda: si registra in negozi_clienti con il suo codice delle statistiche
+      function associa(c, suoi) {
+        const riga = el('div', 'ana-associa');
+        const scelta = el('select');
+        scelta.setAttribute('aria-label', 'Negozio nella copia');
+        // i negozi del progetto non ancora associati a nessun cliente
+        const liberi = Negozi.installati.filter(id => !negoziClienti.some(n => n.negozio === id));
+        liberi.forEach(id => {
+          const o = el('option', '', `${id} · ${Negozi.scheda(id)?.nome || id}`);
+          o.value = id;
+          scelta.append(o);
+        });
+        const nome = el('input');
+        nome.maxLength = 60;
+        nome.setAttribute('aria-label', 'Nome del negozio');
+        const nomeDi = () => { nome.value = (Negozi.scheda(scelta.value)?.nome || scelta.value || '').toUpperCase(); };
+        scelta.addEventListener('change', nomeDi);
+        nomeDi();
+        const vai = bottone('+ associa negozio');
+        const esito = el('p', 'status');
+        vai.addEventListener('click', async () => {
+          if (!scelta.value || !nome.value.trim()) return;
+          vai.disabled = true;
+          try {
+            await api('negozi_clienti', { metodo: 'POST', prefer: 'return=minimal',
+              corpo: { cliente_id: c.id, cliente: c.ragione_sociale, negozio: scelta.value, nome: nome.value.trim().toUpperCase() } });
+            await carica();
+          } catch (errore) {
+            stato(esito, `negozio non associato: ${errore.message}`, 'err');
+            vai.disabled = false;
+          }
+        });
+        const copia = bottone('copia riga installati.js');
+        copia.disabled = !suoi.some(n => n.attivo);
+        copia.title = 'la riga di installati.js con i negozi attivi del cliente e i loro codici';
+        copia.addEventListener('click', async () => {
+          const attivi = suoi.filter(n => n.attivo);
+          const testo = `Negozi.installa([${attivi.map(n => `'${n.negozio}'`).join(', ')}], { copiaCliente: true, statistiche: { ${attivi.map(n => `${n.negozio}: '${n.token}'`).join(', ')} } });`;
+          try { await navigator.clipboard.writeText(testo); stato(esito, 'riga copiata', 'ok'); }
+          catch { stato(esito, testo); }
+        });
+        if (liberi.length) riga.append(scelta, nome, vai);
+        riga.append(copia, esito);
+        return riga;
+      }
+
+      // statistiche del negozio: la sezione Statistiche si apre su quel negozio
+      function apriStatistiche(id) {
+        try { sessionStorage.setItem('storecraft_statistiche_negozio', id); } catch { /* niente */ }
+        const finestra = document.querySelector('.vista[data-vista="statistiche"] iframe')?.contentWindow;
+        try { finestra?.mostraNegozio?.(id); } catch { /* non ancora caricata */ }
+      }
+
+      async function eliminaCliente(c, suoi) {
+        if (suoi.length) {
+          alert(`${c.ragione_sociale} ha ${suoi.length === 1 ? 'un negozio associato' : `${suoi.length} negozi associati`}: prima elimina ${suoi.length === 1 ? 'il negozio' : 'i negozi'} nella sezione Statistiche (con le loro statistiche), poi la scheda.`);
+          return;
+        }
+        if (!confirm(`Eliminare la scheda di ${c.ragione_sociale} (${numeroCliente(c.numero)})?`)) return;
+        if (!confirm('Sei proprio sicuro? La scheda non si può recuperare.')) return;
+        try { await api(`clienti?id=eq.${c.id}`, { metodo: 'DELETE' }); await carica(); }
+        catch (errore) { stato($('anaStato'), `scheda non eliminata: ${errore.message}`, 'err'); }
+      }
+
+      // ----- Modulo (nuovo cliente o modifica) -----
+      const CAMPI = [
+        { gruppo: 'cliente' },
+        { chiave: 'ragione_sociale', nome: 'ragione sociale', larga: 'c6', obbligatorio: true, max: 120 },
+        { gruppo: 'sede legale' },
+        { chiave: 'sede_indirizzo', nome: 'indirizzo', larga: 'c6', max: 160 },
+        { chiave: 'sede_citta', nome: 'città', citta: { provincia: 'sede_provincia', cap: 'sede_cap' }, max: 80 },
+        { chiave: 'sede_provincia', nome: 'prov.', larga: 'c1', max: 2 },
+        { chiave: 'sede_cap', nome: 'cap', larga: 'c2', max: 5, controllo: 'cap' },
+        { gruppo: 'dati fiscali' },
+        { chiave: 'partita_iva', nome: 'partita iva', larga: 'c2', max: 13, controllo: 'piva' },
+        { chiave: 'codice_sdi', nome: 'codice sdi', larga: 'c2', max: 7, controllo: 'sdi' },
+        { chiave: 'pec', nome: 'legal mail (pec)', larga: 'c2', max: 120, controllo: 'mail', tipo: 'email' },
+        { gruppo: 'negozio' },
+        { chiave: 'negozio_indirizzo', nome: 'indirizzo negozio', max: 160 },
+        { chiave: 'negozio_citta', nome: 'città negozio', larga: 'c2', citta: { provincia: 'negozio_provincia' }, max: 80 },
+        { chiave: 'negozio_provincia', nome: 'prov.', larga: 'c1', max: 2 },
+        { gruppo: 'contatto interno' },
+        { chiave: 'contatto_nome', nome: 'nome', max: 80 },
+        { chiave: 'contatto_telefono', nome: 'telefono', max: 30, controllo: 'telefono', tipo: 'tel' },
+        { chiave: 'note', nome: 'note', larga: 'c6', area: true, max: 4000 }
+      ];
+
+      // controlli dei campi: avvisano, non bloccano (i dati si completano anche più tardi)
+      function partitaIvaValida(valore) {
+        const cifre = valore.replace(/^IT/i, '');
+        if (!/^\d{11}$/.test(cifre)) return false;
+        let somma = 0;
+        for (let i = 0; i < 11; i += 1) {
+          let n = Number(cifre[i]);
+          if (i % 2 === 1) { n *= 2; if (n > 9) n -= 9; }
+          somma += n;
+        }
+        return somma % 10 === 0;
+      }
+      function controlla(campo, valore, modulo) {
+        if (!valore) return '';
+        switch (campo.controllo) {
+          case 'piva': return partitaIvaValida(valore.replace(/\s/g, '')) ? '' : 'partita iva da controllare: 11 cifre';
+          case 'sdi': return /^[A-Z0-9]{7}$/.test(valore) ? '' : 'il codice sdi ha 7 caratteri, lettere e cifre';
+          case 'mail': return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valore) ? '' : 'indirizzo email da controllare';
+          case 'telefono': return /^[+\d][\d\s./-]{5,}$/.test(valore) ? '' : 'numero da controllare';
+          case 'cap': {
+            if (!/^\d{5}$/.test(valore)) return 'il cap ha 5 cifre';
+            const caps = modulo.capDi?.sede_cap;
+            return caps && !caps.includes(valore) ? `cap non di ${modulo.querySelector('[name="sede_citta"]').value}` : '';
+          }
+          default: return '';
+        }
+      }
+
+      function modulo(c) {
+        const form = el('form', 'ana-modulo');
+        form.noValidate = true;
+        form.capDi = {};
+        form.append(el('h3', '', c ? `> MODIFICA ${numeroCliente(c.numero)} · ${c.ragione_sociale.toUpperCase()}` : '> NUOVO CLIENTE'));
+        if (!c) form.append(el('p', 'copy-note', 'il numero cliente e la data di registrazione li assegna il database al salvataggio.'));
+        const griglia = el('div', 'ana-griglia');
+        CAMPI.forEach(campo => {
+          if (campo.gruppo) { griglia.append(el('p', 'gruppo', campo.gruppo)); return; }
+          const etichetta = el('label', `campo-ana ${campo.larga || ''}`.trim());
+          const input = el(campo.area ? 'textarea' : 'input');
+          input.name = campo.chiave;
+          if (campo.tipo) input.type = campo.tipo;
+          input.maxLength = campo.max;
+          input.autocomplete = 'off';
+          input.value = c?.[campo.chiave] || '';
+          if (campo.obbligatorio) input.required = true;
+          const avviso = el('span', 'avviso-campo');
+          etichetta.append(el('span', '', campo.nome + (campo.obbligatorio ? ' *' : '')), input, avviso);
+          if (campo.citta) cercaCitta(input, campo.citta, form, etichetta);
+          // maiuscole dove servono
+          if (['codice_sdi', 'sede_provincia', 'negozio_provincia'].includes(campo.chiave)) input.addEventListener('input', () => { input.value = input.value.toUpperCase(); });
+          input.addEventListener('blur', () => { avviso.textContent = controlla(campo, input.value.trim(), form); etichetta.classList.toggle('da-vedere', Boolean(avviso.textContent)); });
+          griglia.append(etichetta);
+        });
+        form.append(griglia);
+
+        const comandi = el('div', 'ana-comandi');
+        const salva = el('button', 'btn', c ? 'salva modifiche' : 'crea scheda');
+        salva.type = 'submit';
+        const annulla = bottone('annulla');
+        annulla.addEventListener('click', () => { inModifica = null; disegna(); });
+        const esito = el('p', 'status');
+        comandi.append(salva, annulla, esito);
+        form.append(comandi);
+
+        let avvisato = false;
+        form.addEventListener('submit', async evento => {
+          evento.preventDefault();
+          const corpo = {};
+          let avvisi = 0;
+          CAMPI.filter(campo => campo.chiave).forEach(campo => {
+            const input = form.elements[campo.chiave];
+            const valore = input.value.trim();
+            corpo[campo.chiave] = valore || null;
+            const testo = controlla(campo, valore, form);
+            const etichetta = input.closest('.campo-ana');
+            etichetta.querySelector('.avviso-campo').textContent = testo;
+            etichetta.classList.toggle('da-vedere', Boolean(testo));
+            if (testo) avvisi += 1;
+          });
+          if (!corpo.ragione_sociale) { stato(esito, 'la ragione sociale serve', 'err'); form.elements.ragione_sociale.focus(); return; }
+          if (avvisi && !avvisato) {
+            avvisato = true;
+            salva.textContent = 'salva comunque';
+            stato(esito, `${avvisi === 1 ? 'un campo' : `${avvisi} campi`} da controllare: correggi, o salva comunque`, 'err');
+            return;
+          }
+          if (corpo.partita_iva) corpo.partita_iva = corpo.partita_iva.replace(/\s/g, '').toUpperCase();
+          corpo.aggiornato_il = new Date().toISOString();
+          salva.disabled = true;
+          stato(esito, 'salvataggio…');
+          try {
+            if (c) await api(`clienti?id=eq.${c.id}`, { metodo: 'PATCH', corpo, prefer: 'return=minimal' });
+            else await api('clienti', { metodo: 'POST', corpo, prefer: 'return=minimal' });
+            inModifica = null;
+            await carica();
+          } catch (errore) {
+            salva.disabled = false;
+            stato(esito, /duplicate|unique/i.test(errore.message) ? 'c\'è già un cliente con questa ragione sociale' : `scheda non salvata: ${errore.message}`, 'err');
+          }
+        });
+        form.addEventListener('keydown', evento => { if (evento.key === 'Escape') { evento.stopPropagation(); inModifica = null; disegna(); } });
+        requestAnimationFrame(() => { form.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); form.elements.ragione_sociale.focus({ preventScroll: true }); });
+        return form;
+      }
+
+      // Città con l'elenco dei comuni: scrivendo compaiono i comuni che cominciano così (poi quelli che lo contengono);
+      // scelto un comune, provincia e cap si riempiono (con più cap, es. Roma, il cap si sceglie dal suo elenco)
+      function cercaCitta(input, { provincia, cap }, form, etichetta) {
+        const elenco = el('ul', 'ana-elenco');
+        elenco.hidden = true;
+        elenco.setAttribute('role', 'listbox');
+        etichetta.append(elenco);
+        input.setAttribute('role', 'combobox');
+        input.setAttribute('aria-autocomplete', 'list');
+        let trovati = [];
+        let attivo = -1;
+        const chiudi = () => { elenco.hidden = true; etichetta.classList.remove('ana-elenco-aperto'); attivo = -1; };
+        const evidenzia = () => [...elenco.children].forEach((li, i) => li.setAttribute('aria-selected', String(i === attivo)));
+        function scegli(comune) {
+          const [nome, sigla, caps] = comune;
+          input.value = nome;
+          form.elements[provincia].value = sigla;
+          if (cap) {
+            const elencoCap = caps.split('|');
+            form.capDi[cap] = elencoCap;
+            const campoCap = form.elements[cap];
+            if (elencoCap.length === 1) campoCap.value = elencoCap[0];
+            else if (!elencoCap.includes(campoCap.value)) campoCap.value = '';
+            campoCap.placeholder = elencoCap.length > 1 ? `${elencoCap[0]}–${elencoCap.at(-1)}` : '';
+            let lista = document.getElementById(`ana-cap-${cap}`);
+            if (!lista) { lista = el('datalist'); lista.id = `ana-cap-${cap}`; form.append(lista); }
+            lista.replaceChildren(...elencoCap.map(v => Object.assign(document.createElement('option'), { value: v })));
+            campoCap.setAttribute('list', lista.id);
+            if (elencoCap.length > 1) campoCap.focus();
+          }
+          chiudi();
+        }
+        input.addEventListener('input', async () => {
+          const cerca = semplice(input.value);
+          if (cerca.length < 2) { chiudi(); return; }
+          let tutti;
+          try { tutti = await caricaComuni(); } catch { return; }
+          if (semplice(input.value) !== cerca) return;
+          const inizio = [];
+          const dentro = [];
+          for (const comune of tutti) {
+            const s = semplice(comune[0]);
+            if (s.startsWith(cerca)) inizio.push(comune);
+            else if (dentro.length < 15 && s.includes(cerca)) dentro.push(comune);
+          }
+          trovati = [...inizio, ...dentro].slice(0, 15);
+          attivo = trovati.length ? 0 : -1;
+          elenco.replaceChildren(...trovati.map(comune => {
+            const li = el('li', '', comune[0]);
+            const caps = comune[2].split('|');
+            li.append(' ', el('small', '', `${comune[1]} · ${caps.length > 1 ? `${caps[0]}–${caps.at(-1)}` : caps[0]}`));
+            li.setAttribute('role', 'option');
+            li.addEventListener('mousedown', evento => { evento.preventDefault(); scegli(comune); });
+            return li;
+          }));
+          elenco.hidden = !trovati.length;
+          etichetta.classList.toggle('ana-elenco-aperto', Boolean(trovati.length));
+          evidenzia();
+        });
+        input.addEventListener('keydown', evento => {
+          if (elenco.hidden) return;
+          if (evento.key === 'ArrowDown' || evento.key === 'ArrowUp') {
+            evento.preventDefault();
+            attivo = (attivo + (evento.key === 'ArrowDown' ? 1 : -1) + trovati.length) % trovati.length;
+            evidenzia();
+            elenco.children[attivo]?.scrollIntoView({ block: 'nearest' });
+          } else if (evento.key === 'Enter' && attivo >= 0) { evento.preventDefault(); scegli(trovati[attivo]); }
+          else if (evento.key === 'Escape') { evento.preventDefault(); evento.stopPropagation(); chiudi(); }
+        });
+        // uscendo dal campo: un nome scritto tutto che è un comune prende la sua provincia
+        input.addEventListener('blur', () => {
+          setTimeout(chiudi, 120);
+          caricaComuni().then(tutti => {
+            const uguale = tutti.find(comune => semplice(comune[0]) === semplice(input.value));
+            if (uguale && !form.elements[provincia].value) form.elements[provincia].value = uguale[1];
+          }).catch(() => {});
+        });
+      }
+
+      $('anaNuovo').addEventListener('click', () => { inModifica = 'nuovo'; disegna(); });
+      window.addEventListener('supabase-operatore', carica);
+      carica();
+    })();
   </script>
 </body>
 </html>

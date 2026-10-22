@@ -2,21 +2,21 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261022-10"></script>
+<script src="assets/js/negozi.js?v=20261022-13"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
 <title>IMPORTA LAYOUT .PSD (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-10">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-13">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-10">
-  <script src="assets/js/operatore-sezione.js?v=20261022-10"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-13">
+  <script src="assets/js/operatore-sezione.js?v=20261022-13"></script>
   <!-- lettura del file Photoshop nel browser (ag-psd; non è su cdnjs: jsDelivr, versione fissata) -->
   <script src="https://cdn.jsdelivr.net/npm/ag-psd@31.0.2/dist/bundle.js"></script>
   <!-- generatore della pagina (dai dati letti alla pagina di cartelli sulla Nuova Base Comune) -->
-  <script src="modelli/import-genera.js?v=20261022-10"></script>
+  <script src="modelli/import-genera.js?v=20261022-13"></script>
   <!-- salvataggio nella cartella del progetto (moduli/ e gallerie di Gestione pacchetti) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-10"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261022-13"></script>
   <!--
     Import layout (area operatore): dal file Photoshop originale (.psd) alla nuova pagina di generazione di cartelli.
     Passo 1 (questa versione): si sceglie il .psd, la conversione legge foglio, cartelli e livelli (nomi dei componenti del
@@ -65,6 +65,7 @@
     background: transparent; color: var(--op-oro); border: 1px solid var(--op-oro); }
   .tipo-pagina button[aria-checked="true"] { background: var(--op-oro); color: #121110; }
   .avviso-tipo { color: var(--op-errore); }
+  .avviso-tipo::before { content: none; }   /* il // rosso è già nel testo dell'avviso */
   .file-scelto.err { color: var(--op-errore); }
   .file-scelto.vuoto { color: var(--op-tenue); }
   .file-scelto::before { content: '$ '; color: var(--op-oro); }
@@ -377,6 +378,30 @@
     .nodo-psd { max-width: 160px; }
     .fili { display: none; }
   }
+  /* aspetto più moderno (23 ottobre 2026, come Statistiche, Gestione loghi e Gestione clienti): passi in riquadri
+     arrotondati con il numero in un cerchio, comandi a pillola, linguette e scelte a segmenti, riquadri arrotondati */
+  .passi-op { display: grid; gap: 14px; }
+  .passo-op { padding: 18px; border: 1px solid #26231f; border-radius: 14px; background: rgba(18, 17, 15, .6); }
+  .passo-op + .passo-op { border-top: 1px solid #26231f; }
+  .passo-op.chiuso { padding: 12px 18px 14px; }
+  .passo-num { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--op-oro); border-radius: 50%; }
+  .passo-num::before, .passo-num::after { content: none; }
+  .btn-folder { border-radius: 999px; padding: 7px 16px; }
+  /* testi dei pulsanti ovali tutti in maiuscolo, come AVVIA CONVERSIONE */
+  .tipo-pagina button, .parti button, .linguette button { border-radius: 999px; text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
+  .upload-box { border-radius: 14px; border-width: 1px; }
+  .registro { border-radius: 12px; }
+  .cornice-anteprima { border-radius: 12px; }
+  .campo-salva input, .campo-salva select { border-radius: 8px; }
+  .linguette { gap: 2px; padding: 3px; border: 1px solid #2c2925; border-radius: 999px; background: #0a0908; width: fit-content; max-width: 100%; }
+  .linguette button { border: 0; border-radius: 999px; }
+  .linguette button[aria-selected="true"] { background: rgba(212, 163, 115, .16); }
+  .parti { gap: 2px; padding: 3px; border: 1px solid #2c2925; border-radius: 999px; background: #0a0908; width: fit-content; max-width: 100%; }
+  .parti button { padding: 7px 16px; border-radius: 999px; }
+  .parti button[aria-selected="true"] { background: var(--op-oro); color: #121110; }
+  .parti button[aria-selected="true"]::after { content: none; }
+  .tasto-icona, .tasto-sposta { border-radius: 8px; }
+  .genera-riga { border-top-color: #24221f; }
 </style>
 </head>
 <body>
@@ -1058,14 +1083,27 @@
     svg.replaceChildren();
     return svg;
   }
-  function filo(svg, contenitore, da, a, classi, dati = {}, dalCentro = false, anima = false) {
+  // Fili dritti ad angoli retti (dal 23 ottobre 2026, prima curve): orizzontale, verticale, orizzontale, con gli angoli
+  // appena arrotondati. corsia { inizio, fine, indice, totale }: il tratto verticale sta nello spazio tra il bordo destro
+  // di inizio e il bordo sinistro di fine, su una corsia sua (indice su totale), così i fili non si sovrappongono
+  function filo(svg, contenitore, da, a, classi, dati = {}, dalCentro = false, anima = false, corsia = null) {
     const base = contenitore.getBoundingClientRect(), r0 = da.getBoundingClientRect(), r1 = a.getBoundingClientRect();
     if (!r0.width || !r1.width) return;
     const x0 = (dalCentro ? r0.left + r0.width / 2 : r0.right) - base.left, y0 = r0.top + r0.height / 2 - base.top;
     const x1 = r1.left - base.left, y1 = r1.top + r1.height / 2 - base.top;
-    const dx = Math.max(24, (x1 - x0) / 2);
+    let xm = (x0 + x1) / 2;
+    if (corsia) {
+      const sinistra = corsia.inizio.getBoundingClientRect().right - base.left + 8;
+      const destra = corsia.fine.getBoundingClientRect().left - base.left - 8;
+      if (destra > sinistra) xm = sinistra + (destra - sinistra) * (corsia.indice + 1) / (corsia.totale + 1);
+    }
+    const dy = y1 - y0;
+    const raggio = Math.min(6, Math.abs(dy) / 2, Math.abs(xm - x0), Math.abs(x1 - xm));
+    const verso = Math.sign(dy);
+    const d = Math.abs(dy) < 1 ? `M${x0} ${y0} H${x1}`
+      : `M${x0} ${y0} H${xm - raggio} Q${xm} ${y0} ${xm} ${y0 + verso * raggio} V${y1 - verso * raggio} Q${xm} ${y1} ${xm + raggio} ${y1} H${x1}`;
     const p = document.createElementNS(SVG, 'path');
-    p.setAttribute('d', `M${x0} ${y0} C${x0 + dx} ${y0}, ${x1 - dx} ${y1}, ${x1} ${y1}`);
+    p.setAttribute('d', d);
     p.setAttribute('class', classi);
     Object.entries(dati).forEach(([k, v]) => { p.dataset[k] = v; });
     svg.append(p);
@@ -1620,10 +1658,12 @@
     // fili: numero → livello → modulo
     const fili = () => {
       const svg = tela(mappa);
-      suoi.forEach(({ e, i }) => {
-        filo(svg, mappa, segni[i], liv[i], e.stato, { i }, true, primaVolta);
+      // corsie: il filo che parte più in alto prende la corsia più a destra, così i fili che scendono non si incrociano
+      suoi.forEach(({ e, i }, k) => {
+        const indice = suoi.length - 1 - k;
+        filo(svg, mappa, segni[i], liv[i], e.stato, { i }, true, primaVolta, { inizio: col1, fine: col2, indice, totale: suoi.length });
         const arrivo = mod[e.chiave || 'x'];
-        if (arrivo) filo(svg, mappa, liv[i], arrivo, e.stato, { i }, false, primaVolta);
+        if (arrivo) filo(svg, mappa, liv[i], arrivo, e.stato, { i }, false, primaVolta, { inizio: col2, fine: col3, indice, totale: suoi.length });
       });
       primaVolta = false;
     };

@@ -2,22 +2,22 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261022-10"></script>
+<script src="assets/js/negozi.js?v=20261022-13"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
 <title>STATISTICHE (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-10">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-13">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-10">
-  <script src="assets/js/operatore-sezione.js?v=20261022-10"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261022-10"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-13">
+  <script src="assets/js/operatore-sezione.js?v=20261022-13"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261022-13"></script>
   <!--
     Statistiche (area operatore, dal 22 ottobre 2026; solo nel progetto madre): i dati che le copie dei clienti spediscono
     a STORE // CRAFT su Supabase (assets/js/statistiche.js, schema in supabase/schema.sql), letti dopo l'accesso con
     email e password dell'operatore (Supabase Auth; le iscrizioni libere sono spente). Tre sezioni apribili:
     NEGOZI CLIENTI (i negozi registrati, ognuno con il suo codice da scrivere nella copia del cliente, in installati.js),
-    STAMPE (per negozio e periodo: totali, tipi, le pagine più usate, ogni foglio con la sua anteprima e i dettagli, e le
+    STAMPE (per negozio, periodo, sezione e pagina: totali, grafico nel tempo, pagine più usate, ogni foglio con i suoi dati di stampa, senza immagini, e le
     etichette DYMO per layout) e BACKUP LOGHI PERSONALI (l'ultima lista di ogni negozio, da scaricare nel formato di
     Gestisci Lista e reimportare con Unisci o Sostituisci Lista). L'accesso (assets/js/supabase-operatore.js) resta nel browser
     (localStorage storecraft_operatore_supabase) finché non si esce.
@@ -87,36 +87,135 @@
       line-height: 1.6; word-break: break-all; }
     .riga-installa::before { content: '// in installati.js della copia del cliente:'; display: block; margin-bottom: 4px; color: var(--op-tenue); }
 
-    /* stampe */
-    .scelte { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
-    .scelte .etichetta { margin-right: 6px; color: var(--op-tenue); font-size: 11.5px; }
-    .scelte button { padding: 6px 11px; border: 1px solid var(--op-bordo); border-radius: 3px; background: var(--op-riquadro); color: var(--op-tenue);
-      font: 400 11px var(--op-mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
-    .scelte button:hover { color: var(--op-oro-chiaro); border-color: var(--op-oro); }
-    .scelte button[aria-pressed="true"] { color: var(--op-oro-chiaro); border-color: var(--op-oro); background: rgba(212, 163, 115, .1); }
-    .scelte button[aria-pressed="true"]::before { content: '> '; }
-    .numeri { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 6px 0 18px; }
-    .numero { padding: 12px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo); }
-    .numero b { display: block; color: var(--op-oro-chiaro); font-size: 20px; font-weight: 400; }
-    .numero span { color: var(--op-tenue); font-size: 10.5px; letter-spacing: .08em; text-transform: lowercase; }
-    .sottotitolo { margin: 18px 0 10px; color: var(--op-oro); font-size: 11.5px; letter-spacing: .16em; text-transform: lowercase; }
-    .sottotitolo::before { content: '// '; }
-    .barre { display: flex; flex-direction: column; gap: 6px; }
-    .barra { display: grid; grid-template-columns: minmax(120px, 230px) 1fr 90px; align-items: center; gap: 10px; font-size: 11.5px; }
+    /* stampe (dal 22 ottobre 2026, aspetto più moderno): filtri a pillola, numeri grandi, pannelli arrotondati, grafico */
+    /* selettori principali (negozio, periodo) in due riquadri grandi con il titolo al centro; sotto, staccato, il riepilogo
+       del negozio (logo e totali); poi i filtri del dettaglio (sezione, pagina) sopra grafici e tabelle */
+    .filtri-principali { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 30px; }
+    .filtro.grande { align-items: center; gap: 14px; padding: 18px 16px 20px; border: 1px solid #26231f; border-radius: 14px; background: #12110f; }
+    .filtro.grande .filtro-nome { font-size: 13px; letter-spacing: .26em; }
+    .filtro.grande .segmenti { justify-content: center; }
+    .filtro.grande .segmenti button { padding: 9px 17px; font-size: 11.5px; }
+    .riepilogo { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 14px; margin-bottom: 26px; }
+    .riepilogo-negozio { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 22px 18px;
+      border: 1px solid #26231f; border-radius: 14px; background: #0a0908; text-align: center; }
+    .riepilogo-negozio img { max-width: 80%; max-height: 46px; margin-bottom: 8px; filter: brightness(0) invert(1); opacity: .92; }
+    .riepilogo-negozio .tenue { font-size: 11px; }
+    .riepilogo-periodo { padding: 3px 11px; border: 1px solid var(--op-oro); border-radius: 999px; color: var(--op-oro-chiaro); font-size: 10px;
+      letter-spacing: .14em; text-transform: uppercase; }
+    .riepilogo .numeri { margin: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .filtri-dettaglio { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 22px; padding-top: 20px; border-top: 1px solid #24221f; }
+    @media (max-width: 900px) {
+      .riepilogo { grid-template-columns: 1fr; }
+      .riepilogo .numeri { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    }
+    @media (max-width: 760px) { .filtri-principali { grid-template-columns: 1fr; } }
+    .filtro { display: flex; flex-direction: column; gap: 6px; }
+    .filtro-nome { color: #f4f1ea; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+    .segmenti { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border: 1px solid #2c2925; border-radius: 999px; background: #0a0908; }
+    .segmenti button { padding: 6px 13px; border: 0; border-radius: 999px; background: transparent; color: var(--op-tenue);
+      font: 400 10.5px var(--op-mono); letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: background .15s, color .15s; }
+    .segmenti button:hover { color: var(--op-oro-chiaro); }
+    .segmenti button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
+    .segmenti button:focus-visible, .scelta-pagina:focus-visible, .grafico-colonna:focus-visible { outline: 1px solid var(--op-oro-chiaro); outline-offset: 2px; }
+    .scelta-pagina { min-width: 200px; max-width: 280px; padding: 7px 14px; border: 1px solid #2c2925; border-radius: 999px; background: #0a0908;
+      color: var(--op-testo); font: 400 10.5px var(--op-mono); letter-spacing: .1em; text-transform: uppercase; }
+    .numeri { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 0 0 16px; }
+    .numero { padding: 16px 16px 14px; border: 1px solid #26231f; border-radius: 12px; background: #12110f; }
+    .numero b { display: block; color: #f4e6cf; font-size: 28px; font-weight: 300; line-height: 1.1; letter-spacing: -.01em; }
+    .numero span { display: block; margin-top: 6px; color: var(--op-tenue); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .pannello { margin-top: 14px; padding: 16px 18px 18px; border: 1px solid #26231f; border-radius: 12px; background: #0f0e0c; min-width: 0; }
+    .pannello-titolo { margin: 0 0 14px; color: var(--op-oro-chiaro); font: 400 10.5px var(--op-mono); letter-spacing: .16em; text-transform: uppercase; }
+    .affiancati { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0 14px; }
+    .avviso-dati { margin: 0 0 14px; padding: 9px 12px; border: 1px solid rgba(224, 160, 95, .4); border-radius: 8px; color: #e0a05f; font-size: 11px; }
+    /* grafico a barre: una serie, l'oro dell'area operatore; valori al passaggio del mouse */
+    .grafico { position: relative; padding: 0 0 26px 34px; }
+    .grafico-area { position: relative; height: 170px; }
+    .grafico-linea { position: absolute; left: 0; right: 0; border-top: 1px solid rgba(255, 255, 255, .06); }
+    .grafico-linea span { position: absolute; right: calc(100% + 8px); top: -7px; color: #6f6a62; font-size: 10px; }
+    .grafico-colonne { position: absolute; inset: 0; display: flex; align-items: flex-end; gap: 2px; }
+    .grafico-colonna { position: relative; flex: 1; height: 100%; display: flex; align-items: flex-end; justify-content: center; cursor: default; }
+    .grafico-colonna:hover, .grafico-colonna.attiva { background: rgba(212, 163, 115, .06); }
+    .grafico-barra { width: 100%; max-width: 30px; border-radius: 4px 4px 0 0; background: var(--op-oro); transition: background .15s; }
+    .grafico-colonna.attiva .grafico-barra { background: var(--op-oro-chiaro); }
+    .grafico-x { position: absolute; top: calc(100% + 7px); left: 50%; transform: translateX(-50%); color: #6f6a62; font-size: 10px; white-space: nowrap; }
+    .grafico-suggerimento { position: absolute; top: 0; transform: translate(-50%, calc(-100% - 6px)); padding: 5px 10px; border: 1px solid var(--op-oro);
+      border-radius: 8px; background: #0a0908; color: var(--op-testo); font-size: 11px; white-space: nowrap; pointer-events: none; z-index: 2; }
+    .grafico-suggerimento[hidden] { display: none; }
+    .grafico-suggerimento b { color: var(--op-oro-chiaro); font-weight: 400; }
+    .grafico-vuoto { position: absolute; inset: 0 0 26px 34px; display: grid; place-items: center; margin: 0; color: var(--op-tenue); font-size: 11.5px; }
+    .barre { display: flex; flex-direction: column; gap: 9px; }
+    .barra { display: grid; grid-template-columns: minmax(0, 1fr) minmax(70px, 1.2fr) 78px; align-items: center; gap: 12px; font-size: 11.5px; }
     .barra-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .barra-fondo { height: 8px; border-radius: 2px; background: var(--op-riquadro); }
-    .barra-pieno { height: 100%; border-radius: 2px; background: var(--op-oro); }
+    .barra-fondo { height: 8px; border-radius: 999px; background: #1d1b18; }
+    .barra-pieno { height: 100%; border-radius: 999px; background: var(--op-oro); }
     .barra-valore { color: var(--op-tenue); text-align: right; white-space: nowrap; }
-    .fogli { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
-    .foglio { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 1px solid var(--op-bordo); border-radius: 4px; background: var(--op-fondo);
-      font-size: 10.5px; line-height: 1.45; }
-    .foglio-immagine { display: flex; align-items: center; justify-content: center; aspect-ratio: 1 / 1; padding: 6px; background: var(--op-riquadro); }
-    .foglio-immagine img { max-width: 100%; max-height: 100%; background: #fff; }
-    .foglio-immagine span { color: var(--op-tenue); }
-    .foglio-nome { color: var(--op-testo); font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .foglio-tipo { color: var(--op-oro); letter-spacing: .08em; text-transform: uppercase; }
-    .foglio .tenue { overflow-wrap: anywhere; }
+    .tabella-dati td.num { color: var(--op-oro-chiaro); }
+    .tabella-dati th.num { text-align: right; }
+    .tabella-dati td { padding: 8px; }
+    /* titoli delle colonne in stampatello maiuscolo, chiari, per staccarli dai valori; la data dell'ultima stampa in evidenza */
+    .tabella-dati th { color: #fff; font-weight: 500; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; vertical-align: bottom; }
+    .tabella-dati td:first-child { color: var(--op-testo); white-space: nowrap; }
+    .tabella-dati tr[hidden] { display: none; }
+    .tabella-piede { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; font-size: 11px; }
+    .tabella-piede [hidden] { display: none; }
     .vuoto { padding: 10px 0; color: var(--op-tenue); font-size: 12px; }
+    @media (max-width: 640px) { .barra { grid-template-columns: 1fr 70px; } .barra-fondo { grid-column: 1 / -1; grid-row: 2; } .grafico { padding-left: 28px; } }
+
+    /* negozi clienti come schede (22 ottobre 2026): logo del negozio, poche informazioni; l'ingranaggio nell'angolo apre
+       il pannello con il codice (campo con le icone mostra e copia) e disattiva / elimina, due pulsanti larghi uguale */
+    .schede-negozi { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); align-items: start; gap: 12px; }
+    .scheda-negozio { position: relative; border: 1px solid #26231f; border-radius: 14px; background: #12110f; overflow: hidden; transition: border-color .15s; }
+    .scheda-negozio:hover { border-color: rgba(212, 163, 115, .45); }
+    .scheda-negozio.spento .scheda-logo img, .scheda-negozio.spento .scheda-corpo { opacity: .5; }
+    .scheda-logo { position: relative; display: grid; place-items: center; height: 78px; padding: 14px 44px; background: #0a0908; border-bottom: 1px solid #1f1d1a; }
+    .scheda-logo img { max-width: 100%; max-height: 32px; filter: brightness(0) invert(1); opacity: .9; }
+    .scheda-logo span { color: var(--op-oro-chiaro); font-size: 14px; letter-spacing: .12em; }
+    .scheda-corpo { display: grid; gap: 10px; padding: 14px 16px 16px; }
+    .scheda-testa .nome-negozio { font-size: 13px; }
+    .scheda-testa .tenue { margin-top: 2px; font-size: 11px; }
+    .scheda-fatti { display: flex; gap: 6px; }
+    .pallino { display: flex; align-items: center; gap: 7px; color: var(--op-tenue); font-size: 11px; }
+    .pallino::before { content: ''; flex: none; width: 7px; height: 7px; border-radius: 50%; background: #5d5850; }
+    .pallino.vivo { color: var(--op-ok); }
+    .pallino.vivo::before { background: var(--op-ok); box-shadow: 0 0 6px rgba(143, 191, 122, .7); }
+    .pallino.fermo { color: var(--op-errore); }
+    .pallino.fermo::before { background: var(--op-errore); }
+    .gettone { padding: 3px 9px; border: 1px solid #2c2925; border-radius: 999px; color: var(--op-tenue); font-size: 10.5px; white-space: nowrap; }
+    .icona { display: grid; place-items: center; flex: none; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 7px; background: transparent;
+      color: var(--op-oro); cursor: pointer; transition: background .15s, color .15s; }
+    .icona:hover { background: rgba(212, 163, 115, .14); color: var(--op-oro-chiaro); }
+    .icona.acceso { color: var(--op-ok); }
+    .icona:focus-visible, .azione:focus-visible { outline: 1px solid var(--op-oro-chiaro); outline-offset: 1px; }
+    .scheda-gestisci { position: absolute; top: 9px; right: 9px; border: 1px solid #2c2925; border-radius: 50%; background: rgba(18, 17, 15, .9); }
+    .scheda-gestisci[aria-expanded="true"] { border-color: var(--op-oro); background: var(--op-oro); color: #121110; }
+    .scheda-pannello { display: grid; gap: 10px; padding: 14px 16px 16px; border-top: 1px solid #24221f; background: #0d0c0b; }
+    .scheda-pannello[hidden] { display: none; }
+    .etichetta-pannello { color: var(--op-tenue); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .codice-campo { display: flex; align-items: center; gap: 2px; height: 36px; padding: 0 4px 0 12px; border: 1px solid #2c2925; border-radius: 9px; background: #0a0908; }
+    .codice-campo code { flex: 1; min-width: 0; overflow: hidden; color: var(--op-testo); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .scheda-azioni { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .azione { height: 32px; padding: 0 10px; border: 1px solid #2c2925; border-radius: 9px; background: transparent; color: var(--op-tenue);
+      font: 400 11px var(--op-mono); letter-spacing: .06em; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
+    .azione:hover { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
+    .azione.oro { border-color: var(--op-oro); color: var(--op-oro-chiaro); }
+    .azione.rossa { border-color: rgba(224, 122, 95, .45); color: var(--op-errore); }
+    .azione.rossa:hover { border-color: var(--op-errore); background: rgba(224, 122, 95, .1); color: var(--op-errore); }
+    #apriRegistra { margin-top: 14px; }
+    .nuovo-negozio[hidden] { display: none; }
+
+    /* sezioni a riquadro, più moderne; le note (// …) per ora nascoste */
+    .subtitle { display: none; }
+    .riga-installa::before { content: none; }
+    .blocco { border: 1px solid #24221f; border-radius: 14px; background: rgba(18, 17, 15, .6); overflow: visible; }
+    .blocco + .blocco { margin-top: 16px; }
+    .blocco > .label { padding: 14px 18px; border-bottom: 1px solid transparent; border-radius: 14px; }
+    .blocco:not(.is-collapsed) > .label { border-bottom-color: #24221f; border-radius: 14px 14px 0 0; }
+    .blocco-corpo { padding: 18px; }
+    .stato { border-radius: 10px; }
+    .tabella tbody tr { transition: background .15s; }
+    .tabella tbody tr:hover { background: rgba(212, 163, 115, .04); }
+    .comando { border-radius: 999px; padding: 6px 13px; }
+    .campo input, .campo select { border-radius: 8px; }
 
     /* backup loghi */
     .loghi-anteprima { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -130,7 +229,7 @@
 
   <div class="container">
     <h1>Statistiche</h1>
-    <p class="subtitle">i dati che le copie dei clienti spediscono una volta al giorno: fogli stampati con anteprima e dettagli, etichette dymo per layout e backup dei loghi personali. ogni negozio cliente ha il suo codice, da scrivere nella sua copia</p>
+    <p class="subtitle">i dati che le copie dei clienti spediscono una volta al giorno: fogli stampati con i loro dati di stampa, etichette dymo per layout, versione della copia e backup dei loghi personali. ogni negozio cliente ha il suo codice, da scrivere nella sua copia</p>
 
     <div class="stato">
       <span class="stato-testo" id="stato" role="status">collegamento a supabase…</span>
@@ -146,15 +245,15 @@
     </form>
 
     <div id="contenuto" hidden>
-      <section class="blocco" id="bloccoNegozi">
-        <div class="label"><h2>NEGOZI CLIENTI</h2><span class="riassunto" id="riassuntoNegozi"></span><button type="button" class="section-toggle" aria-expanded="true" aria-label="Apri o chiudi">⌄</button></div>
+      <section class="blocco is-collapsed" id="bloccoNegozi">
+        <div class="label"><h2>NEGOZI CLIENTI</h2><span class="riassunto" id="riassuntoNegozi"></span><button type="button" class="section-toggle" aria-expanded="false" aria-label="Apri o chiudi">⌄</button></div>
         <div class="blocco-corpo">
-          <div class="tabella-scorre"><table class="tabella">
-            <thead><tr><th>negozio</th><th>cliente</th><th>ultimo invio</th><th>versione</th><th>codice</th><th></th></tr></thead>
-            <tbody id="righeNegozi"></tbody>
-          </table></div>
+          <!-- una scheda per negozio (dal 22 ottobre 2026): logo, nome, cliente, stato, versione e fogli; codice, disattiva ed
+               elimina in un pannello che si apre con «gestisci» -->
+          <div class="schede-negozi" id="righeNegozi"></div>
           <p class="vuoto" id="nessunNegozio" hidden>nessun negozio cliente: registrane uno qui sotto</p>
-          <form class="nuovo-negozio" id="nuovoNegozio">
+          <button type="button" class="comando" id="apriRegistra">+ registra un negozio</button>
+          <form class="nuovo-negozio" id="nuovoNegozio" hidden>
             <label class="campo">cliente<input id="nnCliente" required maxlength="80" placeholder="es. Luxury Outlet srl" list="clientiNoti" autocomplete="off"></label>
             <datalist id="clientiNoti"></datalist>
             <label class="campo">negozio nella copia<select id="nnNegozio"></select></label>
@@ -167,14 +266,13 @@
       <section class="blocco" id="bloccoStampe">
         <div class="label"><h2>STAMPE</h2><span class="riassunto" id="riassuntoStampe"></span><button type="button" class="section-toggle" aria-expanded="true" aria-label="Apri o chiudi">⌄</button></div>
         <div class="blocco-corpo">
-          <div class="scelte" id="sceltaNegozio" role="group" aria-label="Negozio"></div>
-          <div class="scelte" id="sceltaPeriodo" role="group" aria-label="Periodo"></div>
+          <div class="filtri-principali" id="filtriStampe"></div>
           <div id="corpoStampe"></div>
         </div>
       </section>
 
-      <section class="blocco" id="bloccoLoghi">
-        <div class="label"><h2>BACKUP LOGHI PERSONALI</h2><span class="riassunto" id="riassuntoLoghi"></span><button type="button" class="section-toggle" aria-expanded="true" aria-label="Apri o chiudi">⌄</button></div>
+      <section class="blocco is-collapsed" id="bloccoLoghi">
+        <div class="label"><h2>BACKUP LOGHI PERSONALI</h2><span class="riassunto" id="riassuntoLoghi"></span><button type="button" class="section-toggle" aria-expanded="false" aria-label="Apri o chiudi">⌄</button></div>
         <div class="blocco-corpo"><div id="corpoLoghi"></div></div>
       </section>
     </div>
@@ -186,6 +284,7 @@
 
     let negozi = [];
     let negozioScelto = null;
+    let fogliPerNegozio = {};
     let periodo = '30';
 
     const $ = id => document.getElementById(id);
@@ -207,8 +306,115 @@
     }
 
     // ----- Supabase: accesso e richieste (assets/js/supabase-operatore.js) -----
-    const api = (percorso, opzioni) => SupabaseOperatore.api(percorso, opzioni);
+    // Modalità dimostrativa (?demo): dati di esempio creati qui, niente letto o scritto su Supabase
+    const DEMO = new URLSearchParams(location.search).has('demo');
+    const api = DEMO ? apiDemo : (percorso, opzioni) => SupabaseOperatore.api(percorso, opzioni);
     window.addEventListener('supabase-operatore', () => mostra());
+
+    function datiDemo() {
+      if (datiDemo.dati) return datiDemo.dati;
+      let seme = 7;
+      const caso = () => (seme = (seme * 16807) % 2147483647) / 2147483647;
+      const tra = (a, b) => a + Math.floor(caso() * (b - a + 1));
+      const ora = Date.now();
+      const giorni = g => new Date(ora - g * 86400000 - tra(0, 36000) * 1000).toISOString();
+      const negozi = [
+        { id: 'demo-lxry', cliente: 'Zaddick Srl', negozio: 'luxury', nome: 'LUXURY OUTLET', token: 'demo0000000000000000000000000001', attivo: true, creato_il: giorni(60), ultimo_invio: new Date(ora - 3 * 3600000).toISOString(), versione: 'V 1.2.66 2026' },
+        { id: 'demo-tebe', cliente: 'Tebe 96 Srl', negozio: 'tebe', nome: 'TEBE', token: 'demo0000000000000000000000000002', attivo: true, creato_il: giorni(60), ultimo_invio: new Date(ora - 20 * 3600000).toISOString(), versione: 'V 1.2.66 2026' },
+        { id: 'demo-ophilya', cliente: 'Tebe 96 Srl', negozio: 'ophilya', nome: 'OPHILYA', token: 'demo0000000000000000000000000003', attivo: true, creato_il: giorni(60), ultimo_invio: new Date(ora - 2 * 86400000).toISOString(), versione: 'V 1.2.66 2026' }
+      ];
+      const A4 = [210, 297];
+      const pagine = {
+        'demo-lxry': [
+          ['Cartello Semplice', 'cartelli', 'cartelli_semplici.html', 'cartellosemplice.png', 9], ['Outlet', 'cartelli', 'cartelli_outlet.html', 'outlet.png', 12],
+          ['Outlet Multi', 'cartelli', 'cartelli_outletmulti.html', 'cartellomulti.png', 5], ['Multi Brand', 'cartelli', 'cartelli_multireferenza.html', 'duereferenze.png', 3],
+          ['Percentuale', 'cartelli', 'cartellopercentuale.html', 'percentuale.png', 6], ['Last Chance', 'cartelli', 'cartelli_lastchance.html', 'lastchance.png', 4],
+          ['Paletto 15x10', 'cartelli', 'cartello_banco.html', 'cartellobanco.png', 4], ['Cartello Magazzino', 'cartelli', 'magazzino.html', 'magazzinothumb.png', 2],
+          ['Promo Multibrand', 'promo', 'promo_multibrand.html', 'promomultibrand.png', 3], ['Black Friday', 'promo', 'blackfriday.html', 'blackfriday.png', 2],
+          ['Xmas Ball', 'promo', 'xmas_ball.html', 'xmasball.png', 1], ['Cartellini Vetrina', 'cartellini', 'cartellinivetrina.html', 'cartellini.png', 5],
+          ['Cartellini Promo', 'cartellini', 'cartellinipromo.html', 'cartellinipromo.png', 3], ['Quadrati', 'cartellini', 'cartelliniquadrati.html', 'cartelliniquadrati.png', 2],
+          ['Prezzi Vetrina', 'cartellini', 'prezzivetrina.html', 'prezzivetrina.png', 2]
+        ],
+        'demo-tebe': [
+          ['Cartello Semplice', 'cartelli', 'cartelli_semplici.html', 'semplicethumb.png', 7], ['Cartello Sale', 'cartelli', 'cartelli_sale.html', 'salethumb.png', 8],
+          ['Cartello Brand', 'cartelli', 'cartelli_brand.html', 'brandthumb.png', 4], ['Percentuale', 'cartelli', 'cartellopercentuale.html', 'percentualethumb.png', 5],
+          ['Multi Articolo', 'cartelli', 'cartelli_multiarticolo.html', 'multithumb.png', 2], ['Albero Accessori', 'cartelli', 'albero.html', 'alberothumb.png', 3],
+          ['Cornici 10 x 15', 'cartelli', 'cornici10x15.html', 'cornicithumb.png', 4], ['Cornice A4', 'cartelli', 'cornice21x27.html', 'cornice21x27thumb.png', 2],
+          ['Paletto 13 x 9,5', 'cartelli', 'paletto.html', 'palettothumb.png', 5], ['Cartellini TEBE', 'cartellini', 'cartellinitebe.html', 'cartellinitebethumb.png', 4],
+          ['Cartellini LXRY', 'cartellini', 'cartellinilxry.html', 'cartellinithumb.png', 3], ['Prezzi Vetrina', 'cartellini', 'prezzivetrina.html', 'prezzivetrinathumb.png', 2]
+        ],
+        'demo-ophilya': [
+          ['Albero Accessori', 'cartelli', 'albero-ophilya.html', 'alberoophilyathumb.png', 4], ['Paletto 15x10', 'cartelli', 'paletto-ophilya.html', 'palettoophilyathumb.png', 3]
+        ]
+      };
+      const etichette = {
+        'demo-lxry': [['Outlet Doppio Prezzo', 'doppioprezzo.png'], ['Prezzo Finale', 'finalprice.png'], ['Promo -50%', 'promo50.png'], ['Taglie', 'taglie.png'], ['Taglie Doppia Cifra', 'tagliedoppiacifra.png']],
+        'demo-tebe': [1, 2, 3, 4, 5].map(n => [`Layout ${n}`, `label${n}thumb.png`]),
+        'demo-ophilya': [1, 2, 3, 4].map(n => [`Layout ${n}`, `label${n}thumb-ophilya.png`])
+      };
+      const cartella = { 'demo-lxry': 'luxury', 'demo-tebe': 'tebe', 'demo-ophilya': 'ophilya' };
+      const stampe = [];
+      const dymo = [];
+      negozi.forEach(n => {
+        pagine[n.id].forEach(([nome, tipo, pagina, miniatura, quanti]) => {
+          for (let i = 0; i < quanti; i++) {
+            const ultima = tra(0, 58);
+            const orizzontale = tipo === 'cartellini' && pagina !== 'prezzivetrina.html';
+            stampe.push({ id: `${n.id}-s${stampe.length}`, negozio_id: n.id, impronta: `demo${stampe.length}`, nome, titolo: nome, tipo,
+              pagina: `${cartella[n.id]}/${pagina}`, mm_larghezza: orizzontale ? 282 : A4[0], mm_altezza: orizzontale ? 196 : (pagina === 'magazzino.html' && caso() < .5 ? 148.5 : A4[1]),
+              orientamento: orizzontale ? 'landscape' : 'portrait',
+              volte: caso() < .6 ? 1 : tra(2, 6), prima_stampa: giorni(ultima + tra(0, 10)), stampata_il: giorni(ultima) });
+          }
+        });
+        etichette[n.id].forEach(([nome, miniatura]) => {
+          for (let i = 0; i < tra(1, 4); i++) {
+            const ultima = tra(0, 28);
+            const volte = tra(1, 5);
+            dymo.push({ id: `${n.id}-d${dymo.length}`, negozio_id: n.id, layout: nome.toLowerCase().replace(/\W+/g, '-'), nome,
+              volte, copie: volte * tra(1, 12),
+              prima_stampa: giorni(ultima + tra(0, 5)), stampata_il: giorni(ultima) });
+          }
+        });
+      });
+      const loghi = { 'demo-lxry': ['ARMANI.png', 'BALMAIN.PNG', 'BLAUER.png', 'BURBERRY.png', 'BLUMARINE.png', 'AVIREX.png', 'BALDININI.png'], 'demo-tebe': ['PINKO.png', 'SALOME.png', 'DIXIE.png', 'OKKIA.png'] };
+      const backup = Object.entries(loghi).map(([id, file]) => ({ negozio_id: id, numero: file.length, aggiornato_il: giorni(tra(0, 2)),
+        backup: { version: 1, negozio: cartella[id], exportedAt: giorni(0), logos: file.map((f, i) => ({ id: `demo-${i}`, name: f.replace(/\.\w+$/, '').replace(/_/g, ' '), data: `assets/logos/${cartella[id]}/${f}` })) } }));
+      // stampe di ogni giorno: le stampe di ogni foglio sparse tra la prima e l'ultima stampa
+      const giornoLocale = ms => { const d = new Date(ms); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+      const giorniStampe = [];
+      const spargi = (r, genere) => {
+        const da = Date.parse(r.prima_stampa);
+        const a = Date.parse(r.stampata_il);
+        const conti = new Map();
+        for (let k = 0; k < r.volte; k++) {
+          const g = giornoLocale(k === 0 ? a : da + caso() * (a - da));
+          const c = conti.get(g) || { volte: 0, copie: 0 };
+          c.volte += 1;
+          c.copie += genere === 'dymo' ? Math.max(1, Math.round(r.copie / r.volte)) : 0;
+          conti.set(g, c);
+        }
+        conti.forEach((c, giorno) => giorniStampe.push({ negozio_id: r.negozio_id, genere, impronta: r.impronta, giorno, ...c }));
+      };
+      stampe.forEach(r => spargi(r, 'foglio'));
+      dymo.forEach(r => { r.impronta = `demo-d${r.id}`; spargi(r, 'dymo'); });
+      return (datiDemo.dati = { negozi, stampe, dymo, backup, giorni: giorniStampe });
+    }
+
+    async function apiDemo(percorso, opzioni = {}) {
+      if (opzioni.metodo && opzioni.metodo !== 'GET') throw new Error('modalità dimostrativa: niente modifiche');
+      const d = datiDemo();
+      const [tabella, query = ''] = percorso.split('?');
+      const parametri = new URLSearchParams(query);
+      let righe = { negozi_clienti: d.negozi, stampe: d.stampe, etichette_dymo: d.dymo, backup_loghi: d.backup, stampe_giorni: d.giorni }[tabella] || [];
+      const negozio = parametri.get('negozio_id');
+      if (negozio) righe = righe.filter(r => r.negozio_id === negozio.replace(/^eq\./, ''));
+      const dal = parametri.get('stampata_il');
+      if (dal) righe = righe.filter(r => r.stampata_il >= dal.replace(/^gte\./, ''));
+      const dalGiorno = parametri.get('giorno');
+      if (dalGiorno) righe = righe.filter(r => r.giorno >= dalGiorno.replace(/^gte\./, ''));
+      if (tabella === 'stampe' || tabella === 'etichette_dymo') righe = [...righe].sort((a, b) => b.stampata_il.localeCompare(a.stampata_il));
+      return JSON.parse(JSON.stringify(righe));
+    }
 
     $('accesso').addEventListener('submit', async evento => {
       evento.preventDefault();
@@ -224,20 +430,26 @@
     $('aggiorna').addEventListener('click', () => caricaNegozi());
 
     function mostra() {
-      const dentro = SupabaseOperatore.dentro;
+      const dentro = DEMO || SupabaseOperatore.dentro;
       $('accesso').hidden = dentro;
       $('contenuto').hidden = !dentro;
-      $('esci').hidden = !dentro;
+      $('esci').hidden = !dentro || DEMO;
       $('aggiorna').hidden = !dentro;
       if (!dentro) { stato('accedi con l\'email e la password dell\'operatore (supabase › authentication › users)'); return; }
       caricaNegozi();
     }
 
-    // ----- Sezioni apribili -----
+    // ----- Sezioni apribili: una alla volta (aprendone una le altre si chiudono); di partenza aperta Stampe -----
+    const chiudiBlocco = (blocco, chiuso) => {
+      blocco.classList.toggle('is-collapsed', chiuso);
+      blocco.querySelector(':scope > .label .section-toggle').setAttribute('aria-expanded', String(!chiuso));
+    };
     document.querySelectorAll('.blocco > .label').forEach(label => label.addEventListener('click', () => {
       const blocco = label.parentElement;
-      const chiuso = blocco.classList.toggle('is-collapsed');
-      label.querySelector('.section-toggle').setAttribute('aria-expanded', String(!chiuso));
+      const apre = blocco.classList.contains('is-collapsed');
+      if (apre) document.querySelectorAll('.blocco').forEach(altro => { if (altro !== blocco) chiudiBlocco(altro, true); });
+      chiudiBlocco(blocco, !apre);
+      if (apre) blocco.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }));
 
     // ----- Negozi clienti -----
@@ -260,11 +472,16 @@
         const conti = await api('stampe?select=negozio_id,volte');
         const fogli = {};
         conti.forEach(r => { fogli[r.negozio_id] = (fogli[r.negozio_id] || 0) + r.volte; });
+        fogliPerNegozio = fogli;
         disegnaNegozi(fogli);
+        // aperta dalla scheda di un cliente (Gestione clienti › statistiche ›): si parte da quel negozio
+        let richiesto = null;
+        try { richiesto = sessionStorage.getItem('storecraft_statistiche_negozio'); sessionStorage.removeItem('storecraft_statistiche_negozio'); } catch { /* niente */ }
+        if (richiesto && negozi.some(n => n.id === richiesto)) negozioScelto = richiesto;
         if (!negozi.some(n => n.id === negozioScelto)) negozioScelto = negozi[0]?.id || null;
         disegnaScelte();
         await Promise.all([caricaStampe(), caricaLoghi()]);
-        stato(`connesso come ${SupabaseOperatore.email || 'operatore'} · ${negozi.length} ${negozi.length === 1 ? 'negozio cliente' : 'negozi clienti'}`, 'ok');
+        stato(DEMO ? `modalità dimostrativa · dati di esempio, niente letto o scritto su supabase · ` : `connesso come ${SupabaseOperatore.email || 'operatore'} · ${negozi.length} ${negozi.length === 1 ? 'negozio cliente' : 'negozi clienti'}`, 'ok');
       } catch (errore) {
         stato(errore.message, 'err');
       }
@@ -276,7 +493,7 @@
       const suoi = negozi.filter(x => x.cliente === n.cliente && x.attivo);
       const elenco = suoi.map(x => `'${x.negozio}'`).join(', ');
       const codici = suoi.map(x => `${x.negozio}: '${x.token}'`).join(', ');
-      return `Negozi.installa([${elenco}], { statistiche: { ${codici} } });`;
+      return `Negozi.installa([${elenco}], { copiaCliente: true, statistiche: { ${codici} } });`;
     }
 
     function disegnaNegozi(fogli) {
@@ -284,60 +501,113 @@
       $('clientiNoti').replaceChildren(...[...new Set(negozi.map(n => n.cliente))].map(c => { const o = document.createElement('option'); o.value = c; return o; }));
       $('nessunNegozio').hidden = negozi.length > 0;
       $('riassuntoNegozi').textContent = `${negozi.length} ${negozi.length === 1 ? 'negozio' : 'negozi'} · ${negozi.filter(n => n.ultimo_invio).length} con invii`;
-      $('righeNegozi').replaceChildren(...negozi.map(n => {
-        const riga = nodo('tr', n.attivo ? '' : 'spento');
-        const nome = nodo('td');
-        nome.append(nodo('div', 'nome-negozio', n.nome), nodo('div', 'tenue', `${n.negozio} · ${fogli[n.id] || 0} fogli stampati`));
-        const invio = nodo('td', n.ultimo_invio ? 'verde' : 'tenue', fa(n.ultimo_invio));
-        invio.title = data(n.ultimo_invio);
-        const codice = nodo('td');
-        const blocco = nodo('div', 'codice');
-        const testo = nodo('code', '', '••••••••');
-        const mostraCodice = nodo('button', 'comando', 'mostra');
-        mostraCodice.type = 'button';
-        mostraCodice.addEventListener('click', () => {
-          const visibile = testo.textContent !== '••••••••';
-          testo.textContent = visibile ? '••••••••' : n.token;
-          mostraCodice.textContent = visibile ? 'mostra' : 'nascondi';
-        });
-        const copia = nodo('button', 'comando', 'copia riga');
-        copia.type = 'button';
-        copia.title = 'copia la riga per installati.js della copia del cliente (con tutti i negozi di questo cliente)';
-        copia.addEventListener('click', async () => {
-          try { await navigator.clipboard.writeText(rigaInstalla(n)); copia.textContent = 'copiata ✓'; }
-          catch { prompt('copia la riga per installati.js', rigaInstalla(n)); }
-          setTimeout(() => { copia.textContent = 'copia riga'; }, 2000);
-        });
-        blocco.append(testo, mostraCodice, copia);
-        codice.append(blocco);
-        const azioni = nodo('td', 'num');
-        const attiva = nodo('button', `comando ${n.attivo ? 'discreto' : 'pieno'}`, n.attivo ? 'disattiva' : 'riattiva');
-        attiva.type = 'button';
-        attiva.title = n.attivo ? 'sospende il codice: la copia non spedisce più dati, statistiche e loghi restano' : 'il codice torna valido';
-        attiva.addEventListener('click', async () => {
-          if (n.attivo && !confirm(`Disattivare il codice di ${n.nome} (${n.cliente})?
-
-La copia del cliente non potrà più spedire dati finché non lo riattivi. Statistiche e backup dei loghi già arrivati restano.`)) return;
-          try { await api(`negozi_clienti?id=eq.${n.id}`, { metodo: 'PATCH', corpo: { attivo: !n.attivo } }); caricaNegozi(); }
-          catch (errore) { stato(errore.message, 'err'); }
-        });
-        const elimina = nodo('button', 'comando rosso', 'elimina');
-        elimina.type = 'button';
-        elimina.title = 'elimina il negozio con tutte le sue statistiche e il backup dei loghi';
-        elimina.addEventListener('click', async () => {
-          if (!confirm(`Eliminare ${n.nome} (${n.cliente}) con tutte le sue statistiche e il backup dei loghi personali?`)) return;
-          if (!confirm(`Sei sicuro? Non si può annullare, e la copia del cliente non potrà più spedire dati con questo codice.`)) return;
-          try { await api(`negozi_clienti?id=eq.${n.id}`, { metodo: 'DELETE' }); stato(`${n.nome} eliminato`, 'ok'); caricaNegozi(); }
-          catch (errore) { stato(errore.message, 'err'); }
-        });
-        const gruppo = nodo('span', 'azioni-negozio');
-        gruppo.append(attiva, nodo('span', 'divisorio'), elimina);
-        azioni.append(gruppo);
-        riga.append(nome, nodo('td', '', n.cliente), invio, nodo('td', 'tenue', n.versione || '—'), codice, azioni);
-        return riga;
-      }));
+      $('righeNegozi').replaceChildren(...negozi.map(schedaNegozio));
     }
 
+    // Scheda di un negozio cliente: in vista logo, nome, cliente, stato con l'ultimo invio, versione e fogli stampati;
+    // «gestisci» apre il codice (mostra, copia riga) e disattiva / elimina
+    function schedaNegozio(n) {
+      const scheda = Negozi.scheda(n.negozio) || {};
+      const svg = percorso => `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${percorso}</svg>`;
+      const ICONE = {
+        // regolazioni: tre linee con i cursori (al posto dell'ingranaggio)
+        ingranaggio: svg('<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>'),
+        occhio: svg('<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'),
+        copia: svg('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'),
+        fatto: svg('<path d="M20 6 9 17l-5-5"/>')
+      };
+      const icona = (nome, etichetta) => {
+        const b = nodo('button', 'icona');
+        b.type = 'button';
+        b.title = etichetta;
+        b.setAttribute('aria-label', etichetta);
+        b.innerHTML = ICONE[nome];
+        return b;
+      };
+
+      const box = nodo('article', `scheda-negozio${n.attivo ? '' : ' spento'}`);
+      const logo = nodo('div', 'scheda-logo');
+      if (scheda.logoSplash) {
+        const img = document.createElement('img');
+        img.src = `assets/${scheda.logoSplash}`;
+        img.alt = n.nome;
+        logo.append(img);
+      } else logo.append(nodo('span', '', n.nome));
+
+      // ingranaggio nell'angolo: apre e chiude il pannello del negozio
+      const gestisci = icona('ingranaggio', `Gestisci ${n.nome}`);
+      gestisci.classList.add('scheda-gestisci');
+      gestisci.setAttribute('aria-expanded', 'false');
+      logo.append(gestisci);
+
+      const testa = nodo('div', 'scheda-testa');
+      testa.append(nodo('div', 'nome-negozio', n.nome), nodo('div', 'tenue', n.cliente));
+      const invio = nodo('div', `pallino ${!n.attivo ? 'fermo' : n.ultimo_invio ? 'vivo' : 'attesa'}`,
+        !n.attivo ? 'disattivato' : n.ultimo_invio ? `ultimo invio ${fa(n.ultimo_invio)}` : 'nessun invio');
+      invio.title = data(n.ultimo_invio);
+      const versione = n.versione ? n.versione.replace(/^V\s*/, 'v ').replace(/\s*20\d\d$/, '') : 'versione —';
+      const fatti = nodo('div', 'scheda-fatti');
+      fatti.append(nodo('span', 'gettone', versione), nodo('span', 'gettone', `${fogliPerNegozio[n.id] || 0} STAMPE`));
+      const corpo = nodo('div', 'scheda-corpo');
+      corpo.append(testa, invio, fatti);
+
+      // pannello: codice (un campo con le icone mostra e copia) e due pulsanti larghi uguale
+      const pannelloGestisci = nodo('div', 'scheda-pannello');
+      pannelloGestisci.hidden = true;
+      gestisci.addEventListener('click', () => {
+        pannelloGestisci.hidden = !pannelloGestisci.hidden;
+        gestisci.setAttribute('aria-expanded', String(!pannelloGestisci.hidden));
+      });
+      const campo = nodo('div', 'codice-campo');
+      const testo = nodo('code', '', '•••• •••• •••• ••••');
+      const mostra = icona('occhio', 'Mostra il codice');
+      mostra.addEventListener('click', () => {
+        const visibile = testo.textContent !== '•••• •••• •••• ••••';
+        testo.textContent = visibile ? '•••• •••• •••• ••••' : n.token;
+        mostra.classList.toggle('acceso', !visibile);
+        mostra.title = visibile ? 'Mostra il codice' : 'Nascondi il codice';
+      });
+      const copia = icona('copia', 'Copia la riga per installati.js');
+      copia.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(rigaInstalla(n)); }
+        catch { prompt('copia la riga per installati.js', rigaInstalla(n)); return; }
+        copia.innerHTML = ICONE.fatto;
+        copia.classList.add('acceso');
+        setTimeout(() => { copia.innerHTML = ICONE.copia; copia.classList.remove('acceso'); }, 1800);
+      });
+      campo.append(testo, mostra, copia);
+
+      const attiva = nodo('button', `azione ${n.attivo ? '' : 'oro'}`, n.attivo ? 'disattiva' : 'riattiva');
+      attiva.type = 'button';
+      attiva.title = n.attivo ? 'sospende il codice: la copia non spedisce più dati, statistiche e loghi restano' : 'il codice torna valido';
+      attiva.addEventListener('click', async () => {
+        if (n.attivo && !confirm(`Disattivare il codice di ${n.nome} (${n.cliente})?\n\nLa copia del cliente non potrà più spedire dati finché non lo riattivi. Statistiche e backup dei loghi già arrivati restano.`)) return;
+        try { await api(`negozi_clienti?id=eq.${n.id}`, { metodo: 'PATCH', corpo: { attivo: !n.attivo } }); caricaNegozi(); }
+        catch (errore) { stato(errore.message, 'err'); }
+      });
+      const elimina = nodo('button', 'azione rossa', 'elimina');
+      elimina.type = 'button';
+      elimina.title = 'elimina il negozio con tutte le sue statistiche e il backup dei loghi';
+      elimina.addEventListener('click', async () => {
+        if (!confirm(`Eliminare ${n.nome} (${n.cliente}) con tutte le sue statistiche e il backup dei loghi personali?`)) return;
+        if (!confirm('Sei sicuro? Non si può annullare, e la copia del cliente non potrà più spedire dati con questo codice.')) return;
+        try { await api(`negozi_clienti?id=eq.${n.id}`, { metodo: 'DELETE' }); stato(`${n.nome} eliminato`, 'ok'); caricaNegozi(); }
+        catch (errore) { stato(errore.message, 'err'); }
+      });
+      const azioni = nodo('div', 'scheda-azioni');
+      azioni.append(attiva, elimina);
+      pannelloGestisci.append(nodo('div', 'etichetta-pannello', 'codice per le statistiche'), campo, azioni);
+
+      box.append(logo, corpo, pannelloGestisci);
+      return box;
+    }
+
+    $('apriRegistra').addEventListener('click', () => {
+      const modulo = $('nuovoNegozio');
+      modulo.hidden = !modulo.hidden;
+      $('apriRegistra').textContent = modulo.hidden ? '+ registra un negozio' : 'chiudi ×';
+      if (!modulo.hidden) $('nnCliente').focus();
+    });
     $('nuovoNegozio').addEventListener('submit', async evento => {
       evento.preventDefault();
       try {
@@ -353,24 +623,264 @@ La copia del cliente non potrà più spedire dati finché non lo riattivi. Stati
     });
 
     // ----- Stampe -----
-    function disegnaScelte() {
-      $('sceltaNegozio').replaceChildren(nodo('span', 'etichetta', 'negozio:'), ...negozi.map(n => {
-        const b = nodo('button', '', n.nome);
-        b.type = 'button';
-        b.setAttribute('aria-pressed', String(n.id === negozioScelto));
-        b.addEventListener('click', () => { negozioScelto = n.id; disegnaScelte(); caricaStampe(); });
-        return b;
-      }));
-      $('sceltaPeriodo').replaceChildren(nodo('span', 'etichetta', 'periodo:'), ...PERIODI.map(([valore, nome]) => {
+    // Dal 22 ottobre 2026 i conteggi per periodo vengono dalle stampe di ogni giorno (tabella stampe_giorni,
+    // supabase/aggiorna-03.sql): esatti per giorno, mese e anno. Senza quella tabella (aggiornamento non ancora eseguito)
+    // ogni foglio conta tutte le sue stampe sul giorno dell'ultima, come prima. Filtri: negozio, periodo, sezione
+    // (cartelli, cartellini, promo, etichette dymo) e pagina (o layout per le dymo)
+    const SEZIONI = [['tutte', 'tutte'], ['cartelli', 'cartelli'], ['cartellini', 'cartellini'], ['promo', 'promo'], ['dymo', 'etichette dymo']];
+    const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+    let sezione = 'tutte';
+    let pagina = '';
+    let datiStampe = null;     // { fogli: Map, dymo: Map, giorni: [{ genere, impronta, giorno, volte, copie }], esatti }
+
+    const giornoDi = ms => {
+      const d = new Date(ms);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    };
+    const inizioPeriodo = () => periodo === 'tutto' ? null : giornoDi(Date.now() - (Number(periodo) - 1) * 86400000);
+    const nomeGiorno = g => { const [, m, d] = g.split('-'); return `${Number(d)} ${MESI[Number(m) - 1]}`; };
+    const nomeMese = m => { const [a, n] = m.split('-'); return `${MESI[Number(n) - 1]} ${a.slice(2)}`; };
+
+    function segmenti(contenitore, titolo, voci, scelta, quandoCambia, classe = 'filtro') {
+      const gruppo = nodo('div', 'segmenti');
+      gruppo.setAttribute('role', 'group');
+      gruppo.setAttribute('aria-label', titolo);
+      voci.forEach(([valore, nome]) => {
         const b = nodo('button', '', nome);
         b.type = 'button';
-        b.setAttribute('aria-pressed', String(valore === periodo));
-        b.addEventListener('click', () => { periodo = valore; disegnaScelte(); caricaStampe(); });
-        return b;
-      }));
+        b.setAttribute('aria-pressed', String(valore === scelta));
+        b.addEventListener('click', () => quandoCambia(valore));
+        gruppo.append(b);
+      });
+      const filtro = nodo('div', classe);
+      filtro.append(nodo('span', 'filtro-nome', titolo), gruppo);
+      contenitore.append(filtro);
     }
 
-    const filtroPeriodo = () => periodo === 'tutto' ? '' : `&stampata_il=gte.${new Date(Date.now() - Number(periodo) * 86400000).toISOString()}`;
+    // Selettori principali, in cima: negozio e periodo, in due riquadri grandi con il titolo al centro
+    function disegnaScelte() {
+      const filtri = $('filtriStampe');
+      filtri.replaceChildren();
+      segmenti(filtri, 'negozio', negozi.map(n => [n.id, n.nome]), negozioScelto, valore => { negozioScelto = valore; pagina = ''; disegnaScelte(); caricaStampe(); }, 'filtro grande');
+      segmenti(filtri, 'periodo', PERIODI, periodo, valore => { periodo = valore; disegnaScelte(); caricaStampe(); }, 'filtro grande');
+    }
+
+    // Filtri del dettaglio (grafici e tabelle): sezione e pagina (o layout per le DYMO)
+    function filtriDettaglio() {
+      const filtri = nodo('div', 'filtri-dettaglio');
+      segmenti(filtri, 'sezione', SEZIONI, sezione, valore => { sezione = valore; pagina = ''; disegnaStampe(); });
+      const scelta = nodo('select', 'scelta-pagina');
+      scelta.setAttribute('aria-label', sezione === 'dymo' ? 'Layout' : 'Pagina');
+      const voci = [...new Set(eventi(false).map(e => e.meta.nome))].sort((a, b) => a.localeCompare(b, 'it'));
+      scelta.append(Object.assign(nodo('option', '', sezione === 'dymo' ? 'tutti i layout' : 'tutte le pagine'), { value: '' }),
+        ...voci.map(v => Object.assign(nodo('option', '', v), { value: v })));
+      scelta.value = voci.includes(pagina) ? pagina : '';
+      scelta.addEventListener('change', () => { pagina = scelta.value; disegnaStampe(); });
+      const filtro = nodo('div', 'filtro');
+      filtro.append(nodo('span', 'filtro-nome', sezione === 'dymo' ? 'layout' : 'pagina'), scelta);
+      filtri.append(filtro);
+      return filtri;
+    }
+
+    async function caricaStampe() {
+      const corpo = $('corpoStampe');
+      if (!negozioScelto) { corpo.replaceChildren(nodo('p', 'vuoto', 'nessun negozio cliente')); $('riassuntoStampe').textContent = ''; return; }
+      corpo.replaceChildren(nodo('p', 'vuoto', 'lettura…'));
+      const dal = inizioPeriodo();
+      const filtro = `negozio_id=eq.${negozioScelto}${dal ? `&stampata_il=gte.${new Date(`${dal}T00:00`).toISOString()}` : ''}`;
+      try {
+        const [stampe, dymo] = await Promise.all([
+          api(`stampe?select=id,impronta,nome,titolo,tipo,pagina,mm_larghezza,mm_altezza,orientamento,volte,prima_stampa,stampata_il&${filtro}&order=stampata_il.desc&limit=2000`),
+          api(`etichette_dymo?select=id,impronta,layout,nome,volte,copie,prima_stampa,stampata_il&${filtro}&order=stampata_il.desc&limit=2000`)
+        ]);
+        let giorni = null;
+        try {
+          giorni = await api(`stampe_giorni?select=genere,impronta,giorno,volte,copie&negozio_id=eq.${negozioScelto}${dal ? `&giorno=gte.${dal}` : ''}&limit=50000`);
+        } catch (errore) {
+          console.warn('Statistiche: stampe di ogni giorno non lette (supabase/aggiorna-03.sql non eseguito?)', errore);
+        }
+        const esatti = Array.isArray(giorni);
+        if (!esatti) {
+          giorni = [...stampe.map(r => ({ genere: 'foglio', impronta: r.impronta, giorno: giornoDi(r.stampata_il), volte: r.volte, copie: 0 })),
+            ...dymo.map(r => ({ genere: 'dymo', impronta: r.impronta, giorno: giornoDi(r.stampata_il), volte: r.volte, copie: r.copie }))];
+        }
+        datiStampe = {
+          fogli: new Map(stampe.map(r => [r.impronta, { ...r, nome: r.nome || r.titolo || 'foglio' }])),
+          dymo: new Map(dymo.map(r => [r.impronta, { ...r, nome: r.nome || r.layout }])),
+          giorni, esatti
+        };
+        disegnaScelte();
+        disegnaStampe();
+      } catch (errore) {
+        corpo.replaceChildren(nodo('p', 'vuoto rossa', errore.message));
+      }
+    }
+
+    // Le stampe di ogni giorno del periodo, con il foglio (o l'etichetta) a cui appartengono, filtrate per sezione
+    // (e per pagina, se conPagina)
+    function eventi(conPagina = true, conSezione = true) {
+      return datiStampe.giorni.map(g => ({ ...g, meta: (g.genere === 'dymo' ? datiStampe.dymo : datiStampe.fogli).get(g.impronta) }))
+        .filter(e => e.meta)
+        .filter(e => !conSezione || sezione === 'tutte' || (sezione === 'dymo' ? e.genere === 'dymo' : e.genere === 'foglio' && e.meta.tipo === sezione))
+        .filter(e => !conPagina || !pagina || e.meta.nome === pagina);
+    }
+
+    function disegnaStampe() {
+      const corpo = $('corpoStampe');
+      const tutti = eventi();
+      const fogli = tutti.filter(e => e.genere === 'foglio');
+      const dymo = tutti.filter(e => e.genere === 'dymo');
+      const somma = (lista, campo = 'volte') => lista.reduce((s, e) => s + e[campo], 0);
+      const totaleFogli = somma(fogli);
+      const totaleCopie = somma(dymo, 'copie');
+      const parti = [];
+      if (!datiStampe.esatti) parti.push(nodo('p', 'avviso-dati', 'conteggi per periodo approssimati: esegui supabase/aggiorna-03.sql in supabase › sql editor per le stampe di ogni giorno'));
+
+      // riepilogo del negozio nel periodo: a sinistra il logo, a destra i totali (tutte le sezioni)
+      const tuttiNegozio = eventi(false, false);
+      const fogliNegozio = tuttiNegozio.filter(e => e.genere === 'foglio');
+      const dymoNegozio = tuttiNegozio.filter(e => e.genere === 'dymo');
+      $('riassuntoStampe').textContent = `${somma(fogliNegozio)} stampe · ${somma(dymoNegozio, 'copie')} etichette dymo`;
+      const n = negozi.find(x => x.id === negozioScelto) || {};
+      const schedaNegozio = Negozi.scheda(n.negozio) || {};
+      const riepilogo = nodo('div', 'riepilogo');
+      const carta = nodo('div', 'riepilogo-negozio');
+      if (schedaNegozio.logoSplash) {
+        const img = document.createElement('img');
+        img.src = `assets/${schedaNegozio.logoSplash}`;
+        img.alt = n.nome || '';
+        carta.append(img);
+      } else carta.append(nodo('div', 'nome-negozio', n.nome || ''));
+      carta.append(nodo('div', 'tenue', n.cliente || ''),
+        nodo('div', 'riepilogo-periodo', (PERIODI.find(([v]) => v === periodo) || [, ''])[1]));
+      const numeri = nodo('div', 'numeri');
+      numeri.append(
+        numero(somma(fogliNegozio), 'stampe'),
+        numero(new Set(fogliNegozio.map(e => e.impronta)).size, 'fogli diversi'),
+        ...['cartelli', 'cartellini', 'promo'].map(t => numero(somma(fogliNegozio.filter(e => e.meta.tipo === t)), t)),
+        numero(somma(dymoNegozio, 'copie'), 'etichette dymo'),
+        numero(somma(dymoNegozio), 'stampe dymo'),
+        numero(new Set(tuttiNegozio.map(e => e.giorno)).size, 'giorni con stampe'));
+      riepilogo.append(carta, numeri);
+      parti.push(riepilogo, filtriDettaglio());
+
+      // stampe nel tempo: per giorno (7 e 30 giorni), per mese (un anno e tutto)
+      const misura = sezione === 'dymo' ? 'copie' : 'volte';
+      const conta = sezione === 'dymo' ? dymo : fogli;
+      parti.push(pannello(sezione === 'dymo' ? 'etichette dymo nel tempo' : 'fogli stampati nel tempo', grafico(conta, misura, sezione === 'dymo' ? ['etichetta', 'etichette'] : ['foglio', 'fogli'])));
+
+      // pagine (o layout) più usate, e fogli per sezione
+      const affiancati = nodo('div', 'affiancati');
+      const perNome = new Map();
+      conta.forEach(e => perNome.set(e.meta.nome, (perNome.get(e.meta.nome) || 0) + e[misura]));
+      if (perNome.size) {
+        affiancati.append(pannello(sezione === 'dymo' ? 'layout più usati (etichette)' : 'pagine più usate (fogli)',
+          barre([...perNome].map(([nome, valore]) => ({ nome, valore })).sort((a, b) => b.valore - a.valore).slice(0, 12))));
+      }
+      if (sezione === 'tutte' && !pagina && totaleFogli) {
+        affiancati.append(pannello('fogli per sezione',
+          barre(['cartelli', 'cartellini', 'promo'].map(t => ({ nome: t, valore: somma(fogli.filter(e => e.meta.tipo === t)) })).filter(v => v.valore))));
+      }
+      if (affiancati.children.length) parti.push(affiancati);
+
+      // ogni foglio (o etichetta) con i suoi dati di stampa: stampe nel periodo e in tutto (niente immagini)
+      const perFoglio = (lista, campo) => {
+        const mappa = new Map();
+        lista.forEach(e => mappa.set(e.impronta, (mappa.get(e.impronta) || 0) + e[campo]));
+        return [...mappa].map(([impronta, n]) => ({ n, r: lista.find(e => e.impronta === impronta).meta }))
+          .sort((a, b) => String(b.r.stampata_il).localeCompare(String(a.r.stampata_il)));
+      };
+      if (sezione !== 'dymo') {
+        const elenco = perFoglio(fogli, 'volte');
+        // prima colonna data e ora dell'ultima stampa: le righe sono in ordine di tempo, dalla più recente
+        const tabella = tabellaDati(['ultima stampa', 'pagina', 'sezione', 'stampe nel periodo', 'stampe in totale', 'formato'], elenco.map(({ n, r }) => [
+          data(r.stampata_il), [r.nome, r.pagina || ''], NOMI_TIPO[r.tipo] || r.tipo, n, r.volte,
+          `${r.mm_larghezza ? `${Math.round(r.mm_larghezza)} × ${Math.round(r.mm_altezza)} mm` : '—'}${r.orientamento === 'landscape' ? ' · orizzontale' : ''}`]));
+        parti.push(pannello(`fogli stampati (${elenco.length})`, elenco.length ? tabella : nodo('p', 'vuoto', 'nessun foglio stampato in questo periodo')));
+      }
+      if (sezione === 'tutte' || sezione === 'dymo') {
+        const elenco = perFoglio(dymo, 'copie');
+        const tabella = tabellaDati(['ultima stampa', 'layout', 'etichette nel periodo', 'etichette in totale', 'stampe in totale'], elenco.map(({ n, r }) => [
+          data(r.stampata_il), [r.nome, r.layout], n, r.copie, r.volte]));
+        parti.push(pannello(`etichette dymo (${elenco.length})`, elenco.length ? tabella : nodo('p', 'vuoto', 'nessuna etichetta dymo in questo periodo')));
+      }
+      corpo.replaceChildren(...parti);
+    }
+
+    function pannello(titolo, contenuto) {
+      const p = nodo('section', 'pannello');
+      p.append(nodo('h3', 'pannello-titolo', titolo), contenuto);
+      return p;
+    }
+
+    // Grafico a barre delle stampe nel tempo, con il valore al passaggio del mouse (e con la tastiera)
+    function grafico(lista, campo, [uno, tanti]) {
+      const perGiorno = new Map();
+      lista.forEach(e => perGiorno.set(e.giorno, (perGiorno.get(e.giorno) || 0) + e[campo]));
+      const oggi = giornoDi(Date.now());
+      let punti;
+      if (periodo === '7' || periodo === '30') {
+        punti = Array.from({ length: Number(periodo) }, (_, i) => {
+          const g = giornoDi(Date.now() - (Number(periodo) - 1 - i) * 86400000);
+          return { chiave: g, nome: nomeGiorno(g), valore: perGiorno.get(g) || 0 };
+        });
+      } else {
+        const perMese = new Map();
+        perGiorno.forEach((v, g) => perMese.set(g.slice(0, 7), (perMese.get(g.slice(0, 7)) || 0) + v));
+        const ultimo = oggi.slice(0, 7);
+        let primo = periodo === '365' ? giornoDi(Date.now() - 334 * 86400000).slice(0, 7) : ([...perMese.keys()].sort()[0] || ultimo);
+        if (primo > ultimo) primo = ultimo;
+        punti = [];
+        for (let [a, m] = primo.split('-').map(Number); `${a}-${String(m).padStart(2, '0')}` <= ultimo; m === 12 ? (a += 1, m = 1) : (m += 1)) {
+          const chiave = `${a}-${String(m).padStart(2, '0')}`;
+          punti.push({ chiave, nome: nomeMese(chiave), valore: perMese.get(chiave) || 0 });
+        }
+      }
+      const massimo = Math.max(1, ...punti.map(p => p.valore));
+      const tacca = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000].find(t => massimo / t <= 4) || Math.ceil(massimo / 4);
+      const cima = Math.ceil(massimo / tacca) * tacca;
+      const box = nodo('div', 'grafico');
+      const area = nodo('div', 'grafico-area');
+      for (let v = 0; v <= cima; v += tacca) {
+        const linea = nodo('div', 'grafico-linea');
+        linea.style.bottom = `${(v / cima) * 100}%`;
+        linea.append(nodo('span', '', String(v)));
+        area.append(linea);
+      }
+      const colonne = nodo('div', 'grafico-colonne');
+      const suggerimento = nodo('div', 'grafico-suggerimento');
+      suggerimento.hidden = true;
+      const ogni = Math.max(1, Math.ceil(punti.length / 10));
+      punti.forEach((p, i) => {
+        const colonna = nodo('div', 'grafico-colonna');
+        colonna.tabIndex = 0;
+        const testo = `${p.nome} · ${p.valore} ${p.valore === 1 ? uno : tanti}`;
+        colonna.setAttribute('aria-label', testo);
+        const barra = nodo('div', 'grafico-barra');
+        barra.style.height = p.valore ? `max(3px, ${(p.valore / cima) * 100}%)` : '0';
+        colonna.append(barra);
+        // le date sotto: una ogni tanto, e l'ultima solo se non tocca quella prima
+        if (i % ogni === 0 || (i === punti.length - 1 && i % ogni >= ogni / 2)) colonna.append(nodo('span', 'grafico-x', p.nome));
+        const mostra = () => {
+          suggerimento.replaceChildren(nodo('b', '', String(p.valore)), ` ${p.valore === 1 ? uno : tanti} · ${p.nome}`);
+          suggerimento.hidden = false;
+          const c = colonna.getBoundingClientRect();
+          const a = box.getBoundingClientRect();
+          suggerimento.style.left = `${c.left - a.left + c.width / 2}px`;
+          colonna.classList.add('attiva');
+        };
+        const nascondi = () => { suggerimento.hidden = true; colonna.classList.remove('attiva'); };
+        colonna.addEventListener('mouseenter', mostra);
+        colonna.addEventListener('focus', mostra);
+        colonna.addEventListener('mouseleave', nascondi);
+        colonna.addEventListener('blur', nascondi);
+        colonne.append(colonna);
+      });
+      area.append(colonne);
+      box.append(area, suggerimento);
+      if (!punti.some(p => p.valore)) box.append(nodo('p', 'grafico-vuoto', 'nessuna stampa in questo periodo'));
+      return box;
+    }
 
     function barre(voci) {
       const massimo = Math.max(1, ...voci.map(v => v.valore));
@@ -396,84 +906,53 @@ La copia del cliente non potrà più spedire dati finché non lo riattivi. Stati
       return n;
     }
 
-    function schedaFoglio({ anteprima, nome, tipo, righe }) {
-      const foglio = nodo('div', 'foglio');
-      const immagine = nodo('div', 'foglio-immagine');
-      if (anteprima) {
-        const img = document.createElement('img');
-        img.src = anteprima;
-        img.alt = nome;
-        img.loading = 'lazy';
-        immagine.append(img);
-      } else immagine.append(nodo('span', '', 'senza anteprima'));
-      const titolo = nodo('div', 'foglio-nome', nome);
-      titolo.title = nome;
-      foglio.append(immagine, titolo, nodo('div', 'foglio-tipo', tipo));
-      righe.forEach(r => foglio.append(nodo('div', 'tenue', r)));
-      return foglio;
-    }
-
-    async function caricaStampe() {
-      const corpo = $('corpoStampe');
-      if (!negozioScelto) { corpo.replaceChildren(nodo('p', 'vuoto', 'nessun negozio cliente')); $('riassuntoStampe').textContent = ''; return; }
-      corpo.replaceChildren(nodo('p', 'vuoto', 'lettura…'));
-      try {
-        const filtro = `negozio_id=eq.${negozioScelto}${filtroPeriodo()}`;
-        const [stampe, dymo] = await Promise.all([
-          api(`stampe?select=id,impronta,nome,titolo,tipo,pagina,mm_larghezza,mm_altezza,orientamento,anteprima,volte,prima_stampa,stampata_il&${filtro}&order=stampata_il.desc&limit=500`),
-          api(`etichette_dymo?select=id,layout,nome,anteprima,volte,copie,prima_stampa,stampata_il&${filtro}&order=stampata_il.desc&limit=500`)
-        ]);
-        const fogli = stampe.reduce((s, r) => s + r.volte, 0);
-        const copie = dymo.reduce((s, r) => s + r.copie, 0);
-        $('riassuntoStampe').textContent = `${fogli} fogli · ${copie} etichette dymo`;
-        const parti = [];
-        const numeri = nodo('div', 'numeri');
-        numeri.append(numero(fogli, 'fogli stampati'), numero(stampe.length, 'fogli diversi'),
-          ...['cartelli', 'cartellini', 'promo'].map(t => numero(stampe.filter(r => r.tipo === t).reduce((s, r) => s + r.volte, 0), NOMI_TIPO[t])),
-          numero(copie, 'etichette dymo'), numero(dymo.reduce((s, r) => s + r.volte, 0), 'stampe dymo'));
-        parti.push(numeri);
-
-        // pagine più usate
-        const perPagina = new Map();
-        stampe.forEach(r => perPagina.set(r.nome, (perPagina.get(r.nome) || 0) + r.volte));
-        if (perPagina.size) {
-          parti.push(nodo('p', 'sottotitolo', 'pagine più usate (fogli stampati)'),
-            barre([...perPagina].map(([nome, valore]) => ({ nome, valore })).sort((a, b) => b.valore - a.valore).slice(0, 12)));
-        }
-        // dymo per layout
-        const perLayout = new Map();
-        dymo.forEach(r => { const chiave = r.nome || r.layout; perLayout.set(chiave, (perLayout.get(chiave) || 0) + r.copie); });
-        if (perLayout.size) {
-          parti.push(nodo('p', 'sottotitolo', 'etichette dymo per layout (copie)'),
-            barre([...perLayout].map(([nome, valore]) => ({ nome, valore })).sort((a, b) => b.valore - a.valore)));
-        }
-        // ogni foglio con anteprima e dettagli
-        parti.push(nodo('p', 'sottotitolo', `fogli stampati (${stampe.length})`));
-        if (stampe.length) {
-          const griglia = nodo('div', 'fogli');
-          griglia.append(...stampe.map(r => schedaFoglio({
-            anteprima: r.anteprima, nome: r.nome || r.titolo || 'foglio', tipo: NOMI_TIPO[r.tipo] || r.tipo,
-            righe: [
-              `${r.volte} ${r.volte === 1 ? 'volta' : 'volte'} · ultima ${data(r.stampata_il)}`,
-              `prima ${data(r.prima_stampa)}`,
-              `${r.pagina || ''}${r.mm_larghezza ? ` · ${Math.round(r.mm_larghezza)} × ${Math.round(r.mm_altezza)} mm` : ''}${r.orientamento === 'landscape' ? ' · orizzontale' : ''}`
-            ]
-          })));
-          parti.push(griglia);
-        } else parti.push(nodo('p', 'vuoto', 'nessun foglio stampato in questo periodo'));
-        parti.push(nodo('p', 'sottotitolo', `etichette dymo (${dymo.length})`));
-        if (dymo.length) {
-          const griglia = nodo('div', 'fogli');
-          griglia.append(...dymo.map(r => schedaFoglio({
-            anteprima: r.anteprima, nome: r.nome || r.layout, tipo: 'dymo',
-            righe: [`${r.copie} ${r.copie === 1 ? 'copia' : 'copie'} in ${r.volte} ${r.volte === 1 ? 'stampa' : 'stampe'}`, `ultima ${data(r.stampata_il)}`]
-          })));
-          parti.push(griglia);
-        } else parti.push(nodo('p', 'vuoto', 'nessuna etichetta dymo in questo periodo'));
-        corpo.replaceChildren(...parti);
-      } catch (errore) {
-        corpo.replaceChildren(nodo('p', 'vuoto rossa', errore.message));
-      }
+    // Tabella dei dati di stampa: una riga per foglio o etichetta; una cella [nome, sotto] ha il nome e, piccolo, il file
+    const PASSO_TABELLA = 10;
+    function tabellaDati(titoli, righe) {
+      const scorre = nodo('div', 'tabella-scorre');
+      const tabella = nodo('table', 'tabella tabella-dati');
+      const testa = nodo('tr');
+      titoli.forEach((t, i) => testa.append(nodo('th', i && typeof righe[0]?.[i] === 'number' ? 'num' : '', t)));
+      const corpo = nodo('tbody');
+      righe.forEach(riga => {
+        const tr = nodo('tr');
+        riga.forEach(valore => {
+          if (Array.isArray(valore)) {
+            const td = nodo('td');
+            td.append(nodo('div', 'nome-negozio', valore[0]), nodo('div', 'tenue', valore[1]));
+            tr.append(td);
+          } else tr.append(nodo('td', typeof valore === 'number' ? 'num' : 'tenue', String(valore)));
+        });
+        corpo.append(tr);
+      });
+      tabella.append(nodo('thead'), corpo);
+      tabella.querySelector('thead').append(testa);
+      scorre.append(tabella);
+      if (righe.length <= PASSO_TABELLA) return scorre;
+      // si apre con le prime 10 righe: «mostra tutte» apre il resto, «mostra meno» torna alle prime 10
+      const tutte = [...corpo.children];
+      let viste = PASSO_TABELLA;
+      const piede = nodo('div', 'tabella-piede');
+      const conto = nodo('span', 'tenue');
+      const altre = nodo('button', 'comando');
+      altre.type = 'button';
+      const meno = nodo('button', 'comando discreto', 'mostra meno');
+      meno.type = 'button';
+      const aggiorna = () => {
+        tutte.forEach((tr, i) => { tr.hidden = i >= viste; });
+        const restano = tutte.length - viste;
+        conto.textContent = `${Math.min(viste, tutte.length)} di ${tutte.length}`;
+        altre.hidden = restano <= 0;
+        altre.textContent = `mostra tutte (altre ${restano}) ↓`;
+        meno.hidden = viste <= PASSO_TABELLA;
+      };
+      altre.addEventListener('click', () => { viste = tutte.length; aggiorna(); });
+      meno.addEventListener('click', () => { viste = PASSO_TABELLA; aggiorna(); scorre.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
+      piede.append(conto, altre, meno);
+      aggiorna();
+      const box = nodo('div');
+      box.append(scorre, piede);
+      return box;
     }
 
     // ----- Backup dei loghi personali -----
@@ -539,6 +1018,15 @@ La copia del cliente non potrà più spedire dati finché non lo riattivi. Stati
       const [riga] = await api(`backup_loghi?select=backup&negozio_id=eq.${n.id}`);
       return riga?.backup || { version: 1, negozio: n.negozio, logos: [] };
     }
+
+    // la scheda di un cliente nell'area operatore apre le statistiche di un suo negozio (sezione già caricata)
+    window.mostraNegozio = id => {
+      try { sessionStorage.removeItem('storecraft_statistiche_negozio'); } catch { /* niente */ }
+      if (!negozi.some(n => n.id === id)) return;
+      negozioScelto = id;
+      disegnaScelte();
+      caricaStampe();
+    };
 
     opzioniNegozio();
     mostra();

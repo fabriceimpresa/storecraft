@@ -15,9 +15,11 @@
    Nelle schede e in installati.js:
      Negozi.registra(id, scheda)  aggiunge la scheda di un negozio
      Negozi.installa([...])       dichiara i negozi installati e carica le loro schede;
-     Negozi.installa([...], { statistiche: { luxury: '<codice>' } })   così lo scrive Prepara copia nella copia per
-                                  un cliente, con il codice di ogni negozio per spedire le statistiche (statistiche.js,
-                                  sezione Statistiche dell'area operatore); la copia non ha l'area operatore
+     Negozi.installa([...], { copiaCliente: true, statistiche: { luxury: '<codice>' } })   così lo scrive Prepara copia
+                                  nella copia per un cliente, con il codice di ogni negozio per spedire le statistiche
+                                  (statistiche.js, sezione Statistiche dell'area operatore)
+     Negozi.copiaCliente          true nella copia per un cliente: la pagina operatore mostra solo Gestione loghi e
+                                  Pannello di controllo (loghi ufficiali e ghost delle pagine di quel cliente)
      Negozi.codiceStatistiche(id) codice del negozio per le statistiche (null se la copia non lo ha)
      Negozi.extra                 true se il menu IMPOSTAZIONI ha i set EXTRA (VINTAGE…): Negozi.installa([...], { extra: true });
                                   il progetto madre sì, le copie dei clienti no (dal 22 ottobre 2026) */
@@ -30,6 +32,7 @@
   let installati = [];
   let codiciStatistiche = {};
   let extra = false;
+  let copiaCliente = false;
 
   // Caricamento durante la lettura della pagina: i moduli che seguono trovano già schede e colori.
   function scrivi(html) {
@@ -51,6 +54,7 @@
     unico: () => (installati.length === 1 ? installati[0] : null),
     codiceStatistiche: id => codiciStatistiche[id] || null,
     get extra() { return extra; },
+    get copiaCliente() { return copiaCliente; },
     registra(id, scheda) {
       schede[id] = Object.freeze({ id, ...scheda });
     },
@@ -58,6 +62,7 @@
       installati = elenco.slice();
       codiciStatistiche = { ...(opzioni.statistiche || {}) };
       extra = Boolean(opzioni.extra);
+      copiaCliente = Boolean(opzioni.copiaCliente);
       installati.forEach(id => {
         scrivi(`<script src="${new URL(`${id}.js${versione}`, cartella).href}"><\/script>`);
       });

@@ -40,6 +40,8 @@
 .nn-titolo { margin: 0 0 10px; color: var(--nn-oro-chiaro); font: 500 26px/1.25 'Cinzel', serif; letter-spacing: .06em; }
 .nn-nota { margin: 0 0 22px; color: var(--nn-tenue); font-size: 12px; line-height: 1.6; }
 .nn-nota::before { content: '// '; color: var(--nn-oro); }
+/* note dell'area operatore nascoste (decisione del 22 ottobre 2026): restano solo quella del negozio aperto */
+.nn-nota:not(.nn-fatto .nn-nota), .nn-campo-nota { display: none; }
 
 /* passo 1: le due carte del tipo */
 .nn-tipi { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); gap: 18px; }

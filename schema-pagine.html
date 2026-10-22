@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-10"></script>
+  <script src="assets/js/negozi.js?v=20261022-13"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Pannello di controllo</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261022-10"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261022-13"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-10"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261022-13"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -129,6 +129,8 @@
     .blocco.is-collapsed .blocco-corpo { display: none; }
     .archivi .nota { margin-top: 14px; color: var(--tenue); font-size: 11.5px; }
     .archivi .nota::before { content: '// '; color: var(--oro); }
+    /* note dell'area operatore nascoste (decisione del 22 ottobre 2026) */
+    .archivi .nota { display: none; }
     .legenda { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 18px 0 22px; }
     /* riquadri cliccabili: portano al gruppo del loro tipo nella tabella */
     .legenda button { display: block; width: 100%; padding: 10px 12px; border: 1px solid var(--bordo); border-left: 3px solid var(--colore); border-radius: 4px;
@@ -233,6 +235,8 @@
 </div>
 
 <script>
+  // nella copia di un cliente (installati.js con copiaCliente) la tabella degli archivi dei dati non serve: si vede solo nel progetto madre
+  if (window.Negozi?.copiaCliente) document.getElementById('archivi').style.display = 'none';
   // Ogni controllo: [titolo breve, descrizione, funzione che dal testo della pagina dà true/false o un numero]
   const conta = (testo, regex) => (testo.match(regex) || []).length;
   const CONTROLLI = [
@@ -426,7 +430,7 @@
       tasto.type = 'button';
       tasto.className = 'insegna';
       tasto.setAttribute('role', 'tab');
-      tasto.setAttribute('aria-selected', String(id === 'luxury'));
+      tasto.setAttribute('aria-selected', String(id === Negozi.installati[0]));
       tasto.dataset.negozio = id;
       if (scheda.logoSplash) {
         const logo = document.createElement('img');
@@ -469,7 +473,7 @@
       const sezione = document.createElement('div');
       sezione.className = 'schema-negozio';
       sezione.dataset.negozio = id;
-      sezione.hidden = id !== 'luxury';
+      sezione.hidden = id !== Negozi.installati[0];
       const titolo = document.createElement('h3');
       titolo.textContent = Negozi.scheda(id)?.nome || id;
       sezione.append(titolo);
@@ -585,7 +589,7 @@
     ['local', 'Comunicazioni ufficiali', 'storecraft_bacheca_comunicazioni_<negozio>', 'per negozio', 'fogli ad anelli, scadenza, commenti (la foto sta in IndexedDB)', 'fino alla scadenza scelta; «non scade»: domanda dopo un anno', ['assets/js/bacheca.js'], 'storecraft_bacheca_comunicazioni_'],
     ['local', 'Chi scrive in Bacheca', 'storecraft_bacheca_autore_<negozio>', 'per negozio', 'il nome che firma note e commenti', 'finché non si cambia utente', ['assets/js/bacheca.js'], 'storecraft_bacheca_autore_'],
     ['local', 'Radio della dashboard', 'storecraft_radio_<negozio>', 'per negozio', '{ stazione, volume, faccia }: stazione e volume scelti, orologio o radio in vista', 'sempre', ['assets/js/radio.js'], 'storecraft_radio_'],
-    ['local', 'Statistiche spedite', 'storecraft_statistiche_<negozio> · _anteprime_ · _loghi_', 'per negozio', 'giorno dell\'ultimo invio a Supabase, fogli già spediti con l\'anteprima, impronta dell\'ultimo backup dei loghi', 'sempre (solo nelle copie con il codice del negozio)', ['assets/js/statistiche.js'], 'storecraft_statistiche_'],
+    ['local', 'Statistiche spedite', 'storecraft_statistiche_<negozio> · _loghi_', 'per negozio', 'giorno dell\'ultimo invio a Supabase, impronta dell\'ultimo backup dei loghi', 'sempre (solo nelle copie con il codice del negozio)', ['assets/js/statistiche.js'], 'storecraft_statistiche_'],
     ['local', 'Accesso dell\'operatore a Supabase', 'storecraft_operatore_supabase', 'comune', 'sessione della sezione Statistiche (token di accesso e di rinnovo)', 'finché non si esce', ['statistiche.html'], 'storecraft_operatore_supabase'],
     ['local', 'Nome della sezione comunicazioni', 'storecraft_bacheca_nome_comunicazioni_<negozio>', 'per negozio', 'es. «Staff Luxury» (max 30 caratteri)', 'finché non si rinomina', ['assets/js/bacheca.js'], 'storecraft_bacheca_nome_comunicazioni_'],
     ['local', 'Vecchie note (Blocco Note)', 'storecraft_blocco_note_<negozio>', 'per negozio', 'passate da sole alla Bacheca, poi cancellate', 'storico', ['assets/js/bacheca.js'], 'storecraft_blocco_note_', true],
@@ -612,11 +616,14 @@
     ['esterno', 'Stampante DYMO', '127.0.0.1:41951 (DYMO Connect)', 'comune', 'servizio sul computer del negozio per la stampa diretta delle etichette', 'nessun dato salvato', ['assets/js/dymo-direct.js'], '41951'],
     ['esterno', 'Città dalla rete', 'get.geojs.io', 'comune', 'città approssimata dall\'indirizzo IP, per il meteo (sola lettura)', 'nel meteo, un giorno', ['assets/js/meteo.js'], 'get.geojs.io'],
     ['esterno', 'Meteo', 'api.open-meteo.com', 'comune', 'tempo di adesso e nome della città in italiano (sola lettura, senza chiave)', 'nel meteo, 30 minuti', ['assets/js/meteo.js'], 'api.open-meteo.com'],
-    ['esterno', 'Statistiche dei clienti', 'Supabase (uzttznyyrhrqehejbxbf.supabase.co)', 'per negozio cliente', 'fogli stampati con anteprima e dettagli, etichette DYMO, backup dei loghi personali (supabase/schema.sql)', 'nel database, finché non si cancellano', ['assets/js/statistiche.js', 'statistiche.html'], 'uzttznyyrhrqehejbxbf'],
+    ['esterno', 'Statistiche dei clienti', 'Supabase (uzttznyyrhrqehejbxbf.supabase.co)', 'per negozio cliente', 'dati di stampa dei fogli (senza immagini), etichette DYMO, stampe di ogni giorno (stampe_giorni), versione della copia, backup dei loghi personali (supabase/schema.sql)', 'nel database, finché non si cancellano', ['assets/js/statistiche.js', 'statistiche.html'], 'uzttznyyrhrqehejbxbf'],
+    ['esterno', 'Anagrafica dei clienti', 'Supabase · tabella clienti', 'per cliente', 'scheda del cliente: numero cliente progressivo, data di registrazione, ragione sociale, sede legale, partita iva, codice sdi, pec, negozio, contatto interno e note; i negozi (negozi_clienti) le appartengono con cliente_id (supabase/aggiorna-02.sql)', 'nel database, finché non si cancella la scheda', ['operatore.html'], 'anaSchede'],
+    ['file', 'Comuni italiani', 'dati/comuni-italiani.js', 'comune', 'i 7904 comuni con provincia e cap, per le città dell\'anagrafica clienti (dati ISTAT, licenza MIT); solo nel progetto madre', 'nel progetto', ['operatore.html'], 'comuni-italiani'],
     ['esterno', 'Bacheca in cloud', 'Supabase', 'da decidere', 'per condividere la Bacheca tra computer e telefoni', 'in programma: non ancora usato', [], null]
   ];
 
   async function archivi() {
+    if (window.Negozi?.copiaCliente) return;   // nella copia di un cliente la tabella è nascosta: niente letture
     const legenda = document.getElementById('archivi-legenda');
     for (const [tipo, [nome, descrizione]] of Object.entries(TIPI_ARCHIVIO)) {
       const quanti = ARCHIVI.filter(a => a[0] === tipo && !a[8]).length;

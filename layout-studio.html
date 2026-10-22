@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261022-10"></script>
+<script src="assets/js/negozi.js?v=20261022-13"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>Layout Studio · STORE // CRAFT</title>
@@ -97,6 +97,9 @@
   .taglio { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed #c9c4bb; pointer-events: none; }
   .el { position: absolute; transform-origin: center center; }
   .el-testo { white-space: nowrap; }
+  /* doppio clic su un testo: il campo per scriverlo sul foglio, con il carattere, la grandezza e il colore del testo */
+  .testo-sul-foglio { position: absolute; z-index: 20; margin: 0; padding: 2px 4px; border: 1px solid var(--selezione); border-radius: 2px;
+    background: rgba(255, 255, 255, .94); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); outline: none; resize: none; overflow: hidden; white-space: pre; }
   .el img, .el canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
   .el.bloccato { pointer-events: none; }
   .sopra { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
@@ -129,9 +132,14 @@
   .guida.o { left: 0; right: 0; height: 0; border-top: 1px solid var(--guida); cursor: row-resize; }
   .guida::before { content: ''; position: absolute; inset: -4px; }
   .guida.attiva { border-color: #ff5ad1; }
+  /* guida trascinata attaccata a un bordo o alla metà del foglio: rosa come le linee dell'aggancio */
+  .guida.attaccata { border-color: #ff5ad1 !important; box-shadow: 0 0 4px rgba(255, 90, 209, .6); }
   .aggancio { position: absolute; z-index: 6; pointer-events: none; }
   .aggancio.v { top: 0; bottom: 0; border-left: 1px solid #ff5ad1; }
   .aggancio.o { left: 0; right: 0; border-top: 1px solid #ff5ad1; }
+  /* aggancio a un altro elemento: solo il tratto tra i due elementi */
+  .aggancio.v.tratto { bottom: auto; }
+  .aggancio.o.tratto { right: auto; }
   .avviso-vuoto { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--tenue); font-size: 13px; line-height: 1.7; }
   .avviso-vuoto strong { color: var(--oro-chiaro); }
 
@@ -200,6 +208,8 @@
   .contagocce { border: 1px solid var(--bordo); border-radius: 6px; background: #141311; color: var(--tenue); cursor: pointer; }
   .contagocce:hover { color: var(--oro-chiaro); border-color: var(--oro); }
   .nota { color: var(--tenue); font-size: 10.5px; line-height: 1.5; }
+  /* note dell'area operatore nascoste (decisione del 22 ottobre 2026) */
+  p.nota { display: none; }
   .gruppo-colore { display: flex; flex-direction: column; gap: 6px; }
   .vuoto-prop { color: var(--tenue); font-size: 11.5px; line-height: 1.6; text-align: center; padding: 18px 6px; }
   .ordine { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
@@ -425,14 +435,14 @@
     <span>selezione <b id="infoSel">nessuna</b></span>
     <span class="spazio"></span>
     <span class="messaggio" id="messaggio"></span>
-    <button id="magnetiche" aria-pressed="true" title="Guide magnetiche: gli elementi si agganciano a guide, bordi e centro del foglio">⌗ guide magnetiche</button>
+    <button id="magnetiche" aria-pressed="true" title="Guide magnetiche: gli elementi si agganciano a guide, bordi e centro del foglio e, come le guide automatiche di Photoshop, a bordi e centro degli altri elementi">⌗ guide magnetiche</button>
     <button id="mostraGuide" aria-pressed="true" title="Mostra o nascondi le guide (Ctrl+;)">guide visibili</button>
   </footer>
 
   <input type="file" id="fileImmagine" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
   <input type="file" id="fileFont" accept=".ttf,.otf,.woff,.woff2" hidden>
 
-<script src="assets/js/testi-pronti.js?v=20261022-10"></script>
+<script src="assets/js/testi-pronti.js?v=20261022-13"></script>
 
 <script>
 (() => {
@@ -457,6 +467,8 @@
     // viste dei cartelli (doppia cifra / descrizione): quella in prova nell'editor e quella da cui parte la pagina
     modo: { 1: 'doppia', 2: 'doppia' }, modoIniziale: { 1: 'doppia', 2: 'doppia' }, attivo: 1
   };
+  let testoInModifica = null;   // id del testo che si sta scrivendo sul foglio (doppio clic)
+  let guidaAttaccata = null;   // la guida trascinata in questo momento attaccata a un bordo o alla metà del foglio
   const vista = { z: 1, x: 40, y: 30, strumento: 'seleziona', forma: 'rettangolo', sel: null, unita: 'cm', magnetiche: true, guideVisibili: true,
     tolleranza: 32, contiguo: true, nuovaGuida: { asse: 'o', pos: 0 },
     entrambi: false };   // le modifiche dell'elemento scelto valgono anche per lo stesso elemento dell'altro cartello
@@ -595,6 +607,7 @@
     d.dataset.id = e.id;
     if (!e.visibile || !inVista(e)) d.style.display = 'none';
     if (e.bloccato) d.classList.add('bloccato');
+    if (e.id === testoInModifica) d.style.visibility = 'hidden';   // sotto il campo per scriverlo
     d.style.opacity = e.opacita == null ? 1 : e.opacita;
     const ruota = e.rotazione ? ` rotate(${e.rotazione}deg)` : '';
     if (e.tipo === 'testo') {
@@ -694,7 +707,7 @@
   function disegnaSopra() {
     sopra.replaceChildren();
     if (vista.guideVisibili) doc.guide.forEach(g => {
-      const d = el('div', `guida ${g.asse}`);
+      const d = el('div', `guida ${g.asse}${g === guidaAttaccata ? ' attaccata' : ''}`);
       d.dataset.guida = g.id;
       d.style.pointerEvents = 'auto';
       if (g.asse === 'v') d.style.left = `${vista.x + g.pos * MM * vista.z}px`;
@@ -907,9 +920,20 @@
   }
 
   // ---- puntatore sul foglio ----
-  let azione = null, spazio = false;
+  let azione = null, spazio = false, ultimoClic = null;
   scrivania.addEventListener('pointerdown', ev => {
     if (ev.button !== 0 && ev.button !== 1) return;
+    // doppio clic su un testo: due clic ravvicinati sullo stesso testo (il primo ridisegna il foglio, quindi il browser
+    // non genera il dblclick) aprono il campo per scriverlo sul foglio
+    const testoCliccato = ev.button === 0 && ev.target.closest('.el-testo');
+    if (testoCliccato && ultimoClic && ultimoClic.id === testoCliccato.dataset.id && performance.now() - ultimoClic.t < 450
+      && Math.hypot(ev.clientX - ultimoClic.x, ev.clientY - ultimoClic.y) < 6) {
+      ultimoClic = null;
+      ev.preventDefault();
+      scriviSulFoglio(testoCliccato);
+      return;
+    }
+    ultimoClic = testoCliccato ? { id: testoCliccato.dataset.id, t: performance.now(), x: ev.clientX, y: ev.clientY } : null;
     const p = daSchermo(ev.clientX, ev.clientY);
     const guida = ev.target.closest('[data-guida]');
     const maniglia = ev.target.closest('.maniglia');
@@ -981,7 +1005,16 @@
     if (azione.tipo === 'guida') {
       const g = azione.g;
       g.pos = Math.round((g.asse === 'v' ? p.x : p.y) * 10) / 10;
-      $('cursore').textContent = `guida ${g.asse === 'v' ? 'verticale' : 'orizzontale'} ${unita(g.pos)}`;
+      // effetto calamita (dal 23 ottobre 2026): vicino ai bordi o alla metà del foglio (e alla linea di taglio) la guida
+      // si attacca lì, con le guide magnetiche accese
+      const punti = g.asse === 'v'
+        ? [[0, 'bordo sinistro'], [doc.larghezza / 2, 'metà del foglio'], [doc.larghezza, 'bordo destro']]
+        : [[0, 'bordo alto'], [doc.altezza / 2, 'metà del foglio'], [doc.meta, 'linea di taglio'], [doc.altezza, 'bordo basso']];
+      const soglia = 6 / (MM * vista.z);
+      const vicino = vista.magnetiche ? punti.filter(([pos]) => Math.abs(pos - g.pos) < soglia).sort((x, y) => Math.abs(x[0] - g.pos) - Math.abs(y[0] - g.pos))[0] : null;
+      if (vicino) g.pos = vicino[0];
+      guidaAttaccata = vicino ? g : null;
+      $('cursore').textContent = `guida ${g.asse === 'v' ? 'verticale' : 'orizzontale'} ${unita(g.pos)}${vicino ? ` · agganciata: ${vicino[1]}` : ''}`;
       disegnaSopra();
       return;
     }
@@ -1017,7 +1050,13 @@
       const e = azione.e, cx = e.x + e.w / 2, cy = e.y + e.h / 2;
       let ang = Math.atan2(p.y - cy, p.x - cx) * 180 / Math.PI + 90;
       if (ev.shiftKey) ang = Math.round(ang / 15) * 15;
+      // effetto calamita alle rotazioni chiave (dal 23 ottobre 2026, come in Photoshop): vicino a 0°, 45°, 90°, 135°,
+      // 180° … (entro 3°) la rotazione si ferma lì, con le guide magnetiche accese
+      const chiave = Math.round(ang / 45) * 45;
+      const attaccata = vista.magnetiche && !ev.shiftKey && Math.abs(ang - chiave) < 3;
+      if (attaccata) ang = chiave;
       e.rotazione = Math.round(((ang + 540) % 360 - 180) * 10) / 10;
+      $('cursore').textContent = `rotazione ${String(e.rotazione).replace('.', ',')}°${attaccata ? ' · agganciata' : ''}`;
       disegna();
     }
   });
@@ -1025,6 +1064,7 @@
     if (!azione) return;
     const a = azione;
     azione = null;
+    if (guidaAttaccata) { guidaAttaccata = null; disegnaSopra(); }
     scrivania.style.cursor = '';
     mostraAgganci([]);
     if (a.tipo === 'guida') {
@@ -1076,30 +1116,64 @@
     Object.assign(e, { w: nw, h: nh, x: cx - nw / 2, y: cy - nh / 2 });
   }
 
-  // guide magnetiche: bordi e centro dell'elemento su guide, bordi e centro del foglio, linea di taglio
+  // guide magnetiche: bordi e centro dell'elemento su guide, bordi e centro del foglio, linea di taglio e, come le guide
+  // automatiche di Photoshop (dal 23 ottobre 2026), bordi e centro degli altri elementi a schermo; la linea rosa
+  // dell'aggancio a un elemento va solo da un elemento all'altro, e compaiono tutte le linee su cui l'elemento è allineato
   function aggancia(e, x, y) {
     if (!vista.magnetiche) return { x, y, linee: [] };
     const soglia = 5 / (MM * vista.z), linee = [];
-    const vert = [0, doc.larghezza / 2, doc.larghezza, ...doc.guide.filter(g => g.asse === 'v').map(g => g.pos)];
-    const oriz = [0, doc.meta, doc.altezza, doc.meta / 2, doc.meta + (doc.altezza - doc.meta) / 2, ...doc.guide.filter(g => g.asse === 'o').map(g => g.pos)];
+    const vert = [0, doc.larghezza / 2, doc.larghezza, ...doc.guide.filter(g => g.asse === 'v').map(g => g.pos)].map(b => ({ b }));
+    const oriz = [0, doc.meta, doc.altezza, doc.meta / 2, doc.meta + (doc.altezza - doc.meta) / 2, ...doc.guide.filter(g => g.asse === 'o').map(g => g.pos)].map(b => ({ b }));
+    const altri = doc.elementi.filter(o => o !== e && !o.eliminato && o.visibile !== false && inVista(o) && o.w > 0 && o.h > 0);
+    altri.forEach(o => {
+      [o.x, o.x + o.w / 2, o.x + o.w].forEach(b => vert.push({ b, o }));
+      [o.y, o.y + o.h / 2, o.y + o.h].forEach(b => oriz.push({ b, o }));
+    });
     const prova = (val, dim, bersagli) => {
       let meglio = null;
-      [0, dim / 2, dim].forEach(scarto => bersagli.forEach(b => {
-        const d = b - (val + scarto);
-        if (Math.abs(d) < soglia && (!meglio || Math.abs(d) < Math.abs(meglio.d))) meglio = { d, b };
+      [0, dim / 2, dim].forEach(scarto => bersagli.forEach(t => {
+        const d = t.b - (val + scarto);
+        if (Math.abs(d) < soglia && (!meglio || Math.abs(d) < Math.abs(meglio.d))) meglio = { d };
       }));
       return meglio;
     };
     const ax = prova(x, e.w, vert), ay = prova(y, e.h, oriz);
-    if (ax) { x += ax.d; linee.push({ asse: 'v', pos: ax.b }); }
-    if (ay) { y += ay.d; linee.push({ asse: 'o', pos: ay.b }); }
+    if (ax) x += ax.d;
+    if (ay) y += ay.d;
+    // tutte le linee su cui ora l'elemento è allineato (bordi o centro), una sola per posizione
+    const allineate = (val, dim, bersagli, asse) => {
+      const viste = new Set();
+      bersagli.forEach(t => {
+        if (![0, dim / 2, dim].some(scarto => Math.abs(t.b - (val + scarto)) < .05)) return;
+        const linea = { asse, pos: t.b };
+        if (t.o) {
+          // segmento da un elemento all'altro, un poco oltre i due
+          const [a0, a1, b0, b1] = asse === 'v' ? [y, y + e.h, t.o.y, t.o.y + t.o.h] : [x, x + e.w, t.o.x, t.o.x + t.o.w];
+          linea.da = Math.min(a0, b0) - 2;
+          linea.a = Math.max(a1, b1) + 2;
+        }
+        const chiave = `${t.b.toFixed(2)}${t.o ? '' : 'p'}`;
+        if (viste.has(chiave)) return;
+        viste.add(chiave);
+        linee.push(linea);
+      });
+    };
+    if (ax) allineate(x, e.w, vert, 'v');
+    if (ay) allineate(y, e.h, oriz, 'o');
     return { x, y, linee };
   }
   function mostraAgganci(linee) {
     sopra.querySelectorAll('.aggancio').forEach(n => n.remove());
+    const z = MM * vista.z;
     linee.forEach(l => {
-      const d = el('div', `aggancio ${l.asse}`);
-      if (l.asse === 'v') d.style.left = `${vista.x + l.pos * MM * vista.z}px`; else d.style.top = `${vista.y + l.pos * MM * vista.z}px`;
+      const d = el('div', `aggancio ${l.asse}${l.da !== undefined ? ' tratto' : ''}`);
+      if (l.asse === 'v') {
+        d.style.left = `${vista.x + l.pos * z}px`;
+        if (l.da !== undefined) { d.style.top = `${vista.y + l.da * z}px`; d.style.height = `${(l.a - l.da) * z}px`; }
+      } else {
+        d.style.top = `${vista.y + l.pos * z}px`;
+        if (l.da !== undefined) { d.style.left = `${vista.x + l.da * z}px`; d.style.width = `${(l.a - l.da) * z}px`; }
+      }
       sopra.append(d);
     });
   }
@@ -1990,6 +2064,59 @@
 
   // ---- tastiera ----
   const SCORCIATOIE = { v: 'seleziona', t: 'trasforma', h: 'mano', z: 'zoom', x: 'testo', u: 'forma', i: 'immagine', g: 'guida', w: 'bacchetta' };
+  // Doppio clic su un testo (dal 23 ottobre 2026): si scrive direttamente sul foglio, in un campo con il carattere, la
+  // grandezza e il colore del testo, oltre che dalla finestra Proprietà › Testo. Invio o un clic fuori confermano,
+  // Maiuscolo + Invio va a capo, Esc annulla
+  function scriviSulFoglio(nodo) {
+    const e = nodo && trova(nodo.dataset.id);
+    if (!e || e.bloccato || testoInModifica || !nodo.isConnected) return;
+    const r = nodo.getBoundingClientRect(), base = scrivania.getBoundingClientRect(), stile = getComputedStyle(nodo);
+    const area = el('textarea', 'testo-sul-foglio');
+    area.value = e.testo || '';
+    area.spellcheck = false;
+    area.setAttribute('aria-label', `Testo di ${e.nome || 'elemento'}`);
+    Object.assign(area.style, {
+      left: `${r.left - base.left - 5}px`, top: `${r.top - base.top - 3}px`, fontFamily: stile.fontFamily, fontSize: stile.fontSize,
+      letterSpacing: stile.letterSpacing, lineHeight: stile.lineHeight === 'normal' ? '1.1' : stile.lineHeight, color: stile.color,
+      fontWeight: stile.fontWeight, fontStyle: stile.fontStyle, textTransform: stile.textTransform, textAlign: stile.textAlign
+    });
+    const prima = e.testo;
+    let scritto = false;
+    const misura = () => {
+      area.style.width = '0px'; area.style.height = '0px';
+      area.style.width = `${Math.max(r.width + 10, area.scrollWidth + 6)}px`;
+      area.style.height = `${area.scrollHeight}px`;
+    };
+    area.addEventListener('input', () => {
+      if (!scritto) { ricorda(); scritto = true; }
+      e.testo = area.value;
+      misura();
+    });
+    let chiuso = false;
+    const chiudi = annullare => {
+      // una volta sola: togliendo il campo parte anche la sua uscita (blur)
+      if (chiuso) return;
+      chiuso = true;
+      if (annullare && scritto) e.testo = prima;
+      testoInModifica = null;
+      area.remove();
+      disegna();
+      if (vista.sel === e.id) proprieta();
+      menuPagina();
+    };
+    area.addEventListener('keydown', evento => {
+      evento.stopPropagation();
+      if (evento.key === 'Escape') { evento.preventDefault(); chiudi(true); }
+      else if (evento.key === 'Enter' && !evento.shiftKey) { evento.preventDefault(); chiudi(false); }
+    });
+    area.addEventListener('blur', () => chiudi(false));
+    testoInModifica = e.id;
+    disegna();
+    scrivania.append(area);
+    misura();
+    requestAnimationFrame(() => { area.focus(); area.select(); });
+  }
+
   document.addEventListener('keydown', ev => {
     const scrive = /input|textarea|select/i.test(ev.target.tagName);
     if ((ev.ctrlKey || ev.metaKey) && !scrive) {

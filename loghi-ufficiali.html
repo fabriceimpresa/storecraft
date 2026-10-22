@@ -2,15 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261022-10"></script>
+<script src="assets/js/negozi.js?v=20261022-13"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GESTIONE LOGHI (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-10">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261022-13">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-10">
-  <script src="assets/js/operatore-sezione.js?v=20261022-10"></script>
-  <script src="assets/js/admin-negozio.js?v=20261022-10"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261022-13">
+  <script src="assets/js/operatore-sezione.js?v=20261022-13"></script>
+  <script src="assets/js/admin-negozio.js?v=20261022-13"></script>
   <!--
     Loghi ufficiali (area operatore, dal 19 ottobre 2026: unisce Importa loghi ufficiali e Gestisci loghi ufficiali, prima
     logoimport.html e logogestione.html). I loghi ufficiali di un negozio sono i brand dei menu BRAND di tutte le sue
@@ -76,6 +76,36 @@
     .alfabeto button[aria-pressed="true"] { background: var(--op-oro); border-color: var(--op-oro); color: #121110; }
     .alfabeto button:disabled { color: #3a3631; cursor: default; }
     .alfabeto .sep-alfabeto { width: 1px; margin: 3px 4px; background: var(--op-bordo); }
+
+    /* aspetto più moderno (22 ottobre 2026, come Statistiche): passi e sezioni in riquadri arrotondati, comandi a pillola,
+       negozio a segmenti, righe dei loghi come schede */
+    .passi-op { display: grid; gap: 12px; }
+    .passo-op { padding: 18px; border: 1px solid #26231f; border-radius: 14px; background: rgba(18, 17, 15, .6); }
+    .passo-op + .passo-op { border-top: 1px solid #26231f; }
+    .passo-num { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--op-oro); border-radius: 50%; }
+    .admin-negozio { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid #2c2925; border-radius: 999px; background: #0a0908; }
+    .admin-negozio button { border: 0; border-radius: 999px; background: transparent; padding: 6px 13px; }
+    .admin-negozio button[aria-pressed="true"] { background: var(--op-oro); color: #121110; }
+    .admin-negozio button[aria-pressed="true"]::before { content: none; }
+    .btn-folder, .btn-save-row, .btn-delete-row, .modal-btn, .azioni-logo button { border-radius: 999px; }
+    .btn-folder, .btn-save-row, .btn-delete-row, .modal-btn { padding: 7px 15px; }
+    .blocco { border: 1px solid #24221f; border-radius: 14px; background: rgba(18, 17, 15, .6); }
+    .blocco + .blocco { margin-top: 14px; }
+    .blocco > .label { padding: 14px 18px; border-bottom: 1px solid transparent; border-radius: 14px; }
+    .blocco:not(.is-collapsed) > .label { border-bottom-color: #24221f; border-radius: 14px 14px 0 0; }
+    .blocco-corpo { padding: 18px; }
+    .upload-box { border-radius: 14px; border-width: 1px; }
+    .search-bar input, .queue-item-name input { padding: 8px 14px; border-radius: 999px; }
+    .logo-list, .queue-list { display: grid; gap: 8px; }
+    .logo-item { padding: 10px 14px; border: 1px solid #26231f; border-radius: 12px; background: #12110f; transition: border-color .15s; }
+    .logo-item:hover { border-color: rgba(212, 163, 115, .45); }
+    .logo-item-preview { border-radius: 8px; }
+    .variante-riquadro { border-radius: 8px; }
+    .alfabeto button { border-radius: 6px; }
+    .modal-box { border-radius: 16px; }
+    .riassunto { display: none; }
+    .passo-num::before, .passo-num::after { content: none; }
+    .blocco > .label .section-toggle { margin-left: auto; }
   </style>
 </head>
 <body>

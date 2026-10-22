@@ -62,9 +62,14 @@
       const esistenti = await elenco();
       const uguale = esistenti.find(e => e.impronta === chiave);
       const ora = Date.now();
+      // stampe e copie di ogni giorno (giorno locale AAAA-MM-GG), per le statistiche esatte per periodo
+      const d = new Date(ora);
+      const giorno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const giorni = { ...(uguale?.giorni || {}) };
+      giorni[giorno] = { volte: (giorni[giorno]?.volte || 0) + 1, copie: (giorni[giorno]?.copie || 0) + copie };
       const voce = uguale
-        ? { ...uguale, stampataIl: ora, volte: (uguale.volte || 1) + 1, copie, totaleCopie: (uguale.totaleCopie || uguale.copie || 1) + copie }
-        : { id: `${ora}-${Math.random().toString(36).slice(2, 8)}`, impronta: chiave, png, html, layout, nome, copie, totaleCopie: copie, volte: 1, primaStampa: ora, stampataIl: ora };
+        ? { ...uguale, stampataIl: ora, volte: (uguale.volte || 1) + 1, copie, totaleCopie: (uguale.totaleCopie || uguale.copie || 1) + copie, giorni }
+        : { id: `${ora}-${Math.random().toString(36).slice(2, 8)}`, impronta: chiave, png, html, layout, nome, copie, totaleCopie: copie, volte: 1, primaStampa: ora, stampataIl: ora, giorni };
       await operazione('readwrite', archivio => archivio.put(voce));
       if (pannello && !pannello.hidden) carica();
     } catch (errore) {
