@@ -558,6 +558,22 @@
     border-color: var(--interface-border) !important;
   }
 
+  /* Barra da trascinare (es. Dimensione Testo del Magazzino): la linea ha il beige scuro del riquadro della freccia
+     dei menu e delle frecce ▲▼, non il nero dei campi del tema scuro; attorno resta trasparente */
+  :root[data-interface-theme="light"] body .form-group input[type="range"] {
+    background-color: transparent !important;
+  }
+
+  :root[data-interface-theme="light"] body .form-group input[type="range"]::-webkit-slider-runnable-track {
+    background: var(--interface-sidebar);
+    border-color: var(--interface-border);
+  }
+
+  :root[data-interface-theme="light"] body .form-group input[type="range"]::-moz-range-track {
+    background: var(--interface-sidebar);
+    border-color: var(--interface-border);
+  }
+
   /* Il simbolo (€, %) resta oro sul fondo crema, come nelle Utilità Cassa; forma e spazi in pannello.css. */
   :root[data-interface-theme="light"] body .input-affix .affix {
     color: var(--interface-accent) !important;
@@ -727,41 +743,41 @@
     color: #121110;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .mode-switch {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .mode-switch {
     background: #f3ede0 !important;
     border-color: #e3dacb !important;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .mode-switch button {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .mode-switch button {
     background: transparent !important;
     color: #8a7f6e !important;
     border-color: transparent !important;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .mode-switch button:hover:not(.active):not(:disabled) {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .mode-switch button:hover:not(.active):not(:disabled) {
     color: #282522 !important;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .mode-switch button.active {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .mode-switch button.active {
     background: #fffdfa !important;
     color: #282522 !important;
     border-color: transparent !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, .08) !important;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .btn-toggle:not(.active):not([aria-pressed="true"]) {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .btn-toggle:not(.active):not([aria-pressed="true"]) {
     background: var(--interface-accent) !important;
     border-color: var(--interface-accent) !important;
     color: #fffdfa !important;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .btn-toggle:not(.active):not([aria-pressed="true"]):hover {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .btn-toggle:not(.active):not([aria-pressed="true"]):hover {
     background: var(--interface-accent-bright) !important;
     border-color: var(--interface-accent-bright) !important;
   }
 
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .btn-toggle.active,
-  :root[data-interface-theme="light"] body[data-layout="cartelli"] .btn-toggle[aria-pressed="true"] {
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .btn-toggle.active,
+  :root[data-interface-theme="light"] body:is([data-layout="cartelli"], [data-layout="cartellini"], [data-layout="prezzi"]) .btn-toggle[aria-pressed="true"] {
     background: #5f8a55 !important;
     border-color: #5f8a55 !important;
     color: #fffdfa !important;

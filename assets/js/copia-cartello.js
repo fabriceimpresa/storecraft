@@ -19,7 +19,8 @@
     label.hidden = placeholder.hidden;
 
     const text = document.createElement('span');
-    text.textContent = 'COPIA SU ALTRO CARTELLO';
+    // la pagina può dare una scritta sua (es. COPIA SU ALTRA CORNICE nelle Cornici di TEBE)
+    text.textContent = placeholder.dataset.testo || 'COPIA SU ALTRO CARTELLO';
 
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';

@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261021-01"></script>
+  <script src="../assets/js/negozi.js?v=20261022-01"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261021-01"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261021-01">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261021-01">
+  <script src="../assets/js/theme.js?v=20261022-01"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-01">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-01">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261021-01">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-01">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cornice 10 X 15 · TEBE</title>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261021-01"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261021-01"></script>
-  <script src="../assets/js/logos.js?v=20261021-01"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261021-01"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-01"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261022-01"></script>
+  <script src="../assets/js/logos.js?v=20261022-01"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261022-01"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Castoro&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261021-01">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261021-01"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-01">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261022-01"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -56,6 +56,7 @@
     /* CORNICI A4 */
     .frame-box {
       position: absolute;
+      /* misure a schermo; in stampa il riquadro è 2 mm più grande per lato (vedi @media print) */
       width: 95mm;
       height: 144mm;
       top: 37mm;
@@ -85,21 +86,23 @@
     .frame-box:not(.layout-2-articles) .deco-img:first-child {
       position: absolute;
       top: 15.6mm;
-      transform: translateY(-3mm);
+      transform: translateY(-5mm);
     }
 
     .frame-box:not(.layout-2-articles) .deco-img:last-child {
       position: absolute;
       bottom: 15.6mm;
-      transform: translateY(3mm);
+      transform: translateY(5mm);
     }
 
+    /* STANDARD e BRAND: decori e contenuto un poco più grandi che in DOPPIO ARTICOLO (prove di stampa del
+       22 ottobre 2026: nella cornice si leggevano male), e il contenuto tra i decori ancora un poco di più */
     .frame-box:not(.layout-2-articles) .frame-inner-scale {
-      transform: scale(1.2157);
+      transform: scale(1.30);
     }
 
     .frame-box:not(.layout-2-articles) .frame-content {
-      transform: scale(1.03);
+      transform: scale(1.12);
     }
 
     .frame-brand-logo-box {
@@ -110,6 +113,19 @@
       height: 3.075em;
       font-size: var(--standard-desc-font-size, 18pt);
       flex-shrink: 0;
+    }
+
+    /* BRAND: il riquadro del logo è alto quanto il logo (non quanto le tre righe del testo), così il logo
+       sta più vicino ai prezzi e il blocco logo + prezzi resta centrato tra le due decorazioni */
+    .frame-box.brand-mode .frame-brand-logo-box {
+      height: 13mm;
+      margin-bottom: 1mm;
+    }
+
+    /* il logo ha dentro un po' di spazio vuoto sopra e le cifre del prezzo finale lo hanno sotto: il blocco
+       scende di poco perché a occhio sia alla stessa distanza dalle due decorazioni */
+    .frame-box.brand-mode .frame-content {
+      transform: translateY(1.3mm) scale(1.12);
     }
 
     .frame-brand-logo {
@@ -147,19 +163,21 @@
 
     /* SPECIFICO PER LAYOUT 2 ARTICOLI */
     .frame-box.layout-2-articles {
-      padding: 6mm 6mm;
+      padding: 5mm 6mm;
       gap: 2mm;
       justify-content: space-between;
     }
     
+    /* i due articoli sono un poco più grandi (1,12 invece di 1,05, 22 ottobre 2026), in proporzione alle
+       nuove misure di STANDARD e BRAND: crescono verso il centro, dove c'è la linea che li divide */
     .frame-box.layout-2-articles .frame-content:first-of-type {
       transform-origin: top center;
-      transform: scale(1.05);
+      transform: scale(1.12);
     }
 
     .frame-box.layout-2-articles .frame-content:last-of-type {
       transform-origin: bottom center;
-      transform: scale(1.05);
+      transform: scale(1.12);
     }
 
     #frameLeft { left: 7.5mm; }
@@ -249,22 +267,28 @@
       font-size: 35pt;
     }
 
-    /* MODALITA' PERCENTUALE SCONTO: gli elementi di cartellopercentuale.html
-       ridotti (circa 0,39x) per stare tra le due decorazioni della cornice.
-       Le misure sono prima dello scale(1.2157) di .frame-inner-scale. */
-    .frame-box.percent-mode .frame-content {
+    /* MODALITA' PERCENTUALE SCONTO (dal 22 ottobre 2026): senza le decorazioni; FINO AL -50% grande al centro,
+       sopra la descrizione o il logo brand, e il logo TEBE in fondo, vicino al bordo basso della cornice.
+       Gli elementi sono quelli di cartellopercentuale.html ridotti; .frame-content li ingrandisce. */
+    .frame-box.percent-mode .frame-inner-scale {
       transform: none;
+    }
+
+    /* FINO AL -50% ha la stessa grandezza e lo stesso posto in tutte e tre le viste (STANDARD, DESCRIZIONE, BRAND):
+       la descrizione sta in alto nella cornice e il logo brand sopra la percentuale, senza spostarla */
+    .frame-box.percent-mode .frame-content {
+      position: relative;
       gap: 0;
+      transform: translateY(-5mm) scale(1.54);
     }
 
-    /* Modalità % Standard: senza descrizione ne' brand, percentuale e logo un po' piu' grandi. */
-    .frame-box.percent-mode.percent-standard .frame-content {
-      transform: scale(1.06);
-    }
-
-    /* Modalità % Brand: il logo piu' grande spinge giu' il blocco, che si alza un poco. */
-    .frame-box.percent-mode.percent-brand .frame-content {
-      transform: translateY(-2.5mm);
+    .frame-box.percent-mode .pct-brand-box {
+      position: absolute;
+      left: 50%;
+      bottom: 100%;
+      /* staccato dalla percentuale (lo spazio è prima dell'ingrandimento di .frame-content) */
+      margin-bottom: 9mm;
+      transform: translateX(-50%);
     }
 
     .pct-desc {
@@ -280,6 +304,32 @@
     }
 
     .pct-desc.is-long { font-size: 8.5pt; }
+
+    /* DESCRIZIONE (dal 22 ottobre 2026): in alto, alla stessa distanza dal bordo superiore del logo TEBE da quello
+       inferiore, in maiuscolo e con le lettere un poco spaziate come la scritta TEBE (non troppo: deve entrare
+       anche il testo pronto più lungo); se non entra il corpo si riduce (fitPercentDesc) */
+    .pct-desc.pct-desc-top {
+      position: absolute;
+      top: 2mm;
+      left: 0;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      font-family: 'Castoro', serif;
+      font-size: 15pt;
+      line-height: 1.1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: #2b2926;
+      -webkit-text-stroke: 0.2px #2b2926;
+    }
+
+    /* Percentuale Sconto con BRAND: logo nero (variante black), un poco attenuato perché sia un nero
+       pieno ma non brillante, come la descrizione #2b2926 */
+    .frame-box.percent-mode .pct-brand-box .frame-brand-logo {
+      opacity: 0.88;
+    }
 
     .pct-brand-box {
       display: flex;
@@ -331,10 +381,13 @@
     }
 
     .pct-logo {
+      position: absolute;
+      left: 50%;
+      bottom: 2mm;
       display: block;
-      width: 17.7mm;
+      width: 34mm;
       height: auto;
-      margin-top: 2.1mm;
+      transform: translateX(-50%);
     }
 
     @page {
@@ -366,16 +419,37 @@
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
+      /* In stampa (anche lista di stampa, PDF da iPhone e cronologia, che leggono queste regole) le due cornici
+         sono ruotate di 90° verso destra, una al centro della metà alta del foglio e una della metà bassa:
+         lontane dai bordi e tra loro, comode da ritagliare. A schermo restano affiancate.
+         Il riquadro è 2 mm più grande per lato che a schermo (prove di stampa del 22 ottobre 2026: l'insert restava
+         un poco piccolo nella cornice); l'imbottitura cresce di 2 mm per lato, così il contenuto non cambia. */
+      .frame-box {
+        width: 99mm;
+        height: 148mm;
+        padding: 12mm 8mm;
+      }
+      .frame-box.layout-2-articles {
+        padding: 7mm 8mm;
+      }
+      #frameLeft,
+      #frameRight {
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%) rotate(90deg);
+      }
+      #frameLeft { top: 25%; }
+      #frameRight { top: 75%; }
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261021-01">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261021-01">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261021-01">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261021-01">
-  <script defer src="../assets/js/menu-cascata.js?v=20261021-01"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261021-01">
-  <script defer src="../assets/js/responsive.js?v=20261021-01"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-01">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-01">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-01">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-01">
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-01"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-01">
+  <script defer src="../assets/js/responsive.js?v=20261022-01"></script>
 </head>
 <body data-layout="cartelli">
 
@@ -488,6 +562,7 @@
 
       <!-- Blocco 4: stampa -->
       <div class="panel-block">
+        <div id="linkFramesRow" data-copia-cartello data-checkbox-id="linkFrames" data-on-change="setLinkedFrames" data-testo="COPIA SU ALTRA CORNICE"></div>
         <button type="button" class="btn-print" id="printBtn" onclick="printFrames()">STAMPA CORNICI</button>
       </div>
     </div>
@@ -506,9 +581,10 @@
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261021-01"></script>
-  <script src="../assets/js/selettore.js?v=20261021-01"></script>
-  <script src="../assets/js/madeinitaly.js?v=20261021-01" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-01"></script>
+  <script src="../assets/js/selettore.js?v=20261022-01"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261022-01"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261022-01" data-automatico></script>
   <script>
     // Stato indipendente per ciascuna cornice (Lana Merinos impostata su due righe)
     const framesState = {
@@ -697,7 +773,10 @@
       updateAll();
     }
 
-    function getBrandLogoSource(brand) {
+    // Colore del logo brand: oro nelle modalità con le decorazioni, nero nella Percentuale Sconto
+    const brandLogoColor = state => state.percentActive ? 'black' : 'gold';
+
+    function getBrandLogoSource(brand, color = 'gold') {
       const customLogo = readCustomLogos().find(logo => logo.id === brand.customLogoId);
       if (brand.customLogoId && !customLogo) {
         return Promise.reject(new Error(`Logo personale non trovato: ${brand.customLogoId}`));
@@ -707,7 +786,7 @@
         customLogo?.data || '',
         brand.customLogoId ? '' : brand.officialFile,
         '',
-        'gold'
+        color
       );
     }
 
@@ -720,7 +799,7 @@
           if (!brandImage) {
             return Promise.reject(new Error(`Logo brand non presente nella cornice ${side}.`));
           }
-          return getBrandLogoSource(framesState[side].brand).then(source => {
+          return getBrandLogoSource(framesState[side].brand, brandLogoColor(framesState[side])).then(source => {
             if (source) brandImage.src = source;
           });
         });
@@ -860,7 +939,7 @@
     }
 
     // Percentuale Sconto: descrizione o logo brand, "FINO AL" con la barra del meno
-    // e la percentuale, logo TEBE oro; il tutto tra le due decorazioni della cornice.
+    // e la percentuale, senza decorazioni; logo TEBE oro in fondo alla cornice.
     function renderPercentContent(state, box, container) {
       box.classList.remove('layout-2-articles', 'brand-mode', 'standard-max-lines', 'standard-two-line-desc', 'standard-one-line-desc');
       box.style.removeProperty('--standard-desc-font-size');
@@ -871,14 +950,8 @@
         if (text !== undefined) node.textContent = text;
         return node;
       };
-      const deco = (src, alt) => {
-        const img = element('img', 'deco-img');
-        img.src = src;
-        img.alt = alt;
-        return img;
-      };
-
       const content = element('div', 'frame-content');
+      let topDesc = null;
       // In Standard ci sono solo percentuale e logo TEBE, un po' piu' grandi.
       box.classList.toggle('percent-standard', state.percent.extra === 'standard');
       box.classList.toggle('percent-brand', state.percent.extra === 'brand');
@@ -888,11 +961,10 @@
         brandImage.alt = 'Logo brand';
         brandBox.appendChild(brandImage);
         content.appendChild(brandBox);
-        loadBrandImage(brandImage, state.brand);
+        loadBrandImage(brandImage, state.brand, 'black');
       } else if (state.percent.extra === 'descrizione' && state.percent.desc.trim()) {
-        const desc = element('div', 'pct-desc', state.percent.desc);
-        desc.classList.toggle('is-long', state.percent.desc.trim().length > 22);
-        content.appendChild(desc);
+        // in alto nella cornice, fuori dal blocco della percentuale
+        topDesc = element('div', 'pct-desc pct-desc-top', state.percent.desc);
       }
 
       const row = element('div', 'pct-row');
@@ -902,27 +974,48 @@
       row.append(fino, element('div', 'pct-text', `${numeric || '50'}%`));
       content.appendChild(row);
 
+      // logo TEBE in fondo alla cornice, fuori dal blocco della percentuale
       const logo = element('img', 'pct-logo');
       logo.src = '../assets/img/tebe/footer_tebe.png';
       logo.alt = 'TEBE';
-      content.appendChild(logo);
 
-      container.replaceChildren(
-        deco('../assets/img/tebe/decoup.png', 'Decoro Superiore'),
-        content,
-        deco('../assets/img/tebe/decodown.png', 'Decoro Inferiore')
-      );
+      container.replaceChildren(content, logo);
+      if (topDesc) {
+        container.appendChild(topDesc);
+        fitPercentDesc(topDesc, container);
+      }
     }
 
-    function loadBrandImage(brandImage, brand) {
+    function loadBrandImage(brandImage, brand, color = 'gold') {
       if (!brand.customLogoId && !brand.officialFile) return;
-      getBrandLogoSource(brand).then(source => {
+      getBrandLogoSource(brand, color).then(source => {
         if (brandImage.isConnected) brandImage.src = source;
       }).catch(error => {
         console.error('Caricamento del logo brand fallito.', error);
       });
       const customLogo = readCustomLogos().find(logo => logo.id === brand.customLogoId);
       brandImage.alt = customLogo?.name || cleanBrandName(brand.officialFile);
+    }
+
+    // Descrizione in alto della percentuale: i testi corti restano grandi e spaziati; se il testo è più largo
+    // del 94% della cornice prima si stringe la spaziatura delle lettere (fino a 0,04em), poi si riduce il corpo
+    // (misure a schermo, il rapporto vale anche in stampa)
+    function fitPercentDesc(desc, container) {
+      desc.style.fontSize = '';
+      desc.style.letterSpacing = '';
+      const range = document.createRange();
+      range.selectNodeContents(desc);
+      const maxWidth = container.getBoundingClientRect().width * 0.94;
+      const textWidth = () => range.getBoundingClientRect().width;
+      if (!maxWidth || textWidth() <= maxWidth) return;
+      for (let spacing = 0.11; spacing >= 0.04; spacing -= 0.01) {
+        desc.style.letterSpacing = `${spacing.toFixed(2)}em`;
+        if (textWidth() <= maxWidth) return;
+      }
+      const width = textWidth();
+      if (!width) return;
+      const fontSize = parseFloat(getComputedStyle(desc).fontSize);
+      desc.style.fontSize = `${fontSize * maxWidth / width}px`;
     }
 
     // Testo su una riga troppo lungo (es. PANTALONCINO): il corpo si riduce finché il testo non supera
@@ -942,7 +1035,28 @@
       title.style.fontSize = `${fontSize * maxWidth / textWidth}px`;
     }
 
+    // COPIA SU ALTRA CORNICE: spuntando la casella la cornice in modifica viene copiata sull'altra e da lì
+    // ogni modifica vale per tutte e due; togliendo la spunta la cornice sovrascritta torna com'era prima.
+    let linkedFrames = false;
+    let overwrittenFrame = null;   // { side, state } salvato alla spunta
+    const otherFrame = side => side === 'left' ? 'right' : 'left';
+    const copyFrame = state => JSON.parse(JSON.stringify(state));
+
+    function setLinkedFrames(isLinked) {
+      linkedFrames = isLinked;
+      if (isLinked) {
+        const other = otherFrame(currentActiveFrame);
+        overwrittenFrame = { side: other, state: copyFrame(framesState[other]) };
+      } else if (overwrittenFrame) {
+        framesState[overwrittenFrame.side] = overwrittenFrame.state;
+        overwrittenFrame = null;
+      }
+      syncSidebarWithState();
+      updateAll();
+    }
+
     function updateAll() {
+      if (linkedFrames) framesState[otherFrame(currentActiveFrame)] = copyFrame(framesState[currentActiveFrame]);
       renderFrameContent('left');
       renderFrameContent('right');
     }
@@ -990,7 +1104,7 @@
     syncSidebarWithState();
     updateAll();
   </script>
-  <script src="../assets/js/cursore.js?v=20261021-01"></script>
+  <script src="../assets/js/cursore.js?v=20261022-01"></script>
   <script>
     // Cursore: sopra la cornice scelta (sinistra/destra) e sugli elementi della cornice legati al campo in uso.
     const activeFrameBox = () => document.getElementById(currentActiveFrame === 'left' ? 'frameLeft' : 'frameRight');
@@ -1001,6 +1115,10 @@
     const inFrame = selector => () => activeFrameBox()?.querySelector(selector);
     const inFrameArticle = selector => () => activeFrameArticle()?.querySelector(selector);
 
+    // gli elementi delle cornici sono ingranditi (scale), quindi la punta sta a 2,5 mm invece di 1 mm,
+    // perché non tocchi i caratteri grandi (22 ottobre 2026)
+    const GAP_CORNICE = 2.5 * 96 / 25.4;
+
     const cursore = Cursore.create({
       panel: '.controls',
       watch: '#printSheet',
@@ -1008,15 +1126,16 @@
       scope: '#printSheet',
       obstacles: '#printSheet .deco-img, #printSheet .desc-title, #printSheet .frame-brand-logo, #printSheet .price-old-frame, #printSheet .price-percent-frame, #printSheet .price-final-frame, #printSheet .pct-desc, #printSheet .pct-fino-label, #printSheet .pct-text, #printSheet .pct-logo',
       rules: [
+        { controls: '#linkFrames', target: () => document.querySelectorAll('#frameLeft, #frameRight'), placement: 'above' },
         { controls: '#btnLeft, #btnRight, #standardModeBtn, #extraArticleModeBtn, #brandModeBtn, #percentModeBtn', target: activeFrameBox, placement: 'above' },
-        { controls: '#brandSelect, #customBrandSelect, #percentExtraBrandBtn', target: inFrame('.frame-brand-logo') },
-        { controls: '#percentExtraStandardBtn, #percentValue, #percentValue ~ .percent-stepper', target: inFrame('.pct-row') },
-        { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: inFrame('.pct-desc') },
+        { controls: '#brandSelect, #customBrandSelect, #percentExtraBrandBtn', target: inFrame('.frame-brand-logo'), gap: GAP_CORNICE },
+        { controls: '#percentExtraStandardBtn, #percentValue, #percentValue ~ .percent-stepper', target: inFrame('.pct-row'), gap: GAP_CORNICE },
+        { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: inFrame('.pct-desc'), gap: GAP_CORNICE },
         { controls: '#rowSelectorContainer', target: activeFrameArticle },
-        { controls: '#descPreset, #descFree', target: inFrameArticle('.desc-title') },
-        { controls: '#oldPrice', target: inFrameArticle('.price-old-frame') },
-        { controls: '#discountValue, #discountValue ~ .percent-stepper', target: inFrameArticle('.price-percent-frame') },
-        { controls: '#newPrice', target: inFrameArticle('.price-final-frame') }
+        { controls: '#descPreset, #descFree', target: inFrameArticle('.desc-title'), gap: GAP_CORNICE },
+        { controls: '#oldPrice', target: inFrameArticle('.price-old-frame'), gap: GAP_CORNICE },
+        { controls: '#discountValue, #discountValue ~ .percent-stepper', target: inFrameArticle('.price-percent-frame'), gap: GAP_CORNICE },
+        { controls: '#newPrice', target: inFrameArticle('.price-final-frame'), gap: GAP_CORNICE }
       ]
     });
 
@@ -1029,7 +1148,7 @@
       else cursore.point({ target: activeFrameBox, placement: 'above' });
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261021-01"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261021-01"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261022-01"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261022-01"></script>
 </body>
 </html>

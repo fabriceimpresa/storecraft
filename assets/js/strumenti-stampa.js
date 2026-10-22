@@ -155,7 +155,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('lista-stampa.js?v=20261021-01', script.src).href;
+      tag.src = new URL('lista-stampa.js?v=20261022-01', script.src).href;
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -194,7 +194,7 @@
     if (window.CronologiaStampa) return Promise.resolve(window.CronologiaStampa);
     return loadListaStampa().then(() => new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('cronologia-stampa.js?v=20261021-01', script.src).href;
+      tag.src = new URL('cronologia-stampa.js?v=20261022-01', script.src).href;
       tag.onload = () => resolve(window.CronologiaStampa);
       tag.onerror = () => reject(new Error('Caricamento di cronologia-stampa.js non riuscito.'));
       document.head.appendChild(tag);
