@@ -2,18 +2,18 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-04"></script>
+  <script src="../assets/js/negozi.js?v=20261022-05"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prezzi Vetrina</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-05">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-04">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-05">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-05">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-05">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-05">
 
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-05">
   <style>
     /* Font locali da assets/fonts (stessa convenzione delle altre pagine: 'Nevis Project') */
     @font-face {
@@ -180,14 +180,19 @@
 
     /* Vista telefono: quella comune di cartellini e Prezzi Vetrina (../assets/css/responsive.css e responsive.js). */
 
+    /* pallino «•» delle descrizioni: più piccolo e alzato a metà delle minuscole */
+    .desc-pallino {
+      font-size: 0.55em;
+      vertical-align: 0.32em;
+    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-04">
-  <script defer src="../assets/js/responsive.js?v=20261022-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261022-04"></script>
-  <script src="../assets/js/theme.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-05">
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-05">
+  <script defer src="../assets/js/responsive.js?v=20261022-05"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261022-05"></script>
+  <script src="../assets/js/theme.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-05">
 </head>
 <body data-layout="prezzi">
   <a href="index.html" class="app-close-btn" title="Chiudi" aria-label="Chiudi e torna al menu principale">✕</a>
@@ -251,8 +256,8 @@
     </div>
   </main>
 
-  <script src="../assets/js/fasce-prezzo.js?v=20261022-04"></script>
-  <script src="../assets/js/testi-pronti.js?v=20261022-04"></script>
+  <script src="../assets/js/fasce-prezzo.js?v=20261022-05"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-05"></script>
   <script>
     // 24 cartellini in 3 colonne × 8 righe. Si lavora per colonne: gli 8 cartellini di una colonna
     // hanno lo stesso prezzo e testo, e ogni colonna si può escludere dalla stampa.
@@ -304,6 +309,18 @@
       });
     }
 
+    // il pallino «•» delle descrizioni (es. Vera Pelle • Genuine Leather) più piccolo e a metà altezza delle lettere,
+    // come nel Cartello Semplice (22 ottobre 2026)
+    function nodiConPallino(text) {
+      return String(text).split('•').flatMap((parte, indice) => {
+        if (!indice) return [parte];
+        const pallino = document.createElement('span');
+        pallino.className = 'desc-pallino';
+        pallino.textContent = '•';
+        return [pallino, parte];
+      });
+    }
+
     function createElement(tag, className, text) {
       const el = document.createElement(tag);
       if (className) el.className = className;
@@ -325,7 +342,9 @@
           price.append(createElement('span', 'currency', '€'), createElement('span', 'amount', column.price));
         }
 
-        el.append(price, createElement('div', 'desc', column.desc));
+        const descrizione = createElement('div', 'desc');
+        descrizione.append(...nodiConPallino(column.desc));
+        el.append(price, descrizione);
         grid.appendChild(el);
       }
 
@@ -359,7 +378,9 @@
       resetInkAlignment(el);
       const text = el.textContent;
       if (!text) return;
-      const style = getComputedStyle(el.lastElementChild || el);
+      // l'ultimo carattere è del testo, non del pallino piccolo
+      const ultimo = el.lastElementChild;
+      const style = getComputedStyle(ultimo && !ultimo.classList.contains('desc-pallino') ? ultimo : el);
       measureContext.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
       const lastChar = text.trimEnd().slice(-1);
       const metrics = measureContext.measureText(lastChar);
@@ -450,7 +471,7 @@
     init();
     applySafariPrintFix();
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-04"></script>
+  <script src="../assets/js/cursore.js?v=20261022-05"></script>
   <script>
     // Cursore: sopra la colonna selezionata (sul suo primo cartellino) quando si sceglie una linguetta,
     // sopra o di lato a prezzo e testo del primo cartellino della colonna quando si usano i campi.
@@ -476,6 +497,6 @@
       ]
     }).point({ target: firstCardOfColumn, placement: 'above', gap: 3.2 * 96 / 25.4 });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261022-04" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261022-05" data-panel="#editorPanel" data-sheet="#printable-grid"></script>
 </body>
 </html>

@@ -162,8 +162,13 @@
      testo che il cartello usa: se la pagina scrive nel campo un testo uguale a una voce del menu (senza badare a
      maiuscole, spazi e a capo, es. "LANA &\nCACHEMIRE" = "Lana & Cachemire") è un testo pronto, che si mostra nel
      menu; la pagina, leggendo il campo, riceve sempre il testo del cartello. Quello che l'utente scrive a mano resta
-     Testo Libero anche se è uguale a una voce. Scegliendo la voce di partenza il Testo Libero si svuota e la pagina
-     ridisegna il cartello senza testo.
+     Testo Libero anche se è uguale a una voce. Scegliendo la voce di partenza («-- Seleziona … --») sul cartello compare
+     un AVVISO DI SISTEMA (22 ottobre 2026): il triangolo con il punto esclamativo e «Scegli un testo», nel colore del
+     cursore del negozio (--cursore-colore: oro per Luxury, rosso per TEBE e OPHILYA), che si vede solo a schermo e non
+     va in stampa né nella lista di stampa: manca un testo prima di stampare. La pagina riceve dal campo un testo
+     segnato (AVVISO, tra due caratteri invisibili U+2063) e lo scrive sul cartello come gli altri; qui un osservatore
+     della pagina lo trasforma nell'avviso (.testo-mancante). Solo una voce di partenza che dice di lasciare il campo
+     vuoto (es. «— LASCIA IL CAMPO VUOTO —» di Cartellini Promo) svuota il cartello.
      Coppie: ogni <select data-testi-pronti> con il campo che lo segue nello stesso .form-group (prima di un altro
      menu) e ha l'etichetta "Testo Libero"; per altri menu, o per indicare il campo, data-testo-libero="id del campo"
      sul <select> (data-testo-libero="no" esclude il menu). */
@@ -173,6 +178,65 @@
     select: Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value')
   };
   const normalizza = testo => String(testo ?? '').replace(/\s+/g, ' ').trim().toLocaleLowerCase('it');
+
+  // Avviso di sistema sul cartello quando il menu torna sulla voce di partenza
+  const SEGNO = '\u2063';
+  const TESTO_AVVISO = 'Scegli un testo';
+  const AVVISO = SEGNO + TESTO_AVVISO + SEGNO;
+  const eAvviso = testo => String(testo ?? '').includes(SEGNO);
+  function preparaAvvisi() {
+    if (document.getElementById('stile-testo-mancante')) return;
+    const stile = document.createElement('style');
+    stile.id = 'stile-testo-mancante';
+    stile.textContent = `
+      .testo-mancante {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35em;
+        color: var(--cursore-colore, #b48b37);
+        font: 600 max(13px, 0.5em)/1.2 system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+        font-style: normal;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        white-space: nowrap;
+        vertical-align: middle;
+      }
+      .testo-mancante::before {
+        content: '';
+        flex: none;
+        width: 1.15em;
+        height: 1.15em;
+        background: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.5 21h21z' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M12 9.5v5.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='18' r='1.4'/%3E%3C/svg%3E") center / contain no-repeat;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.5 21h21z' fill='none' stroke='black' stroke-width='2.2' stroke-linejoin='round'/%3E%3Cpath d='M12 9.5v5.5' stroke='black' stroke-width='2.4' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='18' r='1.4'/%3E%3C/svg%3E") center / contain no-repeat;
+      }
+      @media print { .testo-mancante { visibility: hidden !important; } }`;
+    document.head.append(stile);
+    // il testo segnato, scritto dalla pagina sul cartello, diventa l'avviso
+    const trasforma = radice => {
+      const camminatore = document.createTreeWalker(radice, NodeFilter.SHOW_TEXT, {
+        acceptNode: n => (n.nodeValue.includes(SEGNO) && !n.parentElement?.closest('.testo-mancante, input, textarea, select, option'))
+          ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+      });
+      const nodi = [];
+      while (camminatore.nextNode()) nodi.push(camminatore.currentNode);
+      nodi.forEach(nodo => {
+        const avviso = document.createElement('span');
+        avviso.className = 'testo-mancante';
+        avviso.setAttribute('role', 'note');
+        avviso.textContent = nodo.nodeValue.split(SEGNO).join('').trim() || TESTO_AVVISO;
+        nodo.replaceWith(avviso);
+      });
+    };
+    new MutationObserver(cambi => cambi.forEach(cambio => {
+      if (cambio.type === 'characterData') {
+        if (cambio.target.nodeValue.includes(SEGNO) && cambio.target.parentNode) trasforma(cambio.target.parentNode);
+      } else {
+        cambio.addedNodes.forEach(n => { if (n.nodeType === 3 ? n.nodeValue.includes(SEGNO) : n.textContent.includes(SEGNO)) trasforma(n.nodeType === 3 ? n.parentNode : n); });
+      }
+    })).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    trasforma(document.body);
+  }
   const PARTENZA_CAMPO = '-- Inserisci Testo Libero';
 
   function campoTestoLibero(select) {
@@ -194,7 +258,7 @@
     const leggiCampo = () => valoreCampo.get.call(campo);
     const scriviCampo = valore => valoreCampo.set.call(campo, valore);
     const scriviMenu = valore => descrittore.select.set.call(select, valore);
-    const coppia = { pronto: false, testo: '', scrive: false };
+    const coppia = { pronto: false, testo: '', scrive: false, avviso: false };
     const voce = testo => normalizza(testo) && Array.from(select.options)
       .find(option => option.value && normalizza(option.value) === normalizza(testo));
     // il menu mostra la voce del testo pronto in uso, altrimenti la voce di partenza
@@ -204,6 +268,17 @@
     };
     const imposta = testo => {
       const valore = String(testo ?? '');
+      // mentre si sceglie la voce di partenza la pagina può svuotare il campo: resta l'avviso
+      if (coppia.tieni && !valore) return;
+      // l'avviso (es. tornando su un cartello che lo aveva): campo vuoto, menu sulla voce di partenza
+      coppia.avviso = eAvviso(valore);
+      if (coppia.avviso) {
+        coppia.pronto = false;
+        coppia.testo = '';
+        scriviCampo('');
+        mostraMenu();
+        return;
+      }
       const scelta = !coppia.scrive && voce(valore);
       coppia.pronto = Boolean(scelta);
       coppia.testo = scelta ? valore : '';
@@ -213,7 +288,7 @@
 
     Object.defineProperty(campo, 'value', {
       configurable: true,
-      get: () => (coppia.pronto ? coppia.testo : leggiCampo()),
+      get: () => (coppia.avviso ? AVVISO : coppia.pronto ? coppia.testo : leggiCampo()),
       set: imposta
     });
     Object.defineProperty(select, 'value', {
@@ -222,7 +297,9 @@
       // la pagina può scegliere una voce (es. Made in Italy); la voce di partenza la decide il campo
       set: valore => {
         const scelta = valore && voce(valore);
-        if (scelta && !leggiCampo()) {
+        // se la voce è già quella del testo in uso, il testo resta com'è (es. su due righe, «PURA» a capo «SETA»)
+        const giaInUso = coppia.pronto && voce(coppia.testo) === scelta;
+        if (scelta && !leggiCampo() && !giaInUso) {
           coppia.pronto = true;
           coppia.testo = scelta.value;
         }
@@ -232,6 +309,8 @@
 
     // l'utente scrive nel Testo Libero: il testo pronto non c'è più, il menu torna alla voce di partenza
     campo.addEventListener('input', () => {
+      if (coppia.sintetico) return;   // l'evento mandato dal modulo per far rileggere il campo alla pagina
+      coppia.avviso = false;
       coppia.pronto = false;
       coppia.testo = '';
       mostraMenu();
@@ -242,10 +321,28 @@
     // formattato, es. su due righe) e lo legge da lì. La voce di partenza svuota il cartello.
     select.addEventListener('change', () => {
       const valore = descrittore.select.get.call(select);
-      coppia.pronto = Boolean(valore);
+      if (!valore) {
+        // voce di partenza: sul cartello l'avviso di sistema (o, con «lascia il campo vuoto», niente); dopo la
+        // funzione della pagina il campo si rilegge
+        const svuota = /vuot/i.test(select.selectedOptions[0]?.textContent || '');
+        coppia.pronto = false;
+        coppia.testo = '';
+        coppia.avviso = !svuota;
+        coppia.tieni = !svuota;
+        scriviCampo('');
+        setTimeout(() => {
+          coppia.tieni = false;
+          scriviMenu('');
+          coppia.sintetico = true;
+          campo.dispatchEvent(new Event('input', { bubbles: true }));
+          coppia.sintetico = false;
+        });
+        return;
+      }
+      coppia.avviso = false;
+      coppia.pronto = true;
       coppia.testo = valore;
       scriviCampo('');
-      if (!valore) setTimeout(() => campo.dispatchEvent(new Event('input', { bubbles: true })));
     }, true);
 
     if (campo.placeholder.startsWith('-- Testo Libero')) {
@@ -276,6 +373,9 @@
   window.addEventListener('DOMContentLoaded', () => {
     coppie.forEach(campo => { campo.value = campo.value; });
   });
+  if (coppie.length) {
+    if (document.body) preparaAvvisi(); else window.addEventListener('DOMContentLoaded', preparaAvvisi);
+  }
 
   window.TestiPronti = Object.freeze({ populate });
 })();

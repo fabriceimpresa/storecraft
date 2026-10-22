@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="luxury">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-04"></script>
+  <script src="../assets/js/negozi.js?v=20261022-05"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cartello da Banco</title>
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-05">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-04">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-04">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-04">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-04">
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-04"></script>
-  <script src="../assets/logos/luxury/elenco.js?v=20261022-04"></script>
-  <script src="../assets/js/logos.js?v=20261022-04"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261022-04"></script>
-  <script src="../assets/js/print-white-logos.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-04">
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-04">
-  <script src="../assets/js/madeinitaly.js?v=20261022-04"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-05">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-05">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-05">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-05">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-05"></script>
+  <script src="../assets/logos/luxury/elenco.js?v=20261022-05"></script>
+  <script src="../assets/js/logos.js?v=20261022-05"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261022-05"></script>
+  <script src="../assets/js/print-white-logos.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-05">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-05">
+  <script src="../assets/js/madeinitaly.js?v=20261022-05"></script>
   <style>
     @font-face {
       font-family: 'Bodoni Project';
@@ -174,15 +174,20 @@
       width: 20%;
       word-break: break-word;
     }
-    /* i claim un poco più staccati dal rettangolo rosso, verso i bordi del cartello */
-    .header-text:first-child { transform: translateX(-3.5mm); }
-    .header-text:last-child { transform: translateX(3.5mm); }
+    /* i claim un poco più staccati dal rettangolo rosso, verso i bordi del cartello (qui 2 mm: 3,5 li allontanava troppo) */
+    .header-text:first-child { transform: translateX(-2mm); }
+    .header-text:last-child { transform: translateX(2mm); }
 
     .claim-flag {
       width: auto;
       height: auto;
       max-width: 15mm;
       max-height: 9mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
+    }
+    /* bandierine del tema Made in Italy più piccole (circa -20%, 22 ottobre 2026); quelle di Black Friday no */
+    .claim-flag:not(.claim-flag-bf) {
+      max-width: 12mm;
+      max-height: 7.2mm;
     }
 
     .claim-flag-left { transform: translateX(-2mm); }
@@ -230,7 +235,6 @@
 
     /* TESTO DESCRITTIVO PROMOZIONALE */
     .promo-description {
-      display: none;
       font-family: 'Bodoni Project', serif;
       font-style: italic;
       font-weight: 400;
@@ -254,7 +258,27 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      width: 100%;
     }
+
+    /* DOPPIA CIFRA e DESCRIZIONE ARTICOLO: la descrizione prende il posto della riga prezzo originario e sconto, nella
+       stessa casella (alta quanto la più alta delle due, che restano sempre impaginate e si nascondono con visibility),
+       così cambiando modalità il prezzo finale non si muove (22 ottobre 2026). Con Made in Italy in DOPPIA CIFRA si
+       vedono tutte e due, una sotto l'altra (.con-entrambe) */
+    .riga-sopra {
+      display: grid;
+      width: 100%;
+      justify-items: center;
+      align-items: center;
+    }
+    .riga-sopra > * { grid-area: 1 / 1; }
+    /* la riga a metà tra il rettangolo rosso e il prezzo finale, misurati sull'inchiostro (22 ottobre 2026) */
+    .riga-sopra:not(.con-entrambe) {
+      position: relative;
+      top: -3mm;
+    }
+    .riga-sopra.con-entrambe > .promo-description { grid-area: 1 / 1; }
+    .riga-sopra.con-entrambe > .price-row-old { grid-area: 2 / 1; }
 
     .price-row-old {
       display: flex;
@@ -306,6 +330,9 @@
       justify-content: center;
       flex-shrink: 0;
       margin-bottom: 2.5mm;
+      /* il logo un poco più vicino al prezzo finale (22 ottobre 2026), senza spostare gli altri elementi */
+      position: relative;
+      top: -2mm;
     }
 
     .card-footer img {
@@ -446,14 +473,19 @@
         background-color: #e89106 !important;
       }
     }
+    /* pallino «•» delle descrizioni: più piccolo e alzato a metà delle minuscole */
+    .desc-pallino {
+      font-size: 0.55em;
+      vertical-align: 0.32em;
+    }
   </style>
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-04">
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-04">
-  <script defer src="../assets/js/responsive.js?v=20261022-04"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261022-04"></script>
-  <script src="../assets/js/theme.js?v=20261022-04"></script>
-  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-05">
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-05">
+  <script defer src="../assets/js/responsive.js?v=20261022-05"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261022-05"></script>
+  <script src="../assets/js/theme.js?v=20261022-05"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261022-05">
 </head>
 <body data-layout="cartelli">
 
@@ -603,12 +635,13 @@
           <div class="header-text" id="headRight1">SHOP<br>NOW</div>
         </div>
 
-        <div class="promo-description" id="promoDesc1">Outlet price</div>
-
         <div class="price-block">
-          <div class="price-row-old" id="priceOldRow1">
-            <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
-            <span class="discount-tag" id="discountDisplay1">-75%</span>
+          <div class="riga-sopra">
+            <div class="promo-description" id="promoDesc1">Outlet price</div>
+            <div class="price-row-old" id="priceOldRow1">
+              <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
+              <span class="discount-tag" id="discountDisplay1">-75%</span>
+            </div>
           </div>
           <div class="price-final" id="priceNewDisplay1">
             <span class="currency">€</span><span id="priceVal1">99,00</span>
@@ -636,12 +669,13 @@
           <div class="header-text" id="headRight2">SHOP<br>NOW</div>
         </div>
 
-        <div class="promo-description" id="promoDesc2">Outlet price</div>
-
         <div class="price-block">
-          <div class="price-row-old" id="priceOldRow2">
-            <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
-            <span class="discount-tag" id="discountDisplay2">-75%</span>
+          <div class="riga-sopra">
+            <div class="promo-description" id="promoDesc2">Outlet price</div>
+            <div class="price-row-old" id="priceOldRow2">
+              <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
+              <span class="discount-tag" id="discountDisplay2">-75%</span>
+            </div>
           </div>
           <div class="price-final" id="priceNewDisplay2">
             <span class="currency">€</span><span id="priceVal2">99,00</span>
@@ -656,12 +690,12 @@
 
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261022-04"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-05"></script>
 
-  <script src="../assets/js/second-brand-toggle.js?v=20261022-04"></script>
-  <script src="../assets/js/selettore.js?v=20261022-04"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261022-04"></script>
-  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261022-04"></script>
+  <script src="../assets/js/second-brand-toggle.js?v=20261022-05"></script>
+  <script src="../assets/js/selettore.js?v=20261022-05"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261022-05"></script>
+  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261022-05"></script>
 
   <script>
     const DEFAULT_LOGO = "LUXURY_GOLD.png";
@@ -958,8 +992,20 @@
     // Testo Libero: fino a 31 caratteri (quanto "Made in Italy • Genuine Leather") il testo ha la sua grandezza;
     // da 32 a 37 caratteri (il campo si ferma lì) il carattere si rimpicciolisce perché il testo resti largo uguale.
     const DESC_FULL_LENGTH = 31;
+    // il pallino «•» delle descrizioni (es. Vera Pelle • Genuine Leather) più piccolo e a metà altezza delle lettere,
+    // come nel Cartello Semplice (22 ottobre 2026)
+    function nodiConPallino(text) {
+      return String(text).split('•').flatMap((parte, indice) => {
+        if (!indice) return [parte];
+        const pallino = document.createElement('span');
+        pallino.className = 'desc-pallino';
+        pallino.textContent = '•';
+        return [pallino, parte];
+      });
+    }
+
     function setDescriptionText(element, text) {
-      element.textContent = text;
+      element.replaceChildren(...nodiConPallino(text));
       element.style.fontSize = '';
       if (text.length > DESC_FULL_LENGTH) {
         const baseSize = parseFloat(getComputedStyle(element).fontSize);
@@ -1000,9 +1046,10 @@
 
       // DOPPIA CIFRA: riga prezzo originario e sconto; DESCRIZIONE ARTICOLO: il testo al suo posto
       const promoDesc = document.getElementById('promoDesc' + cardIndex);
-      promoDesc.style.display = showsDescription(cardIndex) ? 'block' : 'none';
+      promoDesc.style.visibility = showsDescription(cardIndex) ? 'visible' : 'hidden';
       setDescriptionText(promoDesc, state.desc);
-      document.getElementById('priceOldRow' + cardIndex).style.display = state.withDesc ? 'none' : 'flex';
+      document.getElementById('priceOldRow' + cardIndex).style.visibility = state.withDesc ? 'hidden' : 'visible';
+      promoDesc.parentElement.classList.toggle('con-entrambe', showsDescription(cardIndex) && !state.withDesc);
       document.getElementById('priceOldDisplay' + cardIndex).textContent = state.old ? '€ ' + state.old : '';
       document.getElementById('discountDisplay' + cardIndex).textContent = state.disc;
       document.getElementById('priceVal' + cardIndex).textContent = state.price;
@@ -1016,7 +1063,7 @@
     // I menu si riempiono quando la lista dei loghi personali del negozio è pronta (loghi-personalizzati.js).
     window.onload = () => LoghiPersonalizzati.pronto.then(loadLocalLogos);
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-04"></script>
+  <script src="../assets/js/cursore.js?v=20261022-05"></script>
 
   <script>
     // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
@@ -1052,7 +1099,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/copia-cartello.js?v=20261022-04"></script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261022-04"></script>
+  <script src="../assets/js/copia-cartello.js?v=20261022-05"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261022-05"></script>
 </body>
 </html>

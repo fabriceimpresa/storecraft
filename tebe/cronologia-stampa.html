@@ -2,11 +2,11 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-04"></script>
+  <script src="../assets/js/negozi.js?v=20261022-05"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cronologia di Stampa · TEBE</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-04">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-05">
   <style>
     /* Cronologia di stampa del negozio (assets/js/cronologia-stampa.js): le stampe degli ultimi 7 giorni dalle pagine di
        cartelli, cartellini e promo stagionali, divise per giorno, da rivedere, ristampare a misura reale, rimettere nella
@@ -195,6 +195,111 @@
 
     .cr-cornice-stampa { position: fixed; width: 0; height: 0; border: 0; visibility: hidden; }
 
+    /* Selezione di più stampe (22 ottobre 2026): il pulsante SELEZIONA PIÙ STAMPE porta la cronologia nel modo della
+       cronologia delle etichette DYMO: un tocco sceglie la stampa (pallino con la spunta) invece di aprirla, sotto ogni
+       stampa scelta le copie da ristampare (1–99) e ✕ per eliminarla, in fondo il conto, AGGIUNGI A LISTA e RISTAMPA */
+    .cr-scegli[aria-pressed="true"] { background: var(--interface-accent, #d4a373); color: #121110; }
+    .cr-scheda.cr-con-scelta { padding: 0; gap: 0; cursor: default; }
+    .cr-scheda.cr-con-scelta:hover { transform: none; }
+    .cr-scheda.scelta { border-color: var(--interface-accent, #d4a373); box-shadow: 0 0 0 1px var(--interface-accent, #d4a373); }
+    .cr-tocca {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 10px 6px;
+      border: none;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .cr-miniatura { position: relative; }
+    .cr-spunta {
+      position: absolute;
+      top: 7px;
+      left: 7px;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--interface-accent, #d4a373);
+      border-radius: 50%;
+      background: rgba(10, 9, 8, 0.55);
+    }
+    .cr-scheda.scelta .cr-spunta { background: var(--interface-accent, #d4a373); }
+    .cr-scheda.scelta .cr-spunta::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 5px;
+      height: 10px;
+      border: solid #121110;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .cr-sotto { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 42px; padding: 0 10px 8px; }
+    .cr-suggerimento { color: var(--interface-muted, #8c857b); font-size: 0.72rem; }
+    .cr-copie { display: flex; align-items: center; gap: 8px; color: var(--interface-accent, #d4a373); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    .cr-quante { display: inline-flex; align-items: stretch; height: 30px; border: 1px solid var(--interface-border, #2e2b27); border-radius: 5px; overflow: hidden; }
+    .cr-quante input {
+      width: 38px;
+      border: none;
+      background: var(--interface-control, #0a0908);
+      color: var(--interface-text, #f4f1ea);
+      font: 600 0.85rem Arial, sans-serif;
+      text-align: center;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+    .cr-quante input::-webkit-inner-spin-button, .cr-quante input::-webkit-outer-spin-button { margin: 0; -webkit-appearance: none; }
+    .cr-passo { width: 28px; border: none; background: var(--interface-sidebar, #181715); color: var(--interface-accent, #d4a373); font: 700 0.95rem Arial, sans-serif; cursor: pointer; }
+    .cr-passo:hover { background: var(--interface-accent, #d4a373); color: #121110; }
+    .cr-togli {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--interface-border, #2e2b27);
+      border-radius: 50%;
+      background: transparent;
+      color: var(--interface-muted, #8c857b);
+      font: 700 0.75rem Arial, sans-serif;
+      cursor: pointer;
+    }
+    .cr-togli:hover { border-color: #96382b; background: #96382b; color: #fff; }
+    .cr-tocca:focus-visible, .cr-passo:focus-visible, .cr-togli:focus-visible, .cr-ristampa-scelte:focus-visible { outline: 2px solid var(--interface-accent-bright, #e5ba73); outline-offset: 2px; }
+    .cr-piede {
+      position: sticky;
+      bottom: 0;
+      z-index: 9;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 1.5rem calc(0.8rem + env(safe-area-inset-bottom, 0px));
+      background: var(--interface-sidebar, #181715);
+      border-top: 1px solid var(--interface-border, #2e2b27);
+    }
+    .cr-piede[hidden] { display: none; }
+    /* con poche stampe il piede resta in fondo alla finestra */
+    body:has(.cr-piede:not([hidden])) { min-height: 100vh; }
+    body:has(.cr-piede:not([hidden])) .cr-elenco { flex: 1 0 auto; }
+    .cr-conto { color: var(--interface-text, #f4f1ea); font-size: 0.85rem; font-weight: 600; }
+    .cr-esito-scelte { flex: 1; color: var(--interface-accent-bright, #e5ba73); font-size: 0.8rem; text-align: right; }
+    .cr-ristampa-scelte {
+      min-width: 200px;
+      min-height: 44px;
+      padding: 0 1.2rem;
+      border: none;
+      border-radius: 5px;
+      background: #96382b;
+      color: #fff;
+      font: 700 0.85rem 'Plus Jakarta Sans', sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .cr-ristampa-scelte:hover:not(:disabled) { background: #7a2d22; }
+    .cr-ristampa-scelte:disabled, .cr-piede .cr-svuota:disabled { opacity: 0.45; cursor: default; }
+    .cr-piede .cr-svuota { min-height: 44px; }
+
     /* Telefono e finestre strette: due stampe per riga, anteprima a tutto schermo con i comandi sotto */
     @media (max-width: 760px) {
       .cr-testata { min-height: 60px; padding: 0.6rem 0.75rem; }
@@ -208,10 +313,13 @@
       .cr-foglio img { max-height: 100%; }
       .cr-lato { flex: 0 0 auto; }
       .cr-comando { min-height: 44px; }
+      .cr-piede { flex-wrap: wrap; padding-left: 12px; padding-right: 12px; }
+      .cr-esito-scelte { order: 3; flex-basis: 100%; text-align: left; }
+      .cr-ristampa-scelte { flex: 1; min-width: 0; }
     }
-/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .cr-testata { box-shadow: 0 1px 3px rgba(40, 34, 28, .14); }    :root[data-interface-theme="light"] .cr-miniatura img { box-shadow: 0 1px 3px rgba(40, 34, 28, .26); }    :root[data-interface-theme="light"] .cr-foglio img { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .cr-finestra { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }
+/* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .cr-testata { box-shadow: 0 1px 3px rgba(40, 34, 28, .14); }    :root[data-interface-theme="light"] .cr-miniatura img { box-shadow: 0 1px 3px rgba(40, 34, 28, .26); }    :root[data-interface-theme="light"] .cr-foglio img { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .cr-finestra { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }    :root[data-interface-theme="light"] .cr-spunta { background: rgba(255, 253, 250, 0.8); }
   </style>
-  <script src="../assets/js/theme.js?v=20261022-04"></script>
+  <script src="../assets/js/theme.js?v=20261022-05"></script>
 </head>
 <body data-layout="cronologia">
   <header class="cr-testata">
@@ -226,11 +334,20 @@
     <div class="cr-filtri" role="group" aria-label="Filtra le stampe" id="filtri"></div>
     <div class="cr-info">
       <span id="info"></span>
+      <button type="button" class="cr-svuota cr-scegli" id="scegli" aria-pressed="false">Seleziona più stampe</button>
+      <button type="button" class="cr-svuota" id="tutte" hidden>Seleziona tutte</button>
       <button type="button" class="cr-svuota" id="svuota">Svuota cronologia</button>
     </div>
   </div>
 
   <div class="cr-elenco" id="elenco"></div>
+
+  <div class="cr-piede" id="piede" hidden>
+    <span class="cr-conto" id="conto"></span>
+    <span class="cr-esito-scelte" id="esitoScelte" role="status"></span>
+    <button type="button" class="cr-svuota" id="inListaScelte">Aggiungi a lista</button>
+    <button type="button" class="cr-ristampa-scelte" id="ristampaScelte">Ristampa</button>
+  </div>
 
   <div class="cr-velo" id="velo" hidden>
     <div class="cr-finestra" role="dialog" aria-modal="true" aria-labelledby="anteprimaTitolo">
@@ -248,8 +365,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/lista-stampa.js?v=20261022-04"></script>
-  <script src="../assets/js/cronologia-stampa.js?v=20261022-04"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261022-05"></script>
+  <script src="../assets/js/cronologia-stampa.js?v=20261022-05"></script>
   <script>
     // Pagina della cronologia di stampa del negozio (../assets/js/cronologia-stampa.js): uguale nei tre negozi, cambia
     // solo data-negozio.
@@ -260,6 +377,10 @@
     let aperta = null;          // stampa nell'anteprima (con la foto grande)
     let ultimoFuoco = null;
     let indirizzi = [];
+    // selezione di più stampe, come la cronologia delle etichette DYMO: id → copie da ristampare
+    let scegli = false;
+    const selezione = new Map();
+    const limitaCopie = valore => Math.min(99, Math.max(1, Math.round(Number(valore)) || 1));
 
     const nodo = (tag, classe, testo) => {
       const n = document.createElement(tag);
@@ -288,6 +409,7 @@
 
     async function carica() {
       stampe = await CronologiaStampa.elenco();
+      [...selezione.keys()].forEach(id => { if (!stampe.some(s => s.id === id)) selezione.delete(id); });
       disegna();
     }
 
@@ -305,13 +427,22 @@
         return pulsante;
       }));
       document.getElementById('svuota').disabled = !stampe.length;
+      const pulsanteScegli = document.getElementById('scegli');
+      pulsanteScegli.setAttribute('aria-pressed', String(scegli));
+      pulsanteScegli.textContent = scegli ? 'Fine selezione' : 'Seleziona più stampe';
+      pulsanteScegli.disabled = !stampe.length && !scegli;
+      const tutte = document.getElementById('tutte');
+      tutte.hidden = !scegli;
+      tutte.disabled = !visibili().length;
+      tutte.textContent = visibili().length && visibili().every(s => selezione.has(s.id)) ? 'Deseleziona tutte' : 'Seleziona tutte';
+      document.getElementById('piede').hidden = !scegli;
+      aggiornaPiede();
       const info = document.getElementById('info');
       info.textContent = `ultimi 7 giorni · ${stampe.length === 1 ? '1 stampa' : `${stampe.length} stampe`}`;
       CronologiaStampa.spazio().then(byte => { if (byte !== null) info.textContent += ` · ${megabyte(byte)} usati nel browser`; });
 
       const elenco = document.getElementById('elenco');
-      const visibili = stampe.filter(s => filtro === 'tutte' || s.tipo === filtro);
-      if (!visibili.length) {
+      if (!visibili().length) {
         const vuota = nodo('div', 'cr-vuota');
         vuota.append(nodo('strong', '', 'Nessuna stampa'),
           stampe.length ? 'Nessuna stampa di questo tipo negli ultimi 7 giorni.'
@@ -321,7 +452,7 @@
       }
       // per giorno, dal più recente
       const giorni = new Map();
-      visibili.forEach(stampa => {
+      visibili().forEach(stampa => {
         const chiave = new Date(stampa.stampataIl).toDateString();
         if (!giorni.has(chiave)) giorni.set(chiave, []);
         giorni.get(chiave).push(stampa);
@@ -329,25 +460,160 @@
       elenco.replaceChildren(...[...giorni.values()].map(gruppo => {
         const sezione = nodo('section', 'cr-giorno');
         const griglia = nodo('div', 'cr-griglia');
-        griglia.append(...gruppo.map(stampa => {
-          const scheda = nodo('button', 'cr-scheda');
-          scheda.type = 'button';
-          scheda.setAttribute('aria-label', `${nomeStampa(stampa)}, stampata alle ${ora(stampa.stampataIl)}`);
-          const miniatura = nodo('div', 'cr-miniatura');
-          const img = document.createElement('img');
-          img.src = indirizzo(stampa.thumb);
-          img.alt = '';
-          miniatura.append(img);
-          const dettagli = nodo('div', 'cr-dettagli');
-          dettagli.append(nodo('span', 'cr-tipo', NOMI_TIPO[stampa.tipo] || stampa.tipo),
-            nodo('span', '', `${ora(stampa.stampataIl)}${stampa.volte > 1 ? ` · ${stampa.volte} volte` : ''}`));
-          scheda.append(miniatura, nodo('div', 'cr-nome', nomeStampa(stampa)), dettagli);
-          scheda.addEventListener('click', () => apriAnteprima(stampa.id));
-          return scheda;
-        }));
+        griglia.append(...gruppo.map(stampa => scegli ? schedaDaScegliere(stampa) : schedaStampa(stampa)));
         sezione.append(nodo('h2', 'cr-giorno-titolo', titoloGiorno(gruppo[0].stampataIl)), griglia);
         return sezione;
       }));
+    }
+
+    // Contenuto della scheda: miniatura, nome, tipo e ora
+    function contenutoScheda(stampa, contenitore) {
+      const miniatura = nodo('div', 'cr-miniatura');
+      const img = document.createElement('img');
+      img.src = indirizzo(stampa.thumb);
+      img.alt = '';
+      miniatura.append(img);
+      const dettagli = nodo('div', 'cr-dettagli');
+      dettagli.append(nodo('span', 'cr-tipo', NOMI_TIPO[stampa.tipo] || stampa.tipo),
+        nodo('span', '', `${ora(stampa.stampataIl)}${stampa.volte > 1 ? ` · ${stampa.volte} volte` : ''}`));
+      contenitore.append(miniatura, nodo('div', 'cr-nome', nomeStampa(stampa)), dettagli);
+      return miniatura;
+    }
+
+    // Scheda normale: un clic apre l'anteprima
+    function schedaStampa(stampa) {
+      const scheda = nodo('button', 'cr-scheda');
+      scheda.type = 'button';
+      scheda.setAttribute('aria-label', `${nomeStampa(stampa)}, stampata alle ${ora(stampa.stampataIl)}`);
+      contenutoScheda(stampa, scheda);
+      scheda.addEventListener('click', () => apriAnteprima(stampa.id));
+      return scheda;
+    }
+
+    // Scheda nella selezione di più stampe: un tocco la sceglie; scelta, sotto le copie da ristampare e ✕
+    function schedaDaScegliere(stampa) {
+      const scelta = selezione.has(stampa.id);
+      const scheda = nodo('div', `cr-scheda cr-con-scelta${scelta ? ' scelta' : ''}`);
+      const tocca = nodo('button', 'cr-tocca');
+      tocca.type = 'button';
+      tocca.setAttribute('aria-pressed', String(scelta));
+      tocca.setAttribute('aria-label', `${nomeStampa(stampa)}, stampata alle ${ora(stampa.stampataIl)}${scelta ? ', selezionata' : ''}`);
+      const spunta = nodo('span', 'cr-spunta');
+      spunta.setAttribute('aria-hidden', 'true');
+      contenutoScheda(stampa, tocca).append(spunta);
+      tocca.addEventListener('click', () => {
+        if (selezione.has(stampa.id)) selezione.delete(stampa.id); else selezione.set(stampa.id, 1);
+        disegna();
+      });
+      scheda.append(tocca);
+
+      const sotto = nodo('div', 'cr-sotto');
+      if (scelta) {
+        const copie = nodo('label', 'cr-copie');
+        copie.append('Copie');
+        const meno = nodo('button', 'cr-passo', '−');
+        meno.type = 'button';
+        meno.setAttribute('aria-label', 'Una copia in meno');
+        const campo = document.createElement('input');
+        campo.type = 'number';
+        campo.min = '1';
+        campo.max = '99';
+        campo.inputMode = 'numeric';
+        campo.value = String(selezione.get(stampa.id));
+        campo.setAttribute('aria-label', `Copie da ristampare di ${nomeStampa(stampa)}`);
+        const piu = nodo('button', 'cr-passo', '+');
+        piu.type = 'button';
+        piu.setAttribute('aria-label', 'Una copia in più');
+        const imposta = valore => { const v = limitaCopie(valore); campo.value = String(v); selezione.set(stampa.id, v); aggiornaPiede(); };
+        campo.addEventListener('input', () => { if (campo.value !== '') { selezione.set(stampa.id, limitaCopie(campo.value)); aggiornaPiede(); } });
+        campo.addEventListener('change', () => imposta(campo.value));
+        meno.addEventListener('click', () => imposta(limitaCopie(campo.value) - 1));
+        piu.addEventListener('click', () => imposta(limitaCopie(campo.value) + 1));
+        const gruppo = nodo('span', 'cr-quante');
+        gruppo.append(meno, campo, piu);
+        copie.append(gruppo);
+        sotto.append(copie);
+      } else {
+        sotto.append(nodo('span', 'cr-suggerimento', 'tocca per sceglierla'));
+      }
+      const togli = nodo('button', 'cr-togli', '✕');
+      togli.type = 'button';
+      togli.title = 'Elimina dalla cronologia';
+      togli.setAttribute('aria-label', `Elimina ${nomeStampa(stampa)} dalla cronologia`);
+      togli.addEventListener('click', async () => {
+        if (!confirm(`Eliminare «${nomeStampa(stampa)}» delle ${ora(stampa.stampataIl)} dalla cronologia di stampa?`)) return;
+        await CronologiaStampa.elimina(stampa.id);
+        selezione.delete(stampa.id);
+        carica();
+      });
+      sotto.append(togli);
+      scheda.append(sotto);
+      return scheda;
+    }
+
+    // Stampe visibili con il filtro scelto
+    const visibili = () => stampe.filter(s => filtro === 'tutte' || s.tipo === filtro);
+
+    function aggiornaPiede() {
+      const n = selezione.size;
+      const copie = [...selezione.values()].reduce((somma, c) => somma + c, 0);
+      document.getElementById('conto').textContent = n
+        ? `${n} ${n === 1 ? 'stampa' : 'stampe'} · ${copie} ${copie === 1 ? 'foglio' : 'fogli'} in tutto`
+        : 'Tocca le stampe da ristampare';
+      const ristampa = document.getElementById('ristampaScelte');
+      ristampa.disabled = !n;
+      ristampa.textContent = n ? `Ristampa (${copie})` : 'Ristampa';
+      document.getElementById('inListaScelte').disabled = !n;
+    }
+
+    function cambiaModo(acceso) {
+      scegli = acceso;
+      selezione.clear();
+      document.getElementById('esitoScelte').textContent = '';
+      disegna();
+    }
+
+    function selezionaTutte() {
+      const tutte = visibili();
+      if (tutte.length && tutte.every(s => selezione.has(s.id))) tutte.forEach(s => selezione.delete(s.id));
+      else tutte.forEach(s => { if (!selezione.has(s.id)) selezione.set(s.id, 1); });
+      disegna();
+    }
+
+    // Le stampe scelte, complete della foto grande, ognuna ripetuta per le sue copie
+    async function fogliScelti() {
+      const scelte = stampe.filter(s => selezione.has(s.id));
+      const complete = await Promise.all(scelte.map(s => CronologiaStampa.stampa(s.id)));
+      return scelte.flatMap((s, i) => complete[i] ? Array(selezione.get(s.id)).fill(complete[i]) : []);
+    }
+
+    // Ristampa delle stampe scelte: un solo PDF a misura reale, come Stampa (.PDF) dell'anteprima
+    async function ristampaScelte() {
+      if (!selezione.size) return;
+      const esito = document.getElementById('esitoScelte');
+      const ids = [...selezione.keys()];
+      const fogli = await fogliScelti();
+      if (!fogli.length) return carica();
+      const nomeFile = fogli.length === 1 ? `${nomeStampa(fogli[0])}.pdf` : 'cronologia.pdf';
+      await stampaPdf(ListaStampa.buildPdf(fogli), nomeFile, esito);
+      for (const id of ids) await CronologiaStampa.ristampata(id);
+      selezione.clear();
+      carica();
+    }
+
+    async function inListaScelte() {
+      if (!selezione.size) return;
+      const esito = document.getElementById('esitoScelte');
+      try {
+        let totale = 0;
+        for (const foglio of await fogliScelti()) totale = await ListaStampa.addPage(foglio);
+        esito.textContent = `Aggiunte alla lista di stampa (${totale} ${totale === 1 ? 'pagina' : 'pagine'})`;
+        selezione.clear();
+        disegna();
+      } catch (error) {
+        console.error('Aggiunta alla lista di stampa non riuscita.', error);
+        esito.textContent = 'Non è stato possibile aggiungerle alla lista di stampa.';
+      }
     }
 
     // ----- Anteprima di una stampa -----
@@ -390,10 +656,12 @@
     // con il menu Condividi
     async function ristampa() {
       if (!aperta) return;
-      const esito = document.getElementById('esito');
-      const nomeFile = `${nomeStampa(aperta)}.pdf`;
       const pdf = ListaStampa.buildPdf([aperta]);
       CronologiaStampa.ristampata(aperta.id).then(carica);
+      await stampaPdf(pdf, `${nomeStampa(aperta)}.pdf`, document.getElementById('esito'));
+    }
+
+    async function stampaPdf(pdf, nomeFile, esito) {
       if (ListaStampa.isIos()) { ListaStampa.offerPdf(pdf, nomeFile); return; }
       esito.textContent = 'Preparazione del PDF…';
       try {
@@ -442,17 +710,24 @@
     async function svuota() {
       if (!stampe.length || !confirm('Svuotare la cronologia di stampa? Tutte le stampe degli ultimi 7 giorni verranno eliminate.')) return;
       await CronologiaStampa.svuota();
+      selezione.clear();
       carica();
     }
 
     document.getElementById('svuota').addEventListener('click', svuota);
+    document.getElementById('scegli').addEventListener('click', () => cambiaModo(!scegli));
+    document.getElementById('tutte').addEventListener('click', selezionaTutte);
+    document.getElementById('ristampaScelte').addEventListener('click', ristampaScelte);
+    document.getElementById('inListaScelte').addEventListener('click', inListaScelte);
     document.getElementById('ristampa').addEventListener('click', ristampa);
     document.getElementById('inLista').addEventListener('click', inLista);
     document.getElementById('elimina').addEventListener('click', elimina);
     document.getElementById('chiudiAnteprima').addEventListener('click', chiudiAnteprima);
     document.getElementById('velo').addEventListener('click', evento => { if (evento.target.id === 'velo') chiudiAnteprima(); });
     document.addEventListener('keydown', evento => {
-      if (evento.key === 'Escape' && !document.getElementById('velo').hidden) chiudiAnteprima();
+      if (evento.key !== 'Escape') return;
+      if (!document.getElementById('velo').hidden) chiudiAnteprima();
+      else if (scegli) cambiaModo(false);
     });
     // la pagina resta aperta mentre si stampa dalle altre: tornando in primo piano si rilegge la cronologia
     document.addEventListener('visibilitychange', () => { if (!document.hidden && !aperta) carica(); });
