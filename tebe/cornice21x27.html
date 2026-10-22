@@ -2,24 +2,24 @@
 <html lang="it" data-negozio="tebe">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-01"></script>
+  <script src="../assets/js/negozi.js?v=20261022-02"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261022-01"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-01">
+  <script src="../assets/js/theme.js?v=20261022-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-01">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-02">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Cornice 21 X 27 · TEBE</title>
-  <script src="../assets/js/loghi-personalizzati.js?v=20261022-01"></script>
-  <script src="../assets/logos/tebe/elenco.js?v=20261022-01"></script>
-  <script src="../assets/js/logos.js?v=20261022-01"></script>
-  <script src="../assets/js/print-logo-colors.js?v=20261022-01"></script>
+  <script src="../assets/js/loghi-personalizzati.js?v=20261022-02"></script>
+  <script src="../assets/logos/tebe/elenco.js?v=20261022-02"></script>
+  <script src="../assets/js/logos.js?v=20261022-02"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261022-02"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Castoro&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-01">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261022-01"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-02">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261022-02"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -59,7 +59,8 @@
       top: 13.6mm;
       width: 210mm;
       height: 270mm;
-      border: 0.34mm solid #000;
+      /* niente rettangolo nero (tolto il 22 ottobre 2026): il bordo resta trasparente, così gli elementi non si spostano */
+      border: 0.34mm solid transparent;
       background: #fff;
       overflow: hidden;
     }
@@ -70,11 +71,13 @@
       width: 156mm;
       height: auto;
       object-fit: contain;
-      transform: translateX(-50%);
+      /* tutti gli elementi un poco più grandi (×1,06 dal 22 ottobre 2026, senza il rettangolo nero c'è più spazio);
+         i decori crescono restando alla stessa distanza dal bordo */
+      transform: translateX(-50%) scale(1.06);
     }
 
-    #decoTop { top: 11mm; }
-    #decoBottom { bottom: 11mm; }
+    #decoTop { top: 3mm; transform-origin: center top; }   /* 11 mm fino al 22 ottobre 2026: più spazio vuoto attorno al testo */
+    #decoBottom { bottom: 3mm; transform-origin: center bottom; }
 
     /* Testo + prezzi centrati in verticale nella cornice, cioè tra i due decori (che sono simmetrici) */
     .frame-content {
@@ -89,7 +92,7 @@
       align-items: center;
       text-align: center;
       gap: 9mm;
-      transform: scale(1.02);
+      transform: scale(1.08);   /* 1,02 × 1,06 */
       transform-origin: center;
     }
 
@@ -130,6 +133,18 @@
       justify-content: center;
       flex-shrink: 0;
       overflow: hidden;
+    }
+
+    /* BRAND › DESCRIZIONE: testo pronto (Promozioni e Articoli) o Testo Libero, su una riga, nero, in Arial come i
+       testi delle pagine di TEBE (non maiuscolo né oro come i testi della cornice); come in Cornici 10 x 15 */
+    .brand-desc-text {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 30pt;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: #231f20;
+      white-space: nowrap;
+      text-align: center;
     }
 
     .frame-brand-logo {
@@ -181,17 +196,17 @@
        ingranditi in proporzione ai decori della cornice 21x27 (circa 2,77x le misure di Cornici 10x15) */
     .frame-box.percent-mode .frame-content {
       gap: 0;
-      transform: none;
+      transform: scale(1.06);
     }
 
     /* Modalità % Standard: senza descrizione ne' brand, percentuale e logo un po' piu' grandi. */
     .frame-box.percent-mode.percent-standard .frame-content {
-      transform: scale(1.06);
+      transform: scale(1.124);   /* 1,06 × 1,06 */
     }
 
     /* Modalità % Brand: il logo piu' grande spinge giu' il blocco, che si alza un poco. */
     .frame-box.percent-mode.percent-brand .frame-content {
-      transform: translateY(-6.9mm);
+      transform: translateY(-6.9mm) scale(1.06);
     }
 
     .pct-desc {
@@ -299,13 +314,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-01">
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-01"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-01">
-  <script defer src="../assets/js/responsive.js?v=20261022-01"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-02">
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-02"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-02">
+  <script defer src="../assets/js/responsive.js?v=20261022-02"></script>
 </head>
 <body data-layout="cartelli">
   <a href="index.html?store=tebe" class="app-close-btn" title="Chiudi e torna all'index">✕</a>
@@ -317,7 +332,7 @@
 
   <div class="sidebar">
     <div class="controls">
-      <h2>Cornice 21 X 27</h2>
+      <h2>Cornice A4</h2>
 
       <!-- Blocco 1: selettori (selettore comune selettore.js; gli id restano quelli usati da cursore e Made in Italy) -->
       <div class="panel-block">
@@ -325,6 +340,12 @@
           <button value="description" id="modeDescription" class="active">STANDARD</button>
           <button value="brand" id="modeBrand">BRAND</button>
           <button value="percent" id="modePercent">PERCENTUALE<br>SCONTO</button>
+        </div>
+
+        <!-- solo con BRAND: sotto il logo la descrizione (testi pronti o Testo Libero) o il doppio prezzo -->
+        <div data-selettore id="brandViewSelector" data-on-change="setBrandView" aria-label="Seleziona cosa mostrare sotto il logo brand" hidden>
+          <button value="desc" id="brandViewDescBtn">DESCRIZIONE</button>
+          <button value="double" id="brandViewDoubleBtn" class="active">DOPPIO PREZZO</button>
         </div>
 
         <!-- solo con PERCENTUALE SCONTO: cosa c'è sopra la percentuale -->
@@ -388,6 +409,18 @@
 CACHEMIRE</textarea>
         </div>
 
+        <!-- solo con BRAND › DESCRIZIONE: il menu dei testi pronti standard (Promozioni e Articoli) e il Testo Libero -->
+        <div class="form-group" id="brandDescGroup" hidden>
+          <label class="section-label" for="brandDescPreset">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="brandDescPreset" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyBrandDescPreset()">
+              <option value="">-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <label for="brandDescFree">Testo Libero</label>
+          <input type="text" id="brandDescFree" maxlength="37" placeholder="-- Testo Libero --" oninput="updateBrandDesc()">
+        </div>
+
         <div class="form-row" id="priceFieldsGroup">
           <div class="form-group">
             <label for="oldPrice">Prezzo Originario</label>
@@ -419,13 +452,15 @@ CACHEMIRE</textarea>
     </div>
   </div>
 
-  <script src="../assets/js/testi-pronti.js?v=20261022-01"></script>
-  <script src="../assets/js/selettore.js?v=20261022-01"></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-02"></script>
+  <script src="../assets/js/selettore.js?v=20261022-02"></script>
   <script>
     const cardState = {
       mode: 'description',
       description: 'LANA &\nCACHEMIRE',
       brand: { officialFile: '', customLogoId: '' },
+      brandView: 'double',          // BRAND: 'double' doppio prezzo, 'desc' descrizione sotto il logo
+      brandDesc: 'Special Deal',    // BRAND › DESCRIZIONE: testo suo, con i testi pronti standard
       oldPrice: '99,90',
       discount: '30',
       newPrice: '69,90',
@@ -442,6 +477,25 @@ CACHEMIRE</textarea>
       cardState.mode = mode;
       if (usesBrandLogo()) ensureBrandSelected();
       syncPanel();
+      renderCard();
+    }
+
+    // BRAND: sotto il logo la descrizione (con il solo Prezzo Finale) o il doppio prezzo
+    const brandWithDesc = () => cardState.mode === 'brand' && cardState.brandView === 'desc';
+
+    function setBrandView(view) {
+      cardState.brandView = view;
+      syncPanel();
+      renderCard();
+    }
+
+    function applyBrandDescPreset() {
+      document.getElementById('brandDescFree').value = document.getElementById('brandDescPreset').value;
+      updateBrandDesc();
+    }
+
+    function updateBrandDesc() {
+      cardState.brandDesc = document.getElementById('brandDescFree').value;
       renderCard();
     }
 
@@ -465,6 +519,13 @@ CACHEMIRE</textarea>
       document.getElementById('percentFieldsGroup').hidden = mode !== 'percent';
       document.getElementById('percentExtraSelector').hidden = mode !== 'percent';
       document.getElementById('priceFieldsGroup').hidden = mode === 'percent';
+      document.getElementById('brandViewSelector').hidden = mode !== 'brand';
+      Selettore.attiva('brandViewSelector', cardState.brandView);
+      document.getElementById('brandDescGroup').hidden = !brandWithDesc();
+      document.getElementById('brandDescFree').value = cardState.brandDesc;
+      // con BRAND e DESCRIZIONE resta solo il Prezzo Finale
+      document.getElementById('oldPrice').closest('.form-group').hidden = brandWithDesc();
+      document.getElementById('discountValue').closest('.form-group').hidden = brandWithDesc();
 
       Selettore.attiva('percentExtraSelector', percent.extra);
       document.getElementById('percentDescGroup').hidden = percent.extra !== 'descrizione';
@@ -623,7 +684,7 @@ CACHEMIRE</textarea>
       box.classList.toggle('percent-mode', cardState.mode === 'percent');
       if (cardState.mode !== 'percent') box.classList.remove('percent-standard', 'percent-brand');
       if (cardState.mode === 'percent') {
-        box.classList.remove('one-line-desc');
+        box.classList.remove('one-line-desc', 'brand-desc');
         renderPercentContent(box, content);
         return;
       }
@@ -657,10 +718,17 @@ CACHEMIRE</textarea>
       }
       const priceRow = node('div', 'price-row-frame');
       priceRow.append(node('span', 'price-old-frame', `€ ${cardState.oldPrice}`), node('span', 'price-percent-frame', `-${cardState.discount}%`));
-      content.replaceChildren(title, priceRow, node('div', 'price-final-frame', `€ ${cardState.newPrice}`));
+      box.classList.toggle('brand-desc', brandWithDesc());
+      if (brandWithDesc()) {
+        // logo, descrizione e Prezzo Finale (senza prezzo originario e sconto)
+        content.replaceChildren(title, node('div', 'brand-desc-text', cardState.brandDesc), node('div', 'price-final-frame', `€ ${cardState.newPrice}`));
+      } else {
+        content.replaceChildren(title, priceRow, node('div', 'price-final-frame', `€ ${cardState.newPrice}`));
+      }
 
       if (cardState.mode === 'brand') loadBrandImage(content.querySelector('.frame-brand-logo'));
       if (isOneLine) fitOneLineDesc(content);
+      if (brandWithDesc()) fitOneLineDesc(content, '.brand-desc-text');
     }
 
     function loadBrandImage(image) {
@@ -677,8 +745,8 @@ CACHEMIRE</textarea>
     // Testo su una riga troppo lungo (es. PANTALONCINO): il corpo si riduce finché il testo non supera
     // il 70% della larghezza dei decori, come in Cornici 10x15. Vale anche per il testo libero.
     const ONE_LINE_MAX_RATIO = 0.7;
-    function fitOneLineDesc(content) {
-      const title = content.querySelector('.desc-title');
+    function fitOneLineDesc(content, selector = '.desc-title') {
+      const title = content.querySelector(selector);
       const deco = document.getElementById('decoTop');
       if (!title || !deco) return;
       title.style.fontSize = '';
@@ -781,8 +849,8 @@ CACHEMIRE</textarea>
     // Il carattere Castoro arriva da Google Fonts: a caricamento finito si rimisura il testo.
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => renderCard());
   </script>
-  <script src="../assets/js/madeinitaly.js?v=20261022-01" data-automatico></script>
-  <script src="../assets/js/cursore.js?v=20261022-01"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261022-02" data-automatico></script>
+  <script src="../assets/js/cursore.js?v=20261022-02"></script>
   <script>
     // Cursore: indica sulla cornice l'elemento legato al campo in uso.
     const cursore = Cursore.create({
@@ -797,6 +865,8 @@ CACHEMIRE</textarea>
         { controls: '#brandSelect, #customBrandSelect, #percentExtraBrandBtn', target: '#frameContent .frame-brand-logo' },
         { controls: '#percentExtraStandardBtn, #percentValue, #percentValue ~ .percent-stepper', target: '#frameContent .pct-row' },
         { controls: '#percentExtraDescBtn, #percentDescPreset, #percentDescValue', target: '#frameContent .pct-desc' },
+        { controls: '#brandViewDescBtn, #brandDescPreset, #brandDescFree', target: '#frameContent .brand-desc-text' },
+        { controls: '#brandViewDoubleBtn', target: '#frameContent .price-row-frame' },
         { controls: '#oldPrice', target: '#frameContent .price-old-frame' },
         { controls: '#discountValue, #discountValue ~ .percent-stepper', target: '#frameContent .price-percent-frame' },
         { controls: '#newPrice', target: '#frameContent .price-final-frame' }
@@ -812,7 +882,7 @@ CACHEMIRE</textarea>
       else cursore.point({ target: '#frameBox', placement: 'above' });
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261022-01"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261022-01"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261022-02"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261022-02"></script>
 </body>
 </html>

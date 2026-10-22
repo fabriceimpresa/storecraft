@@ -1,4 +1,4 @@
-@import url('input-affix.css?v=20261022-01');
+@import url('input-affix.css?v=20261022-02');
 /*
  * Pannello standard degli editor (Crea Cartelli e Cartellini), comune a tutti i negozi.
  * I colori sono del negozio della pagina, nella sua scheda (assets/negozi/<negozio>.css: --pannello-*); qui i valori
@@ -359,6 +359,12 @@
 
 .mode-switch[hidden] { display: none; }
 
+/* più selettori uno sotto l'altro: un poco più staccati (0,7rem invece di 0,5rem, dal 22 ottobre 2026) e sempre alla
+   stessa distanza, anche quando tra due selettori visibili ce n'è uno nascosto (es. Cornici 10 x 15: il selettore di
+   BRAND o di PERCENTUALE SCONTO compare solo nella sua modalità); il margine alto si unisce a quello basso del
+   selettore sopra, che vale 0,5rem, e resta il più grande dei due */
+.mode-switch:not([hidden]) ~ .mode-switch { margin-top: 0.7rem; }
+
 .mode-switch button {
   flex: 1;
   padding: 9px 8px;
@@ -506,6 +512,7 @@
   .btn-toggle { margin-bottom: 0.45rem; }
   .check-row { padding-bottom: 0.75rem; margin-bottom: 0.75rem; }
   .panel-block > .mode-switch:last-child { margin-bottom: 0.45rem; }
+  .mode-switch:not([hidden]) ~ .mode-switch { margin-top: 0.6rem; }
   .panel-block > .check-row:first-child { padding-bottom: 1.1rem; }
   .form-group label {
     font-size: 0.68rem;

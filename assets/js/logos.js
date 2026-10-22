@@ -5,7 +5,7 @@
 // Cartella dei loghi del negozio della pagina (<html data-negozio="…">), ricavata dalla posizione di questo file:
 // vale sia per la dashboard nella radice sia per le pagine nelle cartelle dei negozi.
 const LOGO_ASSET_PATH = new URL(`../logos/${document.documentElement.dataset.negozio}/`, document.currentScript.src).href;
-const LOGO_ASSET_VERSION = "20261005-4";
+const LOGO_ASSET_VERSION = "20261022-1";
 
 function getLogoSource(fileName) {
   return fileName ? `${LOGO_ASSET_PATH}${fileName}?v=${LOGO_ASSET_VERSION}` : '';

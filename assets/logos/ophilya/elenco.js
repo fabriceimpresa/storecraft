@@ -7,6 +7,8 @@ const LOGO_FILES = [
   "DIXIE.png",
   "HAVEONE.png",
   "OKKIA.png",
+  "OPHILYA.png",
+  "SALOME.png",
   "SOUVENIR.png",
   "Tebe.png",
   "Tebe269.png",
@@ -15,6 +17,6 @@ const LOGO_FILES = [
   "WUSIDE.png"
 ];
 
-// BRAND PRIORITARI: i brand della casa TEBE, mostrati per primi in ogni menu a cascata dei loghi,
+// BRAND PRIORITARI: per OPHILYA solo il suo logo (dal 22 ottobre 2026; i brand di TEBE vanno nell'elenco alfabetico), mostrato per primo in ogni menu a cascata dei loghi,
 // subito dopo la voce di default, ed esclusi dal resto dell'elenco alfabetico.
-const PRIORITY_BRANDS = ["269TEBE.PNG", "Tebe269.png", "Tebe.png"];
+const PRIORITY_BRANDS = ["OPHILYA.png"];

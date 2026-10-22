@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-01"></script>
+  <script src="assets/js/negozi.js?v=20261022-02"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.57</p>
+  <p class="aggiornamento">ultimo aggiornamento: 22 ottobre 2026 · versione 1.2.58</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -302,7 +302,7 @@
   <h2 id="selettori">Selettori e pulsanti</h2>
   <table>
     <tr><th>Componente</th><th>Come si scrive</th><th>Aspetto</th><th>Regole</th></tr>
-    <tr><td>Selettore</td><td><code>&lt;div data-selettore id data-on-change aria-label&gt;&lt;button value class="active"&gt;…</code> + <code>selettore.js</code></td><td>riquadro <code>--pannello-selettore</code>, bordo, angoli 6 px, spazio 4 px · voci system-ui 0,68rem peso 400, lettere 0,08em, maiuscolo, spazio 9 × 8 px · scelta <code>--pannello-selettore-attivo</code> / <code>-testo</code> · non scelta <code>--pannello-selettore-testo</code></td><td><code>&lt;br&gt;</code> per andare a capo (sul telefono una riga, alta 44 px, lettere 0,02em); comandi <code>Selettore.attiva / valore / voci / nascondiVoce / disabilitaVoce</code>; la funzione riceve il valore</td></tr>
+    <tr><td>Selettore</td><td><code>&lt;div data-selettore id data-on-change aria-label&gt;&lt;button value class="active"&gt;…</code> + <code>selettore.js</code></td><td>riquadro <code>--pannello-selettore</code>, bordo, angoli 6 px, spazio 4 px · voci system-ui 0,68rem peso 400, lettere 0,08em, maiuscolo, spazio 9 × 8 px · scelta <code>--pannello-selettore-attivo</code> / <code>-testo</code> · non scelta <code>--pannello-selettore-testo</code></td><td><code>&lt;br&gt;</code> per andare a capo (sul telefono una riga, alta 44 px, lettere 0,02em); comandi <code>Selettore.attiva / valore / voci / nascondiVoce / disabilitaVoce</code>; la funzione riceve il valore; più selettori di seguito stanno tutti nel blocco 1, sempre alla stessa distanza, 0,7rem (sul telefono 0,6rem), anche con un selettore nascosto in mezzo</td></tr>
     <tr><td>Selettori pronti</td><td><code>data-selettore-cartello</code> · <code>data-selettore-modalita-prezzo</code> · <code>data-selettore-numero-articoli data-counts="2,3"</code></td><td>come il selettore</td><td>CARTELLO SUPERIORE / INFERIORE (<code>selectCard</code>, <code>setLowerDisabled</code>) · DOPPIA CIFRA / DESCRIZIONE ARTICOLO (<code>setDescriptionMode</code>) · N ARTICOLI (<code>setItemCount</code>)</td></tr>
     <tr><td>Pulsante a due stati</td><td><code>.btn-toggle</code>; + AGGIUNGI 2° BRAND con <code>data-second-brand-toggle</code></td><td>vuoto: bordo e scritta <code>--pannello-oro</code>, 0,68rem 700, lettere 0,08em, angoli 6 px · acceso: verde <code>#5f8a55</code>, scritta <code>#f4f1ea</code></td><td>scritta accesa diversa (2° BRAND ATTIVO, SCONTISTICA ATTIVA); sul telefono alto 48 px</td></tr>
     <tr><td>COPIA SU ALTRO CARTELLO</td><td><code>&lt;div data-copia-cartello data-checkbox-id data-on-change&gt;</code> + <code>copia-cartello.js</code></td><td>scritta 0,72rem <code>--pannello-oro</code> · casella 14 px · linea sotto <code>--pannello-linea</code> · sul telefono interruttore 48 × 28 px, acceso <code>#5f8a55</code></td><td>prima voce del blocco 4; spuntando copia il cartello sull'altro, togliendo la spunta lo ripristina; nascosta con 1 CARTELLO; <code>data-testo</code> cambia la scritta (COPIA SU ALTRA CORNICE nelle Cornici 10 x 15 di TEBE)</td></tr>
@@ -431,7 +431,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-01</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261022-02</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>

@@ -2,19 +2,19 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-01"></script>
+  <script src="../assets/js/negozi.js?v=20261022-02"></script>
   <!-- modulo sorgente, scritto a codice partendo da TEBE (non è un clone: non si cancella dalle utilità) -->
   <meta name="storecraft-derivata" content="tebe/paletto18x12.html">
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261022-01"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-01">
+  <script src="../assets/js/theme.js?v=20261022-02"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261022-02">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-01">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-02">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
   <title>Paletto 16,5 x 11,5 · OPHILYA</title>
-  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-01">
-  <script defer src="../assets/js/campi-prezzo.js?v=20261022-01"></script>
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261022-02">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261022-02"></script>
   <style>
     /* Bodoni del sito: dichiarato come nei Cartellini (senza font-display: swap) */
     @font-face {
@@ -167,7 +167,7 @@
     }
 
     .card.is-made-in-italy .card-logo {
-      top: 93.54mm;
+      top: 100.04mm;
     }
 
     .card-price {
@@ -262,7 +262,7 @@
       width: 100%;
       overflow: hidden;
       font-family: "Bodoni Std", "Bodoni MT", serif;
-      font-size: 17.54pt;
+      font-size: 19.42pt;   /* un poco più grande (17.54pt fino al 22 ottobre 2026); i testi lunghi restano piccoli */
       font-style: italic;
       font-weight: 400;
       letter-spacing: -0.025em;
@@ -359,7 +359,7 @@
        centrato dove sta il logo TEBE della pagina TEBE */
     .card-logo {
       position: absolute;
-      top: 87.27mm;
+      top: 93.77mm;   /* 6.5 mm più in basso, staccato dal prezzo (87.27mm fino al 22 ottobre 2026) */
       left: 50%;
       width: 51.7mm;
       height: auto;
@@ -412,13 +412,13 @@
     }
 
   </style>
-  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-01">
-  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-01">
-  <script defer src="../assets/js/menu-cascata.js?v=20261022-01"></script>
-  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-01">
-  <script defer src="../assets/js/responsive.js?v=20261022-01"></script>
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261022-02">
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261022-02">
+  <script defer src="../assets/js/menu-cascata.js?v=20261022-02"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261022-02">
+  <script defer src="../assets/js/responsive.js?v=20261022-02"></script>
 </head>
 <body data-layout="cartelli">
   <a href="index.html?store=ophilya" class="app-close-btn" title="Chiudi e torna all'indice">✕</a>
@@ -442,6 +442,12 @@
           <button value="standard" id="standardMode" class="active">STANDARD</button>
           <button value="double" id="doublePriceMode">DOPPIO<br>PREZZO</button>
           <button value="doubleArticle" id="doubleArticleMode">DOPPIO<br>ARTICOLO</button>
+        </div>
+
+        <!-- solo con DOPPIO ARTICOLO, selettore comune (selettore.js): sotto i due articoli la descrizione o il doppio prezzo -->
+        <div data-selettore id="articleModeSelector" hidden data-on-change="setArticlePriceMode" aria-label="Seleziona la modalità degli articoli">
+          <button value="standard" id="articleStandardMode" class="active">DESCRIZIONE</button>
+          <button value="double" id="articleDoublePriceMode">DOPPIO PREZZO</button>
         </div>
       </div>
 
@@ -485,19 +491,14 @@
         </div>
 
         <div id="doubleArticleFields" hidden>
-          <!-- selettore comune (selettore.js): prezzi dei due articoli -->
-          <div data-selettore id="articleModeSelector" data-on-change="setArticlePriceMode" aria-label="Seleziona la modalità degli articoli">
-            <button value="standard" id="articleStandardMode" class="active">DESCRIZIONE</button>
-            <button value="double" id="articleDoublePriceMode">DOPPIO PREZZO</button>
-          </div>
           <div class="article-fields">
             <h2>Articolo sinistro</h2>
             <div data-article-fields="standard">
               <div class="form-group">
-                <label class="section-label" for="firstDescriptionPreset">Promozioni</label>
+                <label class="section-label" for="firstDescriptionPreset">TESTI PRONTI</label>
                 <div class="preset-select">
-                  <select id="firstDescriptionPreset" data-testo-libero="firstDescription" onchange="applyArticleDescriptionPreset('first')">
-                    <option value="">-- Seleziona Promozione --</option>
+                  <select id="firstDescriptionPreset" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyArticleDescriptionPreset('first')">
+                    <option value="">-- Seleziona Testo Pronto --</option>
                   </select>
                 </div>
                 <label for="firstDescription">Testo Libero</label>
@@ -529,10 +530,10 @@
             <h2>Articolo destro</h2>
             <div data-article-fields="standard">
               <div class="form-group">
-                <label class="section-label" for="secondDescriptionPreset">Promozioni</label>
+                <label class="section-label" for="secondDescriptionPreset">TESTI PRONTI</label>
                 <div class="preset-select">
-                  <select id="secondDescriptionPreset" data-testo-libero="secondDescription" onchange="applyArticleDescriptionPreset('second')">
-                    <option value="">-- Seleziona Promozione --</option>
+                  <select id="secondDescriptionPreset" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyArticleDescriptionPreset('second')">
+                    <option value="">-- Seleziona Testo Pronto --</option>
                   </select>
                 </div>
                 <label for="secondDescription">Testo Libero</label>
@@ -618,10 +619,10 @@
     <div class="cut-line" aria-hidden="true"></div>
   </main>
 
-  <script src="../assets/js/testi-pronti.js?v=20261022-01"></script>
-  <script src="../assets/js/selettore.js?v=20261022-01"></script>
-  <script src="../assets/js/selettore-cartello.js?v=20261022-01"></script>
-  <script src="../assets/js/madeinitaly.js?v=20261022-01" data-automatico></script>
+  <script src="../assets/js/testi-pronti.js?v=20261022-02"></script>
+  <script src="../assets/js/selettore.js?v=20261022-02"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261022-02"></script>
+  <script src="../assets/js/madeinitaly.js?v=20261022-02" data-automatico></script>
   <script>
     const cardStates = {
       top: {
@@ -652,10 +653,7 @@
       ...Array.from(descriptionPreset.options, option => option.value.length)
     );
     for (const articleKey of ['first', 'second']) {
-      const preset = document.getElementById(`${articleKey}DescriptionPreset`);
-      for (const option of Array.from(descriptionPreset.options).slice(1)) {
-        preset.add(new Option(option.textContent, option.value));
-      }
+      // il menu TESTI PRONTI degli articoli (Promozioni e Articoli) lo riempie testi-pronti.js
       document.getElementById(`${articleKey}Description`).maxLength = descriptionMaxLength;
     }
     document.getElementById('description').maxLength = descriptionMaxLength;
@@ -697,6 +695,7 @@
       document.getElementById('standardFields').hidden = mode !== 'standard';
       document.getElementById('doublePriceFields').hidden = mode !== 'double';
       document.getElementById('doubleArticleFields').hidden = mode !== 'doubleArticle';
+      document.getElementById('articleModeSelector').hidden = mode !== 'doubleArticle';
       renderCard(activeCard);
     }
 
@@ -741,6 +740,7 @@
       document.getElementById('standardFields').hidden = state.mode !== 'standard';
       document.getElementById('doublePriceFields').hidden = state.mode !== 'double';
       document.getElementById('doubleArticleFields').hidden = state.mode !== 'doubleArticle';
+      document.getElementById('articleModeSelector').hidden = state.mode !== 'doubleArticle';
       Selettore.attiva('articleModeSelector', state.articlePriceMode);
       document.getElementById('doubleArticleFields').classList.toggle('is-double-price', state.articlePriceMode === 'double');
       for (const articleKey of ['first', 'second']) {
@@ -861,7 +861,7 @@
     updateCards();
     renderCard('bottom');
   </script>
-  <script src="../assets/js/cursore.js?v=20261022-01"></script>
+  <script src="../assets/js/cursore.js?v=20261022-02"></script>
   <script>
     // Cursore: sopra il cartello scelto (superiore/inferiore) e sugli elementi legati al campo in uso.
     const activePalettoCard = () => document.getElementById(activeCard === 'bottom' ? 'cardBottom' : 'cardTop');
@@ -894,7 +894,7 @@
       ]
     });
   </script>
-  <script src="../assets/js/strumenti-stampa.js?v=20261022-01"></script>
-  <script defer src="../assets/js/stampa-ios.js?v=20261022-01"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261022-02"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261022-02"></script>
 </body>
 </html>

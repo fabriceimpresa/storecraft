@@ -7,6 +7,8 @@ const LOGO_FILES = [
   "DIXIE.png",
   "HAVEONE.png",
   "OKKIA.png",
+  "PINKO.png",
+  "SALOME.png",
   "SOUVENIR.png",
   "Tebe269.png",
   "Tebe.png",

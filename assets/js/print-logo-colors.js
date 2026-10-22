@@ -15,7 +15,7 @@
   const NEGOZIO = document.documentElement.dataset.negozio;
   const PRINT_LOGOS_PATH = new URL(`../img/${NEGOZIO}/printlogos/`, document.currentScript.src).href;
   const LOGOS_PATH = new URL(`../logos/${NEGOZIO}/`, document.currentScript.src).href;
-  const LOGO_ASSET_VERSION = '20261005-4';
+  const LOGO_ASSET_VERSION = '20261022-1';
   let customLogoCache = new Map(); // chiave: `${sourceData}|${colorKey}`
 
   function getOfficialPrintLogoPath(logoFileName, color) {

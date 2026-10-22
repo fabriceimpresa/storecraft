@@ -22,7 +22,7 @@ Dashboard.contenuto({
         { titolo: 'Multi Articolo', link: 'cartelli_multiarticolo.html', tipo: 'CARTELLO', miniature: ['thumbnail/tebe/multithumb.png', 'thumbnail/tebe/multithumb-2.png'] },
         { titolo: 'Albero Accessori', link: 'albero.html', tipo: 'RASTRELLIERA', miniature: ['thumbnail/tebe/alberothumb.png', 'thumbnail/tebe/alberothumb2.png'] },
         { titolo: 'Cornici 10x15', voce: 'Cornici 10 x 15', link: 'cornici10x15.html', tipo: 'CORNICE', miniature: ['thumbnail/tebe/cornicithumb.png', 'thumbnail/tebe/cornicithumb-2.png'], alt: 'Cornice 10x15' },
-        { titolo: 'Cornice 21x27', voce: 'Cornice 21 x 27', link: 'cornice21x27.html', tipo: 'CORNICE', miniature: ['thumbnail/tebe/cornice21x27thumb.png', 'thumbnail/tebe/cornice21x27thumb-2.png'] },
+        { titolo: 'Cornice A4', voce: 'Cornice A4', link: 'cornice21x27.html', tipo: 'CORNICE', miniature: ['thumbnail/tebe/cornice21x27thumb.png', 'thumbnail/tebe/cornice21x27thumb-2.png'] },
         { titolo: 'Paletto 13 x 9,5', link: 'paletto.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/tebe/palettothumb.png', 'thumbnail/tebe/palettothumb-2.png'] },
         { titolo: 'Paletto 16,5 x 11,5', link: 'paletto18x12.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/tebe/palettothumb.png', 'thumbnail/tebe/palettothumb-2.png'] }
       ]
