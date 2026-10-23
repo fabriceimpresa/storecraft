@@ -140,6 +140,10 @@
     .voce-aiuto::before, .voce-aiuto::after { color: var(--frame); }
     .voce-aiuto svg { flex: none; width: 15px; height: 15px; }
     .voce-aiuto:hover, .voce-aiuto:focus-visible { color: var(--gold); border-color: var(--gold); }
+    /* sotto Guida tecnica: una scritta dorata che esce dall'area operatore e torna alla splash page dei negozi (index.html?scegli) */
+    .esci-operatore { align-self: center; margin-top: 20px; padding: 4px 6px; color: var(--gold); font: 400 0.68rem 'IBM Plex Mono', ui-monospace, monospace;
+      letter-spacing: 0.12em; text-decoration: none; transition: color 0.2s ease; }
+    .esci-operatore:hover, .esci-operatore:focus-visible { color: var(--gold-light); text-decoration: underline; text-underline-offset: 4px; outline: none; }
 
     .voce::before,
     .voce::after {
@@ -425,6 +429,8 @@
       <button class="voce" type="button" data-vista="struttura">Pannello di controllo</button>
       <!-- la guida è un aiuto, non uno strumento: staccata dal resto del menu, in un riquadro oro -->
       <a class="voce voce-aiuto" href="guida-componenti.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="7"/><path d="M6 6.2a2 2 0 1 1 2.8 1.8c-.5.2-.8.6-.8 1.1v.6"/><circle cx="8" cy="11.6" r=".35" fill="currentColor"/></svg>Guida tecnica</a>
+      <!-- esce dall'area operatore: la splash page con la scelta del punto vendita (anche se oggi un negozio è già scelto) -->
+      <a class="esci-operatore" href="index.html?scegli">← esci e torna alla splash page</a>
     </nav>
 
     <!-- Sezioni: Gestione negozi, Controllo codice e le pagine dei loghi dentro la cornice (si caricano alla prima apertura), Prepara copia qui -->
