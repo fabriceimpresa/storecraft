@@ -2,11 +2,11 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-13"></script>
+  <script src="../assets/js/negozi.js?v=20261023-2"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cronologia di Stampa · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-13">
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261023-2">
   <style>
     /* Cronologia di stampa del negozio (assets/js/cronologia-stampa.js): le stampe degli ultimi 7 giorni dalle pagine di
        cartelli, cartellini e promo stagionali, divise per giorno, da rivedere, ristampare a misura reale, rimettere nella
@@ -319,7 +319,7 @@
     }
 /* Tema chiaro: ombre corte e nette, più solide che sfumate (regola delle ombre nel tema chiaro, 11 ottobre 2026) */    :root[data-interface-theme="light"] .cr-testata { box-shadow: 0 1px 3px rgba(40, 34, 28, .14); }    :root[data-interface-theme="light"] .cr-miniatura img { box-shadow: 0 1px 3px rgba(40, 34, 28, .26); }    :root[data-interface-theme="light"] .cr-foglio img { box-shadow: 0 2px 6px rgba(40, 34, 28, .24); }    :root[data-interface-theme="light"] .cr-finestra { box-shadow: 0 4px 10px rgba(40, 34, 28, .26); }    :root[data-interface-theme="light"] .cr-spunta { background: rgba(255, 253, 250, 0.8); }
   </style>
-  <script src="../assets/js/theme.js?v=20261022-13"></script>
+  <script src="../assets/js/theme.js?v=20261023-2"></script>
 </head>
 <body data-layout="cronologia">
   <header class="cr-testata">
@@ -365,8 +365,8 @@
     </div>
   </div>
 
-  <script src="../assets/js/lista-stampa.js?v=20261022-13"></script>
-  <script src="../assets/js/cronologia-stampa.js?v=20261022-13"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261023-2"></script>
+  <script src="../assets/js/cronologia-stampa.js?v=20261023-2"></script>
   <script>
     // Pagina della cronologia di stampa del negozio (../assets/js/cronologia-stampa.js): uguale nei tre negozi, cambia
     // solo data-negozio.
@@ -595,7 +595,7 @@
       const fogli = await fogliScelti();
       if (!fogli.length) return carica();
       const nomeFile = fogli.length === 1 ? `${nomeStampa(fogli[0])}.pdf` : 'cronologia.pdf';
-      await stampaPdf(ListaStampa.buildPdf(fogli), nomeFile, esito);
+      await stampaFogli(fogli, nomeFile, esito);
       for (const id of ids) await CronologiaStampa.ristampata(id);
       selezione.clear();
       carica();
@@ -656,35 +656,22 @@
     // con il menu Condividi
     async function ristampa() {
       if (!aperta) return;
-      const pdf = ListaStampa.buildPdf([aperta]);
+      const foglio = aperta;
       CronologiaStampa.ristampata(aperta.id).then(carica);
-      await stampaPdf(pdf, `${nomeStampa(aperta)}.pdf`, document.getElementById('esito'));
+      await stampaFogli([foglio], `${nomeStampa(foglio)}.pdf`, document.getElementById('esito'));
     }
 
-    async function stampaPdf(pdf, nomeFile, esito) {
-      if (ListaStampa.isIos()) { ListaStampa.offerPdf(pdf, nomeFile); return; }
-      esito.textContent = 'Preparazione del PDF…';
+    // Sul computer i fogli si stampano a misura esatta, al 100%, come dalla pagina (ListaStampa.stampaFogli), senza
+    // passare dal lettore di PDF, che proporrebbe di rimpicciolirli; su iPhone e iPad il PDF con il menu Condividi
+    async function stampaFogli(fogli, nomeFile, esito) {
+      if (ListaStampa.isIos()) { ListaStampa.offerPdf(ListaStampa.buildPdf(fogli), nomeFile); return; }
+      esito.textContent = 'Preparazione della stampa…';
       try {
-        const url = URL.createObjectURL(new File([await pdf], nomeFile, { type: 'application/pdf' }));
-        const cornice = document.createElement('iframe');
-        cornice.className = 'cr-cornice-stampa';
-        cornice.title = nomeFile;
-        cornice.src = url;
-        cornice.onload = () => {
-          try {
-            cornice.contentWindow.focus();
-            cornice.contentWindow.print();
-            esito.textContent = '';
-          } catch (error) {
-            window.open(url, '_blank');
-            esito.textContent = 'PDF aperto in una nuova scheda: stampalo da lì.';
-          }
-        };
-        document.querySelectorAll('.cr-cornice-stampa').forEach(vecchia => vecchia.remove());
-        document.body.append(cornice);
+        await ListaStampa.stampaFogli(fogli);
+        esito.textContent = '';
       } catch (error) {
-        console.error('Preparazione del PDF non riuscita.', error);
-        esito.textContent = 'Non è stato possibile preparare il PDF.';
+        console.error('Preparazione della stampa non riuscita.', error);
+        esito.textContent = 'Non è stato possibile preparare la stampa.';
       }
     }
 

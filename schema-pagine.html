@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261022-13"></script>
+  <script src="assets/js/negozi.js?v=20261023-2"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Pannello di controllo</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261022-13"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261023-2"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261022-13"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261023-2"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -127,6 +127,30 @@
     .section-toggle:focus-visible { outline: 1px solid var(--oro); outline-offset: 2px; }
     .blocco-corpo { padding-top: 6px; }
     .blocco.is-collapsed .blocco-corpo { display: none; }
+    /* Collaudo di stampa: una scheda per negozio (pagine da mettere in lista, avanzamento, APRI LA LISTA), comandi
+       e registro da terminale; il riquadro con le pagine aperte una alla volta resta fuori dallo schermo */
+    .collaudo-negozi { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 22px 0 0; }
+    .collaudo-negozio { padding: 18px 16px; border: 1px solid #26231f; border-radius: 14px; background: rgba(255, 255, 255, .02); text-align: center; }
+    .collaudo-negozio b { display: block; color: #fff; font: 500 12px var(--mono); letter-spacing: .2em; }
+    .collaudo-negozio span { display: block; margin-top: 8px; color: var(--tenue); font-size: 11.5px; }
+    .collaudo-negozio.fatto { border-color: rgba(127, 207, 149, .45); }
+    .collaudo-negozio.fatto span { color: #7fcf95; }
+    .collaudo-negozio.errori span { color: #e07a6b; }
+    .collaudo-negozio a { display: inline-block; margin-top: 14px; padding: 8px 16px; border-radius: 999px; background: var(--oro); color: #121110;
+      text-decoration: none; font: 500 11px var(--mono); letter-spacing: .12em; }
+    .collaudo-negozio a:hover { background: var(--oro-chiaro); }
+    .collaudo-negozio a[hidden] { display: none; }
+    .collaudo-comandi { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 26px; }
+    .collaudo-comandi label { color: #fff; font-size: 11px; letter-spacing: .1em; cursor: pointer; }
+    .collaudo-comandi input { accent-color: var(--oro); vertical-align: -2px; margin-right: 8px; }
+    .collaudo-avvia { padding: 11px 26px; border: 0; border-radius: 999px; background: var(--oro); color: #121110; font: 500 12px var(--mono);
+      letter-spacing: .14em; cursor: pointer; }
+    .collaudo-avvia:hover { background: var(--oro-chiaro); }
+    .collaudo-avvia:disabled { opacity: .4; cursor: default; }
+    .collaudo-registro { max-height: 300px; overflow: auto; margin-top: 22px; padding: 14px 16px; border: 1px solid #26231f; border-radius: 12px;
+      background: #0b0a09; font-size: 11.5px; line-height: 1.75; white-space: pre-wrap; }
+    .collaudo-registro .ok { color: #7fcf95; } .collaudo-registro .ko { color: #e07a6b; } .collaudo-registro .titolo { color: var(--oro-chiaro); }
+    .collaudo-cornice { position: fixed; left: -20000px; top: 0; width: 1440px; height: 1000px; border: 0; }
     .archivi .nota { margin-top: 14px; color: var(--tenue); font-size: 11.5px; }
     .archivi .nota::before { content: '// '; color: var(--oro); }
     /* note dell'area operatore nascoste (decisione del 22 ottobre 2026) */
@@ -230,6 +254,25 @@
       <p class="nota">dove STORE // CRAFT conserva i dati, uguale per tutti i negozi. la colonna verifica controlla a ogni apertura che la chiave sia ancora nel codice</p>
       <div class="legenda" id="archivi-legenda"></div>
       <div class="schema-scroll"><table id="archivi-tabella"></table></div>
+    </div>
+  </section>
+
+  <!-- Collaudo di stampa (23 ottobre 2026): riempie la Lista di Stampa di ogni negozio con tutte le pagine di cartelli,
+       promo e cartellini della sua dashboard, premendo «Aggiungi a lista stampa» come il personale; poi dalla lista
+       si stampa la prova generale. Le liste stanno in questo browser, a questo indirizzo. -->
+  <section class="blocco collaudo is-collapsed" id="collaudo" data-blocco="collaudo">
+    <div class="label">
+      <h2>COLLAUDO DI STAMPA</h2>
+      <span class="riassunto" id="collaudo-riassunto"></span>
+      <button class="section-toggle" type="button" aria-expanded="false" aria-controls="collaudo-corpo" aria-label="Espandi Collaudo di stampa">⌄</button>
+    </div>
+    <div class="blocco-corpo" id="collaudo-corpo">
+      <div class="collaudo-negozi" id="collaudo-negozi"></div>
+      <div class="collaudo-comandi">
+        <label><input type="checkbox" id="collaudo-svuota" checked> SVUOTA PRIMA LA LISTA DI OGNI NEGOZIO</label>
+        <button type="button" class="collaudo-avvia" id="collaudo-avvia">AVVIA IL COLLAUDO</button>
+      </div>
+      <div class="collaudo-registro" id="collaudo-registro" aria-live="polite" hidden></div>
     </div>
   </section>
 </div>
@@ -711,18 +754,128 @@
   }
   archivi();
 
-  // Apri / chiudi le sezioni: clic sul titolo o sulla freccia, come nel menu laterale della dashboard
-  document.querySelectorAll('.blocco').forEach(blocco => {
-    const titolo = blocco.querySelector('.label');
-    const freccia = blocco.querySelector('.section-toggle');
-    const nome = blocco.querySelector('h2').textContent;
-    const cambia = () => {
-      const chiusa = blocco.classList.toggle('is-collapsed');
-      freccia.setAttribute('aria-expanded', String(!chiusa));
-      freccia.setAttribute('aria-label', `${chiusa ? 'Espandi' : 'Chiudi'} ${nome}`);
-      if (!chiusa && blocco.dataset.blocco === 'pagine') requestAnimationFrame(() => window.segnalinoAlSuoPosto?.());
+  // Collaudo di stampa: per ogni negozio installato le pagine di cartelli, promo e cartellini della sua dashboard
+  // (non quelle in arrivo né in ghost), aperte una alla volta in un riquadro fuori dallo schermo, dove si preme
+  // «Aggiungi a lista stampa» come farebbe il personale; si passa alla pagina dopo quando il foglio è nella lista.
+  async function collaudo() {
+    const negozi = [];
+    for (const id of Negozi.installati) {
+      const pagine = [];
+      let tipo = null;
+      for (const riga of (await testo(`assets/negozi/${id}-dashboard.js`)).split('\n')) {
+        if (/carosello:/.test(riga)) { tipo = (riga.match(/tipo:\s*'(\w+)'/) || [])[1]; continue; }
+        if (!['cartelli', 'promo', 'cartellini'].includes(tipo)) continue;
+        const link = (riga.match(/link:\s*'([^'?]+\.html)/) || [])[1];
+        if (!link || /prossimamente|nascosta:\s*true/.test(riga) || pagine.some(p => p.link === link)) continue;
+        const titolo = (riga.match(/voce:\s*'([^']+)'/) || riga.match(/titolo:\s*'([^']+)'/) || [])[1] || link;
+        pagine.push({ link, titolo: titolo.replace(/\s*✦$/, '') });
+      }
+      if (pagine.length) negozi.push({ id, nome: Negozi.scheda(id)?.nome || id.toUpperCase(), pagine });
+    }
+    const contenitore = document.getElementById('collaudo-negozi');
+    const schede = {};
+    for (const n of negozi) {
+      const box = document.createElement('div');
+      box.className = 'collaudo-negozio';
+      const b = document.createElement('b'); b.textContent = n.nome;
+      const s = document.createElement('span'); s.textContent = `${n.pagine.length} PAGINE`;
+      const a = document.createElement('a'); a.href = `${n.id}/lista-stampa.html`; a.target = '_blank'; a.textContent = 'APRI LA LISTA'; a.hidden = true;
+      box.append(b, s, a);
+      contenitore.append(box);
+      schede[n.id] = { box, stato: s, link: a };
+    }
+    const totale = negozi.reduce((t, n) => t + n.pagine.length, 0);
+    document.getElementById('collaudo-riassunto').textContent = `${totale} pagine · ${negozi.length} negozi`;
+
+    const registro = document.getElementById('collaudo-registro');
+    const scrivi = (riga, classe = '') => {
+      const r = document.createElement('div');
+      r.textContent = riga;
+      if (classe) r.className = classe;
+      registro.append(r);
+      registro.scrollTop = registro.scrollHeight;
     };
-    titolo.addEventListener('click', cambia);
+    const attendi = ms => new Promise(fatto => setTimeout(fatto, ms));
+    // apre una pagina nel riquadro e aspetta caratteri e immagini
+    const apri = (cornice, url) => new Promise((fatto, errore) => {
+      const tempo = setTimeout(() => errore(new Error('la pagina non si è caricata in tempo')), 30000);
+      cornice.onload = async () => {
+        clearTimeout(tempo);
+        try { await cornice.contentDocument.fonts.ready; } catch (e) {}
+        await attendi(1500);
+        fatto(cornice.contentWindow);
+      };
+      cornice.src = url;
+    });
+    const conta = async finestra => { try { return finestra.ListaStampa ? await finestra.ListaStampa.countPages() : 0; } catch (e) { return 0; } };
+
+    document.getElementById('collaudo-avvia').addEventListener('click', async () => {
+      const avvia = document.getElementById('collaudo-avvia');
+      avvia.disabled = true;
+      registro.hidden = false;
+      registro.replaceChildren();
+      const cornice = document.createElement('iframe');
+      cornice.className = 'collaudo-cornice';
+      cornice.title = 'pagina in collaudo';
+      cornice.setAttribute('aria-hidden', 'true');
+      document.body.append(cornice);
+      let errori = 0;
+      for (const n of negozi) {
+        const sc = schede[n.id];
+        sc.box.classList.remove('fatto', 'errori');
+        sc.link.hidden = true;
+        scrivi(`$ ${n.nome}`, 'titolo');
+        let fatte = 0, base = 0;
+        // dalla pagina Lista di Stampa del negozio: la lista si svuota (se scelto) e si legge quante pagine ha
+        try {
+          const lista = await apri(cornice, `${n.id}/lista-stampa.html`);
+          if (document.getElementById('collaudo-svuota').checked) { await lista.ListaStampa.clearPages(); scrivi('  lista svuotata'); }
+          base = await lista.ListaStampa.countPages();
+        } catch (errore) { scrivi(`  lista non letta: ${errore.message}`, 'ko'); }
+        for (const [i, p] of n.pagine.entries()) {
+          sc.stato.textContent = `${i + 1} DI ${n.pagine.length} · ${p.titolo.toUpperCase()}`;
+          try {
+            const finestra = await apri(cornice, `${n.id}/${p.link}`);
+            const pulsante = finestra.document.querySelector('.tool-btn[aria-label="Aggiungi a lista stampa"]');
+            if (!pulsante) throw new Error('manca il pulsante «Aggiungi a lista stampa»');
+            const atteso = base + fatte + 1;
+            pulsante.click();
+            let dopo = 0;
+            for (let k = 0; k < 160 && dopo < atteso; k++) { await attendi(250); dopo = await conta(finestra); }
+            if (dopo < atteso) throw new Error('la pagina non è entrata nella lista');
+            fatte++;
+            scrivi(`  ✓ ${p.titolo}`, 'ok');
+          } catch (errore) {
+            errori++;
+            scrivi(`  ✕ ${p.titolo}: ${errore.message}`, 'ko');
+          }
+        }
+        sc.stato.textContent = `${fatte} DI ${n.pagine.length} PAGINE IN LISTA`;
+        sc.box.classList.add(fatte === n.pagine.length ? 'fatto' : 'errori');
+        sc.link.hidden = false;
+      }
+      cornice.remove();
+      scrivi(errori ? `// finito con ${errori} errori` : '// finito: apri la lista di ogni negozio e premi STAMPA LISTA', errori ? 'ko' : 'ok');
+      avvia.disabled = false;
+    });
+  }
+  collaudo();
+
+  // Apri / chiudi le sezioni: clic sul titolo o sulla freccia, come nel menu laterale della dashboard; una sezione
+  // aperta alla volta: aprendone una le altre si chiudono (regola «Stile delle interfacce», 23 ottobre 2026)
+  const blocchi = [...document.querySelectorAll('.blocco')];
+  const imposta = (blocco, aperta) => {
+    blocco.classList.toggle('is-collapsed', !aperta);
+    const freccia = blocco.querySelector('.section-toggle');
+    freccia.setAttribute('aria-expanded', String(aperta));
+    freccia.setAttribute('aria-label', `${aperta ? 'Chiudi' : 'Espandi'} ${blocco.querySelector('h2').textContent}`);
+  };
+  blocchi.forEach(blocco => {
+    blocco.querySelector('.label').addEventListener('click', () => {
+      const apri = blocco.classList.contains('is-collapsed');
+      blocchi.forEach(altro => imposta(altro, altro === blocco && apri));
+      if (apri && blocco.dataset.blocco === 'pagine') requestAnimationFrame(() => window.segnalinoAlSuoPosto?.());
+    });
   });
 </script>
 </body>

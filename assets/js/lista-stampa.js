@@ -455,6 +455,71 @@
   // lista.pdf (e il PDF di iOS): A4 (595,28 × 841,89 punti), verticale o orizzontale come nella stampa da
   // computer. Le pagine con mmWidth / mmHeight stanno a misura reale; quelle salvate prima di queste misure
   // (senza mmWidth) sono ancora adattate alla pagina mantenendo le proporzioni.
+  // Posto del foglio sulla carta, in mm, uguale nel PDF e nella stampa dal computer (stampaFogli): a misura reale,
+  // centrato in larghezza, sulla carta verticale in alto, su quella orizzontale (cartellini) a 4 mm dal bordo alto.
+  // La foto arrotonda i pixel per eccesso (es. 210,1 × 297,1 mm per un A4): un foglio che supera la carta di meno
+  // di 1 mm prende la misura esatta della carta, altrimenti stampanti e lettori di PDF lo vedono troppo grande e lo
+  // rimpiccioliscono. Le pagine salvate senza mmWidth / mmHeight sono adattate alla carta mantenendo le proporzioni.
+  function postoFoglio(page) {
+    const [cartaL, cartaA] = page.orientation === 'landscape' ? [297, 210] : [210, 297];
+    let l, a;
+    if (page.mmWidth && page.mmHeight) {
+      l = page.mmWidth > cartaL && page.mmWidth - cartaL < 1 ? cartaL : page.mmWidth;
+      a = page.mmHeight > cartaA && page.mmHeight - cartaA < 1 ? cartaA : page.mmHeight;
+    } else {
+      const fit = Math.min(cartaL / page.width, cartaA / page.height);
+      l = page.width * fit; a = page.height * fit;
+    }
+    const sopra = page.mmWidth && page.mmHeight ? (page.orientation === 'portrait' ? 0 : 4) : (cartaA - a) / 2;
+    return { cartaL, cartaA, l, a, x: (cartaL - l) / 2, sopra };
+  }
+
+  // Stampa dal computer (lista di stampa, cronologia): niente PDF, perché i lettori di PDF del browser propongono
+  // «Adatta all'area stampabile», che rimpicciolisce il foglio e lascia una striscia bianca in fondo (prove del
+  // 23 ottobre 2026: ritagliando sulla linea il cartello inferiore usciva più alto). Si stampa invece una pagina con
+  // le foto dei fogli a misura esatta in mm e margini zero, come la stampa diretta dalla pagina, che il browser
+  // stampa al 100%. Una pagina di carta per foglio; i cartellini su carta orizzontale (pagina con nome @page).
+  async function stampaFogli(pages) {
+    const urls = [];
+    const doc = document.implementation.createHTMLDocument('lista di stampa');
+    const stile = doc.createElement('style');
+    stile.textContent = `
+      @page { size: A4 portrait; margin: 0; }
+      @page orizzontale { size: A4 landscape; margin: 0; }
+      html, body { margin: 0; padding: 0; background: #fff; }
+      .carta { position: relative; width: 210mm; height: 297mm; overflow: hidden; break-inside: avoid; }
+      .carta.orizzontale { page: orizzontale; width: 297mm; height: 210mm; }
+      .carta:not(:last-child) { break-after: page; }
+      .carta img { position: absolute; display: block; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }`;
+    doc.head.append(stile);
+    for (const page of pages) {
+      const p = postoFoglio(page);
+      const carta = doc.createElement('div');
+      carta.className = page.orientation === 'landscape' ? 'carta orizzontale' : 'carta';
+      const img = doc.createElement('img');
+      const url = URL.createObjectURL(page.jpeg);
+      urls.push(url);
+      img.src = url;
+      Object.assign(img.style, { left: `${p.x}mm`, top: `${p.sopra}mm`, width: `${p.l}mm`, height: `${p.a}mm` });
+      carta.append(img);
+      doc.body.append(carta);
+    }
+    document.querySelectorAll('.lista-stampa-cornice').forEach(vecchia => vecchia.remove());
+    const cornice = document.createElement('iframe');
+    cornice.className = 'lista-stampa-cornice';
+    cornice.title = 'stampa';
+    cornice.setAttribute('aria-hidden', 'true');
+    Object.assign(cornice.style, { position: 'fixed', width: '0', height: '0', border: '0', visibility: 'hidden', right: '0', bottom: '0' });
+    cornice.srcdoc = '<!doctype html>' + doc.documentElement.outerHTML;
+    await new Promise(resolve => { cornice.onload = resolve; document.body.append(cornice); });
+    const finestra = cornice.contentWindow;
+    await Promise.all([...finestra.document.images].map(img => img.decode().catch(() => {})));
+    finestra.addEventListener('afterprint', () => setTimeout(() => urls.forEach(URL.revokeObjectURL), 1000), { once: true });
+    finestra.focus();
+    finestra.print();
+  }
+
   async function buildPdf(pages) {
     const encoder = new TextEncoder();
     const chunks = [];
@@ -471,23 +536,20 @@
     // 1 catalogo, 2 albero delle pagine, poi per ogni pagina: pagina, contenuto, immagine
     const pageIds = pages.map((_, index) => 3 + index * 3);
     push('%PDF-1.4\n%âãÏÓ\n');
-    startObject(1); push('<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    // PrintScaling /None: chi stampa il PDF (Acrobat, Chrome, Edge) parte da «dimensioni effettive», non da «adatta»
+    startObject(1); push('<< /Type /Catalog /Pages 2 0 R /ViewerPreferences << /PrintScaling /None >> >>\nendobj\n');
     startObject(2); push(`<< /Type /Pages /Kids [${pageIds.map(id => `${id} 0 R`).join(' ')}] /Count ${pageCount} >>\nendobj\n`);
 
     for (let index = 0; index < pageCount; index++) {
       const page = pages[index];
       const pageId = pageIds[index];
       const [pageWidth, pageHeight] = page.orientation === 'landscape' ? [841.89, 595.28] : [595.28, 841.89];
-      const realSize = page.mmWidth && page.mmHeight;
-      const fit = Math.min(pageWidth / page.width, pageHeight / page.height);
-      const drawWidth = realSize ? page.mmWidth * 72 / 25.4 : page.width * fit;
-      const drawHeight = realSize ? page.mmHeight * 72 / 25.4 : page.height * fit;
-      const x = (pageWidth - drawWidth) / 2;
-      // Posizione del foglio a misura reale come nella stampa da computer: sulla carta verticale in alto (margine 0),
-      // su quella orizzontale (cartellini) a 4 mm dal bordo alto, il margine @page dei cartellini.
-      // In PDF l'asse y parte dal basso: in alto vuol dire pageHeight - drawHeight.
-      const top = page.orientation === 'portrait' ? 0 : 4 * 72 / 25.4;
-      const y = realSize ? pageHeight - drawHeight - top : (pageHeight - drawHeight) / 2;
+      // posto del foglio come nella stampa da computer (postoFoglio); in PDF l'asse y parte dal basso
+      const pt = mm => mm * 72 / 25.4;
+      const p = postoFoglio(page);
+      const drawWidth = pt(p.l), drawHeight = pt(p.a);
+      const x = pt(p.x);
+      const y = pageHeight - drawHeight - pt(p.sopra);
       const content = `q ${drawWidth.toFixed(2)} 0 0 ${drawHeight.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im0 Do Q`;
       const jpeg = new Uint8Array(await page.jpeg.arrayBuffer());
 
@@ -620,5 +682,5 @@
     document.head.append(style);
   }
 
-  window.ListaStampa = { addSheet, addPage, fotografa, sheetPdf, getPages, deletePage, clearPages, countPages, buildPdf, isIos, offerPdf };
+  window.ListaStampa = { addSheet, addPage, fotografa, sheetPdf, getPages, deletePage, clearPages, countPages, buildPdf, stampaFogli, isIos, offerPdf };
 })();

@@ -2,12 +2,12 @@
 <html lang="it" data-negozio="ophilya">
 <head>
   <meta charset="UTF-8">
-  <script src="../assets/js/negozi.js?v=20261022-13"></script>
+  <script src="../assets/js/negozi.js?v=20261023-2"></script>
   <!-- tema CHIARO / SCURO scelto nella dashboard (colori nella scheda del negozio) -->
-  <script src="../assets/js/theme.js?v=20261022-13"></script>
-  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261022-13">
+  <script src="../assets/js/theme.js?v=20261023-2"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261023-2">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261022-13">
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261023-2">
   <title>Lista di Stampa · OPHILYA</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -350,7 +350,7 @@
     <button type="button" class="action-btn btn-gold" id="clearBtn" onclick="clearList()">Svuota Lista</button>
   </aside>
 
-  <script src="../assets/js/lista-stampa.js?v=20261022-13"></script>
+  <script src="../assets/js/lista-stampa.js?v=20261023-2"></script>
   <script>
     // Pagina che gestisce la lista di stampa (assets/js/lista-stampa.js): miniature, pagina scelta in grande,
     // stampa di tutta la lista come lista.pdf, eliminazione di una pagina e svuotamento della lista.
@@ -433,34 +433,19 @@
     async function printList() {
       if (!pages.length) return;
       // Su iPhone e iPad lista.pdf non passa dalla stampa del browser (margini e riduzione di iOS):
-      // si consegna con il menu Condividi (ListaStampa.offerPdf). Sul computer resta la stampa qui sotto.
+      // si consegna con il menu Condividi (ListaStampa.offerPdf). Sul computer la stampa qui sotto.
       if (ListaStampa.isIos()) {
         ListaStampa.offerPdf(ListaStampa.buildPdf(pages), 'lista.pdf');
         return;
       }
-      setStatus('Preparazione di lista.pdf…');
+      // sul computer niente PDF: i fogli a misura esatta, stampati al 100% come dalla pagina (ListaStampa.stampaFogli)
+      setStatus('Preparazione della stampa…');
       try {
-        const pdf = await ListaStampa.buildPdf(pages);
-        const url = URL.createObjectURL(new File([pdf], 'lista.pdf', { type: 'application/pdf' }));
-        const frame = document.createElement('iframe');
-        frame.className = 'print-frame';
-        frame.title = 'lista.pdf';
-        frame.src = url;
-        frame.onload = () => {
-          try {
-            frame.contentWindow.focus();
-            frame.contentWindow.print();
-            setStatus('');
-          } catch (error) {
-            window.open(url, '_blank');
-            setStatus('lista.pdf aperto in una nuova scheda: stampalo da lì.');
-          }
-        };
-        document.querySelectorAll('.print-frame').forEach(old => old.remove());
-        document.body.appendChild(frame);
+        await ListaStampa.stampaFogli(pages);
+        setStatus('');
       } catch (error) {
-        console.error('Preparazione di lista.pdf non riuscita.', error);
-        setStatus('Non è stato possibile preparare lista.pdf.');
+        console.error('Preparazione della stampa non riuscita.', error);
+        setStatus('Non è stato possibile preparare la stampa.');
       }
     }
 
