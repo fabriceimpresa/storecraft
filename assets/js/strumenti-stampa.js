@@ -155,7 +155,7 @@
     if (window.ListaStampa) return Promise.resolve(window.ListaStampa);
     return new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('lista-stampa.js?v=20261023-3', script.src).href;
+      tag.src = new URL('lista-stampa.js?v=20261023-4', script.src).href;
       tag.onload = () => resolve(window.ListaStampa);
       tag.onerror = () => reject(new Error('Caricamento di lista-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -194,7 +194,7 @@
     if (window.CronologiaStampa) return Promise.resolve(window.CronologiaStampa);
     return loadListaStampa().then(() => new Promise((resolve, reject) => {
       const tag = document.createElement('script');
-      tag.src = new URL('cronologia-stampa.js?v=20261023-3', script.src).href;
+      tag.src = new URL('cronologia-stampa.js?v=20261023-4', script.src).href;
       tag.onload = () => resolve(window.CronologiaStampa);
       tag.onerror = () => reject(new Error('Caricamento di cronologia-stampa.js non riuscito.'));
       document.head.appendChild(tag);
@@ -237,7 +237,10 @@
   }
 
   function openGuide() {
-    const page = location.pathname.split('/').pop() || 'index.html';
+    // il nome del file della pagina, sempre con .html: alcuni server (Cloudflare con html_handling) tolgono .html
+    // dall'indirizzo, e la guida delle foto è scritta per nome di file
+    let page = decodeURIComponent(location.pathname.split('/').pop() || 'index');
+    if (!/\.html?$/i.test(page)) page += '.html';
     const wrapper = document.createElement('div');
     const text = document.createElement('p');
     text.className = 'guide-text';

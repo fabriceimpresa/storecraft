@@ -70,6 +70,13 @@
     return countPages();
   }
 
+  // Il nome del file della pagina, sempre con .html: alcuni server (Cloudflare con html_handling) tolgono .html
+  // dall'indirizzo, e cronologia e statistiche riconoscono le pagine dal nome del file
+  function nomePagina() {
+    const nome = decodeURIComponent(location.pathname.split('/').pop() || 'index');
+    return /\.html?$/i.test(nome) ? nome : `${nome}.html`;
+  }
+
   function loadHtml2canvas() {
     if (window.html2canvas) return Promise.resolve(window.html2canvas);
     return new Promise((resolve, reject) => {
@@ -409,7 +416,7 @@
     thumbCanvas.getContext('2d').drawImage(canvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
     const thumb = await canvasToBlob(thumbCanvas, 'image/jpeg', 0.85);
     return {
-      page: location.pathname.split('/').pop() || 'index.html',
+      page: nomePagina(),
       title: document.title,
       orientation: paperOrientation(sheet),
       width: canvas.width,

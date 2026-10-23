@@ -2,10 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261023-3"></script>
+  <script src="assets/js/negozi.js?v=20261023-4"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261023-3"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261023-3"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261023-4"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261023-4"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -1263,17 +1263,18 @@
     // Restituisce il contenuto da scrivere, o null per tenere il file della copia
     const ZONA_LOGHI = /^assets\/(logos\/[^/]+|img\/[^/]+\/printlogos)\//;
     const testoDi = async contenuto => contenuto.voce ? (await contenuto.voce.getFile()).text() : contenuto.testo;
+    // (le liste si cercano a inizio riga: la riga di commento in cima a elenco.js cita anche lei «const LOGO_FILES = [»)
     async function suMisuraDellaCopia(percorso, voluto, esistente) {
       if (ZONA_LOGHI.test(percorso)) {
         if (!/\/elenco\.js$/.test(percorso)) return null;
         const progetto = await testoDi(voluto);
         const copia = await (await esistente.getFile()).text();
-        const voci = t => [...((t.match(/const LOGO_FILES = \[([\s\S]*?)\];/) || [])[1] || '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
+        const voci = t => [...((t.match(/^const LOGO_FILES = \[([\s\S]*?)\];/m) || [])[1] || '').matchAll(/"([^"]+)"/g)].map(m => m[1]);
         const tutte = [...new Set([...voci(progetto), ...voci(copia)])];
         const elenco = `const LOGO_FILES = [\n${tutte.map(v => `  "${v}"`).join(',\n')}\n];`;
-        let unito = progetto.replace(/const LOGO_FILES = \[[\s\S]*?\];/, () => elenco);
-        const evidenza = copia.match(/const PRIORITY_BRANDS = \[[\s\S]*?\];/);
-        if (evidenza) unito = unito.replace(/const PRIORITY_BRANDS = \[[\s\S]*?\];/, () => evidenza[0]);
+        let unito = progetto.replace(/^const LOGO_FILES = \[[\s\S]*?\];/m, () => elenco);
+        const evidenza = copia.match(/^const PRIORITY_BRANDS = \[[\s\S]*?\];/m);
+        if (evidenza) unito = unito.replace(/^const PRIORITY_BRANDS = \[[\s\S]*?\];/m, () => evidenza[0]);
         return { testo: unito };
       }
       if (/^assets\/negozi\/[^/]+-dashboard\.js$/.test(percorso)) {
