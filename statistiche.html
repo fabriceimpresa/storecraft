@@ -2,16 +2,16 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<script src="assets/js/negozi.js?v=20261023-2"></script>
+<script src="assets/js/negozi.js?v=20261023-3"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
 <title>STATISTICHE (uso interno)</title>
-<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261023-2">
+<link rel="stylesheet" href="assets/css/chiudi-pagina.css?v=20261023-3">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
   <!-- stile terminale elegante dell'area operatore; dentro la pagina operatore senza cornice, titolo e ✕ -->
-  <link rel="stylesheet" href="assets/css/operatore.css?v=20261023-2">
-  <script src="assets/js/operatore-sezione.js?v=20261023-2"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261023-2"></script>
+  <link rel="stylesheet" href="assets/css/operatore.css?v=20261023-3">
+  <script src="assets/js/operatore-sezione.js?v=20261023-3"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261023-3"></script>
   <!--
     Statistiche (area operatore, dal 22 ottobre 2026; solo nel progetto madre): i dati che le copie dei clienti spediscono
     a STORE // CRAFT su Supabase (assets/js/statistiche.js, schema in supabase/schema.sql), letti dopo l'accesso con
@@ -221,6 +221,8 @@
     .loghi-anteprima { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .loghi-anteprima img { width: 64px; height: 40px; padding: 4px; object-fit: contain; border: 1px solid var(--op-bordo);
       background: repeating-conic-gradient(#3a3733 0 25%, #2a2723 0 50%) 0 0 / 10px 10px; }
+    .loghi-storico { display: grid; gap: 6px; margin-top: 10px; }
+    .loghi-storico-voce { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   </style>
 </head>
 <body>
@@ -960,6 +962,8 @@
       const corpo = $('corpoLoghi');
       try {
         const backup = await api('backup_loghi?select=negozio_id,numero,aggiornato_il');
+        // storico dei backup (supabase/aggiorna-04.sql, dal 23 ottobre 2026): senza la tabella, nessuno storico
+        const storico = await api('backup_loghi_storico?select=id,negozio_id,numero,arrivato_il&order=arrivato_il.desc').catch(() => []);
         $('riassuntoLoghi').textContent = `${backup.length} ${backup.length === 1 ? 'backup' : 'backup'}`;
         if (!negozi.length) { corpo.replaceChildren(nodo('p', 'vuoto', 'nessun negozio cliente')); return; }
         const tabella = nodo('table', 'tabella');
@@ -980,7 +984,7 @@
               if (presente) { presente.remove(); return; }
               const lista = await scaricaBackup(n);
               const anteprima = nodo('div', 'loghi-anteprima');
-              (lista.logos || []).forEach(logo => {
+              (lista.logos || []).filter(logo => /^data:image\//.test(logo.data || '')).forEach(logo => {
                 const img = document.createElement('img');
                 img.src = logo.data;
                 img.alt = logo.name;
@@ -991,16 +995,32 @@
             });
             const scarica = nodo('button', 'comando pieno', 'scarica json');
             scarica.type = 'button';
-            scarica.addEventListener('click', async () => {
-              const lista = await scaricaBackup(n);
-              const file = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
-              const a = document.createElement('a');
-              a.href = URL.createObjectURL(file);
-              a.download = `storecraft-loghi-personali-${n.negozio}-${n.cliente.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.json`;
-              a.click();
-              setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-            });
+            scarica.addEventListener('click', async () => salvaJson(n, await scaricaBackup(n)));
             azioni.append(vedi, ' ', scarica);
+            // i backup arrivati prima (un backup sbagliato non cancella quelli buoni): ognuno si scarica
+            const precedenti = storico.filter(x => x.negozio_id === n.id).slice(1);
+            if (precedenti.length) {
+              const apri = nodo('button', 'comando', `precedenti (${precedenti.length})`);
+              apri.type = 'button';
+              apri.addEventListener('click', () => {
+                const presente = dettagli.querySelector('.loghi-storico');
+                if (presente) { presente.remove(); return; }
+                const elenco = nodo('div', 'loghi-storico');
+                precedenti.forEach(p => {
+                  const voce = nodo('div', 'loghi-storico-voce');
+                  const giu = nodo('button', 'comando', 'scarica');
+                  giu.type = 'button';
+                  giu.addEventListener('click', async () => {
+                    const [riga] = await api(`backup_loghi_storico?select=backup&id=eq.${p.id}`);
+                    salvaJson(n, riga?.backup || { version: 1, negozio: n.negozio, logos: [] }, p.arrivato_il);
+                  });
+                  voce.append(nodo('span', 'tenue', `${p.numero} ${p.numero === 1 ? 'logo' : 'loghi'} · arrivato ${data(p.arrivato_il)}`), giu);
+                  elenco.append(voce);
+                });
+                dettagli.append(elenco);
+              });
+              azioni.append(' ', apri);
+            }
           } else {
             dettagli.className = 'tenue';
             dettagli.textContent = 'ancora nessun backup';
@@ -1013,6 +1033,15 @@
       } catch (errore) {
         corpo.replaceChildren(nodo('p', 'vuoto rossa', errore.message));
       }
+    }
+    function salvaJson(n, lista, arrivato) {
+      const file = new Blob([JSON.stringify(lista, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(file);
+      const quando = arrivato ? `-${new Date(arrivato).toISOString().slice(0, 10)}` : '';
+      a.download = `storecraft-loghi-personali-${n.negozio}-${n.cliente.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}${quando}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     }
     async function scaricaBackup(n) {
       const [riga] = await api(`backup_loghi?select=backup&negozio_id=eq.${n.id}`);

@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261023-2"></script>
+  <script src="assets/js/negozi.js?v=20261023-3"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 23 ottobre 2026 · versione 1.2.70</p>
+  <p class="aggiornamento">ultimo aggiornamento: 23 ottobre 2026 · versione 1.2.71</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -436,7 +436,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261023-2</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261023-3</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -660,6 +660,7 @@
     <li><strong>Cosa arriva</strong> (dal 22 ottobre 2026, Supabase, <code>supabase/schema.sql</code>): una volta al giorno, alla prima apertura della dashboard, ogni copia con il codice del negozio spedisce (<code>assets/js/statistiche.js</code>) i fogli stampati di cartelli, cartellini e promo (nome, pagina, tipo, misure, volte, date e un'anteprima di 240 px, una volta sola per foglio), le etichette DYMO (layout, stampe, copie, anteprima) e il backup dei loghi personali, solo quando cambia. Mai la Bacheca.</li>
     <li><strong>Mai avvisi per i commessi</strong>: senza rete o con un errore la spedizione tace e riprova alla prossima apertura.</li>
     <li><strong>Codice del negozio</strong>: si registra il negozio nella sezione <strong>Statistiche</strong> dell'area operatore (cliente, negozio, nome) e il suo codice entra nella copia con Prepara copia (passo [2]) o con «copia riga» in <code>assets/negozi/installati.js</code>: <code>Negozi.installa([...], { statistiche: { luxury: '…' } })</code>. Il codice permette solo di spedire i dati del suo negozio.</li>
+    <li><strong>Difese contro i dati falsi</strong> (23 ottobre 2026, <code>supabase/aggiorna-04.sql</code>): il codice sta in una copia pubblica, quindi chi lo trova può spedire dati a nome del negozio (non leggerli). Sul server: al massimo 20 invii di statistiche e 3 backup dei loghi al giorno per negozio; si scartano fogli ed etichette con date fuori dal 2026 o nel futuro, tipi, misure e numeri impossibili; il backup dei loghi deve avere solo immagini (al massimo 300 loghi e 15 MB) e si tengono gli ultimi 5 (in Backup loghi personali «precedenti (N)», ognuno da scaricare); <code>invia_statistiche</code> restituisce l'impronta del backup sul server e, se non è quella della lista del browser, la copia rispedisce il suo (<code>statistiche.js</code>): un backup falso viene sostituito da solo il giorno dopo. Nelle copie non vanno i dati dei clienti: niente anagrafica (solo su Supabase, letta dopo l'accesso dell'operatore) e niente nomi dei clienti in <code>installati.js</code>.</li>
     <li><strong>Sezione Statistiche</strong> (<code>statistiche.html</code>, solo nel progetto madre): accesso con email e password di Supabase (<code>assets/js/supabase-operatore.js</code>); Negozi clienti (codici, disattiva con conferma, elimina con due conferme), Stampe (per negozio, periodo, sezione e pagina: numeri, grafico nel tempo, pagine più usate, DYMO per layout, tabelle dei fogli e delle etichette con i dati di stampa) e Backup loghi personali (vedi e scarica json, da reimportare con Unisci o Sostituisci Lista).</li>
   </ul>
 

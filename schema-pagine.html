@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261023-2"></script>
+  <script src="assets/js/negozi.js?v=20261023-3"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Pannello di controllo</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261023-2"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261023-3"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261023-2"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261023-3"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -659,7 +659,7 @@
     ['esterno', 'Stampante DYMO', '127.0.0.1:41951 (DYMO Connect)', 'comune', 'servizio sul computer del negozio per la stampa diretta delle etichette', 'nessun dato salvato', ['assets/js/dymo-direct.js'], '41951'],
     ['esterno', 'Città dalla rete', 'get.geojs.io', 'comune', 'città approssimata dall\'indirizzo IP, per il meteo (sola lettura)', 'nel meteo, un giorno', ['assets/js/meteo.js'], 'get.geojs.io'],
     ['esterno', 'Meteo', 'api.open-meteo.com', 'comune', 'tempo di adesso e nome della città in italiano (sola lettura, senza chiave)', 'nel meteo, 30 minuti', ['assets/js/meteo.js'], 'api.open-meteo.com'],
-    ['esterno', 'Statistiche dei clienti', 'Supabase (uzttznyyrhrqehejbxbf.supabase.co)', 'per negozio cliente', 'dati di stampa dei fogli (senza immagini), etichette DYMO, stampe di ogni giorno (stampe_giorni), versione della copia, backup dei loghi personali (supabase/schema.sql)', 'nel database, finché non si cancellano', ['assets/js/statistiche.js', 'statistiche.html'], 'uzttznyyrhrqehejbxbf'],
+    ['esterno', 'Statistiche dei clienti', 'Supabase (uzttznyyrhrqehejbxbf.supabase.co)', 'per negozio cliente', 'dati di stampa dei fogli (senza immagini), etichette DYMO, stampe di ogni giorno (stampe_giorni), versione della copia, backup dei loghi personali con lo storico degli ultimi 5 (backup_loghi_storico) e il registro degli invii per i limiti giornalieri (invii_registro, 7 giorni) (supabase/schema.sql, aggiorna-04.sql)', 'nel database, finché non si cancellano', ['assets/js/statistiche.js', 'statistiche.html'], 'uzttznyyrhrqehejbxbf'],
     ['esterno', 'Anagrafica dei clienti', 'Supabase · tabella clienti', 'per cliente', 'scheda del cliente: numero cliente progressivo, data di registrazione, ragione sociale, sede legale, partita iva, codice sdi, pec, negozio, contatto interno e note; i negozi (negozi_clienti) le appartengono con cliente_id (supabase/aggiorna-02.sql)', 'nel database, finché non si cancella la scheda', ['operatore.html'], 'anaSchede'],
     ['file', 'Comuni italiani', 'dati/comuni-italiani.js', 'comune', 'i 7904 comuni con provincia e cap, per le città dell\'anagrafica clienti (dati ISTAT, licenza MIT); solo nel progetto madre', 'nel progetto', ['operatore.html'], 'comuni-italiani'],
     ['esterno', 'Bacheca in cloud', 'Supabase', 'da decidere', 'per condividere la Bacheca tra computer e telefoni', 'in programma: non ancora usato', [], null]

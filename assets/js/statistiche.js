@@ -135,15 +135,18 @@
     return { stampe, dymo };
   }
 
-  // Backup dei loghi personali, solo se la lista è cambiata dall'ultimo invio
-  async function inviaLoghi() {
+  // Backup dei loghi personali, solo se la lista è cambiata dall'ultimo invio, o se sul server c'è un backup diverso
+  // da quello di questo browser (impronta data da invia_statistiche, dal 23 ottobre 2026: es. un backup falso spedito
+  // con il codice del negozio, che così viene sostituito dal backup vero)
+  async function inviaLoghi(improntaServer) {
     const loghi = await modulo('js/loghi-personalizzati.js', 'LoghiPersonalizzati');
     await loghi.pronto;
     const lista = loghi.elenco();
     // una lista vuota (browser nuovo, prova) non sostituisce mai il backup di un altro computer del negozio
     if (!lista.length) return { loghi: 'lista vuota, non spedita' };
     const firma = await impronta(JSON.stringify(lista.map(l => [l.id, l.name, l.data])));
-    if (firma === leggi(CHIAVE_LOGHI, null)) return { loghi: 'invariati' };
+    const suServer = improntaServer === undefined || improntaServer === firma;
+    if (firma === leggi(CHIAVE_LOGHI, null) && suServer) return { loghi: 'invariati' };
     const backup = { version: 1, negozio, exportedAt: new Date().toISOString(), logos: lista };
     const esito = await chiama('invia_backup_loghi', { p_token: codice, p_backup: backup, p_impronta: firma });
     scrivi(CHIAVE_LOGHI, firma);
@@ -158,7 +161,7 @@
     const versione = document.querySelector('.release-number')?.textContent?.trim() || window.Dashboard?.VERSIONE || '';
     const esito = await chiama('invia_statistiche', { p_token: codice, p_dati: { versione, stampe, dymo } });
     let loghi = null;
-    try { loghi = await inviaLoghi(); } catch (errore) { console.warn('Statistiche: backup dei loghi personali non spedito.', errore); }
+    try { loghi = await inviaLoghi(esito?.loghi_impronta); } catch (errore) { console.warn('Statistiche: backup dei loghi personali non spedito.', errore); }
     scrivi(CHIAVE_GIORNO, oggi());
     return { ...esito, loghi };
   }

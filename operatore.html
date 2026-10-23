@@ -2,10 +2,10 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261023-2"></script>
+  <script src="assets/js/negozi.js?v=20261023-3"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261023-2"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261023-2"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261023-3"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261023-3"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -940,8 +940,8 @@
     }
 
     // 2. Clienti per le statistiche (dal 22 ottobre 2026): i negozi clienti registrati nella sezione Statistiche
-    // (Supabase, assets/js/supabase-operatore.js), una casella per cliente; una copia può avere più clienti (es. Zaddick
-    // Srl con Luxury Outlet e Tebe 96 Srl con TEBE e OPHILYA). Spuntando un cliente si spuntano i suoi negozi, e
+    // (Supabase, assets/js/supabase-operatore.js), una casella per cliente; una copia può avere più clienti (es. una
+    // società con un negozio e un'altra con due). Nella copia non va il nome dei clienti (dati del progetto madre). Spuntando un cliente si spuntano i suoi negozi, e
     // installati.js della copia prende i codici dei negozi dei clienti spuntati (statistiche.js li usa per spedire i
     // dati). Nessun cliente: copia senza statistiche, es. una demo
     let clientiCopia = [];      // [{ cliente, negozio, nome, token }] dei negozi attivi
@@ -1115,7 +1115,7 @@
     }
 
     async function preparaCopia(destinazione, ids) {
-      const installati = testoInstallati(ids, codiciCliente(), clientiScelti().length ? `Clienti: ${clientiScelti().join(', ')}; i codici dei negozi spediscono le statistiche (assets/js/statistiche.js).` : '');
+      const installati = testoInstallati(ids, codiciCliente(), clientiScelti().length ? 'I codici dei negozi spediscono le statistiche (assets/js/statistiche.js).' : '');
       riga('// raccolgo i file: splash page, area operatore ridotta (gestione loghi, pannello di controllo), negozi scelti e assets', 'sezione');
       const file = await fileCopia(ids, installati);
       for (const [percorso, contenuto] of file) {
