@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="it" data-negozio="ophilya">
+<head>
+  <meta charset="UTF-8">
+  <meta name="storecraft-derivata" content="luxury/cartelli_outlet.html">
+  <script src="../assets/js/negozi.js?v=20261028-1"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartello Outlet · OPHILYA</title>
+  <link rel="stylesheet" href="../assets/css/font-arial.css?v=20261028-1">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/pannello.css?v=20261028-1">
+  <script defer src="../assets/js/campi-prezzo.js?v=20261028-1"></script>
+  <link rel="stylesheet" href="../assets/css/torna-al-menu.css?v=20261028-1">
+  <link rel="stylesheet" href="../assets/css/strumenti-stampa.css?v=20261028-1">
+  <link rel="stylesheet" href="../assets/css/cursore.css?v=20261028-1">
+  <script src="../assets/js/loghi-personalizzati.js?v=20261028-1"></script>
+  <script src="../assets/logos/ophilya/elenco.js?v=20261028-1"></script>
+  <script src="../assets/js/logos.js?v=20261028-1"></script>
+  <script src="../assets/js/print-logo-colors.js?v=20261028-1"></script>
+  <script src="../assets/js/print-white-logos.js?v=20261028-1"></script>
+  <link rel="stylesheet" href="../assets/css/chiudi-pagina.css?v=20261028-1">
+  <link rel="stylesheet" href="../assets/css/madeinitaly.css?v=20261028-1">
+  <script src="../assets/js/madeinitaly.js?v=20261028-1"></script>
+  <style>
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('../assets/fonts/BodoniStd.otf') format('opentype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Bodoni Project';
+      src: url('../assets/fonts/BodoniStd-Italic.otf') format('opentype');
+      font-style: italic;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Nevis Project';
+      src: url('../assets/fonts/Nevis Bold.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 700;
+      font-display: block;
+    }
+
+    @font-face {
+      font-family: 'Space Invaders Project';
+      src: url('../assets/fonts/space_invaders.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400;
+      font-display: block;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Sfondo principale */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #212529;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Il pannello segue il pannello standard (../assets/css/pannello.css); qui solo ciò che è proprio della pagina. */
+
+    /* Brand stagionali prioritari evidenziati nel menu Brand */
+    .form-group select option.priority-brand-option {
+      background-color: #2e2b27;
+      color: #e5ba73;
+      font-weight: bold;
+    }
+
+    /* Campi prezzo affiancati: le etichette lunghe non vanno a capo */
+    .form-row .form-group label { white-space: nowrap; }
+
+    /* FOGLIO STAMPA - Padding azzerato per inquadratura edge-to-edge */
+    .print-sheet {
+      position: relative;
+      z-index: 1;
+      width: 210mm;
+      height: 297mm;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      /* stessa geometria del Cartello Semplice (22 ottobre 2026): 8 mm sopra, cartelli di 128 mm, l'inferiore
+         148,5 mm sotto il superiore (23 ottobre 2026), linea di taglio a metà esatta dell'A4 */
+      padding: 8mm 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .print-sheet.single-mode {
+      justify-content: flex-start;
+    }
+
+    /* Due cartelli: l'inferiore sta esattamente mezzo A4 (148,5 mm) sotto il superiore, così ognuno ha la stessa
+       posizione nella sua metà del foglio, come in Cartello Percentuale (23 ottobre 2026; prima, con lo spazio
+       distribuito, l'inferiore finiva 4,4 mm più in basso) */
+    .print-sheet:not(.single-mode) {
+      justify-content: flex-start;
+    }
+
+    .print-sheet:not(.single-mode) #card2 {
+      margin-top: calc(148.5mm - 128mm);
+    }
+
+    .card {
+      width: 100%;
+      height: 128mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 4mm 12mm;
+      flex-shrink: 0;
+      position: relative;
+      top: 3mm;   /* tutto il cartello (claim, rettangolo, prezzi, descrizione, logo) 3 mm più in basso (28 ottobre 2026) */
+    }
+
+    .card.disabled {
+      display: none !important;
+    }
+
+    /* linea di taglio ancorata al centro esatto dell'A4 (50%), come nel Cartello Semplice */
+    .cut-line {
+      position: absolute;
+      top: 50%;
+      left: 12mm;
+      right: 12mm;
+      border-top: 1px dashed #ccc;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+
+    .print-sheet.single-mode .cut-line {
+      display: none;
+    }
+
+    .header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .header-text {
+      font-family: 'Space Invaders Project', 'Courier New', monospace;
+      font-weight: 400;   /* Space Invaders ha un solo peso: senza grassetto finto, più fino */
+      font-size: 0.99rem;   /* claim in Space Invaders: un poco più piccoli (1.1rem prima, 22 ottobre 2026) */
+      color: #8f6a1f;   /* claim in oro scuro (OPHILYA; in Luxury Outlet rossi) */
+      text-align: center;
+      line-height: 1.1;
+      text-transform: uppercase;
+      width: 20%;
+    }
+    /* i claim un poco più staccati dal rettangolo rosso, verso i bordi del cartello */
+    .header-text:first-child { transform: translateX(-3.5mm); }
+    .header-text:last-child { transform: translateX(3.5mm); }
+
+    .claim-flag {
+      width: auto;
+      height: auto;
+      max-width: 21mm;
+      max-height: 13mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
+    }
+    /* bandierine del tema Made in Italy più piccole (circa -20%, 22 ottobre 2026); quelle di Black Friday no */
+    .claim-flag:not(.claim-flag-bf) {
+      max-width: 16.8mm;
+      max-height: 10.4mm;
+    }
+
+    .claim-flag-bf {
+      width: auto;
+      height: auto;
+      max-width: 23mm;
+      max-height: 14mm;   /* proporzioni senza object-fit, che html2canvas (lista di stampa, PDF da iPhone) non applica */
+    }
+
+    .claim-flag-left { transform: translateX(-3mm); }
+    .claim-flag-right { transform: translateX(3mm); }
+
+    .red-box {
+      width: 56%;
+      height: 29mm;
+      background-color: #c99a27 !important;   /* rettangolo dorato (OPHILYA; in Luxury Outlet rosso) */
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2mm;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    /* STRUTTURA LOGHI E ANIMAZIONE MULTI-BRAND */
+    .brand-logo-slot {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: width 0.35s ease, transform 0.35s ease;
+    }
+
+    .brand-logo-slot img {
+      max-width: 94%;
+      max-height: 94%;
+      object-fit: contain;
+    }
+
+    .brand-logo-slot.bis {
+      display: none;
+      width: 0;
+      opacity: 0;
+      transition: width 0.35s ease, opacity 0.2s ease 0.1s;
+    }
+
+    .has-2-brands .brand-logo-slot { width: 50%; }
+    .has-2-brands .brand-logo-slot.bis { display: flex; opacity: 1; }
+
+    /* RIGA DESCRIZIONE PROMOZIONALE */
+    .promo-description {
+      display: none;
+      font-family: 'Bodoni Project', serif;
+      font-style: italic;
+      font-weight: 400;
+      font-size: 2.1rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: #222222;
+      text-align: center;
+      margin: auto 0 0;   /* spazio sopra uguale agli altri: vedi .price-row-old e .price-block */
+      width: 90%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .promo-description.active {
+      display: block;
+    }
+
+    /* Impaginazione del cartello (22 ottobre 2026), come il Cartello Semplice: header in alto, logo in fondo, il prezzo
+       finale alla stessa distanza dal logo che nel Cartello Semplice (margine sotto), e lo spazio che resta sopra diviso
+       in parti uguali tra header, descrizione (se c'è), prezzo barrato e prezzo finale (margin-top: auto): niente spazi
+       bianchi di troppo. */
+    .price-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: auto 0 10mm;   /* prezzo finale → logo: come nel Cartello Semplice */
+      flex-shrink: 0;
+    }
+
+    .price-row-old {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 1.95rem;
+      margin: auto 0 0;
+      flex-shrink: 0;
+    }
+
+    /* correzioni sull'inchiostro: le righe hanno spazio vuoto diverso sopra e sotto le lettere, così gli spazi visti
+       tra header, descrizione, prezzo barrato e prezzo finale sono uguali (misurati sui pixel) */
+    .price-row-old { position: relative; top: 2mm; }
+    /* DOPPIA CIFRA: prezzo barrato e sconto un poco più grandi (1,95rem con DESCRIZIONE ARTICOLO) */
+    .card:not(.has-desc) .price-row-old { font-size: 2.2rem; }
+    /* DESCRIZIONE ARTICOLO: prezzo barrato, prezzo finale e logo 6 mm più in basso, per dare spazio alla descrizione,
+       che sta a metà tra l'header e il prezzo barrato (misurato sui pixel, 22 ottobre 2026) */
+    .card.has-desc .promo-description { position: relative; top: 5.4mm; }
+    .card.has-desc .price-row-old { top: 9.2mm; }   /* 0,8 mm più vicina al prezzo finale */
+    .card.has-desc .price-block,
+    .card.has-desc .card-footer { position: relative; top: 6mm; }
+
+    .price-original {
+      font-family: 'Bodoni Project', serif;
+      font-weight: normal;
+      color: #333;
+      text-decoration: line-through;
+      text-decoration-color: #c99a27;   /* barra dorata */
+    }
+
+    .discount-tag {
+      font-family: 'Bodoni Project', serif;
+      font-style: normal;
+      color: #c99a27;
+      font-weight: 800;
+    }
+
+    .price-final {
+      font-family: 'Bodoni Project', serif;
+      font-size: 9.36rem;
+      font-weight: normal;
+      color: #000;
+      line-height: 0.82;
+      text-align: center;
+      letter-spacing: -3.5px;
+    }
+
+    .card-footer {
+      height: 19.2mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1mm;   /* come nel Cartello Semplice */
+      flex-shrink: 0;
+    }
+
+    .card-footer img {
+      max-height: 100%;
+      max-width: 52mm;   /* logo OPHILYA, lungo e basso (264 px per il logo di Luxury Outlet) */
+      object-fit: contain;
+    }
+
+    /* NAVIGAZIONE E PULSANTI FLOATING */
+
+
+
+
+
+
+    @page {
+      size: A4 portrait;
+      margin: 0mm !important;
+    }
+
+
+
+    @media print {
+      html, body {
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+
+      .sidebar, .floating-nav-box { display: none !important; }
+
+      .print-sheet {
+        box-shadow: none;
+        margin: 0 auto !important;
+        padding: 8mm 0 !important;
+        width: 210mm;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        break-after: avoid !important;
+        break-before: avoid !important;
+        break-inside: avoid !important;
+        overflow: hidden !important;
+      }
+
+      .card {
+        height: 128mm !important;
+      }
+
+      .red-box { 
+        background-color: #c99a27 !important; 
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+    }
+    /* pallino «•» delle descrizioni: più piccolo e alzato a metà delle minuscole */
+    .desc-pallino {
+      font-size: 0.55em;
+      vertical-align: 0.32em;
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/css/menu-cascata.css?v=20261028-1">
+  <script defer src="../assets/js/menu-cascata.js?v=20261028-1"></script>
+  <link rel="stylesheet" href="../assets/css/responsive.css?v=20261028-1">
+  <script defer src="../assets/js/responsive.js?v=20261028-1"></script>
+  <script defer src="../assets/js/stampa-ios.js?v=20261028-1"></script>
+  <script src="../assets/js/theme.js?v=20261028-1"></script>
+  <link rel="stylesheet" href="../assets/css/theme.css?v=20261028-1">
+</head>
+<body data-layout="cartelli">
+  <!-- Pulsanti e Riquadri Navigazione UI -->
+  <a href="index.html" class="app-close-btn" title="Chiudi e torna all'index" aria-label="Chiudi e torna al menu principale">✕</a>
+
+  <!-- MADE IN ITALY BUTTONS -->
+  <button class="made-in-italy-btn" type="button" data-card-index="1" aria-label="Attiva o disattiva Made in Italy del cartello superiore" aria-pressed="false" onclick="toggleMadeInItaly(1)">
+    <img src="../assets/img/ophilya/madeinitaly.png" alt="Made in Italy">
+  </button>
+  <button class="made-in-italy-btn made-in-italy-btn-lower" type="button" data-card-index="2" aria-label="Attiva o disattiva Made in Italy del cartello inferiore" aria-pressed="false" onclick="toggleMadeInItaly(2)">
+    <img src="../assets/img/ophilya/madeinitaly.png" alt="Made in Italy">
+  </button>
+
+  <div class="floating-nav-box">
+    <div class="floating-nav-title">STORE // CRAFT</div>
+    <a href="index.html" class="floating-nav-btn">
+      ← Torna al Menu Principale
+    </a>
+  </div>
+
+  <div class="sidebar">
+    <div class="controls">
+      <h2>Cartello Outlet</h2>
+
+      <!-- Blocco 1: selettori e pulsanti -->
+      <div class="panel-block">
+        <div id="cardSelector" data-selettore-cartello></div>
+
+        <div id="priceModeSelector" data-selettore-modalita-prezzo></div>
+
+        <div id="secondBrandBtn" data-second-brand-toggle data-on-change="toggleSecondBrand"></div>
+      </div>
+
+      <!-- Blocco 2: brand (ufficiali e personali) e claim laterali -->
+      <div class="panel-block">
+        <div class="form-group">
+          <label class="section-label" for="brandSelect" id="brandLabel">BRAND</label>
+          <div class="preset-select">
+            <select id="brandSelect" onchange="onOfficialBrandChange('brand')"></select>
+          </div>
+          <label for="customBrandSelect" id="customBrandLabel">Loghi Personali</label>
+          <div class="preset-select">
+            <select id="customBrandSelect" onchange="onCustomBrandChange('brand')"></select>
+          </div>
+        </div>
+
+        <div class="form-group" id="brandBisGroup" hidden>
+          <label class="section-label" for="brandSelectBis">BRAND 2</label>
+          <div class="preset-select">
+            <select id="brandSelectBis" onchange="onOfficialBrandChange('brandBis')"></select>
+          </div>
+          <label for="customBrandSelectBis">Loghi Personali 2</label>
+          <div class="preset-select">
+            <select id="customBrandSelectBis" onchange="onCustomBrandChange('brandBis')"></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="leftClaim">Claim Sinistro</label>
+            <input type="text" id="leftClaim" oninput="onCardFieldInput('left', this.value)">
+          </div>
+          <div class="form-group">
+            <label for="rightClaim">Claim Destro</label>
+            <input type="text" id="rightClaim" oninput="onCardFieldInput('right', this.value)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocco 3: campi del cartello (prezzi, descrizione o entrambi, secondo la modalità) -->
+      <div class="panel-block">
+        <div class="form-group" id="descGroup" hidden>
+          <label class="section-label" for="presetDesc">TESTI PRONTI</label>
+          <div class="preset-select">
+            <select id="presetDesc" class="ready-text-complete" data-testi-pronti="Promozioni,Articoli" onchange="applyPreset()">
+              <option value="" class="ready-text-placeholder">-- Seleziona Testo Pronto --</option>
+            </select>
+          </div>
+          <label for="desc">Testo Libero</label>
+          <input type="text" id="desc" maxlength="37" placeholder="-- Testo Libero --" oninput="onItemFieldInput('desc', this.value)">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="priceOld">Prezzo Originario</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input data-prezzo type="text" id="priceOld" inputmode="decimal" placeholder="395,00" oninput="onPriceInput('old', this)">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="discount">Sconto</label>
+            <div class="input-affix">
+              <input data-percentuale type="number" id="discount" min="1" max="99" placeholder="75" oninput="onDiscountInput()">
+              <span class="affix">%</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="priceNew">Prezzo Finale</label>
+            <div class="input-affix">
+              <span class="affix">€</span>
+              <input data-prezzo type="text" id="priceNew" inputmode="decimal" placeholder="99,00" oninput="onPriceInput('price', this)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blocco 4: stampa -->
+      <div class="panel-block">
+        <div id="linkCardsRow" data-copia-cartello data-checkbox-id="linkCards" data-on-change="setLinkedCards"></div>
+
+        <div class="form-group">
+          <div class="preset-select">
+            <select id="sheetModeSelect" aria-label="Impostazioni di Stampa" onchange="setSheetMode(this.value)">
+              <option value="double" selected>2 CARTELLI (Foglio A4)</option>
+              <option value="single">1 CARTELLO (Solo cartello superiore)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="button" class="btn-print" id="printBtn" onclick="window.print()">STAMPA CARTELLI</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="print-sheet double-mode" id="printSheet">
+    <!-- CARTELLO 1 -->
+    <div class="card" id="card1">
+      <div class="header-row">
+        <div class="header-text" id="headLeft1">SALDI<br>2026</div>
+        <div class="red-box" id="redBox1">
+          <div class="brand-logo-slot"><img id="cardLogo1" src="" alt="Logo Brand 1"></div>
+          <div class="brand-logo-slot bis"><img id="cardLogo1Bis" src="" alt="Logo Brand 1 Bis"></div>
+        </div>
+        <div class="header-text" id="headRight1">SHOP<br>NOW</div>
+      </div>
+
+      <!-- Riga descrizione e doppio prezzo -->
+      <div class="promo-description" id="promoDesc1">Outlet Price</div>
+
+      <div class="price-row-old">
+        <span class="price-original" id="priceOldDisplay1">€ 395,00</span>
+        <span class="discount-tag" id="discountDisplay1">-75%</span>
+      </div>
+
+      <div class="price-block">
+        <div class="price-final" id="priceNewDisplay1">€ 99,00</div>
+      </div>
+
+      <div class="card-footer"><img id="footerLogo1" class="luxuryLogo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA"></div>
+    </div>
+
+    <!-- LINEA TRATTEGGIATA PER IL RITAGLIO -->
+    <div class="cut-line"></div>
+
+    <!-- CARTELLO 2 -->
+    <div class="card" id="card2">
+      <div class="header-row">
+        <div class="header-text" id="headLeft2">SALDI<br>2026</div>
+        <div class="red-box" id="redBox2">
+          <div class="brand-logo-slot"><img id="cardLogo2" src="" alt="Logo Brand 2"></div>
+          <div class="brand-logo-slot bis"><img id="cardLogo2Bis" src="" alt="Logo Brand 2 Bis"></div>
+        </div>
+        <div class="header-text" id="headRight2">SHOP<br>NOW</div>
+      </div>
+
+      <!-- Riga descrizione e doppio prezzo -->
+      <div class="promo-description" id="promoDesc2">Outlet Price</div>
+
+      <div class="price-row-old">
+        <span class="price-original" id="priceOldDisplay2">€ 395,00</span>
+        <span class="discount-tag" id="discountDisplay2">-75%</span>
+      </div>
+
+      <div class="price-block">
+        <div class="price-final" id="priceNewDisplay2">€ 99,00</div>
+      </div>
+
+      <div class="card-footer"><img id="footerLogo2" class="luxuryLogo" src="../assets/img/ophilya/footerophilya.png" alt="OPHILYA"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/testi-pronti.js?v=20261028-1"></script>
+
+  <script src="../assets/js/second-brand-toggle.js?v=20261028-1"></script>
+  <script src="../assets/js/selettore.js?v=20261028-1"></script>
+  <script src="../assets/js/selettore-cartello.js?v=20261028-1"></script>
+  <script src="../assets/js/selettore-modalita-prezzo.js?v=20261028-1"></script>
+
+  <script>
+    const DEFAULT_LOGO = "OPHILYA.png";
+
+    // Stato dei due cartelli: il pannello mostra e modifica quello scelto con CARTELLO SUPERIORE / INFERIORE.
+    // item: l'articolo del cartello (descrizione e prezzi).
+    function createCardState() {
+      return {
+        brand: '', customBrand: '',          // brand principale: file ufficiale o logo personale (data URL)
+        brandBis: '', customBrandBis: '',    // secondo brand, visibile con + AGGIUNGI 2° BRAND
+        twoBrands: false,
+        left: 'SALDI 2026', right: 'SHOP NOW',
+        withDesc: false,                     // DOPPIA CIFRA (false) o DESCRIZIONE ARTICOLO (true)
+        item: { descPreset: '', desc: 'Outlet Price', old: '395,00', disc: '-75%', price: '99,00' }
+      };
+    }
+
+    const cloneCard = state => ({ ...state, item: { ...state.item } });
+
+    const cards = { 1: createCardState(), 2: createCardState() };
+    let currentCard = 1;
+    let sheetMode = 'double';
+    let linkedCards = false;   // casella COPIA SU ALTRO CARTELLO
+
+    const madeInItalyClaimsActive = { 1: false, 2: false };
+    const previousDescriptionState = { 1: null, 2: null };
+
+    // Cartelli a cui vanno le modifiche: con la casella spuntata (e 2 cartelli) tutti e due.
+    const editedCards = () => linkedCards && sheetMode === 'double' ? [1, 2] : [currentCard];
+
+    function setCardField(field, value) {
+      editedCards().forEach(cardIndex => { cards[cardIndex][field] = value; });
+    }
+
+    function setItemField(field, value) {
+      editedCards().forEach(cardIndex => { cards[cardIndex].item[field] = value; });
+    }
+
+    function cleanBrandName(filename) {
+      return filename.replace(/\.(png|jpg|jpeg|webp|svg)$/i, '').replace(/[-_]/g, ' ');
+    }
+
+    function readCustomLogos() {
+      try {
+        const logos = LoghiPersonalizzati.elenco();
+        return Array.isArray(logos) ? logos.filter(logo => logo && logo.name && logo.data) : [];
+      } catch (error) {
+        console.error('Lettura dei loghi personali fallita.', error);
+        return [];
+      }
+    }
+
+    function addPlaceholder(select, text) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = text;
+      select.replaceChildren(option);
+    }
+
+    // Solo in questa pagina (27 ottobre 2026): nel menu BRAND, insieme ai loghi di OPHILYA, il gruppo «Altri brand» con
+    // i loghi ufficiali di Luxury Outlet (letti dal suo elenco, senza i suoi marchi e senza quelli che OPHILYA ha già).
+    // Il loro valore è «luxury/NOME.png»: l'indirizzo punta alla cartella dei loghi di Luxury Outlet e la versione
+    // bianca del rettangolo la colora la pagina (OPHILYA non ha le loro varianti di stampa).
+    const LOGHI_ALTRO_NEGOZIO = 'luxury/';
+    const MARCHI_LUXURY = ['LUXURY_GOLD.png', 'LXRY_BRAND.png', 'LXRY.png'];
+    const getLogoSourceNegozio = getLogoSource;
+    getLogoSource = function (fileName) {
+      if (!fileName || !fileName.startsWith(LOGHI_ALTRO_NEGOZIO)) return getLogoSourceNegozio(fileName);
+      return new URL(`../assets/logos/${fileName}?v=${LOGO_ASSET_VERSION}`, location.href).href;
+    };
+    const biancoPer = fileName => fileName && fileName.startsWith(LOGHI_ALTRO_NEGOZIO) ? '#ffffff' : 'white';
+
+    async function loghiLuxury() {
+      try {
+        const testo = await (await fetch('../assets/logos/luxury/elenco.js?v=' + LOGO_ASSET_VERSION)).text();
+        const elenco = testo.match(/^const LOGO_FILES = \[([\s\S]*?)\];/m);
+        const nomiNegozio = new Set(LOGO_FILES.map(f => f.toUpperCase()));
+        return (elenco ? [...elenco[1].matchAll(/"([^"]+)"/g)].map(m => m[1]) : [])
+          .filter(f => !MARCHI_LUXURY.includes(f) && !nomiNegozio.has(f.toUpperCase()))
+          .sort((a, b) => cleanBrandName(a).localeCompare(cleanBrandName(b), 'it'));
+      } catch (errore) {
+        console.error('Loghi di Luxury Outlet non letti.', errore);
+        return [];
+      }
+    }
+
+    async function loadLocalLogos() {
+      const { priorityFiles, remainingFiles } = getSortedLogoFiles();
+      const altri = await loghiLuxury();
+      ['brandSelect', 'brandSelectBis'].forEach(id => {
+        const select = document.getElementById(id);
+        addPlaceholder(select, '-- Seleziona Brand --');
+        select.firstChild.className = 'brand-placeholder';   // placeholder testuale del menu BRAND
+        // in cima i brand prioritari del negozio, con la stella; sotto tutti gli altri, del negozio e di Luxury Outlet
+        // insieme, in ordine alfabetico; tutti i nomi in maiuscolo
+        priorityFiles.forEach(fileName => appendBrandOption(select, fileName, cleanBrandName(fileName).toUpperCase(), true));
+        [...remainingFiles, ...altri.map(f => LOGHI_ALTRO_NEGOZIO + f)]
+          .map(valore => ({ valore, nome: cleanBrandName(valore.replace(LOGHI_ALTRO_NEGOZIO, '')).toUpperCase() }))
+          .sort((a, b) => a.nome.localeCompare(b.nome, 'it'))
+          .forEach(({ valore, nome }) => appendBrandOption(select, valore, nome, false));
+      });
+
+      const customLogos = readCustomLogos();
+      ['customBrandSelect', 'customBrandSelectBis'].forEach(id => {
+        const select = document.getElementById(id);
+        addPlaceholder(select, '-- Seleziona Logo Personale --');
+        customLogos.forEach(logo => {
+          const option = document.createElement('option');
+          option.value = logo.data;
+          option.textContent = '★ ' + logo.name;
+          select.appendChild(option);
+        });
+      });
+
+      syncPanel();
+      renderCards();
+    }
+
+    // Scegliere un brand ufficiale azzera il logo personale dello stesso posto, e viceversa.
+    function onOfficialBrandChange(slot) {
+      const suffix = slot === 'brandBis' ? 'Bis' : '';
+      const custom = slot === 'brandBis' ? 'customBrandBis' : 'customBrand';
+      setCardField(slot, document.getElementById('brandSelect' + suffix).value);
+      setCardField(custom, '');
+      document.getElementById('customBrandSelect' + suffix).value = '';
+      renderCards();
+    }
+
+    function onCustomBrandChange(slot) {
+      const suffix = slot === 'brandBis' ? 'Bis' : '';
+      const custom = slot === 'brandBis' ? 'customBrandBis' : 'customBrand';
+      setCardField(custom, document.getElementById('customBrandSelect' + suffix).value);
+      setCardField(slot, '');
+      document.getElementById('brandSelect' + suffix).value = '';
+      renderCards();
+    }
+
+    function onCardFieldInput(field, value) {
+      setCardField(field, value);
+      renderCards();
+    }
+
+    function onItemFieldInput(field, value) {
+      setItemField(field, value);
+      renderCards();
+    }
+
+    function applyPreset() {
+      const value = document.getElementById('presetDesc').value;
+      setItemField('descPreset', value);
+      if (value !== '') {
+        setItemField('desc', value);
+        document.getElementById('desc').value = value;
+      }
+      renderCards();
+    }
+
+    // Lo sconto si scrive come numero da 1 a 99 (con le frecce ▲▼ o a mano): il segno - e il simbolo %
+    // li aggiunge la pagina; nel pannello il % sta fisso accanto al campo.
+    function onDiscountInput() {
+      const digits = document.getElementById('discount').value.replace(/\D/g, '').slice(0, 2);
+      onItemFieldInput('disc', digits ? `-${digits}%` : '');
+    }
+
+
+
+    function onPriceInput(field, input) {
+      input.value = input.value.replace(/[^\d,.]/g, '');
+      onItemFieldInput(field, input.value);
+    }
+
+
+    function setActive(activeId, ids) {
+      ids.forEach(id => document.getElementById(id).classList.toggle('active', id === activeId));
+    }
+
+    // Riporta nel pannello i valori del cartello scelto.
+    function syncPanel() {
+      const state = cards[currentCard];
+      const item = state.item;
+
+      document.getElementById('brandSelect').value = state.brand;
+      document.getElementById('customBrandSelect').value = state.customBrand;
+      document.getElementById('brandSelectBis').value = state.brandBis;
+      document.getElementById('customBrandSelectBis').value = state.customBrandBis;
+      document.getElementById('leftClaim').value = state.left;
+      document.getElementById('rightClaim').value = state.right;
+      document.getElementById('presetDesc').value = item.descPreset;
+      document.getElementById('desc').value = item.desc;
+      document.getElementById('priceOld').value = item.old;
+      document.getElementById('discount').value = item.disc.replace(/\D/g, '');
+      document.getElementById('priceNew').value = item.price;
+
+      SelettoreCartello.setActive('selectCard' + currentCard);
+      SecondBrandToggle.setState('secondBrandBtn', state.twoBrands);
+      SelettoreModalitaPrezzo.setDescription(state.withDesc);
+      document.getElementById('brandBisGroup').hidden = !state.twoBrands;
+      // con il doppio brand i campi del primo brand si chiamano BRAND 1 e Loghi Personali 1
+      document.getElementById('brandLabel').textContent = state.twoBrands ? 'BRAND 1' : 'BRAND';
+      document.getElementById('customBrandLabel').textContent = state.twoBrands ? 'Loghi Personali 1' : 'Loghi Personali';
+      document.getElementById('descGroup').hidden = !state.withDesc;
+
+      document.getElementById('linkCards').checked = linkedCards;
+      document.getElementById('linkCardsRow').hidden = sheetMode === 'single';
+    }
+
+    function selectCard(cardIndex) {
+      if (sheetMode === 'single' && cardIndex === 2) return;
+      currentCard = cardIndex;
+      syncPanel();
+    }
+
+    // + AGGIUNGI 2° BRAND accende e spegne il secondo brand del cartello in modifica.
+    function toggleSecondBrand() {
+      setCardField('twoBrands', !cards[currentCard].twoBrands);
+      syncPanel();
+      renderCards();
+    }
+
+    function setDescriptionMode(withDesc) {
+      setCardField('withDesc', withDesc);
+      syncPanel();
+      renderCards();
+    }
+
+    // Spuntando la casella i valori del cartello in modifica vanno anche sull'altro;
+    // togliendo la spunta il cartello sovrascritto torna ai valori che aveva prima.
+    let overwrittenCard = null;   // { cardIndex, state } salvato alla spunta
+
+    function setLinkedCards(isLinked) {
+      linkedCards = isLinked;
+      if (isLinked) {
+        const otherCard = currentCard === 1 ? 2 : 1;
+        overwrittenCard = { cardIndex: otherCard, state: cloneCard(cards[otherCard]) };
+        cards[otherCard] = cloneCard(cards[currentCard]);
+      } else if (overwrittenCard) {
+        cards[overwrittenCard.cardIndex] = overwrittenCard.state;
+        overwrittenCard = null;
+      }
+      renderCards();
+      syncPanel();
+    }
+
+    // 2 CARTELLI stampa i due cartelli sul foglio A4, 1 CARTELLO solo il superiore.
+    function setSheetMode(mode) {
+      sheetMode = mode;
+      const isSingle = mode === 'single';
+      document.getElementById('printBtn').textContent = isSingle ? 'STAMPA CARTELLO' : 'STAMPA CARTELLI';
+      const sheet = document.getElementById('printSheet');
+      document.getElementById('card2').classList.toggle('disabled', isSingle);
+      sheet.classList.toggle('single-mode', isSingle);
+      sheet.classList.toggle('double-mode', !isSingle);
+      SelettoreCartello.setLowerDisabled(isSingle);
+      document.getElementById('sheetModeSelect').value = mode;
+      if (isSingle && currentCard === 2) currentCard = 1;
+      syncPanel();
+    }
+
+    function setThemeButtonsPressed(cardIndex) {
+      const buttons = {
+        '.made-in-italy-btn': madeInItalyClaimsActive
+      };
+      Object.entries(buttons).forEach(([selector, activeState]) => {
+        const button = document.querySelector(selector + '[data-card-index="' + cardIndex + '"]');
+        if (button) button.setAttribute('aria-pressed', String(activeState[cardIndex]));
+      });
+    }
+
+    // Made in Italy: bandierine al posto dei claim, passa a DESCRIZIONE ARTICOLO e scrive "Made in Italy" come testo;
+    // alla disattivazione ripristina modalità e testo di prima.
+    function toggleMadeInItaly(cardIndex) {
+      MadeInItaly.toggle({
+        index: cardIndex,
+        active: madeInItalyClaimsActive,
+        otherThemes: [],
+        previous: previousDescriptionState,
+        state: cards[cardIndex],
+        targets: [cards[cardIndex].item],
+        descriptionMode: true,
+        onChange: () => {
+          setThemeButtonsPressed(cardIndex);
+          syncPanel();
+          renderCards();
+        }
+      });
+    }
+
+    function createClaimImage(src, alt, side, isBlackFriday) {
+      const image = document.createElement('img');
+      image.className = 'claim-flag' + (isBlackFriday ? ' claim-flag-bf' : '') + ' claim-flag-' + side;
+      image.src = src;
+      image.alt = alt;
+      return image;
+    }
+
+    // Claim su due righe: la prima parola sopra, il resto sotto (es. "SHOP NOW" → SHOP / NOW).
+    function setClaimText(element, value) {
+      const spaceIndex = value.indexOf(' ');
+      if (spaceIndex === -1) {
+        element.replaceChildren(document.createTextNode(value));
+      } else {
+        element.replaceChildren(
+          document.createTextNode(value.slice(0, spaceIndex)),
+          document.createElement('br'),
+          document.createTextNode(value.slice(spaceIndex + 1))
+        );
+      }
+    }
+
+    // Testo Libero: fino a 31 caratteri (quanto "Made in Italy • Genuine Leather") il testo ha la sua grandezza;
+    // da 32 a 37 caratteri (il campo si ferma lì) il carattere si rimpicciolisce perché il testo resti largo uguale.
+    const DESC_FULL_LENGTH = 31;
+    // il pallino «•» delle descrizioni (es. Vera Pelle • Genuine Leather) più piccolo e a metà altezza delle lettere,
+    // come nel Cartello Semplice (22 ottobre 2026)
+    function nodiConPallino(text) {
+      return String(text).split('•').flatMap((parte, indice) => {
+        if (!indice) return [parte];
+        const pallino = document.createElement('span');
+        pallino.className = 'desc-pallino';
+        pallino.textContent = '•';
+        return [pallino, parte];
+      });
+    }
+
+    function setDescriptionText(element, text) {
+      element.replaceChildren(...nodiConPallino(text));
+      element.style.fontSize = '';
+      if (text.length > DESC_FULL_LENGTH) {
+        const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        element.style.fontSize = (baseSize * DESC_FULL_LENGTH / text.length) + 'px';
+      }
+    }
+
+    const formatPrice = value => value ? '€ ' + value : '';
+
+    function renderCard(cardIndex) {
+      const state = cards[cardIndex];
+      const card = document.getElementById('card' + cardIndex);
+      const redBox = document.getElementById('redBox' + cardIndex);
+      const footerLogo = document.getElementById('footerLogo' + cardIndex);
+      const headLeft = document.getElementById('headLeft' + cardIndex);
+      const headRight = document.getElementById('headRight' + cardIndex);
+
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex, state.customBrand, state.brand, DEFAULT_LOGO, biancoPer(state.brand));
+      PrintLogoColors.setBrandLogoSrc('cardLogo' + cardIndex + 'Bis', state.customBrandBis, state.brandBis, DEFAULT_LOGO, biancoPer(state.brandBis));
+      card.classList.toggle('has-2-brands', state.twoBrands);
+      card.classList.toggle('has-desc', state.withDesc);
+      document.getElementById('promoDesc' + cardIndex).classList.toggle('active', state.withDesc);
+
+      redBox.style.setProperty('background-color', '#c99a27', 'important');
+      footerLogo.src = '../assets/img/ophilya/footerophilya.png';
+
+      if (madeInItalyClaimsActive[cardIndex]) {
+        headLeft.replaceChildren(createClaimImage('../assets/img/ophilya/madeinitaly.png', 'Made in Italy', 'left', false));
+        headRight.replaceChildren(createClaimImage('../assets/img/ophilya/madeinitaly.png', 'Made in Italy', 'right', false));
+      } else {
+        setClaimText(headLeft, state.left);
+        setClaimText(headRight, state.right);
+      }
+
+      const item = state.item;
+      setDescriptionText(document.getElementById('promoDesc' + cardIndex), item.desc);
+      document.getElementById('priceOldDisplay' + cardIndex).textContent = formatPrice(item.old);
+      document.getElementById('discountDisplay' + cardIndex).textContent = item.disc;
+      document.getElementById('priceNewDisplay' + cardIndex).textContent = formatPrice(item.price);
+    }
+
+    function renderCards() {
+      renderCard(1);
+      renderCard(2);
+    }
+
+    // I menu si riempiono quando la lista dei loghi personali del negozio è pronta (loghi-personalizzati.js).
+    window.onload = () => LoghiPersonalizzati.pronto.then(loadLocalLogos);
+  </script>
+  <script src="../assets/js/cursore.js?v=20261028-1"></script>
+
+  <script>
+    // Cursore: indica sul cartello in modifica l'elemento legato al campo in uso.
+    const activeCard = () => document.getElementById('card' + currentCard);
+    const inActiveCard = selector => () => activeCard().querySelector(selector);
+    const cardOf = target => target.closest('.card');
+    const inActiveCardId = id => () => document.getElementById(id + currentCard);
+    // I loghi brand stanno sul riquadro rosso, dove il triangolo rosso non si vedrebbe: il cursore sta sempre sopra
+    // il riquadro, centrato sul logo scelto (punta a 1 mm dal riquadro: 2 mm di margine interno + 1 mm).
+    const ABOVE_RED_BOX_GAP = 3 * 96 / 25.4;
+    // Qui il cartello parte dal bordo del foglio e il cursore sopra il cartello uscirebbe dallo schermo: si mette dentro,
+    // con la punta 7 mm sotto il bordo del cartello, nella stessa posizione di Cartello Semplice (8 mm di margine - 1 mm).
+    const CARD_CURSOR_GAP = -7 * 96 / 25.4;
+
+    Cursore.create({
+      panel: '.controls',
+      watch: '#printSheet',
+      scope: cardOf,
+      obstacles: target => cardOf(target).querySelectorAll('.header-text, .red-box, .promo-description, .price-original, .discount-tag, .price-final, .card-footer img'),
+      rules: [
+        { controls: '#selectCard1, #selectCard2', target: activeCard, placement: 'above', gap: CARD_CURSOR_GAP },
+        // + AGGIUNGI 2° BRAND: acceso indica tutti e due i loghi (il cursore si sdoppia), spento solo il primo
+        { controls: '#secondBrandBtn', target: () => activeCard().querySelectorAll(cards[currentCard].twoBrands ? '.brand-logo-slot' : '.brand-logo-slot:not(.bis)'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#doublePriceBtn, #descriptionBtn', target: () => activeCard().querySelector(cards[currentCard].withDesc ? '.promo-description' : '.price-block'), placement: 'above' },
+        { controls: '#brandSelect, #customBrandSelect', target: inActiveCard('.brand-logo-slot:not(.bis)'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#brandSelectBis, #customBrandSelectBis', target: inActiveCard('.brand-logo-slot.bis'), placement: 'above', gap: ABOVE_RED_BOX_GAP },
+        { controls: '#leftClaim', target: inActiveCard('.header-text:first-child') },
+        { controls: '#rightClaim', target: inActiveCard('.header-text:last-child') },
+        { controls: '#presetDesc, #desc', target: inActiveCardId('promoDesc') },
+        { controls: '#priceOld', target: inActiveCardId('priceOldDisplay') },
+        { controls: '#discount, #discount ~ .percent-stepper', target: inActiveCardId('discountDisplay') },
+        { controls: '#priceNew', target: inActiveCardId('priceNewDisplay') }
+      ]
+    });
+  </script>
+  <script src="../assets/js/copia-cartello.js?v=20261028-1"></script>
+  <script src="../assets/js/strumenti-stampa.js?v=20261028-1"></script>
+</body>
+</html>

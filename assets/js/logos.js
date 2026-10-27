@@ -40,8 +40,11 @@ function getOrderedLogoFiles() {
 function appendBrandOption(selectEl, fileName, displayName, isPriority) {
   const option = document.createElement('option');
   option.value = fileName;
-  option.textContent = displayName;
-  if (isPriority && window.Negozi?.corrente()?.brandPrioritari === 'maiuscolo') {
+  // negozi con i brand in maiuscolo (TEBE e OPHILYA): tutti i nomi in maiuscolo, anche quelli non in evidenza
+  // (es. Tebe e Tebe269 nei menu di OPHILYA, dove in evidenza c'è solo OPHILYA; 28 ottobre 2026)
+  const maiuscolo = window.Negozi?.corrente()?.brandPrioritari === 'maiuscolo';
+  option.textContent = maiuscolo ? displayName.toUpperCase() : displayName;
+  if (isPriority && maiuscolo) {
     // Scheda del negozio con brandPrioritari 'maiuscolo' (TEBE e OPHILYA): i brand della casa in maiuscolo con ⭐,
     // come nel progetto TEBE
     option.textContent = `⭐ ${displayName.toUpperCase()}`;

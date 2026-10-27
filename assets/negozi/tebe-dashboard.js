@@ -24,7 +24,8 @@ Dashboard.contenuto({
         { titolo: 'Cornici 10x15', voce: 'Cornici 10 x 15', link: 'cornici10x15.html', tipo: 'CORNICE', miniature: ['thumbnail/tebe/cornicithumb.png', 'thumbnail/tebe/cornicithumb-2.png'], alt: 'Cornice 10x15' },
         { titolo: 'Cornice A4', voce: 'Cornice A4', link: 'cornice21x27.html', tipo: 'CORNICE', miniature: ['thumbnail/tebe/cornice21x27thumb.png', 'thumbnail/tebe/cornice21x27thumb-2.png'] },
         { titolo: 'Paletto 13 x 9,5', link: 'paletto.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/tebe/palettothumb.png', 'thumbnail/tebe/palettothumb-2.png'] },
-        { titolo: 'Paletto 16,5 x 11,5', link: 'paletto18x12.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/tebe/palettothumb.png', 'thumbnail/tebe/palettothumb-2.png'] }
+        { titolo: 'Paletto 16,5 x 11,5', link: 'paletto18x12.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/tebe/palettothumb.png', 'thumbnail/tebe/palettothumb-2.png'] },
+        { titolo: 'Cartello Outlet', link: 'cartelli_outlet.html', tipo: 'CARTELLO', miniature: ['thumbnail/tebe/outlettebethumb.png'], alt: 'Cartello Outlet TEBE', specifiche: ['Brand', '2° Brand', 'I Miei Loghi', 'Descrizione', 'Doppio Prezzo', 'Sconto'] }
       ]
     },
     {

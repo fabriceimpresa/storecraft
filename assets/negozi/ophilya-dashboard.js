@@ -19,7 +19,8 @@ Dashboard.contenuto({
       schede: [
         { titolo: 'Albero Accessori', link: 'albero-ophilya.html', tipo: 'RASTRELLIERA', miniature: ['thumbnail/ophilya/alberoophilyathumb.png?v=20261002', 'thumbnail/ophilya/alberoophilyathumb2.png'], alt: 'Albero Accessori OPHILYA', specifiche: ['Descrizione Articolo', 'Prezzo'] },
         { titolo: 'Paletto 13 x 9,5', link: 'paletto-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 13 x 9,5 OPHILYA' },
-        { titolo: 'Paletto 16,5 x 11,5', link: 'paletto18x12-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 16,5 x 11,5 OPHILYA' }
+        { titolo: 'Paletto 16,5 x 11,5', link: 'paletto18x12-ophilya.html', tipo: 'PALETTO METALLO', miniature: ['thumbnail/ophilya/palettoophilyathumb.png', 'thumbnail/ophilya/palettothumb-2.png'], alt: 'Paletto 16,5 x 11,5 OPHILYA' },
+        { titolo: 'Cartello Outlet', link: 'cartelli_outlet.html', tipo: 'CARTELLO', miniature: ['thumbnail/ophilya/outletophilyathumb.png'], alt: 'Cartello Outlet OPHILYA', specifiche: ['Brand', '2° Brand', 'I Miei Loghi', 'Descrizione', 'Doppio Prezzo', 'Sconto'] }
       ]
     },
     // niente sezione Cartellini: OPHILYA non li usa (tolta il 22 ottobre 2026)
