@@ -497,7 +497,17 @@
   body[data-layout="loghi"] .modal-actions .modal-btn { flex: 1 1 100%; min-height: 44px; }
 }
 
+/* Vista schermi piccoli (responsive.js, setupSchermoPiccolo): tutta la pagina rimpicciolita insieme, come con lo
+   zoom del browser. Le altezze in vh della pagina si allargano dello stesso zoom, così la pagina resta alta quanto la
+   finestra. */
+@media screen {
+  body.schermo-piccolo { zoom: var(--zoom-schermo, 1); }
+  body.schermo-piccolo[data-layout="cartelli"] { min-height: calc(100vh / var(--zoom-schermo, 1)); }
+  body.schermo-piccolo:is([data-layout="cartellini"], [data-layout="prezzi"]) { height: calc(100vh / var(--zoom-schermo, 1)); }
+}
+
 @media print {
+  body.schermo-piccolo { zoom: 1 !important; }
   .phone-lens-btn,
   .phone-theme-toolbar,
   .phone-action-bar,

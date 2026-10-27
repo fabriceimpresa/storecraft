@@ -24,5 +24,9 @@ Negozi.registra('luxury', {
   // guida "Dove montare la stampa?": null la spegne; altrimenti { pagina: [foto in assets/foto/luxury/] }
   guida: null,
   // valori iniziali dell'interfaccia, finché l'utente non sceglie (theme.js)
-  interfaccia: { tema: 'dark', aspetto: 'standard' }
+  interfaccia: { tema: 'dark', aspetto: 'standard' },
+  // vista schermi piccoli (responsive.js, 27 ottobre 2026): nelle pagine dei cartelli e dei cartellini, su uno
+  // schermo piccolo (es. 1024 x 768) tutta la pagina si rimpicciolisce insieme. REVERSIBILE: per tornare indietro
+  // in caso di emergenza scrivere false (come TEBE e OPHILYA) e pubblicare
+  schermiPiccoli: true
 });

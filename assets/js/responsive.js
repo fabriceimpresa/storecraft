@@ -100,6 +100,67 @@
 
   if (layout === 'cartelli') setupCartelli();
   else if (layout === 'cartellini' || layout === 'prezzi') setupCartellini();
+  setupSchermoPiccolo();
+
+  /* Vista schermi piccoli (27 ottobre 2026, dall'installazione su un PC da negozio con lo schermo a 1024 x 768): su
+     computer e tablet, quando la pagina non entra nella finestra, tutta la pagina (pannello, foglio e pulsanti) si
+     rimpicciolisce insieme, come con lo zoom del browser, quanto basta per vedere tutto il foglio accanto al pannello.
+     Cartelli e promo: quando la pagina non entra in larghezza o la finestra è più bassa di 800 px; cartellini e Prezzi
+     Vetrina: quando il foglio non entra. Solo a schermo: la stampa, la lista di stampa e il PDF da iPhone usano sempre
+     la misura vera. Un negozio la spegne con schermiPiccoli: false nella sua scheda (TEBE e OPHILYA, che hanno già
+     una regolazione propria sul PC del negozio). */
+  function setupSchermoPiccolo() {
+    const scheda = window.Negozi && Negozi.corrente();
+    if (scheda && scheda.schermiPiccoli === false) return;
+    const cartelli = layout === 'cartelli';
+    if (!cartelli && layout !== 'cartellini' && layout !== 'prezzi') return;
+    const sheet = cartelli ? document.querySelector('#printSheet, .print-sheet, .a4-sheet')
+      : document.querySelector('main .sheet-wrap');
+    const panel = cartelli ? document.querySelector('.sidebar') : document.querySelector('body > aside, aside');
+    const main = !cartelli && sheet && sheet.closest('main');
+    if (!sheet || !panel) return;
+    const MINIMO = 0.5;
+    const ALTEZZA_PICCOLA = 800;
+    const px = (style, ...props) => props.reduce((sum, prop) => sum + (parseFloat(style[prop]) || 0), 0);
+
+    function adatta() {
+      document.body.classList.remove('schermo-piccolo');
+      if (phone.matches) return;
+      // misure della pagina a grandezza piena (la classe è appena stata tolta)
+      const sheetWidth = sheet.offsetWidth;
+      const sheetHeight = sheet.offsetHeight;
+      if (!sheetWidth || !sheetHeight) return;
+      let width;
+      let height;
+      if (cartelli) {
+        const style = getComputedStyle(document.body);
+        width = px(style, 'paddingLeft', 'paddingRight', 'columnGap') + panel.offsetWidth + sheetWidth;
+        height = px(style, 'paddingTop', 'paddingBottom') + sheetHeight;
+      } else {
+        const style = getComputedStyle(main);
+        width = panel.offsetWidth + px(style, 'paddingLeft', 'paddingRight') + sheetWidth;
+        height = px(style, 'paddingTop', 'paddingBottom') + sheetHeight;
+      }
+      const finestraW = document.documentElement.clientWidth;
+      const finestraH = window.innerHeight;
+      const piccolo = width > finestraW || (cartelli ? finestraH < ALTEZZA_PICCOLA : height > finestraH);
+      if (!piccolo) return;
+      const zoom = Math.max(MINIMO, Math.min(1, finestraW / width, finestraH / height));
+      if (zoom >= 1) return;
+      document.body.style.setProperty('--zoom-schermo', zoom.toFixed(3));
+      document.body.classList.add('schermo-piccolo');
+    }
+
+    let attesa = 0;
+    const ripeti = () => { cancelAnimationFrame(attesa); attesa = requestAnimationFrame(adatta); };
+    window.addEventListener('resize', ripeti);
+    phone.addEventListener('change', ripeti);
+    // il foglio cambia misura con 1 / 2 cartelli (Magazzino: mezzo A4)
+    new MutationObserver(ripeti).observe(sheet, { attributes: true, attributeFilter: ['class'] });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ripeti);
+    window.addEventListener('load', ripeti);
+    adatta();
+  }
 
   /* Cartelli e promo stagionali: in alto il cartello in modifica (superiore o inferiore), che scorre seguendo il
      selettore comune CARTELLO SUPERIORE / INFERIORE. */

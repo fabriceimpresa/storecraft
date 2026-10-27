@@ -34,5 +34,7 @@ Negozi.registra('tebe', {
     'paletto18x12.html': ['paletto.jpg']
   },
   // valori iniziali dell'interfaccia, finché l'utente non sceglie (theme.js)
-  interfaccia: { tema: 'light', aspetto: 'minimal' }
+  interfaccia: { tema: 'light', aspetto: 'minimal' },
+  // niente vista schermi piccoli (responsive.js): il PC del negozio ha già una regolazione propria (27 ottobre 2026)
+  schermiPiccoli: false
 });

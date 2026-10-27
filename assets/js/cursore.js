@@ -222,8 +222,10 @@
         }
         marker.classList.remove('cursore--down', 'cursore--right', 'cursore--left');
         marker.classList.add(`cursore--${chosen.side}`);
-        marker.style.left = `${chosen.left}px`;
-        marker.style.top = `${chosen.top}px`;
+        // nella vista schermi piccoli la pagina è rimpicciolita (zoom): le misure lette sono già rimpicciolite
+        const zoom = marker.currentCSSZoom || 1;
+        marker.style.left = `${chosen.left / zoom}px`;
+        marker.style.top = `${chosen.top / zoom}px`;
         marker.classList.add('is-visible');
       });
       markers.slice(shown).forEach(marker => marker.classList.remove('is-visible'));

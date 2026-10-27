@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Prova schermo 1024 x 768</title>
+<!-- Pagina di prova (non entra nelle copie dei clienti): mostra le pagine di STORE // CRAFT in una finestra grande
+     quanto quella di Chrome su uno schermo POS 1024 x 768 (Windows con la barra delle applicazioni, Chrome con schede
+     e indirizzo: circa 1024 x 643 di pagina). -->
+<style>
+  body { margin: 0; background: #3a3a3a; color: #eee; font: 13px system-ui, sans-serif; padding: 16px; }
+  .barra { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  select, input { font: inherit; padding: 4px 6px; }
+  .schermo { border: 10px solid #111; border-radius: 6px; display: inline-block; box-shadow: 0 2px 6px #000; }
+  iframe { display: block; border: 0; background: #fff; }
+</style>
+</head>
+<body>
+<div class="barra">
+  <strong>Schermo POS 1024 × 768</strong>
+  <select id="pagina">
+    <option value="luxury/cartelli_outlet.html">Luxury · Cartello Outlet</option>
+    <option value="luxury/cartelli_semplici.html">Luxury · Cartello Semplice</option>
+    <option value="luxury/cartellinivetrina.html">Luxury · Cartellini Vetrina</option>
+    <option value="luxury/promo_multibrand.html">Luxury · Promo Multibrand</option>
+    <option value="luxury/index.html">Luxury · Dashboard</option>
+    <option value="tebe/cartelli_semplici.html">TEBE · Cartello Semplice (senza vista schermi piccoli)</option>
+    <option value="ophilya/albero-ophilya.html">OPHILYA · Albero (senza vista schermi piccoli)</option>
+  </select>
+  pagina visibile <input id="w" type="number" value="1024" style="width:70px"> × <input id="h" type="number" value="643" style="width:70px"> px
+</div>
+<div class="schermo"><iframe id="f"></iframe></div>
+<script>
+  const f = document.getElementById('f');
+  const aggiorna = () => {
+    f.style.width = document.getElementById('w').value + 'px';
+    f.style.height = document.getElementById('h').value + 'px';
+    f.src = document.getElementById('pagina').value;
+  };
+  document.querySelectorAll('select, input').forEach(el => el.addEventListener('change', aggiorna));
+  aggiorna();
+</script>
+</body>
+</html>

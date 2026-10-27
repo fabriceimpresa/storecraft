@@ -324,6 +324,9 @@
     const zoomati = [sheet, sheet.closest('.sheet-wrap')].filter(el => el && el.style.zoom);
     const zoomPrima = zoomati.map(el => el.style.zoom);
     zoomati.forEach(el => { el.style.zoom = '1'; });
+    // vista schermi piccoli (responsive.js): per il tempo della foto la pagina torna a grandezza piena
+    const schermoPiccolo = document.body.classList.contains('schermo-piccolo');
+    document.body.classList.remove('schermo-piccolo');
     // Loghi colorati: per il tempo della foto le immagini filtrate della pagina vera diventano quelle già colorate (senza
     // filtro) e la foto parte solo quando sono pronte; dopo tornano le originali. Sostituirle solo nella copia non bastava:
     // su iPhone e iPad la copia veniva fotografata prima che le immagini nuove fossero pronte e i loghi sparivano.
@@ -395,6 +398,7 @@
       });
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
       zoomati.forEach((el, i) => { el.style.zoom = zoomPrima[i]; });
+      if (schermoPiccolo) document.body.classList.add('schermo-piccolo');
     }
     return canvas;
   }

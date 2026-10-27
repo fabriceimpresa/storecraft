@@ -423,7 +423,10 @@
       riga('listaStampa', `${o.id}-lista-stampa`),
       riga('cronologiaStampa', `${o.id}-cronologia-stampa`),
       '  guida: null,',
-      `  interfaccia: { tema: ${virgolette(o.tema)}, aspetto: ${virgolette(o.aspetto)} }`,
+      `  interfaccia: { tema: ${virgolette(o.tema)}, aspetto: ${virgolette(o.aspetto)} },`,
+      '  // vista schermi piccoli (responsive.js): su uno schermo piccolo (es. 1024 x 768) le pagine dei cartelli si',
+      '  // rimpiccioliscono tutte insieme. Reversibile: false la spegne',
+      '  schermiPiccoli: true',
       '});',
       ''
     ].join('\n');
