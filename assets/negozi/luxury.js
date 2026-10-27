@@ -27,6 +27,6 @@ Negozi.registra('luxury', {
   interfaccia: { tema: 'dark', aspetto: 'standard' },
   // vista schermi piccoli (responsive.js, 27 ottobre 2026): nelle pagine dei cartelli e dei cartellini, su uno
   // schermo piccolo (es. 1024 x 768) tutta la pagina si rimpicciolisce insieme. REVERSIBILE: per tornare indietro
-  // in caso di emergenza scrivere false (come TEBE e OPHILYA) e pubblicare
+  // in caso di emergenza scrivere false (come TEBE e OPHILYA) e pubblicare; 'cartello': si vede solo il cartello in modifica
   schermiPiccoli: true
 });

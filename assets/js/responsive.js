@@ -98,20 +98,37 @@
     };
   }
 
+  // foglio e cartelli della vista telefono dei cartelli, usati anche dalla vista schermi piccoli UN CARTELLO
+  let apiCartelli = null;
   if (layout === 'cartelli') setupCartelli();
   else if (layout === 'cartellini' || layout === 'prezzi') setupCartellini();
   setupSchermoPiccolo();
 
   /* Vista schermi piccoli (27 ottobre 2026, dall'installazione su un PC da negozio con lo schermo a 1024 x 768): su
-     computer e tablet, quando la pagina non entra nella finestra, tutta la pagina (pannello, foglio e pulsanti) si
-     rimpicciolisce insieme, come con lo zoom del browser, quanto basta per vedere tutto il foglio accanto al pannello.
-     Cartelli e promo: quando la pagina non entra in larghezza o la finestra è più bassa di 800 px; cartellini e Prezzi
-     Vetrina: quando il foglio non entra. Solo a schermo: la stampa, la lista di stampa e il PDF da iPhone usano sempre
-     la misura vera. Un negozio la spegne con schermiPiccoli: false nella sua scheda (TEBE e OPHILYA, che hanno già
-     una regolazione propria sul PC del negozio). */
-  function setupSchermoPiccolo() {
+     computer e tablet, quando la pagina non entra nella finestra. Tre viste, scelte per negozio:
+     - 'no'       NORMALE: niente, la pagina resta a grandezza piena e si scorre (come prima);
+     - 'si'       PAGINA RIDOTTA: tutta la pagina (pannello, foglio e pulsanti) si rimpicciolisce insieme, come con lo
+                  zoom del browser, quanto basta per vedere tutto il foglio accanto al pannello;
+     - 'cartello' UN CARTELLO: nei cartelli si vede solo il cartello in modifica (CARTELLO SUPERIORE / INFERIORE porta
+                  all'altro), così pagina e cartello restano grandi; VEDI ANTEPRIMA A4, prima del tasto di stampa, mostra
+                  tutto il foglio. Nei cartellini e in Prezzi Vetrina (un foglio solo) vale come PAGINA RIDOTTA.
+     La vista viene dall'interruttore di questo browser (Pannello di controllo › Schermi piccoli, localStorage
+     storecraft_schermi_piccoli_<negozio>), altrimenti dalla scheda del negozio (schermiPiccoli: true, false o
+     'cartello'; senza il campo, PAGINA RIDOTTA). Cartelli e promo: quando la pagina non entra in larghezza o la
+     finestra è più bassa di 800 px; cartellini e Prezzi Vetrina: quando il foglio non entra. Solo a schermo: la stampa,
+     la lista di stampa e il PDF da iPhone usano sempre la misura vera (lista-stampa.js toglie le classi per la foto). */
+  function vistaSchermiPiccoli() {
     const scheda = window.Negozi && Negozi.corrente();
-    if (scheda && scheda.schermiPiccoli === false) return;
+    let forzata = null;
+    try { forzata = localStorage.getItem(`storecraft_schermi_piccoli_${document.documentElement.dataset.negozio}`); } catch (e) {}
+    if (['no', 'si', 'cartello'].includes(forzata)) return forzata;
+    const valore = scheda && scheda.schermiPiccoli;
+    return valore === false ? 'no' : valore === 'cartello' ? 'cartello' : 'si';
+  }
+
+  function setupSchermoPiccolo() {
+    const vista = vistaSchermiPiccoli();
+    if (vista === 'no') return;
     const cartelli = layout === 'cartelli';
     if (!cartelli && layout !== 'cartellini' && layout !== 'prezzi') return;
     const sheet = cartelli ? document.querySelector('#printSheet, .print-sheet, .a4-sheet')
@@ -119,23 +136,89 @@
     const panel = cartelli ? document.querySelector('.sidebar') : document.querySelector('body > aside, aside');
     const main = !cartelli && sheet && sheet.closest('main');
     if (!sheet || !panel) return;
+    // UN CARTELLO: serve il riquadro .phone-preview-frame attorno al foglio (setupCartelli)
+    const unCartello = vista === 'cartello' && cartelli && apiCartelli && apiCartelli.frame === sheet.parentElement;
+    const frame = unCartello ? apiCartelli.frame : null;
     const MINIMO = 0.5;
     const ALTEZZA_PICCOLA = 800;
+    const DESTRA = 60;
+    const CLASSI = ['schermo-piccolo', 'schermo-cartello'];
     const px = (style, ...props) => props.reduce((sum, prop) => sum + (parseFloat(style[prop]) || 0), 0);
+    const body = document.body;
+
+    // VEDI ANTEPRIMA A4: prima del tasto di stampa, solo con la vista UN CARTELLO attiva. Apre una finestra sopra la
+    // pagina (fuori dal <body>, quindi fuori dal suo zoom) in cui il foglio intero sta tutto nello schermo; chiudendola
+    // il foglio torna al suo posto.
+    let bottone = null;
+    let anteprima = null;
+    const aperta = () => !!anteprima && !anteprima.hidden;
+    function zoomAnteprima() {
+      sheet.style.removeProperty('zoom');
+      const zoom = Math.min(1, (window.innerHeight - 90) / sheet.offsetHeight, (window.innerWidth - 40) / sheet.offsetWidth);
+      sheet.style.zoom = zoom.toFixed(3);
+    }
+    if (unCartello) {
+      const stampa = panel.querySelector('.btn-print');
+      bottone = document.createElement('button');
+      bottone.type = 'button';
+      bottone.className = 'vedi-anteprima-a4';
+      bottone.setAttribute('aria-expanded', 'false');
+      bottone.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>VEDI ANTEPRIMA A4</span>';
+      if (stampa) stampa.before(bottone); else panel.append(bottone);
+      anteprima = document.createElement('div');
+      anteprima.className = 'anteprima-a4';
+      anteprima.hidden = true;
+      anteprima.setAttribute('role', 'dialog');
+      anteprima.setAttribute('aria-modal', 'true');
+      anteprima.setAttribute('aria-label', 'Anteprima A4');
+      anteprima.innerHTML = '<div class="anteprima-a4-testa"><span>ANTEPRIMA A4</span><button type="button" class="anteprima-a4-chiudi" aria-label="Chiudi l\'anteprima A4">✕</button></div><div class="anteprima-a4-foglio"></div>';
+      document.documentElement.append(anteprima);
+      const posto = anteprima.querySelector('.anteprima-a4-foglio');
+      const segno = document.createComment('Posto del foglio');
+      const apri = si => {
+        if (si === aperta()) return;
+        if (si) {
+          sheet.before(segno);
+          posto.append(sheet);
+          anteprima.hidden = false;
+          document.documentElement.classList.add('con-anteprima-a4');
+          zoomAnteprima();
+          anteprima.querySelector('.anteprima-a4-chiudi').focus();
+        } else {
+          sheet.style.removeProperty('zoom');
+          segno.replaceWith(sheet);
+          anteprima.hidden = true;
+          document.documentElement.classList.remove('con-anteprima-a4');
+          bottone.focus();
+        }
+        bottone.setAttribute('aria-expanded', String(si));
+        ripeti();
+      };
+      bottone.addEventListener('click', () => apri(true));
+      anteprima.querySelector('.anteprima-a4-chiudi').addEventListener('click', () => apri(false));
+      anteprima.addEventListener('click', event => { if (event.target === anteprima || event.target === posto) apri(false); });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape' && aperta()) apri(false); });
+      // in stampa il foglio deve stare al suo posto nella pagina
+      window.addEventListener('beforeprint', () => apri(false));
+    }
 
     function adatta() {
-      document.body.classList.remove('schermo-piccolo');
+      // anteprima A4 aperta: il foglio sta nella sua finestra, si adatta solo lui
+      if (aperta()) { zoomAnteprima(); return; }
+      body.classList.remove(...CLASSI);
       if (phone.matches) return;
-      // misure della pagina a grandezza piena (la classe è appena stata tolta)
+      // misure della pagina a grandezza piena (le classi sono appena state tolte)
       const sheetWidth = sheet.offsetWidth;
       const sheetHeight = sheet.offsetHeight;
       if (!sheetWidth || !sheetHeight) return;
       let width;
       let height;
+      let padY = 0;
       if (cartelli) {
-        const style = getComputedStyle(document.body);
+        const style = getComputedStyle(body);
+        padY = px(style, 'paddingTop', 'paddingBottom');
         width = px(style, 'paddingLeft', 'paddingRight', 'columnGap') + panel.offsetWidth + sheetWidth;
-        height = px(style, 'paddingTop', 'paddingBottom') + sheetHeight;
+        height = padY + sheetHeight;
       } else {
         const style = getComputedStyle(main);
         width = panel.offsetWidth + px(style, 'paddingLeft', 'paddingRight') + sheetWidth;
@@ -145,18 +228,33 @@
       const finestraH = window.innerHeight;
       const piccolo = width > finestraW || (cartelli ? finestraH < ALTEZZA_PICCOLA : height > finestraH);
       if (!piccolo) return;
+
+      if (unCartello) {
+        // solo la parte di foglio del cartello in modifica: la pagina si rimpicciolisce quanto serve per lei
+        const [start, end] = apiCartelli.cardSlot(apiCartelli.currentCard());
+        const alto = Math.max(1, (end - start) * sheetHeight);
+        // a destra lo spazio dei pulsanti fissi (✕ e temi), che altrimenti coprirebbero il bordo del cartello
+        const zoom = Math.max(MINIMO, Math.min(1, finestraW / (width + DESTRA), finestraH / (padY + alto)));
+        body.style.setProperty('--zoom-schermo', zoom.toFixed(3));
+        body.style.setProperty('--altezza-cartello', `${Math.round(alto)}px`);
+        body.classList.add('schermo-piccolo', 'schermo-cartello');
+        frame.scrollTop = Math.round(start * sheetHeight);
+        return;
+      }
       const zoom = Math.max(MINIMO, Math.min(1, finestraW / width, finestraH / height));
       if (zoom >= 1) return;
-      document.body.style.setProperty('--zoom-schermo', zoom.toFixed(3));
-      document.body.classList.add('schermo-piccolo');
+      body.style.setProperty('--zoom-schermo', zoom.toFixed(3));
+      body.classList.add('schermo-piccolo');
     }
 
     let attesa = 0;
-    const ripeti = () => { cancelAnimationFrame(attesa); attesa = requestAnimationFrame(adatta); };
+    function ripeti() { cancelAnimationFrame(attesa); attesa = requestAnimationFrame(adatta); }
     window.addEventListener('resize', ripeti);
     phone.addEventListener('change', ripeti);
     // il foglio cambia misura con 1 / 2 cartelli (Magazzino: mezzo A4)
     new MutationObserver(ripeti).observe(sheet, { attributes: true, attributeFilter: ['class'] });
+    // UN CARTELLO: il selettore CARTELLO SUPERIORE / INFERIORE (e gli altri del pannello) cambia il cartello in vista
+    if (unCartello) new MutationObserver(ripeti).observe(panel, { subtree: true, attributes: true, attributeFilter: ['aria-pressed', 'class'] });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(ripeti);
     window.addEventListener('load', ripeti);
     adatta();
@@ -306,6 +404,8 @@
       frame.scrollTo({ top: start * height, behavior: smooth ? 'smooth' : 'auto' });
       groups.forEach((group, groupIndex) => { group.hidden = groupIndex !== index; });
     }
+
+    apiCartelli = { frame, cardSlot, currentCard };
 
     function update() {
       if (!phone.matches) full.set(false);

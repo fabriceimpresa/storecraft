@@ -10,6 +10,8 @@
   body[data-layout="cartelli"] > .sidebar { flex-shrink: 0; }
   body[data-layout="cartelli"] > .print-sheet,
   body[data-layout="cartelli"] > .a4-sheet { flex-shrink: 0; }
+  /* il foglio sta dentro .phone-preview-frame (display: contents su computer e tablet): anche lì non si stringe */
+  body[data-layout="cartelli"] .phone-preview-frame > :is(.print-sheet, .a4-sheet) { flex-shrink: 0; }
 }
 
 @media screen and (max-width: 760px) and (pointer: coarse) {
@@ -500,14 +502,52 @@
 /* Vista schermi piccoli (responsive.js, setupSchermoPiccolo): tutta la pagina rimpicciolita insieme, come con lo
    zoom del browser. Le altezze in vh della pagina si allargano dello stesso zoom, così la pagina resta alta quanto la
    finestra. */
+.vedi-anteprima-a4 { display: none; }
 @media screen {
   body.schermo-piccolo { zoom: var(--zoom-schermo, 1); }
   body.schermo-piccolo[data-layout="cartelli"] { min-height: calc(100vh / var(--zoom-schermo, 1)); }
   body.schermo-piccolo:is([data-layout="cartellini"], [data-layout="prezzi"]) { height: calc(100vh / var(--zoom-schermo, 1)); }
+
+  /* UN CARTELLO: si vede solo la parte di foglio del cartello in modifica, ferma in alto mentre il pannello scorre */
+  body.schermo-cartello[data-layout="cartelli"] { padding-right: 80px; }   /* 60 px per i pulsanti fissi a destra (responsive.js, DESTRA) */
+  body.schermo-cartello[data-layout="cartelli"] > .phone-preview { display: block; position: sticky; top: 20px; align-self: flex-start; flex-shrink: 0; }
+  body.schermo-cartello[data-layout="cartelli"] .phone-preview-frame {
+    display: block;
+    height: var(--altezza-cartello, auto);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .6);
+  }
+  body.schermo-cartello[data-layout="cartelli"] .phone-preview-frame > :is(.print-sheet, .a4-sheet) { box-shadow: none; }
+
+  /* VEDI ANTEPRIMA A4: prima del tasto di stampa, a contorno oro come i pulsanti del pannello */
+  body.schermo-cartello .vedi-anteprima-a4 {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; margin: 0 0 0.65rem; padding: 9px 8px;
+    border: 1px solid var(--pannello-oro, #d4a373); border-radius: 6px; background: transparent; color: var(--pannello-oro, #d4a373);
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; cursor: pointer;
+    transition: background .18s ease, color .18s ease;
+  }
+  body.schermo-cartello .vedi-anteprima-a4 svg { width: 18px; height: 18px; flex: none; }
+  body.schermo-cartello .vedi-anteprima-a4:hover { background: var(--pannello-oro, #d4a373); color: #121110; }
+  body.schermo-cartello .vedi-anteprima-a4:focus-visible { outline: 2px solid var(--pannello-oro, #d4a373); outline-offset: 2px; }
+
+  /* anteprima A4 aperta (finestra fuori dal <body>, quindi senza il suo zoom): tutto il foglio al centro, su un velo scuro */
+  .anteprima-a4 { position: fixed; inset: 0; z-index: 3000; display: flex; flex-direction: column; background: rgba(10, 9, 8, .94); }
+  .anteprima-a4[hidden] { display: none; }
+  .anteprima-a4-testa { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px 0 20px; flex: none;
+    color: #d4a373; font: 700 13px Arial, sans-serif; letter-spacing: .16em; }
+  .anteprima-a4-chiudi { width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--chiudi-sfondo, #d4a373); color: var(--chiudi-colore, #121110);
+    font: 700 18px Arial, sans-serif; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, .5); }
+  .anteprima-a4-chiudi:hover { background: var(--chiudi-sfondo-hover, #e5ba73); }
+  .anteprima-a4-chiudi:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .anteprima-a4-foglio { flex: 1; min-height: 0; display: flex; align-items: flex-start; justify-content: center; padding-bottom: 24px; overflow: auto; }
+  .anteprima-a4-foglio > :is(.print-sheet, .a4-sheet) { flex-shrink: 0; box-shadow: 0 4px 20px rgba(0, 0, 0, .6); }
+  html.con-anteprima-a4 .cursore { visibility: hidden; }
 }
 
 @media print {
   body.schermo-piccolo { zoom: 1 !important; }
+  .vedi-anteprima-a4, .anteprima-a4 { display: none !important; }
   .phone-lens-btn,
   .phone-theme-toolbar,
   .phone-action-bar,

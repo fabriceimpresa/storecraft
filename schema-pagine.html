@@ -2,14 +2,14 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261027-1"></script>
+  <script src="assets/js/negozi.js?v=20261027-4"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Pannello di controllo</title>
   <link rel="icon" href="assets/img/favicon-32.png">
-  <script src="assets/js/operatore-sezione.js?v=20261027-1"></script>
+  <script src="assets/js/operatore-sezione.js?v=20261027-4"></script>
   <!-- rimuovere i cloni creati da Gestione pacchetti (scrivendo nella cartella del progetto collegata) -->
-  <script src="assets/js/pacchetti-associa.js?v=20261027-1"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261027-4"></script>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
   <style>
     /* Struttura delle pagine (area operatore: non collegata, non copiata ai clienti). A ogni apertura legge le pagine di
@@ -129,6 +129,31 @@
     .blocco.is-collapsed .blocco-corpo { display: none; }
     /* Collaudo di stampa: una scheda per negozio (pagine da mettere in lista, avanzamento, APRI LA LISTA), comandi
        e registro da terminale; il riquadro con le pagine aperte una alla volta resta fuori dallo schermo */
+    /* Schermi piccoli (27 ottobre 2026): per ogni negozio la vista schermi piccoli accesa o spenta in questo browser,
+       per provarla sul PC di un negozio senza cambiare i file */
+    .schermi-negozi { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin: 22px 0 0; }
+    .schermi-negozio { padding: 18px 16px; border: 1px solid #26231f; border-radius: 14px; background: rgba(255, 255, 255, .02); text-align: center; }
+    .schermi-negozio b { display: block; color: #fff; font: 500 12px var(--mono); letter-spacing: .2em; }
+    .schermi-negozio .stato-vista { display: block; margin-top: 10px; font-size: 11.5px; color: var(--tenue); }
+    .schermi-negozio .stato-vista i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; background: #5a554d; }
+    .schermi-negozio.accesa .stato-vista { color: #7fcf95; }
+    .schermi-negozio.accesa .stato-vista i { background: #3a9b5a; }
+    .schermi-negozio .origine { display: block; margin-top: 4px; color: var(--tenue); font-size: 10.5px; }
+    .schermi-scelta { display: inline-flex; max-width: 100%; margin-top: 14px; padding: 3px; border-radius: 999px; background: #0b0a09; border: 1px solid #26231f; }
+    .schermi-scelta button { border: 0; border-radius: 999px; padding: 7px 9px; white-space: nowrap; background: transparent; color: var(--tenue);
+      font: 500 10px var(--mono); letter-spacing: .06em; cursor: pointer; }
+    .schermi-scelta button[aria-pressed="true"] { background: var(--oro); color: #121110; }
+    .schermi-scelta button:focus-visible, .schermi-negozio a:focus-visible { outline: 1px solid var(--oro); outline-offset: 2px; }
+    .schermi-negozio a { display: block; margin-top: 12px; color: var(--oro-chiaro); font: 400 11px var(--mono); letter-spacing: .08em; text-decoration: none; }
+    .schermi-negozio a:hover { text-decoration: underline; }
+    /* Confronto stampa diretta / lista (_collaudo.py, solo dal computer del progetto): l'ultimo rapporto */
+    .collaudo-confronto { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 22px; padding: 14px 16px;
+      border: 1px solid #26231f; border-radius: 12px; background: rgba(255, 255, 255, .02); font-size: 11.5px; }
+    .collaudo-confronto[hidden] { display: none; }
+    .collaudo-confronto b { color: #fff; font: 500 11px var(--mono); letter-spacing: .14em; }
+    .collaudo-confronto .ok { color: #7fcf95; } .collaudo-confronto .ko { color: #e07a6b; } .collaudo-confronto .tenue { color: var(--tenue); }
+    .collaudo-confronto a { margin-left: auto; color: var(--oro-chiaro); text-decoration: none; }
+    .collaudo-confronto a:hover { text-decoration: underline; }
     .collaudo-negozi { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 22px 0 0; }
     .collaudo-negozio { padding: 18px 16px; border: 1px solid #26231f; border-radius: 14px; background: rgba(255, 255, 255, .02); text-align: center; }
     .collaudo-negozio b { display: block; color: #fff; font: 500 12px var(--mono); letter-spacing: .2em; }
@@ -273,6 +298,22 @@
         <button type="button" class="collaudo-avvia" id="collaudo-avvia">AVVIA IL COLLAUDO</button>
       </div>
       <div class="collaudo-registro" id="collaudo-registro" aria-live="polite" hidden></div>
+      <!-- confronto automatico stampa diretta / lista di stampa: _collaudo.py, lanciato dal computer del progetto -->
+      <div class="collaudo-confronto" id="collaudo-confronto" hidden></div>
+    </div>
+  </section>
+
+  <!-- Schermi piccoli (27 ottobre 2026): la vista schermi piccoli delle pagine dei cartelli e dei cartellini (responsive.js)
+       NORMALE, PAGINA RIDOTTA o UN CARTELLO per ogni negozio solo in questo browser (localStorage storecraft_schermi_piccoli_<negozio>),
+       per provarla sul PC del negozio; scegliendo il valore della scheda del negozio (schermiPiccoli) la scelta si toglie. -->
+  <section class="blocco schermi is-collapsed" id="schermi" data-blocco="schermi">
+    <div class="label">
+      <h2>SCHERMI PICCOLI</h2>
+      <span class="riassunto" id="schermi-riassunto"></span>
+      <button class="section-toggle" type="button" aria-expanded="false" aria-controls="schermi-corpo" aria-label="Espandi Schermi piccoli">⌄</button>
+    </div>
+    <div class="blocco-corpo" id="schermi-corpo">
+      <div class="schermi-negozi" id="schermi-negozi"></div>
     </div>
   </section>
 </div>
@@ -631,6 +672,7 @@
     ['local', 'Note della Bacheca', 'storecraft_bacheca_<negozio>', 'per negozio', 'post-it: titolo, testo, aspetto, autore, nuova', 'finché non si cancellano (avviso oltre 100)', ['assets/js/bacheca.js', 'assets/js/cassa.js', 'assets/js/dashboard.js'], 'storecraft_bacheca_'],
     ['local', 'Comunicazioni ufficiali', 'storecraft_bacheca_comunicazioni_<negozio>', 'per negozio', 'fogli ad anelli, scadenza, commenti (la foto sta in IndexedDB)', 'fino alla scadenza scelta; «non scade»: domanda dopo un anno', ['assets/js/bacheca.js'], 'storecraft_bacheca_comunicazioni_'],
     ['local', 'Chi scrive in Bacheca', 'storecraft_bacheca_autore_<negozio>', 'per negozio', 'il nome che firma note e commenti', 'finché non si cambia utente', ['assets/js/bacheca.js'], 'storecraft_bacheca_autore_'],
+    ['local', 'Vista schermi piccoli', 'storecraft_schermi_piccoli_<negozio>', 'per negozio', 'no / si / cartello: vista schermi piccoli NORMALE, PAGINA RIDOTTA o UN CARTELLO in questo browser (Pannello di controllo › Schermi piccoli); assente: come da scheda del negozio', 'finché non si cambia', ['assets/js/responsive.js', 'schema-pagine.html'], 'storecraft_schermi_piccoli_'],
     ['local', 'Radio della dashboard', 'storecraft_radio_<negozio>', 'per negozio', '{ stazione, volume, faccia }: stazione e volume scelti, orologio o radio in vista', 'sempre', ['assets/js/radio.js'], 'storecraft_radio_'],
     ['local', 'Statistiche spedite', 'storecraft_statistiche_<negozio> · _loghi_', 'per negozio', 'giorno dell\'ultimo invio a Supabase, impronta dell\'ultimo backup dei loghi', 'sempre (solo nelle copie con il codice del negozio)', ['assets/js/statistiche.js'], 'storecraft_statistiche_'],
     ['local', 'Accesso dell\'operatore a Supabase', 'storecraft_operatore_supabase', 'comune', 'sessione della sezione Statistiche (token di accesso e di rinnovo)', 'finché non si esce', ['statistiche.html'], 'storecraft_operatore_supabase'],
@@ -860,6 +902,98 @@
     });
   }
   collaudo();
+
+  // Confronto stampa diretta / lista di stampa: l'ultimo rapporto di _collaudo.py (_collaudo/rapporto.json), che si
+  // lancia solo dal computer del progetto con il server locale; nella copia di un cliente non c'è e il riquadro resta nascosto
+  (async () => {
+    const box = document.getElementById('collaudo-confronto');
+    const voce = (classe, testo) => { const s = document.createElement('span'); s.className = classe; s.textContent = testo; return s; };
+    const titolo = document.createElement('b');
+    titolo.textContent = 'STAMPA DIRETTA / LISTA';
+    try {
+      const r = await fetch('_collaudo/rapporto.json', { cache: 'no-store' });
+      if (!r.ok) throw new Error();
+      const dati = await r.json();
+      const uguali = dati.pagine.filter(p => p.esito === 'uguali').length;
+      const altre = dati.pagine.length - uguali;
+      const quando = new Date(dati.data).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const link = document.createElement('a');
+      link.href = '_collaudo/rapporto.html';
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = 'apri il rapporto ↗';
+      box.append(titolo, voce('tenue', `${quando} · ${dati.pagine.length} pagine`), voce('ok', `${uguali} uguali`));
+      if (altre) box.append(voce('ko', `${altre} da controllare`));
+      box.append(link);
+    } catch (e) {
+      if (window.Negozi?.copiaCliente) return;
+      box.append(titolo, voce('tenue', 'nessun rapporto: lancia _collaudo.bat dal computer del progetto, con il server locale acceso'));
+    }
+    box.hidden = false;
+  })();
+
+  // Schermi piccoli: per ogni negozio installato la vista per gli schermi piccoli in questo browser (NORMALE, PAGINA
+  // RIDOTTA, UN CARTELLO; responsive.js); vale per le pagine del negozio aperte da questo browser a questo indirizzo,
+  // senza cambiare i file. Scegliendo la vista della scheda del negozio la scelta del browser si toglie.
+  const VISTE = [['no', 'NORMALE'], ['si', 'PAGINA RIDOTTA'], ['cartello', 'UN CARTELLO']];
+  const NOME_VISTA = { no: 'normale', si: 'pagina ridotta', cartello: 'un cartello' };
+  function schermiPiccoli() {
+    const contenitore = document.getElementById('schermi-negozi');
+    const chiave = id => `storecraft_schermi_piccoli_${id}`;
+    const leggi = id => { try { return localStorage.getItem(chiave(id)); } catch (e) { return null; } };
+    const disegna = () => {
+      contenitore.textContent = '';
+      const viste = [];
+      for (const id of Negozi.installati) {
+        const scheda = Negozi.scheda(id) || {};
+        const nomeNegozio = scheda.nome || id;
+        const forzata = leggi(id);
+        const daScheda = scheda.schermiPiccoli === false ? 'no' : scheda.schermiPiccoli === 'cartello' ? 'cartello' : 'si';
+        const vista = VISTE.some(([v]) => v === forzata) ? forzata : daScheda;
+        const accesa = vista !== 'no';
+        viste.push(`${nomeNegozio.toLowerCase()} ${NOME_VISTA[vista]}`);
+        const box = document.createElement('div');
+        box.className = 'schermi-negozio' + (accesa ? ' accesa' : '');
+        const nome = document.createElement('b');
+        nome.textContent = nomeNegozio.toUpperCase();
+        const stato = document.createElement('span');
+        stato.className = 'stato-vista';
+        stato.append(document.createElement('i'), NOME_VISTA[vista]);
+        const origine = document.createElement('span');
+        origine.className = 'origine';
+        origine.textContent = vista !== daScheda ? `scelta in questo browser · la scheda dice ${NOME_VISTA[daScheda]}` : 'come da scheda del negozio';
+        const scelta = document.createElement('div');
+        scelta.className = 'schermi-scelta';
+        scelta.setAttribute('role', 'group');
+        scelta.setAttribute('aria-label', `Vista schermi piccoli di ${nomeNegozio}`);
+        VISTE.forEach(([valore, testo]) => {
+          const tasto = document.createElement('button');
+          tasto.type = 'button';
+          tasto.textContent = testo;
+          tasto.setAttribute('aria-pressed', String(vista === valore));
+          tasto.addEventListener('click', () => {
+            try {
+              // uguale alla scheda: niente scelta salvata, così vale di nuovo la scheda
+              if (valore === daScheda) localStorage.removeItem(chiave(id));
+              else localStorage.setItem(chiave(id), valore);
+            } catch (e) {}
+            disegna();
+          });
+          scelta.append(tasto);
+        });
+        const prova = document.createElement('a');
+        prova.href = `${id}/index.html`;
+        prova.target = '_blank';
+        prova.rel = 'noopener';
+        prova.textContent = 'apri la dashboard ↗';
+        box.append(nome, stato, origine, scelta, prova);
+        contenitore.append(box);
+      }
+      document.getElementById('schermi-riassunto').textContent = viste.join(' · ');
+    };
+    disegna();
+  }
+  schermiPiccoli();
 
   // Apri / chiudi le sezioni: clic sul titolo o sulla freccia, come nel menu laterale della dashboard; una sezione
   // aperta alla volta: aprendone una le altre si chiudono (regola «Stile delle interfacce», 23 ottobre 2026)

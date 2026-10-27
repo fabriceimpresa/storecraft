@@ -307,6 +307,24 @@
     document.head.appendChild(regola);
   }
 
+  // Caratteri del foglio pronti prima della foto (27 ottobre 2026): html2canvas aspetta i caratteri della copia prima
+  // che lì si attivino le regole di stampa, e scrive le scritte con quelli della pagina; su un PC lento, o alla prima
+  // apertura, un carattere ancora in arrivo (es. il Bodoni Std corsivo dei Paletti di TEBE e OPHILYA) usciva nella
+  // foto con il carattere di riserva. Qui si chiede a ogni documento di caricare ogni carattere (famiglia, stile e
+  // peso) usato dalle scritte del foglio, e si aspetta che arrivino (al massimo 8 secondi).
+  async function caratteriPronti(doc, radice) {
+    if (!doc.fonts || !radice) return;
+    const vista = doc.defaultView || window;
+    const richieste = new Set();
+    [radice, ...radice.querySelectorAll('*')].forEach(el => {
+      if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return;
+      const st = vista.getComputedStyle(el);
+      richieste.add(`${st.fontStyle} ${st.fontWeight} 16px ${st.fontFamily}`);
+    });
+    const attesa = Promise.all([...richieste].map(f => doc.fonts.load(f).catch(() => null))).then(() => doc.fonts.ready);
+    await Promise.race([attesa, new Promise(fine => setTimeout(fine, 8000))]);
+  }
+
   async function captureSheet(sheet, scala = CAPTURE_SCALE) {
     proteggiControlloTesto();
     const html2canvas = await step('caricamento di html2canvas', loadHtml2canvas);
@@ -317,6 +335,7 @@
     })));
     const colored = colorFilteredImages(sheet);
     const svgFonts = await step('caratteri delle scritte SVG', () => svgFontRules(sheet));
+    await step('caratteri del foglio', () => caratteriPronti(document, sheet));
     let canvas;
     // Vista telefono: il foglio (o il suo contenitore) è rimpicciolito con zoom. html2canvas legge alcune misure dalla
     // pagina vera, e con lo zoom le scritte molto grandi con interlinea stretta (prezzi, percentuali) uscivano più in
@@ -325,8 +344,8 @@
     const zoomPrima = zoomati.map(el => el.style.zoom);
     zoomati.forEach(el => { el.style.zoom = '1'; });
     // vista schermi piccoli (responsive.js): per il tempo della foto la pagina torna a grandezza piena
-    const schermoPiccolo = document.body.classList.contains('schermo-piccolo');
-    document.body.classList.remove('schermo-piccolo');
+    const schermoPiccolo = ['schermo-piccolo', 'schermo-cartello'].filter(c => document.body.classList.contains(c));
+    document.body.classList.remove(...schermoPiccolo);
     // Loghi colorati: per il tempo della foto le immagini filtrate della pagina vera diventano quelle già colorate (senza
     // filtro) e la foto parte solo quando sono pronte; dopo tornano le originali. Sostituirle solo nella copia non bastava:
     // su iPhone e iPad la copia veniva fotografata prima che le immagini nuove fossero pronte e i loghi sparivano.
@@ -387,6 +406,9 @@
             fonts.textContent = svgFonts;
             svg.insertBefore(fonts, svg.firstChild);
           });
+          // con le regole di stampa attive, i caratteri della copia (html2canvas aspetta questa promessa)
+          const foglio = sheet.id ? doc.getElementById(sheet.id) : doc.querySelector(sheet.classList.length ? `.${[...sheet.classList].join('.')}` : 'body');
+          return caratteriPronti(doc, foglio || doc.body);
         }
       }));
     } finally {
@@ -398,7 +420,7 @@
       });
       sheet.querySelectorAll('img[data-lista-colore]').forEach(img => delete img.dataset.listaColore);
       zoomati.forEach((el, i) => { el.style.zoom = zoomPrima[i]; });
-      if (schermoPiccolo) document.body.classList.add('schermo-piccolo');
+      document.body.classList.add(...schermoPiccolo);
     }
     return canvas;
   }
