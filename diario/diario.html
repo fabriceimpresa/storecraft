@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Diario dei lavori StoreCraft</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>[hidden]{display:none!important} img{max-width:100%} body{margin:0}</style>
+</head>
+<body>
+
+<style>
+/* Layout: a work log for the people building it. Masthead, the day's facts, documents, a timeline of commits, then areas, open problems, decisions. One column, gold rules as in StoreCraft's own PDFs. */
+:root {
+  --bg: #f7f4ee;
+  --surface: #fffdf9;
+  --ink: #1d1b18;
+  --muted: #6b645b;
+  --line: #e4dccd;
+  --gold: #a07a2c;
+  --gold-soft: #f3ead7;
+  --ok: #2f7d4a;
+  --ok-soft: #e2f1e7;
+  --warn: #8a6620;
+  --warn-soft: #f6ecd6;
+  --todo: #5a544c;
+  --todo-soft: #ece8e1;
+  --f-display: "Cinzel", "Trajan Pro", Georgia, serif;
+  --f-body: "Plus Jakarta Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141311; --surface: #1d1b18; --ink: #f1ece3; --muted: #a59d91; --line: #34302a;
+    --gold: #d9b56a; --gold-soft: #2c261b; --ok: #7cc795; --ok-soft: #1b2b20; --warn: #e2bd6e; --warn-soft: #2e2617;
+    --todo: #b9b1a5; --todo-soft: #27241f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141311; --surface: #1d1b18; --ink: #f1ece3; --muted: #a59d91; --line: #34302a;
+  --gold: #d9b56a; --gold-soft: #2c261b; --ok: #7cc795; --ok-soft: #1b2b20; --warn: #e2bd6e; --warn-soft: #2e2617;
+  --todo: #b9b1a5; --todo-soft: #27241f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 880px; margin: 0 auto; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 44px; }
+a { color: var(--gold); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
+code { font-family: var(--f-mono); font-size: .86em; background: var(--gold-soft); padding: 1px 5px; border-radius: 4px; }
+
+/* masthead */
+.mast { display: grid; gap: 14px; border-bottom: 2px solid var(--gold); padding-bottom: 22px; }
+.brand { font-family: var(--f-display); font-weight: 600; color: var(--gold); letter-spacing: .08em; font-size: clamp(26px, 5vw, 38px); line-height: 1.1; margin: 0; text-wrap: balance; }
+.brand small { display: block; font-size: 12px; letter-spacing: .32em; color: var(--muted); margin-top: 8px; text-transform: uppercase; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 13.5px; }
+.meta b { color: var(--ink); font-weight: 600; }
+
+/* facts */
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.fact { background: var(--surface); padding: 14px 16px; display: grid; gap: 2px; }
+.fact .v { font-family: var(--f-mono); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.fact .k { font-size: 12px; color: var(--muted); }
+
+h2 { font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+section { min-width: 0; }
+.lead { margin: 0 0 14px; color: var(--muted); max-width: 66ch; }
+
+/* documents */
+.docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.doc { display: grid; grid-template-columns: 44px 1fr; gap: 12px; align-items: start; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; transition: border-color .15s; }
+.doc:hover { border-color: var(--gold); }
+.sheet { width: 44px; height: 56px; border: 1px solid var(--line); border-radius: 3px; background: var(--bg); position: relative; display: grid; place-items: end center; padding-bottom: 6px; font: 600 9px var(--f-mono); color: var(--gold); letter-spacing: .06em; }
+.sheet::before { content: ""; position: absolute; top: 9px; left: 8px; right: 8px; height: 2px; background: var(--gold); box-shadow: 0 7px 0 var(--line), 0 13px 0 var(--line), 0 19px 0 var(--line); }
+.doc b { display: block; font-weight: 600; line-height: 1.3; }
+.doc span { display: block; font-size: 13px; color: var(--muted); margin-top: 3px; }
+.doc .tag { display: inline-block; margin-top: 7px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+
+/* timeline */
+.tl { list-style: none; margin: 0; padding: 0; display: grid; }
+.tl li { display: grid; grid-template-columns: 64px 18px 1fr; gap: 10px; }
+.tl .t { font-family: var(--f-mono); font-size: 13px; color: var(--muted); padding-top: 2px; text-align: right; font-variant-numeric: tabular-nums; }
+.tl .dot { position: relative; }
+.tl .dot::before { content: ""; position: absolute; left: 8px; top: 0; bottom: 0; width: 1px; background: var(--line); }
+.tl li:first-child .dot::before { top: 8px; }
+.tl li:last-child .dot::before { bottom: auto; height: 8px; }
+.tl .dot::after { content: ""; position: absolute; left: 4px; top: 6px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); }
+.tl .body { padding-bottom: 18px; min-width: 0; }
+.tl .body b { font-weight: 600; }
+.tl .body p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.sha { font-family: var(--f-mono); font-size: 12px; text-decoration: none; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 6px; white-space: nowrap; }
+
+/* areas */
+.areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.area { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.area h3 { margin: 0 0 6px; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); }
+.area ul { margin: 0; padding-left: 18px; font-size: 14px; display: grid; gap: 4px; }
+
+/* status table */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 10px 14px; border-bottom: 1px solid var(--gold); }
+td { padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.n { color: var(--muted); font-family: var(--f-mono); width: 28px; }
+td.p { font-weight: 600; min-width: 150px; }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.mid { background: var(--warn-soft); color: var(--warn); }
+.pill.todo { background: var(--todo-soft); color: var(--todo); }
+td .d { display: block; color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+
+/* decisions + next */
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.box.dark { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.box.dark h3 { color: var(--gold); }
+.box h3 { margin: 0 0 8px; font-family: var(--f-display); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 13px; color: var(--gold); }
+.box ol, .box ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; }
+
+.local { font-size: 14px; }
+.local pre { font-family: var(--f-mono); font-size: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 8px 0 0; }
+footer { color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (max-width: 480px) { .tl li { grid-template-columns: 48px 14px 1fr; } .tl .dot::after { left: 2px; } .tl .dot::before { left: 6px; } }
+</style>
+
+<div class="wrap">
+  <a href="./" style="font-size:14px;text-decoration:none">← Torna ai pulsanti</a>
+  <header class="mast">
+    <h1 class="brand">STORE // CRAFT<small>Diario dei lavori · fase 2</small></h1>
+    <div class="meta">
+      <span>Giornata del <b>martedì 3 novembre 2026</b> (fino alle 00:25 del 4)</span>
+      <span>Repository <b>Merdafix/storecraft-app</b></span>
+      <span>Ramo <b>storecraft-finale</b> · <code>main</code> e <code>dev</code> non toccati</span>
+    </div>
+  </header>
+
+  <div class="facts" aria-label="La giornata in numeri">
+    <div class="fact"><span class="v">8</span><span class="k">commit sul ramo, tutti pubblicati</span></div>
+    <div class="fact"><span class="v">1125 / 1125</span><span class="k">test verdi · typecheck e lint puliti</span></div>
+    <div class="fact"><span class="v">≤ 0,6 mm</span><span class="k">scarto delle posizioni da StoreCraft</span></div>
+    <div class="fact"><span class="v">22 · 7 · 15</span><span class="k">cartelli e promo · cartellini · DYMO</span></div>
+  </div>
+
+  <section>
+    <h2>Documenti</h2>
+    <p class="lead">Si aprono in una nuova scheda. Sintesi e piano dettagliato sono aggiornati alla fine della giornata; le prove di stampa hanno in testa due pagine di aggiornamento.</p>
+    <div class="docs">
+      <a class="doc" href="pdf/fase2-sintesi.pdf" target="_blank" rel="noopener"><div class="sheet">PDF</div><div><b>Fase 2 · sintesi</b><span>Le tappe con lo stato, cosa è stato fatto, decisioni prese e aperte. 2 pagine.</span><em class="tag">Riepilogo breve</em></div></a>
+      <a class="doc" href="pdf/fase2-piano-dettagliato.pdf" target="_blank" rel="noopener"><div class="sheet">PDF</div><div><b>Fase 2 · piano dettagliato</b><span>Il piano completo con lo stato del cantiere (§11) e le regole di stampa. 9 pagine.</span><em class="tag">Per Rohi</em></div></a>
+      <a class="doc" href="pdf/prove-di-stampa.pdf" target="_blank" rel="noopener"><div class="sheet">PDF</div><div><b>Prove di stampa</b><span>Aggiornamento sugli 11 problemi, poi le prove del 3/11 con le sovrapposizioni. 18 pagine.</span><em class="tag">Per Rohi</em></div></a>
+      <a class="doc" href="pdf/prove-testi-lunghi.pdf" target="_blank" rel="noopener"><div class="sheet">PDF</div><div><b>Prove testi lunghi</b><span>38 casi, StoreCraft contro Merdafix, fatte prima delle correzioni della notte. 41 pagine.</span><em class="tag">Prove</em></div></a>
+      <a class="doc" href="pdf/stampa-decisioni.pdf" target="_blank" rel="noopener"><div class="sheet">PDF</div><div><b>Regole di stampa</b><span>La scelta della stampa diretta dal browser e le 7 decisioni. 1 pagina.</span><em class="tag">Riepilogo breve</em></div></a>
+    </div>
+  </section>
+
+  <section>
+    <h2>La giornata, commit per commit</h2>
+    <ol class="tl">
+      <li><span class="t">09:33</span><span class="dot"></span><div class="body"><b>Libre Bodoni al posto di Bodoni Moda</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/7c19866" target="_blank" rel="noopener">7c19866</a><p>Sostituto gratuito del Bodoni Std, calibrato a 0,88 della grandezza; 14 template e test aggiornati.</p></div></li>
+      <li><span class="t">17:05</span><span class="dot"></span><div class="body"><b>Interfaccia del negozio e area operatore con la grafica di StoreCraft</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/6f1970a" target="_blank" rel="noopener">6f1970a</a><p>Guscio del negozio, dashboard a caroselli, MENU // IMPOSTAZIONI con le voci in più di Merdafix; admin nello stile di operatore.html, Studio fuori dal menu.</p></div></li>
+      <li><span class="t">19:49</span><span class="dot"></span><div class="body"><b>Percorso del nuovo cliente e menu del Personale</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/f23b3a2" target="_blank" rel="noopener">f23b3a2</a><p><code>/benvenuto</code> in 4 passi, collezioni OUTLET e BOUTIQUE (<code>src/catalog/starters.ts</code>), prova di 30 giorni; il Personale vede solo le voci di tutti i giorni.</p></div></li>
+      <li><span class="t">20:46</span><span class="dot"></span><div class="body"><b>Documenti per Rohi</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/f30ea51" target="_blank" rel="noopener">f30ea51</a><p>Piano della fase 2 e regole di stampa in <code>docs/storecraft-finale/</code>.</p></div></li>
+      <li><span class="t">21:02</span><span class="dot"></span><div class="body"><b>Pagina Compila come gli editor di StoreCraft, tutti i modelli</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/964570f" target="_blank" rel="noopener">964570f</a><p>Pannello a 4 blocchi, selettori, testi pronti, cursore, temi; 22 cartelli e promo, 7 cartellini, 15 layout DYMO al millimetro.</p></div></li>
+      <li><span class="t">21:11</span><span class="dot"></span><div class="body"><b>Prove di stampa per Rohi</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/2372797" target="_blank" rel="noopener">2372797</a><p>PDF con metodo, risultati, 11 problemi e 15 sovrapposizioni.</p></div></li>
+      <li><span class="t">23:52</span><span class="dot"></span><div class="body"><b>Giro di unione, parte 1</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/d518bdb" target="_blank" rel="noopener">d518bdb</a><p>Lavoro di quattro agenti in parallelo: motore, cartelli, cartellini e DYMO, dashboard. Dettagli qui sotto.</p></div></li>
+      <li><span class="t">00:25</span><span class="dot"></span><div class="body"><b>Documenti aggiornati al giro di unione</b><a class="sha" href="https://github.com/Merdafix/storecraft-app/commit/d005424" target="_blank" rel="noopener">d005424</a><p><code>piano.md</code> con §10 e §11, prove di stampa con l'aggiornamento in testa.</p></div></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Giro di unione, per area</h2>
+    <div class="areas">
+      <div class="area"><h3>Motore</h3><ul>
+        <li>Cursore per voce di un selettore (<code>cursor.byValue</code>)</li>
+        <li>Colonne che si impilano: i testi lunghi vanno a capo</li>
+        <li>Calibrazione centrale dei font (<code>render/calibration.ts</code>)</li>
+        <li>Logo colorato come immagine ricolorata: niente filo nel PDF</li>
+        <li>Anteprime senza filigrana</li>
+      </ul></div>
+      <div class="area"><h3>Cartelli e promo</h3><ul>
+        <li>Contratto v2 su tutti i 23 modelli di Luxury, TEBE, OPHILYA</li>
+        <li>BLACK / FRIDAY con i tracciati SVG di StoreCraft (≤ 0,06 mm)</li>
+        <li>Xmas Ball e Lips in Libre Franklin 800</li>
+        <li>Outlet Multi e Cornice A4 vanno a capo come StoreCraft</li>
+      </ul></div>
+      <div class="area"><h3>Cartellini e DYMO</h3><ul>
+        <li>Sale e Fasce Prezzo per tutto il foglio, linguette «Colonna»</li>
+        <li>Valori di partenza per cartellino, «Lascia il campo vuoto»</li>
+        <li>Nelle DYMO il prezzo non copre più il testo</li>
+        <li>Scarti: DYMO ≤ 0,35 mm, cartellini ≤ 0,47 mm</li>
+      </ul></div>
+      <div class="area"><h3>Pagina Compila</h3><ul>
+        <li>Campo Sconto largo come StoreCraft (72 / 46 / 72 px)</li>
+        <li>Tolti «Salva» e «Cartelli salvati»: doppioni della lista di stampa</li>
+      </ul></div>
+      <div class="area"><h3>Dashboard dei negozi</h3><ul>
+        <li>Ordine, titoli, badge e menu presi dai <code>*-dashboard.js</code> di StoreCraft</li>
+        <li>Disposizioni in <code>storecraft/dashboards.ts</code>: OUTLET = Luxury, BOUTIQUE = TEBE, OPHILYA a sé</li>
+        <li>Luxury identica: 6 gallerie, 38 schede</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Gli 11 problemi delle prove di stampa</h2>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Problema</th><th>Stato</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td class="p">Cifre dei prezzi in Libre Bodoni</td><td><span class="pill mid">migliorato</span><span class="d">Cifre a 0,984 con le distanze allargate; restano «1» e «%», disegnati in modo diverso.</span></td></tr>
+        <tr><td class="n">2</td><td class="p">Corsivo più corto</td><td><span class="pill ok">corretto</span><span class="d">Spazio tra le parole come StoreCraft.</span></td></tr>
+        <tr><td class="n">3</td><td class="p">Filo attorno ai loghi colorati</td><td><span class="pill ok">corretto</span></td></tr>
+        <tr><td class="n">4</td><td class="p">Campo Sconto troppo stretto</td><td><span class="pill ok">corretto</span></td></tr>
+        <tr><td class="n">5</td><td class="p">Cursore doppio</td><td><span class="pill ok">corretto</span></td></tr>
+        <tr><td class="n">6</td><td class="p">Pannello nuovo solo su due modelli</td><td><span class="pill ok">corretto</span><span class="d">Contratto v2 su tutti i modelli.</span></td></tr>
+        <tr><td class="n">7</td><td class="p">Loghi di partenza, PINKO e VICOLO</td><td><span class="pill todo">aperto</span><span class="d">Con l'importazione dei negozi veri.</span></td></tr>
+        <tr><td class="n">8</td><td class="p">Testi troppo lunghi</td><td><span class="pill mid">in gran parte</span><span class="d">Restano la parola lunga nelle Cornici, le colonne flessibili e il Promo su 2–3 righe.</span></td></tr>
+        <tr><td class="n">9</td><td class="p">Sale e Fasce Prezzo per foglio</td><td><span class="pill ok">corretto</span><span class="d">Da guardare dal vivo nella pagina Compila.</span></td></tr>
+        <tr><td class="n">10</td><td class="p">Stampa dal server raster</td><td><span class="pill todo">deciso, da fare</span><span class="d">Stampa diretta dal browser come StoreCraft.</span></td></tr>
+        <tr><td class="n">11</td><td class="p">Prove fisiche</td><td><span class="pill todo">da fare</span><span class="d">Carta, DYMO vera, iPhone.</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="two">
+    <div class="box dark"><h3>Da decidere (Fabrice)</h3><ol>
+      <li>Punto delle migliaia: € 1299,00 come StoreCraft o € 1.299,00.</li>
+      <li>Limiti dei caratteri dei campi uguali a StoreCraft.</li>
+      <li>Correggere anche in StoreCraft i 5 testi che escono dai bordi.</li>
+      <li>Black Friday Lips con un cartello: mezzatinta su tutto il foglio o solo sul cartello.</li>
+      <li>Prezzi in Libre Bodoni: larghi come StoreCraft o 2 mm più stretti.</li>
+    </ol></div>
+    <div class="box"><h3>Prossimo giro</h3><ul>
+      <li><code>autoFit</code> dentro le colonne e colonne a larghezza flessibile</li>
+      <li>Altezza minima di un testo in colonna (richiesta 26)</li>
+      <li>Pagina DYMO (richieste 20–25) e riquadro dei cartellini (10–12)</li>
+      <li>Dettagli della dashboard: voce unica «Etichette DYMO», «Apri &amp; Stampa», Materiali Pronti di TEBE e OPHILYA</li>
+      <li>Poi stampa diretta dal browser e lista di stampa con «riapri e modifica»</li>
+    </ul></div>
+  </section>
+
+  <section class="local">
+    <h2>Per vederlo in locale</h2>
+    <p class="lead">Il lavoro gira solo in locale: Merdafix non è online. Dal ramo <code>storecraft-finale</code>:</p>
+    <pre>git fetch origin &amp;&amp; git switch storecraft-finale
+pnpm install &amp;&amp; pnpm db:up &amp;&amp; pnpm db:seed
+pnpm dev        # http://localhost:3000 · modelli senza login su /dev/cartelli, /dev/cartellini, /dev/dymo</pre>
+  </section>
+
+  <footer>Scritto da Fabrice con Claude · ultimo aggiornamento 4 novembre 2026, 00:30 · STORE // CRAFT è COOL · EASY · SMART</footer>
+</div>
+
+</body>
+</html>

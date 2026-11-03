@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>StoreCraft fine giornata</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Plus+Jakarta+Sans:wght@400;700&display=swap">
+<style>[hidden]{display:none!important} img{max-width:100%} body{margin:0}</style>
+</head>
+<body>
+
+<style>
+/* One screen of big buttons, as the desktop "APRI QUI" page: sections of the app first (each opens its photos), then diary and documents. */
+:root {
+  --bg: #f7f4ee; --card: #fffdf9; --ink: #1d1b18; --muted: #6b645b; --line: #e4dccd; --gold: #a07a2c; --gold-ink: #fffdf9;
+  --shade: #100e0c; --shade-ink: #f1ece3;
+  --f-display: "Cinzel", Georgia, serif; --f-body: "Plus Jakarta Sans", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141311; --card: #1d1b18; --ink: #f1ece3; --muted: #a59d91; --line: #34302a; --gold: #d9b56a; --gold-ink: #141311; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #141311; --card: #1d1b18; --ink: #f1ece3; --muted: #a59d91; --line: #34302a; --gold: #d9b56a; --gold-ink: #141311; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.4 var(--f-body); }
+main { max-width: 900px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 14px; }
+h1 { margin: 0; text-align: center; font-family: var(--f-display); font-weight: 600; color: var(--gold); letter-spacing: .1em; font-size: clamp(28px, 6vw, 40px); }
+.day { margin: 0 auto 2px; justify-self: center; font-family: var(--f-display); font-weight: 600; letter-spacing: .3em; font-size: 13px; color: var(--gold); border: 1px solid var(--gold); border-radius: 999px; padding: 5px 14px 5px 18px; }
+.date { margin: 0 0 14px; text-align: center; color: var(--muted); font-size: 14px; }
+.label { margin: 14px 0 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.btn { display: grid; align-content: center; gap: 3px; min-height: 92px; padding: 16px 18px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; color: var(--ink); text-decoration: none; text-align: left; font: inherit; cursor: pointer; transition: border-color .15s, transform .15s; }
+.btn:hover { border-color: var(--gold); transform: translateY(-2px); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.btn b { font-size: 17px; font-weight: 700; }
+.btn span { color: var(--muted); font-size: 13px; }
+.diary { grid-column: 1 / -1; min-height: 96px; text-align: center; background: var(--gold); border-color: var(--gold); color: var(--gold-ink); }
+.diary b { font-family: var(--f-display); font-weight: 600; letter-spacing: .1em; font-size: clamp(17px, 3.2vw, 22px); }
+.soon { border-style: dashed; background: transparent; color: var(--muted); cursor: default; }
+.soon:hover { transform: none; border-color: var(--line); }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } .btn { min-height: 80px; padding: 14px; } .btn b { font-size: 15px; } }
+@media (max-width: 380px) { .grid { grid-template-columns: 1fr; } }
+
+/* photo viewer */
+.viewer[hidden] { display: none; }
+.viewer { position: fixed; inset: 0; height: 100dvh; z-index: 20; background: var(--shade); color: var(--shade-ink); display: grid; grid-template-rows: auto 1fr auto; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.vtop { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.vtop h2 { margin: 0; font-family: var(--f-display); font-weight: 600; letter-spacing: .1em; font-size: 16px; color: #d9b56a; }
+.vtop .count { font-size: 13px; opacity: .7; font-variant-numeric: tabular-nums; }
+.stage { display: block; position: relative; min-height: 0; overflow: hidden; margin: 10px 0; }
+.stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.vbot { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.cap { flex: 1; text-align: center; font-size: 14px; min-width: 0; }
+.vb { appearance: none; border: 1px solid rgba(217,181,106,.5); background: transparent; color: #f1ece3; border-radius: 999px; width: 44px; height: 44px; font-size: 20px; cursor: pointer; flex: none; }
+.vb:hover { background: rgba(217,181,106,.15); }
+.vb:focus-visible { outline: 2px solid #d9b56a; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } .btn:hover { transform: none; } }
+</style>
+
+<main>
+  <p class="day">DAY #1</p>
+  <h1>STORE // CRAFT</h1>
+  <p class="date">Fine giornata · 3 novembre 2026</p>
+
+  <div class="grid">
+    <a class="btn diary" href="diario.html"><b>DIARIO DEI LAVORI IN CORSO</b></a>
+  </div>
+
+  <p class="label">Le sezioni</p>
+  <div class="grid" id="sezioni"></div>
+
+  <p class="label">Documenti</p>
+  <div class="grid">
+    <a class="btn" href="pdf/fase2-sintesi.pdf" target="_blank" rel="noopener"><b>Riepilogo breve</b><span>PDF · 2 pagine</span></a>
+    <a class="btn" href="pdf/fase2-piano-dettagliato.pdf" target="_blank" rel="noopener"><b>Piano dettagliato</b><span>Per Rohi · 9 pagine</span></a>
+    <a class="btn" href="pdf/prove-di-stampa.pdf" target="_blank" rel="noopener"><b>Prove di stampa</b><span>PDF · 18 pagine</span></a>
+    <a class="btn" href="pdf/prove-testi-lunghi.pdf" target="_blank" rel="noopener"><b>Prove testi lunghi</b><span>PDF · 41 pagine</span></a>
+    <a class="btn" href="pdf/stampa-decisioni.pdf" target="_blank" rel="noopener"><b>Regole di stampa</b><span>PDF · 1 pagina</span></a>
+    <a class="btn" href="https://github.com/Merdafix/storecraft-app/tree/storecraft-finale" target="_blank" rel="noopener"><b>Codice su GitHub</b><span>storecraft-finale</span></a>
+    <a class="btn video" href="video/giornata.mp4" target="_blank" rel="noopener" style="grid-column: 1 / -1; border-color: var(--gold); text-align: center"><b>▶ Video della giornata</b><span>57 secondi</span></a>
+  </div>
+</main>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-labelledby="vtitle">
+  <div class="vtop"><h2 id="vtitle"></h2><span class="count" id="vcount"></span><button class="vb" id="vclose" aria-label="Chiudi">✕</button></div>
+  <a class="stage" id="vlink" target="_blank" rel="noopener" title="Apri la foto grande"><img id="vimg" alt=""></a>
+  <div class="vbot"><button class="vb" id="vprev" aria-label="Foto precedente">‹</button><div class="cap" id="vcap"></div><button class="vb" id="vnext" aria-label="Foto successiva">›</button></div>
+</div>
+
+<script>
+const SEZIONI = [{"id": "dashboard", "title": "Dashboard dei negozi", "sub": "Luxury · TEBE · OPHILYA", "items": [{"src": "img/dashboard/01.jpg", "cap": "Luxury Outlet   StoreCraft e Merdafix"}, {"src": "img/dashboard/02.jpg", "cap": "TEBE   StoreCraft e Merdafix"}, {"src": "img/dashboard/03.jpg", "cap": "OPHILYA   StoreCraft e Merdafix"}, {"src": "img/dashboard/04.jpg", "cap": "Dashboard Luxury scuro STANDARD"}, {"src": "img/dashboard/05.jpg", "cap": "Dashboard TEBE chiaro COMPATTO"}, {"src": "img/dashboard/06.jpg", "cap": "Luxury tema chiaro"}, {"src": "img/dashboard/07.jpg", "cap": "Miniature StoreCraft Luxury"}, {"src": "img/dashboard/08.jpg", "cap": "Miniature StoreCraft TEBE"}]}, {"id": "compila", "title": "Pagina Compila", "sub": "Editor come StoreCraft", "items": [{"src": "img/compila/01.jpg", "cap": "Pagina Compila   Outlet tema chiaro"}, {"src": "img/compila/02.jpg", "cap": "Pagina Compila   Outlet tema scuro con cursore"}, {"src": "img/compila/03.jpg", "cap": "Pagina Compila   TEBE (famiglia chiara)"}, {"src": "img/compila/04.jpg", "cap": "Pagina Compila   telefono"}, {"src": "img/compila/05.jpg", "cap": "Cursore   2 brand"}, {"src": "img/compila/06.jpg", "cap": "PDF del server   Cartello Semplice (standard + Black Friday)"}]}, {"id": "cartelli", "title": "Cartelli e promo", "sub": "Luxury · TEBE · OPHILYA", "items": [{"src": "img/cartelli/01.jpg", "cap": "Cartello Semplice   1 standard"}, {"src": "img/cartelli/02.jpg", "cap": "Cartello Outlet   1 standard"}, {"src": "img/cartelli/03.jpg", "cap": "Luxury outletmulti 3art"}, {"src": "img/cartelli/04.jpg", "cap": "Luxury multibrand 2 3art"}, {"src": "img/cartelli/05.jpg", "cap": "Luxury percentuale standard"}, {"src": "img/cartelli/06.jpg", "cap": "Luxury lastchance standard brand"}, {"src": "img/cartelli/07.jpg", "cap": "Luxury paletto doppia desc"}, {"src": "img/cartelli/08.jpg", "cap": "Luxury magazzino standard"}, {"src": "img/cartelli/09.jpg", "cap": "Luxury black friday standard"}, {"src": "img/cartelli/10.jpg", "cap": "Luxury black friday lips standard"}, {"src": "img/cartelli/11.jpg", "cap": "Luxury xmas ball rosso scontistica"}, {"src": "img/cartelli/12.jpg", "cap": "Luxury promo multibrand standard"}, {"src": "img/cartelli/13.jpg", "cap": "Tebe brand descrizione"}, {"src": "img/cartelli/14.jpg", "cap": "Tebe albero standard"}, {"src": "img/cartelli/15.jpg", "cap": "Tebe cornice21x27 brand descrizione"}, {"src": "img/cartelli/16.jpg", "cap": "Ophilya outlet 1 cartello"}, {"src": "img/cartelli/17.jpg", "cap": "Ophilya albero standard"}, {"src": "img/cartelli/18.jpg", "cap": "Ophilya paletto16 standard"}]}, {"id": "cartellini", "title": "Cartellini", "sub": "Vetrina · Promo · Quadrati", "items": [{"src": "img/cartellini/01.jpg", "cap": "Cartellini Compila Prezzi Vetrina (colonne)"}, {"src": "img/cartellini/02.jpg", "cap": "Cartellini Compila Quadrati (linguette)"}, {"src": "img/cartellini/03.jpg", "cap": "Cartellini Luxury Prezzi Vetrina"}, {"src": "img/cartellini/04.jpg", "cap": "Cartellini Luxury Promozionali (sconto, descrizione, black, evento solo)"}, {"src": "img/cartellini/05.jpg", "cap": "Cartellini Luxury Quadrati (descrizione, doppio prezzo, brand)"}, {"src": "img/cartellini/06.jpg", "cap": "Cartellini Luxury Quadrati tema Sale"}, {"src": "img/cartellini/07.jpg", "cap": "Cartellini Luxury Vetrina"}, {"src": "img/cartellini/08.jpg", "cap": "Cartellini TEBE Cartellini LXRY"}, {"src": "img/cartellini/09.jpg", "cap": "Cartellini TEBE Cartellini TEBE tema Sale"}, {"src": "img/cartellini/10.jpg", "cap": "Cartellini TEBE Cartellini TEBE"}, {"src": "img/cartellini/11.jpg", "cap": "Cartellini TEBE Prezzi Vetrina"}, {"src": "img/cartellini/12.jpg", "cap": "Merdafix   cartellini testi lunghi (giro 2)"}]}, {"id": "dymo", "title": "Etichette DYMO", "sub": "15 layout", "items": [{"src": "img/dymo/01.jpg", "cap": "DYMO Luxury Outlet"}, {"src": "img/dymo/02.jpg", "cap": "DYMO OPHILYA"}, {"src": "img/dymo/03.jpg", "cap": "DYMO TEBE"}, {"src": "img/dymo/04.jpg", "cap": "Merdafix   DYMO prezzi lunghi (giro 2)"}]}, {"id": "caratteri", "title": "Caratteri e scritte", "sub": "Libre Bodoni · Black Friday", "items": [{"src": "img/caratteri/01.jpg", "cap": "Libre Bodoni   calibrazione prima e dopo"}, {"src": "img/caratteri/02.jpg", "cap": "Corsivo sul cartello   StoreCraft contro Merdafix"}, {"src": "img/caratteri/03.jpg", "cap": "Black Friday   scritte"}, {"src": "img/caratteri/04.jpg", "cap": "Xmas Ball   carattere dei prezzi"}]}, {"id": "menu", "title": "Menu e impostazioni", "sub": "Impostazioni · profilo · abbonamento", "items": [{"src": "img/menu/01.jpg", "cap": "Menu laterale CREA CARTELLI aperto"}, {"src": "img/menu/02.jpg", "cap": "MENU IMPOSTAZIONI aperto"}, {"src": "img/menu/03.jpg", "cap": "Merdafix impostazioni"}, {"src": "img/menu/04.jpg", "cap": "Merdafix profilo"}, {"src": "img/menu/05.jpg", "cap": "Merdafix abbonamento"}, {"src": "img/menu/06.jpg", "cap": "Merdafix catalogo"}, {"src": "img/menu/07.jpg", "cap": "Merdafix compatto"}]}, {"id": "cassa", "title": "Cassa, coda e stampe", "sub": "Utilità Cassa", "items": [{"src": "img/cassa/01.jpg", "cap": "Vista CASSIERE Utilita Cassa"}, {"src": "img/cassa/02.jpg", "cap": "Merdafix coda"}, {"src": "img/cassa/03.jpg", "cap": "Merdafix stampe"}]}, {"id": "cliente", "title": "Nuovo cliente", "sub": "Iscrizione in 4 passi", "items": [{"src": "img/cliente/01.jpg", "cap": "Outlet 01 chi sei"}, {"src": "img/cliente/02.jpg", "cap": "Outlet 02 chi sei compilato"}, {"src": "img/cliente/03.jpg", "cap": "Outlet 03 negozio"}, {"src": "img/cliente/04.jpg", "cap": "Outlet 04 che negozio hai"}, {"src": "img/cliente/05.jpg", "cap": "Outlet 05 apri"}, {"src": "img/cliente/06.jpg", "cap": "Outlet 06 dashboard"}, {"src": "img/cliente/07.jpg", "cap": "Outlet 07 galleria"}, {"src": "img/cliente/08.jpg", "cap": "Telefono 01 chi sei"}, {"src": "img/cliente/09.jpg", "cap": "Telefono 06 dashboard"}]}, {"id": "personale", "title": "Personale", "sub": "Menu dello staff", "items": [{"src": "img/personale/01.jpg", "cap": "Menu impostazioni del Personale"}]}, {"id": "operatore", "title": "Area operatore", "sub": "Negozi · pacchetti · richieste", "items": [{"src": "img/operatore/01.jpg", "cap": "Menu area operatore storecraft vs merdafix"}, {"src": "img/operatore/02.jpg", "cap": "Sezione negozi storecraft statistiche vs merdafix negozi"}, {"src": "img/operatore/03.jpg", "cap": "Pacchetti storecraft gestione clienti vs merdafix pacchetti"}, {"src": "img/operatore/04.jpg", "cap": "Richieste modelli"}, {"src": "img/operatore/05.jpg", "cap": "Dialog crea negozio"}, {"src": "img/operatore/06.jpg", "cap": "Accesso splash storecraft vs sign in merdafix"}, {"src": "img/operatore/07.jpg", "cap": "Scegli negozio splash vs select org"}, {"src": "img/operatore/08.jpg", "cap": "PRIMA amministrazione originale di Rohi"}, {"src": "img/operatore/09.jpg", "cap": "PRIMA pacchetti originale di Rohi"}]}];
+const grid = document.getElementById("sezioni");
+for (const s of SEZIONI) {
+  const b = document.createElement("button");
+  b.className = "btn"; b.type = "button";
+  b.innerHTML = `<b></b><span></span>`;
+  b.querySelector("b").textContent = s.title;
+  b.querySelector("span").textContent = s.items.length + (s.items.length === 1 ? " foto" : " foto") + " · " + s.sub;
+  b.addEventListener("click", () => { location.hash = s.id; });
+  grid.appendChild(b);
+}
+const V = id => document.getElementById(id);
+let cur = null, idx = 0;
+function show() {
+  const it = cur.items[idx];
+  V("vimg").src = it.src; V("vlink").href = it.src; V("vimg").alt = it.cap;
+  V("vcap").textContent = it.cap.replace(/\s{2,}/g, " · ");
+  V("vcount").textContent = (idx + 1) + " / " + cur.items.length;
+  const one = cur.items.length < 2; V("vprev").hidden = one; V("vnext").hidden = one;
+}
+function route() {
+  const s = SEZIONI.find(x => x.id === location.hash.slice(1));
+  if (!s) { V("viewer").hidden = true; cur = null; return; }
+  cur = s; idx = 0; V("vtitle").textContent = s.title; V("viewer").hidden = false; show(); V("vclose").focus();
+}
+function step(d) { if (!cur) return; idx = (idx + d + cur.items.length) % cur.items.length; show(); }
+V("vprev").onclick = () => step(-1); V("vnext").onclick = () => step(1);
+V("vclose").onclick = () => { history.replaceState(null, "", location.pathname + location.search); route(); };
+document.addEventListener("keydown", e => { if (!cur) return; if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); else if (e.key === "Escape") V("vclose").click(); });
+let sx = null; V("viewer").addEventListener("touchstart", e => { sx = e.touches[0].clientX; }, { passive: true });
+V("viewer").addEventListener("touchend", e => { if (sx === null) return; const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1); sx = null; });
+window.addEventListener("hashchange", route); route();
+</script>
+
+</body>
+</html>
