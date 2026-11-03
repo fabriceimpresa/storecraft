@@ -8,6 +8,7 @@ Contesto, decisioni e convenzioni del progetto stanno in `AGENTS.md`, così Clau
 
 - **Non modificare mai `Desktop\TEBE`**: si legge come riferimento, si scrive solo in questo repository.
 - All'inizio di ogni sessione di lavoro, avviare `Avvia server.bat` (Windows) o `Avvia server mac.command` (Mac) nella radice del repository. Si lavora sul ramo `main`, che è il sito pubblicato (link in `AGENTS.md`): ogni push va online, quindi le modifiche si provano prima con il server locale. Non usare Githack per le prove (vedi `AGENTS.md`).
+- **I server locali sono accesi solo mentre si lavora** (regola del 3 novembre 2026, su qualunque computer): quando si smette di lavorare e si passa ad altro, si fermano il server di STORE // CRAFT (porta 8000) e, se acceso, quello della SaaS di prova (porta 3000, con il suo database in Docker).
 - Non esistono comandi di build, lint o test. Per verificare una modifica, servi il repo e apri la pagina; per impaginazione o stampa chiedi all'utente di controllare l'anteprima di stampa del browser.
 - Prima di modificare una pagina, leggi i suoi `<style>` e `<script>` inline. Se cambi una funzione duplicata in più pagine, aggiorna tutte le copie.
 - La documentazione (README.md, AGENTS.md, CLAUDE.md) si scrive solo in italiano.

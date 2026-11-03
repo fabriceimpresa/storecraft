@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261028-2"></script>
+  <script src="assets/js/negozi.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Guida tecnica</title>
@@ -186,7 +186,7 @@
     </div>
   </header>
   <!-- data dell'ultimo aggiornamento della guida: si cambia a ogni modifica (regola in AGENTS.md, Verifica delle modifiche) -->
-  <p class="aggiornamento">ultimo aggiornamento: 28 ottobre 2026 · versione 1.2.76</p>
+  <p class="aggiornamento">ultimo aggiornamento: 3 novembre 2026 · versione 1.2.77</p>
 
   <nav class="indice">
     <a href="#regole">Regole comuni</a><a href="#pagina">Struttura di una pagina</a><a href="#campionario">Pannello degli strumenti</a>
@@ -438,7 +438,7 @@
   <!-- ================================================================ -->
   <h2 id="versioni">Versioni e cache</h2>
   <ul class="regole">
-    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261028-2</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
+    <li><strong>Versione dei file comuni</strong> (<code>?v=</code>): le pagine richiamano i file di <code>assets/css/</code> e <code>assets/js/</code> con un numero nell'indirizzo, es. <code>theme.css?v=20261103-1</code>: data dell'ultima modifica e un progressivo nella stessa giornata. È uno solo per tutti i file comuni: quando ne cambia uno, si aggiorna in tutte le pagine (compreso <code>lista-stampa.js</code> caricato da <code>strumenti-stampa.js</code>); le schede dei negozi prendono la versione di <code>negozi.js</code>.</li>
     <li><strong>Versione dei loghi</strong> (<code>LOGO_ASSET_VERSION</code>): si aggiunge agli indirizzi dei loghi ufficiali e delle loro varianti colore. Sostituendo un logo con lo stesso nome si aggiorna in <code>logos.js</code> e in <code>print-logo-colors.js</code>.</li>
     <li><strong>Versione del prodotto</strong> (<code>VERSIONE</code> in <code>dashboard.js</code>, visibile in CREDITS): <code>V 1.89 2026</code> → <code>1.90</code> a ogni commit, non è un numero decimale; va nel messaggio del commit. Non dipende dal negozio né dal tema.</li>
   </ul>
@@ -825,6 +825,15 @@
     <li>Ogni foto è descritta in <code>FOTO</code> di <code>_foto-guida.html</code>: pagina da aprire, azione (es. accendere un tema), elemento da ritagliare; i nomi <code>tel-*</code> con la vista telefono.</li>
     <li>Le foto vanno in <code>guida-immagini/</code>, fuori dalle copie per i clienti; nella guida si collegano per titolo della scheda (<code>IMMAGINI</code>) o con <code>data-foto</code>.</li>
   </ol>
+
+  <!-- ================================================================ -->
+  <h2 id="esporta-saas">Esporta per la SaaS</h2>
+  <ol class="passi">
+    <li>Dalla radice del progetto: <code>node _esporta.mjs</code> (Node 18 o più); la cartella di uscita è <code>_export/</code>, fuori da git, oppure quella scritta dopo il comando.</li>
+    <li>Escono i negozi installati (scheda, colori, dashboard con gallerie e widget), i testi pronti, le fasce prezzo, i loghi ufficiali con le varianti e l'elenco delle risorse con le impronte; i codici delle statistiche restano fuori.</li>
+    <li>Alla fine il comando dice se manca qualche file citato dalle schede: va sistemato prima di importare.</li>
+    <li>Quando cambia la forma di una scheda, di una dashboard, dei testi pronti o dei loghi, si aggiorna anche <code>_esporta.mjs</code> (AGENTS.md, Verifica delle modifiche).</li>
+  </ol>
 </div>
 
 <script>
@@ -874,7 +883,7 @@
       { id: 'parte-creation', nome: 'Creation Engine', sezioni: { 'ce-panoramica': 'Panoramica', 'ce-gallerie': 'Gallerie e moduli',
         'ce-nuovo': 'Nuovo modulo', 'ce-import': 'Import layout', 'ce-negozi': 'Associare ai negozi', 'ce-gestione-negozi': 'Gestione negozi', 'ce-ghost': 'Ghost', 'ce-file': 'File e cartelle' } },
       { id: 'ricette', nome: 'Come si fa', sezioni: { 'nuova-pagina': 'Nuova pagina', 'aggiungi-tipo': 'Tipo di pagina in un negozio',
-        'nuovo-negozio': 'Nuovo negozio', 'copia-cliente': 'Copia per un cliente', 'foto-guida': 'Foto della guida' } }
+        'nuovo-negozio': 'Nuovo negozio', 'copia-cliente': 'Copia per un cliente', 'foto-guida': 'Foto della guida', 'esporta-saas': 'Esporta per la SaaS' } }
     ];
     indice.setAttribute('aria-label', 'Parti e sezioni della guida');
     const rigaParti = document.createElement('div');
