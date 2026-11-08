@@ -991,7 +991,12 @@
       element.classList.toggle('is-long', text.trim().length >= 27);
       element.style.fontSize = '';
       if (text.length > DESC_FULL_LENGTH) {
+        // la grandezza di partenza si legge con l'animazione spenta: durante la transizione (font-size 0.2s) il browser
+        // darebbe quella che si sta già rimpicciolendo, e a ogni lettera scritta il testo diventava sempre più piccolo
+        // (difetto trovato confrontando con Merdafix l'8 novembre 2026)
+        element.style.transition = 'none';
         const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        element.style.transition = '';
         element.style.fontSize = (baseSize * DESC_FULL_LENGTH / text.length) + 'px';
       }
     }
