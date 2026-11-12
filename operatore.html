@@ -5,6 +5,7 @@
   <script src="assets/js/negozi.js?v=20261103-1"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
   <script src="assets/js/pacchetti-associa.js?v=20261103-1"></script>
+  <script src="assets/js/riepilogo-copia.js?v=20261108-1"></script>
   <script src="assets/js/supabase-operatore.js?v=20261103-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
@@ -297,6 +298,23 @@
     .status:not(:empty)::before { content: '$ '; color: var(--accent); }
     .status.ok { color: #8fbf7a; }
     .status.err { color: #e07a5f; }
+    /* riepilogo di Aggiorna copia cliente */
+    .agg-riepilogo { margin: 14px 0 0; padding: 14px 16px; border: 1px solid var(--border, #2e2b27); background: rgba(0, 0, 0, .25); font-size: 12.5px; line-height: 1.55; color: #d9d3c7; }
+    .agg-riepilogo h3 { margin: 0 0 6px; font: 600 12px 'Cinzel', serif; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-light, #e5ba73); }
+    .agg-riepilogo h4 { margin: 12px 0 4px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted, #8c857b); }
+    .agg-riepilogo ul { margin: 0; padding-left: 18px; }
+    .agg-riepilogo li { margin: 2px 0; }
+    .agg-versioni { margin: 0; font-size: 14px; color: #fff; }
+    .agg-controlli { list-style: none; padding-left: 0 !important; }
+    .agg-controlli li::before { display: inline-block; width: 1.4em; font-weight: 700; }
+    .agg-controlli li.ok::before { content: '✓'; color: #8fbf7a; }
+    .agg-controlli li.avviso { color: #e0a95f; }
+    .agg-controlli li.avviso::before { content: '⚠'; }
+    .agg-controlli li.blocco { color: #e07a5f; font-weight: 600; }
+    .agg-controlli li.blocco::before { content: '✗'; }
+    .agg-controlli li ul { margin-top: 2px; font-weight: 400; color: #b5ad9f; }
+    .agg-letto { display: flex; gap: 8px; align-items: center; margin: 12px 0 0; color: #e0a95f; cursor: pointer; }
+    .agg-riepilogo .btn { margin-top: 12px; }
 
     /* Anagrafica clienti: schede in stile terminale, modulo con i campi in fila, città con l'elenco dei comuni */
     .ana-barra { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
@@ -571,6 +589,22 @@
             <button class="btn" type="button" id="aggVai" disabled>aggiorna la copia</button>
             <p class="status" id="aggStatus" role="status" aria-live="polite"></p>
           </div>
+        </div>
+
+        <!-- riepilogo prima di aggiornare (dall'8 novembre 2026, assets/js/riepilogo-copia.js): versioni, cosa cambia in
+             parole, pagine per negozio e controlli; con un controllo rosso il pulsante resta bloccato, con uno arancione
+             serve la spunta -->
+        <div class="agg-riepilogo" id="aggRiepilogo" hidden>
+          <h3>riepilogo dell'aggiornamento</h3>
+          <p class="agg-versioni" id="aggVersioni"></p>
+          <h4>cosa cambia</h4>
+          <ul id="aggNovita"></ul>
+          <h4>pagine e file</h4>
+          <ul id="aggGruppi"></ul>
+          <h4>controlli</h4>
+          <ul class="agg-controlli" id="aggControlli"></ul>
+          <label class="agg-letto" id="aggLettoRiga" hidden><input type="checkbox" id="aggLetto"> ho letto il riepilogo e gli avvisi</label>
+          <button class="btn" type="button" id="aggScarica">scarica il riepilogo</button>
         </div>
 
         <div class="terminale" id="terminaleAgg" hidden>
@@ -1144,7 +1178,10 @@
       $('aggStepCopia').setAttribute('aria-disabled', String(!progetto));
       const pronto = progetto && Boolean(copiaCliente);
       $('aggConfronta').disabled = !pronto;
-      $('aggVai').disabled = !pronto || !differenze || !(differenze.scrivere.length + differenze.togliere.length);
+      // con un controllo rosso il pulsante resta bloccato; con uno arancione serve la spunta «ho letto il riepilogo»
+      const riepilogo = differenze?.riepilogo;
+      $('aggVai').disabled = !pronto || !differenze || !(differenze.scrivere.length + differenze.togliere.length)
+        || Boolean(riepilogo?.bloccato) || Boolean(riepilogo?.avvisi && !$('aggLetto').checked);
       $('aggStepVai').setAttribute('aria-disabled', String(!pronto));
     }
     // la cartella del progetto è la stessa di prepara copia [1]
@@ -1229,22 +1266,31 @@
             const elencoNegozi = t => t.split(/\r?\n/).filter(l => l.startsWith('Negozi.installa')).join('');
             if (elencoNegozi(await (await esistente.getFile()).text()) === elencoNegozi(contenuto.testo)) { invariati += 1; continue; }
           } else if (await uguali(nuovo, await esistente.getFile())) { invariati += 1; continue; }
+          // pagine, script e stili che cambiano solo nei numeri di aggiornamento dei collegamenti (?v=20261103-1)
+          if (/\.(html|js|css)$/.test(percorso)) {
+            const senzaV = t => t.replace(/\?v=\d{8}-\d+/g, '');
+            if (senzaV(await nuovo.text()) === senzaV(await (await esistente.getFile()).text())) { scrivere.push([percorso, contenuto, 'riferimenti']); continue; }
+          }
           scrivere.push([percorso, contenuto, 'cambiato']);
         }
         // i loghi aggiunti nella copia (Gestione loghi della copia) non si tolgono
         const togliere = [...presenti.keys()].filter(percorso => !voluti.has(percorso) && !ZONA_LOGHI.test(percorso)).sort();
         differenze = { scrivere, togliere };
-        scrivere.forEach(([percorso, , motivo]) => riga(`  ${motivo === 'nuovo' ? '+ nuovo   ' : '~ cambiato'}  ${percorso}`, 'ok'));
+        differenze.riepilogo = await riepilogoCopia({ voluti, presenti, scrivere, togliere, tenuti });
+        mostraRiepilogo(differenze.riepilogo);
+        scrivere.forEach(([percorso, , motivo]) => riga(`  ${{ nuovo: '+ nuovo   ', cambiato: '~ cambiato', riferimenti: '· solo ?v= ' }[motivo]}  ${percorso}`, motivo === 'riferimenti' ? 'salta' : 'ok'));
         togliere.forEach(percorso => riga(`  - da togliere  ${percorso}`, 'err'));
         const nuovi = scrivere.filter(([, , m]) => m === 'nuovo').length;
         const totale = scrivere.length + togliere.length;
         if (tenuti) riga(`  = ${tenuti} loghi della copia tenuti come sono`, 'salta');
         riga(`${totale ? '' : '✓ '}${nuovi} nuovi · ${scrivere.length - nuovi} cambiati · ${togliere.length} da togliere · ${invariati} uguali`, totale ? 'sezione' : 'ok');
-        stato($('aggStatus'), totale ? `${totale} cambiamenti: ${nuovi} nuovi, ${scrivere.length - nuovi} cambiati, ${togliere.length} da togliere. Premi aggiorna la copia.` : 'La copia è già aggiornata: niente da cambiare.', 'ok');
+        const esito = differenze.riepilogo.bloccato ? ' BLOCCATO: leggi i controlli in rosso nel riepilogo.' : differenze.riepilogo.avvisi ? ' Leggi gli avvisi del riepilogo e spunta «ho letto».' : ' Controlli tutti verdi.';
+        stato($('aggStatus'), totale ? `${totale} cambiamenti: ${nuovi} nuovi, ${scrivere.length - nuovi} cambiati, ${togliere.length} da togliere.${esito}` : 'La copia è già aggiornata: niente da cambiare.', differenze.riepilogo.bloccato ? 'err' : 'ok');
         $('aggVai').textContent = totale ? `aggiorna la copia (${totale})` : 'aggiorna la copia';
       } catch (errore) {
         console.error(errore);
         differenze = null;
+        $('aggRiepilogo').hidden = true;
         riga(`✗ confronto non riuscito: ${errore.message}`, 'err');
         stato($('aggStatus'), `Confronto non riuscito: ${errore.message}`, 'err');
       } finally {
@@ -1294,6 +1340,93 @@
       return voluto;
     }
 
+    // ----- Riepilogo prima di aggiornare (dall'8 novembre 2026; i calcoli in assets/js/riepilogo-copia.js) -----
+    // Legge le versioni (assets/js/dashboard.js della copia e del progetto), il piano (Storecraft Aggiornamento.html), le
+    // dashboard e i testi della copia come sarà dopo, e le pagine in ghost prima e dopo
+    async function riepilogoCopia({ voluti, presenti, scrivere, togliere, tenuti }) {
+      const testoDiFile = async voce => voce ? (await voce.getFile()).text() : '';
+      // un file del progetto da un percorso (le cartelle si aprono una per una: getFileHandle non accetta «a/b.js»)
+      const daProgetto = async percorso => {
+        try {
+          const parti = percorso.split('/');
+          let dir = sorgente;
+          for (const parte of parti.slice(0, -1)) dir = await dir.getDirectoryHandle(parte);
+          return await testoDiFile(await dir.getFileHandle(parti.at(-1)));
+        } catch { return ''; }
+      };
+      const finali = new Set([...voluti.keys(), ...[...presenti.keys()].filter(p => ZONA_LOGHI.test(p))]);
+      const scritti = new Map(scrivere.map(([percorso, contenuto]) => [percorso, contenuto]));
+      // il testo di un file dopo l'aggiornamento: quello scritto se cambia, altrimenti quello della copia
+      const dopo = async percorso => {
+        if (scritti.has(percorso)) return testoDi(scritti.get(percorso));
+        if (presenti.has(percorso)) return testoDiFile(presenti.get(percorso));
+        return voluti.has(percorso) ? testoDi(voluti.get(percorso)) : '';
+      };
+      const testi = new Map();
+      for (const percorso of finali) if (/\.(html|js|css)$/.test(percorso) && !ZONA_LOGHI.test(percorso)) testi.set(percorso, await dopo(percorso));
+      const dashboards = {};
+      const fantasmiCopia = {};
+      const fantasmiDopo = {};
+      for (const id of copiaNegozi) {
+        const percorso = `assets/negozi/${id}-dashboard.js`;
+        dashboards[id] = testi.get(percorso) || '';
+        const prima = await testoDiFile(presenti.get(percorso));
+        const pagine = [...new Set([...prima.matchAll(/link:\s*'([^'?#]+)/g)].map(m => Associa.pagina(m[1])))];
+        fantasmiCopia[id] = pagine.filter(nome => Associa.fantasma(prima, nome));
+        fantasmiDopo[id] = pagine.filter(nome => Associa.fantasma(dashboards[id], nome));
+      }
+      return RiepilogoCopia.calcola({
+        versioneCopia: await testoDiFile(presenti.get('assets/js/dashboard.js')),
+        versioneProgetto: await daProgetto('assets/js/dashboard.js'),
+        piano: await daProgetto('Storecraft Aggiornamento.html'),
+        negozi: copiaNegozi, codici: copiaCodici,
+        scrivere: scrivere.map(([percorso, , motivo]) => [percorso, motivo]), togliere,
+        presenti: presenti.size, finali, dashboards, testi, tenuti, fantasmiCopia, fantasmiDopo,
+      });
+    }
+
+    function mostraRiepilogo(r) {
+      const voce = (lista, testo, classe) => {
+        const li = document.createElement('li');
+        if (classe) li.className = classe;
+        li.textContent = testo;
+        lista.append(li);
+        return li;
+      };
+      $('aggVersioni').textContent = `versione della copia ${r.versioneCopia || '?'} → versione del progetto ${r.versioneProgetto || '?'}`;
+      $('aggNovita').replaceChildren();
+      if (r.novita.length) r.novita.forEach(n => voce($('aggNovita'), `${n.versione} (${n.data}): ${n.testo}`));
+      else voce($('aggNovita'), 'nessuna nota di versione nel piano per questo passaggio');
+      $('aggGruppi').replaceChildren();
+      RiepilogoCopia.righeGruppi(r.gruppi).forEach(testo => voce($('aggGruppi'), testo));
+      $('aggControlli').replaceChildren();
+      r.controlli.forEach(c => {
+        const li = voce($('aggControlli'), c.testo, c.livello);
+        if (c.dettagli?.length) {
+          const sotto = document.createElement('ul');
+          c.dettagli.slice(0, 12).forEach(d => voce(sotto, d));
+          if (c.dettagli.length > 12) voce(sotto, `… e altri ${c.dettagli.length - 12}`);
+          li.append(sotto);
+        }
+      });
+      $('aggLetto').checked = false;
+      $('aggLettoRiga').hidden = r.bloccato || !r.avvisi;
+      $('aggRiepilogo').hidden = false;
+    }
+    $('aggLetto').addEventListener('change', () => aggiornaPassiAgg());
+    $('aggScarica').addEventListener('click', () => {
+      const r = differenze?.riepilogo;
+      if (!r) return;
+      const data = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([RiepilogoCopia.testo(r, { copia: copiaCliente?.name || '', data })], { type: 'text/plain;charset=utf-8' }));
+      link.download = `riepilogo-aggiornamento-${copiaCliente?.name || 'copia'}-${data.replaceAll('/', '-')}.txt`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    });
+
     // toglie un file e le cartelle rimaste vuote sopra di lui
     async function togliFile(radice, percorso) {
       const parti = percorso.split('/');
@@ -1311,7 +1444,9 @@
     $('aggVai').addEventListener('click', async () => {
       if (!differenze || inCorso) return;
       const { scrivere, togliere } = differenze;
-      if (!confirm(`Aggiornare la copia "${copiaCliente.name}"?\n\n${scrivere.length} file da scrivere e ${togliere.length} da togliere.\n.git, CNAME e i file che cominciano con il punto non si toccano.`)) return;
+      if (differenze.riepilogo?.bloccato) return;
+      const { versioneCopia, versioneProgetto } = differenze.riepilogo || {};
+      if (!confirm(`Aggiornare la copia "${copiaCliente.name}" dalla versione ${versioneCopia || '?'} alla ${versioneProgetto || '?'}?\n\n${scrivere.length} file da scrivere e ${togliere.length} da togliere (il riepilogo è sopra il pulsante).\n.git, CNAME e i file che cominciano con il punto non si toccano.`)) return;
       inCorso = true;
       copiati = 0;
       aggiornaPassiAgg();
