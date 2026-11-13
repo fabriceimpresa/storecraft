@@ -2,11 +2,11 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <script src="assets/js/negozi.js?v=20261103-1"></script>
+  <script src="assets/js/negozi.js?v=20261113-1"></script>
   <!-- cartella del progetto per le sezioni che scrivono (Gestione pacchetti, Controllo codice): Associa.scegliProgetto -->
-  <script src="assets/js/pacchetti-associa.js?v=20261103-1"></script>
+  <script src="assets/js/pacchetti-associa.js?v=20261113-1"></script>
   <script src="assets/js/riepilogo-copia.js?v=20261108-1"></script>
-  <script src="assets/js/supabase-operatore.js?v=20261103-1"></script>
+  <script src="assets/js/supabase-operatore.js?v=20261113-1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>STORE // CRAFT · Area operatore</title>
@@ -1266,7 +1266,7 @@
             const elencoNegozi = t => t.split(/\r?\n/).filter(l => l.startsWith('Negozi.installa')).join('');
             if (elencoNegozi(await (await esistente.getFile()).text()) === elencoNegozi(contenuto.testo)) { invariati += 1; continue; }
           } else if (await uguali(nuovo, await esistente.getFile())) { invariati += 1; continue; }
-          // pagine, script e stili che cambiano solo nei numeri di aggiornamento dei collegamenti (?v=20261103-1)
+          // pagine, script e stili che cambiano solo nei numeri di aggiornamento dei collegamenti (?v=20261113-1)
           if (/\.(html|js|css)$/.test(percorso)) {
             const senzaV = t => t.replace(/\?v=\d{8}-\d+/g, '');
             if (senzaV(await nuovo.text()) === senzaV(await (await esistente.getFile()).text())) { scrivere.push([percorso, contenuto, 'riferimenti']); continue; }

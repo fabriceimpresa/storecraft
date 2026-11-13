@@ -859,6 +859,14 @@
   :root[data-interface-theme="light"] body[data-layout="loghi"] {
     background-image: none !important;
   }
+
+  /* Etichette DYMO: con il tema chiaro anche il riquadro dell'anteprima è chiaro, come gli altri riquadri della pagina
+     (13 novembre 2026, scelta di Fabrice: prima restava scuro, #0a0908, in Luxury Outlet e OPHILYA); l'etichetta
+     bianca resta staccata dall'ombra corta del tema chiaro (.label-preview-wrapper nella pagina) */
+  :root[data-interface-theme="light"] body[data-layout="dymo"] .preview-section {
+    background: var(--interface-surface) !important;
+    border-color: var(--interface-border) !important;
+  }
 }
 
 .system-menu[hidden],

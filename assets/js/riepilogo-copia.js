@@ -37,7 +37,7 @@
   // Le pagine e i file che cambiano, raggruppati: per negozio (pagine .html della sua cartella e altri file), loghi,
   // schede dei negozi, file comuni (assets/js, assets/css, …), radice
   function gruppi(scrivere, togliere, negozi) {
-    // riferimenti: file che cambiano solo nei numeri di aggiornamento dei collegamenti (?v=20261103-1), non nel contenuto
+    // riferimenti: file che cambiano solo nei numeri di aggiornamento dei collegamenti (?v=20261113-1), non nel contenuto
     const g = { negozi: {}, loghi: 0, schede: [], comuni: { js: 0, css: 0, immagini: 0, caratteri: 0, altri: 0 }, radice: [], riferimenti: 0 };
     const conta = (percorso, come) => {
       const parti = percorso.split('/');
